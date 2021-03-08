@@ -193,7 +193,7 @@ Radians:
     For angular regions (and increments) specified in radians you may use a set of forms indicating multiples or
     fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating
     point numbers, e.g., -2\ **pi**\ /2\ **pi**\ 3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
-    of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\ 
+    of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\
     **pi**\ , 3/2 (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
     (1\ **pi**\ 3), and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value
     is within roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required
@@ -265,7 +265,7 @@ Map frame and axes annotations: The **-B** option
 This is potentially the most complicated option in GMT, but most examples of its usage are actually quite simple. We
 distinguish between two sets of information: :ref:`Frame settings <option_-B_frame>` and
 :ref:`Axes settings <option_-B_axes>`.  These are set separately by their own **-B** invocations; hence multiple
-**-B** specifications may be specified. The :ref:`Frame settings <option_-B_frame>` covers things such as which axes
+**-B** specifications may be specified. The :ref:`Frame settings <option_-B_frame>` cover things such as which axes
 should be plotted, canvas fill, plot title (and subtitle), and what type of gridlines be drawn, whereas the
 :ref:`Axes settings <option_-B_axes>` deal with annotation, tick, and gridline intervals, axes labels, and annotation
 units.
@@ -286,8 +286,8 @@ to **-B** to control the Frame settings:
 - *axes* to set which of the axes should be drawn and possibly annotated using a combination of the codes listed
   below [default is **WESN**]. Borders omitted from the set of codes will not be drawn. For example, **WSn**
   denotes that the "western" (left) and "southern" (bottom) axes should be drawn with tick-marks and annotations by
-  using **W** and **S**, that the "northern" (top) edge of the plot should be drawn with tick-marks and without
-  annotations by using **n**, and that the "eastern" (right) axes should not be drawn by not including one of **E**\ \|\
+  using **W** and **S**; that the "northern" (top) edge of the plot should be drawn with tick-marks and without
+  annotations by using **n**; and that the "eastern" (right) axes should not be drawn by not including one of **E**\ \|\
   **e**\ \|\ **r**.
 
    - **W**\ est, **E**\ ast, **S**\ outh, **N**\ orth, and/or (for 3-D plots) **Z** indicate axes that should be
@@ -299,8 +299,8 @@ to **-B** to control the Frame settings:
 
 - *axes*\ **code** (for 3-D plots) where **code** is any combination of the corder ids **1**, **2**, **3**, **4**. By
   default, a single vertical axes will be plotted for 3-D plots at the most suitable map corner. **code** can be used
-  to override this, where **1** represents the south-western/lower-left corner, **2** the south-eastern/lower-right,
-  **3** the north-eastern/upper-right, and **4** the north-western/upper-left corner.
+  to override this, where **1** represents the south-western (lower-left) corner, **2** the south-eastern (lower-right),
+  **3** the north-eastern (upper-right), and **4** the north-western (upper-left) corner.
 
 - **+w**\ [*pen*] (for 3-D plots) to draw the outlines of the x-z and y-z planes [default is no outlines]. Optionally,
   append *pen* to specify different :ref:`pen <-Wpen_attrib>` attributes [default is :term:`MAP_GRID_PEN_PRIMARY`].
@@ -329,14 +329,15 @@ to **-B** to control the Frame settings:
 
 - **+n** to have no frame and annotations at all [default is contolled by *axes*].
 
-- **+t**\ *title* to place a title will appear centered above the plot frame [default is no title].
+- **+t**\ *title* to place the string given in *title* centered above the plot frame [default is no title].
 
-- **+s**\ *subtitle* (requires **+t**\ *title*) to place a subtitle beneath the title [default is no subtitle].
+- **+s**\ *subtitle* (requires **+t**\ *title*) to place the string given in *subtitle* beneath the *title* [default is
+  no subtitle].
 
 **Note**: Both **+t**\ *title* and **+s**\ *subtitle* may be set over multiple lines by breaking them up using the
-markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
+markers @^ or <break>.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
 with @[ markers (or alternatively <math> ... </math>) (requires ``latex`` and ``dvips`` to be installed). See the
-:doc:`/cookbook/gmt-latex` cookbook chapter for more details.
+:doc:`/cookbook/gmt-latex` chapter for more details.
 
 .. _option_-B_axes:
 
@@ -371,7 +372,7 @@ The following modifiers can be appended to **-B** to control the Axes settings:
 - **+s**\|\ **S**\ *seclabel* (for Cartesion plots only) to specify an alternate label for the right or upper axes.
   **+s** uses the default label orientation; **+S** forces a horizontal label for *y*-axes, which is useful for very
   short labels.
-- **+p**\ *prefix* to define a leading text prefix for the axis annotation (e.g., dollar sign for plots related to
+- **+p**\ *prefix* (for Cartesion plots only) to define a leading text prefix for the axis annotation (e.g., dollar sign for plots related to
   money). For geographic maps the addition of degree symbols, etc. is automatic and controlled by
   :term:`FORMAT_GEO_MAP`.
 - **+u**\ *unit* (for Cartesion plots only) to append specific units to the annotations. For geographic maps the
@@ -384,16 +385,16 @@ The following modifiers can be appended to **-B** to control the Axes settings:
   spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
 **NOTE**: To include LaTeX code as part of a label, enclose the expression with @[ markers (or alternatively <math>
-... </math>). (requires ``latex`` and ``dvips`` to be installed). See the :doc:`/cookbook/gmt-latex` cookbook chapter
-for more details.
+... </math>). (requires ``latex`` and ``dvips`` to be installed). See the :doc:`/cookbook/gmt-latex` chapter for more
+details.
 
 **NOTE**: If any labels, prefixes, or units contain spaces or special characters you will need to enclose them in
 quotes.
 
 **NOTE**: Text items such as *title*, *subtitle*, *label* and *seclabel* are seen by GMT as part of a long string
-containing everything passed to **-B**. Therefore, they cannot contain substrings that looks like other modifiers. If
-you need to embed such sequences (e.g., **+t**\ "Solving a+b=c") you need to replace those + symbols with their octal
-equivalent \\053, (e.g., **+t**\ "Solving a\\053b=c").
+containing everything passed to **-B**. Therefore, they cannot contain substrings that look like other modifiers. If
+you need to embed such sequences (e.g., **+t**\ "Solving a+b=c") you need to replace those + symbols with their
+:doc:`octal equivalent </cookbook/octal-codes>` \\053, (e.g., **+t**\ "Solving a\\053b=c").
 
 **NOTE**: For non-geographical projections: Give negative scale (in **-Jx**) or axis length (in **-JX**) to change the
 direction of increasing coordinates (i.e., to make the y-axis positive down)
@@ -407,8 +408,8 @@ direction of increasing coordinates (i.e., to make the y-axis positive down)
 
 The choice of **a**\|\ **f**\|\ **g** sets the axis item of interest, which are detailed in the Table
 :ref:`interval types <tbl-inttype>`. Optionally, append *phase* to shift the annotations by that amount (positive or
-negative, and the sign is *required*).Optionally, append *unit* to specify the units of *stride*, where *unit* is one
-of the 18 supported :ref:`unit codes <tbl-units>`. Fof custom annotations and intervals, *intervals* can be given as
+negative, and the sign is *required*). Optionally, append *unit* to specify the units of *stride*, where *unit* is one
+of the 18 supported :ref:`unit codes <tbl-units>`. For custom annotations and intervals, *intervals* can be given as
 **c**\ *intfile*, where *intfile* contains any number of records with *coord* *type* [*label*]. See the section
 :ref:`Custom axes <custom_axes>` for more details.
 
@@ -432,7 +433,7 @@ GMT will auto-select the spacing between the annotations and major ticks, minor 
 not provided after **a**\|\ **f**\|\ **g**. This can be useful for automated plots where the region may not always be
 the same, making it difficult to determine the appropriate *stride* in advance. For example, **-Bafg** will select all
 three spacings automatically for both axes. In case of longitude–latitude plots, this will keep the spacing the same on
-both axes. You can also use **-Bxafg -Byafg** to auto-select them separately. Also note that given the myriad ways of
+both axes. You can also use **-Bxafg -Byafg** to auto-select them separately. Note that given the myriad ways of
 specifying time-axis annotations, the automatic selections may need to be overridden with manual settings to active
 exactly what you need. When *stride* is omitted after **g**, the grid line spacing is chosen the same as the minor tick
 spacing; unless **g** is used in consort with **a**, then the grid lines are spaced the same as the annotations.
@@ -440,7 +441,7 @@ spacing; unless **g** is used in consort with **a**, then the grid lines are spa
 *Stride units*:
 The *unit* flag can take on one of 18 codes; these are listed in Table :ref:`Units <tbl-units>`. Almost all of these
 units are time-axis specific. However, the **d**, **m**, and **s** units will be interpreted as arc degrees, minutes,
-and arc seconds, respectively, when a map projection is in effect.
+and arc seconds respectively when a map projection is in effect.
 
 .. _tbl-units:
 
