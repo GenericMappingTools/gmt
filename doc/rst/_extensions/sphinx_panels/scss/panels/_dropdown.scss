@@ -1,0 +1,102 @@
+details.dropdown {
+  .summary-title {
+    // don't overlap the chevron
+    padding-right: 3em !important;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  .summary-content {
+    cursor: default;
+  }
+
+  summary {
+    // hide the default triangle marker
+    list-style: none;
+    padding: 1em;
+
+    // Ellipsis added when no title
+    .octicon.no-title {
+      vertical-align: middle;
+    }
+  }
+
+  &[open] summary .octicon.no-title {
+    visibility: hidden;
+  }
+
+  // chrome doesn't yet support list-style
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  summary:focus {
+    outline: none;
+  }
+
+  summary:hover .summary-up svg,
+  summary:hover .summary-down svg {
+    opacity: 1;
+  }
+
+  .summary-up svg,
+  .summary-down svg {
+    display: block;
+    opacity: .6;
+  }
+
+  .summary-up,
+  .summary-down {
+    pointer-events: none;
+    position: absolute;
+    right: 1em;
+    top: .75em;
+  }
+
+  &[open] .summary-down {
+    visibility: hidden;
+  }
+
+  &:not([open]) .summary-up {
+    visibility: hidden;
+  }
+
+  // Transition animation
+  &.fade-in[open] summary~* {
+    -moz-animation: panels-fade-in .5s ease-in-out;
+    -webkit-animation: panels-fade-in .5s ease-in-out;
+    animation: panels-fade-in .5s ease-in-out;
+  }
+
+  &.fade-in-slide-down[open] summary~* {
+    -moz-animation: panels-fade-in .5s ease-in-out, panels-slide-down .5s ease-in-out;
+    -webkit-animation: panels-fade-in .5s ease-in-out, panels-slide-down .5s ease-in-out;
+    animation: panels-fade-in .5s ease-in-out, panels-slide-down .5s ease-in-out;
+  }
+}
+
+@keyframes panels-fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes panels-slide-down {
+  0% {
+    transform: translate(0, -10px);
+  }
+
+  100% {
+    transform: translate(0, 0);
+  }
+}
