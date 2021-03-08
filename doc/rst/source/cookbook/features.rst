@@ -2063,7 +2063,7 @@ read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
 `ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_, `Panoply
 <http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
-<http://www.epic.noaa.gov/java/ncBrowse/>`_ ; others can be found on the
+<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
 to read netcdf 4 files (if data compression has been applied).
