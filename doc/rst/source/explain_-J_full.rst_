@@ -31,16 +31,17 @@ respectively):
 
     **-Jc**\|\ **C**\ *lon0/lat0/scale*\|\ *width* (Cassini).
 
-        Give projection center *lon0/lat0* and *scale* (**1:**\ *xxxx* or UNIT/degree).
+        Give projection center *lon0/lat0* and either *scale* (with **-Jc**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JC**; in :ref:`plot-units <plt-units>`).
 
 .. _-Jcyl_stere_full:
 
     **-Jcyl_stere**\|\ **Cyl_stere**\ /[*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* (Cylindrical Stereographic)
 
-        Give central meridian *lon0* (optional), standard parallel *lat0*
-        (optional), and *scale* along parallel (**1:**\ *xxxx* or
-        UNIT/degree). The standard parallel is typically one of these (but
-        can be any value):
+        Give central meridian *lon0* (optional), standard parallel *lat0* (optional), and either *scale* along parallel
+        (with **-Jcyl_stere**; as **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/degree) or *width* (with
+        **-JCyc_stere**; in :ref:`plot-units <plt-units>`). The standard parallel is typically one of these (but can be
+        any value):
 
           * 66.159467 - Miller's modified Gall
           * 55 - Kamenetskiy's First
@@ -52,15 +53,16 @@ respectively):
 
     **-Jj**\|\ **J**\ [*lon0/*]\ *scale*\|\ *width* (Miller Cylindrical Projection).
 
-        Give the central meridian *lon0* (optional) and *scale*
-        (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* (with **-Jj**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JJ**; in :ref:`plot-units <plt-units>`).
 
 .. _-Jm_full:
 
     **-Jm**\|\ **M**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* (Mercator **[C]**)
 
-        Give central meridian *lon0* (optional), standard parallel *lat0*
-        (optional), and *scale* along parallel (**1:**\ *xxxx* or UNIT/degree).
+        Give central meridian *lon0* (optional), standard parallel *lat0* (optional), and either *scale* along parallel
+        (with **-Jm**; as **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/degree) or *width* (with **-JM**; in
+        :ref:`plot-units <plt-units>`).
 
 .. _-Jo_full:
 
@@ -68,28 +70,27 @@ respectively):
 
         Typically used with **-R**\ *LLx/LLy/URx/URy*\ **+r** or with projected coordinates.  Specify one of:
 
-        **-Jo**\|\ **O**\ [**a**\|\ **A**]\ *lon0/lat0/azimuth/*\ *scale*\|\ *width*
-            Set projection center *lon0/lat0*, *azimuth* of oblique equator, and *scale*.
-        **-Jo**\|\ **O**\ [**b**\|\ **B**]\ *lon0/lat0/lon1/lat1/*\ *scale*\|\ *width*
-            Set projection center *lon0/lat0*, another point on the oblique
-            equator *lon1/lat1*, and *scale*.
-        **-Jo**\|\ **O**\ [**c**\|\ **C**]\ *lon0/lat0/lonp/latp/*\ *scale*\|\ *width*
-            Set projection center *lon0/lat0*, pole of oblique projection
-            *lonp/latp*, and *scale*.
-            Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
+        **-Jo**\|\ **O**\ [**a**\|\ **A**]\ *lon0/lat0/azimuth/*\ *scale*\|\ *width*\ [**+v**]
+            Set projection center *lon0/lat0*, *azimuth* of oblique equator, and *scale* or *width*
+        **-Jo**\|\ **O**\ [**b**\|\ **B**]\ *lon0/lat0/lon1/lat1/*\ *scale*\|\ *width*\ [**+v**]
+            Set projection center *lon0/lat0*, another point on the oblique equator *lon1/lat1*, and *scale* or *width*
+        **-Jo**\|\ **O**\ [**c**\|\ **C**]\ *lon0/lat0/lonp/latp/*\ *scale*\|\ *width*\ [**+v**]
+            Set projection center *lon0/lat0*, pole of oblique projection *lonp/latp*, and *scale* or *width*
 
-        Use upper-case **A**\|\ **B**\|\ **C** to remove enforcement of a northern hemisphere pole.
-        Append **+v** to let the oblique Equator align with the *y*-axis [*x*-axis].  **Note**: If
-        the region (**-R**) is given without the **+r** modifier then the arguments are considered oblique
-        degrees relative to the projection center and not longitude/latitude bounds.
+        Give *scale* along oblique equator (with **-Ja**\|\ **b**\|\ **c**; **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JA**\|\ **B**\|\ **C**; in
+        :ref:`plot-units <plt-units>`). Use upper-case **A**\|\ **B**\|\ **C** to remove enforcement of a northern
+        hemisphere pole. Append **+v** to let the oblique Equator align with the *y*-axis [*x*-axis].  **Note**: If
+        the region (**-R**) is given without the **+r** modifier then the arguments are considered oblique degrees
+        relative to the projection center and not longitude/latitude bounds.
 
 .. _-Jq_full:
 
     **-Jq**\|\ **Q**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* (Cylindrical Equidistant).
 
-        Give the central meridian *lon0* (optional), standard parallel
-        *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
-        standard parallel is typically one of these (but can be any value):
+        Give the central meridian *lon0* (optional), standard parallel *lat0* (optional), and either *scale* (with
+        **-Jq**; as **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/degree) or *width* (with **-JQ**; in
+        :ref:`plot-units <plt-units>`) The standard parallel is typically one of these (but can be any value):
 
           * 61.7 - Grafarend and Niermann, minimum linear distortion
           * 50.5 - Ronald Miller Equirectangular
@@ -102,24 +103,26 @@ respectively):
 
     **-Jt**\|\ **T**\ *lon0/*\ [*lat0/*]\ *scale*\|\ *width* (Transverse Mercator **[C]**)
 
-        Give the central meridian *lon0*, central parallel *lat0*
-        (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0*, central parallel *lat0* (optional), and either *scale* (with **-Jt**; as
+        **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/degree) or *width* (with **-JT**; in
+        :ref:`plot-units <plt-units>`).
 
 .. _-Ju_full:
 
     **-Ju**\|\ **U**\ *zone/*\ *scale*\|\ *width* (UTM - Universal Transverse Mercator **[C]**).
 
-        Give the UTM zone (A,B,1-60[C-X],Y,Z)) and *scale* (**1:**\ *xxxx* or UNIT/degree).
-        Zones: If C-X not given, prepend - or + to enforce southern or
-        northern hemisphere conventions [northern if south > 0].
+        Give the UTM zone (A,B,1-60[C-X],Y,Z)) and either *scale* (with **-Ju**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JU**; in :ref:`plot-units <plt-units>`). Zones:
+        If C-X not given, prepend - or + to enforce southern or northern hemisphere conventions [default is northern
+        if south > 0].
 
 .. _-Jy_full:
 
     **-Jy**\|\ **Y**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* (Cylindrical Equal-Area **[E]**).
 
-        Give the central meridian *lon0* (optional), standard parallel
-        *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
-        standard parallel is typically one of these (but can be any value):
+        Give the central meridian *lon0* (optional), standard parallel *lat0* (optional), and either *scale* (with
+        **-Jy**; as **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/degree) or *width* (with **-JY**; in
+        :ref:`plot-units <plt-units>`). The standard parallel is typically one of these (but can be any value):
 
           * 50 - Balthasart
           * 45 - Gall
@@ -134,141 +137,131 @@ respectively):
 .. _-Jb_full:
 
     **-Jb**\|\ **B**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width* (Albers **[E]**).
-        Give projection center *lon0/lat0*, two standard parallels
-        *lat1/lat2*, and *scale* (**1:**\ *xxxx* or UNIT/degree).
+        Give projection center *lon0/lat0*, two standard parallels *lat1/lat2*, and either *scale* (with **-Jb**; as
+        **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/degree) or *width* (with **-JB**; in
+        :ref:`plot-units <plt-units>`).
 
 .. _-Jd_full:
 
     **-Jd**\|\ **D**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width* (Conic Equidistant)
-        Give projection center *lon0/lat0*, two standard parallels
-        *lat1/lat2*, and *scale* (**1:**\ *xxxx* or UNIT/degree).
+        Give projection center *lon0/lat0*, two standard parallels *lat1/lat2*, and either *scale* (with **-Jd**; as
+        **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/degree) or *width* (with **-JD**; in
+        :ref:`plot-units <plt-units>`).
 
 .. _-Jl_full:
 
     **-Jl**\|\ **L**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width* (Lambert **[C]**)
-        Give origin *lon0/lat0*, two standard parallels *lat1/lat2*, and
-        *scale* along these (**1:**\ *xxxx* or UNIT/degree).
+        Give origin *lon0/lat0*, two standard parallels *lat1/lat2*, and *scale* along these (with **-Jl**; as
+        **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/degree) or *width* (with **-JL**; in
+        :ref:`plot-units <plt-units>`).
 
 .. _-Jpoly_full:
 
     **-Jpoly**\|\ **Poly**\ /[*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* ((American) Polyconic).
-        Give the central meridian *lon0* (optional), reference parallel
-        *lat0* (optional, default = equator), and *scale* along central
-        meridian (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional), reference parallel *lat0* (optional, default = equator), and
+        either *scale* along central meridian (with **-Jpoly**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JPoly**; in :ref:`plot-units <plt-units>`).
 
     **AZIMUTHAL PROJECTIONS:**
 
-    Except for polar aspects, **-R**\ w/e/s/n will be reset to **-Rg**.
-    Use **-R**\ <...>\ **+r** for smaller regions.
-
+    Except for polar aspects, **-R**\ w/e/s/n will be reset to **-Rg**. Use
+    **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r** for smaller regions.
 
 .. _-Ja_full:
 
     **-Ja**\|\ **A**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width* (Lambert **[E]**).
-        *lon0/lat0* specifies the projection center. *horizon* specifies
-        the max distance from projection center (in degrees, <= 180,
-        default 90). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
-        where *radius* is distance in UNIT from origin to the oblique
-        latitude *lat*.
+        *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center
+        (in degrees, <= 180, default 90). Give either *scale* (with **-Ja**; as **1:**\ *xxxx* or *radius/lat*,
+        where *radius* is distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*) or
+        width (with **-JA**; in :ref:`plot-units <plt-units>`).
 
 .. _-Je_full:
 
     **-Je**\|\ **E**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width* (Azimuthal Equidistant).
-        *lon0/lat0* specifies the projection center. *horizon* specifies
-        the max distance from projection center (in degrees, <= 180,
-        default 180). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
-        where *radius* is distance in UNIT from origin to the oblique
-        latitude *lat*.
+        *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center
+        (in degrees, <= 180, default 180). Give *scale* (with **-Je**; as **1:**\ *xxxx* or *radius/lat*,
+        where *radius* is distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*) or
+        width (with **-JE**; in :ref:`plot-units <plt-units>`).
 
 .. _-Jf_full:
 
     **-Jf**\|\ **F**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width* (Gnomonic).
-        *lon0/lat0* specifies the projection center. *horizon* specifies
-        the max distance from projection center (in degrees, < 90,
-        default 60). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
-        where *radius* is distance in UNIT from origin to the oblique
-        latitude *lat*.
+        *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center (in
+        degrees, < 90, default 60). Give *scale* (with **-Jf**; as **1:**\ *xxxx* or *radius/lat*, where *radius* is
+        distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*) or width (with **-JF**; in
+        :ref:`plot-units <plt-units>`).
 
 .. _-Jg_full:
 
     **-Jg**\|\ **G**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width* (Orthographic).
-        *lon0/lat0* specifies the projection center. *horizon* specifies
-        the max distance from projection center (in degrees, <= 90,
-        default 90). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
-        where *radius* is distance in UNIT from origin to the oblique
-        latitude *lat*.
+        *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center (in
+        degrees, <= 90, default 90). Give *scale* (with **-Jg**; as **1:**\ *xxxx* or *radius/lat*, where *radius* is
+        distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*.
     **-Jg**\|\ **G**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/*\ *scale*\|\ *width* (General Perspective).
-        *lon0/lat0* specifies the projection center. *altitude* is the
-        height (in km) of the viewpoint above local sea level. If
-        *altitude* is less than 10, then it is the distance from the
-        center of the earth to the viewpoint in earth radii. If
-        *altitude* has a suffix **r** then it is the radius from the
-        center of the earth in kilometers. *azimuth* is measured to the
-        east of north of view. *tilt* is the upward tilt of the plane of
-        projection. If *tilt* is negative, then the viewpoint is
-        centered on the horizon. Further, specify the clockwise *twist*,
-        *Width*, and *Height* of the viewpoint in degrees. Give *scale*
-        as **1:**\ *xxxx* or *radius/lat*, where *radius* is distance in
-        UNIT from origin to the oblique latitude *lat*.
+        *lon0/lat0* specifies the projection center. *altitude* is the height (in km) of the viewpoint above local sea
+        level. If *altitude* is less than 10, then it is the distance from the center of the earth to the viewpoint in
+        earth radii. If *altitude* has a suffix **r** then it is the radius from the center of the earth in kilometers.
+        *azimuth* is measured to the east of north of view. *tilt* is the upward tilt of the plane of projection. If
+        *tilt* is negative, then the viewpoint is centered on the horizon. Further, specify the clockwise *twist*,
+        *Width*, and *Height* of the viewpoint in degrees. Give *scale* (with **-Jg**; as **1:**\ *xxxx* or
+        *radius/lat*, where *radius* is distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude
+        *lat*) or width (with **-JG**; in :ref:`plot-units <plt-units>`).
 
 .. _-Js_full:
 
     **-Js**\|\ **S**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width* (General Stereographic **[C]**).
-        *lon0/lat0* specifies the projection center. *horizon* specifies
-        the max distance from projection center (in degrees, < 180,
-        default 90). Give *scale* as **1:**\ *xxxx* (true at pole) or
-        *lat0*/**1:**\ *xxxx* (true at standard parallel *lat*) or
-        *radius/lat* (*radius* in UNIT from origin to the oblique
-        latitude *lat*). Note if **1:**\ *xxxx* is used then to specify
-        *horizon* you must also specify the *lat* as +-90 to avoid
-        ambiguity.
+        *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center (in
+        degrees, < 180, default 90). Give *scale* (with **-Js**; as **1:**\ *xxxx* (true at pole) or *lat0*/**1:**\
+        *xxxx* (true at standard parallel *lat*) or *radius/lat* (*radius* in :ref:`plot-units <plt-units>` from origin
+        to the oblique latitude *lat*). Note if **1:**\ *xxxx* is used then to specify *horizon* you must also specify
+        the *lat* as +-90 to avoid ambiguity.) or width (with **-JS**; in :ref:`plot-units <plt-units>`).
 
     **MISCELLANEOUS PROJECTIONS:**
 
 .. _-Jh_full:
 
     **-Jh**\|\ **H**\ [*lon0/*]\ *scale*\|\ *width* (Hammer **[E]**).
-        Give the central meridian *lon0* (optional) and *scale* along
-        equator (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jh**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JH**; in :ref:`plot-units <plt-units>`).
 
 .. _-Ji_full:
 
     **-Ji**\|\ **I**\ [*lon0/*]\ *scale*\|\ *width* (Sinusoidal **[E]**).
-        Give the central meridian *lon0* (optional) and *scale* along
-        equator (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Ji**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JI**; in :ref:`plot-units <plt-units>`).
 
 .. _-Jk_full:
 
     **-Jk**\|\ **K**\ **f**\ [*lon0/*]\ *scale*\|\ *width* (Eckert IV) **[E]**).
-        Give the central meridian *lon0* (optional) and *scale* along
-        equator (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jk**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JK**; in :ref:`plot-units <plt-units>`).
     **-Jk**\|\ **K**\ [**s**][*lon0/*]\ *scale*\|\ *width* (Eckert VI) **[E]**).
-        Give the central meridian *lon0* (optional) and *scale* along
-        equator (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jk**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JK**; in :ref:`plot-units <plt-units>`).
 
 .. _-Jn_full:
 
     **-Jn**\|\ **N**\ [*lon0/*]\ *scale*\|\ *width* (Robinson).
-        Give the central meridian *lon0* (optional) and *scale* along
-        equator (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jn**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JN**; in :ref:`plot-units <plt-units>`).
 
 .. _-Jr_full:
 
     **-Jr**\|\ **R**\ [*lon0/*]\ *scale*\|\ *width* (Winkel Tripel).
-        Give the central meridian *lon0* (optional) and *scale* along
-        equator (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jr**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JR**; in :ref:`plot-units <plt-units>`).
 
 .. _-Jv_full:
 
     **-Jv**\|\ **V**\ [*lon0/*]\ *scale*\|\ *width* (Van der Grinten).
-        Give the central meridian *lon0* (optional) and *scale* along
-        equator (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jv**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JV**; in :ref:`plot-units <plt-units>`).
 
 .. _-Jw_full:
 
     **-Jw**\|\ **W**\ [*lon0/*]\ *scale*\|\ *width* (Mollweide **[E]**).
-        Give the central meridian *lon0* (optional) and *scale* along
-        equator (**1:**\ *xxxx* or UNIT/degree).
+        Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jw**; as **1:**\ *xxxx* or
+        :ref:`plot-units <plt-units>`/degree) or *width* (with **-JW**; in :ref:`plot-units <plt-units>`).
 
     **NON-GEOGRAPHICAL PROJECTIONS:**
 
@@ -277,43 +270,39 @@ respectively):
     **-Jp**\|\ **P**\ *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\
     [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]] (Polar coordinates (*theta*, *r*))
 
-    Give *scale* in UNIT/r-unit.  Optionally add **+a** if *theta* is azimuth CW
-    from North instead of direction CCW from East [Default].
-    Append **+f** to flip the radial direction to point inwards, and append **e** to indicate
-    that *r* represents *elevations* in degrees (requires *south* >= 0 and *north* <= 90),
-    **p** to select current planetary radius (determined by :term:`PROJ_ELLIPSOID`) as maximum radius [*north*], or *radius*
-    to specify a custom radius.
-    Append **+r**\ *offset* to include a radial offset in measurement units [0].
-    Append **+t**\ *origin* in degrees so that this angular value is aligned with the positive *x*-axis
-    (or the azimuth to be aligned with the positive *y*-axis if **+a**) [0].
-    Finally, append **+z** if you want to annotate depth rather than radius [Default].
+    Give *scale* (with **-Jp**; in UNIT/r-unit) or width (with **-JP**; in :ref:`plot-units <plt-units>`).
+    The following modifiers are supported by **-Jp**\|\ **P**:
+
+    - **+a** to indicate that  *theta* is azimuth CW from North instead of direction CCW from East [Default is
+      CCW from East].
+    - **+f** to flip the radial direction to point inwards, and append **e** to indicate that *r* represents
+      *elevations* in degrees (requires *south* >= 0 and *north* <= 90), **p** to select current planetary radius
+      (determined by :term:`PROJ_ELLIPSOID`) as maximum radius [*north*], or *radius* to specify a custom radius.
+    - **+r**\ *offset* to include a radial offset in measurement units [default is **0**].
+    - **+t**\ *origin* in degrees so that this angular value is aligned with the positive *x*-axis (or the azimuth to
+      be aligned with the positive *y*-axis if **+a**) [default is **0**].
+    - **+z** to annotate depth rather than radius [default is radius].
+
     Alternatively, if your *r* data are actually depths then you can append **p** or *radius* to get
     radial annotations (*r = radius - z*) instead.
 
 .. _-Jx_full:
 
-    **-Jx**\|\ **X**\ *x-scale*\|\ *width*\ [*/y-scale*\|\ *height*] (Linear, log, and power scaling)
+    **-Jx**\|\ **X**\ *x-scale*\|\ *width*\ [*/y-scale*\|\ *height*][**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]\
+    [/\ *height*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]][**d**](Linear, log, and power scaling)
 
-    Give *x-scale* (**1:**\ *xxxx* or UNIT/x-unit) and/or *y-scale*
-    (**1:**\ *xxxx* or UNIT/y-unit); or specify *width* and/or *height*
-    in UNIT. *y-scale*\ =\ *x-scale* if not specified separately and
-    using **1:**\ *xxxx* implies that x-unit and y-unit are in meters.
-    Use negative scale(s) to reverse the direction of an axis (e.g., to
-    have y be positive down). Set *height* or *width* to 0 to have it
-    recomputed based on the implied scale of the other axis. Optionally,
-    append to *x-scale*, *y-scale*, *width* or *height* one of the
-    following:
+    Give *x-scale* (with **-Jx**; as **1:**\ *xxxx* or :ref:`plot-units <plt-units>`/x-unit) and/or *y-scale*
+    (**1:**\ *xxxx* or :ref:`plot-units <plt-units>`/y-unit); or specify *width* and/or *height* (with **-JX**; in
+    :ref:`plot-units <plt-units>`). *y-scale*\ =\ *x-scale* if not specified separately and using **1:**\ *xxxx* implies
+    that x-unit and y-unit are in meters. Use negative scale(s) to reverse the direction of an axis (e.g., to have y be
+    positive down). Set *height* or *width* to 0 to have it recomputed based on the implied scale of the other axis.
+    Optionally, append to *x-scale* *y-scale*, *width* or *height* one of the following:
 
-        **d**
-           Data are geographical coordinates (in degrees).
-        **l**
-           Take log10 of values before scaling.
-        **p**\ *power*
-           Raise values to *power* before scaling.
-        **t**
-           Input coordinates are time relative to :term:`TIME_EPOCH`.
-        **T**
-           Input coordinates are absolute time.
+    - **d** to indicate that data are geographical coordinates (in degrees).
+    - **l** to take log10 of values before scaling.
+    - **p**\ *power* to raise values to *power* before scaling.
+    - **t** to indicate that input coordinates are time relative to :term:`TIME_EPOCH`.
+    - **T** to indicate that input coordinates are absolute time.
 
 	For mixed axes with only one geographic axis you may need to set **-f** as well.
 
