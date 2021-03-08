@@ -78,7 +78,7 @@ int main (int argc, char *argv[]) {
 #ifdef WIN32
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    n_columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    n_columns = csbi.srWindow.Right;
 #else
 	struct winsize w;
     ioctl (STDOUT_FILENO, TIOCGWINSZ, &w);
