@@ -58,6 +58,8 @@ Polish Notation" (RPN) calculator that operates on or creates table data:
       gmt math -T0/100/1  T SQRT = sqrt.txt
       gmt math -T0/100/10 T SQRT = sqrt10.txt
 
+.. _-Jx_linear:
+
 Cartesian linear transformation (**-Jx** **-JX**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -140,6 +142,8 @@ option. As an example, we want to plot a crude world map centered on
 with the result reproduced in
 Figure :ref:`Linear transformation of map coordinates <GMT_Linear_d>`.
 
+.. _-Jx_time:
+
 Calendar time coordinates
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -177,6 +181,7 @@ general, the options provided with **-JX** will prevail.
 
 .. literalinclude:: /_verbatim/GMT_linear_cal.txt
 
+.. _-Jx_log:
 
 Cartesian logarithmic projection
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -204,6 +209,8 @@ Note that if *x*- and *y*-scaling are different and a
 appended twice: Once after the *x*-scale (before the /) and once after
 the *y*-scale.
 
+.. _-Jx_power:
+
 Cartesian power projection :ref:`... <-Jx_full>`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -227,6 +234,8 @@ to the linear transformation. Thus our command becomes (Figure :ref:`Power
 transformation <GMT_pow>`)
 
 .. literalinclude:: /_verbatim/GMT_pow.txt
+
+.. _-Jp:
 
 Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
 --------------------------------------------------------------------------------
