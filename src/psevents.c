@@ -530,6 +530,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core coupe, meca, or velo command with valid -S option\n");
 					n_errors++;
 				}
+				GMT->current.setting.proj_length_unit = GMT_INCH;	/* Since S.size is now in inches */
 				if (gmt_M_is_zero (Ctrl->S.size)) {	/* Sanity check */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a valid -S option with specified nonzero symbol size\n");
 					n_errors++;
@@ -1027,7 +1028,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 			t_plateau = t_event + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];	/* End of the plateau phase */
 			t_decay = t_plateau + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];	/* End of the decay phase */
-			size = (Ctrl->S.mode) ? in[s_in] : Ctrl->S.size;	/* Fixed or variable nominal symbol size */
+			size = (Ctrl->S.mode) ? in[s_in] : Ctrl->S.size;	/* Fixed or variable nominal symbol size in inches */
 			if (Ctrl->T.now < t_event) {	/* We are within the rise phase */
 				x = pow ((Ctrl->T.now - t_rise)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 0 to 1 */
 				if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
