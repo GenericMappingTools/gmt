@@ -135,6 +135,9 @@ struct PSEVENTS_CTRL {
 	} Z;
 };
 
+/* THe names of the three external modules.  We skip first 2 letters if in modern mode */
+GMT_LOCAL char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
+
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSEVENTS_CTRL *C;
 
@@ -234,7 +237,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default plots lines or polygons; see -A for further instructions.\n");
 	GMT_Option (API, "V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", 0);
-	GMT_Option (API, "X,bi2,c,di,e,f,h,i,p,qi,w,:,.");
+	GMT_Option (API, "X");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append core external command and required options that must include -S<format><size>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The quoted command must start with [ps]coupe, [ps]meca, or [ps]velo.\n");
+	GMT_Option (API, "bi2,c,di,e,f,h,i,p,qi,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -247,6 +253,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	 */
 
 	unsigned int n_errors = 0, pos, n_col = 3, k = 0, id = 0;
+
 	char *c = NULL, *t_string = NULL, txt_a[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
 
@@ -527,7 +534,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				if (Ctrl->Z.cmd == NULL || Ctrl->Z.module == NULL) {	/* Sanity checks */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core coupe, meca, or velo command with valid -S option\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core [ps]coupe, [ps]meca, or [ps]velo command with valid -S option and fixed size\n");
 					n_errors++;
 				}
 				GMT->current.setting.proj_length_unit = GMT_INCH;	/* Since S.size is now in inches */
@@ -587,14 +594,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (!Ctrl->C.active && !Ctrl->G.active && !Ctrl->W.active), "Option -Z: Must specify at least one of -C, -G, -W to plot visible symbols.\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.J.active, "Must specify a map projection with the -J option\n");
-	if (GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Use classic mode names */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.module, "pscoupe", 7U) && strncmp (Ctrl->Z.module, "psmeca", 6U) && strncmp (Ctrl->Z.module, "psvelo", 6U)),
-			"Option Z: Classic module command must begin with one of pscoupe, psmeca or psvelo\n");
-	}
-	else {	/* Modern mode names */
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && (strncmp (Ctrl->Z.module, "coupe", 5U) && strncmp (Ctrl->Z.module, "meca", 4U) && strncmp (Ctrl->Z.module, "velo", 4U)),
-			"Option Z: Modern module command must begin with one of coupe, meca or velo\n");
-}
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !(strstr (Ctrl->Z.module, &coupe[2]) || strstr (Ctrl->Z.module, &meca[2]) || strstr (Ctrl->Z.module, &velo[2])),
+		"Option Z: Module command must begin with one of [ps]coupe, [ps]meca, or [ps]velo\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -613,12 +614,11 @@ GMT_LOCAL void psevents_set_XY (struct GMT_CTRL *GMT, unsigned int x_type, unsig
 
 GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *module, char *cmd) {
 	/* Return how many data columns are needed for the selected seismo/geodetic symbol */
-	unsigned int n = 0, k = (GMT->current.setting.run_mode == GMT_CLASSIC) ? 0 : 2;
-	char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
+	unsigned int n = 0;
 	char *S = strstr (cmd, "-S");	/* Pointer to start of symbol option */
 	S += 2;	/* Now at format designation */
 
-	if (!strncmp (module, &coupe[k], 7U-k)) {	/* Using coupe/pscoupe */
+	if (strstr (module, &coupe[2])) {	/* Using coupe/pscoupe */
 		switch (S[0]) {
 			case 'a': n = 7; break;
 			case 'c': n = 11; break;
@@ -628,7 +628,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 			default: n = 0; break;
 		}
 	}
-	else if (!strncmp (module, &meca[k], 6U-k)) {	/* Using meca/psmeca */
+	else if (strstr (module, &meca[2])) {	/* Using meca/psmeca */
 		switch (S[0]) {
 			case 'a': n = 7; break;
 			case 'c': n = 11; break;
@@ -639,7 +639,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 		}
 		if (strstr (cmd, "-Fo")) n--;	/* No depth column in this deprecated format */
 	}
-	else if (!strncmp (module, &velo[k], 6U-k)) {	/* Using velo/psvelo */
+	else if (strstr (module, &velo[2])) {	/* Using velo/psvelo */
 		switch (S[0]) {
 			case 'e': case 'r': n = 7; break;
 			case 'n': case 'w': n = 4; break;
@@ -1172,7 +1172,7 @@ Do_txt:	if (Ctrl->E.active[PSEVENTS_TEXT] && In->text) {	/* Also plot trailing t
 			if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.fill);}
 			if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
 			if (Ctrl->N.active) strcat (cmd, Ctrl->N.arg);
-			module = Ctrl->Z.module;
+			module = (GMT->current.setting.run_mode == GMT_MODERN && !strncmp (Ctrl->Z.module, "ps", 2U)) ? &Ctrl->Z.module[2] : Ctrl->Z.module;
 		}
 		else {	/* Command to plot symbols */
 			sprintf (cmd, "%s -R -J -O -K -I -t -S%s --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=%s", tmp_file_symbols, Ctrl->S.symbol, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
