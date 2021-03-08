@@ -1,5 +1,9 @@
 #include "gmt_dev.h"
+#ifdef WIN32
+#include <windows.h>
+#else
 #include <sys/ioctl.h>
+#endif
 
 /*! . */
 void gmt_usage_line (unsigned int mode, size_t MLENGTH, int type, char *in_line) {
@@ -69,16 +73,23 @@ void gmt_usage_line (unsigned int mode, size_t MLENGTH, int type, char *in_line)
 
 int main (int argc, char *argv[]) {
 	char text[2048] = {""};
-	int length_of_line = 80, type = 0;
+	int length_of_line = 80, type = 0, n_columns;
 	const char *name = "somemodule";
+#ifdef WIN32
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    n_columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+#else
 	struct winsize w;
+    ioctl (STDOUT_FILENO, TIOCGWINSZ, &w);
+    n_columns = w.ws_col;
+#endif
 	sprintf (text, "usage: %s <grid> [-A] [-C] [%s] [-E[a|e|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] [-N<table>] [%s] [-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]",
 		name, GMT_GRDEDIT2D, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
-    ioctl (STDOUT_FILENO, TIOCGWINSZ, &w);
 
 	if (argc > 1) {	/* Gave a length argument */
-		if (argv[1][0] == '-') length_of_line = w.ws_col;	/* use the terminal width */
+		if (argv[1][0] == '-') length_of_line = n_columns;	/* use the terminal width */
 		else length_of_line = atoi (argv[1]);	/* Use what was given to us */
 	}
 	if (argc == 3) type = 1;	/* If we gave a 2nd arg it means use fancy ISO line-break symbol */
