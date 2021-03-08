@@ -194,7 +194,7 @@ Radians:
     fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating
     point numbers, e.g., -2\ **pi**\ /2\ **pi**\ 3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
     of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\
-    **pi**\ , 3/2 (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
+    **pi**\ , 3/2 **pi** (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
     (1\ **pi**\ 3), and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value
     is within roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required
     multiples or fractions.
@@ -297,7 +297,7 @@ to **-B** to control the Frame settings:
    - **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op) and/or (for 3-D plots) **u**\ (p) indicate axes that
      should be drawn without tick-marks or annotations.
 
-- *axes*\ **code** (for 3-D plots) where **code** is any combination of the corder ids **1**, **2**, **3**, **4**. By
+- *axes*\ **code** (for 3-D plots) where **code** is any combination of the corner ids **1**, **2**, **3**, **4**. By
   default, a single vertical axes will be plotted for 3-D plots at the most suitable map corner. **code** can be used
   to override this, where **1** represents the south-western (lower-left) corner, **2** the south-eastern (lower-right),
   **3** the north-eastern (upper-right), and **4** the north-western (upper-left) corner.
@@ -360,7 +360,7 @@ The following modifiers can be appended to **-B** to control the Axes settings:
 - **p**\|\ **s** to set whether the modifiers apply to the **p**\ (rimary) or **s**\ (econdary) axes [Default is **p**].
   These settings are mostly used for time axes annotations but are available for geographic axes as well. **Note**:
   Primary refers to annotations closest to the axis and secondary to annotations further away.  Hence, primary
-  annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts). The terms "primary" and
+  annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts. The terms "primary" and
   "secondary" do not reflect any hierarchical order of units: the "primary" annotation interval is usually smaller
   (e.g., days) while the "secondary" annotation interval typically is larger (e.g., months).
 - **x**\|\ **y**\|\ **z** to set which axes the modifiers apply to [default is **xy**]. If you wish to give different
@@ -379,8 +379,8 @@ The following modifiers can be appended to **-B** to control the Axes settings:
   addition of degree symbols, etc. is automatic and controlled by :term:`FORMAT_GEO_MAP`.
 - **+a**\ *angle* (for Cartesion plots only) to plot slanted annotations, where *angle* is measured with respect to
   the horizontal and must be in the -90 <= *angle* <= 90 range. **+an** can be used as a shorthand for normal
-  (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e., **+a**\ 0) annotations [Default fo
-  x-axis] These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
+  (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e., **+a**\ 0) annotations [Default for
+  x-axis]. These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
 - *intervals* to define the intervals for annotations and major tick spacing, minor tick spacing, and/or grid line
   spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
@@ -408,7 +408,7 @@ direction of increasing coordinates (i.e., to make the y-axis positive down)
 
 The choice of **a**\|\ **f**\|\ **g** sets the axis item of interest, which are detailed in the Table
 :ref:`interval types <tbl-inttype>`. Optionally, append *phase* to shift the annotations by that amount (positive or
-negative, and the sign is *required*). Optionally, append *unit* to specify the units of *stride*, where *unit* is one
+negative with the sign being required). Optionally, append *unit* to specify the units of *stride*, where *unit* is one
 of the 18 supported :ref:`unit codes <tbl-units>`. For custom annotations and intervals, *intervals* can be given as
 **c**\ *intfile*, where *intfile* contains any number of records with *coord* *type* [*label*]. See the section
 :ref:`Custom axes <custom_axes>` for more details.
@@ -434,12 +434,12 @@ not provided after **a**\|\ **f**\|\ **g**. This can be useful for automated plo
 the same, making it difficult to determine the appropriate *stride* in advance. For example, **-Bafg** will select all
 three spacings automatically for both axes. In case of longitude–latitude plots, this will keep the spacing the same on
 both axes. You can also use **-Bxafg -Byafg** to auto-select them separately. Note that given the myriad ways of
-specifying time-axis annotations, the automatic selections may need to be overridden with manual settings to active
-exactly what you need. When *stride* is omitted after **g**, the grid line spacing is chosen the same as the minor tick
-spacing; unless **g** is used in consort with **a**, then the grid lines are spaced the same as the annotations.
+specifying time-axis annotations, the automatic selections may need to be overridden with manual settings to achieve
+exactly what you need. When *stride* is omitted after **g**, the grid line are spaced the same as the minor ticks;
+unless **g** is used in consort with **a**, in which case the grid lines are spaced the same as the annotations.
 
 *Stride units*:
-The *unit* flag can take on one of 18 codes; these are listed in Table :ref:`Units <tbl-units>`. Almost all of these
+The *unit* flag can take on one of 18 codes which are listed in Table :ref:`Units <tbl-units>`. Almost all of these
 units are time-axis specific. However, the **d**, **m**, and **s** units will be interpreted as arc degrees, minutes,
 and arc seconds respectively when a map projection is in effect.
 
@@ -486,7 +486,12 @@ and arc seconds respectively when a map projection is in effect.
 +------------+------------------+----------------------------------------------------------------------------------+
 
 **NOTE**: If your axis is in radians you can use multiples or fractions of **pi** to set such annotation intervals. The
-format is [*s*]\ **pi**\ [*f*], for an optional integer scale *s* and optional integer fraction *f*.
+format is [*s*]\ **pi**\ [*f*], for an optional integer scale *s* and optional integer fraction *f*. When GMT parses one
+of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\ **pi**\ ,
+3/2 **pi** (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3 (1\ **pi**\ 3),
+and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value is within
+roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required multiples or
+fractions.
 
 Geographic basemaps
 ^^^^^^^^^^^^^^^^^^^
