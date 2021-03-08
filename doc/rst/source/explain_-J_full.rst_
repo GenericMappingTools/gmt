@@ -29,14 +29,13 @@ respectively):
 
 .. _-Jc_full:
 
-    **-Jc**\ *lon0/lat0/scale* or **-JC**\ *lon0/lat0/width* (Cassini).
+    **-Jc**\|\ **C**\ *lon0/lat0/scale*\|\ *width* (Cassini).
 
         Give projection center *lon0/lat0* and *scale* (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jcyl_stere_full:
 
-    **-Jcyl_stere**/[*lon0/*\ [*lat0/*]]\ *scale* or
-    **-JCyl_stere**/[*lon0/*\ [*lat0/*]]\ *width* (Cylindrical Stereographic).
+    **-Jcyl_stere**\|\ **Cyl_stere**\ /[*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* (Cylindrical Stereographic)
 
         Give central meridian *lon0* (optional), standard parallel *lat0*
         (optional), and *scale* along parallel (**1:**\ *xxxx* or
@@ -51,14 +50,14 @@ respectively):
 
 .. _-Jj_full:
 
-    **-Jj**\ [*lon0/*]\ *scale* or **-JJ**\ [*lon0/*]\ *width* (Miller Cylindrical Projection).
+    **-Jj**\|\ **J**\ [*lon0/*]\ *scale*\|\ *width* (Miller Cylindrical Projection).
 
         Give the central meridian *lon0* (optional) and *scale*
         (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jm_full:
 
-    **-Jm**\ [*lon0/*\ [*lat0/*]]\ *scale* or **-JM**\ [*lon0/*\ [*lat0/*]]\ *width* (Mercator **[C]**)
+    **-Jm**\|\ **M**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* (Mercator **[C]**)
 
         Give central meridian *lon0* (optional), standard parallel *lat0*
         (optional), and *scale* along parallel (**1:**\ *xxxx* or UNIT/degree).
@@ -69,12 +68,12 @@ respectively):
 
         Typically used with **-R**\ *LLx/LLy/URx/URy*\ **+r** or with projected coordinates.  Specify one of:
 
-        **-Jo**\ [**a**\|\ **A**]\ *lon0/lat0/azimuth/scale* or **-JO**\ [**a**\|\ **A**]\ *lon0/lat0/azimuth/width*
+        **-Jo**\|\ **O**\ [**a**\|\ **A**]\ *lon0/lat0/azimuth/*\ *scale*\|\ *width*
             Set projection center *lon0/lat0*, *azimuth* of oblique equator, and *scale*.
-        **-Jo**\ [**b**\|\ **B**]\ *lon0/lat0/lon1/lat1/scale* or **-JO**\ [**b**\|\ **B**]\ *lon0/lat0/lon1/lat1/width*
+        **-Jo**\|\ **O**\ [**b**\|\ **B**]\ *lon0/lat0/lon1/lat1/*\ *scale*\|\ *width*
             Set projection center *lon0/lat0*, another point on the oblique
             equator *lon1/lat1*, and *scale*.
-        **-Joc**\|\ **C**\ *lon0/lat0/lonp/latp/scale* or **-JOc**\|\ **C**\ *lon0/lat0/lonp/latp/width*
+        **-Jo**\|\ **O**\ [**c**\|\ **C**]\ *lon0/lat0/lonp/latp/*\ *scale*\|\ *width*
             Set projection center *lon0/lat0*, pole of oblique projection
             *lonp/latp*, and *scale*.
             Give *scale* along oblique equator (**1:**\ *xxxx* or UNIT/degree).
@@ -86,8 +85,7 @@ respectively):
 
 .. _-Jq_full:
 
-    **-Jq**\ [*lon0/*\ [*lat0/*]]\ *scale* or
-    **-JQ**\ [*lon0/*\ [*lat0/*]]\ *width* (Cylindrical Equidistant).
+    **-Jq**\|\ **Q**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* (Cylindrical Equidistant).
 
         Give the central meridian *lon0* (optional), standard parallel
         *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
@@ -102,15 +100,14 @@ respectively):
 
 .. _-Jt_full:
 
-    **-Jt**\ *lon0/*\ [*lat0/*]\ *scale* or
-    **-JT**\ *lon0/*\ [*lat0/*]\ *width* (Transverse Mercator **[C]**)
+    **-Jt**\|\ **T**\ *lon0/*\ [*lat0/*]\ *scale*\|\ *width* (Transverse Mercator **[C]**)
 
         Give the central meridian *lon0*, central parallel *lat0*
         (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Ju_full:
 
-    **-Ju**\ *zone/scale* or **-JU**\ *zone/width* (UTM - Universal Transverse Mercator **[C]**).
+    **-Ju**\|\ **U**\ *zone/*\ *scale*\|\ *width* (UTM - Universal Transverse Mercator **[C]**).
 
         Give the UTM zone (A,B,1-60[C-X],Y,Z)) and *scale* (**1:**\ *xxxx* or UNIT/degree).
         Zones: If C-X not given, prepend - or + to enforce southern or
@@ -118,7 +115,7 @@ respectively):
 
 .. _-Jy_full:
 
-    **-Jy**\ [*lon0/*\ [*lat0/*]]\ *scale* or **-JY**\ [*lon0/*\ [*lat0/*]]\ *width* (Cylindrical Equal-Area **[E]**).
+    **-Jy**\|\ **Y**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* (Cylindrical Equal-Area **[E]**).
 
         Give the central meridian *lon0* (optional), standard parallel
         *lat0* (optional), and *scale* (**1:**\ *xxxx* or UNIT/degree). The
@@ -136,25 +133,25 @@ respectively):
 
 .. _-Jb_full:
 
-    **-Jb**\ *lon0/lat0/lat1/lat2/scale* or **-JB**\ *lon0/lat0/lat1/lat2/width* (Albers **[E]**).
+    **-Jb**\|\ **B**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width* (Albers **[E]**).
         Give projection center *lon0/lat0*, two standard parallels
         *lat1/lat2*, and *scale* (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jd_full:
 
-    **-Jd**\ *lon0/lat0/lat1/lat2/scale* or **-JD**\ *lon0/lat0/lat1/lat2/width* (Conic Equidistant)
+    **-Jd**\|\ **D**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width* (Conic Equidistant)
         Give projection center *lon0/lat0*, two standard parallels
         *lat1/lat2*, and *scale* (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jl_full:
 
-    **-Jl**\ *lon0/lat0/lat1/lat2/scale* or **-JL**\ *lon0/lat0/lat1/lat2/width* (Lambert **[C]**)
+    **-Jl**\|\ **L**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width* (Lambert **[C]**)
         Give origin *lon0/lat0*, two standard parallels *lat1/lat2*, and
         *scale* along these (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jpoly_full:
 
-    **-Jpoly**/[*lon0/*\ [*lat0/*]]\ *scale* or **-JPoly**/[*lon0/*\ [*lat0/*]]\ *width* ((American) Polyconic).
+    **-Jpoly**\|\ **Poly**\ /[*lon0/*\ [*lat0/*]]\ *scale*\|\ *width* ((American) Polyconic).
         Give the central meridian *lon0* (optional), reference parallel
         *lat0* (optional, default = equator), and *scale* along central
         meridian (**1:**\ *xxxx* or UNIT/degree).
@@ -167,7 +164,7 @@ respectively):
 
 .. _-Ja_full:
 
-    **-Ja**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JA**\ *lon0/lat0*\ [*/horizon*]\ */width* (Lambert **[E]**).
+    **-Ja**\|\ **A**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width* (Lambert **[E]**).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, <= 180,
         default 90). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
@@ -176,7 +173,7 @@ respectively):
 
 .. _-Je_full:
 
-    **-Je**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JE**\ *lon0/lat0*\ [*/horizon*]\ */width* (Azimuthal Equidistant).
+    **-Je**\|\ **E**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width* (Azimuthal Equidistant).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, <= 180,
         default 180). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
@@ -185,7 +182,7 @@ respectively):
 
 .. _-Jf_full:
 
-    **-Jf**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JF**\ *lon0/lat0*\ [*/horizon*]\ */width* (Gnomonic).
+    **-Jf**\|\ **F**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width* (Gnomonic).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, < 90,
         default 60). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
@@ -194,13 +191,13 @@ respectively):
 
 .. _-Jg_full:
 
-    **-Jg**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JG**\ *lon0/lat0*\ [*/horizon*]\ */width* (Orthographic).
+    **-Jg**\|\ **G**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width* (Orthographic).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, <= 90,
         default 90). Give *scale* as **1:**\ *xxxx* or *radius/lat*,
         where *radius* is distance in UNIT from origin to the oblique
         latitude *lat*.
-    **-Jg**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/scale* or **-JG**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/width* (General Perspective).
+    **-Jg**\|\ **G**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/*\ *scale*\|\ *width* (General Perspective).
         *lon0/lat0* specifies the projection center. *altitude* is the
         height (in km) of the viewpoint above local sea level. If
         *altitude* is less than 10, then it is the distance from the
@@ -216,7 +213,7 @@ respectively):
 
 .. _-Js_full:
 
-    **-Js**\ *lon0/lat0*\ [*/horizon*]\ */scale* or **-JS**\ *lon0/lat0*\ [*/horizon*]\ */width* (General Stereographic **[C]**).
+    **-Js**\|\ **S**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width* (General Stereographic **[C]**).
         *lon0/lat0* specifies the projection center. *horizon* specifies
         the max distance from projection center (in degrees, < 180,
         default 90). Give *scale* as **1:**\ *xxxx* (true at pole) or
@@ -230,46 +227,46 @@ respectively):
 
 .. _-Jh_full:
 
-    **-Jh**\ [*lon0/*]\ *scale* or **-JH**\ [*lon0/*]\ *width* (Hammer **[E]**).
+    **-Jh**\|\ **H**\ [*lon0/*]\ *scale*\|\ *width* (Hammer **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Ji_full:
 
-    **-Ji**\ [*lon0/*]\ *scale* or **-JI**\ [*lon0/*]\ *width* (Sinusoidal **[E]**).
+    **-Ji**\|\ **I**\ [*lon0/*]\ *scale*\|\ *width* (Sinusoidal **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jk_full:
 
-    **-Jkf**\ [*lon0/*]\ *scale* or **-JKf**\ [*lon0/*]\ *width* (Eckert IV) **[E]**).
+    **-Jk**\|\ **K**\ **f**\ [*lon0/*]\ *scale*\|\ *width* (Eckert IV) **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
-    **-Jk**\ [**s**][*lon0/*]\ *scale* or **-JK**\ [**s**][*lon0/*]\ *width* (Eckert VI) **[E]**).
+    **-Jk**\|\ **K**\ [**s**][*lon0/*]\ *scale*\|\ *width* (Eckert VI) **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jn_full:
 
-    **-Jn**\ [*lon0/*]\ *scale* or **-JN**\ [*lon0/*]\ *width* (Robinson).
+    **-Jn**\|\ **N**\ [*lon0/*]\ *scale*\|\ *width* (Robinson).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jr_full:
 
-    **-Jr**\ [*lon0/*]\ *scale* **-JR**\ [*lon0/*]\ *width* (Winkel Tripel).
+    **-Jr**\|\ **R**\ [*lon0/*]\ *scale*\|\ *width* (Winkel Tripel).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jv_full:
 
-    **-Jv**\ [*lon0/*]\ *scale* or **-JV**\ [*lon0/*]\ *width* (Van der Grinten).
+    **-Jv**\|\ **V**\ [*lon0/*]\ *scale*\|\ *width* (Van der Grinten).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
 .. _-Jw_full:
 
-    **-Jw**\ [*lon0/*]\ *scale* or **-JW**\ [*lon0/*]\ *width* (Mollweide **[E]**).
+    **-Jw**\|\ **W**\ [*lon0/*]\ *scale*\|\ *width* (Mollweide **[E]**).
         Give the central meridian *lon0* (optional) and *scale* along
         equator (**1:**\ *xxxx* or UNIT/degree).
 
@@ -277,8 +274,8 @@ respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\ *scale*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]] or **-JP**\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]][**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
-    (Polar coordinates (*theta*, *r*))
+    **-Jp**\|\ **P**\ *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\
+    [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]] (Polar coordinates (*theta*, *r*))
 
     Give *scale* in UNIT/r-unit.  Optionally add **+a** if *theta* is azimuth CW
     from North instead of direction CCW from East [Default].
@@ -295,7 +292,7 @@ respectively):
 
 .. _-Jx_full:
 
-    **-Jx**\ *x-scale*\ [*/y-scale*] or **-JX**\ *width*\ [*/height*] (Linear, log, and power scaling)
+    **-Jx**\|\ **X**\ *x-scale*\|\ *width*\ [*/y-scale*\|\ *height*] (Linear, log, and power scaling)
 
     Give *x-scale* (**1:**\ *xxxx* or UNIT/x-unit) and/or *y-scale*
     (**1:**\ *xxxx* or UNIT/y-unit); or specify *width* and/or *height*
