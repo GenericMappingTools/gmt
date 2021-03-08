@@ -473,6 +473,10 @@ can be cleared via the command **gmt clear data**.  Finally, when a remote file 
 we also check if that file has changed at the server and re-download the updated file;
 this check is only performed no more often than once a day.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_SRTM.txt
+   
 .. figure:: /_images/GMT_SRTM.*
    :width: 700 px
    :align: center
@@ -739,6 +743,10 @@ point, as shown in Figures :ref:`Cap <Cap_settings>` and :ref:`Miter <Miter_sett
 
 .. _Cap_settings:
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_cap.txt
+   
 .. figure:: /_images/GMT_cap.*
    :width: 400 px
    :align: center
@@ -748,6 +756,10 @@ point, as shown in Figures :ref:`Cap <Cap_settings>` and :ref:`Miter <Miter_sett
    where plotted with the same width and dash-spacing (-W10p,20_20:0).
 
 .. _Miter_settings:
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_joint.txt
 
 .. figure:: /_images/GMT_joint.*
    :width: 550 px
@@ -770,6 +782,10 @@ different phase *offset* and color. See the :doc:`/gmt.conf` man page for more i
 
 .. _Line_appearance:
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_linecap.txt
+
 .. figure:: /_images/GMT_linecap.*
    :width: 500 px
    :align: center
@@ -785,6 +801,10 @@ and :term:`PS_LINE_JOIN` by setting both to *round*.  Figure :ref:`Line appearan
 displays the difference in results.
 
 .. _Line_badrender:
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_fatline.txt
 
 .. figure:: /_images/GMT_fatline.*
    :width: 500 px
@@ -816,6 +836,10 @@ specification. The line attribute modifiers are:
 
 .. _Line_offset:
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_lineoffset.txt
+
 .. figure:: /_images/GMT_lineoffset.*
    :width: 500 px
    :align: center
@@ -831,6 +855,10 @@ specification. The line attribute modifiers are:
     2-D coordinates, not the raw user coordinates (i.e., it is not a spherical surface spline).
 
 .. _Line_bezier:
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_bezier.txt
 
 .. figure:: /_images/GMT_bezier.*
    :width: 500 px
@@ -849,6 +877,10 @@ specification. The line attribute modifiers are:
     vector head (see :doc:`/plot` for more details).
 
 .. _Line_vector:
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_linearrow.txt
 
 .. figure:: /_images/GMT_linearrow.*
    :width: 500 px
@@ -998,6 +1030,10 @@ discusses the various ways to do this.
 
 .. _Text_justify:
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_pstext_justify.txt
+
 .. figure:: /_images/GMT_pstext_justify.*
    :width: 400 px
    :align: center
@@ -1023,6 +1059,10 @@ specify offsets *dx* and *dy* that is used to enlarge the bounding box,
 as illustrated in Figure :ref:`Text clearance <Text_clearance>`.
 
 .. _Text_clearance:
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_pstext_clearance.txt
 
 .. figure:: /_images/GMT_pstext_clearance.*
    :width: 300 px
@@ -1272,6 +1312,10 @@ from data), reversing the order of colors, and even isolating a section
 of an incoming CPT.  Here, :doc:`/makecpt` can be told the data range or compute
 it from data tables while :doc:`/grd2cpt` can derive the range from one or more grids.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_hinge.txt
+
 .. figure:: /_images/GMT_hinge.*
    :width: 500 px
    :align: center
@@ -1308,6 +1352,10 @@ Modules that obtain the *z*-range indirectly (e.g., :doc:`/grdimage`) may use th
 to set the quivalent of a **-T**\ *min/max* option.  You may append **+i**\ *dz* to the
 color list to have the *min* and *max* values rounded down and up to nearest multiple of *dz*, respectively.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_colorlist.txt
+
 .. figure:: /_images/GMT_colorlist.*
    :width: 500 px
    :align: center
@@ -1328,6 +1376,10 @@ value it will remove an integer multiple of the *z*-range represented by the
 color table so that we are always inside the range of the color table.  This
 means that the fore- and back-ground colors can never be activated.  Wrapped
 color tables are useful for highlighting small changes.
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_cyclic.txt
 
 .. figure:: /_images/GMT_cyclic.*
    :width: 500 px
@@ -1359,6 +1411,10 @@ several types of transformations to take place:
 The order of these transformations is important.  For instance, if **-Iz** is given
 then all other *z*-values need to be referred to the new sign convention. For most
 applications only the last transformation is needed.
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_CPTscale.txt
 
 .. figure:: /_images/GMT_CPTscale.*
    :width: 500 px
@@ -1404,6 +1460,10 @@ between three types of vectors:
    a beginning point and the azimuth and length (in km) of the vector,
    or by its beginning and end point.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_arrows.txt
+
 .. figure:: /_images/GMT_arrows.*
    :width: 500 px
    :align: center
@@ -1419,6 +1479,10 @@ the left or right half, if the vector attributes should shrink for
 vectors whose length are less than a given cutoff length, and the size
 and shape of the head. These attributes are detailed further in the
 relevant manual pages.
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_arrows_types.txt
 
 .. figure:: /_images/GMT_arrows_types.*
    :width: 500 px
@@ -1565,6 +1629,10 @@ the background panel attribute settings.
 Reference and anchor point specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_anchor.txt
+
 .. figure:: /_images/GMT_anchor.*
    :width: 500 px
    :align: center
@@ -1696,6 +1764,10 @@ the attributes that are under your control:
    shade [Default is 4p/-4p/gray50].  If happy with the placement but desiring a dark blue
    shadow, add **+s**\ darkblue.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_panel.txt
+   
 .. figure:: /_images/GMT_panel.*
    :width: 400 px
    :align: center
@@ -1747,6 +1819,10 @@ Here is a list of the attributes that is under your control:
    with **+w** to all distance annotations along the bar, while for the plain scale it will replace
    the default scale label with the unit abbreviation.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_mapscale.txt
+
 .. figure:: /_images/GMT_mapscale.*
    :width: 500 px
    :align: center
@@ -1790,6 +1866,10 @@ The next two modifiers are optional:
    of the cardinal points from being labeled by giving no label in the corresponding order.  E.g., **+l**",,Down,Up"
    would write Down and Up at the south and north cardinal point, respectively.  Note that for the plain
    directional rose only the north annotation will be placed.
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_dir_rose.txt
 
 .. figure:: /_images/GMT_dir_rose.*
    :width: 500 px
@@ -1847,6 +1927,10 @@ The remaining modifiers are optional:
    If only three intervals are given then we assume you want the same intervals for both rings.  As an example,
    to annotate every 90 degrees and tick every 15 and 5 degrees, add **+t**\ 90/15/5.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_mag_rose.txt
+
 .. figure:: /_images/GMT_mag_rose.*
    :width: 600 px
    :align: center
@@ -1887,6 +1971,10 @@ supply suitable required and optional modifiers:
 #. Add missing data key.  Append **+n** to draw a rectangle with the current NaN color and label it NaN.
    Optionally, append a replacement *text*.  One example might be **+n**\ "No data".
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_colorbar.txt
+
 .. figure:: /_images/GMT_colorbar.*
    :width: 500 px
    :align: center
@@ -1916,6 +2004,10 @@ first, then supply suitable required and optional modifiers:
    these lines are controlled by the chosen line-spacing factor times the current primary annotation
    font setting, i.e., :term:`FONT_ANNOT_PRIMARY`.  The default line spacing factor
    is 1.1; change this with **+l**\ *linefactor*.
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_legend.txt
 
 .. figure:: /_images/GMT_legend.*
    :width: 500 px
@@ -1950,6 +2042,10 @@ In addition, we require one (of two) modifiers to determine the image size.
    directions, resulting in a tiling of the map using the selected image.  This may be useful
    in conjunction with an active clip path set by :doc:`/clip`.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_images.txt
+
 .. figure:: /_images/GMT_images.*
    :width: 500 px
    :align: center
@@ -1970,6 +2066,10 @@ In addition, we require one modifier to set the logo's size.
 #. Specify logo width.  This is a required modifier and is set via **+w**\ *width*.
    The height is automatically set (it is half the width).  To place a 5 cm wide
    GMT logo, append **+w**\ 5c.
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_coverlogo.txt
 
 .. figure:: /_images/GMT_coverlogo.*
    :width: 300 px
@@ -2009,6 +2109,10 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
    know what this means in terms of positions on the map in plot units.  In terms of the modifiers
    this would be **jTR**\ **+w**\ 100k.  See the figure caption for an example.
 
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_inset.txt
+
 .. figure:: /_images/GMT_inset.*
    :width: 500 px
    :align: center
@@ -2037,6 +2141,10 @@ In addition, we offer a few modifier to set the scale bar's remaining attributes
 
 #. Add a unit to the vertical scale bar label.  This is an optional modifier and is set via **+u**\ *unit*.
    To append nT (nTesla) to the label you would specify **+u**\ nT.
+
+.. dropdown:: Click to see source code for figure below.
+
+   .. literalinclude:: /_verbatim/GMT_vertscale.txt
 
 .. figure:: /_images/GMT_vertscale.*
    :width: 600 px
