@@ -88,6 +88,8 @@ The latter method is less robust as other users may have a different
 default unit set and then your script may not work as intended. For portability,
 we therefore recommend you always append the desired unit explicitly.
 
+.. _dist-units:
+
 Distance units
 ~~~~~~~~~~~~~~
 
