@@ -26,6 +26,7 @@ jobs:
           --exclude "^ftp://"
           --exclude "^https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$"
           --exclude "^https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$"
+          --exclude "^http://maps.google.com/mapfiles/kml/$"
           --exclude "^-W@weight.png$"
           --verbose
           "**/*.rst"

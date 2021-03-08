@@ -148,8 +148,7 @@ Optional Arguments
 **-I**\ *icon*
     Specify the URL to an alternative icon that should be used for the
     symbol [Default is a Google Earth circle]. If the URL starts with +
-    then we will prepend
-    `http://maps.google.com/mapfiles/kml/ <http://maps.google.com/mapfiles/kml/>`_
+    then we will prepend ``http://maps.google.com/mapfiles/kml/``
     to the name. To turn off icons entirely (e.g., when just wanting a
     text label), use **-I**-. [Default is a local icon with no directory path].
 
