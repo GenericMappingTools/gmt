@@ -247,8 +247,8 @@ The over 30 map projections and coordinate transformations available in GMT are 
 
 .. _proj-codes:
 
-Projections specifications table
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Projections specifications
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 GMT offers 31 map projections specified using the **-J** option. There are two conventions you may use: (a) GMT-style
 syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax. The codes for the GMT-style and the PROJ-style are tabulated
 below along with the associated *parameters* and links to the cookbook sections that describe the projection syntax and
