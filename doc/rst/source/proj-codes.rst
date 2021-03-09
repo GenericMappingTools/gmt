@@ -1,11 +1,3 @@
-#########################
-Projection Specifications
-#########################
-
-GMT offers 31 map projections. These are specified using the **-J** common option.
-There are two conventions you may use: (a) GMT-style syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax.
-The projection codes for the GMT-style and the PROJ-style are tabulated below.
-
 .. Substitution definitions:
 .. |lon0| replace:: lon\ :sub:`0`
 .. |lat0| replace:: lat\ :sub:`0`
