@@ -41,8 +41,8 @@ the option to use the abbreviations used by the `PROJ <https://proj.org/>`_ mapp
 package. Since some of the GMT projections are not in **PROJ**, we
 invented some of our own as well. For a full list of both the old 1- and
 2-letter codes, as well as the **PROJ**-equivalents see the quick
-reference cards in :doc:`/proj-codes`. For example, **-JM**\ 15c and
-**-JMerc**\ /15c have the same meaning.
+reference cards in :ref:`Projections Specifications <proj-codes>`. For example,
+**-JM**\ 15c and **-JMerc**\ /15c have the same meaning.
 
 Conic projections
 -----------------
