@@ -9,7 +9,7 @@ The two founders built and maintained GMT from version 1 through 3.
 
 GMT 4 benefitted from numerous contributions from two new team members
 [Remko Scharroo](https://www.researchgate.net/profile/Remko_Scharroo)
-and [Joaquim Luis](http://w3.ualg.pt/~jluis/).
+and [Joaquim Luis](http://joa-quim.pt/).
 
 GMT 5 saw major new contributions from team member Florian Wobbe.
 
