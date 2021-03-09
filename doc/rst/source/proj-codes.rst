@@ -148,8 +148,8 @@ The projection codes for the GMT-style and the PROJ-style are tabulated below.
        :ref:`power <-Jx_power>`, and :ref:`time <-Jx_time>`
      - **-Jx**\|\ **X**
      - **-Jxy**
-     - *xscale*\|\ *width*\ [**l**\|\ **p**\ *exp*\|\ **T**\|\ **t**]\
-       [/\ *yscale*\|\ *height*\ [**l**\|\ **p**\ *exp*\|\ **T**\|\ **t**]][**d**]
+     - *xscale*\|\ *width*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]\
+       [/\ *yscale*\|\ *height*\ [**l**\|\ **p**\ *power*\|\ **T**\|\ **t**]][**d**]
    * - :ref:`Cylindrical equal area <-Jy>`
      - **-Jy**\|\ **Y**
      - **-Jcea/**
