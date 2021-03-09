@@ -530,56 +530,50 @@ Using a horizon of 60, our example of this projection centered on
 Cylindrical projections
 -----------------------
 
-Cylindrical projections are easily recognized for its shape: maps are
-rectangular and meridians and parallels are straight lines crossing at
-right angles. But that is where similarities between the cylindrical
-projections supported by GMT (Mercator, transverse Mercator, universal
-transverse Mercator, oblique Mercator, Cassini, cylindrical equidistant,
-cylindrical equal-area, Miller, and cylindrical stereographic
-projections) stops. Each have a different way of spacing the meridians
-and parallels to obtain certain desirable cartographic properties.
+Cylindrical projections are easily recognized for their shape: maps are rectangular and meridians and parallels are
+straight lines crossing at right angles. But that is where similarities between the cylindrical projections supported
+by GMT (:ref:`Mercator <-Jm>`, :ref:`transverse Mercator <-Jt>`, :ref:`universal transverse Mercator <-Ju>`,
+:ref:`oblique Mercator <-Jo>`, :ref:`Cassini <-Jc>`, :ref:`cylindrical equidistant <-Jq>`,
+:ref:`cylindrical equal-area <-Jy>`, :ref:`Miller <-Jj>`, and :ref:`cylindrical stereographic <-Jcyl_stere>`) stops.
+Each have a different way of spacing the meridians and parallels to obtain certain desirable cartographic properties.
 
 .. _-Jm:
 
-Mercator projection (**-Jm** **-JM**) :ref:`... <-Jm_full>`
+Mercator projection (**-Jm** **-JM**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Probably the most famous of the various map projections, the Mercator
-projection takes its name from the Flemish cartographer Gheert Cremer,
-better known as Gerardus Mercator, who presented it in 1569. The
-projection is a cylindrical and conformal, with no distortion along the
-equator. A major navigational feature of the projection is that a line
-of constant azimuth is straight. Such a line is called a rhumb line or
-*loxodrome*. Thus, to sail from one point to another one only had to
-connect the points with a straight line, determine the azimuth of the
-line, and keep this constant course for the entire voyage [21]_. The
-Mercator projection has been used extensively for world maps in which
-the distortion towards the polar regions grows rather large, thus
-incorrectly giving the impression that, for example, Greenland is larger
-than South America. In reality, the latter is about eight times the size
-of Greenland. Also, the Former Soviet Union looks much bigger than
-Africa or South America. One may wonder whether this illusion has had
-any influence on U.S. foreign policy.
+**Syntax**
 
-In the regular Mercator projection, the cylinder touches the globe along
-the equator. Other orientations like vertical and oblique give rise to
-the Transverse and Oblique Mercator projections, respectively. We will
-discuss these generalizations following the regular Mercator projection.
+   **-Jm**\|\ **M**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width*
 
-The regular Mercator projection requires a minimum of parameters. To use
-it in GMT programs you supply this information (the first two items
-are optional and have defaults):
+**Parameters**
 
--  Central meridian [Middle of your map].
+-  Optionally, the central meridian (*lon0*) [default is the middle of the map].
+-  Optionally, the standard parallel for true scale (*lat0*) [default is the equator]. When supplied, the central
+   meridian (*lon0*) must be supplied as well.
+-  The *scale* along the equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jm**) or map *width* in
+   :ref:`plot-units <plt-units>` (with **-JM**).
 
--  Standard parallel for true scale [Equator]. When supplied, central
-   meridian must be supplied as well.
+**Description**
 
--  Scale along the equator in plot-units/degree or 1:xxxxx (**-Jm**), or map
-   width (**-JM**).
+Probably the most famous of the various map projections, the Mercator projection takes its name from the Flemish
+cartographer Gheert Cremer, better known as Gerardus Mercator, who presented it in 1569. The projection is a cylindrical
+and conformal, with no distortion along the equator. A major navigational feature of the projection is that a line of
+constant azimuth is straight. Such a line is called a rhumb line or *loxodrome*. Thus, to sail from one point to another
+one only had to connect the points with a straight line, determine the azimuth of the line, and keep this constant
+course for the entire voyage [21]_. The Mercator projection has been used extensively for world maps in which the
+distortion towards the polar regions grows rather large, thus incorrectly giving the impression that, for example,
+Greenland is larger than South America. In reality, the latter is about eight times the size of Greenland. Also, the
+Former Soviet Union looks much bigger than Africa or South America. One may wonder whether this illusion has had any
+influence on U.S. foreign policy.
 
-Our example presents a world map at a scale of 0.03 cm per degree
-which will give a map 10.8-cm wide. It was created with the command:
+In the regular Mercator projection, the cylinder touches the globe along the equator. Other orientations like vertical
+and oblique give rise to the :ref:`transverse Mercator <-Jt>` and :ref:`oblique Mercator <-Jo>` projections,
+respectively. We will discuss these generalizations following the regular Mercator projection.
+
+**Example**
+
+A world map at a scale of 0.03 cm per degree, which will give a map 10.8-cm wide, can be obtained as follows:
 
 .. literalinclude:: /_verbatim/GMT_mercator.txt
 
@@ -590,35 +584,38 @@ which will give a map 10.8-cm wide. It was created with the command:
    Simple Mercator map.
 
 
-While this example is centered on the Dateline, one can easily choose
-another configuration with the **-R** option. A map centered on
-Greenwich would specify the region with **-R**-180/180/-70/70.
+While this example is centered on the Dateline, one can easily choose another configuration with the **-R** option. For
+example, specify the region with **-R**-180/180/-70/70 to obtain a map centered on Greenwich.
 
 .. _-Jt:
 
-Transverse Mercator projection (**-Jt** **-JT**) :ref:`... <-Jt_full>`
+Transverse Mercator projection (**-Jt** **-JT**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The transverse Mercator was invented by Johann Heinrich Lambert in 1772. In this
-projection the cylinder touches a meridian along which there is no
-distortion. The distortion increases away from the central meridian and
-goes to infinity at 90° from center. The central meridian, each meridian
-90° away from the center, and equator are straight lines; other parallels
-and meridians are complex curves. The projection is defined by
-specifying:
+**Syntax**
 
--  The central meridian.
+   **-Jt**\|\ **T**\ *lon0/*\ [*lat0/*]\ *scale*\|\ *width*
 
--  Optionally, the latitude of origin (default is the equator).
+**Parameters**
 
--  Scale along the equator in plot-units/degree or 1:xxxxx (**-Jt**), or map
-   width (**-JT**).
+-  The central meridian (*lon0*).
+-  Optionally, the latitude of origin (*lat0*) [default is the equator].
+-  The *scale* along the equator in :ref:`plot-units <plt-units>`/degree or 1:xxxxx (with **-Jt**) or map
+   *width* in :ref:`plot-units <plt-units>` (with **-JT**).
 
-The optional latitude of origin defaults to Equator if not specified.
-Although defaulting to 1, you can change the map scale factor via the
-:term:`PROJ_SCALE_FACTOR` parameter. Our example shows a transverse
-Mercator map of south-east Europe and the Middle East with 35°E as the
-central meridian:
+You can change the map scale factor via the :term:`PROJ_SCALE_FACTOR` parameter [default is **1**].
+
+**Description**
+
+The transverse Mercator was invented by Johann Heinrich Lambert in 1772. In this projection the cylinder touches a
+meridian along which there is no distortion. The distortion increases away from the central meridian and goes to
+infinity at 90° from center. The central meridian, each meridian 90° away from the center, and equator are straight
+lines; other parallels and meridians are complex curves.
+
+**Example**
+
+A transverse Mercator map of south-east Europe and the Middle East with 35°E as the central meridian can be obtained as
+follows:
 
 .. literalinclude:: /_verbatim/GMT_transverse_merc.txt
 
@@ -629,20 +626,9 @@ central meridian:
    Rectangular Transverse Mercator map.
 
 
-The transverse Mercator can also be used to generate a global map - the
-equivalent of the 360° Mercator map. Using the command
+A global transverse Mercator map - the equivalent of the 360° Mercator map - can also be obtained as follows:
 
 .. literalinclude:: /_verbatim/GMT_TM.txt
-
-we made the map illustrated in Figure :ref:`Global transverse Mercator
-<GMT_TM>`. Note that
-when a world map is given (indicated by **-R**\ *0/360/s/n*), the
-arguments are interpreted to mean oblique degrees, i.e., the 360° range
-is understood to mean the extent of the plot along the central meridian,
-while the "south" and "north" values represent how far from the central
-longitude we want the plot to extend. These values correspond to
-latitudes in the regular Mercator projection and must therefore be less
-than 90.
 
 .. _GMT_TM:
 
@@ -652,19 +638,36 @@ than 90.
 
    A global transverse Mercator map.
 
+Note that when a world map is given (indicated by **-R**\ *0/360/s/n*), the arguments are interpreted to mean oblique
+degrees, i.e., the 360° range is understood to mean the extent of the plot along the central meridian, while the "south"
+and "north" values represent how far from the central longitude we want the plot to extend. These values correspond to
+latitudes in the regular Mercator projection and must therefore be less than 90.
+
+
+
 .. _-Ju:
 
-Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**) :ref:`... <-Ju_full>`
+Universal Transverse Mercator (UTM) projection (**-Ju** **-JU**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-A particular subset of the transverse Mercator is the Universal
-Transverse Mercator (UTM) which was adopted by the US Army for
-large-scale military maps. Here, the globe is divided into 60 zones
-between 84°S and 84°N, most of which are 6 wide. Each of these UTM zones
-have their unique central meridian. Furthermore, each zone is divided
-into latitude bands but these are not needed to specify the projection
-for most cases. See Figure :ref:`Universal Transverse Mercator
-<GMT_utm_zones>` for all zone designations.
+**Syntax**
+
+    **-Ju**\|\ **U**\ *zone/*\ *scale*\|\ *width*
+
+**Parameters**
+
+- UTM *zone* (A, B, 1–60, Y, Z). Use negative values for numerical zones in the southern hemisphere or append the
+  latitude modifiers (C–H, J–N, P–X) to specify an exact UTM grid zone.
+- The *scale* along the equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Ju**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JU**).
+
+**Description**
+
+A particular subset of the :ref:`transverse Mercator <-Jt>` is the Universal Transverse Mercator (UTM) which was adopted
+by the US Army for large-scale military maps. Here, the globe is divided into 60 zones between 84°S and 84°N, most of
+which are 6° wide. Each of these UTM zones have a unique central meridian. Furthermore, each zone is divided into
+latitude bands but these are not needed to specify the projection for most cases. See Figure
+:ref:`Universal Transverse Mercator <GMT_utm_zones>` for all zone designations.
 
 .. _GMT_utm_zones:
 
@@ -675,68 +678,69 @@ for most cases. See Figure :ref:`Universal Transverse Mercator
    Universal Transverse Mercator zone layout.
 
 
-GMT implements both the transverse Mercator and the UTM projection.
-When selecting UTM you must specify:
-
--  UTM zone (A, B, 1–60, Y, Z). Use negative values for numerical zones
-   in the southern hemisphere or append the latitude modifiers C–H, J–N,
-   P–X) to specify an exact UTM grid zone.
-
--  Scale along the equator in plot-units/degree or 1:xxxxx (**-Ju**), or map
-   width (**-JU**).
-
-In order to minimize the distortion in any given zone, a scale factor of
-0.9996 has been factored into the formulae. (although a standard, you
-can change this with :term:`PROJ_SCALE_FACTOR`). This makes the UTM
-projection a *secant* projection and not a *tangent* projection like the
-transverse Mercator above. The scale only varies by 1 part in 1,000 from
-true scale at equator. The ellipsoidal projection expressions are
-accurate for map areas that extend less than 10 away from the central
-meridian. For larger regions we use the conformal latitude in the
-general spherical formulae instead.
+In order to minimize the distortion in any given zone, a scale factor of 0.9996 has been factored into the formulae
+(although a standard, you can change this with :term:`PROJ_SCALE_FACTOR`). This makes the UTM projection a *secant*
+projection and not a *tangent* projection like the :ref:`transverse Mercator <-Jt>` above. The scale only varies by 1
+part in 1,000 from true scale at equator. The ellipsoidal projection expressions are accurate for map areas that extend
+less than 10 away from the central meridian. For larger regions we use the conformal latitude in the general spherical
+formulae instead.
 
 .. _-Jo:
 
-Oblique Mercator projection (**-Jo** **-JO**) :ref:`... <-Jo_full>`
+Oblique Mercator projection (**-Jo** **-JO**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Oblique configurations of the cylinder give rise to the oblique Mercator
-projection. It is particularly useful when mapping regions of large
-lateral extent in an oblique direction. Both parallels and meridians are
-complex curves. The projection was developed in the early 1900s by
-several workers. Several parameters must be provided to define the
-projection. GMT offers three different definitions:
+**Option 1 Syntax**
 
-#. Option **-Jo**\ [**a**\|\ **A**] or **-JO**\ [**a**\|\ **A**]:
+   **-Jo**\|\ **O**\ [**a**\|\ **A**]\ *lon0/lat0/azimuth/*\ *scale*\|\ *width*\ [**+v**]
 
-   -  Longitude and latitude of projection center.
+**Option 1 Parameters**
 
-   -  Azimuth of the oblique equator.
+   - The longitude (*lon0*) and latitude (*lat0*) of projection center.
+   - The azimuth (*azimuth*) of the oblique equator.
+   - The *scale* in :ref:`plot-units <plt-units>`/degree or 1:xxxxx along oblique equator (with **-Jo**),
+     or map *width* in :ref:`plot-units <plt-units>` (with **-JO**).
+   - Optionally, append **+v** to let the oblique Equator align with the *y*-axis [default is to align with the
+     *x*-axis].
 
-   -  Scale in plot-units/degree or 1:xxxxx along oblique equator (**-Jo**),
-      or map width (**-JO**).
+**Option 2 Syntax**
 
-#. Option **-Jo**\ [**b**\|\ **B**] or **-JO**\ [**b**\|\ **B**]:
+   **-Jo**\|\ **O**\ [**b**\|\ **B**]\ *lon0/lat0/lon1/lat1/*\ *scale*\|\ *width*\ [**+v**]
 
-   -  Longitude and latitude of projection center.
+**Option 2 Parameters**
 
-   -  Longitude and latitude of second point on oblique equator.
+   - The longitude (*lon0*) and latitude (*lat0*) of projection center.
+   - The longitude (*lon1*) and latitude (*lat1*) of a second point on oblique equator.
+   - The *scale* in :ref:`plot-units <plt-units>`/degree or 1:xxxxx along oblique equator (with **-Jo**),
+     or map *width* in :ref:`plot-units <plt-units>` (with **-JO**).
+   - Optionally, append **+v** to let the oblique Equator align with the *y*-axis [default is to align with the
+     *x*-axis].
 
-   -  Scale in plot-units/degree or 1:xxxxx along oblique equator (**-Jo**),
-      or map width (**-JO**).
+**Option 3 Syntax**
 
-#. Option **-Joc**\|\ **C** or **-JOc**\|\ **C**:
+   **-Jo**\|\ **O**\ [**c**\|\ **C**]\ *lon0/lat0/lonp/latp/*\ *scale*\|\ *width*\ [**+v**]
 
-   -  Longitude and latitude of projection center.
+**Option 3 Parameters**
 
-   -  Longitude and latitude of projection pole.
+   - The longitude (*lon0*) and latitude (*lat0*) of projection center.
+   - The longitude (*lonp*) and latitude (*latp*) of the projection pole.
+   - The *scale* in :ref:`plot-units <plt-units>`/degree or 1:xxxxx along oblique equator (with **-Jo**),
+     or map *width* in :ref:`plot-units <plt-units>` (with **-JO**).
+   - Optionally, append **+v** to let the oblique Equator align with the *y*-axis [default is to align with the
+     *x*-axis].
 
-   -  Scale in plot-units/degree or 1:xxxxx along oblique equator (**-Jo**),
-      or map width (**-JO**).
+For all three definitions, the upper case **A**\|\ **B**\|\ **C** means we will allow projection poles in the southern
+hemisphere [default is to map any such poles to their antipodes in the northern hemisphere].
 
-For all three definitions, the upper case **A**\|\ **B**\|\ **C** means we
-will allow projection poles in the southern hemisphere [By default we map any such
-poles to their antipodes in the north hemisphere].  Our example was produced by the command
+**Description**
+
+Oblique configurations of the cylinder give rise to the oblique Mercator projection. It is particularly useful when
+mapping regions of large lateral extent in an oblique direction. Both parallels and meridians are complex curves. The
+projection was developed in the early 1900s by several workers.
+
+**Example**
+
+An oblique view of some Caribbean islands using Option 3 can be obtained as follows:
 
 .. literalinclude:: /_verbatim/GMT_obl_merc.txt
 
@@ -744,48 +748,37 @@ poles to their antipodes in the north hemisphere].  Our example was produced by 
    :width: 500 px
    :align: center
 
-   Oblique Mercator map using **-Joc**. We make it clear which direction is North by
-   adding a star rose with the **-Td** option.
+   Oblique Mercator map using **-JOc**. We make it clear which direction is North by adding a star rose with the **-Td**
+   option.
 
 
-It uses definition 3 for an oblique view of some Caribbean islands. Note
-that we define our region using the rectangular system described
-earlier. If we do not append **+r** to the **-R** string then the
-information provided with the **-R** option is assumed to be oblique
-degrees about the projection center rather than the usual geographic
-coordinates. This interpretation is chosen since in general the
-parallels and meridians are not very suitable as map boundaries.
+Note that we define our region using the rectangular system described earlier. If we do not append **+r** to the **-R**
+string then the information provided with the **-R** option is assumed to be oblique degrees about the projection center
+rather than the usual geographic coordinates. This interpretation is chosen since in general the parallels and meridians
+are not very suitable as map boundaries.
 
-Normally, the oblique Equator becomes the horizontal (*x*) axis in the projected units.
-You can select the vertical (*y*) axis by appending **+v**.
-
-When working with oblique projections such as here, it is often much more convenient
-to specify the map domain in the projected coordinates relative to the map center.
-The figure below shows two views of New Zealand using the oblique Mercator projection
-that in both cases specifies the region using **-R**\ -1000/1000/-500/500\ **+uk**.  The
-unit **k** means the following bounds are in projected km and we let GMT determine the
-geographic coordinates of the two diagonal corners internally.
+When working with oblique projections such as here, it is often much more convenient to specify the map domain in the
+projected coordinates relative to the map center. The figure below shows two views of New Zealand using the oblique
+Mercator projection that in both cases specifies the region using **-R**\ -1000/1000/-500/500\ **+uk**.  The unit **k**
+means the following bounds are in projected km and we let GMT determine the geographic coordinates of the two diagonal
+corners internally.
 
 .. figure:: /_images/GMT_obl_nz.*
    :width: 600 px
    :align: center
 
-   (left) Oblique view of New Zealand centered on its geographical center (Nelson)
-   indicated by the white circle for an oblique Equator with azimuth 35.  This
-   resulted in the argument **-JOa**\ 173:17:02E/41:16:15S/35/3i.
-   The map is 2000 km by 1000 km and the Cartesian
-   coordinate system in the projected units are indicated by the bold axes.  The blue
-   circle is the point (40S,180E) and it has projected coordinates (*x* = 426.2, *y* = -399.7).
-   (right) Same dimensions but now specifying an azimuth of 215, yielding a projection
-   pole in the southern hemisphere (hence we used **-JOA** to override the restriction,
-   i.e., **-JOA**\ 173:17:02E/41:16:15S/215/3i.)
-   The projected coordinate system is still aligned as before but the Earth has been rotated
-   180 degrees.  The blue point now has projected coordinates (*x* = -426.2, *y* = 399.7).
+   (left) Oblique view of New Zealand centered on its geographical center (Nelson) indicated by the white circle for an
+   oblique Equator with azimuth 35.  This resulted in the argument **-JOa**\ 173:17:02E/41:16:15S/35/3i. The map is
+   2000 km by 1000 km and the Cartesian coordinate system in the projected units are indicated by the bold axes.  The
+   blue circle is the point (40S,180E) and it has projected coordinates (*x* = 426.2, *y* = -399.7).
+   (right) Same dimensions but now specifying an azimuth of 215, yielding a projection pole in the southern hemisphere
+   (hence we used **-JOA** to override the restriction, i.e., **-JOA**\ 173:17:02E/41:16:15S/215/3i.)
+   The projected coordinate system is still aligned as before but the Earth has been rotated 180 degrees.  The blue
+   point now has projected coordinates (*x* = -426.2, *y* = 399.7).
 
-The oblique Mercator projection will by default arrange the output so that the oblique
-Equator becomes the new horizontal, positive *x*-axis.  For features with an orientation
-more north-south than east-west, it may be preferable to align the oblique Equator with
-the vertical, positive *y*-axis instead.  This configuration is selected by appending
+The oblique Mercator projection will by default arrange the output so that the oblique Equator becomes the new
+horizontal, positive *x*-axis.  For features with an orientation more north-south than east-west, it may be preferable
+to align the oblique Equator with the vertical, positive *y*-axis instead.  This configuration is selected by appending
 **+v** to the **-J** projection option.  The example below shows this behaviour.
 
 .. figure:: /_images/GMT_obl_baja.*
@@ -806,8 +799,8 @@ Cassini cylindrical projection (**-Jc** **-JC**)
 
 **Parameters**
 
-   - Longitude (*lon0*) and latitude (*lat0*) of central point.
-   - *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jc**), or map width in
+   - The longitude (*lon0*) and latitude (*lat0*) of the central point.
+   - The *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jc**) or map *width* in
      :ref:`plot-units <plt-units>` (with **-JC**).
 
 **Description**
@@ -822,7 +815,7 @@ and parallels are complex curves.
 **Example**
 
 A detailed map of the island of Sardinia centered on the 8°45'E meridian using the Cassini projection can be obtained by
-running the command:
+as follows:
 
 .. literalinclude:: /_verbatim/GMT_cassini.txt
 
@@ -838,40 +831,29 @@ As with the previous projections, the user can choose between a rectangular boun
 
 .. _-Jq:
 
-Cylindrical equidistant projection (**-Jq** **-JQ**) :ref:`... <-Jq_full>`
+Cylindrical equidistant projection (**-Jq** **-JQ**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This simple cylindrical projection is really a linear scaling of
-longitudes and latitudes. The most common form is the Plate Carrée
-projection, where the scaling of longitudes and latitudes is the same.
-All meridians and parallels are straight lines. The projection can be
-defined by:
+**Syntax**
 
--  The central meridian [Middle of your map].
+   **-Jq**\|\ **Q**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width*
 
--  Standard parallel [Equator].
+**Parameters**
 
--  Scale in plot-units/degree or as 1:xxxxx (**-Jq**), or map width (**-JQ**).
+- Optionally, the central meridian (*lon0*) [default is the middle of the map map].
+- Optionally, the standard parallel (*lat0*)  [default is the equator]. When supplied, the central meridian (*lon0*)
+  must be supplied as well.
+- The *scale*  in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jq**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JQ**).
 
-The first two of these are optional and have defaults. When the standard
-parallel is defined, the central meridian must be supplied as well.
+**Description**
 
-A world map centered on the dateline using this projection can be
-obtained by running the command:
+This simple cylindrical projection is really a linear scaling of longitudes and latitudes. The most common form is the
+Plate Carrée projection, where the scaling of longitudes and latitudes is the same. All meridians and parallels are
+straight lines.
 
-.. literalinclude:: /_verbatim/GMT_equi_cyl.txt
-
-.. figure:: /_images/GMT_equi_cyl.*
-   :width: 500 px
-   :align: center
-
-   World map using the Plate Carrée projection.
-
-
-Different relative scalings of longitudes and latitudes can be obtained
-by selecting a standard parallel different from the equator. Some
-selections for standard parallels have practical properties as shown in
-Table :ref:`JQ <tbl-JQ>`.
+Different relative scalings of longitudes and latitudes can be obtained by selecting a standard parallel different from
+the equator. Some selections for standard parallels have practical properties as shown in Table :ref:`JQ <tbl-JQ>`.
 
 .. _tbl-JQ:
 
@@ -890,25 +872,42 @@ Table :ref:`JQ <tbl-JQ>`.
 | Plate Carrée, Simple Cylindrical, Plain/Plane       | 0°     |
 +-----------------------------------------------------+--------+
 
+**Example**
+
+A world map centered on the dateline using this projection can be obtained as follows:
+
+.. literalinclude:: /_verbatim/GMT_equi_cyl.txt
+
+.. figure:: /_images/GMT_equi_cyl.*
+   :width: 500 px
+   :align: center
+
+   World map using the Plate Carrée projection.
+
 .. _-Jy:
 
-Cylindrical equal-area projections (**-Jy** **-JY**) :ref:`... <-Jy_full>`
+Cylindrical equal-area projections (**-Jy** **-JY**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This cylindrical projection is actually several projections, depending
-on what latitude is selected as the standard parallel. However, they are
-all equal area and hence non-conformal. All meridians and parallels are
-straight lines. The requirements to define this projection are:
+**Syntax**
 
--  The central meridian.
+    **-Jy**\|\ **Y**\ [*lon0/*\ [*lat0/*]]\ *scale*\|\ *width*
 
--  The standard parallel.
+**Parameters**
 
--  Scale in plot-units/degree or as 1:xxxxx (**-Jy**), or map width (**-JY**)
+- Optionally, the central meridian (*lon0*) [default is the middle of the map].
+- Optionally, the standard parallel (*lat0*) [default is the equator]. When supplied, the central meridian (*lon0*)
+  must be supplied as well.
+- The *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jy**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JY**)
 
-While you may choose any value for the standard parallel and obtain your
-own personal projection, there are seven choices of standard parallels
-that result in known (or named) projections. These are listed in Table :ref:`JY <tbl-JY>`.
+**Description**
+
+This cylindrical projection is actually several projections, depending on what latitude is selected as the standard
+parallel. However, they are all equal area and hence non-conformal. All meridians and parallels are straight lines.
+
+While you may choose any value for the standard parallel and obtain your own personal projection, there are seven
+choices of standard parallels that result in known (or named) projections. These are listed in Table :ref:`JY <tbl-JY>`.
 
 .. _tbl-JY:
 
@@ -929,9 +928,10 @@ that result in known (or named) projections. These are listed in Table :ref:`JY 
 | Lambert           | 0°                  |
 +-------------------+---------------------+
 
-For instance, a world map centered on the 35°E meridian using the Behrman
-projection (Figure :ref:`Behrman cylindrical projection <GMT_general_cyl>`)
-can be obtained by running the command:
+**Example**
+
+A world map centered on the 35°E meridian using the Behrman projection (Figure
+:ref:`Behrman cylindrical projection <GMT_general_cyl>`) can be obtained as follows:
 
 .. literalinclude:: /_verbatim/GMT_general_cyl.txt
 
@@ -944,30 +944,36 @@ can be obtained by running the command:
    World map using the Behrman cylindrical equal-area projection.
 
 
-As one can see there is considerable distortion at high latitudes since
-the poles map into lines.
+As one can see there is considerable distortion at high latitudes since the poles map into lines.
 
 .. _-Jj:
 
-Miller Cylindrical projection (**-Jj** **-JJ**) :ref:`... <-Jj_full>`
+Miller Cylindrical projection (**-Jj** **-JJ**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This cylindrical projection, presented by Osborn Maitland Miller of the
-American Geographic Society in 1942, is neither equal nor conformal. All
-meridians and parallels are straight lines. The projection was designed
-to be a compromise between Mercator and other cylindrical projections.
-Specifically, Miller spaced the parallels by using Mercator's formula
-with 0.8 times the actual latitude, thus avoiding the singular poles;
-the result was then divided by 0.8. There is only a spherical form for
-this projection. Specify the projection by:
+**Syntax**
 
--  Optionally, the central meridian (default is the middle of your map).
+    **-Jj**\|\ **J**\ [*lon0/*]\ *scale*\|\ *width*
 
--  Scale in plot-units/degree or as 1:xxxxx (**-Jj**), or map width (**-JJ**).
+**Parameters**
 
-For instance, a world map centered on the 90°E meridian at a map scale of
-1:400,000,000 (Figure :ref:`Miller projection <GMT_miller>`) can be obtained as
-follows:
+- Optionally, the central meridian (*lon0*) [default is the middle of the map].
+
+- The *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jj**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JJ**).
+
+**Description**
+
+This cylindrical projection, presented by Osborn Maitland Miller of the American Geographic Society in 1942, is neither
+equal nor conformal. All meridians and parallels are straight lines. The projection was designed to be a compromise
+between Mercator and other cylindrical projections. Specifically, Miller spaced the parallels by using Mercator's
+formula with 0.8 times the actual latitude, thus avoiding the singular poles; the result was then divided by 0.8. There
+is only a spherical form for this projection.
+
+**Example**
+
+A world map centered on the 90°E meridian at a map scale of 1:400,000,000 (Figure :ref:`Miller projection <GMT_miller>`)
+can be obtained as follows:
 
 .. literalinclude:: /_verbatim/GMT_miller.txt
 
@@ -981,29 +987,31 @@ follows:
 
 .. _-Jcyl_stere:
 
-Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**) :ref:`... <-Jcyl_stere_full>`
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cylindrical stereographic projections (**-Jcyl_stere** **-JCyl_stere**)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The cylindrical stereographic projections are certainly not as notable
-as other cylindrical projections, but are still used because of their
-relative simplicity and their ability to overcome some of the downsides
-of other cylindrical projections, like extreme distortions of the higher
-latitudes. The stereographic projections are perspective projections,
-projecting the sphere onto a cylinder in the direction of the antipodal
-point on the equator. The cylinder crosses the sphere at two standard
-parallels, equidistant from the equator. The projections are defined by:
+**Syntax**
 
--  The central meridian (uses the middle of the map when omitted).
+    **-Jcyl_stere**\|\ **Cyl_stere**\ /[*lon0/*\ [*lat0/*]]\ *scale*\|\ *width*
 
--  The standard parallel (default is the Equator). When used, central
-   meridian needs to be given as well.
+**Parameters**
 
--  Scale in plot-units/degree or as 1:xxxxx (**-Jcyl_stere**), or map width
-   (**-JCyl_stere**)
+- Optionally, the central meridian (*lon0*) [default is the middle of the map].
+- Optionally, the standard parallel (*lat0*) [default is the Equator]. When used, central meridian (*lon0*) needs to be
+  given as well.
+- The *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jcyl_stere**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JCyl_stere**).
 
-Some of the selections of the standard parallel are named for the
-cartographer or publication that popularized the projection
-(Table :ref:`JCylstere <tbl-JCylstere>`).
+**Description**
+
+The cylindrical stereographic projections are certainly not as notable as other cylindrical projections, but are still
+used because of their relative simplicity and their ability to overcome some of the downsides of other cylindrical
+projections, like extreme distortions of the higher latitudes. The stereographic projections are perspective
+projections, projecting the sphere onto a cylinder in the direction of the antipodal point on the equator. The cylinder
+crosses the sphere at two standard parallels, equidistant from the equator.
+
+Some of the selections of the standard parallel are named for the cartographer or publication that popularized the
+projection (Table :ref:`JCylstere <tbl-JCylstere>`).
 
 .. _tbl-JCylstere:
 
@@ -1020,10 +1028,10 @@ cartographer or publication that popularized the projection
 | Braun's cylindrical                                     | 0°          |
 +---------------------------------------------------------+-------------+
 
-A map of the world, centered on the Greenwich meridian, using the Gall's
-stereographic projection (standard parallel is 45°,
-Figure :ref:`Gall's stereographic projection <GMT_gall_stereo>`),
-is obtained as follows:
+**Example**
+
+A map of the world, centered on the Greenwich meridian, using the Gall's stereographic projection (standard parallel is
+45°, Figure :ref:`Gall's stereographic projection <GMT_gall_stereo>`), can be obtained as follows:
 
 .. literalinclude:: /_verbatim/GMT_gall_stereo.txt
 
