@@ -797,26 +797,32 @@ the vertical, positive *y*-axis instead.  This configuration is selected by appe
 
 .. _-Jc:
 
-Cassini cylindrical projection (**-Jc** **-JC**) :ref:`... <-Jc_full>`
+Cassini cylindrical projection (**-Jc** **-JC**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This cylindrical projection was developed in 1745 by César-François
-Cassini de Thury for the survey of France. It is occasionally called
-Cassini-Soldner since the latter provided the more accurate mathematical
-analysis that led to the development of the ellipsoidal formulae. The
-projection is neither conformal nor equal-area, and behaves as a
-compromise between the two end-members. The distortion is zero along the
-central meridian. It is best suited for mapping regions of north-south
-extent. The central meridian, each meridian 90° away, and equator are
-straight lines; all other meridians and parallels are complex curves.
-The requirements to define this projection are:
+**Syntax**
 
--  Longitude and latitude of central point.
+    **-Jc**\|\ **C**\ *lon0/lat0/scale*\|\ *width*
 
--  Scale in plot-units/degree or as 1:xxxxx (**-Jc**), or map width (**-JC**).
+**Parameters**
 
-A detailed map of the island of Sardinia centered on the 8°45'E meridian
-using the Cassini projection can be obtained by running the command:
+   - Longitude (*lon0*) and latitude (*lat0*) of central point.
+   - *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jc**), or map width in
+     :ref:`plot-units <plt-units>` (with **-JC**).
+
+**Description**
+
+This cylindrical projection was developed in 1745 by César-François Cassini de Thury for the survey of France. It is
+occasionally called Cassini-Soldner since the latter provided the more accurate mathematical analysis that led to the
+development of the ellipsoidal formulae. The projection is neither conformal nor equal-area, and behaves as a compromise
+between the two end-members. The distortion is zero along the central meridian. It is best suited for mapping regions of
+north-south extent. The central meridian, each meridian 90° away, and equator are straight lines; all other meridians
+and parallels are complex curves.
+
+**Example**
+
+A detailed map of the island of Sardinia centered on the 8°45'E meridian using the Cassini projection can be obtained by
+running the command:
 
 .. literalinclude:: /_verbatim/GMT_cassini.txt
 
@@ -827,8 +833,8 @@ using the Cassini projection can be obtained by running the command:
    Cassini map over Sardinia.
 
 
-As with the previous projections, the user can choose between a
-rectangular boundary (used here) or a geographical (WESN) boundary.
+As with the previous projections, the user can choose between a rectangular boundary (used here) or a geographical
+(WESN) boundary.
 
 .. _-Jq:
 
