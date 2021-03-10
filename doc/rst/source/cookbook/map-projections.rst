@@ -1,48 +1,46 @@
 GMT Map Projections
 ===================
 
-GMT implements more than 30 different projections. They all project
-the input coordinates longitude and latitude to positions on a map. In
-general, *x' = f(x,y,z)* and *y' = g(x,y,z)*, where
-*z* is implicitly given as the radial vector length to the
-*(x,y)* point on the chosen ellipsoid. The functions *f* and
-*g* can be quite nasty and we will refrain from presenting details
-in this document. The interested read is referred to *Snyder*
-[1987] [20]_. We will mostly be using the
-:doc:`/coast` command to demonstrate each of
-the projections. GMT map projections are grouped into four categories
-depending on the nature of the projection. The groups are
+GMT implements more than 30 different projections. They all project the input coordinates longitude and latitude to
+positions on a map. In general, :math:`x' = f(x,y,z)` and :math:`y' = g(x,y,z)`, where :math:`z` is implicitly given as
+the radial vector length to the :math:`(x,y)` point on the chosen ellipsoid. The functions :math:`f` and :math:`g` can be
+quite nasty and we will refrain from presenting details in this document. The interested reader is referred to *Snyder*
+[1987]\ [20]_. We will mostly be using the :doc:`/coast` command to demonstrate each of the projections. GMT map
+projections are grouped into four categories depending on the nature of the projection. The groups are
 
-#. Conic map projections
+#. :ref:`cookbook/map-projections:Conic projections`
 
-#. Azimuthal map projections
+#. :ref:`cookbook/map-projections:Azimuthal projections`
 
-#. Cylindrical map projections
+#. :ref:`cookbook/map-projections:Cylindrical projections`
 
-#. Miscellaneous projections
+#. :ref:`cookbook/map-projections:Miscellaneous projections`
 
-Because *x* and *y* are coupled we can only specify one
-plot-dimensional scale, typically a map *scale* (for lower-case map
-projection code) or a map *width* (for upper-case map projection code).
-However, in some cases it would be more practical to specify map
-*height* instead of *width*, while in other situations it would be nice
-to set either the *shortest* or *longest* map dimension. Users may
-select these alternatives by appending a character code to their map
-dimension. To specify map *height*, append **+dh** to the given dimension;
-to select the minimum map dimension, append **+dl**, whereas you may
-append **+du** to select the maximum map dimension. Without the modifier
-the map width is selected by default [**+dw**].  All dimensions are called
-*plot-units* below and are numbers followed by units **c**, **i**, or **p**.
+Because :math:`x` and :math:`y` are coupled we can only specify one plot-dimensional scale, typically a map *scale*
+(for lower-case map projection code) or a map *width* (for upper-case map projection code). The *measurement unit*
+is cm, inch, or point, depending on the :term:`PROJ_LENGTH_UNIT` setting in **gmt.conf**, but this can be overridden on
+the command line by appending **c**, **i**, or **p** to the *scale* or *width* values. In some cases it would be more
+practical to specify map *height* instead of *width*, while in other situations it would be nice to set either the
+*shortest* or *longest* map dimension. Users may select these alternatives by appending a character code to their map
+dimension [detault is **+dw**]:
 
-In GMT version 4.3.0 we noticed we ran out of the alphabet for
-1-letter (and sometimes 2-letter) projection codes. To allow more
-flexibility, and to make it easier to remember the codes, we implemented
-the option to use the abbreviations used by the `PROJ <https://proj.org/>`_ mapping
-package. Since some of the GMT projections are not in **PROJ**, we
-invented some of our own as well. For a full list of both the old 1- and
-2-letter codes, as well as the **PROJ**-equivalents see the quick
-reference table below. For example,
-**-JM**\ 15c and **-JMerc**\ /15c have the same meaning.
+   - Append **+dh** to the given :ref:`dimension <cookbook/features:Dimension units>` to specify map *height*.
+   - Append **+du** to the given :ref:`dimension <cookbook/features:Dimension units>` to select the minimum map
+     dimension.
+   - Append **+dl** to the given :ref:`dimension <cookbook/features:Dimension units>` to select the maximum map
+     dimension.
+
+The ellipsoid used in map projections is user-definable. 73 commonly used ellipsoids and spheroids are currently
+supported, and users may also specify their own custom ellipsoid parameters [default is WGS-84]. Several GMT parameters
+can affect the projection: :term:`PROJ_ELLIPSOID`, :term:`GMT_INTERPOLANT`, :term:`PROJ_SCALE_FACTOR`, and
+:term:`PROJ_LENGTH_UNIT`; see the :doc:`gmt.conf` man page for details.
+
+In GMT version 4.3.0 we noticed we ran out of the alphabet for 1-letter (and sometimes 2-letter) projection codes. To
+allow more flexibility, and to make it easier to remember the codes, we implemented the option to use the abbreviations
+used by the `PROJ <https://proj.org/>`_ mapping package. Since some of the GMT projections are not in **PROJ**, we
+invented some of our own as well. For a full list of both the old 1- and 2-letter codes, as well as the
+**PROJ**-equivalents see the quick reference table below. For example, **-JM**\ 15c and **-JMerc**\ /15c have the same
+meaning.
 
 .. include:: ../proj-codes.rst_
 
@@ -589,7 +587,7 @@ cartographer Gheert Cremer, better known as Gerardus Mercator, who presented it 
 and conformal, with no distortion along the equator. A major navigational feature of the projection is that a line of
 constant azimuth is straight. Such a line is called a rhumb line or *loxodrome*. Thus, to sail from one point to another
 one only had to connect the points with a straight line, determine the azimuth of the line, and keep this constant
-course for the entire voyage [21]_. The Mercator projection has been used extensively for world maps in which the
+course for the entire voyage\ [21]_. The Mercator projection has been used extensively for world maps in which the
 distortion towards the polar regions grows rather large, thus incorrectly giving the impression that, for example,
 Greenland is larger than South America. In reality, the latter is about eight times the size of Greenland. Also, the
 Former Soviet Union looks much bigger than Africa or South America. One may wonder whether this illusion has had any
@@ -1212,7 +1210,7 @@ Robinson projection (**-Jn** **-JN**)
 The Robinson projection, presented by the American geographer and cartographer Arthur H. Robinson in 1963, is a modified
 cylindrical projection that is neither conformal nor equal-area. Central meridian and all parallels are straight lines;
 other meridians are curved. It uses lookup tables rather than analytic expressions to make the world map "look"
-right [22]_. The scale is true along latitudes 38. The projection was originally developed for use by Rand McNally and
+right\ [22]_. The scale is true along latitudes 38. The projection was originally developed for use by Rand McNally and
 is currently used by the National Geographic Society.
 
 **Example**
