@@ -247,7 +247,7 @@ FORMAT Parameters
         coordinate is to be plotted. This template is then used to guide the
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append **A**
-        which plots the absolute value of the coordinate [default is **ddd:mm:ss**]. 
+        which plots the absolute value of the coordinate [default is **ddd:mm:ss**].
         Not all items may be plotted as this depends on the annotation interval.
 
     **FORMAT_GEO_OUT**
@@ -668,7 +668,7 @@ MAP Parameters
         geotiffs), chose **inside**.  Finally, for Cartesian plots you can
         also choose **graph**\ , which adds a vector to the end of each axis.
         This works best when you reduce the number of axes plotted to one
-        per dimension. By default, the vector tip extends the length of each axis by 7.5%. 
+        per dimension. By default, the vector tip extends the length of each axis by 7.5%.
         Alternatively, append ,\ *length*, where the optional *unit*
         may be **%** (then *length* is the alternate extension in percent) or one
         of **c**, **i**, or **p** (then *length* is the absolute extension
@@ -676,6 +676,18 @@ MAP Parameters
         is set to match :term:`MAP_FRAME_WIDTH`, while the vector
         head length and width are 10 and 5 times this width, respectively.  You
         may control its shape via :term:`MAP_VECTOR_SHAPE`.
+
+        .. toggle::
+
+            Here is an example showing the appearance of different **MAP_FRAME_TYPE** settings.
+
+            .. literalinclude:: /_verbatim/GMT_map_frame_type.txt
+
+            .. figure:: /_images/GMT_map_frame_type.*
+               :width: 100%
+               :align: center
+
+               Appearance of different **MAP_FRAME_TYPE** settings
 
     **MAP_FRAME_WIDTH**
         Width (> 0) of map borders for fancy map frame [default is **5p**]. **Note**: For fancy
@@ -921,8 +933,8 @@ Projection Parameters
     **PROJ_LENGTH_UNIT**
         Sets the default unit length. Choose between **c**\ m, **i**\ nch, or
         **p**\ oint [default is **c** *(or i)*].
-        **Note**: In GMT, one point is defined as 1/72 inch (the PostScript definition), 
-        while it is often defined as 1/72.27 inch in the typesetting industry. 
+        **Note**: In GMT, one point is defined as 1/72 inch (the PostScript definition),
+        while it is often defined as 1/72.27 inch in the typesetting industry.
         There is no universal definition.)
 
     **PROJ_MEAN_RADIUS**
@@ -933,7 +945,7 @@ Projection Parameters
 
     **PROJ_SCALE_FACTOR**
         Changes the default map scale factor used for the Polar
-        Stereographic [default is **0.9996**], UTM [default is **0.9996**], 
+        Stereographic [default is **0.9996**], UTM [default is **0.9996**],
         and Transverse Mercator [default is **1**]
         projections in order to minimize areal distortion. Provide a new
         scale-factor or leave as default.
@@ -951,8 +963,8 @@ PostScript Parameters
         that the PostScript output generates the correct characters on the
         plot. Choose from **Standard**, **Standard+**, **ISOLatin1**, **ISOLatin1+**, and
         **ISO-8859-x** (where *x* is in the ranges 1-11 or 13-16). See
-        Appendix F for details [default is **ISOLatin1+** *(or Standard+)*].  
-        **Note**: Normally the character set is written as part of the PostScript header.  
+        Appendix F for details [default is **ISOLatin1+** *(or Standard+)*].
+        **Note**: Normally the character set is written as part of the PostScript header.
         If you need to switch to another character set for a later overlay then
         you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and
         not via gmt :doc:`/gmtset`.  Finally, note 6, 8, and 11 do not work with standard fonts.
@@ -1080,7 +1092,7 @@ Calendar/Time Parameters
         Specifies the value of the calendar and clock at the origin (zero
         point) of relative time units (see :term:`TIME_UNIT`). It is a string
         of the form **yyyy-mm-ddT[hh:mm:ss]** (Gregorian) or
-        **yyyy-Www-ddT[hh:mm:ss]** (ISO) [default is **1970-01-01T00:00:00** 
+        **yyyy-Www-ddT[hh:mm:ss]** (ISO) [default is **1970-01-01T00:00:00**
         *(the origin of the UNIX time epoch*)].
 
     **TIME_INTERVAL_FRACTION**
@@ -1100,8 +1112,8 @@ Calendar/Time Parameters
         truncate to previous whole number of *n* units and then center time
         on the following interval. (3) **-n**\ *unit*. Same, but center time on
         the previous interval [default is **off**].
-        For example, with **TIME_IS_INTERVAL** =+1o, an input data string 
-        like 1999-12 will be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December), 
+        For example, with **TIME_IS_INTERVAL** =+1o, an input data string
+        like 1999-12 will be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December),
         while if **TIME_IS_INTERVAL** = **off** then that date is interpreted to mean
         1999-12-01T00:00:00.0 (start of December).
 

@@ -9,7 +9,7 @@ sys.path.append(os.path.abspath('_extensions'))
 
 # -- General configuration -----------------------------------------------------
 needs_sphinx = '1.8'
-extensions = ['sphinx.ext.mathjax', 'jinja', 'youtube', 'sphinx_panels']
+extensions = ['sphinx.ext.mathjax', 'jinja', 'youtube', 'sphinx_panels', 'sphinx_togglebutton', 'sphinx_copybutton']
 source_encoding = 'utf-8-sig'
 source_suffix = '.rst'
 master_doc = 'index'
