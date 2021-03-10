@@ -526,9 +526,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
 						while (c[0]) *q++ = *c++;	/* Shuffle down the remaining text from the command to fill the void left by size */
 						*q = '\0';	/* And truncate since we shuffled characters forward */
-						if (strstr (txt_a, "-C") || strstr (txt_a, "-G") || strstr (txt_a, "-I") || strstr (txt_a, "-N") || strstr (txt_a, "-W") || strstr (txt_a, "-t")) {	/* Sanity check */
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -I, -N, -W, or -t in the %s command\n", Ctrl->Z.module);
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: The -C, -G, -N, -W options may be given to %s instead, while I, -t are not allowed\n", &events[s]);
+						if (strstr (txt_a, "-C") || strstr (txt_a, "-G") || strstr (txt_a, "-I") || strstr (txt_a, "-J") || strstr (txt_a, "-N") || strstr (txt_a, "-R") \
+						  || strstr (txt_a, "-W") || strstr (txt_a, "-t")) {	/* Sanity check */
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -I, -J, -N, -R, -W, or -t in the %s command\n", Ctrl->Z.module);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: The -C, -G, -J, -N, -R, -W options may be given to %s instead, while I, -t are not allowed\n", &events[s]);
 							n_errors++;							
 						}
 						else	/* Keep a copy of the final command that has -S with no symbol-size specified */

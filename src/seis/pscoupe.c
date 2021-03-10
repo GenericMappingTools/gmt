@@ -541,7 +541,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					Ctrl->A.frame = true;
 					p[0] = '\0';	/* Chop off modifier */
 				}
-				else if (opt->arg[strlen(opt->arg)-1] == 'f') Ctrl->A.frame = true;
+				else if (opt->arg[strlen(opt->arg)-1] == 'f') Ctrl->A.frame = true;	/* Deprecated syntax */
 				if (Ctrl->A.proj_type == 'a' || Ctrl->A.proj_type == 'c') {
 					sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
 						&lon1, &lat1, &lon2, &lat2, &Ctrl->A.PREF.dip, &Ctrl->A.p_width, &Ctrl->A.dmin, &Ctrl->A.dmax);
