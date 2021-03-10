@@ -49,35 +49,38 @@ Conic projections
 
 .. _-Jb:
 
-Albers conic equal-area projection (**-Jb** **-JB**) :ref:`... <-Jb_full>`
+Albers conic equal-area projection (**-Jb** **-JB**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This projection, developed by Heinrich C. Albers in 1805, is predominantly used to
-map regions of large east-west extent, in particular the United States.
-It is a conic, equal-area projection, in which parallels are unequally
-spaced arcs of concentric circles, more closely spaced at the north and
-south edges of the map. Meridians, on the other hand, are equally spaced
-radii about a common center, and cut the parallels at right angles.
-Distortion in scale and shape vanishes along the two standard parallels.
-Between them, the scale along parallels is too small; beyond them it is
-too large. The opposite is true for the scale along meridians. To define
-the projection in GMT you need to provide the following information:
+**Syntax**
 
--  Longitude and latitude of the projection center.
+    **-Jb**\|\ **B**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width*
 
--  Two standard parallels.
+**Parameters**
 
--  Map scale in plot-units/degree or 1:xxxxx notation (**-Jb**), or map width (**-JB**).
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- The two standard parallels (*lat1* and *lat2*).
+- The *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jb**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JB**).
 
-Note that you must include the "1:" if you choose to specify the scale
-that way. E.g., you can say 0.5c which means 0.5 cm/degree or 1:200000
-which means 1 unit on the map equals 200,000 units along the standard
-parallels. The projection center defines the origin of the rectangular
-map coordinates. As an example we will make a map of the region near
-Taiwan. We choose the center of the projection to be at 125°E/20°N and
-25°N and 45°N as our two standard parallels. We desire a map that is 12
-cm wide. The complete command needed to generate the map below is
-therefore given by:
+Note that you must include the "1:" if you choose to specify the *scale* that way. For example, you can say 0.5c which
+means 0.5 cm/degree or 1:200000 which means 1 unit on the map equals 200,000 units along the standard parallels. The
+projection center defines the origin of the rectangular map coordinates.
+
+**Description**
+
+This projection, developed by Heinrich C. Albers in 1805, is predominantly used to map regions of large east-west
+extent, in particular the United States. It is a conic, equal-area projection, in which parallels are unequally
+spaced arcs of concentric circles, more closely spaced at the north and south edges of the map. Meridians, on the other
+hand, are equally spaced radii about a common center, and cut the parallels at right angles. Distortion in scale and
+shape vanishes along the two standard parallels. Between them, the scale along parallels is too small; beyond them it is
+too large. The opposite is true for the scale along meridians.
+
+**Example**
+
+As an example we will make a map of the region near Taiwan. We choose the center of the projection to be at 125°E/20°N
+and 25°N and 45°N as our two standard parallels. We desire a map that is 12 cm wide. The complete command needed to
+generate the map below is therefore given by:
 
 .. literalinclude:: /_verbatim/GMT_albers.txt
 
@@ -89,24 +92,30 @@ therefore given by:
 
 .. _-Jd:
 
-Equidistant conic projection (**-Jd** **-JD**) :ref:`... <-Jd_full>`
+Equidistant conic projection (**-Jd** **-JD**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The equidistant conic projection was described by the Greek philosopher
-Claudius Ptolemy about A.D. 150. It is neither conformal or equal-area,
-but serves as a compromise between them. The scale is true along all
-meridians and the standard parallels. To select this projection in
-GMT you must provide the same information as for the other conic
-projection, i.e.,
+**Syntax**
 
--  Longitude and latitude of the projection center.
+    **-Jd**\|\ **D**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width*
 
--  Two standard parallels.
+**Parameters**
 
--  Map scale in plot-unts/degree or 1:xxxxx notation (**-Jd**), or map width (**-JD**).
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- The two standard parallels (*lat1* and *lat2*).
+- The *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jd**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JD**).
 
-The equidistant conic projection is often used for atlases with maps of
-small countries. As an example, we generate a map of Cuba:
+**Description**
+
+The equidistant conic projection was described by the Greek philosopher Claudius Ptolemy about A.D. 150. It is neither
+conformal or equal-area, but serves as a compromise between them. The scale is true along all meridians and the standard
+parallels.
+
+**Example**
+
+The equidistant conic projection is often used for atlases with maps of small countries. As an example, we generate a
+map of Cuba:
 
 .. literalinclude:: /_verbatim/GMT_equidistant_conic.txt
 
@@ -118,32 +127,35 @@ small countries. As an example, we generate a map of Cuba:
 
 .. _-Jl:
 
-Lambert conic conformal projection (**-Jl** **-JL**) :ref:`... <-Jl_full>`
+Lambert conic conformal projection (**-Jl** **-JL**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This conic projection was designed by the Alsatian mathematician Johann
-Heinrich Lambert (1772) and has been used extensively for mapping of
-regions with predominantly east-west orientation, just like the Albers
-projection. Unlike the Albers projection, Lambert's conformal projection
-is not equal-area. The parallels are arcs of circles with a common
-origin, and meridians are the equally spaced radii of these circles. As
-with Albers projection, it is only the two standard parallels that are
-distortion-free. To select this projection in GMT you must provide the
-same information as for the Albers projection, i.e.,
+**Syntax**
 
--  Longitude and latitude of the projection center.
+    **-Jl**\|\ **L**\ *lon0/lat0/lat1/lat2/*\ *scale*\|\ *width*
 
--  Two standard parallels.
+**Parameters**
 
--  Map scale in plot-untes/degree or 1:xxxxx notation (**-Jl**), or map width (**-JL**).
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- The two standard parallels (*lat1* and *lat2*).
+- The *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jl**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JL**).
 
-The Lambert conformal projection has been used for basemaps for all the
-48 contiguous States with the two fixed standard parallels 33°N and 45°N.
-We will generate a map of the continental USA using these parameters.
-Note that with all the projections you have the option of selecting a
-rectangular border rather than one defined by meridians and parallels.
-Here, we choose the regular WESN region, a "fancy" basemap frame, and
-use degrees west for longitudes. The generating commands used were
+**Description**
+
+This conic projection was designed by the Alsatian mathematician Johann Heinrich Lambert (1772) and has been used
+extensively for mapping of regions with predominantly east-west orientation, just like the Albers projection. Unlike the
+Albers projection, Lambert's conformal projection is not equal-area. The parallels are arcs of circles with a common
+origin, and meridians are the equally spaced radii of these circles. As with Albers projection, it is only the two
+standard parallels that are distortion-free.
+
+**Example**
+
+The Lambert conformal projection has been used for basemaps for all the 48 contiguous States with the two fixed standard
+parallels 33°N and 45°N. We will generate a map of the continental USA using these parameters. Note that with all the
+projections you have the option of selecting a rectangular border rather than one defined by meridians and parallels.
+Here, we choose the regular WESN region, a "fancy" basemap frame, and use degrees west for longitudes. The generating
+commands used were:
 
 .. literalinclude:: /_verbatim/GMT_lambert_conic.txt
 
@@ -154,36 +166,43 @@ use degrees west for longitudes. The generating commands used were
    Lambert conformal conic map projection.
 
 
-The choice for projection center does not affect the projection but it
-indicates which meridian (here 100°W) will be vertical on the map. The
-standard parallels were originally selected by Adams to provide a
-maximum scale error between latitudes 30.5°N and 47.5°N of 0.5–1%. Some
-areas, like Florida, experience scale errors of up to 2.5%.
+The choice for projection center does not affect the projection but it indicates which meridian (here 100°W) will be
+vertical on the map. The standard parallels were originally selected by Adams to provide a maximum scale error between
+latitudes 30.5°N and 47.5°N of 0.5–1%. Some areas, like Florida, experience scale errors of up to 2.5%.
 
 .. _-Jpoly:
 
-(American) polyconic projection (**-Jpoly** **-JPoly**) :ref:`... <-Jpoly_full>`
+(American) polyconic projection (**-Jpoly** **-JPoly**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The polyconic projection, in Europe usually referred to as the American
-polyconic projection, was introduced shortly before 1820 by the
-Swiss-American cartographer Ferdinand Rodulph Hassler (1770–1843). As
-head of the Survey of the Coast, he was looking for a projection that
-would give the least distortion for mapping the coast of the United
-States. The projection acquired its name from the construction of each
-parallel, which is achieved by projecting the parallel onto the cone
-while it is rolled around the globe, along the central meridian, tangent
-to that parallel. As a consequence, the projection involves many cones
-rather than a single one used in regular conic projections.
+**Syntax**
 
-The polyconic projection is neither equal-area, nor conformal. It is
-true to scale without distortion along the central meridian. Each
-parallel is true to scale as well, but the meridians are not as they get
-further away from the central meridian. As a consequence, no parallel is
-standard because conformity is lost with the lengthening of the meridians.
+    **-Jpoly**\|\ **Poly**\ /[*lon0/*\ [*lat0/*]]\ *scale*\|\ *width*
 
-Below we reproduce the illustration by *Snyder* [1987], with a gridline
-every 10 and annotations only every 30° in longitude:
+**Parameters**
+
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- The two standard parallels (*lat1* and *lat2*).
+- The *scale* in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jl**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JL**).
+
+**Description**
+
+The polyconic projection, in Europe usually referred to as the American polyconic projection, was introduced shortly
+before 1820 by the Swiss-American cartographer Ferdinand Rodulph Hassler (1770–1843). As head of the Survey of the
+Coast, he was looking for a projection that would give the least distortion for mapping the coast of the United
+States. The projection acquired its name from the construction of each parallel, which is achieved by projecting the
+parallel onto the cone while it is rolled around the globe, along the central meridian, tangent to that parallel. As a
+consequence, the projection involves many cones rather than a single one used in regular conic projections.
+
+The polyconic projection is neither equal-area, nor conformal. It is true to scale without distortion along the central
+meridian. Each parallel is true to scale as well, but the meridians are not as they get further away from the central
+meridian. As a consequence, no parallel is standard because conformity is lost with the lengthening of the meridians.
+
+**Example**
+
+Below we reproduce the illustration by *Snyder* [1987], with a gridline every 10 and annotations only every 30° in
+longitude:
 
 .. literalinclude:: /_verbatim/GMT_polyconic.txt
 
