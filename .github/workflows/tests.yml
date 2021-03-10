@@ -172,8 +172,6 @@ jobs:
           path: build/
         if: failure()
 
-      # Upload test coverage even if build fails
       - name: Upload test coverage
-        run: |
-          set -x -e
-          bash <(curl -s https://codecov.io/bash)
+        run: bash <(curl -s https://codecov.io/bash)
+        if: ${{ always() }}
