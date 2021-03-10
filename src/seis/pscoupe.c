@@ -944,27 +944,27 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	if (Ctrl->S.read) {	/* Read symbol size from file */
+		scol = Ctrl->S.n_cols;
 		Ctrl->S.n_cols++;
-		scol = Ctrl->S.n_cols - 1;
-		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_DIMENSION);
+		gmt_set_column_type (GMT, GMT_IN, scol, GMT_IS_DIMENSION);
 	}
 	else	/* Fixed scale */
 		scale = Ctrl->S.scale;
 
 	if (Ctrl->I.mode) {	/* Read intensity from data file */
+		icol = Ctrl->S.n_cols;
 		Ctrl->S.n_cols++;
-		icol = Ctrl->S.n_cols - 1;
 		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
 	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
 		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			tcol_f = Ctrl->S.n_cols;
 			Ctrl->S.n_cols++;	/* Read fill transparencies from data file */
-			tcol_f = Ctrl->S.n_cols - 1;
 			gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
 		}
 		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			tcol_s = Ctrl->S.n_cols;
 			Ctrl->S.n_cols++;	/* Read stroke transparencies from data file */
-			tcol_s = Ctrl->S.n_cols - 1;
 			gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
 		}
 	}
@@ -1007,7 +1007,6 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 		n_rec++;
 		if (Ctrl->S.read) scale = in[scol];
 		size = scale;
-
 		/* Must examine the trailing text for optional columns: newX, newY and title */
 		/* newX and newY are not used in pscoupe, but we promised psmeca and pscoupe can use the same input file */
 		if (In->text) {
