@@ -1056,9 +1056,9 @@ double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	   In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 	if (ortho)
-		pmm *= 1.0 / d_sqrt(M_PI);
+		pmm /= d_sqrt(M_PI);
 	else if (m != 0)
-		pmm *= d_sqrt(2.0);
+		pmm *= M_SQRT2;
 
 	/* If C-S phase is requested, apply it now */
 
@@ -1167,9 +1167,9 @@ void gmt_plm_bar_all (struct GMT_CTRL *GMT, int lmax, double x, bool ortho, doub
 		In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 		if (ortho)
-			plm[mm] = pmm * 0.5 / d_sqrt(M_PI);
+			plm[mm] = pmm / d_sqrt(M_PI);
 		else if (m != 0)
-			plm[mm] = pmm * d_sqrt(2.0);
+			plm[mm] = pmm * M_SQRT2;
 
 		/* If C-S phase is requested, apply it now */
 
