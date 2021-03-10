@@ -21,7 +21,6 @@ smartquotes_action = 'qe'
 highlight_language = 'bash'
 pygments_style = 'sphinx'
 autosectionlabel_prefix_document = True
-autosectionlabel_maxdepth = 2
 
 # Disable sphinx_panels extension for manpage build
 if tags.has("nosphinxpanels"):
