@@ -253,8 +253,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	 */
 
 	unsigned int n_errors = 0, pos, n_col = 3, k = 0, id = 0;
-
-	char *c = NULL, *t_string = NULL, txt_a[GMT_LEN256] = {""};
+	unsigned int s = (GMT->current.setting.run_mode == GMT_MODERN) ? 2 : 0;
+	char *c = NULL, *t_string = NULL, txt_a[GMT_LEN256] = {""}, *events = "psevents";
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -514,19 +514,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						while (c[0] == ' ' || c[0] == '\t') c++;	/* Move to first word after the module (user may have more than one space...) */
 						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a temporary buffer */
 						c = q = strstr (txt_a, "-S") + 3;	/* Determine the start position of the required symbol size in the command */
-						while (c[0] && !strchr ("/+", c[0])) c++;	/* Skip the size until we hit a slash or a modifier or the end of string */
+						while (c[0] && !strchr ("/+ ", c[0])) c++;	/* Skip the size until we hit a slash or a modifier or the end of the option or the entire string */
 						if (c[0] == '/') c++;	/* Then skip the slash since it will not be needed when size is not given via the new -S */
-						if (c[0] == '+') {	/* Found a modifier that we need to hide when getting the symbol size */
+						if (c[0] == '+' || c[0] == ' ') {	/* Found a modifier or space that we need to hide when getting the symbol size */
+							char was = c[0];
 							c[0] = '\0';	/* Hide modifier */
 							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
-							c[0] = '+';	/* Restore modifier */
+							c[0] = was;	/* Restore char */
 						}
 						else	/* No modifier, so OK to convert */
 							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
 						while (c[0]) *q++ = *c++;	/* Shuffle down the remaining text from the command to fill the void left by size */
 						*q = '\0';	/* And truncate since we shuffled characters forward */
-						if (strstr (txt_a, "-I") || strstr (txt_a, "-t")) {	/* Sanity check */
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Cannot include options like -I, -t in the command\n");
+						if (strstr (txt_a, "-C") || strstr (txt_a, "-G") || strstr (txt_a, "-I") || strstr (txt_a, "-N") || strstr (txt_a, "-W") || strstr (txt_a, "-t")) {	/* Sanity check */
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -I, -N, -W, or -t in the %s command\n", Ctrl->Z.module);
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: The -C, -G, -N, -W options may be given to %s instead, while I, -t are not allowed\n", &events[s]);
 							n_errors++;							
 						}
 						else	/* Keep a copy of the final command that has -S with no symbol-size specified */
