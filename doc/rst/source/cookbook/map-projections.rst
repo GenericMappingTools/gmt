@@ -1073,33 +1073,38 @@ A map of the world, centered on the Greenwich meridian, using the Gall's stereog
 Miscellaneous projections
 -------------------------
 
-GMT supports eight common projections for global presentation of data or
-models. These are the Hammer, Mollweide, Winkel Tripel, Robinson, Eckert
-IV and VI, Sinusoidal, and Van der Grinten projections. Due to the small
-scale used for global maps these projections all use the spherical
-approximation rather than more elaborate elliptical formulae.
+GMT supports eight common projections for global presentation of data or models. These are the :ref:`Hammer <-Jh>`,
+:ref:`Mollweide <-Jw>`, :ref:`Winkel Tripel <-Jr>`, :ref:`Robinson <-Jn>`, :ref:`Eckert IV and VI <-Jk>`,
+:ref:`Sinusoidal <-Ji>`, and :ref:`Van der Grinten <-Jv>` projections. Due to the small scale used for global maps these
+projections all use the spherical approximation rather than more elaborate elliptical formulae.
 
-In all cases, the specification of the central meridian can be skipped.
-The default is the middle of the longitude range of the plot, specified
-by the (**-R**) option.
+In all cases, the specification of the central meridian can be skipped. The default is the middle of the longitude
+range of the plot, specified by the (**-R**) option.
 
 .. _-Jh:
 
-Hammer projection (**-Jh** **-JH**) :ref:`... <-Jh_full>`
+Hammer projection (**-Jh** **-JH**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The equal-area Hammer projection, first presented by the German
-mathematician Ernst von Hammer in 1892, is also known as Hammer-Aitoff
-(the Aitoff projection looks similar, but is not equal-area). The border
-is an ellipse, equator and central meridian are straight lines, while
-other parallels and meridians are complex curves. The projection is
-defined by selecting:
+**Syntax**
 
--  The central meridian [Middle of your map].
+    **-Jh**\|\ **H**\ [*lon0/*]\ *scale*\|\ *width*
 
--  Scale along equator in plot-units/degree or 1:xxxxx (**-Jh**), or map width (**-JH**).
+**Parameters**
 
-A view of the Pacific ocean using the Dateline as central meridian is accomplished thus
+- The central meridian (*lon0*) [default is the middle of the map].
+- The *scale* along equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jh**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JH**).
+
+**Description**
+
+The equal-area Hammer projection, first presented by the German mathematician Ernst von Hammer in 1892, is also known as
+Hammer-Aitoff (the Aitoff projection looks similar, but is not equal-area). The border is an ellipse, equator and
+central meridian are straight lines, while other parallels and meridians are complex curves.
+
+**Example**
+
+A view of the Pacific ocean using the Dateline as central meridian can be generated thus:
 
 .. literalinclude:: /_verbatim/GMT_hammer.txt
 
@@ -1111,22 +1116,27 @@ A view of the Pacific ocean using the Dateline as central meridian is accomplish
 
 .. _-Jw:
 
-Mollweide projection (**-Jw** **-JW**) :ref:`... <-Jw_full>`
+Mollweide projection (**-Jw** **-JW**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This pseudo-cylindrical, equal-area projection was developed by the
-German mathematician and astronomer Karl Brandan Mollweide in 1805.
-Parallels are unequally spaced straight lines with the meridians being
-equally spaced elliptical arcs. The scale is only true along latitudes
-40°44' north and south. The projection is used mainly for global maps
-showing data distributions. It is occasionally referenced under the name
-homalographic projection. Like the Hammer projection, outlined above, we
-need to specify only two parameters to completely define the mapping of
-longitudes and latitudes into rectangular *x*/*y* coordinates:
+**Syntax**
 
--  The central meridian [Middle of your map].
+    **-Jw**\|\ **W**\ [*lon0/*]\ *scale*\|\ *width*
 
--  Scale along equator in plot-units/degree or 1:xxxxx (**-Jw**), or map width (**-JW**).
+**Parameters**
+
+- The central meridian (*lon0*) [default is the middle of the map].
+- The *scale* along equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jw**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JW**).
+
+**Description**
+
+This pseudo-cylindrical, equal-area projection was developed by the German mathematician and astronomer Karl Brandan
+Mollweide in 1805. Parallels are unequally spaced straight lines with the meridians being equally spaced elliptical
+arcs. The scale is only true along latitudes 40°44' north and south. The projection is used mainly for global maps
+showing data distributions. It is occasionally referenced under the name *homalographic* projection.
+
+**Example**
 
 An example centered on Greenwich can be generated thus:
 
@@ -1140,31 +1150,35 @@ An example centered on Greenwich can be generated thus:
 
 .. _-Jr:
 
-Winkel Tripel projection (**-Jr** **-JR**) :ref:`... <-Jr_full>`
+Winkel Tripel projection (**-Jr** **-JR**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In 1921, the German mathematician Oswald Winkel a projection that was to
-strike a compromise between the properties of three elements (area,
-angle and distance). The German word "tripel" refers to this junction of
-where each of these elements are least distorted when plotting global
-maps. The projection was popularized when Bartholomew and Son started to
-use it in its world-renowned "The Times Atlas of the World" in the mid
-20th century. In 1998, the National Geographic Society made the Winkel
-Tripel as its map projection of choice for global maps.
+**Syntax**
 
-Naturally, this projection is neither conformal, nor equal-area. Central
-meridian and equator are straight lines; other parallels and meridians
-are curved. The projection is obtained by averaging the coordinates of
-the Equidistant Cylindrical and Aitoff (not Hammer-Aitoff) projections.
-The poles map into straight lines 0.4 times the length of equator. To
-use it you must enter
+    **-Jr**\|\ **R**\ [*lon0/*]\ *scale*\|\ *width*
 
--  The central meridian [Middle of your map].
+**Parameters**
 
--  Scale along equator in plot-units/degree or 1:xxxxx (**-Jr**), or map width (**-JR**).
+- The central meridian (*lon0*) [default is the middle of the map].
+- The *scale* along equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jr**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JR**).
 
-Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection
-<GMT_winkel>` was created by this command:
+**Description**
+
+In 1921, the German mathematician Oswald Winkel created a projection that was to strike a compromise between the
+properties of three elements (area, angle and distance). The German word "tripel" refers to this junction of where each
+of these elements are least distorted when plotting global maps. The projection was popularized when Bartholomew and Son
+started to use it in its world-renowned "The Times Atlas of the World" in the mid-20th century. In 1998, the National
+Geographic Society made the Winkel Tripel as its map projection of choice for global maps.
+
+Naturally, this projection is neither conformal, nor equal-area. Central meridian and equator are straight lines; other
+parallels and meridians are curved. The projection is obtained by averaging the coordinates of the Equidistant
+Cylindrical and Aitoff (not Hammer-Aitoff) projections. The poles map into straight lines 0.4 times the length of
+equator.
+
+**Example**
+
+Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection <GMT_winkel>` was created by this command:
 
 .. literalinclude:: /_verbatim/GMT_winkel.txt
 
@@ -1178,23 +1192,28 @@ Centered on Greenwich, the example in Figure :ref:`Winkel Tripel projection
 
 .. _-Jn:
 
-Robinson projection (**-Jn** **-JN**) :ref:`... <-Jn_full>`
+Robinson projection (**-Jn** **-JN**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Robinson projection, presented by the American geographer and
-cartographer Arthur H. Robinson in 1963, is a modified cylindrical
-projection that is neither conformal nor equal-area. Central meridian
-and all parallels are straight lines; other meridians are curved. It
-uses lookup tables rather than analytic expressions to make the world
-map "look" right [22]_. The scale is true along latitudes 38. The
-projection was originally developed for use by Rand McNally and is
-currently used by the National Geographic Society. To use it you must
-enter
+**Syntax**
 
--  The central meridian [Middle of your map].
+    **-Jn**\|\ **N**\ [*lon0/*]\ *scale*\|\ *width*
 
--  Scale along equator in plot-units/degree or 1:xxxxx (**-Jn**), or map width
-   (**-JN**).
+**Parameters**
+
+- The central meridian (*lon0*) [default is the middle of the map].
+- The *scale* along equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jn**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JN**).
+
+**Description**
+
+The Robinson projection, presented by the American geographer and cartographer Arthur H. Robinson in 1963, is a modified
+cylindrical projection that is neither conformal nor equal-area. Central meridian and all parallels are straight lines;
+other meridians are curved. It uses lookup tables rather than analytic expressions to make the world map "look"
+right [22]_. The scale is true along latitudes 38. The projection was originally developed for use by Rand McNally and
+is currently used by the National Geographic Society.
+
+**Example**
 
 Again centered on Greenwich, the example below was created by this command:
 
@@ -1208,26 +1227,31 @@ Again centered on Greenwich, the example below was created by this command:
 
 .. _-Jk:
 
-Eckert IV and VI projection (**-Jk** **-JK**) :ref:`... <-Jk_full>`
+Eckert IV and VI projection (**-Jk** **-JK**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Eckert IV and VI projections, presented by the German cartographer
-Max Eckert-Greiffendorff in 1906, are pseudo-cylindrical equal-area
-projections. Central meridian and all parallels are straight lines;
-other meridians are equally spaced elliptical arcs (IV) or sinusoids
-(VI). The scale is true along latitudes 40°30' (IV) and 49°16' (VI). Their
-main use is in thematic world maps. To select Eckert IV you must use
-**-JKf** (**f** for "four") while Eckert VI is selected with **-JKs**
-(**s** for "six"). If no modifier is given it defaults to Eckert VI. In
-addition, you must enter
+**Syntax**
 
--  The central meridian [Middle of your map].
+   **-Jk**\|\ **K**\ **f**\ [*lon0/*]\ *scale*\|\ *width* (Eckert IV)
+   **-Jk**\|\ **K**\ [**s**][*lon0/*]\ *scale*\|\ *width* (Eckert VI)
 
--  Scale along equator in plot-units/degree or 1:xxxxx (**-Jk**), or map width
-   (**-JK**).
+**Parameters**
 
-Centered on the Dateline, the Eckert IV example below was created by
-this command:
+- The central meridian (*lon0*) [default is the middle of the map].
+- The *scale* along equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jk**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JK**).
+
+**Description**
+
+The Eckert IV and VI projections, presented by the German cartographer Max Eckert-Greiffendorff in 1906, are
+pseudo-cylindrical equal-area projections. Central meridian and all parallels are straight lines; other meridians are
+equally spaced elliptical arcs (IV) or sinusoids (VI). The scale is true along latitudes 40°30' (IV) and 49°16' (VI).
+Their main use is in thematic world maps. To select Eckert IV you must use **-JKf** (**f** for "four") while Eckert VI
+is selected with **-JKs** (**s** for "six"). If no modifier is given it defaults to Eckert VI.
+
+**Examples**
+
+Centered on the Dateline, the Eckert IV example below was created by this command:
 
 .. literalinclude:: /_verbatim/GMT_eckert4.txt
 
@@ -1248,20 +1272,27 @@ The same script, with **s** instead of **f**, yields the Eckert VI map:
 
 .. _-Ji:
 
-Sinusoidal projection (**-Ji** **-JI**) :ref:`... <-Ji_full>`
+Sinusoidal projection (**-Ji** **-JI**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The sinusoidal projection is one of the oldest known projections, is
-equal-area, and has been used since the mid-16th century. It has also
-been called the "Equal-area Mercator" projection. The central meridian
-is a straight line; all other meridians are sinusoidal curves. Parallels
-are all equally spaced straight lines, with scale being true along all
-parallels (and central meridian). To use it, you need to select:
+**Syntax**
 
--  The central meridian [Middle of your map].
+    **-Ji**\|\ **I**\ [*lon0/*]\ *scale*\|\ *width*
 
--  Scale along equator in plot-units/degree or 1:xxxxx (**-Ji**), or map width
-   (**-JI**).
+**Parameters**
+
+- The central meridian (*lon0*) [default is the middle of the map].
+- The *scale* along equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Ji**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JI**).
+
+**Description**
+
+The sinusoidal projection is one of the oldest known projections, is equal-area, and has been used since the mid-16th
+century. It has also been called the "Equal-area Mercator" projection. The central meridian is a straight line; all
+other meridians are sinusoidal curves. Parallels are all equally spaced straight lines, with scale being true along all
+parallels (and central meridian).
+
+**Examples**
 
 A simple world map using the sinusoidal projection is therefore obtained by
 
@@ -1274,15 +1305,11 @@ A simple world map using the sinusoidal projection is therefore obtained by
    World map using the Sinusoidal projection.
 
 
-To reduce distortion of shape the interrupted sinusoidal projection was
-introduced in 1927. Here, three symmetrical segments are used to cover
-the entire world. Traditionally, the interruptions are at 160°W, 20°W, and
-60°E. To make the interrupted map we must call
-:doc:`/coast` for each segment and superpose
-the results. To produce an interrupted world map (with the traditional
-boundaries just mentioned) that is 14.4 cm wide we use the scale
-14.4/360 = 0.04 and offset the subsequent plots horizontally by their
-widths (140\ :math:`\cdot`\ 0.04 and 80\ :math:`\cdot`\ 0.04):
+To reduce distortion of shape the interrupted sinusoidal projection was introduced in 1927. Here, three symmetrical
+segments are used to cover the entire world. Traditionally, the interruptions are at 160°W, 20°W, and 60°E. To make the
+interrupted map we must call :doc:`/coast` for each segment and superpose the results. To produce an interrupted world
+map (with the traditional boundaries just mentioned) that is 14.4 cm wide we use the scale 14.4/360 = 0.04 and offset
+the subsequent plots horizontally by their widths (140\ :math:`\cdot`\ 0.04 and 80\ :math:`\cdot`\ 0.04):
 
 .. literalinclude:: /_verbatim/GMT_sinus_int.txt
 
@@ -1293,24 +1320,31 @@ widths (140\ :math:`\cdot`\ 0.04 and 80\ :math:`\cdot`\ 0.04):
    World map using the Interrupted Sinusoidal projection.
 
 
-The usefulness of the interrupted sinusoidal projection is basically
-limited to display of global, discontinuous data distributions like
-hydrocarbon and mineral resources, etc.
+The usefulness of the interrupted sinusoidal projection is basically limited to display of global, discontinuous data
+distributions like hydrocarbon and mineral resources, etc.
 
 .. _-Jv:
 
-Van der Grinten projection (**-Jv** **-JV**) :ref:`... <-Jv_full>`
+Van der Grinten projection (**-Jv** **-JV**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Van der Grinten projection, presented by Alphons J. van der Grinten
-in 1904, is neither equal-area nor conformal. Central meridian and
-Equator are straight lines; other meridians are arcs of circles. The
-scale is true along the Equator only. Its main use is to show the entire
-world enclosed in a circle. To use it you must enter
+**Syntax**
 
--  The central meridian [Middle of your map].
+    **-Jv**\|\ **V**\ [*lon0/*]\ *scale*\|\ *width*
 
--  Scale along equator in plot-units/degree or 1:xxxxx (**-Jv**), or map width (**-JV**).
+**Parameters**
+
+- The central meridian (*lon0*) [default is the middle of the map].
+- The *scale* along equator in :ref:`plot-units <plt-units>`/degree or as 1:xxxxx (with **-Jv**) or map *width* in
+  :ref:`plot-units <plt-units>` (with **-JV**).
+
+**Description**
+
+The Van der Grinten projection, presented by Alphons J. van der Grinten in 1904, is neither equal-area nor conformal.
+Central meridian and Equator are straight lines; other meridians are arcs of circles. The scale is true along the
+Equator only. Its main use is to show the entire world enclosed in a circle.
+
+**Example**
 
 Centered on the Dateline, the example below was created by this command:
 

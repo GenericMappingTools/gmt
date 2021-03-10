@@ -232,10 +232,10 @@ respectively):
 
 .. _-Jk_full:
 
-    **-Jk**\|\ **K**\ **f**\ [*lon0/*]\ *scale*\|\ *width* (Eckert IV) **[E]**).
+    **-Jk**\|\ **K**\ **f**\ [*lon0/*]\ *scale*\|\ *width* (Eckert IV **[E]**).
         Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jk**; as **1:**\ *xxxx* or
         :ref:`plot-units <plt-units>`/degree) or *width* (with **-JK**; in :ref:`plot-units <plt-units>`).
-    **-Jk**\|\ **K**\ [**s**][*lon0/*]\ *scale*\|\ *width* (Eckert VI) **[E]**).
+    **-Jk**\|\ **K**\ [**s**][*lon0/*]\ *scale*\|\ *width* (Eckert VI **[E]**).
         Give the central meridian *lon0* (optional) and either *scale* along equator (with **-Jk**; as **1:**\ *xxxx* or
         :ref:`plot-units <plt-units>`/degree) or *width* (with **-JK**; in :ref:`plot-units <plt-units>`).
 
