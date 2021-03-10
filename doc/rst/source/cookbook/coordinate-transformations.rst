@@ -264,6 +264,8 @@ Since :math:`q = 1` we do not need to specify **p**\ 1 since it is identical to 
 
    Exponential or power transformation of x–coordinates.
 
+.. _-Jp:
+
 Polar coordinate transformations
 --------------------------------------------------------------------------------
 

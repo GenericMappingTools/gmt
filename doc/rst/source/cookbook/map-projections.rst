@@ -33,7 +33,7 @@ dimension [detault is **+dw**]:
 The ellipsoid used in map projections is user-definable. 73 commonly used ellipsoids and spheroids are currently
 supported, and users may also specify their own custom ellipsoid parameters [default is WGS-84]. Several GMT parameters
 can affect the projection: :term:`PROJ_ELLIPSOID`, :term:`GMT_INTERPOLANT`, :term:`PROJ_SCALE_FACTOR`, and
-:term:`PROJ_LENGTH_UNIT`; see the :doc:`gmt.conf` man page for details.
+:term:`PROJ_LENGTH_UNIT`; see the :doc:`../gmt.conf` man page for details.
 
 In GMT version 4.3.0 we noticed we ran out of the alphabet for 1-letter (and sometimes 2-letter) projection codes. To
 allow more flexibility, and to make it easier to remember the codes, we implemented the option to use the abbreviations
