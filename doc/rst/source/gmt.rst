@@ -308,8 +308,8 @@ These options are only used in classic mode and are listed here just for referen
 
 .. include:: explain_-P_full.rst_
 
-See Also
---------
+More information sources
+-------------------------
 
 Look up the individual man pages for more details and full syntax. Run
 ``gmt --help`` to list all GMT programs and to show all installation
