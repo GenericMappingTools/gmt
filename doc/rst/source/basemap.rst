@@ -203,8 +203,8 @@ Another basemap for middle Europe may be created by
 
     gmt basemap -R0/90/25/55 -Jl45/20/32/45/0.1i -Bafg -B+t"Lambert Conformal Conic" -pdf lambertc
 
-Equidistant
-~~~~~~~~~~~
+Conic Equidistant
+~~~~~~~~~~~~~~~~~
 
 Yet another basemap of width 6 inch for middle Europe may be created by
 
@@ -236,10 +236,10 @@ will give the following basemap:
 
 Follow the instructions for stereographic projection if you want to
 impose rectangular boundaries on the azimuthal equal-area map but
-substitute **-Ja** for **-Js**.
+substitute |-J|\ **a** for |-J|\ **s**.
 
-Equidistant
-~~~~~~~~~~~
+Azimuthal Equidistant
+~~~~~~~~~~~~~~~~~~~~~
 
 A 15-cm-wide global map in which distances from the center (here 125/10)
 to any point is true can be obtained by:
@@ -271,7 +271,7 @@ vantage point 125/10 will give the following 6-inch-wide basemap:
 General Perspective
 ~~~~~~~~~~~~~~~~~~~
 
-The **-JG** option can be used in a more generalized form, specifying
+The |-J|\ **G** option can be used in a more generalized form, specifying
 altitude above the surface, width and height of the view point, and
 twist and tilt. A view from 160 km above -74/41.5 with a tilt of 55 and
 azimuth of 210 degrees, and limiting the viewpoint to 30 degrees width
@@ -294,7 +294,7 @@ degrees annotation/tick interval and 1 degree gridlines, run
 
 To make a 12-cm-wide stereographic basemap for Australia from an
 arbitrary view point (not the poles), and use a rectangular boundary, we
-must give the pole for the new projection and use the **-R** option to
+must give the pole for the new projection and use the |-R| option to
 indicate the lower left and upper right corners (in lon/lat) that will
 define our rectangle. We choose a pole at 130/-30 and use 100/-45 and
 160/-5 as our corners. The command becomes
@@ -404,7 +404,7 @@ Arbitrary rotation
 ~~~~~~~~~~~~~~~~~~
 
 If you need to plot a map but have it rotated about a vertical axis then
-use the **-p** option.  For instance, to rotate the basemap below 90
+use the |-p| option.  For instance, to rotate the basemap below 90
 degrees about an axis centered on the map, try
 
    ::

@@ -63,6 +63,8 @@ indicate the units of your arguments by appending the unit character, as
 discussed below. This will aid you in debugging, let others understand your
 scripts, and remove any uncertainty as to what unit you thought you wanted.
 
+.. _plt-units:
+
 Dimension units
 ~~~~~~~~~~~~~~~
 
@@ -85,6 +87,8 @@ two ways to ensure that GMT understands which unit you intend to use:
 The latter method is less robust as other users may have a different
 default unit set and then your script may not work as intended. For portability,
 we therefore recommend you always append the desired unit explicitly.
+
+.. _dist-units:
 
 Distance units
 ~~~~~~~~~~~~~~
@@ -1599,6 +1603,8 @@ the different features in more detail we will first review the "reference point/
 system used by GMT to specify such locations in relation to the underlying map, and then discuss
 the background panel attribute settings.
 
+.. _Reference_Points:
+
 Reference and anchor point specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1624,10 +1630,14 @@ There are four different ways to specify the reference point on a map, allowing 
 to select any location inside or outside the map.  The reference point syntax is [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*;
 the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
 
+.. _Reference_Points_g:
+
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the reference point.
    This mechanism is useful when you want to tie the location of the feature to an actual point
    best described by data coordinates.  An example of such a reference point might
    be **g**\ 135W/20N.
+
+.. _Reference_Points_j:
 
 #. [**j**] Specify *refpoint* using one of the nine *justification codes*, equivalent to the justification
    codes for placing text strings in :doc:`/text`.  This mechanism is illustrated in the figure above and
@@ -1641,10 +1651,14 @@ the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
    justification code. Thus, when using **JTL**\, the anchor point on the map feature will default to **BR**.
    This is practical for features that are drawn **outside** of the basemap (like color bars often are).
 
+.. _Reference_Points_x:
+
 #. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distances in inches, centimeters, or
    points from the lower left plot origin.  This mechanism is preferred when you wish to lay out
    map features using familiar measurements of distance from origins. An example of such a reference
    point might be **x**\ 2.75i/2c.
+
+.. _Reference_Points_n:
 
 #. [**n**] Specify *refpoint* using *normalized* coordinates, i.e., fractional coordinates between 0
    and 1 in both the *x* and *y* directions.  This mechanism avoids units and is useful if you want to always
@@ -1652,6 +1666,8 @@ the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
    An example of such a reference point might be **n**\ 0.2/0.1.
 
 If no code is specified we default to **x**.
+
+.. _Anchor_Point_j:
 
 With the reference point taken care of, it is time to select the anchor point.
 While the reference point selection gives unlimited flexibility to pick
@@ -1663,6 +1679,8 @@ used to set it), or to the mirror opposite of the reference point (if **J**\ *co
 specifications of the reference point, the anchor point takes on the default value of **MC** (for map rose and
 map scale) or **BL** (all other map features). Adding **+j**\ *anchor* overrules those defaults.
 For instance, **+jTR**\  would select the top right point on the map feature as the anchor.
+
+.. _Anchor_Point_o:
 
 It is likely that you will wish to offset the anchor point away from
 your selection by some arbitrary amount, particularly if the reference point is specified with **j**\|\ **J**\ *code*.
@@ -1680,6 +1698,7 @@ Similarly, **+jBR** will align the bottom right corner of the map feature, and *
 and 1 cm up. When using middle (**M**) or center (**C**) justifications, to offset works the same way as bottom (**B**) or left (**L**),
 respectively, i.e., moving the map feature up or to the right.
 
+.. _Background-panel:
 
 The background panel
 ~~~~~~~~~~~~~~~~~~~~
@@ -1729,6 +1748,8 @@ the attributes that are under your control:
    rectangle was specified with **-F+g**\ lightgreen\ **+r**, while the white panel on the
    lower right was set with **-F+p**\ 1p\ **+i+s+g**\ white\ **+c**\ 0.1i (we added a light
    dashed box to indicate the effect of the clearance setting).
+
+.. _Placing-map-scales:
 
 Placing map scales
 ~~~~~~~~~~~~~~~~~~
@@ -2097,7 +2118,7 @@ read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
 `ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_, `Panoply
 <http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
-<http://www.epic.noaa.gov/java/ncBrowse/>`_ ; others can be found on the
+<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
 to read netcdf 4 files (if data compression has been applied).

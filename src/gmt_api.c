@@ -13095,13 +13095,14 @@ int GMT_Set_Default (void *V_API, const char *keyword, const char *txt_val) {
 	}
 #endif
 	else if (!strncmp (keyword, "API_GRID_LAYOUT", 15U)) {	/* Change grid layout */
-			if (!strncmp (value, "columns", 7U) || (strlen(value) >= 2 && value[1] == 'C'))		/* Accept also TC, though ignore 1st and 3-end chars. Accept this to be consistent with the "API_IMAGE_LAYOUT" case */
+		if (!strncmp (value, "columns", 7U) || (strlen(value) >= 2 && value[1] == 'C'))		/* Accept also TC, though ignore 1st and 3-end chars. Accept this to be consistent with the "API_IMAGE_LAYOUT" case */
 			API->shape = GMT_IS_COL_FORMAT;	/* Switch to column-major format */
 		else if (!strncmp (value, "rows", 4U) || (strlen(value) >= 2 && value[1] == 'R'))
 			API->shape = GMT_IS_ROW_FORMAT;	/* Switch to row-major format */
-		else
+		else {
 			GMT_Report (API, GMT_MSG_ERROR, "API_GRID_LAYOUT must be either \"columns\" (or TC) or \"rows\" (TR)",  value);
-		error = 1;
+			error = 1;
+		}
 	}
 	else	/* Must process as a GMT setting */
 		error = gmtlib_setparameter (API->GMT, keyword, value, false);

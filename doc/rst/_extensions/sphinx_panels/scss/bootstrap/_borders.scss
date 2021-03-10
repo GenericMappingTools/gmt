@@ -1,0 +1,85 @@
+// Bootstrap v4.4.1 (https://getbootstrap.com/)
+// Copyright 2011-2019 The Bootstrap Authors
+// Copyright 2011-2019 Twitter, Inc.
+// Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+
+.border-0 {
+  border: 0 !important;
+}
+
+.border-top-0 {
+  border-top: 0 !important;
+}
+
+.border-right-0 {
+  border-right: 0 !important;
+}
+
+.border-bottom-0 {
+  border-bottom: 0 !important;
+}
+
+.border-left-0 {
+  border-left: 0 !important;
+}
+
+$pad-width: (
+  "0": 0,
+  "1": .25rem,
+  "2": .5rem,
+  "3": 1rem,
+  "4": 1.5rem,
+  "5": 3rem,
+) !default;
+
+@each $id, $value in $pad-width {
+  .p-#{$id} {
+    padding: $value !important;
+  }
+
+  .pt-#{$id},
+  .py-#{$id} {
+    padding-top: $value !important;
+  }
+
+  .pr-#{$id},
+  .px-#{$id} {
+    padding-right: $value !important;
+  }
+
+  .pb-#{$id},
+  .py-#{$id} {
+    padding-bottom: $value !important;
+  }
+
+  .pl-#{$id},
+  .px-#{$id} {
+    padding-left: $value !important;
+  }
+}
+
+@each $id, $value in $pad-width {
+  .m-#{$id} {
+    margin: $value !important;
+  }
+
+  .mt-#{$id},
+  .my-#{$id} {
+    margin-top: $value !important;
+  }
+
+  .mr-#{$id},
+  .mx-#{$id} {
+    margin-right: $value !important;
+  }
+
+  .mb-#{$id},
+  .my-#{$id} {
+    margin-bottom: $value !important;
+  }
+
+  .ml-#{$id},
+  .mx-#{$id} {
+    margin-left: $value !important;
+  }
+}

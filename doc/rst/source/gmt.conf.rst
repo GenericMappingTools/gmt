@@ -724,6 +724,18 @@ MAP Parameters
         the vector head length and width are 10 and 5 times this width,
         respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
 
+        .. toggle::
+
+            Here is an example showing the appearance of different **MAP_FRAME_TYPE** settings.
+
+            .. literalinclude:: /_verbatim/GMT_map_frame_type.txt
+
+            .. figure:: /_images/GMT_map_frame_type.*
+               :width: 100%
+               :align: center
+
+               Appearance of different **MAP_FRAME_TYPE** settings
+
     **MAP_FRAME_WIDTH**
         Width (> 0) of map borders for fancy map frame [default is :doc:`theme dependent
         <theme-settings>`]. **Note**: For fancy frames, :term:`MAP_FRAME_PEN`

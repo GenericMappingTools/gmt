@@ -6,9 +6,9 @@ on a plot. This is achieved by selecting one of several coordinate
 transformations or projections. We distinguish between three sets of
 such conversions:
 
--  Cartesian coordinate transformations
+-  :ref:`cookbook/coordinate-transformations:Cartesian coordinate transformations`
 
--  Polar coordinate transformations
+-  :ref:`cookbook/coordinate-transformations:Polar coordinate transformations`
 
 -  Map coordinate transformations
 
@@ -24,8 +24,8 @@ Finally, note that while we will specify dimensions in inches (by
 appending **i**), you may want to use cm (**c**), or points (**p**) as
 unit instead (see the :doc:`/gmt.conf` man page).
 
-Cartesian transformations
--------------------------
+Cartesian coordinate transformations
+--------------------------------------------------------------------------------
 
 GMT Cartesian coordinate transformations come in three flavors:
 
@@ -228,7 +228,7 @@ transformation <GMT_pow>`)
 
 .. literalinclude:: /_verbatim/GMT_pow.txt
 
-Linear projection with polar coordinates (**-Jp** **-JP**) :ref:`... <-Jp_full>`
+Polar coordinate transformations
 --------------------------------------------------------------------------------
 
 .. _GMT_polar:
