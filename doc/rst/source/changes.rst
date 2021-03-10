@@ -38,22 +38,22 @@ changes, we mention
  #. Allow both **-i** and **-o** to specify an open-ended list of columns to end of record.
  #. API improvements to support the GMT/MEX, PyGMT, and GMT.jl environments.
 
-New Common Options:
--------------------
+New Common Options in GMT 6.1:
+------------------------------
  #. **-l**: Add automatic legend entries from the modules :doc:`plot`, :doc:`plot3d`, 
     :doc:`grdcontour` and :doc:`pscontour` in modern mode.
  #. **-q**\[**i**\|\ **o**\ ]: Select specific data rows to complement selection of data columns (via **-i**, **-o**).
 
-New Modules:
-------------
+New Modules in GMT 6.1:
+-----------------------
 
 #. :doc:`batch`: Automate batch job processing by replicating a master script with job-specific parameters.
 #. :doc:`grdmix`: Blending and transforming grids and images, including manipulating transparency.
 #. :doc:`grdinterpolate`: Interpolate new 2-D grids or 1-D data series from a 3-D data cube.
 #. :doc:`grdgdal`: Execute GDAL raster programs (such as info, dem, grid, translate, rasterize or warp), from GMT.
 
-New Core Module Features:
--------------------------
+New Core Module Features in GMT 6.1:
+------------------------------------
 
 #. :doc:`begin`: Ignore the user's *gmt.conf* files normally included by using **-C**.
 #. :doc:`colorbar`: Option **-S** has been enhanced to handle bar appearance when **-B** is not used.
@@ -87,8 +87,8 @@ New Core Module Features:
 #. :doc:`sample1d`: Adds a smoothing cubic spline via **-Fs**\ *p* (for a fit parameter *p*), with optional weights (**-W**).
 #. :doc:`surface`: Let **-D** take a modifier **+z**\ *value* to set a constant breakline level.
 
-Supplement updates:
--------------------
+Supplement updates in GMT 6.1:
+------------------------------
 #. *seis*: Update all module syntax to GMT 6 standards and make their i/o more robust.
 #. *potential*: :doc:`grdflexure </supplements/potential/grdflexure>` adds new transfer functions now documented with equations.
 
@@ -113,8 +113,8 @@ there are numerous changes:
 #. The default mode remains *classic*, the only mode previously available.  All
    existing classic mode GMT 4 and 5 scripts will run as before.
 
-Modern mode modules
--------------------
+Modern mode modules in GMT 6.0
+------------------------------
 
 GMT modern mode is supported by five new commands:
 
@@ -137,16 +137,16 @@ The entire cookbook, tutorial and gallery examples all use modern mode. In moder
 the default graphics format is PDF and scripts can open up the plots in the default
 viewer automatically.
 
-New modules
------------
+New modules in GMT 6.0
+----------------------
 
 Apart from modern mode we have added a few modules that are accessible to all users:
 
 #. :doc:`events` makes a snapshot of all time-dependent events.
 #. :doc:`/supplements/geodesy/earthtide` (supplement) computes the solid Earth tides.
 
-General improvements
---------------------
+General improvements in GMT 6.0
+-------------------------------
 
 While our focus has been almost exclusively on GMT modern mode, there is a
 range of new capabilities have been added to all of GMT; here is a
@@ -211,8 +211,8 @@ summary of these changes:
    options **-Re** and **-Ra** will examine the data files given and determine the exact or approximate region,
    respectively.
 
-Module enhancements
--------------------
+Module enhancements in GMT 6.0
+------------------------------
 
 Several modules have obtained new options to extend their capabilities:
 
@@ -324,8 +324,8 @@ to standardize GMT non-common option usage across the suite.
 Nevertheless, there have been many user-level enhancements as well.
 Here is a summary of these changes in three key areas:
 
-New modules
------------
+New modules in GMT 5.4
+----------------------
 
 We have added a new module to the GMT core called
 :doc:`ternary`.
@@ -335,8 +335,8 @@ The *mgd77* supplement has gained a new tool :doc:`mgd77header <supplements/mgd7
 for creating a valid MGD77-format header from basic metadata and information
 determined from the header-less data file.
 
-General improvements
---------------------
+General improvements in GMT 5.4
+-------------------------------
 
 A range of new capabilities have been added to all of GMT; here is a
 summary of these changes:
@@ -421,8 +421,8 @@ summary of these changes:
    will now get the old-style symbol.  The new and superior vector symbols
    will require the use of the new (and standard) syntax.
 
-Module enhancements
--------------------
+Module enhancements in GMT 5.4
+------------------------------
 
 Several modules have obtained new options to extend their capabilities:
 
@@ -491,8 +491,8 @@ Several modules have obtained new options to extend their capabilities:
    groups of jobs across many cores, packaging KMLs into a single KMZ archive,
    and more.
 
-API changes
------------
+API changes in GMT 5.4
+----------------------
 
 We have introduced one change that breaks backwards compatibility for users of
 the API functions.  We don't do this lightly but given the API is still considered
@@ -566,8 +566,8 @@ we are building toward MATLAB and Python.  Nevertheless, there have
 been many user-level enhancements as well.
 Here is a summary of these changes in three key areas:
 
-New modules
------------
+New modules in GMT 5.3
+----------------------
 
 We have added a new module to the GMT core called
 :doc:`solar`.
@@ -588,8 +588,8 @@ to the *potential* supplement.  This tool is a Green's function gridding module
 that grids vector data assumed to be coupled via an elastic model.  The prime
 usage is for gridding GPS velocity components.
 
-General improvements
---------------------
+General improvements in GMT 5.3
+-------------------------------
 
 There are many changes to GMT, mostly under the hood, but also changes that
 affect users directly.  We have added four new examples and one new animation
@@ -730,8 +730,8 @@ only added to the 5.2-series.  All in all, almost 200 new features (a combinatio
 of new programs, new options, and enhancements) have been implemented.
 Here is a summary of these changes in six key areas:
 
-New modules
------------
+New modules in GMT 5.2
+----------------------
 
 There are two new modules in the core system:
 
@@ -776,8 +776,8 @@ Finally, we have renamed our PostScript Light (PSL) library from psl
 to PostScriptLight to avoid package name conflicts.  This library will eventually
 become decoupled from GMT and end up as a required prerequisite.
 
-New common options
-------------------
+New common options in GMT 5.2
+-----------------------------
 
 We have added two new lower-case GMT common options:
 
@@ -798,8 +798,8 @@ We have added two new lower-case GMT common options:
    supplement's :doc:`x2sys_solve <supplements/x2sys/x2sys_solve>`.
    This list will grow longer with time.
 
-New default parameters
-----------------------
+New default parameters in GMT 5.2
+---------------------------------
 
 There have been a few changes to the GMT Defaults parameters.  All changes
 are backwards compatible:
@@ -825,8 +825,8 @@ are backwards compatible:
 
 *  :term:`TIME_REPORT` now has defaults for absolute or elapsed time stamps.
 
-Updated common options
-----------------------
+Updated common options in GMT 5.2
+---------------------------------
 
 Two of the established GMT common options have seen minor improvements:
 
@@ -841,8 +841,8 @@ Two of the established GMT common options have seen minor improvements:
    dimensions (requires **-I** to use the increments).  The optional justification
    keys specify how the reference point relate to the grid region.
 
-General improvements
---------------------
+General improvements in GMT 5.2
+-------------------------------
 
 Several changes have affects across GMT; these are:
 
@@ -888,8 +888,8 @@ Several changes have affects across GMT; these are:
    means the desired code will be given as last item on each data record.  Such custom
    symbols must be specified with uppercase **-SK**.
 
-Program-specific improvements
------------------------------
+Program-specific improvements in GMT 5.2
+----------------------------------------
 
 Finally, here is a list of enhancements to individual modules.  Any
 changes to existing syntax will be backwards compatible:
@@ -1104,8 +1104,8 @@ switches (you will receive a warning instead).  This is discussed below.
 
 Below are six key areas of improvements in GMT 5.
 
-New programs
-------------
+New programs in GMT 5
+---------------------
 
 First, a few new programs have been added and some have been
 promoted (and possibly renamed) from earlier supplements:
@@ -1200,8 +1200,8 @@ Finally, the spotter supplement has added one new module:
 :doc:`grdpmodeler <supplements/spotter/grdpmodeler>`:
     Evaluate a plate model on a geographic grid.
 
-New common options
-------------------
+New common options in GMT 5
+---------------------------
 
 First we discuss changes that have been
 implemented by a series of new lower-case GMT common options:
@@ -1240,8 +1240,8 @@ implemented by a series of new lower-case GMT common options:
    transparency level for that layer. However, as PostScript has no provision for
    transparency you can only see the effect if you convert it to PDF.
 
-Updated common options
-----------------------
+Updated common options in GMT 5
+-------------------------------
 
 Some of the established GMT common options have seen significant
 improvements; these include:
@@ -1264,8 +1264,8 @@ While just giving - (the hyphen) as argument presents just the synopsis of the c
 line arguments, we now also support giving + which in addition will list
 the explanations for all options that are not among the GMT common set.
 
-New default parameters
-----------------------
+New default parameters in GMT 5
+-------------------------------
 
 Most of the GMT default parameters have changed names in order to
 group parameters into logical groups and to use more consistent naming.
@@ -1322,8 +1322,8 @@ Among these are:
 *  *DIR_TMP*: was supposed to indicate the directory in which to store temporary files. But needs to be known without
    gmt.conf file as well. So the environment variable **$GMT_TMPDIR** is used instead.
 
-General improvements
---------------------
+General improvements in GMT 5
+-----------------------------
 
 Other wide-ranging changes have been implemented in different
 ways, such as
@@ -1373,8 +1373,8 @@ ways, such as
 
 *  GMT now ships with 36 standard color palette tables (CPT), up from 24.
 
-Program-specific improvements
------------------------------
+Program-specific improvements in GMT 5
+--------------------------------------
 
 Finally, here is a list of numerous enhancements to individual programs:
 
