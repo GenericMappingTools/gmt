@@ -193,7 +193,7 @@ Radians:
     For angular regions (and increments) specified in radians you may use a set of forms indicating multiples or
     fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating
     point numbers, e.g., -2\ **pi**\ /2\ **pi**\ 3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
-    of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\ 
+    of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\
     **pi**\ , 3/2 (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
     (1\ **pi**\ 3), and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value
     is within roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required
@@ -212,42 +212,30 @@ Other coordinates:
 Coordinate transformations and map projections: The **-J** option
 -----------------------------------------------------------------
 
-This option selects the coordinate transformation or map projection. The
-general format is
+This option selects the coordinate transformation or map projection. The general format is
 
--  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta`
-   is a *lower-case* letter of the alphabet that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited
-   projection parameter, and *scale* is map scale given in distance
-   units per degree or as 1:xxxxx.
+-  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta` is a *lower-case* letter of the alphabet that
+   selects a particular map projection, the *parameters* is zero or more slash-delimited projection parameter, and
+   *scale* is map scale given in :ref:`plot-units <plt-units>` /degree or as 1:xxxxx.
 
--  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta`
-   is an *upper-case* letter of the alphabet that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited
-   projection parameter, and *width* is map width (map height is
-   automatically computed from the implied map scale and region).
+-  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta` is an *upper-case* letter of the alphabet that
+   selects a particular map projection, the *parameters* is zero or more slash-delimited projection parameter, and
+   *width* is map width in :ref:`plot-units <plt-units>` (map height is automatically computed from the implied map scale
+   and region).
 
-Since GMT version 4.3.0, there is an alternative way to specify the
-projections: use the same abbreviation as in the mapping package
-`PROJ <https://proj.org/>`_. The options thus either look like:
+Since GMT version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the
+mapping package `PROJ <https://proj.org/>`_. The options thus either look like:
 
--  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a
-   *lower-case* abbreviation that selects a particular map projection,
-   the *parameters* is zero or more slash-delimited projection
-   parameter, and *scale* is map scale given in distance units per
-   degree or as 1:xxxxx.
+-  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a *lower-case* abbreviation that selects a particular
+   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *scale* is map scale given
+   in distance units per degree or as 1:xxxxx.
 
--  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an
-   *capitalized* abbreviation that selects a particular map projection,
-   the *parameters* is zero or more slash-delimited projection
-   parameter, and *width* is map width (map height is automatically
-   computed from the implied map scale and region).
+-  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an *capitalized* abbreviation that selects a particular
+   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *width* is map width (map
+   height is automatically computed from the implied map scale and region).
 
-The projections available in GMT are presented in Figure
-:ref:`gmt_projections`. For details on all GMT projections and the required
-parameters, see the :doc:`/basemap` man page. We will also show examples of
-every projection in the next Chapters, and a quick summary of projection
-syntax is listed in :doc:`/proj-codes`.
+The over 30 map projections and coordinate transformations available in GMT are represented in the Figure
+:ref:`GMT Projections <gmt_projections>`.
 
 .. _gmt_projections:
 
@@ -256,6 +244,17 @@ syntax is listed in :doc:`/proj-codes`.
    :align: center
 
    The over-30 map projections and coordinate transformations available in GMT
+
+.. _proj-codes:
+
+Projections specifications
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+GMT offers 31 map projections specified using the **-J** option. There are two conventions you may use: (a) GMT-style
+syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax. The codes for the GMT-style and the PROJ-style are tabulated
+below along with the associated *parameters* and links to the cookbook sections that describe the projection syntax and
+usage.
+
+.. include:: ../proj-codes.rst_
 
 .. _option_-B:
 
