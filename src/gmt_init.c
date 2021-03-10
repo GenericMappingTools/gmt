@@ -9933,7 +9933,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		scale = fontsize / 10.0;	/* scaling for offsets, pen widths and lengths normalized to the modern 10p size */
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Computed primary annotation font size: %g p  Dimension scaling: %g\n", fontsize, scale);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed primary annotation font size: %g p  Dimension scaling: %g\n", fontsize, scale);
 
 	/* Only apply the automatic scaling to items NOT specifically set via a --PAR=value option */
 

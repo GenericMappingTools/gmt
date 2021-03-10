@@ -9328,13 +9328,13 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 
 void gmtmap_reset_oblique_settings (struct GMT_CTRL *GMT) {
 	/* The modern mode default for MAP_ANNOT_OBLIQUE has settings that only makes sense for oblique plots with rectangular borders.
-	 * THus, if the current projection is not like that then we reset the default to a more benign default setting.  However, if
+	 * Thus, if the current projection is not like that then we reset the default to a more benign default setting.  However, if
 	 * the user has actively changed the MAP_ANNOT_OBLIQUE value then we do nothing. */
 
 	if (GMT->current.setting.map_annot_oblique_set) return;	/* User changed MAP_ANNOT_OBLIQUE so we cannot reset anything */
 	if (GMT->common.R.oblique) return;	/* These are the appropriate defaults for oblique projections with rectangular borders */
 
-	GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Reset MAP_ANNOT_OBLIQUE to anywhere\n");
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reset MAP_ANNOT_OBLIQUE to anywhere\n");
 
 	GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_ANYWHERE;	/* Reset to non-oblique map defaults */
 }

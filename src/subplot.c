@@ -801,7 +801,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			gmean_dim = sqrt (width * height);
 			width = height = 0.0;	/* Reset */
 		}
-		GMT_Report (API, GMT_MSG_NOTICE, "Subplot max panel dimension estimated: %g inch\n", gmean_dim);
+		GMT_Report (API, GMT_MSG_DEBUG, "Subplot max panel dimension estimated: %g inch\n", gmean_dim);
 
 		/* We must change any undefined defaults given this representative dimension now so that font sizes and dimensions
 		 * can be written to this subplot's gmt.conf file and thus give the same settings for all panels. The gmt.conf is
