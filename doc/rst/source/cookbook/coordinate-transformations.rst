@@ -1,28 +1,23 @@
 GMT Coordinate Transformations
 ==============================
 
-GMT programs read real-world coordinates and convert them to positions
-on a plot. This is achieved by selecting one of several coordinate
-transformations or projections. We distinguish between three sets of
-such conversions:
+GMT programs read real-world coordinates and convert them to positions on a plot. This is achieved by selecting one of
+several coordinate transformations or projections. We distinguish between three sets of such conversions:
 
 -  :ref:`cookbook/coordinate-transformations:Cartesian coordinate transformations`
 
 -  :ref:`cookbook/coordinate-transformations:Polar coordinate transformations`
 
--  Map coordinate transformations
+-  :doc:`Map coordinate transformations <map-projections>`
 
-The next Chapter will be dedicated to GMT map projections in its
-entirety. Meanwhile, the present Chapter will summarize the properties
-of the Cartesian and Polar coordinate transformations available in
-GMT, list which parameters define them, and demonstrate how they are
-used to create simple plot axes. We will mostly be using
-:doc:`/basemap` (and occasionally :doc:`/plot`) to demonstrate the various
-transformations. Our illustrations may differ from those you reproduce
-with the same commands because of different settings in our ``gmt.conf`` file.)
-Finally, note that while we will specify dimensions in inches (by
-appending **i**), you may want to use cm (**c**), or points (**p**) as
-unit instead (see the :doc:`/gmt.conf` man page).
+The next Chapter will be dedicated to GMT map projections in its entirety. Meanwhile, the present Chapter will summarize
+the properties of the :ref:`Cartesian <cookbook/coordinate-transformations:Cartesian coordinate transformations>`and
+:ref:`Polar <cookbook/coordinate-transformations:Polar coordinate transformations>` coordinate transformations available
+in GMT, list which parameters define them, and demonstrate how they are used to create simple plot axes. We will mostly
+be using :doc:`/basemap` (and occasionally :doc:`/plot`) to demonstrate the various transformations. Our illustrations
+may differ from those you reproduce with the same commands because of different settings in our ``gmt.conf`` file.
+Finally, note that while we will specify dimensions in inches (by appending **i**), you may want to use cm (**c**), or
+points (**p**) as :ref:`unit <cookbook/features:Dimension units>` instead.
 
 Cartesian coordinate transformations
 --------------------------------------------------------------------------------
