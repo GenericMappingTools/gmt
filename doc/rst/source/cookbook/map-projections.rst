@@ -202,25 +202,28 @@ Azimuthal projections
 Lambert Azimuthal Equal-Area (**-Ja** **-JA**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This projection was developed by Johann Heinrich Lambert in 1772 and is typically used
-for mapping large regions like continents and hemispheres. It is an
-azimuthal, equal-area projection, but is not perspective. Distortion is
-zero at the center of the projection, and increases radially away from
-this point. To define this projection in GMT you must provide the
-following information:
+**Syntax**
 
--  Longitude and latitude of the projection center.
+    **-Ja**\|\ **A**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width*
 
--  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (<= 180, default is 90).
+**Parameters**
 
--  Scale as 1:xxxxx or as radius/latitude where radius is the projected
-   distance on the map from projection center to an oblique latitude where 0
-   would be the oblique Equator
-   (**-Ja**), or map width (**-JA**).
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (<=180) [default is 90].
+- The *scale* as 1:xxxxx or as radius/latitude where radius is the projected distance on the map from projection center
+  to an oblique latitude where 0 would be the oblique Equator (with **-Ja**) or map *width*
+  :ref:`plot-units <plt-units>` (with **-JA**).
 
-Two different types of maps can be made with this projection depending
-on how the region is specified. We will give examples of both types.
+**Description**
+
+This projection was developed by Johann Heinrich Lambert in 1772 and is typically used for mapping large regions like
+continents and hemispheres. It is an azimuthal, equal-area projection, but is not perspective. Distortion is zero at the
+center of the projection, and increases radially away from this point.
+
+**Examples**
+
+Two different types of maps can be made with this projection depending on how the region is specified. We will give
+examples of both types in the next two subsections.
 
 Rectangular map
 ^^^^^^^^^^^^^^^
@@ -251,8 +254,8 @@ an error since *'east'* < *'west'*.
 Hemisphere map
 ^^^^^^^^^^^^^^
 
-Here, you must specify the world as your region (**-Rg** or
-**-Rd**). E.g., to obtain a hemisphere view that shows the Americas, try
+Here, you must specify the world as your region (**-Rg** or **-Rd**). E.g., to obtain a hemisphere view that shows the
+Americas, try
 
 .. literalinclude:: /_verbatim/GMT_lambert_az_hemi.txt
 
@@ -279,38 +282,44 @@ stereonet can be obtained by using the stereographic projection
 
 .. _-Js:
 
-Stereographic Equal-Angle projection (**-Js** **-JS**) :ref:`... <-Js_full>`
+Stereographic Equal-Angle (**-Js** **-JS**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-This is a conformal, azimuthal projection that dates back to the Greeks.
-Its main use is for mapping the polar regions. In the polar aspect all
-meridians are straight lines and parallels are arcs of circles. While
-this is the most common use it is possible to select any point as the
-center of projection. The requirements are
+**Syntax**
 
--  Longitude and latitude of the projection center.
+    **-Js**\|\ **S**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width*
 
--  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (< 180, default is 90).
+**Parameters**
 
--  Scale as 1:xxxxx (true scale at pole), slat/1:xxxxx (true scale at
-   standard parallel slat), or radius/latitude where radius is distance
-   on map in plot-units from projection center to a particular
-   oblique latitude (**-Js**), or simply map width (**-JS**).
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (< 180) [default is 90].
+- Scale as 1:xxxxx (true scale at pole), slat/1:xxxxx (true scale at standard parallel slat), or radius/latitude where
+  radius is distance on map in :ref:`plot-units <plt-units>` from projection center to a particular oblique latitude
+  (with **-Js**) or simply map *width* in :ref:`plot-units <plt-units>` (with **-JS**).
 
-A map scale factor of 0.9996 will be applied by default
-(although you may change this with :term:`PROJ_SCALE_FACTOR`). However,
-the setting is ignored when a standard parallel has been specified since
-the scale is then implicitly given. We will look at two different types
-of maps.
+**Description**
 
-Polar Stereographic Map :ref:`... <-Js_full>`
+
+This is a conformal, azimuthal projection that dates back to the Greeks. Its main use is for mapping the polar regions.
+In the polar aspect all meridians are straight lines and parallels are arcs of circles. While this is the most common
+use it is possible to select any point as the center of projection. The requirements are
+
+A map scale factor of 0.9996 will be applied by default (although you may change this with :term:`PROJ_SCALE_FACTOR`).
+However, the setting is ignored when a standard parallel has been specified since the scale is then implicitly given.
+We will look at two different types of maps.
+
+**Examples**
+
+Multiple types of maps can be made with this projection depending on how the region is specified. We will give
+examples in the next three subsections.
+
+Polar Stereographic Map
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 In our first example we will let the projection center be at the north
 pole. This means we have a polar stereographic projection and the map
 boundaries will coincide with lines of constant longitude and latitude.
-An example is given by
+An example is given by:
 
 .. literalinclude:: /_verbatim/GMT_stereographic_polar.txt
 
@@ -327,7 +336,7 @@ Rectangular stereographic map
 As with Lambert's azimuthal equal-area projection we have the option to
 use rectangular boundaries rather than the wedge-shape typically
 associated with polar projections. This choice is defined by selecting
-two points as corners in the rectangle and appending an "r" to the
+two points as corners in the rectangle and appending **+r** to the
 **-R** option. This command produces a map as presented in
 Figure :ref:`Polar stereographic <GMT_stereographic_rect>`:
 
@@ -364,45 +373,39 @@ next to its equal-area cousin in the Section `Lambert Azimuthal Equal-Area (-Ja 
 
 .. _-Jg_pers:
 
-Perspective projection (**-Jg** **-JG**) :ref:`... <-Jg_full>`
+Perspective projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The perspective projection imitates in 2 dimensions the 3-dimensional
-view of the earth from space. The implementation in GMT is very
-flexible, and thus requires many input variables. Those are listed and
-explained below, with the values used in
-Figure :ref:`Perspective projection <GMT_perspective>` between brackets.
+**Syntax**
 
--  Longitude and latitude of the projection center (4°E/52°N).
+    **-Jg**\|\ **G**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/*\ *scale*\|\ *width*
 
--  Altitude of the viewer above sea level in kilometers (230 km). If
-   this value is less than 10, it is assumed to be the distance of the
-   viewer from the center of the earth in earth radii. If an "r" is
-   appended, it is the distance from the center of the earth in
-   kilometers.
+**Parameters**
 
--  Azimuth in degrees (90, due east). This is the direction in which you
-   are looking, measured clockwise from north.
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- The *altitude* of the viewer above sea level in kilometers. If this value is less than 10, it is assumed to instead be
+  the distance of the viewer from the center of the earth in earth radii. If **r** is appended, it is assumed to instead
+  be the distance from the center of the earth in kilometers.
+- The *azimuth* in degrees. This is the direction in which you are looking, measured clockwise from north.
+- The *tilt* in degrees. This is the viewing angle relative to zenith. For example, a tilt of 0° is looking straight
+  down, and 60° is looking from 30° above the horizon.
+- The *twist* in degrees. This is the boresight rotation (clockwise) of the image.
+- The *Width* and *Height* of the viewpoint in degrees. This number depends on whether you are looking with the naked
+  eye (in which case the view is about 60° wide), or with binoculars, for example.
+- The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
+  projection center to a particular oblique latitude (with **-Jg**), or map width in :ref:`plot-units <plt-units>`
+  (with **-JG**).
 
--  Tilt in degrees (60). This is the viewing angle relative to zenith.
-   So a tilt of 0° is looking straight down, 60° is looking from 30° above
-   the horizon.
+**Description**
 
--  Twist in degrees (180). This is the boresight rotation (clockwise) of
-   the image. The twist of 180° in the example mimics the fact that the
-   Space Shuttle flies upside down.
+The perspective projection imitates in 2 dimensions the 3-dimensional view of the earth from space. The implementation
+in GMT is very flexible, and thus requires many input variables.
 
--  Width and height of the viewpoint in degrees (60). This number
-   depends on whether you are looking with the naked eye (in which case
-   you view is about 60° wide), or with binoculars, for example.
+**Example**
 
--  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in plot-units from projection center to a particular
-   oblique latitude (**-Jg**), or map width (**-JG**) (e.g., 12 cm).
-
-The imagined view of northwest Europe from a Space Shuttle at 230 km
-looking due east is thus accomplished by the following
-:doc:`/coast` command:
+The imagined view of northwest Europe from a Space Shuttle at 230 km looking due east is thus accomplished by the
+following :doc:`/coast` command (*lon0*\ =4; *lat0*\ =52; *altitude*\ =230 km; *azimuth*\ = 90°; *tilt*\ = 60°;
+*twist*\ = 180°; *Width*\ = 60°; *Height*\ = 60°; and *width* = 12 cm):
 
 .. literalinclude:: /_verbatim/GMT_perspective.txt
 
@@ -416,33 +419,34 @@ looking due east is thus accomplished by the following
 
 .. _-Jg:
 
-Orthographic projection (**-Jg** **-JG**) :ref:`... <-Jg_full>`
+Orthographic projection (**-Jg** **-JG**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The orthographic azimuthal projection is a perspective projection from
-infinite distance. It is therefore often used to give the appearance of
-a globe viewed from outer space. As with Lambert's equal-area and the
-stereographic projection, only one hemisphere can be viewed at any time.
-The projection is neither equal-area nor conformal, and much distortion
-is introduced near the edge of the hemisphere. The directions from the
-center of projection are true. The projection was known to the Egyptians
-and Greeks more than 2,000 years ago. Because it is mainly used for
-pictorial views at a small scale, only the spherical form is necessary.
+**Syntax**
 
-To specify the orthographic projection the same options **-Jg** or
-**-JG** as the perspective projection are used, but with fewer variables to supply:
+    **-Jg**\|\ **G**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width*
 
--  Longitude and latitude of the projection center.
+**Parameters**
 
--  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (<= 90, default is 90).
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (<=90) [default is 90].
+- The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
+  projection center to a particular oblique latitude (with **-Jg**), or map width in :ref:`plot-units <plt-units>`
+  (with **-JG**).
 
--  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in plot-units from projection center to a particular
-   oblique latitude (**-Jg**), or map width (**-JG**).
+**Description**
 
-Our example of a perspective view centered on 75°W/40°N can therefore be
-generated by the following :doc:`/coast` command:
+The orthographic azimuthal projection is a perspective projection from infinite distance. It is therefore often used to
+give the appearance of a globe viewed from outer space. As with Lambert's equal-area and the stereographic projection,
+only one hemisphere can be viewed at any time. The projection is neither equal-area nor conformal, and much distortion
+is introduced near the edge of the hemisphere. The directions from the center of projection are true. The projection was
+known to the Egyptians and Greeks more than 2,000 years ago. Because it is mainly used for pictorial views at a small
+scale, only the spherical form is necessary.
+
+**Example**
+
+Our example of a perspective view centered on 75°W/40°N can therefore be generated by the following :doc:`/coast`
+command:
 
 .. literalinclude:: /_verbatim/GMT_orthographic.txt
 
@@ -454,32 +458,34 @@ generated by the following :doc:`/coast` command:
 
 .. _-Je:
 
-Azimuthal Equidistant projection (**-Je** **-JE**) :ref:`... <-Je_full>`
+Azimuthal Equidistant projection (**-Je** **-JE**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The most noticeable feature of this azimuthal projection is the fact
-that distances measured from the center are true. Therefore, a circle
-about the projection center defines the locus of points that are equally
-far away from the plot origin. Furthermore, directions from the center
-are also true. The projection, in the polar aspect, is at least several
-centuries old. It is a useful projection for a global view of locations
-at various or identical distance from a given point (the map center).
+**Syntax**
 
-To specify the azimuthal equidistant projection you must supply:
+    **-Je**\|\ **E**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width*
 
--  Longitude and latitude of the projection center.
+**Parameters**
 
--  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (<= 180, default is 180).
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (<=180) [default is 180].
+- The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
+  projection center to a particular oblique latitude (with **-Je**), or map width in :ref:`plot-units <plt-units>`
+  (with **-JE**).
 
--  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in plot-units from projection center to a particular
-   oblique latitude (**-Je**), or map width (**-JE**).
+**Description**
 
-Our example of a global view centered on 100°W/40°N can therefore be
-generated by the following :doc:`/coast`
-command. Note that the antipodal point is 180° away from the center, but
-in this projection this point plots as the entire map perimeter:
+The most noticeable feature of this azimuthal projection is the fact that distances measured from the center are true.
+Therefore, a circle about the projection center defines the locus of points that are equally far away from the plot
+origin. Furthermore, directions from the center are also true. The projection, in the polar aspect, is at least several
+centuries old. It is a useful projection for a global view of locations at various or identical distance from a given
+point (the map center).
+
+**Example**
+
+Our example of a global view centered on 100°W/40°N can therefore be generated by the following :doc:`/coast` command.
+Note that the antipodal point is 180° away from the center, but in this projection this point plots as the entire map
+perimeter:
 
 .. literalinclude:: /_verbatim/GMT_az_equidistant.txt
 
@@ -491,32 +497,33 @@ in this projection this point plots as the entire map perimeter:
 
 .. _-Jf:
 
-Gnomonic projection (**-Jf** **-JF**) :ref:`... <-Jf_full>`
+Gnomonic projection (**-Jf** **-JF**)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The Gnomonic azimuthal projection is a perspective projection from the
-center onto a plane tangent to the surface. Its origin goes back to the
-old Greeks who used it for star maps almost 2500 years ago. The
-projection is neither equal-area nor conformal, and much distortion is
-introduced near the edge of the hemisphere; in fact, less than a
-hemisphere may be shown around a given center. The directions from the
-center of projection are true. Great circles project onto straight
-lines. Because it is mainly used for pictorial views at a small scale,
-only the spherical form is necessary.
+**Syntax**
 
-To specify the Gnomonic projection you must supply:
+    **-Jf**\|\ **F**\ *lon0/lat0*\ [*/horizon*]\ *scale*\|\ *width*
 
--  Longitude and latitude of the projection center.
+**Parameters**
 
--  Optionally, the horizon, i.e., the number of degrees from the center
-   to the edge (< 90, default is 60).
+- The longitude (*lon0*) and latitude (*lat0*) of the projection center.
+- Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (<90) [default is 60].
+- The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
+  projection center to a particular oblique latitude (with **-Jf**), or map width in :ref:`plot-units <plt-units>`
+  (with **-JF**).
 
--  Scale as 1:xxxxx or as radius/latitude where radius is distance on
-   map in plot-units from projection center to a particular
-   oblique latitude (**-Jf**), or map width (**-JF**).
+**Description**
 
-Using a horizon of 60, our example of this projection centered on
-120°W/35°N can therefore be generated by the following :doc:`/coast` command:
+The Gnomonic azimuthal projection is a perspective projection from the center onto a plane tangent to the surface. Its
+origin goes back to the old Greeks who used it for star maps almost 2500 years ago. The projection is neither equal-area
+nor conformal, and much distortion is introduced near the edge of the hemisphere; in fact, less than a hemisphere may be
+shown around a given center. The directions from the center of projection are true. Great circles project onto straight
+lines. Because it is mainly used for pictorial views at a small scale, only the spherical form is necessary.
+
+**Example**
+
+Using a *horizon* of 60, our example of this projection centered on 120°W/35°N can therefore be generated by the
+following :doc:`/coast` command:
 
 .. literalinclude:: /_verbatim/GMT_gnomonic.txt
 
