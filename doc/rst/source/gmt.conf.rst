@@ -14,7 +14,7 @@ GMT. The parameter names are always given in **UPPER CASE**. The
 parameter values are case-insensitive unless otherwise noted. Theme-independent
 system defaults are given in brackets [default is **value**], with units
 specified for dimensional quantities, while theme-dependent defaults are
-outlined in the GMT_THEME :doc:`settings table <theme-settings>`.Most parameters
+outlined in the **GMT_THEME** :doc:`settings table <theme-settings>`. Most parameters
 can be changed by using :doc:`gmtset`, editing a **gmt.conf** file that can be
 acquired using :doc:`gmtdefaults`, or setting parameters on-the-fly via the
 **--PARAMETER**\ =\ *VALUE* option to any GMT program. However, a few are static
@@ -89,7 +89,7 @@ COLOR Parameters
         By default, color interpolation takes place directly on the RGB
         values which can produce some unexpected hues, whereas interpolation
         directly on the HSV values better preserves those hues. The choices
-        are: **none** (default: use whatever the **COLOR_MODEL** setting in the
+        are: **none** (use whatever the **COLOR_MODEL** setting in the
         CPT demands), **rgb** (force interpolation in RGB),
         **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
         in CMYK but interpolates in RGB) [default is **none**].
@@ -346,8 +346,8 @@ GMT Miscellaneous Parameters
         Determines if the current GMT version should be able to parse command-line
         options for a prior major release.  Specify the major release version number,
         e.g., 4-6. If 4 is set we will parse obsolete GMT 4 options and issue warnings;
-        if 5 is set then parsing GMT 4 only syntax will result in errors [4]; likewise
-        for 6: obsolete syntax from early GMT 5 will be considered errors.
+        if 5 is set then parsing GMT 4 only syntax will result in errors [default is 4];
+        likewise for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
         Name (or URL) of a GMT data server [default is **oceania**]. Please set
@@ -522,7 +522,7 @@ I/O Parameters
         for auto-adjusting the scale and/or offset of packed integer grids
         (=\ *ID*\ **+s**\ *a* is a shorthand for =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
         When *invalid* is omitted the appropriate value for the given format is used
-        (NaN or largest negative). [default is **nf**].
+        (NaN or largest negative) [default is **nf**].
 
     **IO_GRIDFILE_SHORTHAND**
         If **true**, all grid file names are examined to see if they use the
@@ -548,7 +548,7 @@ I/O Parameters
         (longitude,latitude) or (x,y). false means we have (x,y) both on
         input and output. **true** means both input and output should be (y,x).
         **IN** means only input has (y,x), while **OUT** means only output should
-        be (y,x). [default is **false**].
+        be (y,x) [default is **false**].
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [default is **0**].
@@ -581,7 +581,7 @@ I/O Parameters
         [128,256). Setting :term:`IO_NC4_CHUNK_SIZE` will produce netCDF version 4
         files, which can only be read with the netCDF 4 library, unless all
         dimensions are less than 128 or **c**\ lassic is specified for
-        classic netCDF. [default is **auto**]
+        classic netCDF [default is **auto**]
 
     **IO_NC4_DEFLATION_LEVEL**
         Sets the compression level for netCDF4 files upon output. Values
@@ -590,7 +590,7 @@ I/O Parameters
         improve performance and reduce the size of certain data. While
         higher compression levels further reduce the data size, they do so
         at the cost of extra processing time. This parameter does not
-        apply to classic netCDF files. [default is **3**]
+        apply to classic netCDF files [default is **3**].
 
     **IO_SEGMENT_BINARY**
         Determines how binary data records with all values set to NaN are
@@ -623,13 +623,13 @@ MAP Parameters
     **MAP_ANNOT_MIN_ANGLE**
         If the angle between the map boundary and the annotation baseline is
         less than this minimum value (in degrees), the annotation is not
-        plotted (this may occur for certain oblique projections.) Give a
+        plotted (this may occur for certain oblique projections). Give a
         value in the range [0,90] [default is **20**].
 
     **MAP_ANNOT_MIN_SPACING**
         If an annotation would be plotted less than this minimum distance
         from its closest neighbor, the annotation is not plotted (this may
-        occur for certain oblique or polar projections.) [default is
+        occur for certain oblique or polar projections) [default is
         :doc:`theme dependent <theme-settings>`]. Choose **auto** for
         :ref:`automatic scaling with plot size <auto-scaling>`.
 
@@ -637,16 +637,15 @@ MAP Parameters
         This argument is a comma-separated list of up to seven keywords:
         **separate** means longitudes will be annotated on the lower and upper
         boundaries only, and latitudes will be annotated on the left and right
-        boundaries only;
-        **anywhere** means annotations will occur wherever an imaginary gridline
-        crosses the map boundaries; **lon_horizontal** means longitude annotations
-        will be plotted horizontally; **lat_horizontal** means latitude annotations
-        will be plotted horizontally; **tick_extend** means tick-marks are extended
-        so the distance from the tip of the oblique tick to the map frame equals
-        the specified tick length; **tick_normal** means tick-marks will be drawn
-        normal to the border regardless of gridline angle; **lat_parallel** means
-        latitude annotations will be plotted parallel to the border. [default
-        is **anywhere**].
+        boundaries only; **anywhere** means annotations will occur wherever an
+        imaginary gridline crosses the map boundaries; **lon_horizontal** means
+        longitude annotations will be plotted horizontally; **lat_horizontal**
+        means latitude annotations will be plotted horizontally; **tick_extend**
+        means tick-marks are extended so the distance from the tip of the oblique
+        tick to the map frame equals the specified tick length; **tick_normal**
+        means tick-marks will be drawn normal to the border regardless of
+        gridline angle; **lat_parallel** means latitude annotations will be
+        plotted parallel to the border [default is **anywhere**].
 
     **MAP_ANNOT_OFFSET**
         Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and
@@ -661,13 +660,13 @@ MAP Parameters
     **MAP_ANNOT_OFFSET_SECONDARY**
         Distance from base of primary annotation to the top of the secondary
         annotation (Only applies to time axes with both primary and secondary
-        annotations). [default is :doc:`theme dependent <theme-settings>`]. Choose
+        annotations) [default is :doc:`theme dependent <theme-settings>`]. Choose
         **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_ORTHO**
         Determines which axes will get their annotations (for Cartesian
         projections) plotted orthogonally to the axes. Combine any **w**, **e**,
-        **s**, **n**, **z** (uppercase allowed as well). [default is **we**] (if
+        **s**, **n**, **z** (uppercase allowed as well) [default is **we**] (if
         nothing specified). Note that this setting can be overridden via the
         **+a** modifier in **-B**.
 
@@ -692,7 +691,8 @@ MAP Parameters
         without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
         **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
         optional **+b** to draw a cube of axes in perspective view.
-        [default is :doc:`theme dependent <theme-settings>`].
+        [default is :doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic selection <auto-scaling>`.
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [default is :doc:`theme dependent
