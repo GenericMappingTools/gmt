@@ -690,9 +690,9 @@ MAP Parameters
         to draw the axis only, but not annotate.   To *just* draw an axis
         without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
         **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
-        optional **+b** to draw a cube of axes in perspective view.
-        [default is :doc:`theme dependent <theme-settings>`]. Choose **auto**
-        for :ref:`automatic selection <auto-scaling>`.
+        optional **+b** to draw a cube of axes in perspective view. Choose
+        **auto** for :ref:`automatic selection <auto-scaling>` [default is
+        :doc:`theme dependent <theme-settings>`].
 
     **MAP_FRAME_PEN**
         Pen attributes used to draw plain map frame [default is :doc:`theme dependent
