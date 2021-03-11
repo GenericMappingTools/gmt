@@ -299,6 +299,13 @@ stereonet can be obtained by using the stereographic projection
 
    Equal-Area (Schmidt) and Equal-Angle (Wulff) stereo nets.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_stereonets.txt
+
+
 .. _-Js:
 
 Stereographic Equal-Angle (**-Js** **-JS**)
@@ -703,6 +710,11 @@ latitude bands but these are not needed to specify the projection for most cases
 
    Universal Transverse Mercator zone layout.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_utm_zones.txt
 
 In order to minimize the distortion in any given zone, a scale factor of 0.9996 has been factored into the formulae
 (although a standard, you can change this with :term:`PROJ_SCALE_FACTOR`). This makes the UTM projection a *secant*
@@ -802,6 +814,12 @@ corners internally.
    The projected coordinate system is still aligned as before but the Earth has been rotated 180 degrees.  The blue
    point now has projected coordinates (*x* = -426.2, *y* = 399.7).
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_obl_nz.txt
+
 The oblique Mercator projection will by default arrange the output so that the oblique Equator becomes the new
 horizontal, positive *x*-axis.  For features with an orientation more north-south than east-west, it may be preferable
 to align the oblique Equator with the vertical, positive *y*-axis instead.  This configuration is selected by appending
@@ -813,6 +831,12 @@ to align the oblique Equator with the vertical, positive *y*-axis instead.  This
 
    Oblique view of Baja California using the vertical oblique Equator modifier.  This plot
    resulted from the argument **-JOa**\ 120W/25N/-30/6c\ **+v**\ .
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_obl_baja.txt
 
 .. _-Jc:
 
@@ -1269,6 +1293,12 @@ The same script, with **s** instead of **f**, yields the Eckert VI map:
    :align: center
 
    World map using the Eckert VI projection.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_eckert6.txt
 
 .. _-Ji:
 
