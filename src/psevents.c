@@ -508,7 +508,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				Ctrl->Z.active = true;
 				if (opt->arg[0] && strstr (opt->arg, "-S")) {	/* Got the required -S option as part of the command */
 					if ((c = strchr (opt->arg, ' '))) {	/* First space in the command ends the module name */
-						char *q;
+						char *q, was;
 						c[0] = '\0';	/* Temporarily hide the rest of the command so we can isolate the module name */
 						Ctrl->Z.module = strdup (opt->arg);	/* Make a copy of the module name */
 						c[0] = ' ';	/* Restore space */
@@ -516,15 +516,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						strncpy (txt_a, c, GMT_LEN256);	/* Copy the remaining text into a temporary buffer */
 						c = q = strstr (txt_a, "-S") + 3;	/* Determine the start position of the required symbol size in the command */
 						while (c[0] && !strchr ("/+ ", c[0])) c++;	/* Skip the size until we hit a slash or a modifier or the end of the option or the entire string */
-						if (c[0] == '/') c++;	/* Then skip the slash since it will not be needed when size is not given via the new -S */
-						if (c[0] == '+' || c[0] == ' ') {	/* Found a modifier or space that we need to hide when getting the symbol size */
-							char was = c[0];
-							c[0] = '\0';	/* Hide modifier */
-							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
-							c[0] = was;	/* Restore char */
-						}
-						else	/* No modifier, so OK to convert */
-							Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
+						was = c[0];	/* Remember first char after size */
+						c[0] = '\0';	/* Hide it */
+						Ctrl->S.size = gmt_M_to_inch (GMT, q);	/* Get the fixed symbol size specified */
+						c[0] = was;	/* Restore char */
+						if (c[0] == '/') c++;	/* Skip the slash since it will not be needed when size is not given via the new -S */
 						while (c[0]) *q++ = *c++;	/* Shuffle down the remaining text from the command to fill the void left by size */
 						*q = '\0';	/* And truncate since we shuffled characters forward */
 						if (strstr (txt_a, "-C") || strstr (txt_a, "-G") || strstr (txt_a, "-I") || strstr (txt_a, "-J") || strstr (txt_a, "-N") || strstr (txt_a, "-R") \

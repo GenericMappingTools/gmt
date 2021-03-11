@@ -2410,6 +2410,7 @@ bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
 	if (!strncmp (GMT->init.module_name, "psxy",    4U)) return true;
 	if (!strncmp (GMT->init.module_name, "pstext",  6U)) return true;
 	if (!strncmp (GMT->init.module_name, "psmeca",  6U)) return true;
+	if (!strncmp (GMT->init.module_name, "psvelo",  6U)) return true;
 	if (!strncmp (GMT->init.module_name, "pscoupe", 7U)) return true;
 	return false;	/* Anything else */
 }
