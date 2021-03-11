@@ -755,14 +755,20 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 --------------------------------------
 
-The **-U** option draws the GMT system time stamp on the plot.
-By appending **+j**\ *just* and/or **+o**\ *dx/dy*, the user may
-specify the justification of the stamp and where the stamp should fall
-on the page relative to lower left corner of the plot.
-For example, +jBL+o0/0 will align the lower left corner of the time stamp
-with the bottom left corner of the plot [BL]. Optionally, append  an
-arbitrary text string (surrounded by double quotes), or give **+c**,
-which will plot the current command string (Figure :ref:`Time stamp <fig_-U>`).
+The **-U** option draws the GMT system time stamp on the plot with the syntax
+(**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]). The following modifiers are supported:
+
+- **+c** to plot the current command string
+- **+j**\ *just* to specify the justification of the time stamp and where the stamp, where *just* is a two-character
+  :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**\ (eft), **C**\ (enter), or
+  **R**\ (ight)) and a vertical (**T**\ (op), **M**\ (iddle), or **B**\ (ottom)) code [default is **BL**]
+- *label* to append the text string given in *label* (which must be surrounded by double qoutes)
+- **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` for the time stamp by *dx* and optionally
+  *dy* (if different than *dx*).
+
+The GMT parameters :term:`MAP_LOGO`, :term:`MAP_LOGO_POS`, :term:`FONT_LOGO` and :term:`FORMAT_TIME_STAMP` can affect
+the appearance; see the :doc:`../gmt.conf` man page for details. The time string will be in the locale set by the
+environment variable **TZ** (generally local time).
 
 .. _fig_-U:
 
