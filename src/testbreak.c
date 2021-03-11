@@ -13,38 +13,45 @@ struct GMT_WORD {
 
 struct GMT_WORD * gmt_split_words (char *line) {
 	/* Split line into an array of words where words are separated by either
-	 * a space (like between options) or the occurrence of "][" sequences. */
+	 * a space (like between options) or the occurrence of "][" sequences.
+	 * These are the places where we are allowed to break the line. */
 	struct GMT_WORD *array = NULL;
-	unsigned int n = 0, c, start = 0, next, end, j, p, space = 0, n_alloc = GMT_LEN512;
+	unsigned int n = 0, c, start = 0, next, end, j, stop, space = 0, n_alloc = GMT_LEN512;
 	array = calloc (n_alloc, sizeof (struct GMT_WORD));
 	while (line[start]) {	/* More to chop up */
 		/* Find the next break location */
-		p = start;
-		while (line[p] && !(line[p] == ' ' || (line[p] == ']' && line[p+1] == '['))) p++;
-		end = next = p;
-		array[n].space = space;
-		if (line[p] == ' ')	/* Skip the space to start at next word */
-			next = p + 1, space = 1;
-		else if (line[p] == ']') {	/* Include this char then break */
+		stop = start;
+		while (line[stop] && !(line[stop] == ' ' || (line[stop] == ']' && line[stop+1] == '['))) stop++;
+		end = next = stop;	/* Mark likely end */
+		array[n].space = space;	/* Do we need a leading space (set via previous word)? */
+		if (line[stop] == ' ') {	/* Skip the space to start over at next word */
+			while (line[stop] == ' ') stop++;	/* In case there are more than one space */
+			next = stop; space = 1;
+		}
+		else if (line[stop] == ']') {	/* Include this char then break */
 			next = ++end, space = 0;
 		}
 		array[n].word = calloc (end - start + 1, sizeof (char));	/* Allocate space for word */
 		for (j = start, c = 0; j < end; j++, c++) array[n].word[c] = line[j];
-		n++;	/* Got our word */
-		start = next;
+		n++;	/* Got another word */
+		start = next;	/* Advance to start of next word */
 	}
+	/* Finalize array length - keep one extra to indicate end of array */
 	array = realloc (array, (n+1)*sizeof (struct GMT_WORD));
+#if 1
 	fprintf (stderr, "Found %d words\n", n);
 	for (j = 0; j < n; j++)
 		fprintf (stderr, "%2.2d: [%d] %s\n", j, array[j].space, array[j].word);
 	fprintf (stderr, "\n");
+#endif
 
 	return (array);
 }
 
 void gmt_usage_line (unsigned int mode, unsigned int MLENGTH, char *in_line) {
+	/* Break the in_ine across multiple lines determined by the terminal line width MLENGTH */
 	struct GMT_WORD *W = gmt_split_words (in_line);
-	unsigned int width = MLENGTH - 2, k, current_width = 0;
+	unsigned int width, k, current_width = 0;
 #ifdef WIN32
 	char *brk = "\xe2\x80\xa6";
 #else
@@ -54,25 +61,26 @@ void gmt_usage_line (unsigned int mode, unsigned int MLENGTH, char *in_line) {
 		fprintf (stderr, "  ");	/* Starting 2-spaces */
 		current_width = 2;
 	}
-	for (k = 0; W[k].word; k++) {
-		width = (W[k+1].space) ? MLENGTH : MLENGTH - 1;
-		if ((current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit */
-			if (W[k].space) fprintf (stderr, " ");
-			fprintf (stderr, "%s", W[k].word);
-			current_width += strlen (W[k].word) + W[k].space;
-			free (W[k].word);
+	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
+		width = (W[k+1].space) ? MLENGTH : MLENGTH - 1;	/* May need one space for ellipsis at end */
+		if ((current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
+			if (W[k].space) fprintf (stderr, " ");	/* This word requires a leading space */
+			fprintf (stderr, "%s", W[k].word);	/* Place the word */
+			current_width += strlen (W[k].word) + W[k].space;	/* Update line width so far */
+			free (W[k].word);	/* Free the word we are done with */
+			if (W[k+1].word == NULL)	/* Finalize the last line */
+				fprintf (stderr, "\n");
 		}
-		else {	/* Must split */
-			if (W[k].space) /* No break character since space separation */
-				fprintf (stderr, "\n  "), current_width = 2;
-			else
+		else {	/* Must split at the current break point and continue on next line */
+			if (W[k].space) /* No break character needed since space separation is expected */
+				fprintf (stderr, "\n  "), current_width = 2;	/* Indent normal 2 spaces */
+			else	/* Split in the middle of an option so append ellipsis and start with one too */
 				fprintf (stderr, "%s\n   %s", brk, brk), current_width = 4;
-			W[k].space = 0;	/* No leading space if starting the line */
-			k--;	/* Since k will be incremented but we did not write this word on this line */
+			W[k].space = 0;	/* No leading space if starting a the line */
+			k--;	/* Since k will be incremented by loop but we did not write this word yet */
 		}
 	}
-	fprintf (stderr, "\n");
-	free (W);
+	free (W);	/* Free the structure array */
 }
 
 int main (int argc, char *argv[]) {
