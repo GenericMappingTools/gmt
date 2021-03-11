@@ -65,7 +65,7 @@ button.toggle-button {
         position: absolute;
         font-size: .8em;
         left: -13.5em;
-        bottom: .3em;
+        bottom: .4em;
     }
 }
 
