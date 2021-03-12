@@ -131,8 +131,6 @@ jobs:
           # if html.log isn't empty (i.e., sphinx raise warnings), return 1
           ! [ -s doc/rst/html.log ]
           cmake --build . --target docs_man
-          # if man.log isn't empty (i.e., sphinx raise warnings), return 1
-          ! [ -s doc/rst/man.log ]
 
       - name: Install GMT
         run: |

@@ -1571,9 +1571,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && !S.par_set) {	/* Ellipses and rectangles */
 				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
-					in[ex2] = in[ex3] = S.size_x, in[ex1] = 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero  */
+					in[ex2] = in[ex3] = S.size_x, in[ex1] = (gmt_M_is_cartesian (GMT, GMT_IN)) ? 90.0 : 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero  */
 				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
-					in[ex2] = in[ex3] = in[ex1], in[ex1] = 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero */
+					in[ex2] = in[ex3] = in[ex1], in[ex1] = (gmt_M_is_cartesian (GMT, GMT_IN)) ? 90.0 : 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero */
 			}
 
 			if (S.base_set & GMT_BASE_READ) {
@@ -1780,13 +1780,23 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							dim[1] = in[ex2];
 							dim[2] = in[ex3];
 						}
-						if (!S.convert_angles)
+						if (!S.convert_angles)	/* -Se or -Sr */
 							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						else if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Got axes in user units, change to inches */
 							dim[0] = 90.0 - dim[0];	/* Cartesian azimuth */
 							dim[1] *= GMT->current.proj.scale[GMT_X];
 							dim[2] *= GMT->current.proj.scale[GMT_Y];
-							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+							if (may_intrude_inside) {	/* Must plot fill and outline separately */
+								gmt_setfill (GMT, &current_fill, 0);
+								PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+								if (outline_setting) {
+									gmt_setpen (GMT, &current_pen);
+									PSL_setfill (PSL, GMT->session.no_rgb, outline_setting);
+									PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
+								}
+							}
+							else
+								PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						}
 						else if (S.symbol == PSL_ELLIPSE) {	/* Got axis in km */
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
@@ -1801,7 +1811,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							else
 								gmt_plot_geo_ellipse (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);
 						}
-						else {
+						else {	/* Georectangle */
 							if (may_intrude_inside) {	/* Must plot fill and outline separately */
 								gmt_setfill (GMT, &current_fill, 0);
 								gmt_geo_rectangle (GMT, in[GMT_X], in[GMT_Y], dim[1], dim[2], dim[0]);

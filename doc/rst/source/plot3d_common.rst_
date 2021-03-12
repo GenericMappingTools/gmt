@@ -27,6 +27,8 @@ Required Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
+.. _-Jz:
+
 .. include:: explain_-Jz.rst_
 
 .. _-R:

@@ -39,8 +39,8 @@ that leaves off the scale or width then we supply a scale or width to fill the i
 as possible, given the inset size and margins (if selected).
 
 
-Required Arguments
-------------------
+Required Arguments (begin mode)
+-------------------------------
 
 .. _-D:
 
@@ -60,26 +60,19 @@ Required Arguments
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Specify inset box attributes via the **-F** option [outline only].
 
-Optional Arguments
-------------------
+Optional Arguments (begin mode)
+-------------------------------
 
 .. _-F:
 
-**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
-    Without further options, draws a rectangular border around the map inset using
-    :term:`MAP_FRAME_PEN`; specify a different pen with **+p**\ *pen*.
-    Add **+g**\ *fill* to fill the logo box [no fill].
-    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
-    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
-    x- and y-direction, or individual side spacings between logo and border.
-    Append **+i** to draw a secondary, inner border as well. We use a uniform
-    *gap* between borders of 2\ **p** and the :term:`MAP_DEFAULT_PEN`
-    unless other values are specified. Append **+r** to draw rounded
-    rectangular borders instead, with a 6\ **p** corner radius. You can
-    override this radius by appending another value. Finally, append
-    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
-    indicates the shift relative to the foreground frame
-    [4\ **p**/-4\ **p**] and *shade* changes the fill used for shading [gray50].
+**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]]\
+[**+s**\ [[*dx*/*dy*/][*shade*]]]
+
+    Without further options, draws a rectangular border around the map inset using :term:`MAP_FRAME_PEN`. The following
+    modifiers can be appended to |-F|, with additional explanation and examples provided in the :ref:`Background-panel`
+    cookbook section:
+
+    .. include:: explain_-F_box.rst_
 
 .. _-M:
 
@@ -110,8 +103,8 @@ The **end** directive finalizes the current inset, which returns the plotting en
 the state prior to the start of the inset.  The previous region and map projection will be
 in effect going forward.
 
-Optional Arguments
-------------------
+Optional Arguments (end mode)
+-----------------------------
 
 .. _inset_end-V:
 

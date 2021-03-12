@@ -63,6 +63,8 @@ indicate the units of your arguments by appending the unit character, as
 discussed below. This will aid you in debugging, let others understand your
 scripts, and remove any uncertainty as to what unit you thought you wanted.
 
+.. _plt-units:
+
 Dimension units
 ~~~~~~~~~~~~~~~
 
@@ -85,6 +87,8 @@ two ways to ensure that GMT understands which unit you intend to use:
 The latter method is less robust as other users may have a different
 default unit set and then your script may not work as intended. For portability,
 we therefore recommend you always append the desired unit explicitly.
+
+.. _dist-units:
 
 Distance units
 ~~~~~~~~~~~~~~
@@ -236,6 +240,13 @@ E.g., if your ``gmt.conf`` file has *x* offset = 3\ **c** as default, the
 
    Some GMT parameters that affect plot appearance.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_Defaults_1a.txt
+
+
 .. _gmt_defaults_b:
 
 .. figure:: /_images/GMT_Defaults_1b.*
@@ -244,6 +255,12 @@ E.g., if your ``gmt.conf`` file has *x* offset = 3\ **c** as default, the
 
    More GMT parameters that affect plot appearance.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_Defaults_1b.txt
+
 .. _gmt_defaults_c:
 
 .. figure:: /_images/GMT_Defaults_1c.*
@@ -251,6 +268,12 @@ E.g., if your ``gmt.conf`` file has *x* offset = 3\ **c** as default, the
    :align: center
 
    Even more GMT parameters that affect plot appearance.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_Defaults_1c.txt
 
 There are at least two good reasons why the GMT default options are
 placed in a separate parameter file:
@@ -464,6 +487,12 @@ this check is only performed no more often than once a day.
    :align: center
 
    The 14297 1x1 degree tiles (red) for which SRTM 1 and 3 arc second data are available.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_SRTM.txt
 
 As a short example, we can make a quick map of Easter Island using the SRTM 1x1 arc second
 grid via
@@ -733,6 +762,12 @@ point, as shown in Figures :ref:`Cap <Cap_settings>` and :ref:`Miter <Miter_sett
    **ROUND**, or **BUTT**.  The circles and thin lines indicate the coordinates.  All lines
    where plotted with the same width and dash-spacing (-W10p,20_20:0).
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_cap.txt
+
 .. _Miter_settings:
 
 .. figure:: /_images/GMT_joint.*
@@ -743,6 +778,12 @@ point, as shown in Figures :ref:`Cap <Cap_settings>` and :ref:`Miter <Miter_sett
    meet that can be adjusted with :term:`PS_LINE_JOIN`.  There is **BEVEL**, **ROUND**, and
    **MITER**.  The last setting also depends on :term:`PS_MITER_LIMIT` which sets a limit on
    the angle at the mitered joint below which we apply a bevel.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_joint.txt
 
 By default, line segments have rectangular ends, but this can
 change to give rounded ends. When :term:`PS_LINE_CAP` is set to round the
@@ -762,6 +803,12 @@ different phase *offset* and color. See the :doc:`/gmt.conf` man page for more i
 
    Line appearance can be varied by using :term:`PS_LINE_CAP`
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_linecap.txt
+
 Experience has shown that the rendering of lines that are short relative to the pen thickness
 can sometimes appear wrong or downright ugly.  This is a feature of PostScript interpreters, such as
 Ghostscript.  By default, lines are rendered using a fast algorithm which is susceptible to
@@ -778,6 +825,12 @@ displays the difference in results.
 
    Very thick line appearance using the default (left) and round line cap and join (right).  The
    red line (1p width) illustrates the extent of the input coordinates.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_fatline.txt
 
 Specifying line attributes
 --------------------------
@@ -810,6 +863,12 @@ specification. The line attribute modifiers are:
    of plotting the same line while requesting offsets of 1 cm at the beginning and 500 km
    at the end, via **-W**\ 2p\ **+o**\ 1c/500k.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_lineoffset.txt
+
 * **+s**
     Normally, all PostScript line drawing is implemented as a linear spline, i.e., we simply
     draw straight line-segments between the map-projected data points.  Use this modifier to render the
@@ -824,6 +883,12 @@ specification. The line attribute modifiers are:
 
    (left) Normal plotting of line given input points (red circles) via **-W**\ 2p. (right) Letting
    the projected points be interpolated by a Bezier cubic spline via **-W**\ 2p\ **+s**.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_bezier.txt
 
 * **+v**\ [**b**\|\ **e**]\ *vspecs*
     By default, lines are normally drawn from start to end.  Using the **+v** modifier you can
@@ -843,6 +908,12 @@ specification. The line attribute modifiers are:
    Same line as above but now we have requested a blue vector head at the end of the line and a
    red circle at the beginning of the line with **-W**\ 2p\ **+o**\ 1c/500k\ **+vb**\ 0.2i\ **+g**\ red\ **+p**\ faint\ **+b**\ c\ **+ve**\ 0.3i\ **+g**\ blue.
    Note that we also prescribed the line offsets in addition to the symbol endings.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_linearrow.txt
 
 .. _-Gfill_attrib:
 
@@ -994,6 +1065,12 @@ discusses the various ways to do this.
    three letter codes for horizontal (**L**\ eft, **C**\ enter, **R**\ ight)
    and vertical (**T**\ op, **M**\ iddle, **B**\ ottom) alignments.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_pstext_justify.txt
+
 Notice how the anchor points refers to the text baseline and do not change
 for text whose letters extend below the baseline.
 
@@ -1019,6 +1096,12 @@ as illustrated in Figure :ref:`Text clearance <Text_clearance>`.
    bounding box can be modified as well, including rounded or convex
    rectangles.  Here we have chosen a rounded rectangle, requiring the
    additional specification of a corner radius, *r*.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_pstext_clearance.txt
 
 .. _CPT_section:
 
@@ -1268,6 +1351,12 @@ it from data tables while :doc:`/grd2cpt` can derive the range from one or more 
    Because of the hinge, the two sides of the CPT will be stretched separately
    to honor the desired range while utilizing the full color range.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_hinge.txt
+
 All CPT master tables can be found in Chapter :ref:`Of Colors and Color Legends`
 where those with hard or soft hinges are identified by triangles at their hinges.
 
@@ -1300,6 +1389,12 @@ color list to have the *min* and *max* values rounded down and up to nearest mul
 
    Lists of colors (here red,yellow,purple) can be turned into discrete or continuous CPT tables on the fly.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_colorlist.txt
+
 Cyclic (wrapped) CPTs
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -1320,6 +1415,12 @@ color tables are useful for highlighting small changes.
    :align: center
 
    Cyclic color bars are indicated by a cycle symbol on the left side of the bar.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_cyclic.txt
 
 .. _manipulating_CPTs:
 
@@ -1352,6 +1453,12 @@ applications only the last transformation is needed.
 
    Examples of two user CPTs for the range -0.5 to 3 created from the same master.  One (left) extracted a
    subset of the master before scaling while the other (right) used the entire range.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_CPTscale.txt
 
 Automatic CPTs
 ~~~~~~~~~~~~~~
@@ -1398,6 +1505,12 @@ between three types of vectors:
    for different attribute specifications. Note that both full and half
    arrow-heads can be specified, as well as no head at all.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_arrows.txt
+
 There are numerous attributes you can modify, including how the vector
 should be justified relative to the given point (beginning, center, or
 end), where heads (if any) should be placed, if the head should just be
@@ -1416,6 +1529,12 @@ relevant manual pages.
    Other vector heads are the circle (**c**), the terminal line (**t**), the
    arrow fin (**i**) and the plain head (**A**) and tail (**I**); the last two
    are line-drawings only and cannot be filled.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_arrows_types.txt
 
 .. _Char-esc-seq:
 
@@ -1546,6 +1665,8 @@ the different features in more detail we will first review the "reference point/
 system used by GMT to specify such locations in relation to the underlying map, and then discuss
 the background panel attribute settings.
 
+.. _Reference_Points:
+
 Reference and anchor point specification
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1562,6 +1683,12 @@ Reference and anchor point specification
    anchor point (red square).
    The feature is then placed such that its adjusted anchor point matches the reference point.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_anchor.txt
+
 Placing a feature on the map means selecting a *reference* point somewhere on the map, an
 *anchor* point somewhere on the feature, and then positioning the feature so that the two points overlap.
 It may be helpful to consider the analog of a boat dropping an anchor: The boat navigates to the
@@ -1571,10 +1698,14 @@ There are four different ways to specify the reference point on a map, allowing 
 to select any location inside or outside the map.  The reference point syntax is [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*;
 the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
 
+.. _Reference_Points_g:
+
 #. [**g**] Specify *refpoint* using *data* coordinates, e.g., the longitude and latitude of the reference point.
    This mechanism is useful when you want to tie the location of the feature to an actual point
    best described by data coordinates.  An example of such a reference point might
    be **g**\ 135W/20N.
+
+.. _Reference_Points_j:
 
 #. [**j**] Specify *refpoint* using one of the nine *justification codes*, equivalent to the justification
    codes for placing text strings in :doc:`/text`.  This mechanism is illustrated in the figure above and
@@ -1588,10 +1719,14 @@ the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
    justification code. Thus, when using **JTL**\, the anchor point on the map feature will default to **BR**.
    This is practical for features that are drawn **outside** of the basemap (like color bars often are).
 
+.. _Reference_Points_x:
+
 #. [**x**] Specify *refpoint* using *plot* coordinates, i.e., the distances in inches, centimeters, or
    points from the lower left plot origin.  This mechanism is preferred when you wish to lay out
    map features using familiar measurements of distance from origins. An example of such a reference
    point might be **x**\ 2.75i/2c.
+
+.. _Reference_Points_n:
 
 #. [**n**] Specify *refpoint* using *normalized* coordinates, i.e., fractional coordinates between 0
    and 1 in both the *x* and *y* directions.  This mechanism avoids units and is useful if you want to always
@@ -1599,6 +1734,8 @@ the five codes **g**\|\ **j**\|\ **J**\|\ **n**\|\ **x** refer to the five ways:
    An example of such a reference point might be **n**\ 0.2/0.1.
 
 If no code is specified we default to **x**.
+
+.. _Anchor_Point_j:
 
 With the reference point taken care of, it is time to select the anchor point.
 While the reference point selection gives unlimited flexibility to pick
@@ -1610,6 +1747,8 @@ used to set it), or to the mirror opposite of the reference point (if **J**\ *co
 specifications of the reference point, the anchor point takes on the default value of **MC** (for map rose and
 map scale) or **BL** (all other map features). Adding **+j**\ *anchor* overrules those defaults.
 For instance, **+jTR**\  would select the top right point on the map feature as the anchor.
+
+.. _Anchor_Point_o:
 
 It is likely that you will wish to offset the anchor point away from
 your selection by some arbitrary amount, particularly if the reference point is specified with **j**\|\ **J**\ *code*.
@@ -1627,6 +1766,7 @@ Similarly, **+jBR** will align the bottom right corner of the map feature, and *
 and 1 cm up. When using middle (**M**) or center (**C**) justifications, to offset works the same way as bottom (**B**) or left (**L**),
 respectively, i.e., moving the map feature up or to the right.
 
+.. _Background-panel:
 
 The background panel
 ~~~~~~~~~~~~~~~~~~~~
@@ -1677,6 +1817,14 @@ the attributes that are under your control:
    lower right was set with **-F+p**\ 1p\ **+i+s+g**\ white\ **+c**\ 0.1i (we added a light
    dashed box to indicate the effect of the clearance setting).
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_panel.txt
+
+.. _Placing-map-scales:
+
 Placing map scales
 ~~~~~~~~~~~~~~~~~~
 
@@ -1724,6 +1872,12 @@ Here is a list of the attributes that is under your control:
    The left-most scale was placed with **-Lj**\ *ML*\ **+c**\ 53\ **+w**\ 1000k\ **+f+l**\ "Scale at 53\\232N"
    while the scale on the right was placed with **-Lj**\ *BR*\ **+c**\ 53\ **+w**\ 1000k\ **+l+f**.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_mapscale.txt
+
 Note that for the purpose of anchor justification (**+j**) the footprint of the map scale is
 considered the rectangle that contains the scale and all selected labels and annotations, i.e.,
 the map scale's *bounding box*.
@@ -1768,6 +1922,12 @@ The next two modifiers are optional:
    and a cross indicating the cardinal directions, specified by **-Tdg**\ 0/0\ **+w**\ 1i. (middle) Fancy rose
    obtained by adding **+f** and **+l**\ ,,,N to get the north label.  (right) Fancy directional rose
    at level 3 with labels by adding **+f**\ 3\ **+l**.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_dir_rose.txt
 
 .. _Placing-mag-map-roses:
 
@@ -1826,6 +1986,12 @@ The remaining modifiers are optional:
    was specified by **-Tmg**\ -2/0.5\ **+w**\ 2.5i\ **+d**\ -14.5\ **+t**\ 45/10/5\ **+i**\ 0.25p,blue\ **+p**\ 0.25p,red\ **+l+j**\ CM.
    See :doc:`/gmt.conf` for more details on the default parameters.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_mag_rose.txt
+
 Placing color scale bars
 ~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1864,6 +2030,12 @@ supply suitable required and optional modifiers:
    colors, and used the frame-annotation machinery to add labels.  The bar was placed with
    **-D**\ *JBC*\ **+o**\ 0/0.35i\ **+w**\ 4.5i/0.1i\ **+h**.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_colorbar.txt
+
 Placing map legends
 ~~~~~~~~~~~~~~~~~~~
 
@@ -1894,6 +2066,12 @@ first, then supply suitable required and optional modifiers:
    here, :doc:`/legend` reads macro commands that specifies each item of the legend, including colors,
    widths of columns, the number of columns, and presents a broad selection of items.  Here, we
    simply used **-Dx**\ 0/0\ **+w**\ 14c\ **+j**\ *BL*.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_legend.txt
 
 Placing raster and EPS images on maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1929,6 +2107,12 @@ In addition, we require one (of two) modifiers to determine the image size.
    The School of Ocean and Earth Science and Technology at the University of Hawaii at Manoa
    hosts the gmt server and its EPS logo is shown via **-Dj**\ *MR*\ **+o**\ 0.1i\ **+w**\ 2i.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_images.txt
+
 Placing a GMT logo on maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -1946,6 +2130,12 @@ In addition, we require one modifier to set the logo's size.
 
    Placement of the GMT logo. The logo itself only has a size modifier but the :doc:`/gmtlogo`
    module allows additional attributes such as a background map panel.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_coverlogo.txt
 
 Placing map insets
 ~~~~~~~~~~~~~~~~~~
@@ -1987,6 +2177,12 @@ instead (similar to how the **-R** option works), by adding **+r**\ .  Some opti
    right area with **-Dj**\ TR\ **+w**\ 3.8c\ **+o**\ 0.4c/0.25c.
    See Example :ref:`example_44` for more details.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_inset.txt
+
 Placing a vertical scale on maps
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -2014,6 +2210,11 @@ In addition, we offer a few modifier to set the scale bar's remaining attributes
    Placement of a vertical scale bar. As for other embellishments the :doc:`/wiggle`
    module allows additional attributes such as a background map panel.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_vertscale.txt
 
 .. _grid-file-format:
 
@@ -2044,7 +2245,7 @@ read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
 `ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_, `Panoply
 <http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
-<http://www.epic.noaa.gov/java/ncBrowse/>`_ ; others can be found on the
+<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
 to read netcdf 4 files (if data compression has been applied).

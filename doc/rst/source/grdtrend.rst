@@ -58,8 +58,12 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-D:
+
 **-D**\ *diff.nc*
     Write the difference (input data - trend) to the file *diff.nc*.
+
+.. _-R:
 
 .. |Add_-R| replace:: Using the **-R** option
     will select a subsection of the input grid. If this subsection

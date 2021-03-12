@@ -13,7 +13,7 @@ Quick links
    :columns: 3
 
    - :doc:`std-opts`
-   - :doc:`proj-codes`
+   - :ref:`Projections Specifications <proj-codes>`
    - :doc:`Default Settings (gmt.conf) <gmt.conf>`
    - :doc:`Colors <gmtcolors>`
    - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
@@ -31,52 +31,61 @@ Quick links
    :hidden:
 
    std-opts
-   proj-codes
    gmt.conf
    gmtcolors
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Getting started
+.. panels::
 
-   gallery
-   animations
-   tutorial
+    .. toctree::
+        :maxdepth: 1
+        :caption: Getting started
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Reference documentation
+        gallery
+        animations
+        tutorial
 
-   modules
-   cookbook
-   datasets
+    ---
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Resources
+    .. toctree::
+        :maxdepth: 1
+        :caption: Reference documentation
 
-   users-contrib-scripts
-   users-contrib-symbols
-   changes
-   deprecated-defaults
-   switching
-   migrating
+        modules
+        cookbook
+        datasets
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Classic Mode
+    ---
 
-   std-opts-classic
-   modules-classic
+    .. toctree::
+        :maxdepth: 1
+        :caption: Resources
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Developer Resources
+        users-contrib-scripts
+        users-contrib-symbols
+        changes
+        deprecated-defaults
+        switching
+        migrating
 
-   Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
-   Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
-   reStructuredText Cheatsheet <rst-cheatsheet>
-   Debugging GMT <debug>
-   GMT C API <api>
-   PostScriptLight C API <postscriptlight>
-   devdocs
+    ---
+
+    .. toctree::
+        :maxdepth: 1
+        :caption: Classic Mode
+
+        std-opts-classic
+        modules-classic
+
+    ---
+
+    .. toctree::
+        :maxdepth: 1
+        :caption: Developer Resources
+
+        Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
+        Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+        reStructuredText Cheatsheet <rst-cheatsheet>
+        Debugging GMT <debug>
+        GMT C API <api>
+        PostScriptLight C API <postscriptlight>
+        devdocs

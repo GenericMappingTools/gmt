@@ -76,49 +76,54 @@ importance (some are used a lot more than others).
 Data domain or map region: The **-R** option
 --------------------------------------------
 
-The **-R** option defines the map region or data domain of interest. It
-may be specified in one of five ways, two of which are shown in Figure
-:ref:`Map region <gmt_region>`:
+The **-R** option defines the map region or data domain of interest. It may be specified in one of seven ways. Options 1
+and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region <gmt_region>`:
 
-#. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*. This is the standard way to
-   specify Cartesian data domains and geographical regions when using
-   map projections where meridians and parallels are rectilinear.
+1. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+u**\ *unit*]. This is the standard way to specify Cartesian data domains and
+   geographic regions when using map projections where meridians and parallels are rectilinear. Optionally, append
+   **+u**\ *unit* to specify a region in projected units (e.g., UTM meters) where *xmin*/*xmax*/*ymin*/*ymax* are
+   Cartesian projected coordinates compatible with the chosen projection and *unit* is an allowable
+   :ref:`distance unit <dist-units>`.
 
-#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is
-   used with map projections that are oblique, making meridians and
-   parallels poor choices for map boundaries. Here, we instead specify
-   the lower left corner and upper right corner geographic coordinates,
-   followed by the modifier **+r**. This form guarantees a rectangular map
+#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is useful for map projections that are oblique,
+   making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
+   upper right corner geographic coordinates, followed by the modifier **+r**. This form guarantees a rectangular map
    even though lines of equal longitude and latitude are not straight lines.
+#. **-R**\ **g** or **-R**\ **d**. These forms can be used to quickly specify the global domain (0/360 for **-Rg** and
+   -180/+180 for **-Rd** in longitude, with -90/+90 in latitude).
 
-#. **-R**\ *gridfile*. This will copy the domain settings found for the
-   grid in specified file. Note that depending on the nature of the
-   calling program, this mechanism will also set grid spacing and
-   possibly the grid registration (see
-   Section `Grid registration: The -r option`_).
+#. **-R**\ *gridfile*. This will copy the domain settings found for the grid in specified file. Note that depending on
+   the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
+   Section `Grid registration: The -r option`_\ ).
 
-#. **-R**\ *code1,code2,...*\ [**+e**\|\ **r**\|\ **R**\ [*incs*]]. This indirectly supplies
-   the region by consulting the DCW (Digital Chart of the World) database and derives
-   the bounding regions for one or more countries given by the codes.
-   Simply append one or more comma-separated countries using the two-character
-   ISO 3166-1 alpha-2 convention (e.g., https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-   To select a state within a country (if available), append .state, e.g, US.TX for Texas.
-   To specify a whole continent, prepend = to any of the continent codes AF (Africa),
-   AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA
-   (South America).  Append **+r** to modify exact bounding box coordinates obtained from
-   the polygon(s): Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
-   final region boundaries to be multiples of these steps [default is no adjustment].
-   Alternatively, use **+R** to extend the region outward by adding these increments
-   instead, or **+e** which is like **+r** but it ensures that the bounding box extends
-   by at least 0.25 times the increment [no extension]. As an example, **-R**\ *FR*\ **+r**\ 1 will select
-   the national bounding box of France rounded to nearest integer degree.
+#. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]]. This indirectly supplies the region by consulting
+   the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
+   the codes. Simply append one or more comma-separated countries using the two-character
+   `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)>`_.
+   To select a state within a country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent,
+   prepend **=** to any of the continent codes **AF** (Africa), **AN** (Antarctica), **AS** (Asia), **EU** (Europe),
+   **OC** (Oceania), **NA** (North America), or **SA** (South America). The following modifiers can be appended:
 
-#. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
-   grids.  Here, *code* is a 2-character combination of **L**\ , **C**\ , **R** (for left, center,
-   or right) and **T**\ , **M**\ , **B** for top, middle, or bottom. e.g., **BL** for lower left.  This
-   indicates which point on a rectangular grid region the *x0*/*y0* coordinates
-   refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
-   via **-I** to create the corresponding region.
+   - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc* [default is no adjustment]. For example, **-R**\ *FR*\ **+r**\ 1 will select the
+     national bounding box of France rounded to nearest integer degree.
+   - **+R** to extend the region outward by adding the amounts specified by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc* [default is no extension].
+   - **+e** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box extends by at least 0.25 times the increment
+     [default is no adjustment].
+
+#. **-R**\ *justify*\ *x0*/*y0*/*nx*/*ny*, where *justify* is a 2-character combination of **L**\|\ **C**\|\ **R** (for
+   left, center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom) (e.g., **BL** for lower left). The
+   two character code *justify* indicates which point on a rectangular grid region the *x0*/*y0* coordinates refer to
+   and the grid dimensions *nx* and *ny* are used with grid spacings given via **-I** to create the corresponding
+   region. This method can be used when creating grids. For example, **-RCM**\ *25*/*25*/*50*/*50* specifies a
+   *50*\ x\ *50* grid centered on *25*\ ,\ *25*.
+
+#. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*/*zmin*/*zmax*. This method can be used for perspective views with the **-Jz**
+   and the :ref:`-p <option_-p>` option, where the z-range (*zmin*/*zmax*) is appended to the first method to indicate
+   the third dimension. This is not used for :ref:`-p <option_-p>` without **-Jz**, in which case a perspective view of
+   the place is plotted with no third dimension.
 
 .. _gmt_region:
 
@@ -126,102 +131,86 @@ may be specified in one of five ways, two of which are shown in Figure
    :width: 500 px
    :align: center
 
-   The plot region can be specified in two different ways. (a) Extreme values
-   for each dimension, or (b) coordinates of lower left and upper right corners.
+   The plot region can be specified in two different ways. (a) Extreme values for each dimension, or (b) coordinates of
+   lower left and upper right corners.
 
-For rectilinear projections the first two forms give identical results.
-Depending on the selected map projection (or the kind of expected input
-data), the boundary coordinates may take on several different formats:
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-R.txt
+
+For rectilinear projections the first two forms give identical results. Depending on the selected map projection (or
+the kind of expected input data), the boundary coordinates may take on several different formats:
 
 Geographic coordinates:
-    These are longitudes and latitudes and may be given in decimal
-    degrees (e.g., -123.45417) or in the
-    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**]
-    format (e.g., 123:27:15W). Note that **-Rg** and **-Rd** are
-    shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and
-    **-R**\ *-180*/*180*/*-90*/*90*, respectively.
+    These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417) or in the
+    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**] format (e.g., 123:27:15W). **-Rg** and
+    **-Rd** are shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and **-R**\ *-180*/*180*/*-90*/*90*
+    respectively.
 
-    When used in conjunction with the Cartesian Linear Transformation
-    (**-Jx** or **-JX**) —which can be used to map floating point data,
-    geographical coordinates, as well as time coordinates— it is prudent
-    to indicate that you are using geographical coordinates in one of
-    the following ways:
+    When used in conjunction with the Cartesian Linear Transformation (**-Jx** or **-JX**) — which can be used to map
+    floating point data, geographical coordinates, as well as time coordinates — it is prudent to indicate that you are
+    using geographical coordinates in one of the following ways:
 
     -  Use **-Rg** or **-Rd** to indicate the global domain.
 
-    -  Use **-Rg**\ *xmin*/*xmax*/*ymin*/*ymax* to indicate a limited
-       geographic domain.
+    -  Use **-Rg**\ *xmin*/*xmax*/*ymin*/*ymax* to indicate a limited geographic domain.
 
-    -  Add **W**, **E**, **S**, or **N** to the coordinate limits or add
-       the generic **D** or **G**. Example:
-       **-R**\ *0*/*360G*/*-90*/*90N*.
+    -  Add **W**, **E**, **S**, or **N** to the coordinate limits (e.g., **-R**\ *15W*/*30E*/*10S*/*15N*).
 
-    Alternatively, you may indicate geographical coordinates by
-    supplying **-fg**; see Section `Data type selection: The -f option`_.
+    Alternatively, you may indicate geographical coordinates by supplying **-fg**; see Section
+    `Data type selection: The -f option`_.
 
 Projected coordinates:
-    These are Cartesian projected coordinates compatible with the chosen
-    projection and are given in a length *unit* set via the **+u** modifier, (e.g.,
-    -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
-    on the projection center (0, 0). These coordinates are internally
-    converted to the corresponding geographic (longitude, latitude)
-    coordinates for the lower left and upper right corners. This form is
-    convenient when you want to specify a region directly in the
-    projected units (e.g., UTM meters). For allowable units, see
-    Table :ref:`distunits <tbl-distunits>`.
+    These are Cartesian projected coordinates compatible with the chosen projection and are given in a length *unit*
+    set via the **+u** modifier, (e.g., -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
+    on the projection center (0, 0). These coordinates are internally converted to the corresponding geographic
+    (longitude, latitude) coordinates for the lower left and upper right corners. This form is convenient when you want
+    to specify a region directly in the projected units (e.g., UTM meters). For allowable units, see Table
+    :ref:`Distance units <tbl-distunits>`. **Note**: For the UTM, TM and Stereographic projections we will guess the
+    units in your grid to be meter if the domain exceeds the range of geographical longitude and latitude.
 
 Calendar time coordinates:
-    These are absolute time coordinates referring to a Gregorian or ISO
-    calendar. The general format is [*date*]\ **T**\ [*clock*],
-    where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
-    day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
-    Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. **Note**: This format requirement
-    only applies to command-line arguments and not time coordinates given via
-    data files.  If no *date* is given
-    we assume the current day. The **T** flag is required if a *clock* is given.
+    These are absolute time coordinates referring to a Gregorian or ISO calendar. The general format is
+    [*date*]\ **T**\ [*clock*], where *date* must be in the [-]\ *yyyy*\ [*-mm*\ [*-dd*]] (year, month, day-of-month) or
+    *yyyy*\ [*-jjj*] (year and day-of-year) for Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
+    week, and day-of-week) for the ISO calendar. **Note**: This format requirement only applies to command-line
+    arguments and not time coordinates given via data files.  If no *date* is given we assume the current day. The
+    **T** flag is required if a *clock* is given.
 
-    The optional *clock* string is a 24-hour clock in
-    *hh*\ [*:mm*\ [*:ss*\ [*.xxx*]]] format. If no *clock* is given it
-    implies 00:00:00, i.e., the start of the specified day. Note that
-    not all of the specified entities need be present in the data. All
-    calendar date-clock strings are internally represented as double
-    precision seconds since proleptic Gregorian date Monday January 1
-    00:00:00 0001. Proleptic means we assume that the modern calendar
-    can be extrapolated forward and backward; a year zero is used, and
-    Gregory's reforms [11]_ are extrapolated backward. Note that this is
-    not historical.
+    The optional *clock* string is a 24-hour clock in *hh*\ [*:mm*\ [*:ss*\ [*.xxx*]]] format. If no *clock* is given it
+    implies 00:00:00, i.e., the start of the specified day. Note that not all of the specified entities need be present
+    in the data. All calendar date-clock strings are internally represented as double precision seconds since proleptic
+    Gregorian date Monday January 1 00:00:00 0001. Proleptic means we assume that the modern calendar can be
+    extrapolated forward and backward; a year zero is used, and Gregory's reforms [11]_ are extrapolated backward. Note
+    that this is not historical. The use of delimiters and their type and positions for *date* and *clock* must be
+    exactly as indicated; however, these are customizable using :ref:`FORMAT parameters <FORMAT Parameters>`
 
 Relative time coordinates:
-    These are coordinates which count seconds, hours, days or years
-    relative to a given epoch. A combination of the parameters
-    :term:`TIME_EPOCH` and :term:`TIME_UNIT` define the epoch and time unit.
-    The parameter :term:`TIME_SYSTEM` provides a few shorthands for common
-    combinations of epoch and unit, like **j2000** for days since noon
-    of 1 Jan 2000. The default relative time coordinate is that of UNIX
-    computers: seconds since 1 Jan 1970. Denote relative time
-    coordinates by appending the optional lower case **t** after the
-    value. When it is otherwise apparent that the coordinate is relative
-    time (for example by using the **-f** switch), the **t** can be omitted.
+    These are coordinates which count seconds, hours, days or years relative to a given epoch. A combination of the
+    parameters :term:`TIME_EPOCH` and :term:`TIME_UNIT` define the epoch and time unit. The parameter
+    :term:`TIME_SYSTEM` provides a few shorthands for common combinations of epoch and unit, like **j2000** for days
+    since noon of 1 Jan 2000. The default relative time coordinate is that of UNIX computers: seconds since 1 Jan 1970.
+    Denote relative time coordinates by appending the optional lower case **t** after the value. When it is otherwise
+    apparent that the coordinate is relative time (for example by using the **-f** switch), the **t** can be omitted.
 
 Radians:
-    For angular regions (and increments) specified in radians you may use a set of
-    forms indicating multiples or fractions of :math:`\pi`.  Valid forms are
-    [±][*s*]pi[*f*], where *s* and *f* are any integer or floating point numbers,
-    e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
-    of these forms we alert the labeling machinery to look for certain combinations of pi,
-    limited to *n*\ pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4 pi.  When an
-    annotated value is within roundoff-error of these combinations we typeset the label
-    using the Greek letter for pi and required multiples or fractions.
+    For angular regions (and increments) specified in radians you may use a set of forms indicating multiples or
+    fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating
+    point numbers, e.g., -2\ **pi**\ /2\ **pi**\ 3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
+    of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\
+    **pi**\ , 3/2 (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
+    (1\ **pi**\ 3), and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value
+    is within roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required
+    multiples or fractions.
 
 Other coordinates:
-    These are simply any coordinates that are not related to geographic
-    or calendar time or relative time and are expected to be simple
-    floating point values such as
+    These are simply any coordinates that are not related to geographic or calendar time or relative time and are
+    expected to be simple floating point values such as
     [±]\ *xxx.xxx*\ [**E**\|\ **e**\|\ **D**\|\ **d**\ [±]\ *xx*],
-    i.e., regular or exponential notations, with the enhancement to understand
-    FORTRAN double precision output which may use **D** instead of **E** for
-    exponents. These values are simply converted as they are to internal
+    i.e., regular or exponential notations, with the enhancement to understand FORTRAN double precision output which
+    may use **D** instead of **E** for exponents. These values are simply converted as they are to internal
     representation. [12]_
 
 .. _option_-J:
@@ -229,42 +218,30 @@ Other coordinates:
 Coordinate transformations and map projections: The **-J** option
 -----------------------------------------------------------------
 
-This option selects the coordinate transformation or map projection. The
-general format is
+This option selects the coordinate transformation or map projection. The general format is
 
--  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta`
-   is a *lower-case* letter of the alphabet that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited
-   projection parameter, and *scale* is map scale given in distance
-   units per degree or as 1:xxxxx.
+-  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta` is a *lower-case* letter of the alphabet that
+   selects a particular map projection, the *parameters* is zero or more slash-delimited projection parameter, and
+   *scale* is map scale given in :ref:`plot-units <plt-units>` /degree or as 1:xxxxx.
 
--  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta`
-   is an *upper-case* letter of the alphabet that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited
-   projection parameter, and *width* is map width (map height is
-   automatically computed from the implied map scale and region).
+-  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta` is an *upper-case* letter of the alphabet that
+   selects a particular map projection, the *parameters* is zero or more slash-delimited projection parameter, and
+   *width* is map width in :ref:`plot-units <plt-units>` (map height is automatically computed from the implied map scale
+   and region).
 
-Since GMT version 4.3.0, there is an alternative way to specify the
-projections: use the same abbreviation as in the mapping package
-`PROJ <https://proj.org/>`_. The options thus either look like:
+Since GMT version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the
+mapping package `PROJ <https://proj.org/>`_. The options thus either look like:
 
--  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a
-   *lower-case* abbreviation that selects a particular map projection,
-   the *parameters* is zero or more slash-delimited projection
-   parameter, and *scale* is map scale given in distance units per
-   degree or as 1:xxxxx.
+-  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a *lower-case* abbreviation that selects a particular
+   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *scale* is map scale given
+   in distance units per degree or as 1:xxxxx.
 
--  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an
-   *capitalized* abbreviation that selects a particular map projection,
-   the *parameters* is zero or more slash-delimited projection
-   parameter, and *width* is map width (map height is automatically
-   computed from the implied map scale and region).
+-  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an *capitalized* abbreviation that selects a particular
+   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *width* is map width (map
+   height is automatically computed from the implied map scale and region).
 
-The projections available in GMT are presented in Figure
-:ref:`gmt_projections`. For details on all GMT projections and the required
-parameters, see the :doc:`/basemap` man page. We will also show examples of
-every projection in the next Chapters, and a quick summary of projection
-syntax is listed in :doc:`/proj-codes`.
+The over 30 map projections and coordinate transformations available in GMT are represented in the Figure
+:ref:`GMT Projections <gmt_projections>`.
 
 .. _gmt_projections:
 
@@ -273,6 +250,23 @@ syntax is listed in :doc:`/proj-codes`.
    :align: center
 
    The over-30 map projections and coordinate transformations available in GMT
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-J.txt
+
+.. _proj-codes:
+
+Projections specifications
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+GMT offers 31 map projections specified using the **-J** option. There are two conventions you may use: (a) GMT-style
+syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax. The codes for the GMT-style and the PROJ-style are tabulated
+below along with the associated *parameters* and links to the cookbook sections that describe the projection syntax and
+usage.
+
+.. include:: ../proj-codes.rst_
 
 .. _option_-B:
 
@@ -359,13 +353,12 @@ but you may also split this into two separate invocations for clarity, i.e.,
     default setting :term:`FORMAT_GEO_MAP`). However, for other plots you can add
     specific units by adding **+u**\ *unit*.  If any of these text strings contain
     spaces or special characters you will need to enclose them in quotes.
-    Cartesian x-axes also allow for the optional **+a**\ *angle*, which
+    Cartesian axes also allow for the optional **+a**\ *angle*, which
     will plot slanted annotations; *angle* is measured with respect to the horizontal
     and must be in the -90 <= *angle* <= 90 range only.  Also, **+an** is a shorthand
-    for normal (i.e., **+a**\ 90) and **+ap** for parallel (i.e., **+a**\ 0) annotations
-    [Default].  For the y-axis, arbitrary angles are not allowed but **+an** and **+ap**
-    specify annotations normal [Default] and parallel to the axis, respectively.  Note that
-    these defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
+    for normal (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e.,
+    **+a**\ 0) annotations [Default for x-axis]. Note that these defaults can be changed
+    via :term:`MAP_ANNOT_ORTHO`.
 
 The *intervals* specification is a concatenated string made up of substrings of the form
 
@@ -486,6 +479,12 @@ is shown in Figure :ref:`Geographic map border <basemap_border>`.
    frame, and grid intervals.  Formatting of the annotation is controlled by
    the parameter :term:`FORMAT_GEO_MAP` in your :doc:`/gmt.conf`.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_geo_1.txt
+
 The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
 be used to separate degree annotations from minutes- and
@@ -501,6 +500,12 @@ attributes for grid lines and grid crosses, see Figure :ref:`Complex basemap
    :align: center
 
    Geographic map border with both primary (P) and secondary (S) components.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_geo_2.txt
 
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
@@ -527,6 +532,12 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
    annotations, shorter ticks indicate frame interval. The axis label is
    optional. For this example we used ``-R0/12/0/0.95 -JX7.5c/0.75c -Ba4f2g1+lFrequency+u" %" -BS``
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_linear.txt
+
 There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
 One solution is to request slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`)
@@ -543,6 +554,11 @@ via the **+a**\ *angle* modifier.
    For this example we used ``-R2000/2020/35/45 -JX12c -Bxa2f+a-30 -BS``.
    For the y-axis only the modifier **+ap** for parallel is allowed.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_slanted.txt
 
 Cartesian log\ :sub:`10` axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -579,6 +595,12 @@ specific to log axes (see Figure :ref:`Logarithmic projection axis
    (bottom) We annotate every power of 10 using :math:`\log_{10}` of the actual
    values as exponents, with -Ba1f2g3p.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_log.txt
+
 Cartesian exponential axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -603,6 +625,12 @@ labeled 1, 4, 9, ... will appear.
    in -R0/100/0/0.9 -JX3ip0.5/0.25i -Ba20f10g5.
    (bottom) Here, intervals refer to projected values, although the annotation
    uses the corresponding unprojected values, as in -Ba3f2g1p.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_pow.txt
 
 .. _cartesian_time_axes:
 
@@ -791,6 +819,12 @@ which will plot the current command string (Figure :ref:`Time stamp <fig_-U>`).
 
    The -U option makes it easy to date a plot.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-U.txt
+
 .. _option_-V:
 
 Verbose feedback: The **-V** option
@@ -838,6 +872,12 @@ To move the origin half the width to the right, use **-X**\ *w*\ /2.
    :align: center
 
    Plot origin can be translated freely with -X -Y.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-XY.txt
 
 .. _option_-a:
 
@@ -1316,6 +1356,11 @@ spacing by
    Gridline- and pixel-registration of data nodes.  The red shade indicates the
    areas represented by the value at the node (solid circle).
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_registration.txt
 
 .. math::
 
@@ -1355,6 +1400,12 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
    function of wavenumber :math:`k_j` [Marks and Smith, 2007 [15]_.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_grid2pix.txt
 
 .. _option_-s:
 

@@ -4,8 +4,11 @@ Description
 -----------
 
 Reads data values from *files* [or standard input] and
-will plot velocity arrows on a map.
-Most options are the same as for :doc:`plot </plot>`, except **-S**.
+will plot the selected geodesy symbol on a map.
+You may choose from velocity vectors and their uncertainties,
+rotational wedges and their uncertainties, anisotropy bars,
+or strain crosses.  Symbol fills or their outlines may be colored
+based on constant parameters or via color lookup tables.
 
 Required Arguments
 ------------------
@@ -30,16 +33,16 @@ Required Arguments
     cases, the scales are in data units per length unit and sizes are in length units (default length
     unit is controlled by :term:`PROJ_LENGTH_UNIT` unless **c**, **i**, or **p** is appended).
 
-    **-Se**\ *velscale/confidence*\ [**+f**\ *font*]
+    **-Se**\ [*velscale*/]\ *confidence*\ [**+f**\ *font*]
 
-        Velocity ellipses in (N,E) convention. *velscale* sets the scaling of the
-        velocity arrows. The *confidence* sets the 2-dimensional confidence
-        limit for the ellipse, e.g., 0.95 for 95% confidence ellipse. *font*
-        sets the font and size of the text [9p,Helvetica,black]. The ellipse will be filled with the
-        color or shade specified by the |-G| option [default transparent]. The
-        arrow and the circumference of the ellipse will be drawn with the pen
-        attributes specified by the |-W| option. Parameters are expected to be
-        in the following columns:
+        Velocity ellipses in (N,E) convention. The *velscale* sets the scaling of the velocity arrows.
+        If *velscale* is not given the we read it from the data file as an extra column.
+        The *confidence* sets the 2-dimensional confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+        Use **+f** to set the font and size of the text [9p,Helvetica,black]; give **+f**\ 0 to deactivate labeling.
+        The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
+        The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
+        and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
+        Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
             longitude, latitude of station (**-:** option interchanges order)
@@ -49,12 +52,13 @@ Required Arguments
             uncertainty of eastward, northward velocities (1-sigma) (**-:** option interchanges order)
             **7**:
             correlation between eastward and northward components
-            **8**:
+            **Trailing text**:
             name of station (optional).
 
-    **-Sn**\ *barscale*
+    **-Sn**\ [*barscale*]
 
-        Anisotropy bars. *barscale* sets the scaling of the bars.
+        Anisotropy bars. The *barscale* sets the scaling of the bars.
+        If *barscale* is not given the we read it from the data file as an extra column.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -62,16 +66,16 @@ Required Arguments
             **3**,\ **4**:
             eastward, northward components of anisotropy vector (**-:** option interchanges order)
 
-    **-Sr**\ *velscale/confidence*\ [**+f**\ *font*]
+    **-Sr**\ [*velscale*/]\ *confidence*\ [**+f**\ *font*]
 
-        Velocity ellipses in rotated convention. *velscale* sets the scaling of
-        the velocity arrows. The *confidence* sets the 2-dimensional
-        confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
-        *font* sets the font and size of the text [9p,Helvetica,black]. The ellipse will be
-        filled with the color or shade specified by the |-G| option [default
-        transparent]. The arrow and the circumference of the ellipse will be
-        drawn with the pen attributes specified by the |-W| option. Parameters
-        are expected to be in the following columns:
+        Velocity ellipses in rotated convention. The *velscale* sets the scaling of the velocity arrows.
+        If *velscale* is not given the we read it from the data file as an extra column.
+        The *confidence* sets the 2-dimensional confidence limit for the ellipse, e.g., 0.95 for 95% confidence ellipse.
+        Use **+f** to set the font and size of the text [9p,Helvetica,black]; give **+f**\ 0 to deactivate labeling.
+        The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
+        The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
+        and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
+        Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
             longitude, latitude, of station (**-:** option interchanges order)
@@ -81,16 +85,17 @@ Required Arguments
             semi-major, semi-minor axes
             **7**:
             counter-clockwise angle, in degrees, from horizontal axis to major axis of ellipse.
-            **8**:
+            **Trailing text**:
             name of station (optional)
 
-    **-Sw**\ *wedgescale/wedgemag*
+    **-Sw**\ [*wedgescale*/]\ *wedgemag*
 
-        Rotational wedges. *wedgescale* sets the size of the wedges. Values are
-        multiplied by *wedgemag* before plotting. For example, setting
+        Rotational wedges. The *wedgescale* sets the size of the wedges.
+        If *wedgescale* is not given the we read it from the data file as an extra column.
+        Rotation values are multiplied by *wedgemag* before plotting. For example, setting
         *wedgemag* to 1.e7 works well for rotations of the order of 100
-        nanoradians/yr. Use **-G** to set the fill color or shade for the wedge,
-        and **-E** to set the color or shade for the uncertainty. Parameters are
+        nanoradians/yr. Use |-G| to set the fill color or shade for the wedge,
+        and |-E| to set the color or shade for the uncertainty. Parameters are
         expected to be in the following columns:
 
             **1**,\ **2**:
@@ -100,10 +105,11 @@ Required Arguments
             **4**:
             rotation uncertainty in radians
 
-    **-Sx**\ *cross_scale*
+    **-Sx**\ [*cross_scale*]
 
-        gives Strain crosses. *cross_scale* sets the size of the cross. Parameters
-        are expected to be in the following columns:
+        gives Strain crosses. The *cross_scale* sets the size of the cross.
+        If *cross_scale* is not given the we read it from the data file as an extra column.
+        Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
             longitude, latitude, of station (**-:** option interchanges order)
@@ -128,6 +134,12 @@ Optional Arguments
 
 .. include:: ../../explain_-B.rst_
 
+.. _-C:
+
+**-C**\ *cpt*
+    Give a CPT and let symbol color normally set by |-G| be
+    determined from the magnitude.  See **-Z** for other selections.
+
 .. _-D:
 
 **-D**\ *Sigma\_scale*
@@ -138,19 +150,36 @@ Optional Arguments
 
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
     Sets the color or shade used for filling uncertainty wedges
-    (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). [If
-    **-E** is not specified, the uncertainty regions will be transparent.]
+    (**-Sw**) or velocity error ellipses (**-Se** or **-Sr**). If
+    **-E** is not specified, the uncertainty regions will be transparent.
+    **Note**: Using **-C** and **-Z+e** will update the uncertainty fill
+    color based on the selected measure in **-Z** [magnitude error].
 
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Select color or pattern for filling of symbols or polygons [Default is no fill].
+    Select color or pattern for filling of symbols [Default is no fill].
+    **Note**: Using **-C** (and optionally **-Z**) will update the symbol fill
+    color based on the selected measure in **-Z** [magnitude].
+
+.. _-I:
+
+**-I**\ *intens*
+    Use the supplied *intens* value (nominally in the -1 to +1 range) to
+    modulate the symbol fill color by simulating illumination [none].
+    If no intensity is provided we will instead read *intens* from an extra
+    data column after the required input columns determined by **-S**.
 
 .. _-L:
 
-**-L**
-    Draw lines. Ellipses and fault planes will have their outlines drawn
-    using current pen (see **-W**).
+**-L**\ [*pen*\ [**+c**\ [**f**\|\ **l**]]]
+    Draw lines. Ellipses and rotational wedges will have their outlines drawn
+    using current pen (see **-W**).  Alternatively, append a separate pen to
+    use for the error outlines.
+    If the modifier **+cl** is appended then the color of the pen are updated from the CPT (see
+    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    file is applied to error fill only [Default].  Use just **+c** to set both
+    pen and fill color.
 
 .. _-N:
 
@@ -169,13 +198,28 @@ Optional Arguments
 
 .. _-W:
 
-**-W**
+**-W**\ [*pen*][**+c**\ [**f**\|\ **l**]]
     Set pen attributes for velocity arrows, ellipse circumference and
     fault plane edges. [Defaults: width = default, color = black, style = solid].
+    If the modifier **+cl** is appended then the color of the pen are updated from the CPT (see
+    **-C**). If instead modifier **+cf** is appended then the color from the cpt
+    file is applied to symbol fill only [Default].  Use just **+c** to set both
+    pen and fill color.
 
 .. _-X:
 
 .. include:: ../../explain_-XY.rst_
+
+.. _-Z:
+
+**Z**\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**]
+    Select the quantity that will be used with the CPT given via **-C** to
+    set the fill color.  Choose from **m**\ agnitude (vector magnitude or
+    rotation magnitude), **e**\ ast-west velocity, **n**\ orth-south velocity,
+    or **u**\ ser-supplied data column (supplied after the required columns).
+    To instead use the corresponding error estimates (i.e., vector or rotation
+    uncertainty) to lookup the color and paint the error ellipse or wedge
+    instead, append **+e**.
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
@@ -192,8 +236,25 @@ Optional Arguments
 .. include:: ../../explain_perspective.rst_
 
 .. include:: ../../explain_-qi.rst_
-.. include:: ../../explain_-t.rst_
+.. include:: ../../explain_-tv_full.rst_
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 
 .. include:: ../../explain_vectors.rst_
+
+Data Column Order
+-----------------
+
+The **-S** option determines how many data columns are required to generate
+the selected symbol.  In addition, your use of options **-I** and **-t** will
+require extra columns, as will a **-S** option without the *scale* or a user-column
+selected via **-Zu** for color lookup purposes.  The order of the data record
+is fixed regardless of option order, even if not all items may be activated.
+We expect data columns to come in the following order::
+
+    lon lat symbol-columns [usercol] [scale] [intens] [transp [transp2]] [trailing-text]
+
+where *symbol-columns* represent the normally required data columns, and items
+given in brackets are optional and under the control of the stated options
+(the trailing text is always optional).  **Note**:  You can use **-i** to
+rearrange your data record to match the expected format.

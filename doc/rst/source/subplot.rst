@@ -40,8 +40,8 @@ Description
 The **begin** directive of subplot defines the layout of the entire multi-panel illustration.  Several
 options are available to specify the systematic layout, labeling, dimensions, and more for the subplots.
 
-Required Arguments
-------------------
+Required Arguments (begin mode)
+--------------------------------
 
 *nrows*\ **x**\ *ncols*
     Specifies the number of rows and columns of subplots.  Each row will have
@@ -81,8 +81,8 @@ Required Arguments
     subplots, add dividing lines between panels (**+w**\ *pen*), and even expand it via **+c**.  These are most
     useful if you supply **-B+n** to **subplot begin**, meaning no ticks or annotations will take place in the subplots.
 
-Optional Arguments
-------------------
+Optional Arguments (begin mode)
+-------------------------------
 
 .. _-A:
 
@@ -103,6 +103,8 @@ Optional Arguments
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
+
+.. _-B:
 
 .. include:: explain_-B.rst_
 
@@ -185,8 +187,8 @@ inside the subplot, then the scale of the map is automatically determined by the
 For Cartesian plots: If you want the scale to apply *equally* to both dimensions
 then you must specify **-Jx** [The default projection of **-JX** will fill the subplot by using unequal scales].
 
-Optional Arguments
-------------------
+Optional Arguments (set mode)
+-----------------------------
 
 *row,col*
     Sets the current subplot until further notice.  **Note**: First *row* or *col* is 0, not 1. If not given we go to the next subplot by order
@@ -235,8 +237,8 @@ outline. This allows subsequent commands, such as colorbar, to use **-DJ** to pl
 reference to the complete figure dimensions. We also reset
 the current plot location to where it was prior to the subplot.
 
-Optional Arguments
-------------------
+Optional Arguments (end mode)
+-----------------------------
 
 .. _subplot_end-V:
 
