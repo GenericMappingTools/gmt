@@ -802,14 +802,19 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 --------------------------------------
 
-The **-U** option draws the GMT system time stamp on the plot with the syntax
-(**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]). The following modifiers are supported:
+**Syntax**
 
-- **+c** to plot the current command string
-- **+j**\ *just* to specify the justification of the time stamp and where the stamp, where *just* is a two-character
+**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
+
+**Description**
+
+The **-U** option draws the GMT system time stamp on the plot. The following modifiers are supported:
+
+- **+c** to plot the current command string.
+- **+j**\ *just* to specify the justification of the time stamp, where *just* is a two-character
   :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**\ (eft), **C**\ (enter), or
-  **R**\ (ight)) and a vertical (**T**\ (op), **M**\ (iddle), or **B**\ (ottom)) code [default is **BL**]
-- *label* to append the text string given in *label* (which must be surrounded by double qoutes)
+  **R**\ (ight)) and a vertical (**T**\ (op), **M**\ (iddle), or **B**\ (ottom)) code [default is **BL**].
+- *label* to append the text string given in *label* (which must be surrounded by double qoutes).
 - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` for the time stamp by *dx* and optionally
   *dy* (if different than *dx*).
 
@@ -836,16 +841,26 @@ environment variable **TZ** (generally local time).
 Verbose feedback: The **-V** option
 -----------------------------------
 
-The **-V** option controls the verbosity mode, which determines which
-messages are sent to standard error [Default **-Vw** reports errors and warnings].
-Even more verbose levels are **-Vi** (or just **-V**; for informational messages)
-and **-Vd** (debug). If compiled with backward-compatibility
-you can select **-Vc**, which includes warnings about deprecated usage.  To study
-the run-time of time-intensive algorithms you can use **-Vt** (where available).
-Finally, **-Vq** can be used to run without any warnings or errors. This
-option can also be set by specifying the default :term:`GMT_VERBOSE`, as
-**quiet**, **error**, **warning**, **timing**, **compat**, **information**, or
-**debug**, in order of increased verbosity.
+**Syntax**
+
+**-V**\ [*level*]
+
+**Description**
+
+The **-V** option controls the verbosity mode, which determines which messages are sent to standard error. Choose among
+7 levels of verbosity; each level adds more messages:
+
+- **q** - Quiet, not even fatal error messages are produced.
+- **e** - Error messages only.
+- **w** - Warnings.
+- **t** - Timings (report runtimes for time-intensive algorithms).
+- **i** - Informational messages (same as **-V** only).
+- **c** - Compatibility warnings (if compiled with backward-compatibility).
+- **d** - Debugging messages.
+
+
+This option can also be set by specifying the default :term:`GMT_VERBOSE` as **quiet**, **error**, **warning**,
+**timing**, **compat**, **information**, or **debug**, in order of increased verbosity [default is **warning**].
 
 .. _option_-X:
 .. _option_-Y:
@@ -853,23 +868,27 @@ option can also be set by specifying the default :term:`GMT_VERBOSE`, as
 Plot positioning and layout: The **-X** **-Y** options
 ------------------------------------------------------
 
-The **-X** and **-Y** options shift plot origin relative to the current origin by
-(*xshift*,\ *yshift*); optionally append the length unit
-(**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`,
-:term:`MAP_ORIGIN_Y`) for new plots [14]_. Subsequent overlays will
-be co-registered with the previous plot unless the origin is shifted using
-these options.  You can prepend **a** to shift the origin
-back to the original position after the plot module completes, prepend **c** to
-center the plot on the center of the paper (optionally add a shift),
-prepend **f** to shift the origin relative to the fixed lower left
-corner of the page, or prepend **r** [Default] to move the origin
-relative to its current location.  When **-X**
-or **-Y** are used without any further arguments, the values from
-the last use of that option in a previous GMT command will be used.
-Note that **-X** and **-Y** can also access the previous plot bounding box dimensions
-*w* and *h* and construct offsets that involves them.  For instance, to move the origin
-up 2 cm beyond the height of the previous plot, use **-Y**\ *h*\ +2c.
-To move the origin half the width to the right, use **-X**\ *w*\ /2.
+**Syntax**
+
+- **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
+- **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*]
+
+**Description**
+
+The **-X** and **-Y** options shift the plot origin relative to the current origin by (*xshift*,\ *yshift*). Optionally,
+append the length unit (**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`, :term:`MAP_ORIGIN_Y`) for new
+plots\ [14]_. Subsequent overlays will be co-registered with the previous plot unless the origin is shifted using these
+options. The following modifiers are supported [default is **r**]:
+
+- Prepend **a** to shift the origin back to the original position after plotting.
+- Prepend **c** to center the plot on the center of the paper (optionally add a *shift*).
+- Prepend **f** to shift the origin relative to the fixed lower left.
+- Prepend **r** to move the origin relative to its current location.
+
+When **-X** or **-Y** are used without any further arguments, the values from the last use of that option in a previous
+GMT command will be used. Note that **-X** and **-Y** can also access the previous plot bounding box dimensions *w* and
+*h* and construct offsets that involves them.  For instance, to move the origin up 2 cm beyond the height of the
+previous plot, use **-Y**\ *h*\ +2c. To move the origin half the width to the right, use **-X**\ *w*\ /2.
 
 .. _XY_options:
 
