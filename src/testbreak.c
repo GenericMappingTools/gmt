@@ -52,10 +52,9 @@ void gmt_usage_line (unsigned int mode, unsigned int MLENGTH, char *in_line) {
 	/* Break the in_ine across multiple lines determined by the terminal line width MLENGTH */
 	struct GMT_WORD *W = gmt_split_words (in_line);
 	unsigned int width, k, current_width = 0;
+	char *brk = "\xe2\x80\xa6";
 #ifdef WIN32
-	char *brk = "\xe2\x80\xa6";
-#else
-	char *brk = "\xe2\x80\xa6";
+	SetConsoleOutputCP (CP_UTF8);
 #endif
 	if (mode) {	/* Start with 2-spaces in */
 		fprintf (stderr, "  ");	/* Starting 2-spaces */
