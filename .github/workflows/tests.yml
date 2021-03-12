@@ -9,6 +9,13 @@ on:
     branches:
       - master
       - 6.[0-9]+
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'doc/examples/**'
+      - 'doc/scripts/**'
+      - '.github/workflows/**'
+      - 'ci/**'
 
 defaults:
   run:
