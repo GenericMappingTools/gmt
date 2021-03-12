@@ -829,6 +829,18 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	if (Ctrl->In.n <= 1) {	/* Got a blend file (or stdin) */
+		if (Ctrl->In.n) {	/* Check if user mistakenly gave a single grid as input */
+			char test_file[PATH_MAX] = {""};
+			int ret_code;
+			struct GMT_GRID_HEADER *h_test = gmt_get_header (GMT);
+			strncpy (test_file, Ctrl->In.file[0], PATH_MAX);
+			if ((ret_code = gmt_grd_get_format (GMT, test_file, h_test, true)) == GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Only a single grid found; no blending can take place\n");
+				gmt_free_header (API->GMT, &h_test);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			gmt_free_header (API->GMT, &h_test);
+		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
