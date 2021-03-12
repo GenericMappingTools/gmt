@@ -12,6 +12,7 @@ on:
     paths:
       - 'src/**'
       - 'test/**'
+      - 'share/cpt/**'
       - 'doc/examples/**'
       - 'doc/scripts/**'
       - '.github/workflows/**'
