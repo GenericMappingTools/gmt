@@ -41,26 +41,26 @@ Required Arguments
 **-A**
   selects the cross-section.
 
-  **-Aa**\ *lon1/lat1/lon2/lat2/dip/p\_width/dmin/dmax*\ [**+f**]
+  **-Aa**\ *lon1*/*lat1*/*lon2*/*lat2*[**+d**\ *dip*][**+w++\ *p_width*][**+z**\ *dmin*/*dmax*][**+r**]
      *lon* and *lat* are the longitude and latitude of points 1 and 2
-     limiting the length of the cross-section. *dip* is the dip of the plane
-     on which the cross-section is made. *p\_width* is the width of the
+     limiting the length of the cross-section, *dip* is the dip of the plane
+     on which the cross-section is made [90], *p_width* is the width of the
      cross-section on each side of a vertical plane or above and under an
-     oblique plane. *dmin* and *dmax* are the distances min and max from
-     horizontal plane, along steepest descent direction. Add **+f** to get the
-     frame from the cross-section parameters.
+     oblique plane, and *dmin* and *dmax* are the distances min and max from
+     horizontal plane, along steepest descent direction. Add **+r** to get the
+     plott domain from the cross-section parameters.
 
-  **-Ab**\ *lon1/lat1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**+f**]
+  **-Ab**\ *lon1*/*lat1*/*strike*/*p_length*[**+d**\ *dip*][**+w++\ *p_width*][**+z**\ *dmin*/*dmax*][**+r**]
      *lon1* and *lat1* are the longitude and latitude of the beginning of the
-     cross-section. *strike* is the azimuth of the direction of the
-     cross-section. *p\_length* is the length along which the cross-section
+     cross-section, *strike* is the azimuth of the direction of the
+     cross-section, and *p_length* is the length along which the cross-section
      is made. The other parameters are the same as for **-Aa** option.
 
-  **-Ac**\ *x1/y1/x2/y2/dip/p\_width/dmin/dmax*\ [**+f**]
-     The same as **-Aa** option with *x* and *y* cartesian coordinates.
+  **-Ac**\ *x1*/*y1*/*x2*/*y2*[**+d**\ *dip*][**+w++\ *p_width*][**+z**\ *dmin*/*dmax*][**+r**]
+     The same as **-Aa** option with *x* and *y* given as Cartesian coordinates.
 
-  **-Ad**\ *x1/y1/strike/p\_length/dip/p\_width/dmin/dmax*\ [**+f**]
-     The same as **-Ab** option with *x* and *y* cartesian coordinates.
+  **-Ad**\ *x1*/*y1*/*strike*/*p_length*[**+d**\ *dip*][**+w++\ *p_width*][**+z**\ *dmin*/*dmax*][**+r**]
+     The same as **-Ab** option with *x* and *y* given as Cartesian coordinates.
 
 .. _-S:
 

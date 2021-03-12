@@ -54,6 +54,7 @@ struct PSCOUPE_CTRL {
 		int fuseau;
 		char proj_type;
 		double p_width, p_length, dmin, dmax;
+		double lon1, lat1, lon2, lat2;
 		double xlonref, ylatref;
 		struct GMT_PEN pen;
 		struct nodal_plane PREF;
@@ -444,11 +445,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify cross-section parameters. Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Aa<lon1/lat1/lon2/lat2/dip/p_width/dmin/dmax>[+f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1/lat1/strike/p_length/dip/p_width/dmin/dmax>[+f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1/y1/x2/y2/dip/p_width/dmin/dmax>[+f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1/y1/strike/p_length/dip/p_width/dmin/max>[+f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add +f to get the frame from the cross-section parameters.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Aa<lon1>/<lat1>/<lon2>/<lat2>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1>/<lat1>/<strike>/<p_length>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1>/<y1>/<x2>/<y2>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1>/<y1>/<strike>/<p_length>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For -Aa|b, <width>, <p_length>, <dmin> and <dmax> must be given in km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to determine the plot domain (-R) from the cross-section parameters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on depth-value in 3rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select format type and symbol size.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append the format code for your input file:\n");
@@ -511,6 +513,26 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL unsigned int pscoupe_parse_old_A (truct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, char *arg) {
+	int n;
+	char *p = NULL;
+	if ((p = strstr (arg, "+f"))) {	/* Get the frame from the cross-section parameters */
+		Ctrl->A.frame = true;
+		p[0] = '\0';	/* Chop off modifier */
+	}
+	else if (arg[strlen(arg)-1] == 'f')	/* Very deprecated GMT3-4 syntax */
+		Ctrl->A.frame = true;
+	if (Ctrl->A.proj_type == 'a' || Ctrl->A.proj_type == 'c') {
+		n = sscanf (&arg[1], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
+			&Ctrl->A.lon1, &Ctrl->A.lat1, &Ctrl->A.lon2, &Ctrl->A.lat2, &Ctrl->A.PREF.dip, &Ctrl->A.p_width, &Ctrl->A.dmin, &Ctrl->A.dmax);
+	}
+	else {
+		n = sscanf (&arg[1], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
+			&Ctrl->A.lon1, &Ctrl->A.lat1, &Ctrl->A.PREF.str, &Ctrl->A.p_length, &Ctrl->A.PREF.dip, &Ctrl->A.p_width, &Ctrl->A.dmin, &Ctrl->A.dmax);
+	}
+	return (n != 8) ? 1 : GMT_NOERROR;
+}
+
 static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to pscoupe and sets parameters in Ctrl.
 	 * Note Ctrl has already been initialized and non-zero default values set.
@@ -520,7 +542,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	unsigned int n_errors = 0;
-	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *p = NULL;
+	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
 	double lon1, lat1, lon2, lat2;
 
@@ -537,38 +559,76 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 			case 'A':	/* Cross-section definition */
 				Ctrl->A.active = true;
 				Ctrl->A.proj_type = opt->arg[0];
-				if ((p = strstr (opt->arg, "+f"))) {	/* Get the frame from the cross-section parameters */
-					Ctrl->A.frame = true;
-					p[0] = '\0';	/* Chop off modifier */
+				if (strstr (opt->arg, "+f") || gmt_count_char (GMT, opt->arg, '/') == 7)	/* Old deprecated syntax */
+					n_errors += pscoupe_parse_old_A (GMT, Ctrl, opt->arg);
+				else {	/* New, modifier-equipped syntax */
+					if ((p = gmt_first_modifier (GMT, opt->arg, "drwz"))) {	/* Process any modifiers */
+						if (gmt_get_modifier (p, 'd', txt))
+							Ctrl->A.PREF.dip = atof (txt_a);
+						if (gmt_get_modifier (p, 'r', txt))
+							Ctrl->A.frame = true;
+						if (gmt_get_modifier (p, 'w', txt))
+							Ctrl->A.p_width = atof (txt_a);
+						if (gmt_get_modifier (p, 'z', txt))
+							sscanf (txt_a, "%lf/%lf", &Ctrl->A.dmin, &Ctrl->A.dmax);
+						p[0] = '\0';	/* Chop off modifiers */
+					}
+					/* Process the first 4 args */
+					if (sscanf (&opt->arg[1], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A requires 4 arguments before modifiers, only %d found.\n", n);
+						n_errors++;
+					}
+					switch (Ctrl->A.proj_type) {
+						case 'a':
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &Ctrl->A.lon1), txt_a);
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &Ctrl->A.lon2), txt_c);
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_d, GMT_IS_LAT, &Ctrl->A.lat2), txt_d);
+							break;
+						case 'b':
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &Ctrl->A.lon1), txt_a);
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
+							Ctrl->A.PREF.str = atof (txt_c);
+							Ctrl->A.p_length = atof (txt_d);
+						case 'c':
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_a, GMT_IS_FLOAT, &Ctrl->A.lon1), txt_a);
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_b, GMT_IS_FLOAT, &Ctrl->A.lat1), txt_b);
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_c, GMT_IS_FLOAT, &Ctrl->A.lon2), txt_c);
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_d, GMT_IS_FLOAT, &Ctrl->A.lat2), txt_d);
+							break;
+						case 'd':
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &Ctrl->A.lon1), txt_a);
+							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
+							Ctrl->A.PREF.str = atof (txt_c);
+							Ctrl->A.p_length = atof (txt_d);
+						default:
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Unrecognized mode %c.\n", Ctrl->A.proj_type);
+							n_errors++;
+							break;
+					}
 				}
-				else if (opt->arg[strlen(opt->arg)-1] == 'f') Ctrl->A.frame = true;
 				if (Ctrl->A.proj_type == 'a' || Ctrl->A.proj_type == 'c') {
-					sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
-						&lon1, &lat1, &lon2, &lat2, &Ctrl->A.PREF.dip, &Ctrl->A.p_width, &Ctrl->A.dmin, &Ctrl->A.dmax);
-					pscoupe_distaz (lat1, lon1, lat2, lon2, &Ctrl->A.p_length, &Ctrl->A.PREF.str, Ctrl->A.proj_type == 'a' ?  COORD_DEG : COORD_KM);
+					pscoupe_distaz (Ctrl->A.lat1, Ctrl->A.lon1, Ctrl->A.lat2, Ctrl->A.lon2, &Ctrl->A.p_length, &Ctrl->A.PREF.str, Ctrl->A.proj_type == 'a' ?  COORD_DEG : COORD_KM);
 					sprintf (Ctrl->A.newfile, "A%c%.1f_%.1f_%.1f_%.1f_%.0f_%.0f_%.0f_%.0f",
-						Ctrl->A.proj_type, lon1, lat1, lon2, lat2, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
+						Ctrl->A.proj_type, Ctrl->A.lon1, Ctrl->A.lat1, Ctrl->A.lon2, Ctrl->A.lat2, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
 					sprintf (Ctrl->A.extfile, "A%c%.1f_%.1f_%.1f_%.1f_%.0f_%.0f_%.0f_%.0f_map",
-						Ctrl->A.proj_type, lon1, lat1, lon2, lat2, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
+						Ctrl->A.proj_type, Ctrl->A.lon1, Ctrl->A.lat1, Ctrl->A.lon2, Ctrl->A.lat2, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
 				}
 				else {
-					sscanf (&opt->arg[1], "%lf/%lf/%lf/%lf/%lf/%lf/%lf/%lf",
-						&lon1, &lat1, &Ctrl->A.PREF.str, &Ctrl->A.p_length, &Ctrl->A.PREF.dip, &Ctrl->A.p_width, &Ctrl->A.dmin, &Ctrl->A.dmax);
 					sprintf (Ctrl->A.newfile, "A%c%.1f_%.1f_%.0f_%.0f_%.0f_%.0f_%.0f_%.0f",
-						Ctrl->A.proj_type, lon1, lat1, Ctrl->A.PREF.str, Ctrl->A.p_length, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
+						Ctrl->A.proj_type, Ctrl->A.lon1, Ctrl->A.lat1, Ctrl->A.PREF.str, Ctrl->A.p_length, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
 					sprintf (Ctrl->A.extfile, "A%c%.1f_%.1f_%.0f_%.0f_%.0f_%.0f_%.0f_%.0f_map",
-						Ctrl->A.proj_type, lon1, lat1, Ctrl->A.PREF.str, Ctrl->A.p_length, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
+						Ctrl->A.proj_type, Ctrl->A.lon1, Ctrl->A.lat1, Ctrl->A.PREF.str, Ctrl->A.p_length, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
 				}
-				Ctrl->A.PREF.rake = 0.;
+				Ctrl->A.PREF.rake = 0.0;
 				if (Ctrl->A.proj_type == 'a' || Ctrl->A.proj_type == 'b')
-					Ctrl->A.fuseau = pscoupe_gutm (lon1, lat1, &Ctrl->A.xlonref, &Ctrl->A.ylatref, 0);
+					Ctrl->A.fuseau = pscoupe_gutm (Ctrl->A.lon1, Ctrl->A.lat1, &Ctrl->A.xlonref, &Ctrl->A.ylatref, 0);
 				else {
 					Ctrl->A.fuseau = -1;
-					Ctrl->A.xlonref = lon1;
-					Ctrl->A.ylatref = lat1;
+					Ctrl->A.xlonref = Ctrl->A.lon1;
+					Ctrl->A.ylatref = Ctrl->A.lat1;
 				}
 				Ctrl->A.polygon = true;
-				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 
 			case 'Z':	/* Backwards compatibility */
