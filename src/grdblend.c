@@ -338,25 +338,27 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	}
 	gmt_M_free (GMT, L);	/* Done with this now */
 
-	if (h == NULL) {	/* Must use the common region from the tiles */
+	if (h == NULL) {	/* Must use the common region from the tiles and require -I -r if not common increments or registration */
 		uint64_t pp;
-		if (!common_inc)
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Must specify -I if input grids have different increments\n");
-		if (!common_reg)
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Must specify -r if input grids have different registrations\n");
-		if (!common_inc || !common_reg)
+		double *inc = NULL;
+		if (!common_inc && !GMT->common.R.active[ISET])
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must specify -I if input grids have different increments\n");
+		if (!common_reg && !GMT->common.R.active[GSET])
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must specify -r if input grids have different registrations\n");
+		if ((!common_inc && !GMT->common.R.active[ISET]) || (!common_reg && !GMT->common.R.active[GSET]))
 			return (-GMT_RUNTIME_ERROR);
 		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
 		 * will plow through and modify inc if it does not fit, we don't want that here. */
-		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/B[0].G->header->inc[GMT_X] - GMT_CONV6_LIMIT);
+		inc = (GMT->common.R.active[ISET]) ? GMT->common.R.inc : B[0].G->header->inc;	/* Either use -I if given else they all have the same increments */
+		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/inc[GMT_X] - GMT_CONV6_LIMIT);
 		wesn[XHI] = wesn[XLO] + pp * B[0].G->header->inc[GMT_X];
-		pp = (uint64_t)ceil ((wesn[YHI] - wesn[YLO])/B[0].G->header->inc[GMT_Y] - GMT_CONV6_LIMIT);
+		pp = (uint64_t)ceil ((wesn[YHI] - wesn[YLO])/inc[GMT_Y] - GMT_CONV6_LIMIT);
 		wesn[YHI] = wesn[YLO] + pp * B[0].G->header->inc[GMT_Y];
 		/* Create the h structure and initialize it */
 		h = gmt_get_header (GMT);
 		gmt_M_memcpy (h->wesn, wesn, 4, double);
 		gmt_M_memcpy (h->inc, B[0].G->header->inc, 2, double);
-		h->registration = B[0].G->header->registration;
+		h->registration = (GMT->common.R.active[GSET]) ? GMT->common.R.registration : B[0].G->header->registration;	/* Either use -r if given else they all have the same registration */
 		gmt_M_grd_setpad (GMT, h, GMT->current.io.pad); /* Assign default pad */
 		gmt_set_grddim (GMT, h);	/* Update dimensions */
 		*h_ptr = h;			/* Pass out the updated settings */
@@ -764,7 +766,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
 	            "Option -I: Must specify positive increments\n");
-
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active,
+	            "Option -G: Must specify output file\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 

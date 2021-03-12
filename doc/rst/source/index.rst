@@ -13,7 +13,7 @@ Quick links
    :columns: 3
 
    - :doc:`std-opts`
-   - :doc:`proj-codes`
+   - :ref:`Projections Specifications <proj-codes>`
    - :doc:`Default Settings (gmt.conf) <gmt.conf>`
    - :doc:`Colors <gmtcolors>`
    - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
@@ -31,7 +31,6 @@ Quick links
    :hidden:
 
    std-opts
-   proj-codes
    gmt.conf
    gmtcolors
 
