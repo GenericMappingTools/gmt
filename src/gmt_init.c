@@ -2410,6 +2410,7 @@ bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
 	if (!strncmp (GMT->init.module_name, "psxy",    4U)) return true;
 	if (!strncmp (GMT->init.module_name, "pstext",  6U)) return true;
 	if (!strncmp (GMT->init.module_name, "psmeca",  6U)) return true;
+	if (!strncmp (GMT->init.module_name, "psvelo",  6U)) return true;
 	if (!strncmp (GMT->init.module_name, "pscoupe", 7U)) return true;
 	return false;	/* Anything else */
 }
@@ -2470,8 +2471,8 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	}
 	else if (gmtinit_var_t_module (GMT)) {	/* Only some modules can do variable transparency */
 		GMT->common.t.active = GMT->common.t.variable = true;
-		GMT->common.t.n_transparencies = (nt) ? nt : 1;	/* If we gave -t+f+s then we need to read two transparencies, else just 1 */
-		if (GMT->common.t.mode== 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP;	/* For these modules, plain -t means -t+f */
+		if (nt) GMT->common.t.n_transparencies = nt;	/* If we gave -t+f+s then we need to read two transparencies, else just 1. 0 means we apply a single transp to both settings */
+		if (GMT->common.t.mode == 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP;	/* For these modules, plain -t means -t+f */
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t was not given any argument (please add transparency in (0-100]0%% range)!\n");
