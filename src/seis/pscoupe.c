@@ -110,7 +110,7 @@ struct PSCOUPE_CTRL {
 		struct GMT_FILL fill;
 		struct GMT_FONT font;
 	} S;
-	struct PSCOUPE_T {	/* -Tnplane[/<pen>] */
+	struct PSCOUPE_T {	/* -T<nplane>[/<pen>] */
 		bool active;
 		unsigned int n_plane;
 		struct GMT_PEN pen;
@@ -119,7 +119,7 @@ struct PSCOUPE_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} W;
-	struct PSCOUPE_A2 {	/* -Fa[size[/Psymbol[Tsymbol]]] */
+	struct PSCOUPE_A2 {	/* -Fa[<size>[/<Psymbol>[<Tsymbol>]]] */
 		bool active;
 		char P_symbol, T_symbol;
 		double size;
@@ -153,6 +153,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
+	C->A.PREF.dip = 90.0;	/* Vertical is the default dip */
 	C->L.pen = C->T.pen = C->P2.pen = C->T2.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->L.pen.width = C->T.pen.width = C->P2.pen.width = C->T2.pen.width = -1.0;
@@ -446,9 +447,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify cross-section parameters. Choose between\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Aa<lon1>/<lat1>/<lon2>/<lat2>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1>/<lat1>/<strike>/<p_length>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1>/<lat1>/<strike>/<length>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1>/<y1>/<x2>/<y2>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1>/<y1>/<strike>/<p_length>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1>/<y1>/<strike>/<length>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For -Aa|b, <width>, <p_length>, <dmin> and <dmax> must be given in km.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to determine the plot domain (-R) from the cross-section parameters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on depth-value in 3rd column.\n");
@@ -500,11 +501,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not print cross-section information to files\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Tn[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T<n>[/<pen>] draw nodal planes and circumference only to provide a transparent beach ball\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   using the current pen (see -W) or sets pen attribute.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = 1 the only first nodal plane is plotted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = 2 the only second nodal plane is plotted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = 0 both nodal planes are plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <n> = 1 the only first nodal plane is plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <n> = 2 the only second nodal plane is plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <n> = 0 both nodal planes are plotted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If moment tensor is required, nodal planes overlay moment tensor.\n");
 	GMT_Option (API, "U,V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Set pen attributes [%s]\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
@@ -620,7 +621,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					sprintf (Ctrl->A.extfile, "A%c%.1f_%.1f_%.0f_%.0f_%.0f_%.0f_%.0f_%.0f_map",
 						Ctrl->A.proj_type, Ctrl->A.lon1, Ctrl->A.lat1, Ctrl->A.PREF.str, Ctrl->A.p_length, Ctrl->A.PREF.dip, Ctrl->A.p_width, Ctrl->A.dmin, Ctrl->A.dmax);
 				}
-				Ctrl->A.PREF.rake = 0.0;
 				if (Ctrl->A.proj_type == 'a' || Ctrl->A.proj_type == 'b')
 					Ctrl->A.fuseau = pscoupe_gutm (Ctrl->A.lon1, Ctrl->A.lat1, &Ctrl->A.xlonref, &Ctrl->A.ylatref, 0);
 				else {

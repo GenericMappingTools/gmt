@@ -39,27 +39,27 @@ Required Arguments
 .. _-A:
 
 **-A**
-  selects the cross-section.
+  Select the cross-section parameters:
 
-  **-Aa**\ *lon1*/*lat1*/*lon2*/*lat2*[**+d**\ *dip*][**+w++\ *p_width*][**+z**\ *dmin*/*dmax*][**+r**]
+  **-Aa**\ *lon1*/*lat1*/*lon2*/*lat2*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
      *lon* and *lat* are the longitude and latitude of points 1 and 2
      limiting the length of the cross-section, *dip* is the dip of the plane
-     on which the cross-section is made [90], *p_width* is the width in km of the
+     on which the cross-section is made [90], *width* is the width in km of the
      cross-section on each side of a vertical plane or above and under an
      oblique plane, and *dmin* and *dmax* are the distances min and max from
      horizontal plane in km, along steepest descent direction. Add **+r** to get the
      plott domain from the cross-section parameters.
 
-  **-Ab**\ *lon1*/*lat1*/*strike*/*p_length*[**+d**\ *dip*][**+w++\ *p_width*][**+z**\ *dmin*/*dmax*][**+r**]
+  **-Ab**\ *lon1*/*lat1*/*strike*/*length*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
      *lon1* and *lat1* are the longitude and latitude of the beginning of the
      cross-section, *strike* is the azimuth of the direction of the
-     cross-section, and *p_length* is the length along which the cross-section
+     cross-section, and *length* is the length along which the cross-section
      is made (in km). The other parameters are the same as for **-Aa** option.
 
-  **-Ac**\ *x1*/*y1*/*x2*/*y2*[**+d**\ *dip*][**+w++\ *p_width*][**+z**\ *dmin*/*dmax*][**+r**]
+  **-Ac**\ *x1*/*y1*/*x2*/*y2*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
      The same as **-Aa** option with *x* and *y* given as Cartesian coordinates.
 
-  **-Ad**\ *x1*/*y1*/*strike*/*p_length*[**+d**\ *dip*][**+w++\ *p_width*][**+z**\ *dmin*/*dmax*][**+r**]
+  **-Ad**\ *x1*/*y1*/*strike*/*length*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
      The same as **-Ab** option with *x* and *y* given as Cartesian coordinates.
 
 .. _-S:
@@ -82,15 +82,15 @@ Optional Arguments
 .. _-E:
 
 **-E**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Sets color or fill pattern for extensive quadrants [Default is white].
+    Set color or fill pattern for extensive quadrants [Default is white].
 
 .. _-F:
 
 **-F**\ *mode*\ [*args*]
-    Sets one or more attributes; repeatable. The various combinations are
+    Set one or more attributes; repeatable. The various combinations are
 
 **-Fs**\ *symbol*\ [*size*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
-    selects a symbol instead of mechanism. Choose from the following:
+    Select a symbol instead of mechanism. Choose from the following:
     (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
     (**t**) triangle, (**x**) cross. *size* is the symbol size in
     :term:`PROJ_LENGTH_UNIT` (unless **c**, **i**, or **p** is appended
@@ -112,31 +112,31 @@ Optional Arguments
       Text string to appear near the beach ball
 
 **-Fa**\ [*size*\ [/*Psymbol*\ [*Tsymbol*]]]
-    Computes and plots P and T axes with symbols. Optionally specify
+    Compute and plot P and T axes with symbols. Optionally specify
     *size* and (separate) P and T axis symbols from the following:
     (**c**) circle, (**d**) diamond, (**h**) hexagon, (**i**) inverse
     triangle, (**p**) point, (**s**) square, (**t**) triangle, (**x**)
     cross. [Default: 6\ **p**/**cc**]
 
 **-Fe**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Sets the color or fill pattern for the T axis symbol. [Default as set by |-E|]
+    Set the color or fill pattern for the T axis symbol. [Default as set by |-E|]
 
 **-Fg**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Sets the color or fill pattern for the P axis symbol. [Default as set by |-G|]
+    Set the color or fill pattern for the P axis symbol. [Default as set by |-G|]
 
 **-Fp**\ [*pen*]
-    Draws the P axis outline using current pen (see |-W|), or sets pen attributes.
+    Draw the P axis outline using current pen (see |-W|), or sets pen attributes.
 
 **-Fr**\ [*fill*]
     Draw a box behind the label (if any). [Default fill is white]
 
 **-Ft**\ [*pen*]
-    Draws the T axis outline using current pen (see **-W**), or sets pen attributes.
+    Draw the T axis outline using current pen (see **-W**), or sets pen attributes.
 
 .. _-G:
 
 **-G**\ *fill* :ref:`(more ...) <-Gfill_attrib>`
-    Sets color or fill pattern for compressional quadrants [Default is black].
+    Set color or fill pattern for compressional quadrants [Default is black].
 
 .. _-I:
 
@@ -149,7 +149,7 @@ Optional Arguments
 .. _-L:
 
 **-L**\ [*pen*]
-    Draws the "beach ball" outline using current pen (see |-W|) or
+    Draw the "beach ball" outline using current pen (see |-W|) or
     sets pen attributes.
 
 .. _-M:
@@ -170,7 +170,7 @@ Optional Arguments
 .. _-T:
 
 **-T**\ [*nplane*][**/**\ *pen*]
-    Plots the nodal planes and outlines the bubble which is transparent.
+    Plot the nodal planes and outlines the bubble which is transparent.
     If *nplane* is
 
     *0*: both nodal planes are plotted;
