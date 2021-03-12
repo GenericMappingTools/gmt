@@ -518,6 +518,7 @@ GMT_LOCAL double grdseamount_poly_solver (double in[], double f, double v, bool 
 	double b = (1.0 - v) * (M_PI * f * f * poly_smt_func (f) - poly_smt_vol (f)) - v * I1;
 	double t = 0.0, phi = 0.0, lhs = 0.0, last_lhs;
 	gmt_M_unused (in);
+	gmt_M_unused (elliptical);
 	while (lhs >= b) {
     	t += DELTA_PHI;
     	last_lhs = lhs;
@@ -635,7 +636,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	
+
 	/* Assign functions to shape_func and phi_solver array of functions */
 	shape_func[SHAPE_CONE] = grdseamount_cone_area_volume_height;
 	phi_solver[SHAPE_CONE] = grdseamount_cone_solver;
@@ -752,7 +753,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 				if (Ctrl->F.mode == TRUNC_FILE && (Ctrl->F.value < 0.0 || Ctrl->F.value >= 1.0)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", Ctrl->F.value);
 					API->error = GMT_RUNTIME_ERROR;
-					goto wrap_up;					
+					goto wrap_up;
 				}
 				c = (map) ? cosd (in[GMT_Y]) : 1.0;	/* Flat Earth scaling factor */
 				/* Compute area, volume, mean amplitude */
@@ -876,7 +877,7 @@ EXTERN_MSC int GMT_grdseamount (void *V_API, int mode, void *args) {
 							if (Ctrl->F.mode == TRUNC_FILE && (f < 0.0 || f >= 1.0)) {
 								GMT_Report (API, GMT_MSG_ERROR, "Flattening outside valid range 0-1 (%g)!\n", f);
 								API->error = GMT_RUNTIME_ERROR;
-								goto wrap_up;					
+								goto wrap_up;
 							}
 						}
 						else

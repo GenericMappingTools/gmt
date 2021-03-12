@@ -11,7 +11,7 @@ gmt begin ex37
 	# Prefix of two .nc files
 	G=grav.V18.par.surf.1km.sq
 	T=mb.par.surf.1km.sq
-	gmt set FONT_TITLE 14p GMT_FFT kiss
+	gmt set GMT_FFT kiss
 
 	gmt grdinfo @$T.nc -Ib > bbox
 	scl=1.4e-5

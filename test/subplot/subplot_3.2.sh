@@ -14,7 +14,7 @@
 # 3.2 -SR, -B override
 gmt begin subplot_3.2
 	gmt set FONT_HEADING 28p,Helvetica,black
-    gmt subplot begin 2x2 -Fs8c -SRl -R-2/2/0/10 -BWSne -T"3.2: -SRl, -BWSne override"
+    gmt subplot begin 2x2 -Fs8c -SRl -R-2/2/0/10 -Bwsne -T"3.2: -SRl, -Bwsne override"
        	gmt basemap -c
         gmt basemap -c
     	gmt basemap -c

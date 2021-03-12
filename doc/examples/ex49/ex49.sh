@@ -13,7 +13,7 @@ gmt begin ex49
 	# Image depths with color-coded age contours
 	gmt makecpt -Cabyss -T-7000/0 -H > z.cpt
 	gmt makecpt -Chot -T0/100/10 -H > t.cpt
-	gmt grdimage depth_pixel.nc -JM15c -Cz.cpt -B -BWSne --FORMAT_GEO_MAP=dddF
+	gmt grdimage depth_pixel.nc -JM15c -Cz.cpt -B -BWSne --FORMAT_GEO_MAP=dddF --FONT_ANNOT_PRIMARY=12p
 	gmt plot -W1p @ridge_49.txt
 	gmt grdcontour age_pixel.nc -A+f14p -Ct.cpt -Wa0.1p+c -GL30W/22S/5E/13S
 	gmt colorbar -Cz.cpt -DjTR+w5c/0.4c+h+o0.75c/0.4c -Baf+u" km" -W0.001 -F+p1p+gbeige
@@ -42,7 +42,7 @@ gmt begin ex49
 	gmt plot ss.txt -W1p
 	gmt plot -Ss0.4c -Gblue modal.txt -Ey+p1p,blue
 	gmt plot -Ss0.1c -Gwhite modal.txt
-	gmt basemap -R0/100/0/6.5 -JX15c/-10c -Bxaf+u" Myr" -Byaf+u" km" -BWsNe
+	gmt basemap -R0/100/0/6.5 -JX15c/-10c -Bxaf+u" Myr" -Byaf+u" km" -BWsNe --FONT_ANNOT_PRIMARY=12p
 	gmt legend -DjRT+w6.5c+o0.25c -F+p1p+gbeige+s <<- EOF
 	S 0.5c - 0.9c - 4p,green 1c Parsons & Sclater (1977)
 	S 0.5c - 0.9c - 4p,white 1c Stein & Stein (1992)

@@ -222,8 +222,8 @@ Another basemap for middle Europe may be created by
 
     gmt psbasemap -R0/90/25/55 -Jl45/20/32/45/0.1i -Bafg -B+t"Lambert Conformal Conic" -P > lambertc.ps
 
-Equidistant
-~~~~~~~~~~~
+Conic Equidistant
+~~~~~~~~~~~~~~~~~
 
 Yet another basemap of width 6 inch for middle Europe may be created by
 
@@ -257,8 +257,8 @@ Follow the instructions for stereographic projection if you want to
 impose rectangular boundaries on the azimuthal equal-area map but
 substitute **-Ja** for **-Js**.
 
-Equidistant
-~~~~~~~~~~~
+Azimuthal Equidistant
+~~~~~~~~~~~~~~~~~~~~~
 
 A 15-cm-wide global map in which distances from the center (here 125/10)
 to any point is true can be obtained by:

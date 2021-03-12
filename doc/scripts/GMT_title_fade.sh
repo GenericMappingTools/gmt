@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_title_fade
+	gmt set GMT_THEME cookbook
 	cat <<- EOF > B.txt
 	0	afg	0
 	1	afg	t@-i@-

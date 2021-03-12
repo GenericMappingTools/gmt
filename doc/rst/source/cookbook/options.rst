@@ -134,6 +134,12 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
    The plot region can be specified in two different ways. (a) Extreme values for each dimension, or (b) coordinates of
    lower left and upper right corners.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-R.txt
+
 For rectilinear projections the first two forms give identical results. Depending on the selected map projection (or
 the kind of expected input data), the boundary coordinates may take on several different formats:
 
@@ -194,7 +200,11 @@ Radians:
     fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating
     point numbers, e.g., -2\ **pi**\ /2\ **pi**\ 3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
     of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\
+<<<<<<< HEAD
     **pi**\ , 3/2 **pi** (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
+=======
+    **pi**\ , 3/2 (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
+>>>>>>> master
     (1\ **pi**\ 3), and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value
     is within roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required
     multiples or fractions.
@@ -212,42 +222,30 @@ Other coordinates:
 Coordinate transformations and map projections: The **-J** option
 -----------------------------------------------------------------
 
-This option selects the coordinate transformation or map projection. The
-general format is
+This option selects the coordinate transformation or map projection. The general format is
 
--  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta`
-   is a *lower-case* letter of the alphabet that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited
-   projection parameter, and *scale* is map scale given in distance
-   units per degree or as 1:xxxxx.
+-  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta` is a *lower-case* letter of the alphabet that
+   selects a particular map projection, the *parameters* is zero or more slash-delimited projection parameter, and
+   *scale* is map scale given in :ref:`plot-units <plt-units>` /degree or as 1:xxxxx.
 
--  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta`
-   is an *upper-case* letter of the alphabet that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited
-   projection parameter, and *width* is map width (map height is
-   automatically computed from the implied map scale and region).
+-  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta` is an *upper-case* letter of the alphabet that
+   selects a particular map projection, the *parameters* is zero or more slash-delimited projection parameter, and
+   *width* is map width in :ref:`plot-units <plt-units>` (map height is automatically computed from the implied map scale
+   and region).
 
-Since GMT version 4.3.0, there is an alternative way to specify the
-projections: use the same abbreviation as in the mapping package
-`PROJ <https://proj.org/>`_. The options thus either look like:
+Since GMT version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the
+mapping package `PROJ <https://proj.org/>`_. The options thus either look like:
 
--  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a
-   *lower-case* abbreviation that selects a particular map projection,
-   the *parameters* is zero or more slash-delimited projection
-   parameter, and *scale* is map scale given in distance units per
-   degree or as 1:xxxxx.
+-  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a *lower-case* abbreviation that selects a particular
+   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *scale* is map scale given
+   in distance units per degree or as 1:xxxxx.
 
--  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an
-   *capitalized* abbreviation that selects a particular map projection,
-   the *parameters* is zero or more slash-delimited projection
-   parameter, and *width* is map width (map height is automatically
-   computed from the implied map scale and region).
+-  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an *capitalized* abbreviation that selects a particular
+   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *width* is map width (map
+   height is automatically computed from the implied map scale and region).
 
-The projections available in GMT are presented in Figure
-:ref:`gmt_projections`. For details on all GMT projections and the required
-parameters, see the :doc:`/basemap` man page. We will also show examples of
-every projection in the next Chapters, and a quick summary of projection
-syntax is listed in :doc:`/proj-codes`.
+The over 30 map projections and coordinate transformations available in GMT are represented in the Figure
+:ref:`GMT Projections <gmt_projections>`.
 
 .. _gmt_projections:
 
@@ -256,6 +254,23 @@ syntax is listed in :doc:`/proj-codes`.
    :align: center
 
    The over-30 map projections and coordinate transformations available in GMT
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-J.txt
+
+.. _proj-codes:
+
+Projections specifications
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+GMT offers 31 map projections specified using the **-J** option. There are two conventions you may use: (a) GMT-style
+syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax. The codes for the GMT-style and the PROJ-style are tabulated
+below along with the associated *parameters* and links to the cookbook sections that describe the projection syntax and
+usage.
+
+.. include:: ../proj-codes.rst_
 
 .. _option_-B:
 
@@ -513,6 +528,12 @@ is shown in Figure :ref:`Geographic map border <basemap_border>`.
    frame, and grid intervals.  Formatting of the annotation is controlled by
    the parameter :term:`FORMAT_GEO_MAP` in your :doc:`/gmt.conf`.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_geo_1.txt
+
 The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
 be used to separate degree annotations from minutes- and
@@ -528,6 +549,12 @@ attributes for grid lines and grid crosses, see Figure :ref:`Complex basemap
    :align: center
 
    Geographic map border with both primary (P) and secondary (S) components.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_geo_2.txt
 
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
@@ -554,6 +581,12 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
    annotations, shorter ticks indicate frame interval. The axis label is
    optional. For this example we used ``-R0/12/0/0.95 -JX7.5c/0.75c -Ba4f2g1+lFrequency+u" %" -BS``
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_linear.txt
+
 There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
 One solution is to request slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`)
@@ -570,6 +603,11 @@ via the **+a**\ *angle* modifier.
    For this example we used ``-R2000/2020/35/45 -JX12c -Bxa2f+a-30 -BS``.
    For the y-axis only the modifier **+ap** for parallel is allowed.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_slanted.txt
 
 Cartesian log\ :sub:`10` axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -606,6 +644,12 @@ specific to log axes (see Figure :ref:`Logarithmic projection axis
    (bottom) We annotate every power of 10 using :math:`\log_{10}` of the actual
    values as exponents, with -Ba1f2g3p.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_log.txt
+
 Cartesian exponential axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -630,6 +674,12 @@ labeled 1, 4, 9, ... will appear.
    in -R0/100/0/0.9 -JX3ip0.5/0.25i -Ba20f10g5.
    (bottom) Here, intervals refer to projected values, although the annotation
    uses the corresponding unprojected values, as in -Ba3f2g1p.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_pow.txt
 
 .. _cartesian_time_axes:
 
@@ -818,6 +868,12 @@ which will plot the current command string (Figure :ref:`Time stamp <fig_-U>`).
 
    The -U option makes it easy to date a plot.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-U.txt
+
 .. _option_-V:
 
 Verbose feedback: The **-V** option
@@ -865,6 +921,12 @@ To move the origin half the width to the right, use **-X**\ *w*\ /2.
    :align: center
 
    Plot origin can be translated freely with -X -Y.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-XY.txt
 
 .. _option_-a:
 
@@ -1343,6 +1405,11 @@ spacing by
    Gridline- and pixel-registration of data nodes.  The red shade indicates the
    areas represented by the value at the node (solid circle).
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_registration.txt
 
 .. math::
 
@@ -1382,6 +1449,12 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
    function of wavenumber :math:`k_j` [Marks and Smith, 2007 [15]_.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_grid2pix.txt
 
 .. _option_-s:
 
