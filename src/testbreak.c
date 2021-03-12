@@ -52,7 +52,7 @@ void gmt_usage_line (unsigned int mode, unsigned int MLENGTH, char *in_line) {
 	/* Break the in_ine across multiple lines determined by the terminal line width MLENGTH */
 	struct GMT_WORD *W = gmt_split_words (in_line);
 	unsigned int width, k, current_width = 0;
-	char *brk = "\xe2\x80\xa6";
+	char *brk = "\xe2\x8f\x8e", *cnt = "\xe2\x80\xa6";	/* return symbol and ellipsis */
 #ifdef WIN32
 	SetConsoleOutputCP (CP_UTF8);
 #endif
@@ -74,7 +74,7 @@ void gmt_usage_line (unsigned int mode, unsigned int MLENGTH, char *in_line) {
 			if (W[k].space) /* No break character needed since space separation is expected */
 				fprintf (stderr, "\n  "), current_width = 2;	/* Indent normal 2 spaces */
 			else	/* Split in the middle of an option so append ellipsis and start with one too */
-				fprintf (stderr, "%s\n   %s", brk, brk), current_width = 4;
+				fprintf (stderr, "%s\n   %s", brk, cnt), current_width = 4;
 			W[k].space = 0;	/* No leading space if starting a the line */
 			k--;	/* Since k will be incremented by loop but we did not write this word yet */
 		}
