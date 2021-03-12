@@ -13050,7 +13050,7 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 			strcpy (value, "rows");
 	}
 	else {	/* Must process as a GMT setting */
-		strcpy (value, gmtlib_putparameter (API->GMT, keyword));
+		strcpy (value, gmtlib_getparameter (API->GMT, keyword));
 		error = (value[0] == '\0') ? GMT_OPTION_NOT_FOUND : GMT_NOERROR;
 	}
 	return_error (V_API, error);

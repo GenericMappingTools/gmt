@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_API_flow
+	gmt set GMT_THEME cookbook
 	gmt text -R-2/3/-1/1 -Jx1i -F+f14p,Helvetica-Bold -Gwhite -W0.5p -N -C50% -X2i << EOF
 -2	0	EXTERNAL INTERFACE
 0	0	gmt

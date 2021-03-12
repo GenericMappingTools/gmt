@@ -14,10 +14,10 @@
 # 1.3 No -S, panel -B override
 gmt begin subplot_1.3
 	gmt set FONT_HEADING 28p,Helvetica,black
-    gmt subplot begin 2x2 -Fs8c -R-2/2/0/10 -T"1.3: No -S, LL panel -BWSne"
+    gmt subplot begin 2x2 -Fs8c -R-2/2/0/10 -T"1.3: No -S, LL panel -Bwsne"
        	gmt basemap -c
         gmt basemap -c
-    	gmt basemap -c -BWSne
+    	gmt basemap -c -Bwsne
       	gmt basemap -c
     gmt subplot end
 gmt end show

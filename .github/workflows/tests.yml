@@ -164,6 +164,7 @@ jobs:
         run: |
           cd doc/examples
           call do_examples.bat
+        if: runner.os == 'Windows'
 
       - name: Upload build directory if failed
         uses: actions/upload-artifact@v2

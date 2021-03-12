@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_App_M_2
+gmt set GMT_THEME cookbook
 gmt set FONT_ANNOT_PRIMARY 10p PROJ_LENGTH_UNIT cm PS_MEDIA 11ix8.5i
 
 # Set up color palette with named annotations
