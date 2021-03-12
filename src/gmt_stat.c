@@ -983,6 +983,10 @@ double gmt_plm (struct GMT_CTRL *GMT, int l, int m, double x) {
 	return (pll);
 }
 
+#ifndef M_SQRTPI
+#define M_SQRTPI	1.77245385090551602729	
+#endif
+
 double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	/* This function computes the normalized associated Legendre function of x for degree
 	 * l and order m. x must be in the range [-1;1] and 0 <= |m| <= l.
@@ -1056,7 +1060,7 @@ double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	   In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 	if (ortho)
-		pmm /= d_sqrt(M_PI);
+		pmm /= (M_SQRT2 * M_SQRTPI);
 	else if (m != 0)
 		pmm *= M_SQRT2;
 
@@ -1167,7 +1171,7 @@ void gmt_plm_bar_all (struct GMT_CTRL *GMT, int lmax, double x, bool ortho, doub
 		In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 		if (ortho)
-			plm[mm] = pmm / d_sqrt(M_PI);
+			plm[mm] = pmm / (M_SQRT2 * M_SQRTPI);
 		else if (m != 0)
 			plm[mm] = pmm * M_SQRT2;
 
