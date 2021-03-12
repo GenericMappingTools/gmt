@@ -48,7 +48,7 @@ Required Arguments
      cross-section on each side of a vertical plane or above and under an
      oblique plane, and *dmin* and *dmax* are the distances min and max from
      horizontal plane in km, along steepest descent direction. Add **+r** to get the
-     plott domain from the cross-section parameters.
+     plot domain from the cross-section parameters.
 
   **-Ab**\ *lon1*/*lat1*/*strike*/*length*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
      *lon1* and *lat1* are the longitude and latitude of the beginning of the
