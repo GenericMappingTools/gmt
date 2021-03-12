@@ -1,4 +1,4 @@
- #!/usr/bin/env bash
+#!/usr/bin/env bash
 # Ensure -JOa works close to a pole
 gmt begin JOb_pole
 	gmt set MAP_ANNOT_MIN_SPACING 32p MAP_ANNOT_OBLIQUE separate,lon_horizontal,lat_horizontal

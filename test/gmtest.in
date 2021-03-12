@@ -105,7 +105,8 @@ for apiprog in \
     testapi_matrix_io \
     testapi_matrix_360 \
     testapi_matrix_360_ref \
-    testapi_grid2matrix
+    testapi_grid2matrix \
+    testapi_putvector
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done
