@@ -513,7 +513,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
-GMT_LOCAL unsigned int pscoupe_parse_old_A (truct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, char *arg) {
+GMT_LOCAL unsigned int pscoupe_parse_old_A (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, char *arg) {
 	int n;
 	char *p = NULL;
 	if ((p = strstr (arg, "+f"))) {	/* Get the frame from the cross-section parameters */
@@ -563,19 +563,19 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					n_errors += pscoupe_parse_old_A (GMT, Ctrl, opt->arg);
 				else {	/* New, modifier-equipped syntax */
 					if ((p = gmt_first_modifier (GMT, opt->arg, "drwz"))) {	/* Process any modifiers */
-						if (gmt_get_modifier (p, 'd', txt))
+						if (gmt_get_modifier (p, 'd', txt_a))
 							Ctrl->A.PREF.dip = atof (txt_a);
-						if (gmt_get_modifier (p, 'r', txt))
+						if (gmt_get_modifier (p, 'r', txt_a))
 							Ctrl->A.frame = true;
-						if (gmt_get_modifier (p, 'w', txt))
+						if (gmt_get_modifier (p, 'w', txt_a))
 							Ctrl->A.p_width = atof (txt_a);
-						if (gmt_get_modifier (p, 'z', txt))
+						if (gmt_get_modifier (p, 'z', txt_a))
 							sscanf (txt_a, "%lf/%lf", &Ctrl->A.dmin, &Ctrl->A.dmax);
 						p[0] = '\0';	/* Chop off modifiers */
 					}
 					/* Process the first 4 args */
 					if (sscanf (&opt->arg[1], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A requires 4 arguments before modifiers, only %d found.\n", n);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A requires 4 arguments before modifiers.\n");
 						n_errors++;
 					}
 					switch (Ctrl->A.proj_type) {
@@ -657,9 +657,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 				switch (opt->arg[0]) {
 					case 'a':	/* plot axis */
 						Ctrl->A2.active = true;
-						strncpy (txt, &opt->arg[1], GMT_LEN256-1);
-						if ((p = strchr (txt, '/')) != NULL) p[0] = '\0';
-						if (txt[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt);
+						strncpy (txt_a, &opt->arg[1], GMT_LEN256-1);
+						if ((p = strchr (txt_a, '/')) != NULL) p[0] = '\0';
+						if (txt_a[0]) Ctrl->A2.size = gmt_M_to_inch (GMT, txt_a);
 						if (p) {
 							p++;
 							switch (strlen (p)) {
@@ -735,9 +735,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 								Ctrl->S.justify = PSL_BC;
 								opt->arg[strlen(opt->arg)-1] = '\0';
 							}
-							txt[0] = txt_b[0] = txt_c[0] = '\0';
-							sscanf (&opt->arg[2], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-							if (txt[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
+							txt_a[0] = txt_b[0] = txt_c[0] = '\0';
+							sscanf (&opt->arg[2], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+							if (txt_a[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt_a);
 							if (txt_b[0]) Ctrl->S.font.size = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 							if (txt_c[0]) Ctrl->S.offset[1] = gmt_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 							if (Ctrl->S.font.size < 0.0) Ctrl->S.no_label = true;
@@ -866,9 +866,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 						Ctrl->S.justify = PSL_BC;
 						opt->arg[strlen(opt->arg)-1] = '\0';
 					}
-					txt[0] = txt_b[0] = txt_c[0] = '\0';
-					sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
-					if (txt[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt);
+					txt_a[0] = txt_b[0] = txt_c[0] = '\0';
+					sscanf (&opt->arg[1], "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+					if (txt_a[0]) Ctrl->S.scale = gmt_M_to_inch (GMT, txt_a);
 					if (txt_b[0]) Ctrl->S.font.size = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 					if (txt_c[0]) Ctrl->S.offset[1] = gmt_convert_units (GMT, txt_c, GMT_PT, GMT_INCH);
 					if (Ctrl->S.font.size < 0.0) Ctrl->S.no_label = true;
