@@ -55,6 +55,7 @@ dy=0.6
 y0=$(gmt math -Q $n2 $dy MUL 0.5 MUL 0.1 ADD =)
 
 gmt begin GMT_App_M_1b
+gmt set GMT_THEME cookbook
 gmt set MAP_FRAME_PEN thinner FONT_ANNOT_PRIMARY 8p MAP_TICK_LENGTH_PRIMARY 0.1i MAP_ANNOT_OFFSET_PRIMARY 0.04i
 gmt basemap -R0/6.1/0/$y0 -Jx1i -B0
 

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000
-%%Title: GMT v6.1.0_3b68500_2020.01.23 [64-bit] Document from pscoast
+%%Title: GMT v6.2.0_99b7aea-dirty_2021.03.11 [64-bit] Document from coast
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Jan 27 13:26:31 2020
+%%CreationDate: Thu Mar 11 16:09:47 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -637,6 +662,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -661,13 +700,16 @@ FQ
 O0
 1200 1200 TM
 % PostScript produced by:
-%@GMT: gmt pscoast -R200/340/-90/90 -Ji0.04c -Bg -A10000 -Dc -Gdarkred -Sazure
+%@GMT: gmt coast -R200/340/-90/90 -Ji0.04c -Bg -A10000 -Dc -Gdarkred -Sazure
 %@PROJ: sinu 200.00000000 340.00000000 -90.00000000 90.00000000 -7783653.638 7783653.638 -10007554.678 10007554.678 +proj=sinu +lon_0=270 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+7 W
+0 A
 {0.941 1 1 C} FS
+O0
 1323 0 M
 183 151 D
 46 37 D
@@ -3007,8 +3049,8 @@ FO
 71 59 D
 P
 FO
-25 W
 4 W
+0 A
 1224 95 M
 -143 137 D
 -6 7 D
@@ -3073,56 +3115,6 @@ FO
 12 13 D
 124 119 D
 S
-1248 95 M
--73 94 D
--67 87 D
--61 81 D
--9 13 D
--28 37 D
--13 19 D
--41 56 D
--30 44 D
--47 69 D
--29 43 D
--52 81 D
--7 13 D
--23 37 D
--7 13 D
--53 93 D
--42 81 D
--44 93 D
--32 75 D
--34 93 D
--24 75 D
--24 93 D
--19 99 D
--13 111 D
--4 112 D
-5 112 D
-11 86 D
-4 31 D
-19 93 D
-23 87 D
-28 87 D
-33 87 D
-27 62 D
-23 50 D
-46 93 D
-27 50 D
-32 56 D
-41 69 D
-75 118 D
-21 31 D
-34 50 D
-53 75 D
-41 56 D
-9 13 D
-28 37 D
-9 13 D
-100 131 D
-58 75 D
-29 38 D
-S
 1273 95 M
 -109 212 D
 -46 94 D
@@ -3158,53 +3150,8 @@ S
 54 107 D
 52 100 D
 S
-1298 95 M
--50 194 D
--59 243 D
--29 131 D
--28 137 D
--26 144 D
--27 174 D
--17 149 D
--14 161 D
--7 161 D
--2 137 D
-4 148 D
-8 137 D
-13 149 D
-19 149 D
-30 193 D
-32 168 D
-31 143 D
-58 244 D
-64 250 D
-S
 1323 95 M
 0 3212 D
-S
-1348 95 M
-67 262 D
-30 125 D
-38 169 D
-22 106 D
-24 124 D
-28 168 D
-20 156 D
-9 87 D
-11 124 D
-7 148 D
-2 112 D
--1 136 D
--6 137 D
--10 136 D
--18 162 D
--22 155 D
--23 137 D
--36 181 D
--39 174 D
--24 100 D
--47 188 D
--32 125 D
 S
 1372 95 M
 81 156 D
@@ -3236,56 +3183,6 @@ S
 -62 131 D
 -71 144 D
 -88 169 D
-S
-1397 95 M
-30 37 D
-9 13 D
-29 37 D
-101 132 D
-33 43 D
-13 19 D
-37 50 D
-58 81 D
-72 106 D
-57 88 D
-60 99 D
-7 13 D
-28 50 D
-33 62 D
-49 99 D
-8 19 D
-32 75 D
-30 80 D
-27 81 D
-20 75 D
-15 68 D
-17 99 D
-10 112 D
-1 111 D
--8 112 D
--17 111 D
--18 81 D
--26 93 D
--27 81 D
--37 93 D
--39 87 D
--27 56 D
--60 112 D
--33 56 D
--65 106 D
--53 81 D
--69 100 D
--27 37 D
--13 19 D
--37 50 D
--37 50 D
--24 31 D
--9 13 D
--10 12 D
--9 13 D
--10 12 D
--9 13 D
--112 144 D
 S
 1422 95 M
 91 87 D
@@ -3370,41 +3267,22 @@ S
 1207 3307 M
 232 0 D
 S
-979 285 M
-688 0 D
-S
 659 569 M
 1327 0 D
-S
-385 853 M
-1875 0 D
 S
 176 1136 M
 2294 0 D
 S
-45 1419 M
-2556 0 D
-S
 0 1701 M
 2646 0 D
-S
-45 1983 M
-2556 0 D
 S
 176 2266 M
 2294 0 D
 S
-385 2549 M
-1875 0 D
-S
 659 2833 M
 1327 0 D
 S
-979 3117 M
-688 0 D
-S
-8 W
-25 W
+21 W
 1323 0 M
 P
 69 56 D
@@ -3562,13 +3440,16 @@ FQ
 O0
 2646 0 TM
 % PostScript produced by:
-%@GMT: gmt pscoast -R-20/60/-90/90 -Bg -Dc -A10000 -Gdarkgreen -Sazure -X5.6c -Ji0.04c
+%@GMT: gmt coast -R-20/60/-90/90 -Bg -Dc -A10000 -Gdarkgreen -Sazure -X5.6c -Ji0.04c
 %@PROJ: sinu -20.00000000 60.00000000 -90.00000000 90.00000000 -4447802.079 4447802.079 -10007554.678 10007554.678 +proj=sinu +lon_0=20 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+7 W
+0 A
 {0.941 1 1 C} FS
+O0
 756 0 M
 157 226 D
 59 88 D
@@ -4890,54 +4771,8 @@ FO
 -80 238 D
 P
 FO
-25 W
-4 W
-698 95 M
--8 12 D
--7 13 D
--72 119 D
--26 43 D
--7 13 D
--37 62 D
--21 38 D
--63 112 D
--69 131 D
--61 125 D
--55 125 D
--32 80 D
--38 106 D
--31 100 D
--27 105 D
--18 87 D
--12 68 D
--13 112 D
--6 99 D
--1 62 D
-3 87 D
-5 74 D
-11 87 D
-9 62 D
-19 93 D
-25 99 D
-28 94 D
-25 74 D
-33 87 D
-39 94 D
-31 68 D
-23 50 D
-27 56 D
-19 37 D
-49 94 D
-24 44 D
-88 156 D
-8 12 D
-7 13 D
-52 87 D
-7 13 D
-8 12 D
-7 13 D
-57 94 D
-S
+3 W
+0 A
 723 95 M
 -58 169 D
 -23 68 D
@@ -4967,22 +4802,6 @@ S
 60 175 D
 5 13 D
 S
-748 95 M
--26 300 D
--23 300 D
--15 236 D
--12 249 D
--6 186 D
--4 223 D
--1 149 D
-3 236 D
-7 223 D
-12 249 D
-13 211 D
-19 262 D
-31 369 D
-2 19 D
-S
 772 95 M
 27 156 D
 56 344 D
@@ -5000,36 +4819,6 @@ S
 -27 187 D
 -43 269 D
 -31 175 D
-S
-797 95 M
-17 37 D
-24 57 D
-84 200 D
-40 100 D
-45 118 D
-38 106 D
-53 162 D
-35 125 D
-27 111 D
-23 112 D
-20 118 D
-16 143 D
-7 99 D
-2 112 D
--1 99 D
--7 111 D
--10 100 D
--16 111 D
--14 81 D
--24 112 D
--25 99 D
--30 106 D
--47 149 D
--42 119 D
--21 56 D
--51 131 D
--94 225 D
--49 113 D
 S
 822 95 M
 78 112 D
@@ -5084,41 +4873,22 @@ S
 690 3307 M
 132 0 D
 S
-559 285 M
-393 0 D
-S
 377 569 M
 758 0 D
-S
-220 853 M
-1072 0 D
 S
 101 1136 M
 1310 0 D
 S
-26 1419 M
-1460 0 D
-S
 0 1701 M
 1512 0 D
-S
-26 1983 M
-1460 0 D
 S
 101 2266 M
 1310 0 D
 S
-220 2549 M
-1072 0 D
-S
 377 2833 M
 758 0 D
 S
-559 3117 M
-393 0 D
-S
-8 W
-25 W
+21 W
 756 0 M
 P
 74 106 D
@@ -5210,13 +4980,16 @@ FQ
 O0
 1512 0 TM
 % PostScript produced by:
-%@GMT: gmt pscoast -R60/200/-90/90 -Bg -Dc -A10000 -Gdarkblue -Sazure -X3.2c -Ji0.04c
+%@GMT: gmt coast -R60/200/-90/90 -Bg -Dc -A10000 -Gdarkblue -Sazure -X3.2c -Ji0.04c
 %@PROJ: sinu 60.00000000 200.00000000 -90.00000000 90.00000000 -7783653.638 7783653.638 -10007554.678 10007554.678 +proj=sinu +lon_0=130 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+7 W
+0 A
 {0.941 1 1 C} FS
+O0
 1323 0 M
 183 151 D
 46 37 D
@@ -6943,8 +6716,8 @@ FO
 54 46 D
 P
 FO
-25 W
 4 W
+0 A
 1207 95 M
 -46 37 D
 -22 19 D
@@ -7013,58 +6786,6 @@ FO
 22 19 D
 46 38 D
 S
-1232 95 M
--83 87 D
--48 50 D
--11 13 D
--58 62 D
--69 75 D
--11 13 D
--77 87 D
--16 19 D
--58 69 D
--36 43 D
--74 94 D
--28 37 D
--9 13 D
--49 68 D
--58 87 D
--35 56 D
--7 13 D
--39 68 D
--29 56 D
--44 93 D
--27 69 D
--24 68 D
--23 81 D
--17 80 D
--12 81 D
--6 87 D
--1 37 D
-4 87 D
-7 68 D
-15 87 D
-20 80 D
-23 75 D
-28 74 D
-27 62 D
-42 87 D
-45 81 D
-49 81 D
-32 50 D
-65 93 D
-47 62 D
-9 13 D
-94 118 D
-63 75 D
-110 125 D
-29 31 D
-11 13 D
-52 56 D
-23 25 D
-76 81 D
-78 82 D
-S
 1257 95 M
 -48 69 D
 -106 156 D
@@ -7102,33 +6823,6 @@ S
 94 137 D
 44 63 D
 S
-1281 95 M
--96 225 D
--56 137 D
--55 144 D
--38 106 D
--59 181 D
--33 118 D
--28 118 D
--19 93 D
--23 137 D
--13 117 D
--8 112 D
--3 136 D
-5 137 D
-12 136 D
-15 106 D
-18 105 D
-13 62 D
-25 106 D
-32 118 D
-59 187 D
-61 168 D
-49 125 D
-41 100 D
-96 225 D
-5 13 D
-S
 1306 95 M
 -69 412 D
 -8 57 D
@@ -7149,21 +6843,6 @@ S
 18 125 D
 29 187 D
 48 282 D
-S
-1331 95 M
-35 412 D
-22 312 D
-12 212 D
-9 211 D
-6 223 D
-2 186 D
--1 261 D
--6 223 D
--9 211 D
--12 212 D
--17 255 D
--28 344 D
--13 150 D
 S
 1356 95 M
 83 244 D
@@ -7192,55 +6871,6 @@ S
 -54 163 D
 -41 118 D
 -11 32 D
-S
-1381 95 M
-23 37 D
-7 13 D
-8 12 D
-7 13 D
-38 62 D
-7 13 D
-8 12 D
-7 13 D
-37 62 D
-7 13 D
-36 62 D
-7 13 D
-21 37 D
-31 57 D
-43 81 D
-35 68 D
-40 81 D
-8 19 D
-29 62 D
-21 50 D
-28 69 D
-19 49 D
-41 118 D
-17 56 D
-23 87 D
-23 106 D
-19 124 D
-8 74 D
-5 112 D
--1 99 D
--4 74 D
--13 112 D
--20 118 D
--28 118 D
--24 80 D
--9 32 D
--32 93 D
--39 99 D
--40 94 D
--58 124 D
--64 125 D
--44 81 D
--78 138 D
--26 43 D
--7 13 D
--71 119 D
--45 75 D
 S
 1406 95 M
 97 112 D
@@ -7284,71 +6914,6 @@ S
 -49 56 D
 -5 7 D
 S
-1430 95 M
-71 62 D
-84 75 D
-6 7 D
-56 50 D
-101 93 D
-6 7 D
-27 25 D
-97 93 D
-18 19 D
-7 6 D
-18 19 D
-7 6 D
-90 94 D
-68 75 D
-38 43 D
-72 87 D
-44 56 D
-9 13 D
-32 43 D
-54 81 D
-39 62 D
-31 56 D
-35 69 D
-22 49 D
-15 38 D
-20 55 D
-19 62 D
-16 69 D
-9 49 D
-8 81 D
-2 62 D
--2 62 D
--6 62 D
--6 43 D
--13 62 D
--19 68 D
--23 69 D
--31 74 D
--23 50 D
--40 74 D
--33 56 D
--48 75 D
--26 37 D
--60 81 D
--65 81 D
--48 56 D
--73 81 D
--12 12 D
--11 13 D
--97 100 D
--19 18 D
--18 19 D
--7 6 D
--12 13 D
--138 131 D
--7 6 D
--6 7 D
--21 18 D
--6 7 D
--28 25 D
--124 112 D
--77 69 D
--22 19 D
-S
 1323 0 M
 -19 26 D
 -7 11 D
@@ -7376,41 +6941,22 @@ S
 1207 3307 M
 232 0 D
 S
-979 285 M
-688 0 D
-S
 659 569 M
 1327 0 D
-S
-385 853 M
-1875 0 D
 S
 176 1136 M
 2294 0 D
 S
-45 1419 M
-2556 0 D
-S
 0 1701 M
 2646 0 D
-S
-45 1983 M
-2556 0 D
 S
 176 2266 M
 2294 0 D
 S
-385 2549 M
-1875 0 D
-S
 659 2833 M
 1327 0 D
 S
-979 3117 M
-688 0 D
-S
-8 W
-25 W
+21 W
 1323 0 M
 P
 69 56 D

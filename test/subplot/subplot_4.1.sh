@@ -14,7 +14,7 @@
 # 4.1 -SR -SC, MAP_FRAME_AXES override 
 gmt begin subplot_4.1
 	gmt set FONT_HEADING 28p,Helvetica,black
-    gmt subplot begin 2x2 -Fs8c -SCb -SRl -R-2/2/0/10 --MAP_FRAME_AXES=WESN -T"4.1: -SRl -SCb, MAP_FRAME_AXES=WESN"
+    gmt subplot begin 2x2 -Fs8c -SCb -SRl -R-2/2/0/10 --MAP_FRAME_AXES=wsne -T"4.1: -SRl -SCb, MAP_FRAME_AXES=wsne"
        	gmt basemap -c
         gmt basemap -c
     	gmt basemap -c

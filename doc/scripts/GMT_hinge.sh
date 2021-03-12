@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_hinge
+	gmt set GMT_THEME cookbook
 	gmt makecpt -Cglobe -T-8000/3000
 	gmt colorbar -B -Dx0/0+w4.5i/0.1i+h -W0.001
 	gmt colorbar -Cglobe -B -Dx0/0+w4.5i/0.1i+h -W0.001 -Y0.5i

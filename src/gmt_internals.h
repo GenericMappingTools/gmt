@@ -130,7 +130,7 @@ EXTERN_MSC char * gmtlib_putcmyk (struct GMT_CTRL *GMT, double *cmyk);
 EXTERN_MSC char * gmtlib_puthsv (struct GMT_CTRL *GMT, double *hsv);
 EXTERN_MSC enum gmt_enum_units gmtlib_get_unit_number (struct GMT_CTRL *GMT, char unit);
 EXTERN_MSC void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options);
-EXTERN_MSC char * gmtlib_putparameter (struct GMT_CTRL *GMT, const char *keyword);
+EXTERN_MSC char * gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword);
 EXTERN_MSC unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core);
 EXTERN_MSC int gmtlib_report_func (struct GMT_CTRL *GMT, unsigned int level, const char *source_line, const char *format, ...);
 EXTERN_MSC int gmtlib_get_num_processors ();
