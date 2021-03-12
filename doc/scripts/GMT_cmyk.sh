@@ -11,6 +11,7 @@ gmt project -N -Z2.6+e -G0.02 -C5.75/1.3  > C.d
 gmt project -N -Z2.6+e -G0.02 -C5/0       > Y.d
 
 gmt begin GMT_cmyk ps
+	gmt set GMT_THEME cookbook
 	gmt plot -R-2.25/7.25/-1.8/2.75 -Jx0.6i R.d -Gred -B0
 	gmt plot G.d -Ggreen
 	gmt plot B.d -Gblue

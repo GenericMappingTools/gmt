@@ -64,7 +64,7 @@ button.toggle-button {
         content: "{{ togglebutton_hint }}";
         position: absolute;
         font-size: .8em;
-        left: -6.5em;
+        left: -13.5em;
         bottom: .4em;
     }
 }

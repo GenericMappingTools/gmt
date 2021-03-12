@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #	Show distribution of SRTM tiles
 gmt begin GMT_SRTM
+	gmt set GMT_THEME cookbook
 	gmt set MAP_FRAME_TYPE plain
 	gmt coast -R-180/180/-60/60 -JQ0/15c -B -BWStr -Dc -A5000 -Glightgray --FORMAT_GEO_MAP=dddF
 	echo "1	red" > t.cpt

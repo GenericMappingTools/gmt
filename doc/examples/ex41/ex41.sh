@@ -5,7 +5,7 @@
 # GMT modules:  set, coast, legend, plot, makecpt
 #
 gmt begin ex41
-	gmt set FONT_ANNOT_PRIMARY 12p FONT_LABEL 12p
+	gmt set FONT_ANNOT_PRIMARY 12p,Helvetica FONT_LABEL 12p,Helvetica
 	gmt makecpt -Cred,orange,yellow,green,bisque,cyan,magenta,white,gray -T1/10/1 -N
 	gmt coast -R130W/50W/8N/56N -JM14c -Glightgray -Sazure1 -A1000 -Wfaint
 	gmt coast -EUS+glightyellow+pfaint -ECU+glightred+pfaint -EMX+glightgreen+pfaint -ECA+glightblue+pfaint

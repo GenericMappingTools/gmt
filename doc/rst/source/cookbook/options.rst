@@ -134,6 +134,12 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
    The plot region can be specified in two different ways. (a) Extreme values for each dimension, or (b) coordinates of
    lower left and upper right corners.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-R.txt
+
 For rectilinear projections the first two forms give identical results. Depending on the selected map projection (or
 the kind of expected input data), the boundary coordinates may take on several different formats:
 
@@ -244,6 +250,12 @@ The over 30 map projections and coordinate transformations available in GMT are 
    :align: center
 
    The over-30 map projections and coordinate transformations available in GMT
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-J.txt
 
 .. _proj-codes:
 
@@ -467,6 +479,12 @@ is shown in Figure :ref:`Geographic map border <basemap_border>`.
    frame, and grid intervals.  Formatting of the annotation is controlled by
    the parameter :term:`FORMAT_GEO_MAP` in your :doc:`/gmt.conf`.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_geo_1.txt
+
 The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
 be used to separate degree annotations from minutes- and
@@ -482,6 +500,12 @@ attributes for grid lines and grid crosses, see Figure :ref:`Complex basemap
    :align: center
 
    Geographic map border with both primary (P) and secondary (S) components.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_geo_2.txt
 
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
@@ -508,6 +532,12 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
    annotations, shorter ticks indicate frame interval. The axis label is
    optional. For this example we used ``-R0/12/0/0.95 -JX7.5c/0.75c -Ba4f2g1+lFrequency+u" %" -BS``
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_linear.txt
+
 There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
 One solution is to request slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`)
@@ -524,6 +554,11 @@ via the **+a**\ *angle* modifier.
    For this example we used ``-R2000/2020/35/45 -JX12c -Bxa2f+a-30 -BS``.
    For the y-axis only the modifier **+ap** for parallel is allowed.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_slanted.txt
 
 Cartesian log\ :sub:`10` axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -560,6 +595,12 @@ specific to log axes (see Figure :ref:`Logarithmic projection axis
    (bottom) We annotate every power of 10 using :math:`\log_{10}` of the actual
    values as exponents, with -Ba1f2g3p.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_log.txt
+
 Cartesian exponential axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -584,6 +625,12 @@ labeled 1, 4, 9, ... will appear.
    in -R0/100/0/0.9 -JX3ip0.5/0.25i -Ba20f10g5.
    (bottom) Here, intervals refer to projected values, although the annotation
    uses the corresponding unprojected values, as in -Ba3f2g1p.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_pow.txt
 
 .. _cartesian_time_axes:
 
@@ -778,6 +825,12 @@ environment variable **TZ** (generally local time).
 
    The -U option makes it easy to date a plot.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-U.txt
+
 .. _option_-V:
 
 Verbose feedback: The **-V** option
@@ -825,6 +878,12 @@ To move the origin half the width to the right, use **-X**\ *w*\ /2.
    :align: center
 
    Plot origin can be translated freely with -X -Y.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-XY.txt
 
 .. _option_-a:
 
@@ -1303,6 +1362,11 @@ spacing by
    Gridline- and pixel-registration of data nodes.  The red shade indicates the
    areas represented by the value at the node (solid circle).
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_registration.txt
 
 .. math::
 
@@ -1342,6 +1406,12 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
    function of wavenumber :math:`k_j` [Marks and Smith, 2007 [15]_.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_grid2pix.txt
 
 .. _option_-s:
 

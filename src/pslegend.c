@@ -545,6 +545,14 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		do_width = true;
 	}
 
+	/* When no projection specified (i.e, -Dx is used), we cannot autoscale so must set undefined dimensions and font sizes to nominal sizes */
+	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {
+		GMT_Report (API, GMT_MSG_INFORMATION, "Without -R -J we must select default font sizes and dimensions regardless of plot size\n");
+		gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values */
+	}
+	else if (gmt_map_setup (GMT, GMT->common.R.wesn))	/* gmt_map_setup will call gmt_set_undefined_defaults as well */
+		Return (GMT_PROJECTION_ERROR);
+
 	/* First attempt to compute the legend height */
 
 	one_line_spacing = Ctrl->D.spacing * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
@@ -748,7 +756,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								if (x > 0.0) line_size = x;
 							}
 							if (x > def_size) def_size = x;
-							if (n_scan > 1 && strcmp (txt_b, "-")) {
+							if (n_scan > 2 && strcmp (txt_b, "-")) {
 								x = gmt_M_to_inch (GMT, txt_b);
 								if (x > def_dx2) def_dx2 = x;
 							}
@@ -835,8 +843,6 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Disabling your -B option since -R -J were not set\n");
 		}
 	}
-	else if (gmt_map_setup (GMT, GMT->common.R.wesn))
-		Return (GMT_PROJECTION_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 

@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 595 842
 %%HiResBoundingBox: 0 0 595.0000 842.0000
-%%Title: GMT v6.2.0_1515dec-dirty_2020.10.08 [64-bit] Document from coast
+%%Title: GMT v6.2.0_99b7aea-dirty_2021.03.11 [64-bit] Document from coast
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Oct  8 21:24:26 2020
+%%CreationDate: Thu Mar 11 16:10:38 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Landscape
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -635,6 +660,20 @@ end
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
     psl_label dup sd neg 0 exch G show
+    U
+} def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
     U
 } def
 /PSL_nclip 0 def
@@ -11699,7 +11738,7 @@ PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 PSL_GPP setmatrix [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 4 W
-{1 A 0.7 /Normal PSL_transp} FS
+{1 A 0.7 0.7 /Normal PSL_transp} FS
 500 F1
 V
 (702) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
@@ -11714,7 +11753,7 @@ O1
 1816 4367 M (702) mr false charpath fs S
 PSL_GPP setmatrix [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 4 W
-{1 A 0.7 /Normal PSL_transp} FS
+{1 A 0.7 0.7 /Normal PSL_transp} FS
 O0
 V
 (458) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
@@ -11729,7 +11768,7 @@ O1
 2866 2316 M (458) mr false charpath fs S
 PSL_GPP setmatrix [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 4 W
-{1 A 0.7 /Normal PSL_transp} FS
+{1 A 0.7 0.7 /Normal PSL_transp} FS
 O0
 V
 (2146) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
@@ -11744,7 +11783,7 @@ O1
 4966 3308 M (2146) mr false charpath fs S
 PSL_GPP setmatrix [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 4 W
-{1 A 0.7 /Normal PSL_transp} FS
+{1 A 0.7 0.7 /Normal PSL_transp} FS
 O0
 V
 (2304) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
@@ -11759,7 +11798,7 @@ O1
 7066 3970 M (2304) mr false charpath fs S
 PSL_GPP setmatrix [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 4 W
-{1 A 0.7 /Normal PSL_transp} FS
+{1 A 0.7 0.7 /Normal PSL_transp} FS
 O0
 V
 (284) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
@@ -11774,7 +11813,7 @@ O1
 4703 4632 M (284) mr false charpath fs S
 PSL_GPP setmatrix [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 4 W
-{1 A 0.7 /Normal PSL_transp} FS
+{1 A 0.7 0.7 /Normal PSL_transp} FS
 O0
 V
 (1311) V MU 0 0 M E /PSL_dim_w edef FP pathbbox N /PSL_dim_h edef /PSL_dim_x1 edef /PSL_dim_d edef /PSL_dim_x0 edef U
@@ -11795,7 +11834,7 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt plot3d /Users/pwessel/.gmt/cache/languages_10.txt -R-180/180/-90/90/0/2500 -JZ6c -So0.75c+Z5 -C -Wthinner --FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-2c -p200/40 --FORMAT_GEO_MAP=dddF -B -Bza500+lLanguages '-BWSneZ+tWorld Languages By Continent' -JQ0/37.5/20c
+%@GMT: gmt plot3d /Users/meghanj/.gmt/cache/languages_10.txt -R-180/180/-90/90/0/2500 -JZ6c -So0.75c+Z5 -C -Wthinner --FONT_TITLE=30p,Times-Bold --MAP_TITLE_OFFSET=-2c -p200/40 --FORMAT_GEO_MAP=dddF -B -Bza500+lLanguages '-BWSneZ+tWorld Languages By Continent' -JQ0/37.5/20c
 %@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -15879053.864 15879053.864 -10007554.678 10007554.678 +proj=eqc +lat_ts=37.5 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
@@ -11803,104 +11842,104 @@ O0
 3.32550952342 setmiterlimit
 /PSL_GPP matrix currentmatrix def [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 8 W
-N 0 0 M 0 -83 D S
-N 0 5955 M 0 83 D S
-N 2362 0 M 0 -83 D S
-N 2362 5955 M 0 83 D S
-N 4724 0 M 0 -83 D S
-N 4724 5955 M 0 83 D S
-N 7087 0 M 0 -83 D S
-N 7087 5955 M 0 83 D S
-N 9449 0 M 0 -83 D S
-N 9449 5955 M 0 83 D S
-N 9449 0 M 83 0 D S
-N 0 0 M -83 0 D S
-N 9449 0 M 83 0 D S
-N 0 0 M -83 0 D S
-N 9449 2977 M 83 0 D S
-N 0 2977 M -83 0 D S
-N 9449 2977 M 83 0 D S
-N 0 2977 M -83 0 D S
-N 9449 5955 M 83 0 D S
-N 0 5955 M -83 0 D S
-N 9449 5955 M 83 0 D S
-N 0 5955 M -83 0 D S
-0 A [] 0 B
-25 W
-83 W
-1 A
-N -42 0 M 0 992 D S
-N 9490 0 M 0 992 D S
 0 A
-N -42 992 M 0 993 D S
-N 9490 992 M 0 993 D S
+N 0 0 M 0 -82 D S
+N 0 5955 M 0 82 D S
+N 2362 0 M 0 -82 D S
+N 2362 5955 M 0 82 D S
+N 4724 0 M 0 -82 D S
+N 4724 5955 M 0 82 D S
+N 7087 0 M 0 -82 D S
+N 7087 5955 M 0 82 D S
+N 9449 0 M 0 -82 D S
+N 9449 5955 M 0 82 D S
+N 9449 0 M 81 0 D S
+N 0 0 M -82 0 D S
+N 9449 0 M 81 0 D S
+N 0 0 M -82 0 D S
+N 9449 2977 M 81 0 D S
+N 0 2977 M -82 0 D S
+N 9449 2977 M 81 0 D S
+N 0 2977 M -82 0 D S
+N 9449 5955 M 81 0 D S
+N 0 5955 M -82 0 D S
+N 9449 5955 M 81 0 D S
+N 0 5955 M -82 0 D S
+24 W
+49 W
 1 A
-N -42 1985 M 0 992 D S
-N 9490 1985 M 0 992 D S
+N -24 0 M 0 992 D S
+N 9473 0 M 0 992 D S
 0 A
-N -42 2977 M 0 993 D S
-N 9490 2977 M 0 993 D S
+N -24 992 M 0 993 D S
+N 9473 992 M 0 993 D S
 1 A
-N -42 3970 M 0 992 D S
-N 9490 3970 M 0 992 D S
+N -24 1985 M 0 992 D S
+N 9473 1985 M 0 992 D S
 0 A
-N -42 4962 M 0 993 D S
-N 9490 4962 M 0 993 D S
-N 0 -42 M 787 0 D S
-N 0 5997 M 787 0 D S
+N -24 2977 M 0 993 D S
+N 9473 2977 M 0 993 D S
 1 A
-N 787 -42 M 788 0 D S
-N 787 5997 M 788 0 D S
+N -24 3970 M 0 992 D S
+N 9473 3970 M 0 992 D S
 0 A
-N 1575 -42 M 787 0 D S
-N 1575 5997 M 787 0 D S
+N -24 4962 M 0 993 D S
+N 9473 4962 M 0 993 D S
+N 0 -24 M 787 0 D S
+N 0 5979 M 787 0 D S
 1 A
-N 2362 -42 M 788 0 D S
-N 2362 5997 M 788 0 D S
+N 787 -24 M 788 0 D S
+N 787 5979 M 788 0 D S
 0 A
-N 3150 -42 M 787 0 D S
-N 3150 5997 M 787 0 D S
+N 1575 -24 M 787 0 D S
+N 1575 5979 M 787 0 D S
 1 A
-N 3937 -42 M 787 0 D S
-N 3937 5997 M 787 0 D S
+N 2362 -24 M 788 0 D S
+N 2362 5979 M 788 0 D S
 0 A
-N 4724 -42 M 788 0 D S
-N 4724 5997 M 788 0 D S
+N 3150 -24 M 787 0 D S
+N 3150 5979 M 787 0 D S
 1 A
-N 5512 -42 M 787 0 D S
-N 5512 5997 M 787 0 D S
+N 3937 -24 M 787 0 D S
+N 3937 5979 M 787 0 D S
 0 A
-N 6299 -42 M 788 0 D S
-N 6299 5997 M 788 0 D S
+N 4724 -24 M 788 0 D S
+N 4724 5979 M 788 0 D S
 1 A
-N 7087 -42 M 787 0 D S
-N 7087 5997 M 787 0 D S
+N 5512 -24 M 787 0 D S
+N 5512 5979 M 787 0 D S
 0 A
-N 7874 -42 M 787 0 D S
-N 7874 5997 M 787 0 D S
+N 6299 -24 M 788 0 D S
+N 6299 5979 M 788 0 D S
 1 A
-N 8661 -42 M 788 0 D S
-N 8661 5997 M 788 0 D S
+N 7087 -24 M 787 0 D S
+N 7087 5979 M 787 0 D S
 0 A
-8 W
-N -83 0 M 9615 0 D S
-N -83 -83 M 9615 0 D S
-N 9449 -83 M 0 6121 D S
-N 9532 -83 M 0 6121 D S
-N 9532 5955 M -9615 0 D S
-N 9532 6038 M -9615 0 D S
-N 0 6038 M 0 -6121 D S
-N -83 6038 M 0 -6121 D S
-0 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
+N 7874 -24 M 787 0 D S
+N 7874 5979 M 787 0 D S
+1 A
+N 8661 -24 M 788 0 D S
+N 8661 5979 M 788 0 D S
+0 A
+5 W
+N -49 0 M 9547 0 D S
+N -49 -49 M 9547 0 D S
+N 9449 -49 M 0 6053 D S
+N 9498 -49 M 0 6053 D S
+N 9498 5955 M -9547 0 D S
+N 9498 6004 M -9547 0 D S
+N 0 6004 M 0 -6053 D S
+N -49 6004 M 0 -6053 D S
+0 -130 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+163 F0
 (180°) tc Z
-2362 -167 M (90°W) tc Z
-4724 -167 M (0°) tc Z
-7087 -167 M (90°E) tc Z
-9449 -167 M (180°) tc Z
--167 0 M (90°S) mr Z
--167 2977 M (0°) mr Z
--167 5955 M (90°N) mr Z
+2362 -130 M (90°W) tc Z
+4724 -130 M (0°) tc Z
+7087 -130 M (90°E) tc Z
+9449 -130 M (180°) tc Z
+-130 0 M (90°S) mr Z
+-130 2977 M (0°) mr Z
+-130 5955 M (90°N) mr Z
 PSL_GPP setmatrix
 PSL_font_encode 5 get 0 eq {ISOLatin1+_Encoding /Times-Bold /Times-Bold PSL_reencode PSL_font_encode 5 1 put} if
 5458 6901 M 500 F5
@@ -11908,6 +11947,7 @@ PSL_font_encode 5 get 0 eq {ISOLatin1+_Encoding /Times-Bold /Times-Bold PSL_reen
 /PSL_GPP matrix currentmatrix def [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 PSL_GPP setmatrix
 V
+8 W
 O1
 {0.563 0.0984 0.854 C} FS
 /PSL_GPP matrix currentmatrix def [-0.342020143326 0.604022773555 0 0.766044443119 8776.12232691 1576.71927336] concat
@@ -12186,29 +12226,30 @@ PSL_GPP setmatrix [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 
 354 355 2972 2139 Sb
 U
 PSL_GPP setmatrix [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
+0 A
 PSL_GPP setmatrix
 /PSL_GPP matrix currentmatrix def [0.939692620786 0.219846310393 0 0.766044443119 0 3596.94823701] concat
-25 W
+24 W
 N 0 2835 M 0 -2835 D S
-/PSL_A0_y 83 def
+/PSL_A0_y 82 def
 /PSL_A1_y 0 def
 8 W
-N 0 0 M -83 0 D S
-N 0 567 M -83 0 D S
-N 0 1134 M -83 0 D S
-N 0 1701 M -83 0 D S
-N 0 2268 M -83 0 D S
-N 0 2835 M -83 0 D S
+N 0 0 M -82 0 D S
+N 0 567 M -82 0 D S
+N 0 1134 M -82 0 D S
+N 0 1701 M -82 0 D S
+N 0 2268 M -82 0 D S
+N 0 2835 M -82 0 D S
 /MM {neg exch M} def
 /PSL_AH0 0
-200 F0
+163 F0
 (500) sw mx
 (1000) sw mx
 (1500) sw mx
 (2000) sw mx
 (2500) sw mx
 def
-/PSL_A0_y PSL_A0_y 83 add def
+/PSL_A0_y PSL_A0_y 49 add def
 567 PSL_A0_y MM
 (500) mr Z
 1134 PSL_A0_y MM
@@ -12220,9 +12261,9 @@ def
 2835 PSL_A0_y MM
 (2500) mr Z
 /PSL_A0_y PSL_A0_y PSL_AH0 add def
-/PSL_LH 267 F0
+/PSL_LH 228 F0
 (M) sh def
-/PSL_L_y PSL_A0_y PSL_A1_y mx 133 add def
+/PSL_L_y PSL_A0_y PSL_A1_y mx 98 add def
 1417 PSL_L_y MM
 V 90 R (Languages) bc Z U
 PSL_GPP setmatrix
@@ -12234,7 +12275,7 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt legend -JZ6c -DjLB+o0.5c+w3.5c/0+jBL --FONT=Helvetica-Bold -F+glightgrey+pthinner+s-4p/-6p/grey20@40 -p200/40 /Users/pwessel/.gmt/cache/legend_10.txt -R-180/180/-90/90/0/2500 -JQ0/37.5/20c
+%@GMT: gmt legend -JZ6c -DjLB+o0.5c+w3.5c/0+jBL --FONT=Helvetica-Bold -F+glightgrey+pthinner+s-4p/-6p/grey20@40 -p200/40 /Users/meghanj/.gmt/cache/legend_10.txt -R-180/180/-90/90/0/2500 -JQ0/37.5/20c
 %@PROJ: eqc -180.00000000 180.00000000 -90.00000000 90.00000000 -15879053.864 15879053.864 -10007554.678 10007554.678 +proj=eqc +lat_ts=37.5 +lat_0=0 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
@@ -12242,16 +12283,16 @@ O0
 3.32550952342 setmiterlimit
 /PSL_GPP matrix currentmatrix def [0.939692620786 0.219846310393 -0.342020143326 0.604022773555 2036.72577495 0] concat
 /PSL_legend_box_width 1654 def
-/PSL_legend_box_height 1600 def
+/PSL_legend_box_height 1389 def
 236 236 T
-{0.2 A 0.6 /Normal PSL_transp} FS
-1600 1654 760 700 Sr
+{0.2 A 0.6 0.6 /Normal PSL_transp} FS
+1389 1654 760 594 Sr
 {0.827 A} FS
-1600 1654 827 800 Sr
+1389 1654 827 694 Sr
 8 W
 FQ
 O1
-1600 1654 827 800 Sr
+1389 1654 827 694 Sr
 0 A
 FQ
 O0
@@ -12265,16 +12306,16 @@ O0
 3.32550952342 setmiterlimit
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1 0 0 C
-67 1292 M 267 F1
+67 1116 M 228 F1
 (dying) bl Z
 1 1 0 C
-67 999 M (in trouble) bl Z
+67 865 M (in trouble) bl Z
 0 0.392 0 C
-67 705 M (vigorous) bl Z
+67 614 M (vigorous) bl Z
 0 0 1 C
-67 412 M (developing) bl Z
+67 362 M (developing) bl Z
 0.627 0.125 0.941 C
-67 119 M (institutional) bl Z
+67 111 M (institutional) bl Z
 %%EndObject
 -236 -236 T
 PSL_GPP setmatrix

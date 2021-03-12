@@ -179,6 +179,8 @@ EXTERN_MSC int GMT_gmtset (void *V_API, int mode, void *args) {
 
 	if (gmt_setdefaults (GMT, options)) Return (GMT_PARSE_ERROR);		/* Process command line arguments, return error if failures */
 
+	strcpy (GMT->current.setting.theme, "off");	/* To preserve changes the user may have set */
+
 	gmt_putdefaults (GMT, Ctrl->G.file);	/* Write out the revised settings */
 
 	Return (GMT_NOERROR);
