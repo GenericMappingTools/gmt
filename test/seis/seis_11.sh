@@ -21,7 +21,7 @@ gmt begin
 	gmt basemap -JM5i -R0/6/0/6 -B -X0.5i -Y0.5i
 	gmt events data.txt -Z"psmeca -Sa4c+f0" -Ct.cpt -W1p -T\${MOVIE_COL0} -Es+r1+p1+d1+f1 -Mi1+c-0.5 -Ms2+c0.5 -Mt+c0 -L3 --TIME_UNIT=d
 	gmt events labels.txt -L1 -Et -T\${MOVIE_COL0} -F+f12p,Helvetica-Bold,red+jBL -Dj0.1c --TIME_UNIT=d
-gmt end show
+gmt end
 EOF
 #gmt movie main.sh -C6ix6ix100 -Nseis_11 -Fmp4 -Mm,ps -Lc0+o1.5c -Lf+jTR+o1.5c -Ttime.txt -Z --FORMAT_CLOCK_MAP=hh
 gmt movie main.sh -C6ix6ix100 -Nseis_11 -Fnone -Mm,ps -Lc0+o1.5c -Lf+jTR+o1.5c -Ttime.txt -Z --FORMAT_CLOCK_MAP=hh
