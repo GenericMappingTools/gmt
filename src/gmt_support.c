@@ -6962,6 +6962,12 @@ void gmt_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 	}
 }
 
+void gmt_scale_pen (struct GMT_CTRL *GMT, struct GMT_PEN *P, double scale) {
+	/* Scale all pen attributes by scale */
+	P->width *= scale;
+	/* Wait with texture for now */
+}
+
 #define GMT_INC_IS_FEET		1
 #define GMT_INC_IS_SURVEY_FEET	2
 #define GMT_INC_IS_M		4
