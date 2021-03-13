@@ -9,6 +9,14 @@ on:
     branches:
       - master
       - 6.[0-9]+
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'share/**'
+      - 'doc/examples/**'
+      - 'doc/scripts/**'
+      - '.github/workflows/**'
+      - 'ci/**'
 
 defaults:
   run:
@@ -164,6 +172,7 @@ jobs:
         run: |
           cd doc/examples
           call do_examples.bat
+        if: runner.os == 'Windows'
 
       - name: Upload build directory if failed
         uses: actions/upload-artifact@v2

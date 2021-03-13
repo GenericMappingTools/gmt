@@ -1011,28 +1011,28 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	if (Ctrl->Z.mode == PSVELO_V_USER) Ctrl->S.n_cols++;	/* Need to read one extra column */
   /* 2. Add scale from file, if missing */
 	if (Ctrl->S.read) {	/* Read symbol size from file */
+		scol = Ctrl->S.n_cols;	/* Column ID with scales */
 		Ctrl->S.n_cols++;	/* Must read an extra column */
-		scol = Ctrl->S.n_cols - 1;	/* Column ID with scales */
 		gmt_set_column_type (GMT, GMT_IN, scol, GMT_IS_DIMENSION);
 	}
 	else	/* Fixed symbol scale */
 		scale = Ctrl->S.scale;
   /* 3. Add intensity from file, if requested */
 	if (Ctrl->I.mode) {	/* Read intensity from data file */
+		icol = Ctrl->S.n_cols;	/* Column id for intensity */
 		Ctrl->S.n_cols++;	/* One more data column required */
-		icol = Ctrl->S.n_cols - 1;	/* Column id for intensity */
 		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
   /* Add transparencies from file, if requested */
 	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
 		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			tcol_f = Ctrl->S.n_cols;
 			Ctrl->S.n_cols++;	/* Read fill transparencies from data file */
-			tcol_f = Ctrl->S.n_cols - 1;
 			gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
 		}
 		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			tcol_s = Ctrl->S.n_cols;
 			Ctrl->S.n_cols++;	/* Read stroke transparencies from data file */
-			tcol_s = Ctrl->S.n_cols - 1;
 			gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
 		}
 	}

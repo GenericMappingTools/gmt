@@ -295,6 +295,73 @@ placed in a separate parameter file:
    scenarios into separate ``gmt.conf`` files will minimize headaches associated with
    micro-editing of illustrations.
 
+
+.. _auto-scaling:
+
+Automatic GMT settings
+~~~~~~~~~~~~~~~~~~~~~~
+
+The **auto** flag for :doc:`GMT parameters </gmt.conf>` signals that suitable
+dimensions or settings will be automatically computed when the plot dimensions
+are known. The **auto** flag is supported for the following parameters:
+
+================================== ===============================================
+:term:`FONT_ANNOT_PRIMARY`         Primary annotation font [11.00p]
+:term:`FONT_ANNOT_SECONDARY`       Secondary annotation font [13.20p]
+:term:`FONT_HEADING`               Subplot heading font [30.80p]
+:term:`FONT_LABEL`                 Axis label font [15.40p]
+:term:`FONT_LOGO`                  Logo font [8.80p]
+:term:`FONT_SUBTITLE`              Plot subtitle font [19.80p]
+:term:`FONT_TAG`                   Tag/labeling font [17.60p]
+:term:`FONT_TITLE`                 Plot title font [24.20p]
+:term:`MAP_ANNOT_MIN_SPACING`      Minimum space between annotations [11.00p]
+:term:`MAP_ANNOT_OFFSET_PRIMARY`   Primary annotation offset from axis [3.30p]
+:term:`MAP_ANNOT_OFFSET_SECONDARY` Secondary annotation offset from axis [3.30p]
+:term:`MAP_FRAME_AXES`             Axes that are drawn and annotated
+:term:`MAP_FRAME_PEN`              Pen width of plain frame [1.65p]
+:term:`MAP_FRAME_WIDTH`            Width of fancy frame [3.30p]
+:term:`MAP_GRID_PEN_PRIMARY`       Pen width of primary gridline [0.28p]
+:term:`MAP_GRID_PEN_SECONDARY`     Pen width of secondary gridline [0.55p]
+:term:`MAP_HEADING_OFFSET`         Heading offset from subplot [17.60p]
+:term:`MAP_LABEL_OFFSET`           Label offset from annotations [6.60p]
+:term:`MAP_POLAR_CAP`              Appearance of gridlines near the poles
+:term:`MAP_TICK_LENGTH_PRIMARY`    Length of primary tick marks [2.2p/1.1p]
+:term:`MAP_TICK_LENGTH_SECONDARY`  Length of secondary tick marks [6.60p/1.65p]
+:term:`MAP_TICK_PEN_PRIMARY`       Pen width of primary tick marks [0.55p]
+:term:`MAP_TICK_PEN_SECONDARY`     Pen width of secondary tick marks [0.28p]
+:term:`MAP_TITLE_OFFSET`           Title offset from plot [13.20p]
+================================== ===============================================
+
+The reference dimensions listed in brackets are the values for a plot
+with a height and width of 25 cm.  Larger and smaller illustrations
+will see a linear magnification or attenuation of these dimensions. The primary
+annotation font size will be computed as::
+
+    size = (2/15) * (map_size_in_cm - 10) + 9 [in points]
+
+where :math:`map\_size\_in\_cm = sqrt(map\_height  x  map\_width)`.  All other
+items will have their reference sizes scaled by :math:`scale = size / 10`. In
+modern mode, if you do nothing then all of the above dimensions will be
+automatically set based on your plot dimensions.  However, you are free to
+override any of them using the methods described in the next section. **Note**:
+Selecting **auto** for font sizes and dimensions requires GMT to know the plot
+dimensions. If the plot dimensions are not available (e.g., :doc:`/pslegend`
+with **-Dx** and no **-R -J**), the settings will be updated using the nominal
+font sizes and dimensions for a 10 x 1 cm plot. **Note**: The particular scaling
+relationship is experimental in 6.2 and we reserve the right to adjust it
+pending further experimentation and user feedback.
+
+For **MAP_POLAR_CAP**, **auto** will determine a suitable *pc_lat* for your
+region for all azimuthal projections and a few others in which the geographic
+poles are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
+Sinusoidal, and van der Grinten).
+
+For **MAP_FRAME_AXES**, **auto** will determine a suitable setting based on the
+projection, type of plot, perspective, etc. For example, GMT will determine the
+position of different quadrants for perspective and polar plots and select the
+equivalent of **WrStZ**. The default for non-perspective, non-polar plots using
+**MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
+
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
 

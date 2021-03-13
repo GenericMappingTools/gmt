@@ -102,6 +102,7 @@ struct GMT_DEFAULTS {
 	unsigned int fft;         /* Any of FFT_implementations: k_fft_auto, k_fft_accelerate, k_fft_fftw3, k_fft_kiss, k_fft_brenner */
 	unsigned int fftw_plan;   /* Only accessed if HAVE_FFTW3F is defined: Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
 	unsigned int run_mode;     /* Either classic [0] or modern [1] */
+	bool update_theme;    	 /* Refresh defaults with contents of selected theme */
 	bool use_modern_name;     /* true if we should use the modern name in usage message */
 	double extrapolate_val[2];/* Choose between [0] = 0, 1D extrapolated vals are NaN, = 1 -> extrapolate, = 2 -> set to const stored in [1] */
 	bool fftwf_threads;   /* Only accessed if HAVE_FFTW3F_THREADS is defined: Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
@@ -110,6 +111,7 @@ struct GMT_DEFAULTS {
 	unsigned int export_type;     /* What data type to export to external APIs [GMT_DOUBLE] */
 	unsigned graphics_format;	/* The default graphics format in modern mode [GMT_SESSION_FORMAT] */
 	int max_cores;		/* The maximum number of cores for a multi-threaded module [GMT_MAX_CORES] */
+	char theme[GMT_LEN64];	/* User-selected defaults theme */
 	/* IO group */
 	uint64_t n_bin_header_cols;		/* Minimum number of columns in a binary file for which the all cols == NaN means segment header [2] */
 	unsigned int io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */
@@ -153,6 +155,7 @@ struct GMT_DEFAULTS {
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
 	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
 	unsigned int map_graph_extension_unit;	/* If mapframetype is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
+	bool map_annot_oblique_set;		/* true if user changed map_annot_oblique via a gmt.conf or --par=val */
 	bool map_logo;			/* Plot time and map projection on map [false] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */

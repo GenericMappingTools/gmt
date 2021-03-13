@@ -103,6 +103,7 @@ struct PSCOAST_CTRL {
 	} I;
 	struct PSCOAST_L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
 		bool active;
+		char *arg;
 		struct GMT_MAP_SCALE scale;
 	} L;
 	struct PSCOAST_M {	/* -M */
@@ -166,6 +167,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallo
 	if (!C) return;
 	gmt_DCW_free (GMT, &(C->E.info));
 	if (C->L.scale.refpoint) gmt_free_refpoint (GMT, &C->L.scale.refpoint);
+	gmt_M_str_free (C->L.arg);
 	gmt_M_free (GMT, C->L.scale.panel);
 	if (C->T.rose.refpoint) gmt_free_refpoint (GMT, &C->T.rose.refpoint);
 	gmt_M_free (GMT, C->T.rose.panel);
@@ -417,7 +419,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				n_errors += gmt_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
+				if (opt->arg[0])
+					Ctrl->L.arg = strdup (opt->arg);
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: No argument given!\n");
+					n_errors++;					
+				}
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through on purpose */
@@ -803,6 +810,8 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+
+	if (Ctrl->L.active && gmt_getscale (GMT, 'L', Ctrl->L.arg, &Ctrl->L.scale)) Return (GMT_PARSE_ERROR);
 
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 

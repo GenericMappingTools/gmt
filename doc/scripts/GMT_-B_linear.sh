@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_-B_linear
+	gmt set GMT_THEME cookbook
 	gmt basemap -R0/12/0/0.95 -JX7.5c/0.75c -Ba4f2g1+lFrequency+u" %" -BS
 	gmt plot -Sv2p+e+a60 -W0.5p -Gblack -Y0.25c -N << EOF
 2 0 0 0.5

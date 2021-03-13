@@ -2209,6 +2209,7 @@ GMT_LOCAL void gmtmap_setxy (struct GMT_CTRL *GMT, double xmin, double xmax, dou
 		update_parameters = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Rescaling map for subplot by factors fx = %g fy = %g dx = %g dy = %g\n", fx, fy, P->dx, P->dy);
 		if (gmt_M_is_rect_graticule (GMT) && P->parallel) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Force parallel latitude annotations\n");
 			strcpy (GMT->current.setting.map_annot_ortho, "");	/* All annotations will be parallel to axes */
 			GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_LAT_PARALLEL;	/* Plot latitude parallel to frame for geo maps */
 		}
@@ -6700,6 +6701,16 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 		d = fabs (GMT->common.R.wesn[ZHI] - GMT->common.R.wesn[ZLO]);
 	}
 	f *= GMT->session.u2u[GMT_INCH][GMT_PT];	/* Change to points */
+
+#ifndef NO_THEMES
+	if (GMT->current.setting.run_mode == GMT_MODERN && gmt_M_axis_is_geo (GMT, axis)) {	/* Need more space for degree symbol and WESN letters not considered in the algorithm */
+		if (strchr (GMT->current.setting.format_geo_map, 'F'))	/* Need more space for degree symbol and letter */
+			d *= 1.75;
+		else	/* Just more space for degree symbol */
+			d *= 1.25;
+	}
+#endif
+
 	/* First guess of interval */
 	d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.20));
 
@@ -9315,6 +9326,19 @@ unsigned int gmtlib_map_loncross (struct GMT_CTRL *GMT, double lon, double south
 	return (nc);
 }
 
+void gmtmap_reset_oblique_settings (struct GMT_CTRL *GMT) {
+	/* The modern mode default for MAP_ANNOT_OBLIQUE has settings that only makes sense for oblique plots with rectangular borders.
+	 * Thus, if the current projection is not like that then we reset the default to a more benign default setting.  However, if
+	 * the user has actively changed the MAP_ANNOT_OBLIQUE value then we do nothing. */
+
+	if (GMT->current.setting.map_annot_oblique_set) return;	/* User changed MAP_ANNOT_OBLIQUE so we cannot reset anything */
+	if (GMT->common.R.oblique) return;	/* These are the appropriate defaults for oblique projections with rectangular borders */
+
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Reset MAP_ANNOT_OBLIQUE to anywhere\n");
+
+	GMT->current.setting.map_annot_oblique = GMT_OBL_ANNOT_ANYWHERE;	/* Reset to non-oblique map defaults */
+}
+
 int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	/* Core map setup function for the projection.  All program needing projection support
 	 * will call this either directly or indirectly.  Programs that _just_ need to project
@@ -9405,6 +9429,8 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	GMT->current.map.lon_wrap = true;
 	GMT->current.map.lat_wrap = false;
 	GMT->current.map.lon_wrap_range = 360.0;
+
+	gmtmap_reset_oblique_settings (GMT);	/* Maybe reset MAP_ANNOT_OBLIQUE defaults depending on situation */
 
 	switch (GMT->current.proj.projection) {
 
@@ -9571,6 +9597,8 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	double scale, i_scale;
 
 	if ((error = gmt_proj_setup (GMT, wesn)) != GMT_NOERROR) goto gmt_map_setup_end;
+
+	gmt_set_undefined_defaults (GMT, sqrt (GMT->current.map.width * GMT->current.map.height), false);	/* We must change any undefined defaults given max plot dimension */
 
 	search = GMT->current.proj.search;
 

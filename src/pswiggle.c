@@ -55,6 +55,7 @@ struct PSWIGGLE_CTRL {
 	} C;
 	struct PSWIGGLE_D {	/* -D[g|j|J|n|x]<refpoint>+w<length>[+a][+j<justify>][+o<dx>[/<dy>]][+l<label>] */
 		bool active;
+		char *arg;
 		struct GMT_MAP_SCALE scale;
 	} D;
 	struct PSWIGGLE_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
@@ -105,6 +106,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->D.arg);
 	if (C->D.scale.refpoint) gmt_free_refpoint (GMT, &C->D.scale.refpoint);
 	gmt_M_free (GMT, C->D.scale.panel);
 	gmt_M_str_free (C->S.label);
@@ -310,8 +312,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors += gmt_parse_g_option (GMT, txt_a);
 				}
 				else {
+					if (opt->arg[0])
+						Ctrl->D.arg = strdup (opt->arg);
+					else {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -D: No argument given!\n");
+						n_errors++;					
+					}
 					Ctrl->D.active = Ctrl->D.scale.vertical = true;
-					n_errors += gmt_getscale (GMT, 'D', opt->arg, &Ctrl->D.scale);
 				}
 				break;
 			case 'F':
@@ -478,6 +485,8 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+
+	if (Ctrl->D.active && gmt_getscale (GMT, 'D', Ctrl->D.arg, &Ctrl->D.scale)) Return (GMT_PARSE_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
