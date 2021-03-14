@@ -2584,10 +2584,12 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 }
 
 bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
-	if (fabs (lat) < 90.0) return false;	/* Not at the poles so OK to annotate */
 	/* Here, latitude is -90 or +90 and the question is do we annotation that latitude? */
+	if (GMT->current.proj.projection_GMT == GMT_ECKERT4   && fabs (lat) > 85.0) return true;	/* Slope too gentle near poles to adjust via boost */
+	if (GMT->current.proj.projection_GMT == GMT_HAMMER    && fabs (lat) > 85.0) return true;	/* Slope too gentle near poles to adjust via boost */
+	if (GMT->current.proj.projection_GMT == GMT_MOLLWEIDE && fabs (lat) > 88.0) return true;	/* Slope too gentle near poles to adjust via boost */
+	if (fabs (lat) < 90.0) return false;	/* Not at the poles so OK to annotate */
 	if (GMT->current.proj.polar) return true;	/* Cannot since inside map */
-	if (GMT->current.proj.projection_GMT == GMT_ECKERT4) return true;	/* Slope too gentle near poles to adjust via boost */
 	return false;
 }
 
