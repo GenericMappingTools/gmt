@@ -1119,19 +1119,19 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	else
 		n_needed = n_cols_start + S.n_required;
 	if (Ctrl->I.mode) {
+		icol = n_needed;
 		n_needed++;	/* Read intensity from data file */
-		icol = n_needed - 1;
 		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
 	}
 	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
 		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
+			tcol_f = n_needed;
 			n_needed++;	/* Read fill transparencies from data file */
-			tcol_f = n_needed - 1;
 			gmt_set_column_type (GMT, GMT_IN, tcol_f, GMT_IS_FLOAT);
 		}
 		if (GMT->common.t.mode & GMT_SET_PEN_TRANSP) {
+			tcol_s = n_needed;
 			n_needed++;	/* Read stroke transparencies from data file */
-			tcol_s = n_needed - 1;
 			gmt_set_column_type (GMT, GMT_IN, tcol_s, GMT_IS_FLOAT);
 		}
 	}

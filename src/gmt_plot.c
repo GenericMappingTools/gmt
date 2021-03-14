@@ -2583,6 +2583,16 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 	PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
 }
 
+bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
+	/* Here, latitude is -90 or +90 and the question is do we annotation that latitude? */
+	if (GMT->current.proj.projection_GMT == GMT_ECKERT4   && fabs (lat) > 85.0) return true;	/* Slope too gentle near poles to adjust via boost */
+	if (GMT->current.proj.projection_GMT == GMT_HAMMER    && fabs (lat) > 85.0) return true;	/* Slope too gentle near poles to adjust via boost */
+	if (GMT->current.proj.projection_GMT == GMT_MOLLWEIDE && fabs (lat) > 88.0) return true;	/* Slope too gentle near poles to adjust via boost */
+	if (fabs (lat) < 90.0) return false;	/* Not at the poles so OK to annotate */
+	if (GMT->current.proj.polar) return true;	/* Cannot since inside map */
+	return false;
+}
+
 GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	unsigned int i, k, nx = 0, ny = 0, last, form, remove[2] = {0,0}, trim, add;
 	bool do_minutes, do_seconds, done_Greenwich, done_Dateline, check_edges;
@@ -2762,8 +2772,8 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			}
 			last = ny - 1;
 			for (i = 0; i < ny; i++) {
-				if ((GMT->current.proj.polar || GMT->current.proj.projection_GMT == GMT_VANGRINTEN) && doubleAlmostEqual (fabs (val[i]), 90.0))
-					continue;
+				if (gmtplot_skip_pole_lat_annotation (GMT, val[i]))
+					continue;	/* Cannot place S or N 90 degree annotation for this projection */
 				if (gmtplot_skip_polar_apex_annotation (GMT, i, val, ny)) continue;
 				annot = true, trim = 0;
 				if (check_edges && ((i == 0 && val[i] == s) || (i == last && val[i] == n)))
