@@ -2410,6 +2410,7 @@ bool gmtinit_var_t_module (struct GMT_CTRL *GMT) {
 	if (!strncmp (GMT->init.module_name, "psxy",    4U)) return true;
 	if (!strncmp (GMT->init.module_name, "pstext",  6U)) return true;
 	if (!strncmp (GMT->init.module_name, "psmeca",  6U)) return true;
+	if (!strncmp (GMT->init.module_name, "psvelo",  6U)) return true;
 	if (!strncmp (GMT->init.module_name, "pscoupe", 7U)) return true;
 	return false;	/* Anything else */
 }
@@ -2470,8 +2471,8 @@ bool gmtinit_parse_t_option (struct GMT_CTRL *GMT, char *item) {
 	}
 	else if (gmtinit_var_t_module (GMT)) {	/* Only some modules can do variable transparency */
 		GMT->common.t.active = GMT->common.t.variable = true;
-		GMT->common.t.n_transparencies = (nt) ? nt : 1;	/* If we gave -t+f+s then we need to read two transparencies, else just 1 */
-		if (GMT->common.t.mode== 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP;	/* For these modules, plain -t means -t+f */
+		if (nt) GMT->common.t.n_transparencies = nt;	/* If we gave -t+f+s then we need to read two transparencies, else just 1. 0 means we apply a single transp to both settings */
+		if (GMT->common.t.mode == 0) GMT->common.t.mode = GMT_SET_FILL_TRANSP;	/* For these modules, plain -t means -t+f */
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -t was not given any argument (please add transparency in (0-100]0%% range)!\n");
@@ -9763,7 +9764,7 @@ char gmt_set_V (int mode) {
 GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT);	/* Must set this here since the next two functions call each other */
 
 /*! . */
-GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
+GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file, bool theme) {
 	static int gmt_version_major = GMT_PACKAGE_VERSION_MAJOR;
 	unsigned int error = 0, rec = 0, ver;
 	char line[GMT_BUFSIZ] = {""}, keyword[GMT_LEN256] = {""}, value[GMT_BUFSIZ] = {""};
@@ -9779,11 +9780,13 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file) {
 			return (GMT_NOERROR);
 		}
 
-		if (rec != 2) { /* Nothing */ }
-		else if (strlen (line) < 7 || (ver = strtol (&line[6], NULL, 10)) < 5 )
-			gmt_message (GMT, "Your %s file (%s) may not be GMT %d compatible\n", GMT_SETTINGS_FILE, file, gmt_version_major);
-		else if (!strncmp (&line[6], "5.0.0", 5))
-			gmt_message (GMT, "Your %s file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", GMT_SETTINGS_FILE, file, file);
+		if (!theme) {	/* Must check validity and version */
+			if (rec != 2) { /* Nothing */ }
+			else if (strlen (line) < 7 || (ver = strtol (&line[6], NULL, 10)) < 5 )
+				gmt_message (GMT, "Your %s file (%s) may not be GMT %d compatible\n", GMT_SETTINGS_FILE, file, gmt_version_major);
+			else if (!strncmp (&line[6], "5.0.0", 5))
+				gmt_message (GMT, "Your %s file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", GMT_SETTINGS_FILE, file, file);
+		}
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\0') continue;	/* Skip Blank lines */
 
@@ -9822,7 +9825,7 @@ GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
 	else if (!strcmp (GMT->current.setting.theme, "modern"))
 		gmtinit_conf_modern (GMT);
 	else if (gmt_getsharepath (GMT, "themes", GMT->current.setting.theme, ".conf", theme_file, R_OK)) {	/* Load given theme */
-		error = gmtinit_loaddefaults (GMT, theme_file);
+		error = gmtinit_loaddefaults (GMT, theme_file, true);
 	}
 	else
 		gmt_message (GMT, "Theme %s file not found - ignored\n", GMT->current.setting.theme);
@@ -9875,7 +9878,7 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 	char axes[GMT_LEN32] = {""};
 	double az = (gmt_M_is_zero (GMT->common.p.z_rotation)) ? GMT->current.proj.z_project.view_azimuth : GMT->common.p.z_rotation;
-	if (strcmp (GMT->current.setting.map_frame_axes, "auto")) return;
+	if (strcmp (GMT->current.setting.map_frame_axes, "auto") || !GMT->current.map.frame.draw) return;
 
 	/* Determine suitable MAP_FRAME_AXES for plot */
 	if (GMT->current.proj.projection == GMT_POLAR) {	/* May need to switch what is south and north */
@@ -13025,16 +13028,16 @@ int gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file) {
 	int err = GMT_NOTSET;	/* Returned if this_file == NULL, classic mode, and no gmt.conf found */
 
 	if (this_file)	/* Defaults file is specified */
-		err = gmtinit_loaddefaults (GMT, this_file);
+		err = gmtinit_loaddefaults (GMT, this_file, false);
 	else {	/* Use local dir, tempdir, or workflow dir (modern mode) */
 		if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Modern mode: Use the workflow directory */
 			char path[PATH_MAX] = {""}, tag[GMT_LEN32] = {""};
 			gmt_hierarchy_tag (GMT->parent, GMT_SETTINGS_FILE, GMT_IN, tag);
 			snprintf (path, PATH_MAX, "%s/%s%s", GMT->parent->gwf_dir, GMT_SETTINGS_FILE, tag);
-			err = gmtinit_loaddefaults (GMT, path);
+			err = gmtinit_loaddefaults (GMT, path, false);
 		}
 		else if (gmtlib_getuserpath (GMT, GMT_SETTINGS_FILE, file))
-			err = gmtinit_loaddefaults (GMT, file);
+			err = gmtinit_loaddefaults (GMT, file, false);
 	}
 	return (err);
 }

@@ -12,8 +12,8 @@ local_script=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/${script_name}"
 src="@GMT_SOURCE_DIR@/${script_dir}"
 
-# Is it a modern mode script?
-modern=$(grep "gmt begin" "$script" -c)
+# Is it a modern mode or one-liner script
+modern=$(grep "gmt begin\| -ps " "$script" -c)
 
 # Is it a script that is known to fail?
 if [ "@GMT_ENABLE_KNOWN2FAIL@" = "ON" ]; then
@@ -105,7 +105,8 @@ for apiprog in \
     testapi_matrix_io \
     testapi_matrix_360 \
     testapi_matrix_360_ref \
-    testapi_grid2matrix
+    testapi_grid2matrix \
+    testapi_putvector
 do
     eval "${apiprog}() { valgrind_wrapper \"@GMT_BINARY_DIR@/src/${apiprog}\" \"\$@\"; }"
 done
