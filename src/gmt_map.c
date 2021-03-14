@@ -4552,6 +4552,8 @@ GMT_LOCAL int gmtmap_init_winkel (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.left_edge = &gmtproj_left_winkel;
 		GMT->current.map.right_edge = &gmtproj_right_winkel;
 		GMT->current.map.frame.horizontal = 2;
+		/* Unless MAP_ANNOT_OBLIQUE is set manually, we must add normal ticks for this pole-is-line projection */
+		if (!GMT->current.setting.map_annot_oblique_set) GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_NORMAL_TICKS;
 	}
 	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
 	GMT->current.proj.fwd = &gmtproj_winkel;
@@ -4606,6 +4608,8 @@ GMT_LOCAL int gmtmap_init_eckert4 (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.left_edge = &gmtproj_left_eckert4;
 		GMT->current.map.right_edge = &gmtproj_right_eckert4;
 		GMT->current.map.frame.horizontal = 2;
+		/* Unless MAP_ANNOT_OBLIQUE is set manually, we must add normal ticks for this pole-is-line projection */
+		if (!GMT->current.setting.map_annot_oblique_set) GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_NORMAL_TICKS;
 	}
 	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
 	GMT->current.proj.fwd = &gmtproj_eckert4;
@@ -4662,6 +4666,8 @@ GMT_LOCAL int gmtmap_init_eckert6 (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.left_edge = &gmtproj_left_eckert6;
 		GMT->current.map.right_edge = &gmtproj_right_eckert6;
 		GMT->current.map.frame.horizontal = 2;
+		/* Unless MAP_ANNOT_OBLIQUE is set manually, we must add normal ticks for this pole-is-line projection */
+		if (!GMT->current.setting.map_annot_oblique_set) GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_NORMAL_TICKS;
 	}
 	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
 	GMT->current.proj.fwd = &gmtproj_eckert6;
@@ -4717,6 +4723,8 @@ GMT_LOCAL int gmtmap_init_robinson (struct GMT_CTRL *GMT, bool *search) {
 		GMT->current.map.left_edge = &gmtproj_left_robinson;
 		GMT->current.map.right_edge = &gmtproj_right_robinson;
 		GMT->current.map.frame.horizontal = 2;
+		/* Unless MAP_ANNOT_OBLIQUE is set manually, we must add normal ticks for this pole-is-line projection */
+		if (!GMT->current.setting.map_annot_oblique_set) GMT->current.setting.map_annot_oblique |= GMT_OBL_ANNOT_NORMAL_TICKS;
 	}
 	gmtmap_setinfo (GMT, xmin, xmax, ymin, ymax, GMT->current.proj.pars[1]);
 	GMT->current.proj.fwd = &gmtproj_robinson;
