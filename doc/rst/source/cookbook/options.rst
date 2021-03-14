@@ -810,11 +810,11 @@ Timestamps on plots: The **-U** option
 
 The **-U** option draws the GMT system time stamp on the plot. The following modifiers are supported:
 
+- *label* to append the text string given in *label* (which must be surrounded by double qoutes).
 - **+c** to plot the current command string.
 - **+j**\ *just* to specify the justification of the time stamp, where *just* is a two-character
   :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**\ (eft), **C**\ (enter), or
   **R**\ (ight)) and a vertical (**T**\ (op), **M**\ (iddle), or **B**\ (ottom)) code [default is **BL**].
-- *label* to append the text string given in *label* (which must be surrounded by double qoutes).
 - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` for the time stamp by *dx* and optionally
   *dy* (if different than *dx*).
 
