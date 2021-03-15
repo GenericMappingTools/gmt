@@ -9878,7 +9878,7 @@ unsigned int gmt_setdefaults (struct GMT_CTRL *GMT, struct GMT_OPTION *options) 
 void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 	char axes[GMT_LEN32] = {""};
 	double az = (gmt_M_is_zero (GMT->common.p.z_rotation)) ? GMT->current.proj.z_project.view_azimuth : GMT->common.p.z_rotation;
-	if (strcmp (GMT->current.setting.map_frame_axes, "auto")) return;
+	if (strcmp (GMT->current.setting.map_frame_axes, "auto") || !GMT->current.map.frame.draw) return;
 
 	/* Determine suitable MAP_FRAME_AXES for plot */
 	if (GMT->current.proj.projection == GMT_POLAR) {	/* May need to switch what is south and north */
