@@ -86,3 +86,5 @@ on the command line.  If you have variable symbol sizes then you must append **+
 a suitable size for the legend entry.  For other symbol cases the **-l** option will
 be ignored.  Legend entries also work for lines and polygons, but not more complicated
 features such as decorated and quoted lines, fronts, etc.
+
+.. include:: plot_extra_cols.rst_
