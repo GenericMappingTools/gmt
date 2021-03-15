@@ -1303,25 +1303,23 @@ Definition of scalar moment.
 				meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 			}
 
-			if (Ctrl->A2.active) {
+			if (Ctrl->A2.active) {	/* Plot axis symbols */
+				double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				double asize = (Ctrl->H.active) ? Ctrl->A2.size * scl : Ctrl->A2.size;
 				if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
 				meca_axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
 				current_pen = Ctrl->P2.pen;
-				if (Ctrl->H.active) {
-					double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				if (Ctrl->H.active)
 					gmt_scale_pen (GMT, &current_pen, scl);
-				}
 				gmt_setpen (GMT, &current_pen);
 				gmt_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
-				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
+				PSL_plotsymbol (PSL, P_x, P_y, &asize, Ctrl->A2.P_symbol);
 				current_pen = Ctrl->T2.pen;
-				if (Ctrl->H.active) {
-					double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				if (Ctrl->H.active)
 					gmt_scale_pen (GMT, &current_pen, scl);
-				}
 				gmt_setpen (GMT, &current_pen);
 				gmt_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
-				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
+				PSL_plotsymbol (PSL, T_x, T_y, &asize, Ctrl->A2.T_symbol);
 			}
 		}
 
