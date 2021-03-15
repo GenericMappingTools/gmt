@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 2-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,S?(=2,ZD(=,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtw" GMT_OPT("HMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtw" GMT_OPT("Mmc")
 
 /* Control structure for psxy */
 
@@ -813,7 +813,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 			case 'H':		/* Overall symbol/pen scale column provided */
 				Ctrl->H.active = true;
 				break;
-
 			case 'I':	/* Adjust symbol color via intensity */
 				Ctrl->I.active = true;
 				if (opt->arg[0])
