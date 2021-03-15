@@ -173,4 +173,4 @@ References
 ncBrowse, see `<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_
 ncView, see `<http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_
 The Marine Geophysical Data Exchange Format - "MGD77", see
-`<https://repository.library.noaa.gov/view/noaa/13411>`_
+`<https://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

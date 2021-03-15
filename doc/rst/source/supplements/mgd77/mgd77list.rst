@@ -628,4 +628,4 @@ References
 The Marine Geophysical Data Exchange Format - MGD77, see
 `<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
-IGRF, see `<http://www.ngdc.noaa.gov/IAGA/vmod/igrf/>`_
+IGRF, see `<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_
