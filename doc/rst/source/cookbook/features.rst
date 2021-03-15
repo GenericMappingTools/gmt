@@ -359,8 +359,9 @@ Sinusoidal, and van der Grinten).
 For **MAP_FRAME_AXES**, **auto** will determine a suitable setting based on the
 projection, type of plot, perspective, etc. For example, GMT will determine the
 position of different quadrants for perspective and polar plots and select the
-equivalent of **WrStZ**. The default for non-perspective, non-polar plots using
-**MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
+equivalent of **WrStZ**. The default for the Gnomonic and general perspective
+projections is **WESNZ**. The default for non-perspective, non-Gnomonic, and
+non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
