@@ -103,11 +103,11 @@ struct PSXYZ_CTRL {
 };
 
 enum Psxyz_poltype {
-	PSXY_POL_X 		= 1,
-	PSXY_POL_Y,
-	PSXY_POL_SYMM_DEV,
-	PSXY_POL_ASYMM_DEV,
-	PSXY_POL_ASYMM_ENV};
+	PSXYZ_POL_X 		= 1,
+	PSXYZ_POL_Y,
+	PSXYZ_POL_SYMM_DEV,
+	PSXYZ_POL_ASYMM_DEV,
+	PSXYZ_POL_ASYMM_ENV};
 
 enum Psxyz_cliptype {
 	PSXYZ_CLIP_REPEAT 	= 0,
@@ -407,18 +407,18 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 			case 'L':		/* Force closed polygons */
 				Ctrl->L.active = true;
 				if ((c = strstr (opt->arg, "+b")) != NULL)	/* Build asymmetric polygon from lower and upper bounds */
-					Ctrl->L.anchor = PSXY_POL_ASYMM_ENV;
+					Ctrl->L.anchor = PSXYZ_POL_ASYMM_ENV;
 				else if ((c = strstr (opt->arg, "+d")) != NULL)	/* Build symmetric polygon from deviations about y(x) */
-					Ctrl->L.anchor = PSXY_POL_SYMM_DEV;
+					Ctrl->L.anchor = PSXYZ_POL_SYMM_DEV;
 				else if ((c = strstr (opt->arg, "+D")) != NULL)	/* Build asymmetric polygon from deviations about y(x) */
-					Ctrl->L.anchor = PSXY_POL_ASYMM_DEV;
+					Ctrl->L.anchor = PSXYZ_POL_ASYMM_DEV;
 				else if ((c = strstr (opt->arg, "+x")) != NULL) {	/* Parse x anchors for a polygon */
 					switch (c[2]) {
 						case 'l':	Ctrl->L.mode = XLO;	break;	/* Left side anchors */
 						case 'r':	Ctrl->L.mode = XHI;	break;	/* Right side anchors */
 						default:	Ctrl->L.mode = ZLO;	Ctrl->L.value = atof (&c[2]);	break;	/* Arbitrary x anchor */
 					}
-					Ctrl->L.anchor = PSXY_POL_X;
+					Ctrl->L.anchor = PSXYZ_POL_X;
 				}
 				else if ((c = strstr (opt->arg, "+y")) != NULL) {	/* Parse y anchors for a polygon */
 					switch (c[2]) {
@@ -426,7 +426,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 						case 't':	Ctrl->L.mode = YHI;	break;	/* Top side anchors */
 						default:	Ctrl->L.mode = ZHI;	Ctrl->L.value = atof (&c[2]);	break;	/* Arbitrary y anchor */
 					}
-					Ctrl->L.anchor = PSXY_POL_Y;
+					Ctrl->L.anchor = PSXYZ_POL_Y;
 				}
 				else	/* Just force a closed polygon */
 					Ctrl->L.polygon = true;
@@ -771,8 +771,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	}
 
 	if (get_rgb && gmt_is_barcolumn (GMT, &S) && (n_z = gmt_get_columbar_bands (GMT, &S)) > 1) get_rgb = rgb_from_z = false;	/* Not used in the same way here */
-	if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV) n_cols_start += 1;
-	if (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) n_cols_start += 2;
+	if (Ctrl->L.anchor == PSXYZ_POL_SYMM_DEV) n_cols_start += 1;
+	if (Ctrl->L.anchor == PSXYZ_POL_ASYMM_DEV || Ctrl->L.anchor == PSXYZ_POL_ASYMM_ENV) n_cols_start += 2;
 
 	/* Extra columns 1, 2, and 3 */
 	ex1 = (rgb_from_z) ? 4 : 3;
@@ -2062,8 +2062,8 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					bool draw_line = true;
 					gmt_plane_perspective (GMT, -1, 0.0);
 					if (Ctrl->L.anchor) {	/* Build a polygon in one of several ways */
-						if (Ctrl->L.anchor == PSXY_POL_SYMM_DEV || Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) {	/* Build envelope around y(x) from delta y values in 1 or 2 extra columns */
-							uint64_t k, m, col = (Ctrl->L.anchor == PSXY_POL_ASYMM_DEV) ? 4 : 3;
+						if (Ctrl->L.anchor == PSXYZ_POL_SYMM_DEV || Ctrl->L.anchor == PSXYZ_POL_ASYMM_DEV) {	/* Build envelope around y(x) from delta y values in 1 or 2 extra columns */
+							uint64_t k, m, col = (Ctrl->L.anchor == PSXYZ_POL_ASYMM_DEV) ? 4 : 3;
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, GMT_IN, end, 3);	/* Init or reallocate 3 tmp vectors */
 							/* First go in positive x direction and build part of envelope */
@@ -2082,7 +2082,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							GMT->hidden.mem_coord[GMT_Y][end-1] = GMT->hidden.mem_coord[GMT_Y][0];
 							GMT->hidden.mem_coord[GMT_Z][end-1] = GMT->hidden.mem_coord[GMT_Z][0];
 						}
-						else if (Ctrl->L.anchor == PSXY_POL_ASYMM_ENV) {	/* Build envelope around y(x) from low and high 2 extra columns */
+						else if (Ctrl->L.anchor == PSXYZ_POL_ASYMM_ENV) {	/* Build envelope around y(x) from low and high 2 extra columns */
 							uint64_t k, m;
 							end = 2 * L->n_rows + 1;
 							gmt_prep_tmp_arrays (GMT, GMT_IN, end, 3);	/* Init or reallocate 3 tmp vectors */
