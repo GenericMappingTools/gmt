@@ -57,6 +57,8 @@ struct PSXYZ_CTRL {
 	} G;
 	struct PSXYZ_H {	/* -H read overall scaling factor for symbol size and pen width */
 		bool active;
+		unsigned int mode;
+		double value;
 	} H;
 	struct PSXYZ_I {	/* -I[<intensity>] */
 		bool active;
@@ -113,6 +115,10 @@ enum Psxyz_cliptype {
 	PSXYZ_NO_CLIP_REPEAT,
 	PSXYZ_NO_CLIP_NO_REPEAT};
 
+enum Psxyz_scaletype {
+	PSXYZ_READ_SCALE	= 0,
+	PSXYZ_CONST_SCALE	= 1};
+
 struct PSXYZ_DATA {
 	int symbol, outline;
 	unsigned int flag;	/* 1 = convert azimuth, 2 = use geo-functions, 4 = x-base in units, 8 y-base in units */
@@ -153,7 +159,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *mod_name = &name[4];	/* To skip the leading gmt for usage messages */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[m|p|x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H] [-I[<intens>]] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[m|p|x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
@@ -179,7 +185,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [Default is no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -G is specified but not -S, then %s draws a filled polygon.\n", mod_name);
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Scale symbol sizes (set via -S or input column) by factors read from scale column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The scale column is given after the symbol size column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
 	GMT_Option (API, "K");
@@ -386,6 +392,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 				break;
 			case 'H':		/* Overall symbol/pen scale column provided */
 				Ctrl->H.active = true;
+				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
+					Ctrl->H.value = atof (opt->arg);
+					Ctrl->H.mode = PSXYZ_CONST_SCALE;
+				}
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				Ctrl->I.active = true;
@@ -780,7 +790,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		for (j = n_cols_start; j < 7; j++) gmt_set_column_type (GMT, GMT_IN, j, GMT_IS_DIMENSION);	/* Since these may have units appended */
 		for (j = 0; j < S.n_nondim; j++) gmt_set_column_type (GMT, GMT_IN, S.nondim_col[j]+rgb_from_z, GMT_IS_FLOAT);	/* Since these are angles or km, not dimensions */
 	}
-	if (Ctrl->H.active) {
+	if (Ctrl->H.active && Ctrl->H.mode == PSXYZ_READ_SCALE) {
 		xcol = n_needed;
 		n_needed++;	/* Read scaling from data file */
 		gmt_set_column_type (GMT, GMT_IN, xcol, GMT_IS_FLOAT);
@@ -1200,8 +1210,9 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				nominal_size_y = S.size_y;
 			}
 			if (Ctrl->H.active) {	/* Variable scaling of symbol size and pen width */
-				S.size_x = nominal_size_x * in[xcol];
-				S.size_y = nominal_size_y * in[xcol];
+				double scl = (Ctrl->H.mode == PSXYZ_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				S.size_x = nominal_size_x * scl;
+				S.size_y = nominal_size_y * scl;
 			}
 
 			if (S.base_set & GMT_BASE_ORIGIN) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */
@@ -1211,8 +1222,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
 					current_pen = Ctrl->W.pen;
 					nominal_pen = current_pen;
-					if (Ctrl->H.active)
-						gmt_scale_pen (GMT, &current_pen, in[xcol]);
+					if (Ctrl->H.active) {
+						double scl = (Ctrl->H.mode == PSXYZ_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						gmt_scale_pen (GMT, &current_pen, scl);
+					}
 					if (can_update_headpen && !gmt_M_same_pen (current_pen, last_headpen))	/* Since color may have changed */
 						last_headpen = current_pen;
 				}
@@ -1221,8 +1234,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				else if (Ctrl->G.active)
 					current_fill = Ctrl->G.fill;
 			}
-			else if (Ctrl->H.active)
-				gmt_scale_pen (GMT, &current_pen, in[xcol]);
+			else if (Ctrl->H.active) {
+				double scl = (Ctrl->H.mode == PSXYZ_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				gmt_scale_pen (GMT, &current_pen, scl);
+			}
 			data[n].dim[0] = S.size_x;
 			data[n].dim[1] = S.size_y;
 
