@@ -6963,9 +6963,21 @@ void gmt_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 }
 
 void gmt_scale_pen (struct GMT_CTRL *GMT, struct GMT_PEN *P, double scale) {
-	/* Scale all pen attributes by scale */
-	P->width *= scale;
-	/* Wait with texture for now */
+	/* Scale all pen attributes by given scale */
+	P->width  *= scale;
+	P->offset *= scale;
+	if (P->style[0]) {	/* Must scale the dashes and gaps and update string */
+		unsigned int pos = 0;
+		char tmp[GMT_PEN_LEN] = {""}, p[GMT_LEN64] = {""};
+		double w;
+		while ((gmt_strtok (P->style, "+", &pos, p))) {
+			w = atof (p) * scale;
+			sprintf (p, "%.3g", w);
+			if (tmp[0]) strcat (tmp, " ");
+			strcat (tmp, p);
+		}
+		strncpy (P->style, tmp, GMT_PEN_LEN);
+	}
 }
 
 #define GMT_INC_IS_FEET		1
