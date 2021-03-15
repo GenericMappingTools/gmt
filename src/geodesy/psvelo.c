@@ -38,7 +38,7 @@
 #define THIS_MODULE_PURPOSE	"Plot velocity vectors, crosses, anisotropy bars and wedges"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehipqt" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
 
 #define CINE 1
 #define ANISO 2
