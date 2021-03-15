@@ -657,7 +657,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 
 	enum gmt_col_enum time_type, end_type;
 
-	unsigned int n_cols_needed, n_copy_to_out, col, s_in = 2, t_in = 2, d_in = 3, s_col = 2, i_col = 3, t_col = 4, x_type, y_type;
+	unsigned int n_cols_needed, n_copy_to_out, col, s_in = 2, t_in = 2, d_in = 3, x_col = 2, i_col = 3, t_col = 4, x_type, y_type;
 
 	uint64_t n_total_read = 0, n_symbols_plotted = 0, n_labels_plotted = 0;
 
@@ -863,14 +863,14 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		n_cols_needed += n_cols;	/* One more for time so far */
 		n_copy_to_out = n_cols;	/* lon, lat, and all required cols, no time */
 		t_in = n_cols, d_in = t_in + 1;	/* These are the 1-2 extra columns needed by event */
-		s_col = n_cols, i_col = n_cols + 1, t_col = n_cols + 2;	/* Update output cols for the 3 extras */
+		x_col = n_cols, i_col = n_cols + 1, t_col = n_cols + 2;	/* Update output cols for the 3 extras */
 		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time column in input */
 	}
 	else if (Ctrl->S.active || !Ctrl->A.active) {	/* We read points for symbols OR we are in fact just doing labels */
 		if (Ctrl->C.active) n_cols_needed++;	/* Must allow for z in input */
 		if (Ctrl->S.mode) n_cols_needed++;	/* Must allow for size in input */
 		if (Ctrl->L.mode == PSEVENTS_VAR_DURATION || Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) n_cols_needed++;	/* Must allow for length/time in input */
-		n_copy_to_out = 2 + Ctrl->C.active;
+		n_copy_to_out = 2 + Ctrl->C.active + Ctrl->S.mode;
 	}
 	else {	/* We read lines or polygons */
 		n_cols_needed = n_copy_to_out = 2;
@@ -889,8 +889,8 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->Z.active) {
-		if (Ctrl->C.active) s_in++, t_in++, d_in++, s_col++, i_col++, t_col++;	/* Must allow for z-value in input before size, time, length */
-		if (Ctrl->S.mode) t_in++, d_in++;	/* Must allow for size in input before time and length */
+		if (Ctrl->C.active) s_in++, t_in++, d_in++, x_col++, i_col++, t_col++;	/* Must allow for z-value in input/output before size, time, length */
+		if (Ctrl->S.mode) t_in++, d_in++, x_col++, i_col++, t_col++;	/* Must allow for size in input/output before time and length */
 	}
 	/* Determine if there is a coda phase where symbols remain visible after the event ends: */
 	do_coda = (Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2] > 0.0 || !gmt_M_is_zero (Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2]) || Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] < 100.0);
@@ -1021,35 +1021,35 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			if (Ctrl->T.now < t_event) {	/* We are within the rise phase */
 				x = pow ((Ctrl->T.now - t_rise)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE], 2.0);	/* Quadratic function that goes from 0 to 1 */
 				if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
-				out[s_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x;	/* Magnification of amplitude */
+				out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x;	/* Magnification of amplitude */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;		/* Magnification of intensity */
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);	/* Magnification of opacity */
 			}
 			else if (Ctrl->T.now < t_plateau) {	/* We are within the plateau phase, keep everything constant */
-				out[s_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1];
+				out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1];
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1];
 				out[t_col] = 0.0;	/* No transparency during plateau phase */
 			}
 			else if (Ctrl->T.now < t_decay) {	/* We are within the decay phase */
 				x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
-				out[s_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x + (1.0 - x);	/* Reduction of size down to the nominal size */
+				out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x + (1.0 - x);	/* Reduction of size down to the nominal size */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
 				out[t_col] = 0.0;
 			}
 			else if (finite_duration && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
-				out[s_col] = 1.0;
+				out[x_col] = 1.0;
 				out[i_col] = out[t_col] = 0.0;	/* No intensity or transparency during normal phase */
 			}
 			else if (finite_duration && Ctrl->T.now <= t_fade) {	/* We are within the fade phase */
 				x = pow ((t_fade - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE], 2.0);	/* Quadratic function that goes from 1 to 0 */
 				if (gmt_M_is_dnan (x)) x = 0.0;	/* Probably division by zero */
-				out[s_col] = x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];	/* Reduction of size down to coda size */
+				out[x_col] = x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];	/* Reduction of size down to coda size */
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
 			}
 			else if (do_coda) {	/* If there is a coda then the symbol remains visible given those terminal attributes */
-				out[s_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];
+				out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];
 				out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2];
 				out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
 			}
@@ -1069,10 +1069,11 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->A.active)	/* Just needed the line coordinates */
 				fprintf (fp_symbols, "\n");
-			else if (Ctrl->C.active)	/* For -S symbols, need to pass on the z-value for cpt lookup in plot */
-				fprintf (fp_symbols, "\t%.16g\t%g\t%g\t%g\n", out[GMT_Z], out[s_col], out[i_col], out[t_col]);
-			else
-				fprintf (fp_symbols, "\t%g\t%g\t%g\n", out[s_col], out[i_col], out[t_col]);
+			else {	/* Symbols -S, which may need -C and -S columns before the scale, intens, transp */ 
+				for (col = GMT_Z; col < n_copy_to_out; col++)
+					fprintf (fp_symbols, "\t%.16g", out[col]);
+				fprintf (fp_symbols, "\t%g\t%g\t%g\n", out[x_col], out[i_col], out[t_col]);
+			}
 			n_symbols_plotted++;	/* Count output symbols */
 		}
 
