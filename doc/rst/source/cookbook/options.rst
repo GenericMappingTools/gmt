@@ -909,6 +909,12 @@ previous plot, use **-Y**\ *h*\ +2c. To move the origin half the width to the ri
 OGR/GMT GIS i/o: The **-a** option
 ----------------------------------
 
+**Syntax**
+
+**-a**\ [*col*\ =]\ *name*\ [,\ *...*]
+
+**Description**
+
 GMT relies on external tools to translate geospatial files such as
 shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
 package can do such translations and preserve the aspatial metadata via
@@ -960,6 +966,12 @@ features that straddle the Dateline.
 Binary table i/o: The **-b** option
 -----------------------------------
 
+**Syntax**
+
+**-bi**\|\ **o**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
+
+**Description**
+
 All GMT programs that accept table data as *primary* input may read ASCII, native
 binary, shapefiles, or netCDF tables (Any *secondary* input files provided via command line
 options are always expected to be in ASCII format). Native binary files may have a header section
@@ -1010,6 +1022,12 @@ information, see Chapter :doc:`file-formats`.
 Selecting subplot panels: The **-c** option
 -------------------------------------------
 
+**Syntax**
+
+**-c**\ [*row*\ ,\ *col*\|\ *index*]
+
+**Description**
+
 When using :doc:`/subplot` to assemble multiple individual panels in a
 matrix layout, we use **-c** to either advance the focus of plotting to
 the next panel in the sequence (either by row or by column as set by
@@ -1024,6 +1042,12 @@ panel.  **Note**: *row*, *col*, and *index* all start at 0.
 Missing data conversion: The **-d** option
 ------------------------------------------
 
+**Syntax**
+
+**-di**\|\ **o**\ *nodata*
+
+**Description**
+
 Within GMT, any missing values are represented by the IEEE NaN value.
 However, there are occasionally the need to handle user data where
 missing data are represented by some unlikely data value such as -99999.
@@ -1037,6 +1061,12 @@ or output should be affected, use **-di** or **-do**, respectably.
 
 Data record pattern matching: The **-e** option
 -----------------------------------------------
+
+**Syntax**
+
+**-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
+
+**Description**
 
 Modules that read ASCII tables will normally process all the data records
 that are read.  The **-e** option offers a built-in pattern scanner that
@@ -1056,6 +1086,12 @@ To give a single pattern starting with **+f**, escape it with a backslash.
 
 Data type selection: The **-f** option
 --------------------------------------
+
+**Syntax**
+
+**-f**\ [**i**\|\ **o**]\ *colinfo*
+
+**Description**
 
 When map projections are not required we must explicitly state what kind
 of data each input or output column contains. This is accomplished with
@@ -1085,6 +1121,13 @@ information, see Sections :ref:`input-data-formats` and :ref:`output-data-format
 
 Data gap detection: The **-g** option
 -------------------------------------
+
+**Syntax**
+
+**-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\
+**z**\ *gap*\ [**+n**\|\ **p**]
+
+**Description**
 
 GMT has several mechanisms that can determine line
 segmentation. Typically, data segments are separated by multiple segment
@@ -1120,6 +1163,13 @@ column value.
 Header data records: The **-h** option
 --------------------------------------
 
+**Syntax**
+
+**-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*]\
+[**+r**\ *remark*][**+t**\ *title*]
+
+**Description**
+
 The **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*] option
 lets GMT know that input file(s) have *n_recs* header records [0]. If
 there are more than one header record you must specify the number after
@@ -1149,6 +1199,13 @@ character (on output).
 
 Input columns selection: The **-i** option
 ------------------------------------------
+
+**Syntax**
+
+**-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*]\
+[**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+
+**Description**
 
 The **-i**\ *columns* option allows you to specify which
 input file physical data columns to use and in what order. By default, GMT will
@@ -1199,6 +1256,12 @@ ignore all trailing text, use **-in**.
 Spherical distance calculations: The **-j** option
 --------------------------------------------------
 
+**Syntax**
+
+**-je**\|\ **f**\|\ **g**
+
+**Description**
+
 GMT has different ways to compute distances on planetary bodies.
 By default (**-jg**) we perform great circle distance calculations, and parameters such
 as distance increments or radii will be compared against calculated great
@@ -1215,6 +1278,15 @@ calculations is also controlled by method (:term:`PROJ_GEODESIC`).
 
 Setting automatic legend entries: The **-l** option
 ---------------------------------------------------
+
+**Syntax**
+
+**-l**\ [*label*]\ [**+D**\ *pen*][**+G**\ *gap*][**+H**\ *header*]\
+[**+L**\ [*code*/]\ *txt*][**+N**\ *cols*][**+S**\ *size*\ [/*height*]]\
+[**+V**\ [*pen*]][**+f**\ *font*][**+g**\ *fill*][**+j**\ *just*]\
+[**+o**\ *off*][**+p**\ *pen*][**+s**\ *scale*][**+w**\ *width*]
+
+**Description**
 
 Map or plot legends are created by :doc:`/legend` and normally this module
 will read a *specfile* that outlines how the legend should look.  You can
@@ -1248,6 +1320,12 @@ look for the automatically generated on in the session directory.
 Grid interpolation parameters: The **-n** option
 ------------------------------------------------
 
+**Syntax**
+
+**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*]\
+[**+c**][**+t**\ *threshold*]
+
+**Description**
 The **-n**\ *type* option controls parameters used for
 2-D grids resampling. You can select the type of spline used (**-nb**
 for B-spline smoothing, **-nc** for bicubic [Default], **-nl** for
@@ -1271,6 +1349,12 @@ will go about 90% of the way, etc.
 Output columns selection: The **-o** option
 -------------------------------------------
 
+**Syntax**
+
+**-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
+
+**Description**
+
 The **-o**\ *columns* option allows you to specify which
 columns to write on output and in what order. By default, GMT will
 write all the data columns produced by the program. Using **-o**
@@ -1290,6 +1374,13 @@ trailing text, use **-on**.
 
 Perspective view: The **-p** option
 -----------------------------------
+
+**Syntax**
+
+**-p**\ [**x**\|\ **y**\|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]]\
+[**+w**\ *lon0*/*lat0*\ [/*z0*]][**+v**\ *x0*/*y0*]
+
+**Description**
 
 All plotting programs that normally produce a flat, two-dimensional
 illustration can be told to view this flat illustration from a
@@ -1313,6 +1404,12 @@ or **+w** to select another axis location than the plot origin.
 Data row selection: The **-q** option
 -------------------------------------
 
+**Syntax**
+
+**-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+
+**Description**
+
 Similar to how **-i** and **-o** control which data *columns* to read and write, the **-qi** (or just **-q**)
 and **-qo** options control which data *rows* to read and write [Default is all]. As for columns, you
 can specify specific rows, a range of rows, or several sets of row ranges. You can also
@@ -1330,6 +1427,12 @@ note that when **+c** is used the **+a**\|\ **f**\|\ **s** have no effect.
 
 Grid registration: The **-r** option
 ------------------------------------
+
+**Syntax**
+
+**-r**\ [**g**\|\ **p**]
+
+**Description**
 
 All 2-D grids in GMT have their nodes
 organized in one of two ways, known as *gridline*- and *pixel*-
@@ -1437,6 +1540,12 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
 NaN-record treatment: The **-s** option
 ---------------------------------------
 
+**Syntax**
+
+**-s**\ [*cols*][**+a**][**+r**]
+
+**Description**
+
 We can use this option to suppress output for records whose *z*-value
 equals NaN (by default we output all records). Alternatively, append
 **+r** to reverse the suppression, i.e., only output the records whose
@@ -1449,6 +1558,12 @@ consider (before the optional modifiers) for this NaN test.
 
 Layer transparency: The **-t** option
 -------------------------------------
+
+**Syntax**
+
+**-t**\ *transp*\ [/*transp2*][**+f**\ \|\ **s**]
+
+**Description**
 
 While the PostScript language does not support transparency, PDF does,
 and via PostScript extensions one can manipulate the transparency
@@ -1468,6 +1583,13 @@ or if we expect one or two transparencies.
 
 Examining data cycles: The **-w** option
 ----------------------------------------
+
+**Syntax**
+
+**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\
+*period*\ [/*phase*][**+c**\ *col*]
+
+**Description**
 
 Temporal data (i.e., regular time series) can be analyzed for periods
 via standard spectral analysis, such as offered by :doc:`/spectrum1d`
@@ -1643,6 +1765,12 @@ discusses the four panels resulting from running the script below:
 Selecting number of CPU cores: The **-x** option
 ------------------------------------------------
 
+**Syntax**
+
+**-x**\ [[-]\ *n*]
+
+**Description**
+
 Specify the number of active cores to be used in any OpenMP-enabled
 multi-threaded algorithms. By default, we try to use all available cores.
 You may append *n* to only use *n* cores (if *n* is too large it will be truncated
@@ -1655,6 +1783,12 @@ the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel
 
 Latitude/Longitude or Longitude/Latitude?: The **-:** option
 ------------------------------------------------------------
+
+**Syntax**
+
+**-:**\ [**i**\|\ **o**]
+
+**Description**
 
 For geographical data, the first column is expected to contain
 longitudes and the second to contain latitudes. To reverse this
