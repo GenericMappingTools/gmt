@@ -82,6 +82,8 @@ struct PSVELO_CTRL {
 	} G;
 	struct PSVELO_H {	/* -H read overall scaling factor for symbol size and pen width */
 		bool active;
+		unsigned int mode;
+		double value;
 	} H;
 	struct PSVELO_I {	/* -I[<intensity>] */
 		bool active;
@@ -117,6 +119,10 @@ struct PSVELO_CTRL {
 		unsigned int item;
 	} Z;
 };
+
+enum Psvelo_scaletype {
+	PSVELO_READ_SCALE	= 0,
+	PSVELO_CONST_SCALE	= 1};
 
 enum psvelo_types {
 	PSVELO_G_FILL = 0,
@@ -659,7 +665,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] [-H] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol>[<scale>][</args>][+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol>[<scale>][</args>][+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W[<pen>][+c[f|l]]] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -678,7 +684,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -L and -Z.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern for symbol fill [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Scale symbol sizes (set via -S or input column) and pen attributes by factors read from scale column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The scale column is given after the symbol size column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the symbol fill color (requires -C or -G).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow the required columns in the data record.\n");
 	GMT_Option (API, "K");
@@ -785,6 +791,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'H':		/* Overall symbol/pen scale column provided */
 				Ctrl->H.active = true;
+				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
+					Ctrl->H.value = atof (opt->arg);
+					Ctrl->H.mode = PSVELO_CONST_SCALE;
+				}
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				Ctrl->I.active = true;
@@ -1027,7 +1037,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	else	/* Fixed symbol scale */
 		nominal_size = scale = Ctrl->S.scale;
 	/* 3. Add scaling from file, if requested */
-	if (Ctrl->H.active) {
+	if (Ctrl->H.active && Ctrl->H.mode == PSVELO_READ_SCALE) {
 		xcol = Ctrl->S.n_cols;
 		Ctrl->S.n_cols++;	/* Read scaling from data file */
 		gmt_set_column_type (GMT, GMT_IN, xcol, GMT_IS_FLOAT);
@@ -1196,8 +1206,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			PSL_settransparencies (PSL, transp);
 		}
 		size = scale;
-		if (Ctrl->H.active)	/* Variable scaling of symbol size and pen width */
-			size *= in[xcol];
+		if (Ctrl->H.active) {	/* Variable scaling of symbol size and pen width */
+			double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+			size *= scl;
+		}
 
 		switch (Ctrl->S.symbol) {
 			case CINE:
@@ -1207,8 +1219,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 				if (plot_ellipse) {
 					if (Ctrl->L.active) {
 						current_pen = Ctrl->L.pen;
-						if (Ctrl->H.active)
-							gmt_scale_pen (GMT, &current_pen, in[xcol]);
+						if (Ctrl->H.active) {
+							double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+							gmt_scale_pen (GMT, &current_pen, scl);
+						}
 						gmt_setpen (GMT, &current_pen);
 					}
 					if (Ctrl->E.active)
@@ -1229,8 +1243,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2.0/PSL_DOTS_PER_INCH;	/* Minimum width set */
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = Ctrl->A.S.v.pen;
-						if (Ctrl->H.active)
-							gmt_scale_pen (GMT, &current_pen, in[xcol]);
+						if (Ctrl->H.active) {
+							double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+							gmt_scale_pen (GMT, &current_pen, scl);
+						}
 						gmt_setpen (GMT, &current_pen);
 					}
 					dim[0] = plot_vx, dim[1] = plot_vy;
@@ -1238,8 +1254,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					dim[5] = Ctrl->A.S.v.v_shape;
 					if (Ctrl->L.active) {
 						current_pen = Ctrl->L.pen;
-						if (Ctrl->H.active)
-							gmt_scale_pen (GMT, &current_pen, in[xcol]);
+						if (Ctrl->H.active) {
+							double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+							gmt_scale_pen (GMT, &current_pen, scl);
+						}
 						gmt_setpen (GMT, &current_pen);
 					}
 					if (Ctrl->A.S.symbol == GMT_SYMBOL_VECTOR_V4) {	/* Old GMT4 vector selected */
@@ -1258,8 +1276,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					}
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = Ctrl->W.pen;
-						if (Ctrl->H.active)
-							gmt_scale_pen (GMT, &current_pen, in[xcol]);
+						if (Ctrl->H.active) {
+							double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+							gmt_scale_pen (GMT, &current_pen, scl);
+						}
 						gmt_setpen (GMT, &current_pen);
 					}
 
@@ -1280,16 +1300,20 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			case ANISO:
 				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], size, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				current_pen = Ctrl->W.pen;
-				if (Ctrl->H.active)
-					gmt_scale_pen (GMT, &current_pen, in[xcol]);
+				if (Ctrl->H.active) {
+					double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+					gmt_scale_pen (GMT, &current_pen, scl);
+				}
 				gmt_setpen (GMT, &current_pen);
 				PSL_plotsegment (PSL, plot_x, plot_y, plot_vx, plot_vy);
 				break;
 			case CROSS:
 				/* triangular arrowheads */
 				current_pen = Ctrl->W.pen;
-				if (Ctrl->H.active)
-					gmt_scale_pen (GMT, &current_pen, in[xcol]);
+				if (Ctrl->H.active) {
+					double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+					gmt_scale_pen (GMT, &current_pen, scl);
+				}
 				psvelo_trace_cross (GMT, in[GMT_X],in[GMT_Y],eps1,eps2,theta,size,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
 					Ctrl->A.S.v.h_width,0.1,Ctrl->L.active,&(current_pen));
 				break;
