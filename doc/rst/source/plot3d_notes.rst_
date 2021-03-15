@@ -59,6 +59,27 @@ a suitable size for the legend entry.  For other symbol cases the **-l** option 
 be ignored.  Legend entries also work for lines and polygons, but not more complicated
 features such as decorated and quoted lines, fronts, etc.
 
+Data Column Order
+-----------------
+
+The **-S** option determines how many size columns are required to generate
+the selected symbol, but if *size* is not given then we expect to read *size*
+from file.  In addition, your use of options **-H**, **-I** and **-t** will
+require extra columns.  The order of the data record is fixed regardless of
+option order, even if not all items may be activated. We expect data columns
+to come in the following order::
+
+    x y z [w] [size-columns] [scale] [intens] [transp [transp2]] [trailing-text]
+
+where items given in brackets are optional and under the control of the stated
+options: **-C** selects the optional *w* column for color-lookup, **-S** without
+a size selects the optional *size-columns* (may be more than one depending on
+the selected symbol), **-H** selects the optional *scale* column, **-I** selects
+the optional *intens* column, and **-t** selects the optional *transp* column(s).
+Trailing text is always optional.  **Notes**: (1) If symbol *code* is not given
+by **-S** then it is expected to start the trailing text. (2) You can use **-i** to
+rearrange your data record to match the expected format.
+
 Bugs
 ----
 
