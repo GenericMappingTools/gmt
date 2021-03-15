@@ -118,7 +118,6 @@ struct PSEVENTS_CTRL {
 		bool active;
 		unsigned int mode;
 		char *symbol;
-		double size;
 	} S;
 	struct PSEVENTS_T {	/* 	-T<nowtime> */
 		bool active;
@@ -451,32 +450,18 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 			case 'S':	/* Set symbol type and size (append units) */
 				Ctrl->S.active = true;
 				if (strchr ("kK", opt->arg[0])) {	/* Custom symbol may have a slash before size */
-					if ((c = strrchr (opt->arg, '/'))) {	/* Gave size */
-						Ctrl->S.size = gmt_M_to_inch (GMT, &c[1]);
-						c[0] = '0';
-						Ctrl->S.symbol = strdup (opt->arg);
-						c[0] = '/';
-						GMT->current.setting.proj_length_unit = GMT_INCH;	/* Since S.size is now in inches */
-					}
-					else {	/* Gave no size so get the whole thing and read size from file */
-						Ctrl->S.symbol = strdup (opt->arg);
+					Ctrl->S.symbol = strdup (opt->arg);
+					if ((c = strrchr (opt->arg, '/')) == NULL)	/* Gave no size so get the whole thing and read size from file */
 						Ctrl->S.mode = 1;
-					}
 				}
 				else if (opt->arg[0] == 'E' && opt->arg[1] == '-') {
-					if (opt->arg[2])	/* Gave a fixed size */
-						Ctrl->S.size = atof (&opt->arg[2]);
-					else	/* Must read individual event symbol sizes for file using prevailing length-unit setting */
-						Ctrl->S.mode = 1;
 					Ctrl->S.symbol = strdup ("E-");
+					if (!opt->arg[2])	/*  Must read individual event symbol sizes for file using prevailing length-unit setting */
+						Ctrl->S.mode = 1;
 				}
 				else if (strchr ("-+aAcCdDgGhHiInNsStTxy", opt->arg[0])) {	/* Regular symbols of form <code>[<size>], where <code> is 1-char */
-					if (opt->arg[1] && !strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Gave a fixed size */
-						Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);	/* Now in inches */
-						GMT->current.setting.proj_length_unit = GMT_INCH;	/* Since S.size is now in inches */
-						sprintf (txt_a, "%c", opt->arg[0]);			/* Just the symbol code */
-						Ctrl->S.symbol = strdup (txt_a);
-					}
+					if (opt->arg[1] && !strchr (GMT_DIM_UNITS, opt->arg[1]))	/* Gave a fixed size */
+						Ctrl->S.symbol = strdup (opt->arg);
 					else if (opt->arg[1] && strchr (GMT_DIM_UNITS, opt->arg[1])) {	/* Must read symbol sizes in this unit from file */
 						Ctrl->S.mode = 1;
 						gmt_set_measure_unit (GMT, opt->arg[1]);
@@ -816,7 +801,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				}
 			}
 			if (bad) {
-				GMT_Report (API, GMT_MSG_WARNING, "Interpolation  of time columne with -F%c failed to give monotonically increasing values in %d places. Please use --GMT_INTERPOLANT=linear instead\n", Fmode, bad);
+				GMT_Report (API, GMT_MSG_WARNING, "Interpolation  of time column with -F%c failed to give monotonically increasing values in %d places. Please use --GMT_INTERPOLANT=linear instead\n", Fmode, bad);
 			}
 			sprintf (TCLOCK, " --FORMAT_CLOCK_OUT=hh:mm:ss");
 			if (dt < 1.0) {	/* Need to make sure we pass a proper FORMAT_CLOCK_IN|OUT with enough precision for Step 3 to adequately reflect precision in input data */

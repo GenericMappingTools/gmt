@@ -663,6 +663,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	double DX = 0, DY = 0, *xp = NULL, *yp = NULL, *in = NULL, *v4_rgb = NULL, *z_for_cpt = NULL;
 	double lux[3] = {0.0, 0.0, 0.0}, tmp, x_1, x_2, y_1, y_2, dx, dy, s, c, zz, zb, length, base;
 	double bar_gap, bar_width, bar_step, nominal_size_x, nominal_size_y;
+	double axes[2] = {0.0, 0.0}, Az = 0.0, factor = 1.0;
 
 	struct GMT_PEN default_pen, current_pen, last_headpen, last_spiderpen, nominal_pen;
 	struct GMT_FILL default_fill, current_fill, black, no_fill;
@@ -1194,13 +1195,6 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && !S.par_set) {	/* Ellipses or rectangles */
-				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, Got diameter via S.size_x */
-					in2[ex2] = in2[ex3] = S.size_x, in[ex1] = 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero */
-				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
-					in2[ex2] = in2[ex3] = in[ex1], in[ex1] = 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero */
-			}
-
 			if (S.read_size) {	/* Update sizes from input */
 				S.size_x = in[ex1] * S.factor;
 				if (delayed_unit_scaling[GMT_X]) S.size_x *= GMT->session.u2u[S.u][GMT_INCH];
@@ -1213,6 +1207,15 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				double scl = (Ctrl->H.mode == PSXYZ_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 				S.size_x = nominal_size_x * scl;
 				S.size_y = nominal_size_y * scl;
+			}
+
+			if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && !S.par_set) {	/* Ellipses or rectangles */
+				if (S.n_required == 0)	/* Degenerate ellipse or rectangle, got diameter via S.size_x */
+					axes[GMT_X] = axes[GMT_Y] = S.size_x, Az = (gmt_M_is_cartesian (GMT, GMT_IN)) ? 90.0 : 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero  */
+				else if (S.n_required == 1)	/* Degenerate ellipse or rectangle, expect single diameter via input */
+					axes[GMT_X] = axes[GMT_Y] = in[ex1], Az = (gmt_M_is_cartesian (GMT, GMT_IN)) ? 90.0 : 0.0;	/* Duplicate diameter as major and minor axes and set azimuth to zero */
+				else 	/* Full ellipse */
+					Az = in[ex1], axes[GMT_X] = in[ex2], axes[GMT_Y] = in[ex3];
 			}
 
 			if (S.base_set & GMT_BASE_ORIGIN) data[n].flag |= 32;	/* Flag that base needs to be added to height(s) */
@@ -1311,21 +1314,21 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						data[n].dim[2] = S.size_y;
 					}
 					else {	/* Get parameters from file */
-						if (gmt_M_is_dnan (p_in[ex1])) {
+						if (gmt_M_is_dnan (Az)) {
 							GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle angle = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						if (gmt_M_is_dnan (p_in[ex2])) {
+						if (gmt_M_is_dnan (axes[GMT_X])) {
 							GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle width or major axis = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						if (gmt_M_is_dnan (p_in[ex3])) {
+						if (gmt_M_is_dnan (axes[GMT_Y])) {
 							GMT_Report (API, GMT_MSG_WARNING, "Ellipse/Rectangle height or minor axis = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
-						data[n].dim[0] = p_in[ex1];	/* direction */
-						data[n].dim[1] = p_in[ex2];
-						data[n].dim[2] = p_in[ex3];
+						data[n].dim[0] = Az;	/* direction */
+						data[n].dim[1] = factor * axes[GMT_X];
+						data[n].dim[2] = factor * axes[GMT_Y];
 					}
 					gmt_flip_angle_d (GMT, &data[n].dim[0]);
 					if (S.convert_angles) {		/* Got axis in km */

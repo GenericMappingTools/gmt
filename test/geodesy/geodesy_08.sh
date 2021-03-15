@@ -39,7 +39,7 @@ cat << EOF > main.sh
 gmt begin
 	gmt basemap -R-124.6/-123.3/40/41 -JM5i -B -BWSne -Y0.5i -X0.75i --MAP_FRAME_TYPE=plain
 	gmt events labels.txt -L1 -Et -T\${MOVIE_COL0} -F+f12p,Helvetica-Bold,red+jBL -Dj0.1c --TIME_UNIT=d
-	gmt events -Z"velo -A18p+e+a40+n6k+h0.5 -Se0.50/0/0p" -Ct.cpt -W1.5 -N data.txt -T\${MOVIE_COL0} -Es+r1+p1+d1+f1 -Mi1+c-0.5 -Ms2+c0.5 -Mt+c0 -L3 --TIME_UNIT=d
+	gmt events -Z"velo -A18p+e+a40+n6k+h0.5 -Se0.50/0" -Ct.cpt -W1.5 -N data.txt -T\${MOVIE_COL0} -Es+r1+p1+d1+f1 -Mi1+c-0.5 -Ms2+c0.5 -Mt+c0 -L3 --TIME_UNIT=d
 gmt end
 EOF
 #gmt movie main.sh -C6ix6ix100 -Ngeodesy_08 -Fmp4 -Mm,ps -Lc0+jTR+o1c/1.5c -Lf+o2c/1.5c -Ttime.txt -Z --FORMAT_CLOCK_MAP=hh
