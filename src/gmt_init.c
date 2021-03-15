@@ -9885,6 +9885,8 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 		strcpy (axes, GMT->current.proj.flip ? "WrStZ" : "WrbNZ");
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Given polar projection flip = %d, set MAP_FRAME_AXES = %s\n", GMT->current.proj.flip, axes);
 	}
+	else if (GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_GENPER)	/* Need to relax to all since hard to guess what works */
+		strcpy (axes, "WESNZ");
 	else if (!doubleAlmostEqual (az, 180.0)) {	/* Rotated, so must adjust */
 		unsigned int quadrant = urint (floor (az / 90.0)) + 1;
 		switch (quadrant) {

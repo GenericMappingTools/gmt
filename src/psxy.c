@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Plot lines, polygons, and symbols in 2-D"
 #define THIS_MODULE_KEYS	"<D{,CC(,T-<,S?(=2,ZD(=,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtw" GMT_OPT("HMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYabdefghilpqtw" GMT_OPT("Mmc")
 
 /* Control structure for psxy */
 
@@ -67,6 +67,11 @@ struct PSXY_CTRL {
 		unsigned int sequential;
 		struct GMT_FILL fill;
 	} G;
+	struct PSXY_H {	/* -H read overall scaling factor for symbol size and pen width */
+		bool active;
+		unsigned int mode;
+		double value;
+	} H;
 	struct PSXY_I {	/* -I[<intensity>] */
 		bool active;
 		unsigned int mode;	/* 0 if constant, 1 if read from file (symbols only) */
@@ -127,6 +132,10 @@ enum Psxy_poltype {
 	PSXY_POL_SYMM_DEV,
 	PSXY_POL_ASYMM_DEV,
 	PSXY_POL_ASYMM_ENV};
+
+enum Psxy_scaletype {
+	PSXY_READ_SCALE	= 0,
+	PSXY_CONST_SCALE	= 1};
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSXY_CTRL *C;
@@ -466,7 +475,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A[m|p|x|y]]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F<arg>] [-G<fill>|+z]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-H[<scale>]] [-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t[-S[<symbol>][<size>]] [-T] [%s] [%s] [-W[<pen>][<attr>]]\n\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT);
 	else
@@ -504,6 +513,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -G option can be present in all segment headers (not with -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To assign fill color via -Z, give -G+z).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Scale symbol sizes (set via -S or input column) by factors read from scale column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
 	GMT_Option (API, "K");
@@ -805,6 +816,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 				}
 				if (Ctrl->G.fill.rgb[0] < -4.0) Ctrl->G.sequential = irint (Ctrl->G.fill.rgb[0]+7.0);
 				break;
+			case 'H':		/* Overall symbol/pen scale column provided */
+				Ctrl->H.active = true;
+				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
+					Ctrl->H.value = atof (opt->arg);
+					Ctrl->H.mode = PSXY_CONST_SCALE;
+				}
+				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				Ctrl->I.active = true;
 				if (opt->arg[0])
@@ -956,7 +974,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	bool error_x = false, error_y = false, def_err_xy = false, can_update_headpen = true, decorate_custom = false;
 	bool default_outline = false, outline_active = false, geovector = false, save_W = false, save_G = false, QR_symbol = false;
 	unsigned int n_needed = 0, n_cols_start = 2, justify = 0, tbl, grid_order = 0, frame_order = 0;
-	unsigned int n_total_read = 0, j, geometry, icol = 0, tcol_f = 0, tcol_s = 0, n_z = 0, k, kk;
+	unsigned int n_total_read = 0, j, geometry, xcol = 0, icol = 0, tcol_f = 0, tcol_s = 0, n_z = 0, k, kk;
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR, outline_setting = 0, seq_n_legends = 0, seq_frequency = 0;
@@ -965,9 +983,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 	double direction, length, dx, dy, d, yy, yt, yb, *in = NULL, *z_for_cpt = NULL;
 	double s, c, plot_x, plot_y, x_1, x_2, y_1, y_2, xx, xb, xt, dummy, headpen_width = 0.25;
-	double bar_gap, bar_width, bar_step;
+	double bar_gap, bar_width, bar_step, nominal_size;
 
-	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen;
+	struct GMT_PEN current_pen, default_pen, save_pen, last_headpen, last_spiderpen, nominal_pen;
 	struct GMT_FILL current_fill, default_fill, black, no_fill, save_fill;
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
@@ -1016,6 +1034,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	if (!Ctrl->T.active) GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (Ctrl->E.active && S.symbol == GMT_SYMBOL_LINE)	/* Assume user only wants error bars */
 		S.symbol = GMT_SYMBOL_NONE;
+	nominal_size = S.size_x;
+	nominal_pen = Ctrl->W.pen;
 	/* Do we plot actual symbols, or lines */
 	not_line = !(S.symbol == GMT_SYMBOL_FRONT || S.symbol == GMT_SYMBOL_QUOTED_LINE || S.symbol == GMT_SYMBOL_DECORATED_LINE || S.symbol == GMT_SYMBOL_LINE);
 	if (Ctrl->E.active) {	/* Set error bar parameters */
@@ -1097,8 +1117,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	pos2x = ex1 + GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd longitude (for VECTORS with two sets of coordinates) */
 	pos2y = ex2 - GMT->current.setting.io_lonlat_toggle[GMT_IN];	/* Column with a 2nd latitude (for VECTORS with two sets of coordinates) */
 
+	if (S.read_size) gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_DIMENSION);	/* Must read symbol size from data record */
 	if (Ctrl->E.active) {
-		if (S.read_size) gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_DIMENSION);	/* Must read symbol size from data record */
 		if (def_err_xy && GMT->current.setting.io_lonlat_toggle[GMT_IN]) {	/* With -:, -E should become -Eyx */
 			gmt_M_uint_swap (xy_errors[GMT_X], xy_errors[GMT_Y]);
 			gmt_M_uint_swap (error_type[GMT_X], error_type[GMT_Y]);
@@ -1118,6 +1138,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	}
 	else
 		n_needed = n_cols_start + S.n_required;
+	if (Ctrl->H.active && Ctrl->H.mode == PSXY_READ_SCALE) {
+		xcol = n_needed;
+		n_needed++;	/* Read scaling from data file */
+		gmt_set_column_type (GMT, GMT_IN, xcol, GMT_IS_FLOAT);
+	}
 	if (Ctrl->I.mode) {
 		icol = n_needed;
 		n_needed++;	/* Read intensity from data file */
@@ -1368,6 +1393,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							if ((error = gmt_parse_symbol_option (GMT, s_args, &S, 0, false))) {
 								Return (error);
 							}
+							nominal_size = S.size_x;
 						}
 						else
 							GMT_Report (API, GMT_MSG_ERROR, "Segment header tries to switch to a line symbol like quoted line or fault - ignored\n");
@@ -1393,8 +1419,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "ERROR: no symbol code was provided in the -S option.\n");
 					Return (GMT_RUNTIME_ERROR);
 				}
-				if (S.read_symbol_cmd == 1 && (error = gmt_parse_symbol_option (GMT, In->text, &S, 0, false))) {
-					Return (error);
+				if (S.read_symbol_cmd == 1) {
+					if ((error = gmt_parse_symbol_option (GMT, In->text, &S, 0, false))) {
+						Return (error);
+					}
+					nominal_size = S.size_x;
 				}
 				if (gmt_is_barcolumn (GMT, &S)) {
 					n_z = gmt_get_columbar_bands (GMT, &S);
@@ -1546,10 +1575,16 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				}
 			}
 
+			nominal_pen = current_pen;
 			if (Ctrl->W.cpt_effect) {
 				if (Ctrl->W.pen.cptmode & 1) {	/* Change pen color via CPT */
 					gmt_M_rgb_copy (Ctrl->W.pen.rgb, current_fill.rgb);
 					current_pen = Ctrl->W.pen;
+					nominal_pen = current_pen;
+					if (Ctrl->H.active) {
+						double scl = (Ctrl->H.mode == PSXY_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+						gmt_scale_pen (GMT, &current_pen, scl);
+					}
 					if (can_update_headpen && !gmt_M_same_pen (current_pen, last_headpen)) {	/* Since color may have changed */
 						PSL_defpen (PSL, "PSL_vecheadpen", current_pen.width, current_pen.style, current_pen.offset, current_pen.rgb);
 						last_headpen = current_pen;
@@ -1559,6 +1594,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
 				else if (Ctrl->G.active)
 					current_fill = Ctrl->G.fill;
+			}
+			else if (Ctrl->H.active) {
+				double scl = (Ctrl->H.mode == PSXY_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				gmt_scale_pen (GMT, &current_pen, scl);
 			}
 
 			if (geovector) {	/* Vectors do it separately */
@@ -1583,7 +1622,11 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			if (S.read_size) {
 				S.size_x = in[ex1] * S.factor;	/* Got size from input column; scale by factor if area unifier is on */
 				if (delayed_unit_scaling) S.size_x *= GMT->session.u2u[S.u][GMT_INCH];
+				nominal_size = S.size_x;
 			}
+			if (Ctrl->H.active)	/* Variable (or constant) scaling of symbol size and pen width */
+				S.size_x = nominal_size * ((Ctrl->H.mode == PSXY_READ_SCALE) ? in[xcol] : Ctrl->H.value);
+
 			gmt_M_memset (dim, PSL_MAX_DIMS, double);
 			dim[0] = S.size_x;
 
@@ -2064,6 +2107,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			if (S.read_symbol_cmd && (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC)) {	/* Reset status */
 				current_pen = save_pen; current_fill = save_fill; Ctrl->W.active = save_W; Ctrl->G.active = save_G;
 			}
+			if (Ctrl->H.active) current_pen = nominal_pen;
 		} while (true);
 		if (GMT->common.t.variable) {	/* Reset the transparencies */
 			double transp[2] = {0.0, 0.0};	/* None selected */
