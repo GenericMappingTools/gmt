@@ -1554,7 +1554,6 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				}
 				x1 += z_width[i];
 			}
-			//if (!center && !use_labels) {
 			if (!center) {
 				i = P->n_colors-1;
 				if (all || (P->data[i].annot & GMT_CPT_U_ANNOT)) {
