@@ -1349,7 +1349,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 		if (Ctrl->A.active) {	/* Can only override tag settings if subplot begin -A was used */
 			sprintf (file, "%s/gmt.tags.%d", API->gwf_dir, fig);
-			if (access (file, F_OK)) {
+			if (access (file, F_OK)) {	/* No such file */
 				GMT_Report (API, GMT_MSG_ERROR, "Cannot override tags with -A if it was not set during gmt subplot begin. -A ignored\n");
 				Ctrl->A.format[0] = '\0';
 			}
