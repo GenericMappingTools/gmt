@@ -683,20 +683,28 @@ GMT_LOCAL unsigned int psscale_shrink_triangle (double gap, double yt, double *y
 }
 
 GMT_LOCAL unsigned int psscale_set_custom_annot (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int i, unsigned int justify, unsigned int l_justify, char *text) {
-	/* Determine which custom label to use for this slice i */
+	/* Determine which custom label to use for this slice i. Note: when i == P->n_colors we call it for the last slice for the second time */
 	char *c = NULL;
 	unsigned int this_just = justify;
-	if (i == P->n_colors && (P->data[i-1].annot & GMT_CPT_L_ANNOT) && P->data[i-1].label) {
-		/* Passing P->n_colors means the last slice in CPT after the loop of lower bounds, check for 2nd label to be upper bound label */
-		if ((c = strchr (P->data[i-1].label, ';')))	/* Yes, use it */
-			strncpy (text, &c[1], GMT_LEN256-1);
-		else
+	if (i == P->n_colors && P->data[i-1].annot && P->data[i-1].label) {
+		i--;	/* Get the actual slice number (the last one) */
+		if (P->data[i].annot == GMT_CPT_B_ANNOT) {	/* Use the second label for upper */
+			if ((c = strchr (P->data[i].label, ';')))	/* Use the second label for upper */
+				strncpy (text, &c[1], GMT_LEN256-1);
+			else {	/* Cannot use the same label in both places */
+				text[0] = '\0';
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Last color slice has annotation flag B but only one label found [%s]\n", P->data[i].label);
+			}
+		}
+		else if ((P->data[i].annot & GMT_CPT_U_ANNOT))	/* Use the single label for upper */
+			strncpy (text, P->data[i].label, GMT_LEN256-1);
+		else	/* Else it is set to lower which we skip */
 			text[0] = '\0';
 		this_just = l_justify;
 	}
 	else if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
 		if ((c = strchr (P->data[i].label, ';')))
-			c[0] = '\0';	/* Temporary hide second label */
+			c[0] = '\0';	/* Temporary hide any second label */
 		strncpy (text, P->data[i].label, GMT_LEN256-1);
 		if (c) c[0] = ';';	/* Restore second label */
 		this_just = l_justify;
@@ -1218,10 +1226,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {	/* Finally do last slice z_high boundary */
+				//if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {	/* Finally do last slice z_high boundary */
 					t_len = (all || (P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
-				}
+				//}
 			}
 
 			/* Now we place annotations */
@@ -1504,10 +1512,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {
+				//if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {
 					t_len = (all || (P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
-				}
+				//}
 			}
 
 			/* Finally plot annotations */
