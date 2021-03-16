@@ -682,6 +682,42 @@ GMT_LOCAL unsigned int psscale_shrink_triangle (double gap, double yt, double *y
 	return (4);
 }
 
+GMT_LOCAL unsigned int psscale_set_custom_annot (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int i, unsigned int justify, unsigned int l_justify, char *text) {
+	/* Determine which custom label to use for this slice i. Note: when i == P->n_colors we call it for the last slice for the second time */
+	char *c = NULL;
+	unsigned int this_just = justify;
+	if (i == P->n_colors && P->data[i-1].annot && P->data[i-1].label) {
+		i--;	/* Get the actual slice number (the last one) */
+		if (P->data[i].annot == GMT_CPT_B_ANNOT) {	/* Use the second label for upper */
+			if ((c = strchr (P->data[i].label, ';')))	/* Use the second label for upper */
+				strncpy (text, &c[1], GMT_LEN256-1);
+			else {	/* Cannot use the same label in both places */
+				text[0] = '\0';
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Last color slice has annotation flag B but only one label found [%s]\n", P->data[i].label);
+			}
+		}
+		else if ((P->data[i].annot & GMT_CPT_U_ANNOT))	/* Use the single label for upper */
+			strncpy (text, P->data[i].label, GMT_LEN256-1);
+		else	/* Else it is set to lower which we skip */
+			text[0] = '\0';
+		this_just = l_justify;
+	}
+	else if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
+		if ((c = strchr (P->data[i].label, ';')))
+			c[0] = '\0';	/* Temporary hide any second label */
+		strncpy (text, P->data[i].label, GMT_LEN256-1);
+		if (c) c[0] = ';';	/* Restore second label */
+		this_just = l_justify;
+	}
+	else if (i && (P->data[i-1].annot & GMT_CPT_U_ANNOT) && P->data[i-1].label) {
+		strncpy (text, P->data[i-1].label, GMT_LEN256-1);
+		this_just = l_justify;
+	}
+	else
+		text[0] = '\0';
+	return (this_just);
+}
+
 GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0, p_arg;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nv, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
@@ -1190,10 +1226,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {	/* Finally do last slice z_high boundary */
+				//if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {	/* Finally do last slice z_high boundary */
 					t_len = (all || (P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
-				}
+				//}
 			}
 
 			/* Now we place annotations */
@@ -1209,16 +1245,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					this_just = justify;
 					do_annot = true;
 					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
-						if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
-							strncpy (text, P->data[i].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else if (i && (P->data[i-1].annot & GMT_CPT_U_ANNOT) && P->data[i-1].label) {
-							strncpy (text, P->data[i-1].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else
-							text[0] = '\0';
+						this_just = psscale_set_custom_annot (GMT, P, i, justify, l_justify, text);
 					}
 					else if (center && Ctrl->L.interval)
 						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
@@ -1244,14 +1271,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (all || (P->data[i].annot & GMT_CPT_U_ANNOT)) {
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
-						if (P->data[i].label) {
-							strncpy (text, P->data[i].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else
-							text[0] = '\0';
-					}
+					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
+						this_just = psscale_set_custom_annot (GMT, P, P->n_colors, justify, l_justify, text);
 					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_high);
 						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
@@ -1491,10 +1512,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {
+				//if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {
 					t_len = (all || (P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
-				}
+				//}
 			}
 
 			/* Finally plot annotations */
@@ -1509,18 +1530,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (all || P->data[i].annot) {
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
-						if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
-							strncpy (text, P->data[i].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else if (i && P->data[i-1].annot & GMT_CPT_U_ANNOT && P->data[i-1].label) {
-							strncpy (text, P->data[i-1].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else
-							text[0] = '\0';
-					}
+					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
+						this_just = psscale_set_custom_annot (GMT, P, i, justify, l_justify, text);
 					else if (center && Ctrl->L.interval)
 						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
 					else if (Ctrl->Q.active) {
@@ -1542,12 +1553,14 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				}
 				x1 += z_width[i];
 			}
-			if (!center && !use_labels) {
+			if (!center) {
 				i = P->n_colors-1;
 				if (all || (P->data[i].annot & GMT_CPT_U_ANNOT)) {
 					this_just = justify;
 					do_annot = true;
-					if (Ctrl->Q.active) {
+					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
+						this_just = psscale_set_custom_annot (GMT, P, P->n_colors, justify, l_justify, text);
+					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_high);
 						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
