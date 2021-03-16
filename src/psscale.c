@@ -1210,7 +1210,12 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					do_annot = true;
 					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
 						if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
+							char *c = NULL;
+							fprintf (stderr,"L = %s\n", P->data[i].label);
+							if ((c = strchr (P->data[i].label, ';')))
+								c[0] = '\0';	/* Temporary hide second label */
 							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							if (c) c[0] = ';';	/* Restore second label */
 							this_just = l_justify;
 						}
 						else if (i && (P->data[i-1].annot & GMT_CPT_U_ANNOT) && P->data[i-1].label) {
@@ -1246,7 +1251,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					do_annot = true;
 					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
 						if (P->data[i].label) {
-							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							char *c = NULL;
+							if ((c = strchr (P->data[i].label, ';')))
+								strncpy (text, &c[1], GMT_LEN256-1);
+							else
+								strncpy (text, P->data[i].label, GMT_LEN256-1);
 							this_just = l_justify;
 						}
 						else
@@ -1511,7 +1520,12 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					do_annot = true;
 					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
 						if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
+							char *c = NULL;
+							fprintf (stderr,"L = %s\n", P->data[i].label);
+							if ((c = strchr (P->data[i].label, ';')))
+								c[0] = '\0';	/* Temporary hide second label */
 							strncpy (text, P->data[i].label, GMT_LEN256-1);
+							if (c) c[0] = ';';	/* Restore second label */
 							this_just = l_justify;
 						}
 						else if (i && P->data[i-1].annot & GMT_CPT_U_ANNOT && P->data[i-1].label) {
@@ -1547,7 +1561,19 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (all || (P->data[i].annot & GMT_CPT_U_ANNOT)) {
 					this_just = justify;
 					do_annot = true;
-					if (Ctrl->Q.active) {
+					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
+						if (P->data[i].label) {
+							char *c = NULL;
+							if ((c = strchr (P->data[i].label, ';')))
+								strncpy (text, &c[1], GMT_LEN256-1);
+							else
+								strncpy (text, P->data[i].label, GMT_LEN256-1);
+							this_just = l_justify;
+						}
+						else
+							text[0] = '\0';
+					}
+					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_high);
 						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
