@@ -692,7 +692,6 @@ GMT_LOCAL unsigned int psscale_set_custom_annot (struct GMT_CTRL *GMT, struct GM
 			strncpy (text, &c[1], GMT_LEN256-1);
 		else
 			text[0] = '\0';
-			//strncpy (text, P->data[i-1].label, GMT_LEN256-1);
 		this_just = l_justify;
 	}
 	else if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
