@@ -1356,6 +1356,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		}
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN128] = {""};
+			if ((P = gmt_subplot_info (API, fig)) == NULL) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No subplot information file!\n");
+				Return (GMT_ERROR_ON_FOPEN);
+			}
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
 			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o%s -F+p%s+g%s -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, off, pen, fill, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
