@@ -1047,8 +1047,8 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		icol = Ctrl->S.n_cols;	/* Column id for intensity */
 		Ctrl->S.n_cols++;	/* One more data column required */
 		gmt_set_column_type (GMT, GMT_IN, icol, GMT_IS_FLOAT);
-		}
-	  /* 5. Add transparencies from file, if requested */
+	}
+	/* 5. Add transparencies from file, if requested */
 	if (GMT->common.t.variable) {	/* Need one or two transparencies from file */
 		if (GMT->common.t.mode & GMT_SET_FILL_TRANSP) {
 			tcol_f = Ctrl->S.n_cols;
