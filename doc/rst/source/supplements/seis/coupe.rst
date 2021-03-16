@@ -20,6 +20,7 @@ Synopsis
 [ |-E|\ *fill* ]
 [ |-F|\ *mode*\ [*args*] ]
 [ |-G|\ *fill* ]
+[ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [*pen*] ]
 [ |-M| ] [ |-N| ]

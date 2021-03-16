@@ -359,8 +359,9 @@ Sinusoidal, and van der Grinten).
 For **MAP_FRAME_AXES**, **auto** will determine a suitable setting based on the
 projection, type of plot, perspective, etc. For example, GMT will determine the
 position of different quadrants for perspective and polar plots and select the
-equivalent of **WrStZ**. The default for non-perspective, non-polar plots using
-**MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
+equivalent of **WrStZ**. The default for the Gnomonic and general perspective
+projections is **WESNZ**. The default for non-perspective, non-Gnomonic, and
+non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
@@ -1267,13 +1268,13 @@ Regular CPTs
 Suitable for continuous data types and allowing for color
 interpolations, the format of the regular CPTs is:
 
-+---------------+-------------------+---------------+-------------------+----------+--------------+
-| z\ :sub:`0`   | Color\ :sub:`min` | z\ :sub:`1`   | Color\ :sub:`max` | [**A**]  | [;\ *label*] |
-+---------------+-------------------+---------------+-------------------+----------+--------------+
-| ...                                                                                             |
-+---------------+-------------------+---------------+-------------------+----------+--------------+
-| z\ :sub:`n-2` | Color\ :sub:`min` | z\ :sub:`n-1` | Color\ :sub:`max` | [**A**]  | [;\ *label*] |
-+---------------+-------------------+---------------+-------------------+----------+--------------+
++---------------+-------------------+---------------+-------------------+----------+------------------------------+
+| z\ :sub:`0`   | Color\ :sub:`min` | z\ :sub:`1`   | Color\ :sub:`max` | [**A**]  | [;\ *label*]                 |
++---------------+-------------------+---------------+-------------------+----------+------------------------------+
+| ...                                                                                                             |
++---------------+-------------------+---------------+-------------------+----------+------------------------------+
+| z\ :sub:`n-2` | Color\ :sub:`min` | z\ :sub:`n-1` | Color\ :sub:`max` | [**A**]  | [;\ *labell*\ [;\ *labelu*]] |
++---------------+-------------------+---------------+-------------------+----------+------------------------------+
 
 
 Thus, for each "*z*-slice", defined as the interval between two
@@ -1292,6 +1293,10 @@ be omitted to determine the annotation and tick interval automatically
 (e.g., **-Baf**). The optional semicolon followed by a text label will
 make :doc:`/colorbar`, when used with the
 **-L** option, place the supplied label instead of formatted *z*-values.
+**Note**: If the last slice should have both lower and upper
+custom labels then you must supply *two* semicolon-separated labels and set the
+annotation code to **B**.
+
 
 The background color (for *z*-values < :math:`z_0`), foreground color (for *z*-values >
 :math:`z_{n-1}`), and not-a-number (NaN) color (for *z*-values =

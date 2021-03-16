@@ -27,7 +27,7 @@ follows the technical description, (which is largely consistent with the
 OGC SFS specification). This specification provides for non-topological
 point, line and polygon (area) features, as well as multipoint,
 multiline and multipolygon features, and was written by
-`Brent Wood <http://www.niwa.co.nz/key-contacts/brent-wood/>`_
+`Brent Wood <https://niwa.co.nz/people/brent-wood/>`_
 based on input from Paul Wessel and others on the GMT team.
 
 The OGR/GMT format

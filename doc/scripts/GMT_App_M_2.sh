@@ -18,7 +18,7 @@ cat > ages.cpt <<END
 359	104	255	0	416	104	255	0	;Devonian
 416	220	255	0	444	220	255	0	;Silurian
 444	255	174	0	488	255	174	0	;Ordovician
-488	255	58	0	542	255	58	0	;Cambrian
+488	255	58	0	542	255	58	0	;Cambrian;Precambrian
 B	black
 F	white
 END
