@@ -103,6 +103,9 @@ are centered. The example below also shows how to annotate ranges using
 **-Li** (in which case no name labels should appear in the CPT),
 and how to switch the color bar around (by using a negative length).
 
+Finally, note that if the last slice should have both lower and upper
+custom labels then supply two semicolon-separated labels.
+
 .. figure:: /_images/GMT_App_M_2.*
    :width: 600 px
    :align: center
