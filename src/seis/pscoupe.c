@@ -455,10 +455,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify cross-section parameters. Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Aa<lon1>/<lat1>/<lon2>/<lat2>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1>/<lat1>/<strike>/<length>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1>/<y1>/<x2>/<y2>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1>/<y1>/<strike>/<length>[+d<dip>[+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Aa<lon1>/<lat1>/<lon2>/<lat2>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1>/<lat1>/<strike>/<length>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1>/<y1>/<x2>/<y2>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1>/<y1>/<strike>/<length>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For -Aa|b, <width>, <p_length>, <dmin> and <dmax> must be given in km.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to determine the plot domain (-R) from the cross-section parameters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on depth-value in 3rd column.\n");
