@@ -1219,6 +1219,16 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Wrote subplot order to information file %s\n", file);
 
+		if (Ctrl->A.active) {	/* Place an empty file to signal we set up -A */
+			sprintf (file, "%s/gmt.tags.%d", API->gwf_dir, fig);
+			if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot create file %s\n", file);
+				Return (GMT_ERROR_ON_FOPEN);
+			}
+			fclose (fp);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Wrote tag file %s\n", file);
+		}
+
 		if (Ctrl->F.Lpen[0]) {	/* Must draw divider lines between subplots so we need to allocate a dataset */
 			uint64_t dim[4] = {1, last_row + last_col, 2, 2};	/* One segment line per interior row/col */
 			if ((L = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_LINE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) {
@@ -1337,12 +1347,15 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
 		double gap[4], legend_width = 0.0, legend_scale = 1.0;
 
+		if (Ctrl->A.active) {	/* Can only override tag settings if subplot begin -A was used */
+			sprintf (file, "%s/gmt.tags.%d", API->gwf_dir, fig);
+			if (access (file, F_OK)) {
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot override tags with -A if it was not set during gmt subplot begin. -A ignored\n");
+				Ctrl->A.format[0] = '\0';
+			}
+		}
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN128] = {""};
-			if ((P = gmt_subplot_info (API, fig)) == NULL) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No subplot information file!\n");
-				Return (GMT_ERROR_ON_FOPEN);
-			}
 			/* Default to white legend with 1p frame offset 0.2 cm from selected justification point [TR] */
 			snprintf (cmd, GMT_LEN128, "-Dj%s+w%gi+o%s -F+p%s+g%s -S%g -Xa%gi -Ya%gi", legend_justification, legend_width, off, pen, fill, legend_scale, P->origin[GMT_X] + P->x, P->origin[GMT_Y] + P->y);
 			if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
@@ -1410,6 +1423,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		sprintf (file, "%s/gmt.subplotorder.%d", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
 		sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
+		gmt_remove_file (GMT, file);
+		sprintf (file, "%s/gmt.tags.%d", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
 		for (row = 0; row < P->nrows; row++) {
 			for (col = 0; col < P->ncolumns; col++) {

@@ -202,7 +202,8 @@ Optional Arguments (set mode)
 **-A**\ *fixedlabel*
     Overrides the automatic labeling with the given string.  No modifiers are allowed.
     Placement, justification, etc. are all inherited from how **-A** was specified by the
-    initial **subplot begin** command.
+    initial **subplot begin** command.  **Note**: Overriding means you initiate the tag
+    machinery with **-A** when subplot begin was called, otherwise the option is ignored.
 
 .. _subplot_set-C2:
 
