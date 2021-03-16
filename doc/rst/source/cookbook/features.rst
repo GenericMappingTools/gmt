@@ -1294,7 +1294,9 @@ be omitted to determine the annotation and tick interval automatically
 make :doc:`/colorbar`, when used with the
 **-L** option, place the supplied label instead of formatted *z*-values.
 **Note**: The last slice may have two semicolon-separated labels to set
-labels for both the lower *and* upper boundary.
+labels for both the lower *and* upper boundary. Furthermore,
+the annotation code **A** should be **L** for all slices except the last,
+which must be set to **B**.
 
 The background color (for *z*-values < :math:`z_0`), foreground color (for *z*-values >
 :math:`z_{n-1}`), and not-a-number (NaN) color (for *z*-values =

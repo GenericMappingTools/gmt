@@ -104,7 +104,9 @@ are centered. The example below also shows how to annotate ranges using
 and how to switch the color bar around (by using a negative length).
 
 Finally, note that if the last slice should have both lower and upper
-custom labels then supply two semicolon-separated labels.
+custom labels then supply two semicolon-separated labels. Furthermore,
+the annotation code should be **L** for all slices except the last, which
+must be set to **B**.
 
 .. figure:: /_images/GMT_App_M_2.*
    :width: 600 px
