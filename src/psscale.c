@@ -443,7 +443,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 	else if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT || strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
 		/* Args are +w<length>[/<width>][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
 		double bar_offset[2];	/* Will be initialized in gmt_auto_offsets_for_colorbar */
-		gmt_auto_offsets_for_colorbar (GMT, bar_offset, Ctrl->D.refpoint->justify);
+		gmt_auto_offsets_for_colorbar (GMT, bar_offset, Ctrl->D.refpoint->justify, options);
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 			Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 		else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */

@@ -18890,7 +18890,7 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 }
 #endif
 
-void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify) {
+void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify, struct GMT_OPTION *options) {
 	/* We wish to examine the previous -B setting for information as to which axes was
 	 * annotated and possibly labeled, and if the colorbar is requested to be placed on
 	 * such an axis side we need to make more space by increasing the offset. This is
@@ -18902,6 +18902,9 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	unsigned int pos = 0, sides[5];
 	bool add_label = false, add_annot = false, axis_set = false, was;
 	double GMT_LETTER_HEIGHT = 0.736;
+	struct GMT_OPTION *opt = NULL;
+	char *c = NULL;
+	unsigned int n_errors = 0;
 	FILE *fp = NULL;
 	/* Initialize the default settings before considering any -B history */
 	gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values for now */
@@ -18951,6 +18954,13 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
 	was = GMT->current.map.frame.draw;
 	gmtinit_conf_modern_override (GMT);	/* Reset */
+	(void)gmt_getdefaults (GMT, NULL);
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option != '-') continue;   /* Not a parameter setting */
+		c = strchr (opt->arg, '=');
+		c[0] = '\0';  /* Remove = */
+		n_errors += gmtlib_setparameter (GMT, opt->arg, &c[1], false);
+	}
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 	GMT->current.map.frame.draw = was;
 }
