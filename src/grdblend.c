@@ -302,7 +302,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 
 		strncpy (B[n].file, L[n].file, PATH_MAX-1);
 		B[n].memory = gmt_M_file_is_memory (B[n].file);	/* If grid in memory then we only read once and have everything at once */
-		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
+		if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, B[n].file, NULL)) == NULL) {
 			/* Failure somehow, free all grids read so far and bail */
 			for (n = 0; n < n_files; n++) {
 				gmt_M_str_free (L[n].file);	gmt_M_str_free (L[n].region);
@@ -477,7 +477,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			if (GMT_Destroy_Data (GMT->parent, &B[n].G))
 				return (-GMT_RUNTIME_ERROR);
 			t = NULL;	/* To remind us that this is now gone */
-			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_ROW_BY_ROW, NULL, B[n].file, NULL)) == NULL) {
+			if ((B[n].G = GMT_Read_Data (GMT->parent, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, B[n].file, NULL)) == NULL) {
 				return (-GMT_DATA_READ_ERROR);
 			}
 			t = B[n].G->header;	/* Since it got reallocated */
