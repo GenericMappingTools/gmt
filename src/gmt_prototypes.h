@@ -664,6 +664,7 @@ EXTERN_MSC int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsi
 EXTERN_MSC int gmt_getfont (struct GMT_CTRL *GMT, char *line, struct GMT_FONT *F);
 EXTERN_MSC bool gmt_getpen (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *pen);
 EXTERN_MSC void gmt_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *pen);
+EXTERN_MSC void gmt_scale_pen (struct GMT_CTRL *GMT, struct GMT_PEN *P, double scale);
 EXTERN_MSC bool gmt_getrgb (struct GMT_CTRL *GMT, char *line, double *rgb);
 EXTERN_MSC int gmt_getrose (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_ROSE *mr);
 EXTERN_MSC int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_SCALE *ms);

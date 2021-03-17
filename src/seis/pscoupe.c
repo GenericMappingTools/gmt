@@ -29,7 +29,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("Hc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
 
 #define DEFAULT_FONTSIZE		9.0	/* In points */
 #define DEFAULT_OFFSET			3.0	/* In points */
@@ -74,6 +74,11 @@ struct PSCOUPE_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
+	struct PSCOUPE_H {	/* -H read overall scaling factor for symbol size and pen width */
+		bool active;
+		unsigned int mode;
+		double value;
+	} H;
 	struct PSCOUPE_I {	/* -I[<intensity>] */
 		bool active;
 		unsigned int mode;	/* 0 if constant, 1 if read from file */
@@ -144,6 +149,10 @@ struct PSCOUPE_CTRL {
 		struct GMT_PEN pen;
 	} T2;
 };
+
+enum Pscoupe_scaletype {
+	PSCOUPE_READ_SCALE	= 0,
+	PSCOUPE_CONST_SCALE	= 1};
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
 	struct PSCOUPE_CTRL *C;
@@ -436,7 +445,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -A<params> %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]\n", name, GMT_J_OPT, GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C<cpt>] [-E<fill>] [-Fa[<size>][/<Psymbol>[<Tsymbol>]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify>] [-G<fill>] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-Fs<symbol><size>+f<font>+o<dx>/<dy>+j<justify>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] \n", GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s]\n\t[%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -490,6 +499,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle, (s)quare, (t)riangle.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   t Draw T_symbol outline using the current pen (see -W) or sets pen attribute for outline.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Set color used for compressive parts [Default is black].");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Scale symbol sizes (set via -S or input column) and pen attributes by factors read from scale column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the compressive fill color (requires -C or -G).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow the required columns in the data record.\n");
 	GMT_Option (API, "K");
@@ -702,6 +713,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 				}
 				Ctrl->A.polygon = true;
 				break;
+			case 'H':		/* Overall symbol/pen scale column provided */
+				Ctrl->H.active = true;
+				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
+					Ctrl->H.value = atof (opt->arg);
+					Ctrl->H.mode = PSCOUPE_CONST_SCALE;
+				}
+				break;
 			case 'I':	/* Adjust symbol color via intensity */
 				Ctrl->I.active = true;
 				if (opt->arg[0])
@@ -871,11 +889,11 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	int n_rec = 0, n_plane_old = 0, form = 0, error;
 	int i, transparence_old = 0, not_defined = 0;
 	int n_scanned = 0;
-	unsigned int scol = 0, icol = 0, tcol_f = 0, tcol_s = 0;
+	unsigned int xcol = 0, scol = 0, icol = 0, tcol_f = 0, tcol_s = 0;
 	FILE *pnew = NULL, *pext = NULL;
 
 	double size, xy[2], xynew[2] = {0.0}, plot_x, plot_y, n_dep, distance, fault, depth;
-	double scale, P_x, P_y, T_x, T_y, *in = NULL;
+	double scale, P_x, P_y, T_x, T_y, nominal_size, *in = NULL;
 
 	char event_title[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""};
 
@@ -885,6 +903,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	struct AXIS T, N, P, Tr, Nr, Pr;
 	struct GMT_PALETTE *CPT = NULL;
 	struct GMT_RECORD *In = NULL;
+	struct GMT_PEN current_pen;
 
 	struct PSCOUPE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -911,6 +930,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (&meca, 1, meca);
 	gmt_M_memset (&moment, 1, moment);
+	nominal_size = Ctrl->S.scale;
 
 	if (Ctrl->C.active) {
 		if ((CPT = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
@@ -940,7 +960,6 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 
-	gmt_setpen (GMT, &Ctrl->W.pen);
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
 	if (Ctrl->S.read) {	/* Read symbol size from file */
@@ -950,7 +969,11 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	}
 	else	/* Fixed scale */
 		scale = Ctrl->S.scale;
-
+	if (Ctrl->H.active && Ctrl->H.mode == PSCOUPE_READ_SCALE) {
+		xcol = Ctrl->S.n_cols;
+		Ctrl->S.n_cols++;	/* Read scaling from data file */
+		gmt_set_column_type (GMT, GMT_IN, xcol, GMT_IS_FLOAT);
+	}
 	if (Ctrl->I.mode) {	/* Read intensity from data file */
 		icol = Ctrl->S.n_cols;
 		Ctrl->S.n_cols++;
@@ -1005,8 +1028,12 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 		in = In->data;
 		n_rec++;
-		if (Ctrl->S.read) scale = in[scol];
+		if (Ctrl->S.read) nominal_size = scale = in[scol];
 		size = scale;
+		if (Ctrl->H.active) {	/* Variable scaling of symbol size and pen width */
+			double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+			size *= scl;
+		}
 		/* Must examine the trailing text for optional columns: newX, newY and title */
 		/* newX and newY are not used in pscoupe, but we promised psmeca and pscoupe can use the same input file */
 		if (In->text) {
@@ -1201,6 +1228,10 @@ Definition of scalar moment.
 			}
 
 			size = (meca_computed_mw (moment, meca.magms) / 5.0) * scale;
+			if (Ctrl->H.active) {	/* Variable scaling of symbol size and pen width */
+				double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				size *= scl;
+			}
 
 			if (!Ctrl->Q.active) fprintf (pext, "%s\n", In->text);
 			if (Ctrl->S.readmode == READ_AXIS) {
@@ -1229,17 +1260,32 @@ Definition of scalar moment.
 			}
 
 			if (Ctrl->S.plotmode == PLOT_TENSOR) {
-				gmt_setpen (GMT, &Ctrl->L.pen);
+				current_pen = Ctrl->L.pen;
+				if (Ctrl->H.active) {
+					double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+					gmt_scale_pen (GMT, &current_pen, scl);
+				}
+				gmt_setpen (GMT, &current_pen);
 				meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active, Ctrl->S.zerotrace, n_rec);
 			}
 
 			if (Ctrl->S.zerotrace) {
-				gmt_setpen (GMT, &Ctrl->W.pen);
+				current_pen = Ctrl->W.pen;
+				if (Ctrl->H.active) {
+					double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+					gmt_scale_pen (GMT, &current_pen, scl);
+				}
+				gmt_setpen (GMT, &current_pen);
 				meca_ps_tensor (GMT, PSL, plot_x, plot_y, size, T, N, P, NULL, NULL, true, true, n_rec);
 			}
 
 			if (Ctrl->T.active) {
-				gmt_setpen (GMT, &Ctrl->T.pen);
+				current_pen = Ctrl->T.pen;
+				if (Ctrl->H.active) {
+					double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+					gmt_scale_pen (GMT, &current_pen, scl);
+				}
+				gmt_setpen (GMT, &current_pen);
 				meca_ps_plan (GMT, PSL, plot_x, plot_y, meca, size, Ctrl->T.n_plane);
 				if (not_defined) {
 					not_defined = false;
@@ -1248,19 +1294,32 @@ Definition of scalar moment.
 				}
 			}
 			else if (Ctrl->S.plotmode == PLOT_DC) {
-				gmt_setpen (GMT, &Ctrl->L.pen);
+				current_pen = Ctrl->L.pen;
+				if (Ctrl->H.active) {
+					double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+					gmt_scale_pen (GMT, &current_pen, scl);
+				}
+				gmt_setpen (GMT, &current_pen);
 				meca_ps_mechanism (GMT, PSL, plot_x, plot_y, meca, size, &Ctrl->G.fill, &Ctrl->E.fill, Ctrl->L.active);
 			}
 
-			if (Ctrl->A2.active) {
+			if (Ctrl->A2.active) {	/* Plot axis symbols */
+				double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				double asize = (Ctrl->H.active) ? Ctrl->A2.size * scl : Ctrl->A2.size;
 				if (Ctrl->S.readmode != READ_TENSOR && Ctrl->S.readmode != READ_AXIS) meca_dc2axe (meca, &T, &N, &P);
 				meca_axis2xy (plot_x, plot_y, size, P.str, P.dip, T.str, T.dip, &P_x, &P_y, &T_x, &T_y);
-				gmt_setpen (GMT, &Ctrl->P2.pen);
+				current_pen = Ctrl->P2.pen;
+				if (Ctrl->H.active)
+					gmt_scale_pen (GMT, &current_pen, scl);
+				gmt_setpen (GMT, &current_pen);
 				gmt_setfill (GMT, &Ctrl->G2.fill, Ctrl->P2.active);
-				PSL_plotsymbol (PSL, P_x, P_y, &Ctrl->A2.size, Ctrl->A2.P_symbol);
-				gmt_setpen (GMT, &Ctrl->T2.pen);
+				PSL_plotsymbol (PSL, P_x, P_y, &asize, Ctrl->A2.P_symbol);
+				current_pen = Ctrl->T2.pen;
+				if (Ctrl->H.active)
+					gmt_scale_pen (GMT, &current_pen, scl);
+				gmt_setpen (GMT, &current_pen);
 				gmt_setfill (GMT, &Ctrl->E2.fill, Ctrl->T2.active);
-				PSL_plotsymbol (PSL, T_x, T_y, &Ctrl->A2.size, Ctrl->A2.T_symbol);
+				PSL_plotsymbol (PSL, T_x, T_y, &asize, Ctrl->A2.T_symbol);
 			}
 		}
 
@@ -1285,7 +1344,12 @@ Definition of scalar moment.
 			else /* Top or middle aligned */
 				label_y += Ctrl->S.offset[1];
 
-			gmt_setpen (GMT, &Ctrl->W.pen);
+			current_pen = Ctrl->W.pen;
+			if (Ctrl->H.active) {
+				double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+				gmt_scale_pen (GMT, &current_pen, scl);
+			}
+			gmt_setpen (GMT, &current_pen);
 			PSL_setfill (PSL, Ctrl->R2.fill.rgb, 0);
 			if (Ctrl->R2.active) PSL_plottextbox (PSL, label_x, label_y, Ctrl->S.font.size, event_title, Ctrl->S.angle, label_justify, label_offset, 0);
 			form = gmt_setfont(GMT, &Ctrl->S.font);

@@ -6962,6 +6962,25 @@ void gmt_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 	}
 }
 
+void gmt_scale_pen (struct GMT_CTRL *GMT, struct GMT_PEN *P, double scale) {
+	/* Scale all pen attributes by given scale. Note: P as assumed to be reset to nominal values before scaling */
+	P->width  *= scale;
+	P->offset *= scale;
+	if (P->style[0]) {	/* Must scale the dashes and gaps and update string */
+		unsigned int pos = 0;
+		char tmp[GMT_PEN_LEN] = {""}, p[GMT_LEN64] = {""};
+		double w;
+		while ((gmt_strtok (P->style, "+", &pos, p))) {
+			w = atof (p) * scale;	/* New gap or dash length */
+			snprintf (p, GMT_LEN64, "%.3g", w);
+			if (tmp[0]) strcat (tmp, " ");	/* If not first then we need space between items */
+			strcat (tmp, p);
+		}
+		/* Update the style attribute */
+		strncpy (P->style, tmp, GMT_PEN_LEN);
+	}
+}
+
 #define GMT_INC_IS_FEET		1
 #define GMT_INC_IS_SURVEY_FEET	2
 #define GMT_INC_IS_M		4
