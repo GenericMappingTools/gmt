@@ -148,8 +148,7 @@ Optional Arguments
 **-I**\ *icon*
     Specify the URL to an alternative icon that should be used for the
     symbol [Default is a Google Earth circle]. If the URL starts with +
-    then we will prepend
-    `http://maps.google.com/mapfiles/kml/ <http://maps.google.com/mapfiles/kml/>`_
+    then we will prepend ``http://maps.google.com/mapfiles/kml/``
     to the name. To turn off icons entirely (e.g., when just wanting a
     text label), use **-I**-. [Default is a local icon with no directory path].
 
@@ -389,6 +388,13 @@ switching between folders and documents.  The gmt_shell_scripts.sh
 contains function gmt_build_kmz that can assist in building a KMZ file
 from any number of KML files (and optionally images they may refer to).
 
+If you have made a series of KML files (which may depend on other items
+like local PNG images), you can consolidate these into a single KMZ file
+for saving space and for grouping related files together.  The bash function
+**gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
+do this.  You need to source gmt_shell_functions.sh first before you can
+use it.
+
 Kml Hierarchy
 -------------
 
@@ -458,16 +464,6 @@ Segment Information
 **-L**"*some label*\ " [also see **-N** discussion] and **-T**"*some
 text description*\ ". If present, these are parsed to supply name and
 description tags, respectively, for the current feature.
-
-Making KMZ files
-----------------
-
-If you have made a series of KML files (which may depend on other items
-like local PNG images), you can consolidate these into a single KMZ file
-for saving space and for grouping related files together.  The bash function
-**gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
-do this.  You need to source gmt_shell_functions.sh first before you can
-use it.
 
 See Also
 --------

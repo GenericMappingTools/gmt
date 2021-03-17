@@ -131,6 +131,14 @@ Optional Arguments
     we will cycle through the fill colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  Any *transparency* setting is unchanged.
 
+.. _-H:
+
+**-H**\ [*scale*]
+    Scale symbol sizes and pen widths on a per-record basis using the *scale* read from the
+    data set, given as the first column after the (optional) *z* and *size* columns [no scaling].
+    The symbol size is either provided by **-S** or via the input *size* column.  Alternatively,
+    append a constant *scale* that should be used instead of reading a scale column.
+
 .. _-I:
 
 **-I**\ *intens*

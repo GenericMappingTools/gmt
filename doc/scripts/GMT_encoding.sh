@@ -55,6 +55,7 @@ BEGIN {
 EOF
 
 gmt begin GMT_encoding
+gmt set GMT_THEME cookbook
 gmt set PS_CHAR_ENCODING $1
 gmt plot -R0/9/-1/32 -Jx0.345i/-0.21i -Bg1 -B+t"Octal codes for $1" -Ggray -X3i -Sri tt.empty
 $AWK -f tt.awk tt.chart | gmt text -F+f10p,Times-Roman

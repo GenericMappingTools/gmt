@@ -1046,24 +1046,6 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 		Ctrl->T.T.max = F.T->inc * ceil  (F.wesn[XHI] / F.T->inc);
 	}
 
-	if (GMT->common.l.active) {	/* Add auto-legend entry */
-		/* Always plot a 3:2 width:height rectangle, possibly via user sizing, using fill and pen */
-		struct GMT_SYMBOL S;
-		gmt_M_memset (&S, 1U, struct GMT_SYMBOL);
-		S.symbol = PSL_RECT;
-		if (GMT->common.l.item.size == 0.0) {	/* Select default width given by annotation height scaled by actual fractional height times 1.5 */
-			S.size_y = GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-			S.size_x = 1.5 * S.size_y;	/* Width to height ratio is 3:2 */
-		}
-		else {	/* Use given size as rectangle width */
-			S.size_x = GMT->common.l.item.size;
-			if (GMT->common.l.item.size2 > 0.0)	/* Gave both width and height */
-				S.size_y = GMT->common.l.item.size2;
-			else
-				S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
-		}
-		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
-	}
 
 	/* Set up bin boundaries array */
 
@@ -1306,6 +1288,25 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	area = pshistogram_plot_boxes (GMT, PSL, Ctrl, P, &F, &Ctrl->D);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Area under histogram is %g\n", area);
 
+	if (GMT->common.l.active) {	/* Add auto-legend entry */
+		/* Always plot a 3:2 width:height rectangle, possibly via user sizing, using fill and pen */
+		struct GMT_SYMBOL S;
+		gmt_M_memset (&S, 1U, struct GMT_SYMBOL);
+		S.symbol = PSL_RECT;
+		if (GMT->common.l.item.size == 0.0) {	/* Select default width given by annotation height scaled by actual fractional height times 1.5 */
+			S.size_y = GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+			S.size_x = 1.5 * S.size_y;	/* Width to height ratio is 3:2 */
+		}
+		else {	/* Use given size as rectangle width */
+			S.size_x = GMT->common.l.item.size;
+			if (GMT->common.l.item.size2 > 0.0)	/* Gave both width and height */
+				S.size_y = GMT->common.l.item.size2;
+			else
+				S.size_y = S.size_x / 1.5;	/* Width to height ratio is 3:2 */
+		}
+		gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+	}
+	
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
 		unsigned int type, k, NP = 101U;
 		double f, z, xtmp, ytmp, inc;

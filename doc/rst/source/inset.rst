@@ -39,8 +39,8 @@ that leaves off the scale or width then we supply a scale or width to fill the i
 as possible, given the inset size and margins (if selected).
 
 
-Required Arguments
-------------------
+Required Arguments (begin mode)
+-------------------------------
 
 .. _-D:
 
@@ -60,8 +60,8 @@ Required Arguments
     if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
     Specify inset box attributes via the **-F** option [outline only].
 
-Optional Arguments
-------------------
+Optional Arguments (begin mode)
+-------------------------------
 
 .. _-F:
 
@@ -103,8 +103,8 @@ The **end** directive finalizes the current inset, which returns the plotting en
 the state prior to the start of the inset.  The previous region and map projection will be
 in effect going forward.
 
-Optional Arguments
-------------------
+Optional Arguments (end mode)
+-----------------------------
 
 .. _inset_end-V:
 

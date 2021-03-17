@@ -13,7 +13,7 @@ Quick links
    :columns: 3
 
    - :doc:`std-opts`
-   - :doc:`proj-codes`
+   - :ref:`Projections Specifications <proj-codes>`
    - :doc:`Default Settings (gmt.conf) <gmt.conf>`
    - :doc:`Colors <gmtcolors>`
    - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
@@ -25,15 +25,16 @@ Quick links
    - :ref:`Pen Syntax <-Wpen_attrib>`
    - :ref:`Fill Syntax <-Gfill_attrib>`
    - :ref:`Grid Format Specifications <tbl-grdformats>`
+   - :doc:`theme-settings`
 
 .. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
 .. toctree::
    :hidden:
 
    std-opts
-   proj-codes
    gmt.conf
    gmtcolors
+   theme-settings
 
 .. panels::
 

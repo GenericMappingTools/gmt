@@ -76,49 +76,54 @@ importance (some are used a lot more than others).
 Data domain or map region: The **-R** option
 --------------------------------------------
 
-The **-R** option defines the map region or data domain of interest. It
-may be specified in one of five ways, two of which are shown in Figure
-:ref:`Map region <gmt_region>`:
+The **-R** option defines the map region or data domain of interest. It may be specified in one of seven ways. Options 1
+and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region <gmt_region>`:
 
-#. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*. This is the standard way to
-   specify Cartesian data domains and geographical regions when using
-   map projections where meridians and parallels are rectilinear.
+1. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+u**\ *unit*]. This is the standard way to specify Cartesian data domains and
+   geographic regions when using map projections where meridians and parallels are rectilinear. Optionally, append
+   **+u**\ *unit* to specify a region in projected units (e.g., UTM meters) where *xmin*/*xmax*/*ymin*/*ymax* are
+   Cartesian projected coordinates compatible with the chosen projection and *unit* is an allowable
+   :ref:`distance unit <dist-units>`.
 
-#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is
-   used with map projections that are oblique, making meridians and
-   parallels poor choices for map boundaries. Here, we instead specify
-   the lower left corner and upper right corner geographic coordinates,
-   followed by the modifier **+r**. This form guarantees a rectangular map
+#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is useful for map projections that are oblique,
+   making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
+   upper right corner geographic coordinates, followed by the modifier **+r**. This form guarantees a rectangular map
    even though lines of equal longitude and latitude are not straight lines.
+#. **-R**\ **g** or **-R**\ **d**. These forms can be used to quickly specify the global domain (0/360 for **-Rg** and
+   -180/+180 for **-Rd** in longitude, with -90/+90 in latitude).
 
-#. **-R**\ *gridfile*. This will copy the domain settings found for the
-   grid in specified file. Note that depending on the nature of the
-   calling program, this mechanism will also set grid spacing and
-   possibly the grid registration (see
-   Section `Grid registration: The -r option`_).
+#. **-R**\ *gridfile*. This will copy the domain settings found for the grid in specified file. Note that depending on
+   the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
+   Section `Grid registration: The -r option`_\ ).
 
-#. **-R**\ *code1,code2,...*\ [**+e**\|\ **r**\|\ **R**\ [*incs*]]. This indirectly supplies
-   the region by consulting the DCW (Digital Chart of the World) database and derives
-   the bounding regions for one or more countries given by the codes.
-   Simply append one or more comma-separated countries using the two-character
-   ISO 3166-1 alpha-2 convention (e.g., https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2).
-   To select a state within a country (if available), append .state, e.g, US.TX for Texas.
-   To specify a whole continent, prepend = to any of the continent codes AF (Africa),
-   AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania), NA (North America), or SA
-   (South America).  Append **+r** to modify exact bounding box coordinates obtained from
-   the polygon(s): Append *inc*, *xinc*/*yinc*, or *winc*/*einc*/*sinc*/*ninc* to adjust the
-   final region boundaries to be multiples of these steps [default is no adjustment].
-   Alternatively, use **+R** to extend the region outward by adding these increments
-   instead, or **+e** which is like **+r** but it ensures that the bounding box extends
-   by at least 0.25 times the increment [no extension]. As an example, **-R**\ *FR*\ **+r**\ 1 will select
-   the national bounding box of France rounded to nearest integer degree.
+#. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]]. This indirectly supplies the region by consulting
+   the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
+   the codes. Simply append one or more comma-separated countries using the two-character
+   `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)>`_.
+   To select a state within a country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent,
+   prepend **=** to any of the continent codes **AF** (Africa), **AN** (Antarctica), **AS** (Asia), **EU** (Europe),
+   **OC** (Oceania), **NA** (North America), or **SA** (South America). The following modifiers can be appended:
 
-#. **-R**\ *code*\ *x0*/*y0*/*nx*/*ny*.  This method can be used when creating
-   grids.  Here, *code* is a 2-character combination of **L**\ , **C**\ , **R** (for left, center,
-   or right) and **T**\ , **M**\ , **B** for top, middle, or bottom. e.g., **BL** for lower left.  This
-   indicates which point on a rectangular grid region the *x0*/*y0* coordinates
-   refer to, and the grid dimensions *nx* and *ny* are used with grid spacings given
-   via **-I** to create the corresponding region.
+   - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc* [default is no adjustment]. For example, **-R**\ *FR*\ **+r**\ 1 will select the
+     national bounding box of France rounded to nearest integer degree.
+   - **+R** to extend the region outward by adding the amounts specified by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc* [default is no extension].
+   - **+e** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box extends by at least 0.25 times the increment
+     [default is no adjustment].
+
+#. **-R**\ *justify*\ *x0*/*y0*/*nx*/*ny*, where *justify* is a 2-character combination of **L**\|\ **C**\|\ **R** (for
+   left, center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom) (e.g., **BL** for lower left). The
+   two character code *justify* indicates which point on a rectangular grid region the *x0*/*y0* coordinates refer to
+   and the grid dimensions *nx* and *ny* are used with grid spacings given via **-I** to create the corresponding
+   region. This method can be used when creating grids. For example, **-RCM**\ *25*/*25*/*50*/*50* specifies a
+   *50*\ x\ *50* grid centered on *25*\ ,\ *25*.
+
+#. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*/*zmin*/*zmax*. This method can be used for perspective views with the **-Jz**
+   and the :ref:`-p <option_-p>` option, where the z-range (*zmin*/*zmax*) is appended to the first method to indicate
+   the third dimension. This is not used for :ref:`-p <option_-p>` without **-Jz**, in which case a perspective view of
+   the place is plotted with no third dimension.
 
 .. _gmt_region:
 
@@ -126,102 +131,86 @@ may be specified in one of five ways, two of which are shown in Figure
    :width: 500 px
    :align: center
 
-   The plot region can be specified in two different ways. (a) Extreme values
-   for each dimension, or (b) coordinates of lower left and upper right corners.
+   The plot region can be specified in two different ways. (a) Extreme values for each dimension, or (b) coordinates of
+   lower left and upper right corners.
 
-For rectilinear projections the first two forms give identical results.
-Depending on the selected map projection (or the kind of expected input
-data), the boundary coordinates may take on several different formats:
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-R.txt
+
+For rectilinear projections the first two forms give identical results. Depending on the selected map projection (or
+the kind of expected input data), the boundary coordinates may take on several different formats:
 
 Geographic coordinates:
-    These are longitudes and latitudes and may be given in decimal
-    degrees (e.g., -123.45417) or in the
-    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**]
-    format (e.g., 123:27:15W). Note that **-Rg** and **-Rd** are
-    shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and
-    **-R**\ *-180*/*180*/*-90*/*90*, respectively.
+    These are longitudes and latitudes and may be given in decimal degrees (e.g., -123.45417) or in the
+    [±]\ *ddd*\ [:*mm*\ [:*ss*\ [*.xxx*]]][**W**\|\ **E**\|\ **S**\|\ **N**] format (e.g., 123:27:15W). **-Rg** and
+    **-Rd** are shorthands for "global domain" **-R**\ *0*/*360*/*-90*/*90* and **-R**\ *-180*/*180*/*-90*/*90*
+    respectively.
 
-    When used in conjunction with the Cartesian Linear Transformation
-    (**-Jx** or **-JX**) —which can be used to map floating point data,
-    geographical coordinates, as well as time coordinates— it is prudent
-    to indicate that you are using geographical coordinates in one of
-    the following ways:
+    When used in conjunction with the Cartesian Linear Transformation (**-Jx** or **-JX**) — which can be used to map
+    floating point data, geographical coordinates, as well as time coordinates — it is prudent to indicate that you are
+    using geographical coordinates in one of the following ways:
 
     -  Use **-Rg** or **-Rd** to indicate the global domain.
 
-    -  Use **-Rg**\ *xmin*/*xmax*/*ymin*/*ymax* to indicate a limited
-       geographic domain.
+    -  Use **-Rg**\ *xmin*/*xmax*/*ymin*/*ymax* to indicate a limited geographic domain.
 
-    -  Add **W**, **E**, **S**, or **N** to the coordinate limits or add
-       the generic **D** or **G**. Example:
-       **-R**\ *0*/*360G*/*-90*/*90N*.
+    -  Add **W**, **E**, **S**, or **N** to the coordinate limits (e.g., **-R**\ *15W*/*30E*/*10S*/*15N*).
 
-    Alternatively, you may indicate geographical coordinates by
-    supplying **-fg**; see Section `Data type selection: The -f option`_.
+    Alternatively, you may indicate geographical coordinates by supplying **-fg**; see Section
+    `Data type selection: The -f option`_.
 
 Projected coordinates:
-    These are Cartesian projected coordinates compatible with the chosen
-    projection and are given in a length *unit* set via the **+u** modifier, (e.g.,
-    -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
-    on the projection center (0, 0). These coordinates are internally
-    converted to the corresponding geographic (longitude, latitude)
-    coordinates for the lower left and upper right corners. This form is
-    convenient when you want to specify a region directly in the
-    projected units (e.g., UTM meters). For allowable units, see
-    Table :ref:`distunits <tbl-distunits>`.
+    These are Cartesian projected coordinates compatible with the chosen projection and are given in a length *unit*
+    set via the **+u** modifier, (e.g., -200/200/-300/300\ **+uk** for a 400 by 600 km rectangular area centered
+    on the projection center (0, 0). These coordinates are internally converted to the corresponding geographic
+    (longitude, latitude) coordinates for the lower left and upper right corners. This form is convenient when you want
+    to specify a region directly in the projected units (e.g., UTM meters). For allowable units, see Table
+    :ref:`Distance units <tbl-distunits>`. **Note**: For the UTM, TM and Stereographic projections we will guess the
+    units in your grid to be meter if the domain exceeds the range of geographical longitude and latitude.
 
 Calendar time coordinates:
-    These are absolute time coordinates referring to a Gregorian or ISO
-    calendar. The general format is [*date*]\ **T**\ [*clock*],
-    where *date* must be in the *yyyy*\ [*-mm*\ [*-dd*]] (year, month,
-    day-of-month) or *yyyy*\ [*-jjj*] (year and day-of-year) for
-    Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
-    week, and day-of-week) for the ISO calendar. **Note**: This format requirement
-    only applies to command-line arguments and not time coordinates given via
-    data files.  If no *date* is given
-    we assume the current day. The **T** flag is required if a *clock* is given.
+    These are absolute time coordinates referring to a Gregorian or ISO calendar. The general format is
+    [*date*]\ **T**\ [*clock*], where *date* must be in the [-]\ *yyyy*\ [*-mm*\ [*-dd*]] (year, month, day-of-month) or
+    *yyyy*\ [*-jjj*] (year and day-of-year) for Gregorian calendars and *yyyy*\ [*-*\ **W**\ *ww*\ [*-d*]] (year,
+    week, and day-of-week) for the ISO calendar. **Note**: This format requirement only applies to command-line
+    arguments and not time coordinates given via data files.  If no *date* is given we assume the current day. The
+    **T** flag is required if a *clock* is given.
 
-    The optional *clock* string is a 24-hour clock in
-    *hh*\ [*:mm*\ [*:ss*\ [*.xxx*]]] format. If no *clock* is given it
-    implies 00:00:00, i.e., the start of the specified day. Note that
-    not all of the specified entities need be present in the data. All
-    calendar date-clock strings are internally represented as double
-    precision seconds since proleptic Gregorian date Monday January 1
-    00:00:00 0001. Proleptic means we assume that the modern calendar
-    can be extrapolated forward and backward; a year zero is used, and
-    Gregory's reforms [11]_ are extrapolated backward. Note that this is
-    not historical.
+    The optional *clock* string is a 24-hour clock in *hh*\ [*:mm*\ [*:ss*\ [*.xxx*]]] format. If no *clock* is given it
+    implies 00:00:00, i.e., the start of the specified day. Note that not all of the specified entities need be present
+    in the data. All calendar date-clock strings are internally represented as double precision seconds since proleptic
+    Gregorian date Monday January 1 00:00:00 0001. Proleptic means we assume that the modern calendar can be
+    extrapolated forward and backward; a year zero is used, and Gregory's reforms [11]_ are extrapolated backward. Note
+    that this is not historical. The use of delimiters and their type and positions for *date* and *clock* must be
+    exactly as indicated; however, these are customizable using :ref:`FORMAT parameters <FORMAT Parameters>`
 
 Relative time coordinates:
-    These are coordinates which count seconds, hours, days or years
-    relative to a given epoch. A combination of the parameters
-    :term:`TIME_EPOCH` and :term:`TIME_UNIT` define the epoch and time unit.
-    The parameter :term:`TIME_SYSTEM` provides a few shorthands for common
-    combinations of epoch and unit, like **j2000** for days since noon
-    of 1 Jan 2000. The default relative time coordinate is that of UNIX
-    computers: seconds since 1 Jan 1970. Denote relative time
-    coordinates by appending the optional lower case **t** after the
-    value. When it is otherwise apparent that the coordinate is relative
-    time (for example by using the **-f** switch), the **t** can be omitted.
+    These are coordinates which count seconds, hours, days or years relative to a given epoch. A combination of the
+    parameters :term:`TIME_EPOCH` and :term:`TIME_UNIT` define the epoch and time unit. The parameter
+    :term:`TIME_SYSTEM` provides a few shorthands for common combinations of epoch and unit, like **j2000** for days
+    since noon of 1 Jan 2000. The default relative time coordinate is that of UNIX computers: seconds since 1 Jan 1970.
+    Denote relative time coordinates by appending the optional lower case **t** after the value. When it is otherwise
+    apparent that the coordinate is relative time (for example by using the **-f** switch), the **t** can be omitted.
 
 Radians:
-    For angular regions (and increments) specified in radians you may use a set of
-    forms indicating multiples or fractions of :math:`\pi`.  Valid forms are
-    [±][*s*]pi[*f*], where *s* and *f* are any integer or floating point numbers,
-    e.g., -2pi/2pi3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
-    of these forms we alert the labeling machinery to look for certain combinations of pi,
-    limited to *n*\ pi, 1.5pi, and fractions 3/4, 2/3, 1/2, 1/3, and 1/4 pi.  When an
-    annotated value is within roundoff-error of these combinations we typeset the label
-    using the Greek letter for pi and required multiples or fractions.
+    For angular regions (and increments) specified in radians you may use a set of forms indicating multiples or
+    fractions of :math:`\pi`.  Valid forms are [±][*s*]\ **pi**\ [*f*], where *s* and *f* are any integer or floating
+    point numbers, e.g., -2\ **pi**\ /2\ **pi**\ 3 goes from -360 to 120 degrees (but in radians).  When GMT parses one
+    of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\
+    **pi**\ , 3/2 **pi** (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3
+    (1\ **pi**\ 3), and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value
+    is within roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required
+    multiples or fractions.
 
 Other coordinates:
-    These are simply any coordinates that are not related to geographic
-    or calendar time or relative time and are expected to be simple
-    floating point values such as
+    These are simply any coordinates that are not related to geographic or calendar time or relative time and are
+    expected to be simple floating point values such as
     [±]\ *xxx.xxx*\ [**E**\|\ **e**\|\ **D**\|\ **d**\ [±]\ *xx*],
-    i.e., regular or exponential notations, with the enhancement to understand
-    FORTRAN double precision output which may use **D** instead of **E** for
-    exponents. These values are simply converted as they are to internal
+    i.e., regular or exponential notations, with the enhancement to understand FORTRAN double precision output which
+    may use **D** instead of **E** for exponents. These values are simply converted as they are to internal
     representation. [12]_
 
 .. _option_-J:
@@ -229,42 +218,30 @@ Other coordinates:
 Coordinate transformations and map projections: The **-J** option
 -----------------------------------------------------------------
 
-This option selects the coordinate transformation or map projection. The
-general format is
+This option selects the coordinate transformation or map projection. The general format is
 
--  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta`
-   is a *lower-case* letter of the alphabet that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited
-   projection parameter, and *scale* is map scale given in distance
-   units per degree or as 1:xxxxx.
+-  **-J**\ :math:`\delta`\ [*parameters*/]\ *scale*. Here, :math:`\delta` is a *lower-case* letter of the alphabet that
+   selects a particular map projection, the *parameters* is zero or more slash-delimited projection parameter, and
+   *scale* is map scale given in :ref:`plot-units <plt-units>` /degree or as 1:xxxxx.
 
--  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta`
-   is an *upper-case* letter of the alphabet that selects a particular
-   map projection, the *parameters* is zero or more slash-delimited
-   projection parameter, and *width* is map width (map height is
-   automatically computed from the implied map scale and region).
+-  **-J**\ :math:`\Delta`\ [*parameters*/]\ *width*. Here, :math:`\Delta` is an *upper-case* letter of the alphabet that
+   selects a particular map projection, the *parameters* is zero or more slash-delimited projection parameter, and
+   *width* is map width in :ref:`plot-units <plt-units>` (map height is automatically computed from the implied map scale
+   and region).
 
-Since GMT version 4.3.0, there is an alternative way to specify the
-projections: use the same abbreviation as in the mapping package
-`PROJ <https://proj.org/>`_. The options thus either look like:
+Since GMT version 4.3.0, there is an alternative way to specify the projections: use the same abbreviation as in the
+mapping package `PROJ <https://proj.org/>`_. The options thus either look like:
 
--  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a
-   *lower-case* abbreviation that selects a particular map projection,
-   the *parameters* is zero or more slash-delimited projection
-   parameter, and *scale* is map scale given in distance units per
-   degree or as 1:xxxxx.
+-  **-J**\ *abbrev*/[*parameters*/]\ *scale*. Here, *abbrev* is a *lower-case* abbreviation that selects a particular
+   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *scale* is map scale given
+   in distance units per degree or as 1:xxxxx.
 
--  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an
-   *capitalized* abbreviation that selects a particular map projection,
-   the *parameters* is zero or more slash-delimited projection
-   parameter, and *width* is map width (map height is automatically
-   computed from the implied map scale and region).
+-  **-J**\ *Abbrev*/[*parameters*/]\ *width*. Here, *Abbrev* is an *capitalized* abbreviation that selects a particular
+   map projection, the *parameters* is zero or more slash-delimited projection parameter, and *width* is map width (map
+   height is automatically computed from the implied map scale and region).
 
-The projections available in GMT are presented in Figure
-:ref:`gmt_projections`. For details on all GMT projections and the required
-parameters, see the :doc:`/basemap` man page. We will also show examples of
-every projection in the next Chapters, and a quick summary of projection
-syntax is listed in :doc:`/proj-codes`.
+The over 30 map projections and coordinate transformations available in GMT are represented in the Figure
+:ref:`GMT Projections <gmt_projections>`.
 
 .. _gmt_projections:
 
@@ -274,107 +251,178 @@ syntax is listed in :doc:`/proj-codes`.
 
    The over-30 map projections and coordinate transformations available in GMT
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-J.txt
+
+.. _proj-codes:
+
+Projections specifications
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+GMT offers 31 map projections specified using the **-J** option. There are two conventions you may use: (a) GMT-style
+syntax and (b) `PROJ <https://proj.org/>`_\ -style syntax. The codes for the GMT-style and the PROJ-style are tabulated
+below along with the associated *parameters* and links to the cookbook sections that describe the projection syntax and
+usage.
+
+.. include:: ../proj-codes.rst_
+
 .. _option_-B:
 
 Map frame and axes annotations: The **-B** option
 -------------------------------------------------
 
-This is potentially the most complicated option in GMT,
-but most examples of its usage are actually quite simple. We distinguish
-between two sets of information: Frame settings and Axes parameters.  These
-are set separately by their own **-B** invocations; hence multiple **-B**
-specifications may be specified. The frame settings covers things such
-as which axes should be plotted, canvas fill, plot title (and subtitle), and what type
-of gridlines be drawn, whereas the Axes settings deal with annotation,
-tick, and gridline intervals, axes labels, and annotation units.
+This is potentially the most complicated option in GMT, but most examples of its usage are actually quite simple. We
+distinguish between two sets of information: :ref:`Frame settings <option_-B_frame>` and
+:ref:`Axes settings <option_-B_axes>`.  These are set separately by their own **-B** invocations; hence multiple
+**-B** specifications may be specified. The :ref:`Frame settings <option_-B_frame>` cover things such as which axes
+should be plotted, canvas fill, plot title (and subtitle), and what type of gridlines be drawn, whereas the
+:ref:`Axes settings <option_-B_axes>` deal with annotation, tick, and gridline intervals, axes labels, and annotation
+units.
+
+.. _option_-B_frame:
+
+Frame settings
+^^^^^^^^^^^^^^
 
 The Frame settings are specified by
 
--  **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*][**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
+   **-B**\ [*axes*][**+b**][**+g**\ *fill*][**+i**\ [*val*]][**+n**][**+o**\ *lon/lat*][**+s**\ *subtitle*]\
+   [**+t**\ *title*][**+w**\ [*pen*]][**+x**\ *fill*][**+y**\ *fill*][**+z**\ *fill*]
 
-Here, the optional *axes* dictates which of the axes should be drawn
-and possibly annotated.  By default, all four map boundaries (or plot axes)
-are plotted (denoted **W**, **E**, **S**, **N**). To change this selection,
-append the codes for those you want (e.g., **WSn**). In this example,
-the lower case **n** denotes to draw the axis and (major and minor) tick
-marks on the "northern" (top) edge of the plot. The upper case **WS** will
-annotate the "western" and "southern" axes with numerals and plot the
-any axis labels in addition to draw axis/tick-marks.  For 3-D plots you can
-also specify **Z** or **z**.  To *just* draw an axis without annotation and
-ticks you can use the **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op)
-and (for 3-D) **u**\ (p) codes. By default, a single vertical axes will then be
-plotted at the most suitable map corner.  You can override this by appending
-any combination of corner ids **1234**, where **1** represents the lower left
-corner and the order goes counter-clockwise.  Use **+w** to draw the outlines of
-the x-z and y-z planes [no outlines] and optionally append the *pen* to use
-[:term:`MAP_GRID_PEN_PRIMARY`]. Alternatively, append **+b** to also draw the front lines
-of the 3-D cube defined by **-R**.  You can paint the interior of the canvas with
-**+g**\ *fill* (this also sets fill for the two back-walls in 3-D).
-Use **+x**, **+y**, and **+z** to control the painting of planes *yz*, *xz* and *xy*, respectively [Default is no fill].
-Use **+i** to annotate an internal meridian or parallel when the axis that normally
-would be drawn and annotated does not exist (e.g., azimuthal map with 360-degree range
-has no latitude axis, and a global Hammer map has no longitude axis);
-optionally append the parallel or meridian [0].
-If gridlines are specified via the Axes parameters (discussed below) then
-by default these are referenced to the North pole.  If, however, you wish
-to produce oblique gridlines about another pole you can append **+o**\ *lon/lat*
-to change this behavior (the modifier is ignored if no gridlines are requested).
-Append **+n** to have no frame and annotations at all [Default is controlled by the codes].
-Finally, you may optionally add **+t**\ *title* to place a title that
-will appear centered above the plot frame; optionally also add a *subtitle* via **+s**.
-**Note**: Both *title* and *subtitle* may be set over multiple lines by breaking them up
-using the markers '@^' or '<break>'.  To include LaTeX code as part of a single-line title or subtitle,
-enclose the expression with @[ markers (or alternatively <math> ... </math>).
-(**Note**: Requires ``latex`` and ``dvips`` to be installed).
+The frame setting is optional but can be invoked once to override the defaults. The following modifiers can be appended
+to **-B** to control the Frame settings:
+
+- *axes* to set which of the axes should be drawn and possibly annotated using a combination of the codes listed
+  below [default is **WESN**]. Borders omitted from the set of codes will not be drawn. For example, **WSn**
+  denotes that the "western" (left) and "southern" (bottom) axes should be drawn with tick-marks and annotations by
+  using **W** and **S**; that the "northern" (top) edge of the plot should be drawn with tick-marks and without
+  annotations by using **n**; and that the "eastern" (right) axes should not be drawn by not including one of **E**\ \|\
+  **e**\ \|\ **r**.
+
+   - **W**\ est, **E**\ ast, **S**\ outh, **N**\ orth, and/or (for 3-D plots) **Z** indicate axes that should be
+     drawn with both tick-marks and annotations.
+   - **w**\ est, **e**\ ast, **s**\ outh, **n**\ orth, and/or (for 3-D plots) **z** indicate axes that should be
+     drawn with tick-marks but without annotations.
+   - **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op) and/or (for 3-D plots) **u**\ (p) indicate axes that
+     should be drawn without tick-marks or annotations.
+
+- *axes*\ **code** (for 3-D plots) where **code** is any combination of the corner ids **1**, **2**, **3**, **4**. By
+  default, a single vertical axes will be plotted for 3-D plots at the most suitable map corner. **code** can be used
+  to override this, where **1** represents the south-western (lower-left) corner, **2** the south-eastern (lower-right),
+  **3** the north-eastern (upper-right), and **4** the north-western (upper-left) corner.
+
+- **+w**\ [*pen*] (for 3-D plots) to draw the outlines of the x-z and y-z planes [default is no outlines]. Optionally,
+  append *pen* to specify different :ref:`pen <-Wpen_attrib>` attributes [default is :term:`MAP_GRID_PEN_PRIMARY`].
+
+- **+b** (for 3-D plots) to draw the foreground lines of the 3-D cube defined by :ref:`-R <option_-R>`.
+
+- **+g**\ *fill* to paint the interior of the canvas with a color specified by :doc:`fill <../gmtcolors>` [default is
+  *no fill*]. This also sets fill for the two back-walls in 3-D plots.
+
+- **+x**\ *fill* to paint the **yz** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+  *no fill*].
+
+- **+y**\ *fill* to paint the **xz** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+  *no fill*].
+
+- **+z**\ *fill* to paint the **xy** plane with a color specified by :doc:`fill <../gmtcolors>` [default is
+  *no fill*].
+
+- **+i**\ [*val*] to annotate an internal meridian or parallel when the axis that normally would be drawn and
+  annotated does not exist (e.g., for an azimuthal map with 360-degree range that has no latitude axis or a global
+  Hammer map that has no longitude axis). *val* gives the meridian or parallel that should be annotated [default is
+  **0**].
+
+- **+o**\ *lon/lat* to produce oblique gridlines about another pole specified by *lon/lat* [default references to the
+  North pole]. **+o** is ignored if no gridlines are requested.
+
+- **+n** to have no frame and annotations at all [default is contolled by *axes*].
+
+- **+t**\ *title* to place the string given in *title* centered above the plot frame [default is no title].
+
+- **+s**\ *subtitle* (requires **+t**\ *title*) to place the string given in *subtitle* beneath the *title* [default is
+  no subtitle].
+
+**Note**: Both **+t**\ *title* and **+s**\ *subtitle* may be set over multiple lines by breaking them up using the
+markers @^ or <break>.  To include LaTeX code as part of a single-line title or subtitle, enclose the expression
+with @[ markers (or alternatively <math> ... </math>) (requires ``latex`` and ``dvips`` to be installed). See the
+:doc:`/cookbook/gmt-latex` chapter for more details.
+
+.. _option_-B_axes:
+
+Axes settings
+^^^^^^^^^^^^^
 
 The Axes settings are specified by
 
--  **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
+   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*\ [**+a**\ *angle*\|\ **n**\|\ **p**][**+f**]\
+   [**+l**\ *label*][**+p**\ *prefix*][**+u**\ *unit*]
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
--   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
--   **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
+   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+f**]\
+     [**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
+   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
-    The first optional flag following **-B** selects **p** (rimary) [Default] or
-    **s** (econdary) axes information (mostly used for time axes annotations but
-    is available for geographic axes as well. **Note**: primary refers to annotations
-    closest to the axis and secondary to annotations further away.  Hence, primary
-    annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts).
-    The [**x**\|\ **y**\|\ **z**] flags specify which axes you are providing information for.
-    If none are given then we default to **xy**.  If you wish to give different annotation intervals
-    or labels for the various axes then you must repeat the **B** option for
-    each axis (If a 3-D basemap is selected with **-p** and **-Jz**, use **-Bz**
-    to give settings for the vertical axis.).  To add a label to an axis,
-    just append **+l**\ *label* (Cartesian projections only). Use **+L** to
-    force a horizontal label for *y*-axes (useful for very short labels).
-    For Cartesian axes you may specify an alternate via **+s** which is used for
-    right or upper axis axis label (with any **+l** label used for left and bottom axes).
-    To include LaTeX code as part of a label, enclose the expression with @[ markers
-    (or alternatively <math> ... </math>)
-    (**Note**: Requires ``latex`` and ``dvips`` to be installed).
-    If the axis annotation should have a leading text prefix (e.g., dollar sign for those
-    plots of your net worth) you can append **+p**\ *prefix*. For geographic maps
-    the addition of degree symbols, etc. is automatic (and controlled by the GMT
-    default setting :term:`FORMAT_GEO_MAP`). However, for other plots you can add
-    specific units by adding **+u**\ *unit*.  If any of these text strings contain
-    spaces or special characters you will need to enclose them in quotes.
-    Cartesian axes also allow for the optional **+a**\ *angle*, which
-    will plot slanted annotations; *angle* is measured with respect to the horizontal
-    and must be in the -90 <= *angle* <= 90 range only.  Also, **+an** is a shorthand
-    for normal (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e.,
-    **+a**\ 0) annotations [Default for x-axis]. Note that these defaults can be changed
-    via :term:`MAP_ANNOT_ORTHO`.
+The following modifiers can be appended to **-B** to control the Axes settings:
 
-The *intervals* specification is a concatenated string made up of substrings of the form
+- **p**\|\ **s** to set whether the modifiers apply to the **p**\ (rimary) or **s**\ (econdary) axes [Default is **p**].
+  These settings are mostly used for time axes annotations but are available for geographic axes as well. **Note**:
+  Primary refers to annotations closest to the axis and secondary to annotations further away.  Hence, primary
+  annotation-, tick-, and gridline-intervals must be shorter than their secondary counterparts. The terms "primary" and
+  "secondary" do not reflect any hierarchical order of units: the "primary" annotation interval is usually smaller
+  (e.g., days) while the "secondary" annotation interval typically is larger (e.g., months).
+- **x**\|\ **y**\|\ **z** to set which axes the modifiers apply to [default is **xy**]. If you wish to give different
+  annotation intervals or labels for the various axes then you must repeat the **B** option for each axis. For a
+  3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the verical axis.
+- **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffices encoding the sign.
+- **+l**\|\ **+L**\ *label* (for Cartesian plots only) to add a label to an axis. **+l** uses the default
+  label orientation; **+L** forces a horizontal label for *y*-axes, which is useful for very short labels.
+- **+s**\|\ **S**\ *seclabel* (for Cartesion plots only) to specify an alternate label for the right or upper axes.
+  **+s** uses the default label orientation; **+S** forces a horizontal label for *y*-axes, which is useful for very
+  short labels.
+- **+p**\ *prefix* (for Cartesion plots only) to define a leading text prefix for the axis annotation (e.g., dollar sign for plots related to
+  money). For geographic maps the addition of degree symbols, etc. is automatic and controlled by
+  :term:`FORMAT_GEO_MAP`.
+- **+u**\ *unit* (for Cartesion plots only) to append specific units to the annotations. For geographic maps the
+  addition of degree symbols, etc. is automatic and controlled by :term:`FORMAT_GEO_MAP`.
+- **+a**\ *angle* (for Cartesion plots only) to plot slanted annotations, where *angle* is measured with respect to
+  the horizontal and must be in the -90 <= *angle* <= 90 range. **+an** can be used as a shorthand for normal
+  (i.e., **+a**\ 90) [Default for y-axis] and **+ap** for parallel (i.e., **+a**\ 0) annotations [Default for
+  x-axis]. These defaults can be changed via :term:`MAP_ANNOT_ORTHO`.
+- *intervals* to define the intervals for annotations and major tick spacing, minor tick spacing, and/or grid line
+  spacing. See :ref:`Intervals Specification <option_-B_int>` for the formatting associated with this modifier.
 
-[**t**]\ *stride*\ [*phase*][*unit*].
+**NOTE**: To include LaTeX code as part of a label, enclose the expression with @[ markers (or alternatively <math>
+... </math>). (requires ``latex`` and ``dvips`` to be installed). See the :doc:`/cookbook/gmt-latex` chapter for more
+details.
 
-The **t** flag sets the axis
-item of interest; the available items are listed in Table :ref:`inttype <tbl-inttype>`.
-Normally, equidistant annotations occur at multiples of *stride*; you
-can phase-shift this by appending *phase*, which can be a positive or
-negative number.
+**NOTE**: If any labels, prefixes, or units contain spaces or special characters you will need to enclose them in
+quotes.
+
+**NOTE**: Text items such as *title*, *subtitle*, *label* and *seclabel* are seen by GMT as part of a long string
+containing everything passed to **-B**. Therefore, they cannot contain substrings that look like other modifiers. If
+you need to embed such sequences (e.g., **+t**\ "Solving a+b=c") you need to replace those + symbols with their
+:doc:`octal equivalent </cookbook/octal-codes>` \\053, (e.g., **+t**\ "Solving a\\053b=c").
+
+**NOTE**: For non-geographical projections: Give negative scale (in **-Jx**) or axis length (in **-JX**) to change the
+direction of increasing coordinates (i.e., to make the y-axis positive down)
+
+.. _option_-B_int:
+
+| **Intevals specification**
+| The *intervals* specification is a concatenated string made up of substrings of the form
+
+   [**a**\|\ **f**\|\ **g**]\ [*stride*][*phase*][*unit*].
+
+The choice of **a**\|\ **f**\|\ **g** sets the axis item of interest, which are detailed in the Table
+:ref:`interval types <tbl-inttype>`. Optionally, append *phase* to shift the annotations by that amount (positive or
+negative with the sign being required). Optionally, append *unit* to specify the units of *stride*, where *unit* is one
+of the 18 supported :ref:`unit codes <tbl-units>`. For custom annotations and intervals, *intervals* can be given as
+**c**\ *intfile*, where *intfile* contains any number of records with *coord* *type* [*label*]. See the section
+:ref:`Custom axes <custom_axes>` for more details.
 
 .. _tbl-inttype:
 
@@ -388,31 +436,23 @@ negative number.
 | **g**      | Grid line spacing                   |
 +------------+-------------------------------------+
 
-Note that the appearance of certain time annotations (month-, week-, and
-day-names) may be affected by the :term:`GMT_LANGUAGE`,
-:term:`FORMAT_TIME_PRIMARY_MAP`, and
-:term:`FORMAT_TIME_SECONDARY_MAP` settings.
+**NOTE**: The appearance of certain time annotations (month-, week-, and day-names) may be affected by the
+:term:`GMT_LANGUAGE`, :term:`FORMAT_TIME_PRIMARY_MAP`, and :term:`FORMAT_TIME_SECONDARY_MAP` settings.
 
-For automated plots the region may not always be the same and thus it
-can be difficult to determine the appropriate *stride* in advance. Here
-GMT provides the opportunity to auto-select the spacing between the
-major and minor ticks and the grid lines, by not specifying the *stride*
-value. For example, **-Bafg** will select all three spacings
-automatically for both axes. In case of longitude–latitude plots, this
-will keep the spacing the same on both axes. You can also use
-**-Bxafg -Byafg** to auto-select them separately. Also note that given the
-myriad ways of specifying time-axis annotations, the automatic selections
-may have to be overridden with manual settings to active exactly what you need.
+*Automatic intervals*:
+GMT will auto-select the spacing between the annotations and major ticks, minor ticks, and grid lines if *stride* is
+not provided after **a**\|\ **f**\|\ **g**. This can be useful for automated plots where the region may not always be
+the same, making it difficult to determine the appropriate *stride* in advance. For example, **-Bafg** will select all
+three spacings automatically for both axes. In case of longitude–latitude plots, this will keep the spacing the same on
+both axes. You can also use **-Bxafg -Byafg** to auto-select them separately. Note that given the myriad ways of
+specifying time-axis annotations, the automatic selections may need to be overridden with manual settings to achieve
+exactly what you need. When *stride* is omitted after **g**, the grid line are spaced the same as the minor ticks;
+unless **g** is used in consort with **a**, in which case the grid lines are spaced the same as the annotations.
 
-In the case of automatic spacing, when the *stride* argument is omitted
-after **g**, the grid line spacing is chosen the same as the minor tick
-spacing; unless **g** is used in consort with **a**, then the grid lines
-are spaced the same as the annotations.
-
-The unit flag **u** can take on one of 18 codes; these are listed in
-Table :ref:`units <tbl-units>`. Almost all of these units are time-axis specific.
-However, the **m** and **s** units will be interpreted as arc minutes
-and arc seconds, respectively, when a map projection is in effect.
+*Stride units*:
+The *unit* flag can take on one of 18 codes which are listed in Table :ref:`Units <tbl-units>`. Almost all of these
+units are time-axis specific. However, the **d**, **m**, and **s** units will be interpreted as arc degrees, minutes,
+and arc seconds respectively when a map projection is in effect.
 
 .. _tbl-units:
 
@@ -456,14 +496,13 @@ and arc seconds, respectively, when a map projection is in effect.
 | **s**      | seconds          | Plot as 2-digit integer (0–60)                                                   |
 +------------+------------------+----------------------------------------------------------------------------------+
 
-As mentioned, there may be two levels of annotations. Here, "primary" refers to the
-annotation that is closest to the axis (this is the primary annotation),
-while "secondary" refers to the secondary annotation that is plotted
-further from the axis. The examples below will clarify what is meant.
-Note that the terms "primary" and "secondary" do not reflect any
-hierarchical order of units: The "primary" annotation interval is
-usually smaller (e.g., days) while the "secondary" annotation interval
-typically is larger (e.g., months).
+**NOTE**: If your axis is in radians you can use multiples or fractions of **pi** to set such annotation intervals. The
+format is [*s*]\ **pi**\ [*f*], for an optional integer scale *s* and optional integer fraction *f*. When GMT parses one
+of these forms we alert the labeling machinery to look for certain combinations of **pi**, limited to *n*\ **pi**\ ,
+3/2 **pi** (3\ **pi**\ 2), and fractions 3/4 (3\ **pi**\ 4), 2/3 (2\ **pi**\ 3), 1/2 (1\ **pi**\ 2), 1/3 (1\ **pi**\ 3),
+and 1/4 (1\ **pi**\ 4) in the *interval* given to the **-B** axes settings.  When an annotated value is within
+roundoff-error of these combinations we typeset the label using the Greek letter :math:`\pi` and required multiples or
+fractions.
 
 Geographic basemaps
 ^^^^^^^^^^^^^^^^^^^
@@ -485,6 +524,12 @@ is shown in Figure :ref:`Geographic map border <basemap_border>`.
    frame, and grid intervals.  Formatting of the annotation is controlled by
    the parameter :term:`FORMAT_GEO_MAP` in your :doc:`/gmt.conf`.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_geo_1.txt
+
 The machinery for primary and secondary annotations introduced for
 time-series axes can also be utilized for geographic basemaps. This may
 be used to separate degree annotations from minutes- and
@@ -500,6 +545,12 @@ attributes for grid lines and grid crosses, see Figure :ref:`Complex basemap
    :align: center
 
    Geographic map border with both primary (P) and secondary (S) components.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_geo_2.txt
 
 Cartesian linear axes
 ^^^^^^^^^^^^^^^^^^^^^
@@ -526,6 +577,12 @@ each annotation (see Figure :ref:`Axis label <axis_label_basemap>`).
    annotations, shorter ticks indicate frame interval. The axis label is
    optional. For this example we used ``-R0/12/0/0.95 -JX7.5c/0.75c -Ba4f2g1+lFrequency+u" %" -BS``
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_linear.txt
+
 There are occasions when the length of the annotations are such that placing them
 horizontally (which is the default) may lead to overprinting or too few annotations.
 One solution is to request slanted annotations for the x-axis (e.g., Figure :ref:`Axis label <axis_slanted_basemap>`)
@@ -542,6 +599,11 @@ via the **+a**\ *angle* modifier.
    For this example we used ``-R2000/2020/35/45 -JX12c -Bxa2f+a-30 -BS``.
    For the y-axis only the modifier **+ap** for parallel is allowed.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_slanted.txt
 
 Cartesian log\ :sub:`10` axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -578,6 +640,12 @@ specific to log axes (see Figure :ref:`Logarithmic projection axis
    (bottom) We annotate every power of 10 using :math:`\log_{10}` of the actual
    values as exponents, with -Ba1f2g3p.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_log.txt
+
 Cartesian exponential axes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -602,6 +670,12 @@ labeled 1, 4, 9, ... will appear.
    in -R0/100/0/0.9 -JX3ip0.5/0.25i -Ba20f10g5.
    (bottom) Here, intervals refer to projected values, although the annotation
    uses the corresponding unprojected values, as in -Ba3f2g1p.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-B_pow.txt
 
 .. _cartesian_time_axes:
 
@@ -773,14 +847,25 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 --------------------------------------
 
-The **-U** option draws the GMT system time stamp on the plot.
-By appending **+j**\ *just* and/or **+o**\ *dx/dy*, the user may
-specify the justification of the stamp and where the stamp should fall
-on the page relative to lower left corner of the plot.
-For example, +jBL+o0/0 will align the lower left corner of the time stamp
-with the bottom left corner of the plot [BL]. Optionally, append  an
-arbitrary text string (surrounded by double quotes), or give **+c**,
-which will plot the current command string (Figure :ref:`Time stamp <fig_-U>`).
+**Syntax**
+
+**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
+
+**Description**
+
+The **-U** option draws the GMT system time stamp on the plot. The following modifiers are supported:
+
+- *label* to append the text string given in *label* (which must be surrounded by double qoutes if it contains spaces).
+- **+c** to plot the current command string.
+- **+j**\ *just* to specify the justification of the time stamp, where *just* is a two-character
+  :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**\ (eft), **C**\ (enter), or
+  **R**\ (ight)) and a vertical (**T**\ (op), **M**\ (iddle), or **B**\ (ottom)) code [default is **BL**].
+- **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` for the time stamp by *dx* and optionally
+  *dy* (if different than *dx*).
+
+The GMT parameters :term:`MAP_LOGO`, :term:`MAP_LOGO_POS`, :term:`FONT_LOGO` and :term:`FORMAT_TIME_STAMP` can affect
+the appearance; see the :doc:`../gmt.conf` man page for details. The time string will be in the locale set by the
+environment variable **TZ** (generally local time).
 
 .. _fig_-U:
 
@@ -790,21 +875,37 @@ which will plot the current command string (Figure :ref:`Time stamp <fig_-U>`).
 
    The -U option makes it easy to date a plot.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-U.txt
+
 .. _option_-V:
 
 Verbose feedback: The **-V** option
 -----------------------------------
 
-The **-V** option controls the verbosity mode, which determines which
-messages are sent to standard error [Default **-Vw** reports errors and warnings].
-Even more verbose levels are **-Vi** (or just **-V**; for informational messages)
-and **-Vd** (debug). If compiled with backward-compatibility
-you can select **-Vc**, which includes warnings about deprecated usage.  To study
-the run-time of time-intensive algorithms you can use **-Vt** (where available).
-Finally, **-Vq** can be used to run without any warnings or errors. This
-option can also be set by specifying the default :term:`GMT_VERBOSE`, as
-**quiet**, **error**, **warning**, **timing**, **compat**, **information**, or
-**debug**, in order of increased verbosity.
+**Syntax**
+
+**-V**\ [*level*]
+
+**Description**
+
+The **-V** option controls the verbosity mode, which determines which messages are sent to standard error. Choose among
+7 levels of verbosity; each level adds more messages:
+
+- **q** - Quiet, not even fatal error messages are produced.
+- **e** - Error messages only.
+- **w** - Warnings.
+- **t** - Timings (report runtimes for time-intensive algorithms).
+- **i** - Informational messages (same as **-V** only).
+- **c** - Compatibility warnings (if compiled with backward-compatibility).
+- **d** - Debugging messages.
+
+
+This option can also be set by specifying the default :term:`GMT_VERBOSE` as **quiet**, **error**, **warning**,
+**timing**, **compat**, **information**, or **debug**, in order of increased verbosity [default is **warning**].
 
 .. _option_-X:
 .. _option_-Y:
@@ -812,23 +913,27 @@ option can also be set by specifying the default :term:`GMT_VERBOSE`, as
 Plot positioning and layout: The **-X** **-Y** options
 ------------------------------------------------------
 
-The **-X** and **-Y** options shift plot origin relative to the current origin by
-(*xshift*,\ *yshift*); optionally append the length unit
-(**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`,
-:term:`MAP_ORIGIN_Y`) for new plots [14]_. Subsequent overlays will
-be co-registered with the previous plot unless the origin is shifted using
-these options.  You can prepend **a** to shift the origin
-back to the original position after the plot module completes, prepend **c** to
-center the plot on the center of the paper (optionally add a shift),
-prepend **f** to shift the origin relative to the fixed lower left
-corner of the page, or prepend **r** [Default] to move the origin
-relative to its current location.  When **-X**
-or **-Y** are used without any further arguments, the values from
-the last use of that option in a previous GMT command will be used.
-Note that **-X** and **-Y** can also access the previous plot bounding box dimensions
-*w* and *h* and construct offsets that involves them.  For instance, to move the origin
-up 2 cm beyond the height of the previous plot, use **-Y**\ *h*\ +2c.
-To move the origin half the width to the right, use **-X**\ *w*\ /2.
+**Syntax**
+
+- **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
+- **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*]
+
+**Description**
+
+The **-X** and **-Y** options shift the plot origin relative to the current origin by (*xshift*,\ *yshift*). Optionally,
+append the length unit (**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`, :term:`MAP_ORIGIN_Y`) for new
+plots\ [14]_. Subsequent overlays will be co-registered with the previous plot unless the origin is shifted using these
+options. The following modifiers are supported [default is **r**]:
+
+- Prepend **a** to shift the origin back to the original position after plotting.
+- Prepend **c** to center the plot on the center of the paper (optionally add a *shift*).
+- Prepend **f** to shift the origin relative to the fixed lower left.
+- Prepend **r** to move the origin relative to its current location.
+
+When **-X** or **-Y** are used without any further arguments, the values from the last use of that option in a previous
+GMT command will be used. Note that **-X** and **-Y** can also access the previous plot bounding box dimensions *w* and
+*h* and construct offsets that involves them.  For instance, to move the origin up 2 cm beyond the height of the
+previous plot, use **-Y**\ *h*\ +2c. To move the origin half the width to the right, use **-X**\ *w*\ /2.
 
 .. _XY_options:
 
@@ -838,10 +943,22 @@ To move the origin half the width to the right, use **-X**\ *w*\ /2.
 
    Plot origin can be translated freely with -X -Y.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-XY.txt
+
 .. _option_-a:
 
 OGR/GMT GIS i/o: The **-a** option
 ----------------------------------
+
+**Syntax**
+
+**-a**\ [*col*\ =]\ *name*\ [,\ *...*]
+
+**Description**
 
 GMT relies on external tools to translate geospatial files such as
 shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
@@ -894,6 +1011,12 @@ features that straddle the Dateline.
 Binary table i/o: The **-b** option
 -----------------------------------
 
+**Syntax**
+
+**-bi**\|\ **o**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
+
+**Description**
+
 All GMT programs that accept table data as *primary* input may read ASCII, native
 binary, shapefiles, or netCDF tables (Any *secondary* input files provided via command line
 options are always expected to be in ASCII format). Native binary files may have a header section
@@ -944,6 +1067,12 @@ information, see Chapter :doc:`file-formats`.
 Selecting subplot panels: The **-c** option
 -------------------------------------------
 
+**Syntax**
+
+**-c**\ [*row*\ ,\ *col*\|\ *index*]
+
+**Description**
+
 When using :doc:`/subplot` to assemble multiple individual panels in a
 matrix layout, we use **-c** to either advance the focus of plotting to
 the next panel in the sequence (either by row or by column as set by
@@ -958,6 +1087,12 @@ panel.  **Note**: *row*, *col*, and *index* all start at 0.
 Missing data conversion: The **-d** option
 ------------------------------------------
 
+**Syntax**
+
+**-di**\|\ **o**\ *nodata*
+
+**Description**
+
 Within GMT, any missing values are represented by the IEEE NaN value.
 However, there are occasionally the need to handle user data where
 missing data are represented by some unlikely data value such as -99999.
@@ -971,6 +1106,12 @@ or output should be affected, use **-di** or **-do**, respectably.
 
 Data record pattern matching: The **-e** option
 -----------------------------------------------
+
+**Syntax**
+
+**-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
+
+**Description**
 
 Modules that read ASCII tables will normally process all the data records
 that are read.  The **-e** option offers a built-in pattern scanner that
@@ -990,6 +1131,12 @@ To give a single pattern starting with **+f**, escape it with a backslash.
 
 Data type selection: The **-f** option
 --------------------------------------
+
+**Syntax**
+
+**-f**\ [**i**\|\ **o**]\ *colinfo*
+
+**Description**
 
 When map projections are not required we must explicitly state what kind
 of data each input or output column contains. This is accomplished with
@@ -1019,6 +1166,13 @@ information, see Sections :ref:`input-data-formats` and :ref:`output-data-format
 
 Data gap detection: The **-g** option
 -------------------------------------
+
+**Syntax**
+
+**-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\
+**z**\ *gap*\ [**+n**\|\ **p**]
+
+**Description**
 
 GMT has several mechanisms that can determine line
 segmentation. Typically, data segments are separated by multiple segment
@@ -1054,6 +1208,13 @@ column value.
 Header data records: The **-h** option
 --------------------------------------
 
+**Syntax**
+
+**-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*]\
+[**+r**\ *remark*][**+t**\ *title*]
+
+**Description**
+
 The **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*] option
 lets GMT know that input file(s) have *n_recs* header records [0]. If
 there are more than one header record you must specify the number after
@@ -1083,6 +1244,13 @@ character (on output).
 
 Input columns selection: The **-i** option
 ------------------------------------------
+
+**Syntax**
+
+**-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*]\
+[**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+
+**Description**
 
 The **-i**\ *columns* option allows you to specify which
 input file physical data columns to use and in what order. By default, GMT will
@@ -1133,6 +1301,12 @@ ignore all trailing text, use **-in**.
 Spherical distance calculations: The **-j** option
 --------------------------------------------------
 
+**Syntax**
+
+**-je**\|\ **f**\|\ **g**
+
+**Description**
+
 GMT has different ways to compute distances on planetary bodies.
 By default (**-jg**) we perform great circle distance calculations, and parameters such
 as distance increments or radii will be compared against calculated great
@@ -1149,6 +1323,15 @@ calculations is also controlled by method (:term:`PROJ_GEODESIC`).
 
 Setting automatic legend entries: The **-l** option
 ---------------------------------------------------
+
+**Syntax**
+
+**-l**\ [*label*]\ [**+D**\ *pen*][**+G**\ *gap*][**+H**\ *header*]\
+[**+L**\ [*code*/]\ *txt*][**+N**\ *cols*][**+S**\ *size*\ [/*height*]]\
+[**+V**\ [*pen*]][**+f**\ *font*][**+g**\ *fill*][**+j**\ *just*]\
+[**+o**\ *off*][**+p**\ *pen*][**+s**\ *scale*][**+w**\ *width*]
+
+**Description**
 
 Map or plot legends are created by :doc:`/legend` and normally this module
 will read a *specfile* that outlines how the legend should look.  You can
@@ -1182,6 +1365,12 @@ look for the automatically generated on in the session directory.
 Grid interpolation parameters: The **-n** option
 ------------------------------------------------
 
+**Syntax**
+
+**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*]\
+[**+c**][**+t**\ *threshold*]
+
+**Description**
 The **-n**\ *type* option controls parameters used for
 2-D grids resampling. You can select the type of spline used (**-nb**
 for B-spline smoothing, **-nc** for bicubic [Default], **-nl** for
@@ -1205,6 +1394,12 @@ will go about 90% of the way, etc.
 Output columns selection: The **-o** option
 -------------------------------------------
 
+**Syntax**
+
+**-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
+
+**Description**
+
 The **-o**\ *columns* option allows you to specify which
 columns to write on output and in what order. By default, GMT will
 write all the data columns produced by the program. Using **-o**
@@ -1224,6 +1419,13 @@ trailing text, use **-on**.
 
 Perspective view: The **-p** option
 -----------------------------------
+
+**Syntax**
+
+**-p**\ [**x**\|\ **y**\|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]]\
+[**+w**\ *lon0*/*lat0*\ [/*z0*]][**+v**\ *x0*/*y0*]
+
+**Description**
 
 All plotting programs that normally produce a flat, two-dimensional
 illustration can be told to view this flat illustration from a
@@ -1247,6 +1449,12 @@ or **+w** to select another axis location than the plot origin.
 Data row selection: The **-q** option
 -------------------------------------
 
+**Syntax**
+
+**-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+
+**Description**
+
 Similar to how **-i** and **-o** control which data *columns* to read and write, the **-qi** (or just **-q**)
 and **-qo** options control which data *rows* to read and write [Default is all]. As for columns, you
 can specify specific rows, a range of rows, or several sets of row ranges. You can also
@@ -1264,6 +1472,12 @@ note that when **+c** is used the **+a**\|\ **f**\|\ **s** have no effect.
 
 Grid registration: The **-r** option
 ------------------------------------
+
+**Syntax**
+
+**-r**\ [**g**\|\ **p**]
+
+**Description**
 
 All 2-D grids in GMT have their nodes
 organized in one of two ways, known as *gridline*- and *pixel*-
@@ -1315,6 +1529,11 @@ spacing by
    Gridline- and pixel-registration of data nodes.  The red shade indicates the
    areas represented by the value at the node (solid circle).
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_registration.txt
 
 .. math::
 
@@ -1355,10 +1574,22 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
    function of wavenumber :math:`k_j` [Marks and Smith, 2007 [15]_.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_grid2pix.txt
+
 .. _option_-s:
 
 NaN-record treatment: The **-s** option
 ---------------------------------------
+
+**Syntax**
+
+**-s**\ [*cols*][**+a**][**+r**]
+
+**Description**
 
 We can use this option to suppress output for records whose *z*-value
 equals NaN (by default we output all records). Alternatively, append
@@ -1372,6 +1603,12 @@ consider (before the optional modifiers) for this NaN test.
 
 Layer transparency: The **-t** option
 -------------------------------------
+
+**Syntax**
+
+**-t**\ *transp*\ [/*transp2*][**+f**\ \|\ **s**]
+
+**Description**
 
 While the PostScript language does not support transparency, PDF does,
 and via PostScript extensions one can manipulate the transparency
@@ -1391,6 +1628,13 @@ or if we expect one or two transparencies.
 
 Examining data cycles: The **-w** option
 ----------------------------------------
+
+**Syntax**
+
+**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\
+*period*\ [/*phase*][**+c**\ *col*]
+
+**Description**
 
 Temporal data (i.e., regular time series) can be analyzed for periods
 via standard spectral analysis, such as offered by :doc:`/spectrum1d`
@@ -1566,6 +1810,12 @@ discusses the four panels resulting from running the script below:
 Selecting number of CPU cores: The **-x** option
 ------------------------------------------------
 
+**Syntax**
+
+**-x**\ [[-]\ *n*]
+
+**Description**
+
 Specify the number of active cores to be used in any OpenMP-enabled
 multi-threaded algorithms. By default, we try to use all available cores.
 You may append *n* to only use *n* cores (if *n* is too large it will be truncated
@@ -1578,6 +1828,12 @@ the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel
 
 Latitude/Longitude or Longitude/Latitude?: The **-:** option
 ------------------------------------------------------------
+
+**Syntax**
+
+**-:**\ [**i**\|\ **o**]
+
+**Description**
 
 For geographical data, the first column is expected to contain
 longitudes and the second to contain latitudes. To reverse this

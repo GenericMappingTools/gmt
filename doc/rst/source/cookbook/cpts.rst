@@ -28,6 +28,12 @@ Default ranges, if available, are indicated on the top-right of the scales.
 
    The standard 44 CPTs supported by GMT.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_M_1a.txt
+
 .. _CPT_files_b:
 
 .. figure:: /_images/GMT_App_M_1b.*
@@ -35,6 +41,12 @@ Default ranges, if available, are indicated on the top-right of the scales.
    :align: center
 
    The 30 scientific color maps by Fabio Crameri supported by GMT.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_M_1b.txt
 
 .. _CPT_files_c:
 
@@ -45,6 +57,11 @@ Default ranges, if available, are indicated on the top-right of the scales.
    The 18 categorical CPTs (those ending in "S" are the categorical
    scientific color maps by Fabio Crameri) supported by GMT.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_M_1c.txt
 
 .. _CPT_files_d:
 
@@ -55,6 +72,12 @@ Default ranges, if available, are indicated on the top-right of the scales.
    The 5 cyclic scientific color maps by Fabio Crameri supported by GMT.
    **Note**: Any GMT CPT can be made cyclic by running :doc:`/makecpt`
    with the **-Ww** option (wrapped = cyclic).
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_M_1d.txt
 
 For additional color tables, visit
 `cpt-city <http://soliton.vm.bytemark.co.uk/pub/cpt-city/>`_ and
@@ -80,6 +103,17 @@ are centered. The example below also shows how to annotate ranges using
 **-Li** (in which case no name labels should appear in the CPT),
 and how to switch the color bar around (by using a negative length).
 
+**Note**: If the last slice should have both lower and upper
+custom labels then you must supply *two* semicolon-separated labels and set the
+annotation code to **B**.
+
 .. figure:: /_images/GMT_App_M_2.*
    :width: 600 px
    :align: center
+
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_M_2.txt

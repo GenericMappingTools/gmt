@@ -234,6 +234,11 @@ terribly wrong when you do the interpolation in the other system.
    palette should be interpolated in HSV, since only hue should change between magenta (300) and red (0).
    Diamonds indicate which colors are defined in the palettes; they are fixed, the rest is interpolated.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_color_interpolate.txt
 
 Artificial illumination
 -----------------------
@@ -254,6 +259,12 @@ Artificial illumination
    no longer can easily be related to elevation. GMT thus only uses the directions of these
    vectors and normalizes the intensities to yield suitable shading; see :doc:`/grdgradient`
    for more details.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_slope2intensity.txt
 
 GMT uses the HSV system to achieve artificial illumination of colored
 images (e.g., **-I** option in :doc:`/grdimage`) by changing the saturation
@@ -291,6 +302,12 @@ obvious in RGB.
    B and W points as terminal points but instead end at the two white circles.  Their
    coordinates are given by (:term:`COLOR_HSV_MIN_S`, :term:`COLOR_HSV_MIN_V`) [1, 0.3]
    and (:term:`COLOR_HSV_MAX_S`, :term:`COLOR_HSV_MAX_V`) [0.1, 1].
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_color_hsv.txt
 
 Thinking in RGB or HSV
 ----------------------
@@ -340,6 +357,12 @@ achieved using *c/m/y/k* quadruplets.
    the amount of black in any particular color is removed from the color
    and painted with a specific black ink instead, leading to under-color
    removal of the remaining three pigments.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_cmyk.txt
 
 Obviously, there is no unique way to go from the 3-dimensional RGB
 system to the 4-dimensional CMYK system. So, again, there is a lot of
