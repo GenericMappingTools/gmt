@@ -283,7 +283,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 					Ctrl->A.file = strdup (opt->arg);
 					Ctrl->A.way = 1;	/* Building image directly, use TRPa layout, no call to GDAL */
 				}
-				else if (!strcmp (gmt_get_ext (opt->arg), "ppm")) {	/* Want a ppm image which we can do without GDAL */
+				else if ((c = gmt_get_ext (opt->arg)) && !strcmp (c, "ppm")) {	/* Want a ppm image which we can do without GDAL */
 					Ctrl->A.file = strdup (opt->arg);
 					Ctrl->A.way = 1;	/* Building image directly, use TRP layout, no call to GDAL, writing a PPM file */
 				}
@@ -1141,7 +1141,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	uint64_t node, k, kk, dim[GMT_DIM_SIZE] = {0, 0, 3, 0};
 	int error = 0, ret_val = GMT_NOERROR, ftype = GMT_NOTSET;
 
-	char *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""}, data_grd[GMT_VF_LEN] = {""};
+	char *img_ProjectionRefPROJ4 = NULL, *way[2] = {"via GDAL", "directly"}, cmd[GMT_LEN256] = {""}, data_grd[GMT_VF_LEN] = {""}, *e = NULL;
 	unsigned char *bitimage_8 = NULL, *bitimage_24 = NULL, *rgb_used = NULL;
 
 	double dx, dy, x_side, y_side, x0 = 0.0, y0 = 0.0;
@@ -1192,7 +1192,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	use_intensity_grid = (Ctrl->I.active && !Ctrl->I.constant);	/* We want to use an intensity grid */
 	if (Ctrl->A.file) {
 		Ctrl->Out.file = Ctrl->A.file; Ctrl->A.file = NULL;	/* Only use Out.file for writing */
-		if (strcmp (gmt_get_ext (Ctrl->Out.file), "ppm")) {	/* Turn off the automatic creation of aux files by GDAL */
+		if ((e = gmt_get_ext (Ctrl->Out.file)) && strcmp (e, "ppm")) {	/* Turn off the automatic creation of aux files by GDAL */
 #ifdef WIN32
 			if (_putenv ("GDAL_PAM_ENABLED=NO"))
 #else
