@@ -18957,7 +18957,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	(void)gmt_getdefaults (GMT, NULL);
 	for (opt = options; opt; opt = opt->next) {
 		if (opt->option != '-') continue;   /* Not a parameter setting */
-		c = strchr (opt->arg, '=');
+		if ((c = strchr (opt->arg, '=')) == NULL) continue;
 		c[0] = '\0';  /* Remove = */
 		n_errors += gmtlib_setparameter (GMT, opt->arg, &c[1], false);
 	}
