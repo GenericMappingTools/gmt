@@ -7814,7 +7814,6 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	SetConsoleOutputCP (CP_UTF8);
 #endif
 	API->terminal_width = (n_columns > 25) ? n_columns : 100;	/* Character width of current terminal [100] */
-
 	/* Set temp directory used by GMT */
 
 #ifdef WIN32
@@ -13387,7 +13386,7 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, unsigned int inden
 		}
 	}
 	free (W);	/* Free the structure array */
-	API->print_func (fp, API->message);	/* Do the printing */
+	API->print_func (fp, message);	/* Do the printing */
 }
 
 /*! . */
