@@ -53,33 +53,42 @@ void gmt_usage_line (unsigned int mode, unsigned int MLENGTH, char *in_line) {
 	struct GMT_WORD *W = gmt_split_words (in_line);
 	unsigned int width, k, current_width = 0;
 	char *brk = "\xe2\x8f\x8e", *cnt = "\xe2\x80\xa6";	/* return symbol and ellipsis */
+	char message[BUFSIZ] = {""};
 #ifdef WIN32
 	SetConsoleOutputCP (CP_UTF8);
 #endif
 	if (mode) {	/* Start with 2-spaces in */
-		fprintf (stderr, "  ");	/* Starting 2-spaces */
+		strcat (message, "  ");	/* Starting 2-spaces */
 		current_width = 2;
 	}
 	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
 		width = (W[k+1].space) ? MLENGTH : MLENGTH - 1;	/* May need one space for ellipsis at end */
 		if ((current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
-			if (W[k].space) fprintf (stderr, " ");	/* This word requires a leading space */
-			fprintf (stderr, "%s", W[k].word);	/* Place the word */
+			if (W[k].space)	/* This word requires a leading space */
+				strcat (message, " ");
+			strcat (message, W[k].word);
 			current_width += strlen (W[k].word) + W[k].space;	/* Update line width so far */
 			free (W[k].word);	/* Free the word we are done with */
 			if (W[k+1].word == NULL)	/* Finalize the last line */
-				fprintf (stderr, "\n");
+				strcat (message, "\n");
 		}
 		else {	/* Must split at the current break point and continue on next line */
-			if (W[k].space) /* No break character needed since space separation is expected */
-				fprintf (stderr, "\n  "), current_width = 2;	/* Indent normal 2 spaces */
-			else	/* Split in the middle of an option so append ellipsis and start with one too */
-				fprintf (stderr, "%s\n   %s", brk, cnt), current_width = 4;
+			if (W[k].space) { /* No break character needed since space separation is expected */
+				strcat (message, "\n  ");
+				current_width = 2;	/* Indent normal 2 spaces */
+			}
+			else {	/* Split in the middle of an option so append ellipsis and start with one too */
+				strcat (message, brk);
+				strcat (message, "\n   ");
+				strcat (message, cnt);
+				current_width = 4;
+			}
 			W[k].space = 0;	/* No leading space if starting a the line */
 			k--;	/* Since k will be incremented by loop but we did not write this word yet */
 		}
 	}
 	free (W);	/* Free the structure array */
+	fprintf (stderr, "%s", message);
 }
 
 int main (int argc, char *argv[]) {
