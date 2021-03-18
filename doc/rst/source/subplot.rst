@@ -128,7 +128,7 @@ Optional Arguments (begin mode)
     do *not* draw and annotated any frames.  This option is useful if you wish to lay down a partial subplot
     with annotations and frames, but then want to plot data inside it separately later without redrawing
     the frames.  With different **-B**, **-C**, **-M** and **-S** choices the two subplots may not align, but with
-    **-D* they will.  **Note**: It is assumed that **-F** stays the same [Plot and annotation frames as indicated].
+    **-D** they will.  **Note**: It is assumed that **-F** stays the same [Draw and annotate frames as indicated].
 
 .. _-J:
 
