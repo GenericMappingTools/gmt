@@ -8325,120 +8325,116 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 
 		case 'a':	/* -a option for aspatial field substitution into data columns */
 
-			gmt_message (GMT, "\t%s\n", GMT_a_OPT);
-			gmt_message (GMT, "\t  Specify the aspatial field information.\n");
+			GMT_Usage (API, 2, "%s. Specify the aspatial field information.", GMT_a_OPT);
 			break;
 
 		case 'b':	/* Binary i/o option  */
-			gmt_message (GMT, "\t%s\n", GMT_b_OPT);
-			gmt_message (GMT, "\t   Binary data, add i for input, o for output [Default is both].\n");
-			gmt_message (GMT, "\t   Here, t is c|u|h|H|i|I|l|L|f|d [Default is d (double)].\n");
-			gmt_message (GMT, "\t   Prepend the number of data columns.\n");
-			gmt_message (GMT, "\t   Append w to byte swap an item; append +L|B to fix endianness of file.\n");
+			GMT_Usage (API, 2, "%s "
+				"Binary data, add i for input, o for output [Default is both]. "
+				"Here, t is c|u|h|H|i|I|l|L|f|d [Default is d (double)]. "
+				"Prepend the number of data columns. "
+				"Append w to byte swap an item; append +L|B to fix endianness of file.\n", GMT_b_OPT);
 			break;
 
 		case 'f':	/* Column information option  */
-			gmt_message (GMT, "\t%s\n", GMT_f_OPT);
-			gmt_message (GMT, "\t   Column information, add i for input, o for output [Default is both].\n");
-			gmt_message (GMT, "\t   <colinfo> is <colno>|<colrange>u, where column numbers start at 0\n");
-			gmt_message (GMT, "\t   a range is given as <first>-<last>, e.g., 2-5., u is type:\n");
-			gmt_message (GMT, "\t   t: relative time, T: absolute time, f: floating point,\n");
-			gmt_message (GMT, "\t   x: longitude, y: latitude, g: short for 0x,1y.\n");
+			GMT_Usage (API, 2, "%s "
+				"Column information, add i for input, o for output [Default is both]. n"
+				"<colinfo> is <colno>|<colrange>u, where column numbers start at 0. "
+				"A range is given as <first>-<last>, e.g., 2-5., u is type: "
+				"t: relative time, T: absolute time, f: floating point, "
+				"x: longitude, y: latitude, g: short for 0x,1y.\n", GMT_f_OPT);
 			break;
 
 		case 'g':
-			gmt_message (GMT, "\t%s\n", GMT_g_OPT);
-			gmt_message (GMT, "\t   (Consult manual)\n");
+			GMT_Usage (API, 2, "%s. (Consult documentation)", GMT_g_OPT);
 			break;
 
 		case 'h':	/* Header */
 
-			gmt_message (GMT, "\t%s\n", GMT_h_OPT);
-			gmt_message (GMT, "\t   Specify if Input/output file has header record(s)\n");
-			gmt_message (GMT, "\t   Optionally, append i for input only and/or number of header records [0].\n");
-			gmt_message (GMT, "\t     -hi turns off the writing of all headers on output.\n");
-			gmt_message (GMT, "\t   Append +c to add header record with column information [none].\n");
-			gmt_message (GMT, "\t   Append +d to delete headers before adding new ones [Default will append headers].\n");
-			gmt_message (GMT, "\t   Append +r to add a <remark> comment to the output [none].\n");
-			gmt_message (GMT, "\t   Append +t to add a <title> comment to the output [none].\n");
-			gmt_message (GMT, "\t     (these strings may contain \\n to indicate line-breaks)\n");
-			gmt_message (GMT, "\t   For binary files, <n> is considered to mean number of bytes.\n");
+			GMT_Usage (API, 2, "%s "
+				"Specify if Input/output file has header record(s). "
+				"Optionally, append i for input only and/or number of header records [0]. "
+				"-hi turns off the writing of all headers on output. "
+				"Append +c to add header record with column information [none]. "
+				"Append +d to delete headers before adding new ones [Default will append headers]. n"
+				"Append +r to add a <remark> comment to the output [none]. "
+				"Append +t to add a <title> comment to the output [none]. "
+				"(these strings may contain \\n to indicate line-breaks. "
+				"For binary files, <n> is considered to mean number of bytes.", GMT_h_OPT);
 			break;
 
 		case 'i':	/* -i option for input column order */
 
-			gmt_message (GMT, "\t%s\n", GMT_i_OPT);
-			gmt_message (GMT, "\t   Set alternate numerical input column order and optional translations. Append ,t to include trailing text.\n");
-			gmt_message (GMT, "\t   [Default reads all numerical columns in order, followed by any trailing text].\n");
+			GMT_Usage (API, 2, "%s "
+				"Set alternate numerical input column order and optional translations. Append ,t to include trailing text. "
+				"[Default reads all numerical columns in order, followed by any trailing text].", GMT_i_OPT);
 			break;
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
-			gmt_message (GMT, "\t%s\n", GMT_n_OPT);
-			gmt_message (GMT, "\t   Determine the grid interpolation mode.\n");
-			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
-			gmt_message (GMT, "\t   Append +a switch off antialiasing (except for l) [Default: on].\n");
-			gmt_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
-			gmt_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
-			gmt_message (GMT, "\t   x for periodic boundary conditions on x,\n");
-			gmt_message (GMT, "\t   y for periodic boundary conditions on y.\n");
-			gmt_message (GMT, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
-			gmt_message (GMT, "\t   Append +c to clip interpolated grid to input z-min/max [Default may exceed limits].\n");
-			gmt_message (GMT, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
-			gmt_message (GMT, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
-			gmt_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
+			GMT_Usage (API, 2, "%s "
+				"Determine the grid interpolation mode: "
+				"b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor [Default: bicubic]. "
+				"Append +a switch off antialiasing (except for l) [Default: on]. "
+				"Append +b<BC> to change boundary conditions.  <BC> can be either"
+				"g for geographic boundary conditions, or one or both of"
+				"x for periodic boundary conditions on x, or"
+				"y for periodic boundary conditions on y."
+				"[Default: Natural conditions, unless grid is known to be geographic]. "
+				"Append +c to clip interpolated grid to input z-min/max [Default may exceed limits]. "
+				"Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of"
+				"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate"
+				"about half way from a non-NaN to a NaN node [Default: 0.5].\n", GMT_n_OPT);
 			break;
 
 		case 'o':	/* -o option for output column order */
 
-			gmt_message (GMT, "\t%s\n", GMT_o_OPT);
-			gmt_message (GMT, "\t   Set alternate numerical output column order; end with [,]t[<word>] to output trailing text.\n");
-			gmt_message (GMT, "\t   [Default writes all numerical columns in order, followed by any trailing text].\n");
+			GMT_Usage (API, 2, "%s "
+				"Set alternate numerical output column order; end with [,]t[<word>] to output trailing text. "
+				"[Default writes all numerical columns in order, followed by any trailing text].", GMT_o_OPT);
 			break;
 
 		case 'p':
-			gmt_message (GMT, "\t%s\n", GMT_p_OPT);
-			gmt_message (GMT, "\t   Azimuth and elevation (and zlevel) of the viewpoint [180/90/bottom z-axis].\n");
-			gmt_message (GMT, "\t   Append +w and +v to set coordinates to a fixed viewpoint\n");
+			GMT_Usage (API, 2, "%s \n"
+				"Azimuth and elevation (and zlevel) of the viewpoint [180/90/bottom z-axis]. "
+				"Append +w and +v to set coordinates to a fixed viewpoint", GMT_p_OPT);
 			break;
 
 		case 's':	/* Skip records with NaN as z */
-			gmt_message (GMT, "\t%s\n", GMT_s_OPT);
-			gmt_message (GMT, "\t   Skip records whose <col> [2] output is NaN.\n");
-			gmt_message (GMT, "\t   a skips if ANY columns is NaN, while r reverses the action.\n");
+			GMT_Usage (API, 2, "%s "
+				"Skip records whose <col> [2] output is NaN. "
+				"a skips if ANY columns is NaN, while r reverses the action.", GMT_s_OPT);
 			break;
 
 		case 't':	/* -t layer transparency option  */
-			gmt_message (GMT, "\t%s\n", GMT_t_OPT);
-			gmt_message (GMT, "\t   Set the layer PDF transparency from 0-100 [Default is 0; opaque].\n");
+			GMT_Usage (API, 2, "%s Set the layer PDF transparency from 0-100 [Default is 0; opaque].", GMT_t_OPT);
 			break;
 
 		case 'x':	/* Number of threads */
-			gmt_message (GMT, "\t%s\n", GMT_x_OPT);
-			gmt_message (GMT, "\t   Control the number of processors used in multi-threading.\n");
-			gmt_message (GMT, "\t   -x+a Use all available processors.\n");
-			gmt_message (GMT, "\t   -xn Use n processors (not more than max available off course).\n");
-			gmt_message (GMT, "\t   -x-n Use (all - n) processors.\n");
+			GMT_Usage (API, 2, "%s "
+				"Control the number of processors used in multi-threading: "
+				"-x+a Use all available processors, "
+				"-xn Use n processors (not more than max available off course), "
+				"-x-n Use (all - n) processors.", GMT_x_OPT);
 			break;
 
 		case 'w':	/* -w option for cyclicity */
 
-			gmt_message (GMT, "\t%s\n", GMT_w_OPT);
-			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified cyclicity:\n");
-			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
-			gmt_message (GMT, "\t   Alternatively append c<period>[/<phase>] for custom cyclicity.\n");
-			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
+			GMT_Usage (API, 2, "%s "
+				"Wrapped selected column [0] with specified cyclicity: "
+				"Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles. "
+				"Alternatively append c<period>[/<phase>] for custom cyclicity. "
+				"Select another column than x via +c<col>.\n", GMT_w_OPT);
 			break;
 
 		case ':':	/* lon/lat vs lat/lon i/o option  */
-			gmt_message (GMT, "\t%s\n", GMT_colon_OPT);
-			gmt_message (GMT, "\t   Interpret first two columns, add i for input, o for output [Default is both].\n");
-			gmt_message (GMT, "\t   Swap 1st and 2nd column on input and/or output.\n");
+			GMT_Usage (API, 2, "%s "
+				"Interpret first two columns, add i for input, o for output [Default is both]. "
+				"Swap 1st and 2nd column on input and/or output.", GMT_colon_OPT);
 			break;
 
 		case '-':	/* --PAR=value  */
-			gmt_message (GMT, "\t--<PARAMETER>=<value>.\n");
-			gmt_message (GMT, "\t   See %s for list of parameters.\n", GMT_SETTINGS_FILE);
+			GMT_Usage (API, 2, "--<PARAMETER>=<value>  See %s for list of parameters.", GMT_SETTINGS_FILE);
 			break;
 
 		default:
