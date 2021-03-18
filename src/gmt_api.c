@@ -13318,14 +13318,14 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	while (line[start]) {	/* More to chop up */
 		/* Find the next break location */
 		stop = start;
-		while (line[stop] && !(line[stop] == ' ' || (line[stop] == ']' && line[stop+1] == '['))) stop++;
+		while (line[stop] && !(line[stop] == ' ' || line[stop] == '/' || (line[stop] == ']' && line[stop+1] == '['))) stop++;
 		end = next = stop;	/* Mark likely end */
 		array[n].space = space;	/* Do we need a leading space (set via previous word)? */
 		if (line[stop] == ' ') {	/* Skip the space to start over at next word */
 			while (line[stop] == ' ') stop++;	/* In case there are more than one space */
 			next = stop; space = 1;
 		}
-		else if (line[stop] == ']') {	/* Include this char then break */
+		else if (line[stop] == ']' || line[stop] == '/') {	/* Include this char then break */
 			next = ++end, space = 0;
 		}
 		array[n].word = calloc (end - start + 1, sizeof (char));	/* Allocate space for word */
@@ -13370,16 +13370,16 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, unsigned int inden
 			if (W[k].space) { /* No break character needed since space separation is expected */
 				strcat (message, "\n");	/* Move to new line */
 				for (j = 0; j < indent; j++) strcat (message, " ");	/* Initial indent */
-				strcat (message, "  ");	/* To more indents when wrapped */
-				current_width = indent + 2;	/* Indent plus 2 spaces */
+				strcat (message, "   ");	/* Three more indents when wrapped */
+				current_width = indent + 3;	/* Indent plus 3 spaces */
 			}
 			else {	/* Split in the middle of an option so append breakline and start new line with ellipsis after indent */
 				strcat (message, brk);
 				strcat (message, "\n");
 				for (j = 0; j < indent; j++) strcat (message, " ");	/* Initial indent */
-				strcat (message, "   ");	/* 3 spaces indent */
-				strcat (message, cnt);		/* And ellipsis */
-				current_width = indent + 4;	/* Indent plus the 4 characters */
+				strcat (message, "    ");	/* 4 spaces indent */
+				strcat (message, cnt);		/* And the ellipsis */
+				current_width = indent + 5;	/* Indent plus the 5 characters */
 			}
 			W[k].space = 0;	/* Can be no leading space if starting a the line */
 			k--;	/* Since k will be incremented by loop and we did not write this word yet */
