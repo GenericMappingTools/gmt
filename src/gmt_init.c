@@ -6904,7 +6904,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 		"Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds]. "
 		"Use -R<xmin/xmax/ymin/ymax>+u<unit> for regions given in projected coordinates, "
 		"with <unit> selected from %s. "
-		"Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. n"
+		"Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. "
 		"Append +r if -R specifies the coordinates of the lower left and"
 		"upper right corners of a rectangular area.", GMT_LEN_UNITS2_DISPLAY);
 	if (GMT->current.setting.run_mode == GMT_MODERN)
@@ -6914,7 +6914,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 		"Derive region from closed polygons from the Digital Chart of the World (DCW): "
 		"Append a comma-separated list of ISO 3166 codes for countries to set region, i.e., "
 		"<code1>,<code2>,... etc., using the 2-character ISO country codes (see pscoast -E+l for list). "
-		"To select a state of a country (if available), append .state, e.g, US.TX for Texas. n"
+		"To select a state of a country (if available), append .state, e.g, US.TX for Texas. "
 		"To select a whole continent, give =AF|AN|AS|EU|OC|NA|SA as <code>. "
 		"Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>"
 		"to round region to these multiples; use +R to extend region by those increments instead, "
@@ -7026,7 +7026,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"When <stride> is omitted, a reasonable value will be determined automatically, e.g., -Bafg. "
 				"Log10 axis: Append l to annotate log10 (value) or p for 10^(log10(value)) [Default annotates value]. "
 				"Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear]. "
-				"See basemap man pages for more details and examples of all settings.");
+				"See basemap documentation for more details and examples of all settings.");
 			break;
 
 		case 'b':	/* Condensed tickmark option */
@@ -7062,17 +7062,17 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
 			GMT_Usage (API, 5, "-Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Albers Equal-Area Conic). "
-				"Give origin, 2 standard parallels, and true scale");
+				"Give origin, 2 standard parallels, and true scale.");
 
-			GMT_Usage (API, 5, "-Jc|C<lon0>/<lat0>/<scale>|<width> (Cassini). Give central point and scale");
+			GMT_Usage (API, 5, "-Jc|C<lon0>/<lat0>/<scale>|<width> (Cassini). Give central point and scale.");
 
 			GMT_Usage (API, 5, "-Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Stereographic). "
 				"Give central meridian (opt), standard parallel (opt) and scale. "
 				"<lat0> = 66.159467 (Miller's modified Gall), 55 (Kamenetskiy's First), "
-				"45 (Gall Stereographic), 30 (Bolshoi Sovietskii Atlas Mira), 0 (Braun)");
+				"45 (Gall Stereographic), 30 (Bolshoi Sovietskii Atlas Mira), and 0 (Braun).");
 
 			GMT_Usage (API, 5, "-Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Equidistant Conic). "
-				"Give origin, 2 standard parallels, and true scale");
+				"Give origin, 2 standard parallels, and true scale.");
 
 			GMT_Usage (API, 5, "-Je|E<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Azimuthal Equidistant). "
 				"<lon0>/<lat0> is the center of the projection. "
@@ -7092,11 +7092,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
 			GMT_Usage (API, 5, "-Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective). "
-				"<lon0>/<lat0> is the center of the projection, while"
+				"<lon0>/<lat0> is the center of the projection, while "
 				"<altitude> is the height (in km) of the viewpoint above local sea level.");
-			GMT_Usage (API, 7, "1. If <altitude> less than 10 then it is the distance"
-				"from center of earth to viewpoint in earth radii");
-			GMT_Usage (API, 7, "2. If <altitude> has a suffix of 'r' then it is the radius"
+			GMT_Usage (API, 8, "1. If <altitude> less than 10 then it is the distance "
+				"from center of earth to viewpoint in earth radi.i");
+			GMT_Usage (API, 8, "2. If <altitude> has a suffix of 'r' then it is the radius "
 				"from the center of earth in kilometers");
 			GMT_Usage (API, 5, "<azimuth> is azimuth east of North of view, "
 				"<tilt> is the upward tilt of the plane of projection, "
@@ -7107,27 +7107,27 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance"
 				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
-			GMT_Usage (API, 5, "-Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff). Give central meridian (opt) and scale");
+			GMT_Usage (API, 5, "-Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff). Give central meridian (opt) and scale.");
 
-			GMT_Usage (API, 5, "-Ji|I[<lon0>/]<scale>|<width> (Sinusoidal). Give central meridian (opt) and scale");
+			GMT_Usage (API, 5, "-Ji|I[<lon0>/]<scale>|<width> (Sinusoidal). Give central meridian (opt) and scale.");
 
-			GMT_Usage (API, 5, "-Jj|J[<lon0>/]<scale>|<width> (Miller). Give central meridian (opt) and scale");
+			GMT_Usage (API, 5, "-Jj|J[<lon0>/]<scale>|<width> (Miller). Give central meridian (opt) and scale.");
 
-			GMT_Usage (API, 5, "-Jkf|Kf[<lon0>/]<scale>|<width> (Eckert IV). Give central meridian (opt) and scale)");
+			GMT_Usage (API, 5, "-Jkf|Kf[<lon0>/]<scale>|<width> (Eckert IV). Give central meridian (opt) and scale).");
 
-			GMT_Usage (API, 5, "-Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI). Give central meridian (opt) and scale");
+			GMT_Usage (API, 5, "-Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI). Give central meridian (opt) and scale".);
 
 			GMT_Usage (API, 5, "-Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Lambert Conformal Conic). "
-				"Give origin, 2 standard parallels, and true scale");
+				"Give origin, 2 standard parallels, and true scale.");
 
 			GMT_Usage (API, 5, "-Jm|M[<lon0>/[<lat0>/]]<scale>|<width> (Mercator). "
-				"Give central meridian (opt), true scale parallel (opt), and scale");
+				"Give central meridian (opt), true scale parallel (opt), and scale.");
 
-			GMT_Usage (API, 5, "-Jn|N[<lon0>/]<scale>|<width> (Robinson projection). Give central meridian (opt) and scale");
+			GMT_Usage (API, 5, "-Jn|N[<lon0>/]<scale>|<width> (Robinson projection). Give central meridian (opt) and scale.");
 
 			GMT_Usage (API, 5, "-Jo|O<parameters>[+v] (Oblique Mercator).  Specify one of three definitions:");
 			GMT_Usage (API, 7, "-Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scale>|<width>. "
-				"Give origin, azimuth of oblique equator, and scale at oblique equator\n");
+				"Give origin, azimuth of oblique equator, and scale at oblique equator");
 			GMT_Usage (API, 7, "-Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>."
 				"Give origin, second point on oblique equator, and scale at oblique equator.");
 			GMT_Usage (API, 7, "-Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>."
@@ -7140,7 +7140,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Linear scaling for polar coordinates.  Give scale in %s/units. ",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			GMT_Usage (API, 7, "Append +a to use azimuths (CW from North) instead of directions (CCW from East) [Default].");
-			GMT_Usage (API, 7, "Append +f to flip radial direction so that south is on the outside and north is at the center."
+			GMT_Usage (API, 7, "Append +f to flip radial direction so that south is on the outside and north is at the center. "
 				"Append e to indicate data are elevations in degrees (s/n must be in 0-90 range). "
 				"Append p to set r = current planetary radius to be the center. "
 				"Append <radius> to indicate the radius at the center.");
@@ -7156,9 +7156,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Give central meridian (opt), standard parallel (opt), and scale. "
 				"<lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular), "
 				"45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann), "
-				"37.5 (Min. overall distortion), 0 (Plate Carree, default)");
+				"37.5 (Min. overall distortion), and 0 (Plate Carree, default)");
 
-			GMT_Usage (API, 5, "-Jr|R[<lon0>/]<scale>|<width> (Winkel Tripel). Give central meridian and scale");
+			GMT_Usage (API, 5, "-Jr|R[<lon0>/]<scale>|<width> (Winkel Tripel). Give central meridian and scale.");
 
 			GMT_Usage (API, 5, "-Js|S<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Stereographic). "
 				"<lon0>/<lat0> is the center or the projection, "
@@ -7174,14 +7174,14 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Give zone (A,B,Y,Z, or 1-60 (negative for S hemisphere) or append GMT-X) and scale. "
 				"Or, give -Ju|U<scale>|<width> to have the UTM zone determined from the region.");
 
-			GMT_Usage (API, 5, "-Jv|V[<lon0>/]<scale>|<width> (van der Grinten). Give central meridian (opt) and scale");
+			GMT_Usage (API, 5, "-Jv|V[<lon0>/]<scale>|<width> (van der Grinten). Give central meridian (opt) and scale.");
 
-			GMT_Usage (API, 5, "-Jw|W[<lon0>/]<scale>|<width> (Mollweide). Give central meridian (opt) and scale");
+			GMT_Usage (API, 5, "-Jw|W[<lon0>/]<scale>|<width> (Mollweide). Give central meridian (opt) and scale.");
 
 			GMT_Usage (API, 5, "-Jy|Y[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Equal-area). "
 				"Give central meridian (opt), standard parallel (opt) and scale, "
 				"<lat0> = 50 (Balthasart), 45 (Gall), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards), "
-				"37.0666 (Caster), 30 (Behrmann), 0 (Lambert, default)");
+				"37.0666 (Caster), 30 (Behrmann), and 0 (Lambert [Default])");
 
 			GMT_Usage (API, 5, "-Jx|X<x-scale|<width>[/<y-scale|height>] (Linear, log, power scaling). "
 				"<scale> in %s/units (or 1:xxxx). Optionally, append to <x-scale> and/or <y-scale> one of"
@@ -7332,13 +7332,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 2, "-V Change the verbosity level (currently %c). "
 				"Choose among 7 levels; each level adds more messages:", V_code[GMT->current.setting.verbose]);
-			GMT_Usage (API, 5, "q - Quiet, not even fatal error messages.");
-			GMT_Usage (API, 5, "e - Error messages only.");
-			GMT_Usage (API, 5, "w - Warnings [Default].");
-			GMT_Usage (API, 5, "t - Timings (time-intensive operations only).");
-			GMT_Usage (API, 5, "i - Informational messages (or just -V).");
-			GMT_Usage (API, 5, "c - Compatibility warnings.");
-			GMT_Usage (API, 5, "d - Debugging messages.");
+			GMT_Usage (API, 7, "q - Quiet, not even fatal error messages.");
+			GMT_Usage (API, 7, "e - Error messages only.");
+			GMT_Usage (API, 7, "w - Warnings [Default].");
+			GMT_Usage (API, 7, "t - Timings (time-intensive operations only).");
+			GMT_Usage (API, 7, "i - Informational messages (or just -V).");
+			GMT_Usage (API, 7, "c - Compatibility warnings.");
+			GMT_Usage (API, 7, "d - Debugging messages.");
 			break;
 
 		case 'X':
@@ -7533,11 +7533,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				GMT_Usage (API, 2, "-%c Select a 3-D pseudo perspective view.  Append the"
 					"<azimuth>/<elevation> of the viewpoint [180/90]. "
 					"When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis]. "
-					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. n"
-					"Optionally, append +w<lon0>/<lat0>[/<z0>] to specify a fixed coordinate point"
+					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. "
+					"Optionally, append +w<lon0>/<lat0>[/<z0>] to specify a fixed coordinate point "
 					"or +v<x0>/<y0> for a fixed projected point [region center and page center]. "
-					"For a plain rotation about the z-axis, give rotation angle only"
-					"and optionally use +w or +v to select location of axis [plot origin].\n", options[k]);
+					"For a plain rotation about the z-axis, give rotation angle only "
+					"and optionally use +w or +v to select location of axis [plot origin].", options[k]);
 			}
 			break;
 
