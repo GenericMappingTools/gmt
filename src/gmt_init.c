@@ -711,7 +711,9 @@ GMT_LOCAL void gmtinit_translate_to_long_options (struct GMTAPI_CTRL *API, struc
 	 * may appear more than once after a section separator (e.g., '/' or ',').  The separator is an entry
 	 * in kw.separator, or it is 0 if the option does not take more than one section.
 	 */
-
+	gmt_M_unused (API);
+	gmt_M_unused (this_module_kw);
+	gmt_M_unused (options);
 	/* NOT CODED YET - INTENDED FOR TESTING OUR KEYWORD/VALUE TRANSLATIONS */
 }
 #endif
@@ -6435,7 +6437,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
-	int i, error = 0;
+	int error = 0;
 #if NO_THEMES
 	return;		/* Ignore all the modern theme stuff */
 #endif
@@ -7662,59 +7664,66 @@ void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
 	\param kind  kind = 0 for *contour and 1 for psxy[z]
 */
 void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind) {
-	unsigned int i;
-	char pad[16], *type[3] = {"Contour", "Line", "Decorated line"};
-	char *feature[3] = {"label", "label", "symbol"};
+	struct GMTAPI_CTRL *API = GMT->parent;
+	static char *type[3] = {"Contour", "Line", "Decorated line"};
+	static char *feature[3] = {"label", "label", "symbol"};
 
-	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
-	gmt_message (GMT, "%s +a<angle> will place all %s at a fixed angle.\n", pad, feature[kind]);
-	gmt_message (GMT, "%s Or, specify +an (line-normal) or +ap (line-parallel) [Default].\n", pad);
 	if (kind == 0) {
-		gmt_message (GMT, "%s   For +ap, you may optionally append u for up-hill\n", pad);
-		gmt_message (GMT, "%s   and d for down-hill cartographic annotations.\n", pad);
+		GMT_Usage (API, indent, "+a<angle> will place all %s at a fixed angle. "
+			"Or, specify +an (line-normal) or +ap (line-parallel) [Default]. "
+			"For +ap, you may optionally append u for up-hill"
+			"and d for down-hill cartographic annotations.\n", feature[kind]);
 	}
-	if (kind < 2) gmt_message (GMT, "%s +c<dx>[/<dy>] sets clearance between label and text box [15%%].\n", pad);
-	gmt_message (GMT, "%s +d turns on debug which draws helper points and lines; optionally add a pen [%s]\n", pad, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
-	if (kind < 2) gmt_message (GMT, "%s +e delays the plotting of the text as text clipping is set instead.\n", pad);
-	if (kind < 2) gmt_message (GMT, "%s +f sets specified label font [Default is %s].\n", pad, gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
+	else {
+		GMT_Usage (API, indent, "+a<angle> will place all %s at a fixed angle. "
+			"Or, specify +an (line-normal) or +ap (line-parallel) [Default].", feature[kind]);
+	}
+	if (kind < 2) GMT_Usage (API, indent, "+c<dx>[/<dy>] sets clearance between label and text box [15%%].");
+	GMT_Usage (API, indent, "+d turns on debug which draws helper points and lines; optionally add a pen [%s].", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+	if (kind < 2) GMT_Usage (API, indent, "+e delays the plotting of the text as text clipping is set instead.");
+	if (kind < 2) GMT_Usage (API, indent, "+f sets specified label font [Default is %s].", gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
 	if (kind < 2)
-		gmt_message (GMT, "%s +g[<color>] paints text box [transparent]; append color [white].\n", pad);
+		GMT_Usage (API, indent, "+g[<color>] paints text box [transparent]; append color [white].");
 	else
-		gmt_message (GMT, "%s +g<fill> sets the fill for the symbol [transparent]\n", pad);
-	if (kind) gmt_message (GMT, "%s +i makes the main line invisible [drawn using pen settings from -W].\n", pad);
-	if (kind < 2) gmt_message (GMT, "%s +j<just> sets %s justification [Default is MC].\n", pad, feature[kind]);
+		GMT_Usage (API, indent, "+g<fill> sets the fill for the symbol [transparent]");
+	if (kind) GMT_Usage (API, indent, "+i makes the main line invisible [drawn using pen settings from -W].");
+	if (kind < 2) GMT_Usage (API, indent, "+j<just> sets %s justification [Default is MC].", feature[kind]);
 	if (kind == 1) {
-		gmt_message (GMT, "%s +l<text> Use text as label (quote text if containing spaces).\n", pad);
-		gmt_message (GMT, "%s +L<d|D|f|h|n|N|x> Sets label according to given flag:\n", pad);
-		gmt_message (GMT, "%s   d Cartesian plot distance; append a desired unit from %s.\n", pad, GMT_DIM_UNITS_DISPLAY);
-		gmt_message (GMT, "%s   D Map distance; append a desired unit from %s.\n", pad, GMT_LEN_UNITS_DISPLAY);
-		gmt_message (GMT, "%s   f Label is last column of given label location file.\n", pad);
-		gmt_message (GMT, "%s   h Use segment header labels (via -Lstring).\n", pad);
-		gmt_message (GMT, "%s   n Use the current segment number (starting at 0).\n", pad);
-		gmt_message (GMT, "%s   N Use current file number / segment number (starting at 0/0).\n", pad);
-		gmt_message (GMT, "%s   x Like h, but us headers in file with crossing lines instead.\n", pad);
+		GMT_Usage (API, indent, "+l<text> Use text as label (quote text if containing spaces).");
+		GMT_Usage (API, indent, "+L<d|D|f|h|n|N|x> Sets label according to given flag: "
+			"d Cartesian plot distance; append a desired unit from %s, "
+			"D Map distance; append a desired unit from %s, "
+			"f Label is last column of given label location file, "
+			"h Use segment header labels (via -Lstring), "
+			"n Use the current segment number (starting at 0), "
+			"N Use current file number / segment number (starting at 0/0), or"
+			"x Like h, but use headers in file with crossing lines instead.", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	}
 	if (kind < 2)
-		gmt_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.\n", pad);
+		GMT_Usage (API, indent, "+n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.");
 	else
-		gmt_message (GMT, "%s +n<dx>[/<dy>] to nudge symbol along line (+N for along x/y axis).\n", pad);
-	if (kind < 2)gmt_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
-	gmt_message (GMT, "%s +p[<pen>] draw outline of textbox [Default is no outline].\n", pad);
-	gmt_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);
-	if (kind == 2) gmt_message (GMT, "%s +s<symbol><size> specifies the decorative symbol and its size.\n", pad);
+		GMT_Usage (API, indent, "+n<dx>[/<dy>] to nudge symbol along line (+N for along x/y axis).");
+	if (kind < 2) GMT_Usage (API, indent, "+o to use rounded rectangular text box [Default is rectangular].");
+	GMT_Usage (API, indent, "+p[<pen>] draw outline of textbox [Default is no outline]. "
+		"Optionally append a pen [Default is default pen].");
+	if (kind == 2) GMT_Usage (API, indent, "+s<symbol><size> specifies the decorative symbol and its size.");
 	if (kind < 2) {
-		gmt_message (GMT, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
-		gmt_message (GMT, "%s +t[<file>] saves (x y angle label) to <file> [%s_labels.txt].\n", pad, type[kind%2]);
-		gmt_message (GMT, "%s +u<unit> to append unit to all labels.\n", pad);
+		GMT_Usage (API, indent, "+r<rmin> skips labels where radius of curvature < <rmin> [0].");
+		GMT_Usage (API, indent, "+t[<file>] saves (x y angle label) to <file> [%s_labels.txt].", type[kind%2]);
 	}
-	if (kind == 0) gmt_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
-	if (kind < 2) gmt_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
-	gmt_message (GMT, "%s +w<n> sets how many (x,y) points to use for angle calculation [auto].\n", pad);
+	if (kind == 0) {
+		GMT_Usage (API, indent, "+u<unit> to append unit to all labels. "
+			"If z is appended we use the z-unit from the grdfile [no unit].");
+	}
+	else
+		GMT_Usage (API, indent, "+u<unit> to append unit to all labels.");
+	if (kind < 2) GMT_Usage (API, indent, "+v for placing curved text along path [Default is straight].");
+	GMT_Usage (API, indent, "+w<n> sets how many (x,y) points to use for angle calculation [auto].");
 	if (kind == 1) {
-		gmt_message (GMT, "%s +x[first,last] adds <first> and <last> to these two labels [,'].\n", pad);
-		gmt_message (GMT, "%s   This modifier is only allowed if -SqN2 is used.\n", pad);
+		GMT_Usage (API, indent, "+x[first,last] adds <first> and <last> to these two labels [,']. "
+			"This modifier is only allowed if -SqN2 is used.");
 	}
-	if (kind < 2) gmt_message (GMT, "%s +=<prefix> to give all labels a prefix.\n", pad);
+	if (kind < 2) GMT_Usage (API, indent, "+=<prefix> to give all labels a prefix.");
 }
 
 /*! Contour/line label placement specifications in *contour and psxy[z] */
@@ -7827,54 +7836,56 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 */
 void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, unsigned int mode) {
 	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all, 8 = CPT interactions */
+	struct GMTAPI_CTRL *API = GMT->parent;
+	char msg[GMT_LEN256] = {""};
 	if (string[0] == ' ') {
 		if (longoption)
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%s parsing failure.  Correct syntax:\n", longoption);
 		else
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	}
-	if (longoption)
-		gmt_message (GMT, "\t-%s ", longoption);
-	else
-		gmt_message (GMT, "\t-%c ", option);
 	if (strstr (string, "%s"))
-		gmt_message (GMT, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+		sprintf (msg, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
 	else
-		gmt_message (GMT, string);
-	gmt_message (GMT, "\n\t   <pen> is a comma-separated list of three optional items in the order:\n");
-	gmt_message (GMT, "\t       <width>[%s], <color>, and <style>[%s].\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
-	gmt_message (GMT, "\t   <width> >= 0.0 sets pen width (default units are points); alternatively a pen\n");
-	gmt_message (GMT, "\t             name: Choose among faint, default, or [thin|thick|fat][er|est], or wide.\n");
-	gmt_message (GMT, "\t   <color> = (1) <gray> or <red>/<green>/<blue>, all in range 0-255;\n");
-	gmt_message (GMT, "\t             (2) #rrggbb, all in the range 0-255 using hexadecimal numbers;\n");
-	gmt_message (GMT, "\t             (3) <c>/<m>/<y>/<k> in 0-100%% range;\n");
-	gmt_message (GMT, "\t             (4) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
-	gmt_message (GMT, "\t             (5) any valid color name.\n");
-	gmt_message (GMT, "\t   <style> = (1) pattern of dashes (-) and dots (.), scaled by <width>;\n");
-	gmt_message (GMT, "\t             (2) \"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\";\n");
-	gmt_message (GMT, "\t             (3) <pattern>[:<offset>]; <pattern> holds lengths (default unit points)\n");
-	gmt_message (GMT, "\t                 of any number of lines and gaps separated by underscores.\n");
-	gmt_message (GMT, "\t                The optional <offset> shifts elements from start of the line [0].\n");
-	gmt_message (GMT, "\t   For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
+		strcpy (msg, string);
+	if (longoption)
+		GMT_Usage (API, 2, "-%s %s", longoption, msg);
+	else
+		GMT_Usage (API, 2, "-%c %s", option, msg);
+	GMT_Usage (API, 5, "<pen> is a comma-separated list of three optional items in the order: "
+		"<width>[%s], <color>, and <style>[%s].\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, 7, "<width> >= 0.0 sets pen width (default units are points); alternatively a pen "
+		"name: Choose among faint, default, or [thin|thick|fat][er|est], or wide.");
+	GMT_Usage (API, 7, "<color> = (1) <gray> or <red>/<green>/<blue>, all in range 0-255; "
+		"(2) #rrggbb, all in the range 0-255 using hexadecimal numbers; "
+		"(3) <c>/<m>/<y>/<k> in 0-100%% range; "
+		"(4) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1; "
+		"(5) any valid color name.");
+	GMT_Usage (API, 7, "<style> = (1) pattern of dashes (-) and dots (.), scaled by <width>; "
+		"(2) \"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\"; "
+		"(3) <pattern>[:<offset>]; <pattern> holds lengths (default unit points) "
+		"of any number of lines and gaps separated by underscores. "
+		"The optional <offset> shifts elements from start of the line [0].");
+	GMT_Usage (API, 5, "For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
 	if (mode)
-		gmt_message (GMT, "\t   Additional line attribute modifiers are also available.  Choose from:\n");
+		GMT_Usage (API, 5, "Additional line attribute modifiers are also available:");
 	if (mode & 2) {
-		gmt_message (GMT, "\t     +o<offset> Trim the line from the end inward by the specified amount.\n");
-		gmt_message (GMT, "\t        Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian].\n", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
-		gmt_message (GMT, "\t        To trim the two ends differently, give two offsets separated by a slash (/).\n");
+		GMT_Usage (API, 7, "+o<offset> Trim the line from the end inward by the specified amount. "
+			"Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian]. "
+			"To trim the two ends differently, give two offsets separated by a slash (/).", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	}
 	if (mode & 1)
-		gmt_message (GMT, "\t     +s Draw line using a Bezier spline through projected coordinates [Linear spline].\n");
+		GMT_Usage (API, 7, "+s Draw line using a Bezier spline through projected coordinates [Linear spline].");
 	if (mode & 4) {
-		gmt_message (GMT, "\t     +v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines.\n");
-		gmt_message (GMT, "\t        Use +ve and +vb separately to give different endings (+v applies to both).\n");
-		gmt_message (GMT, "\t        See vector specifications for details. Note: +v must be last modifier for a pen.\n");
+		GMT_Usage (API, 7, "+v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines. "
+			"Use +ve and +vb separately to give different endings (+v applies to both). "
+			"See vector specifications for details. Note: +v must be last modifier for a pen.\n");
 	}
 	if (mode & 8) {
-		gmt_message (GMT, "\t     +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
-		gmt_message (GMT, "\t          Append l to let pen colors follow the CPT setting.\n");
-		gmt_message (GMT, "\t          Append f to let fill/font colors follow the CPT setting.\n");
-		gmt_message (GMT, "\t          Default activates both effects.\n");
+		GMT_Usage (API, 7, "+c Controls how pens and fills are affected if a CPT is specified via -C: "
+			"Append l to let pen colors follow the CPT setting, or"
+			"Append f to let fill/font colors follow the CPT setting. "
+			"Default activates both effects.\n");
 	}
 }
 
@@ -7884,37 +7895,40 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 	\param string ...
 */
 void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c<color> %s Specify <color> as one of:\n", option, string);
-	gmt_message (GMT, "\t   1) <gray> or <red>/<green>/<blue>, all in range 0-255;\n");
-	gmt_message (GMT, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
-	gmt_message (GMT, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
-	gmt_message (GMT, "\t   4) any valid color name.\n");
-	gmt_message (GMT, "\t   For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
+	GMT_Usage (API, 2, "-%c<color> %s Specify <color> as one of: "
+		"1) <gray> or <red>/<green>/<blue>, all in range 0-255; "
+		"2) <c>/<m>/<y>/<k> in range 0-100%%; "
+		"3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1; "
+		"4) any valid color name.", option, string);
+	GMT_Usage (API, 5, "For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
 }
 
 
 void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part) {
 	/* For -Dg|j|J|n|x */
+	struct GMTAPI_CTRL *API = GMT->parent;
 	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "inset", "map scale", "map rose", "vertical scale"}, *tab[2] = {"", "     "};
-	unsigned int shift = (kind == GMT_ANCHOR_INSET) ? 1 : 0;	/* Add additional "tab" to front of message */
+	unsigned int shift = (kind == GMT_ANCHOR_INSET) ? 3 : 0;	/* Add additional "tab" to front of message */
 	if (part & 1) {	/* Here string is message, or NULL */
-		if (string) gmt_message (GMT, "\t-%s %s\n", option, string);
-		gmt_message (GMT, "\t   %sPositioning is specified via one of four coordinate systems:\n", tab[shift]);
-		gmt_message (GMT, "\t   %s  Use -%sg to specify <refpoint> with map coordinates.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  Use -%sj or -%sJ to specify bounding-box <refpoint> with 2-char justification code (BL, MC, etc).\n", tab[shift], option, option);
-		gmt_message (GMT, "\t   %s  Use -%sn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  Use -%sx to specify <refpoint> with plot coordinates.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %sAll except -%sx require the -R and -J options to be set.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %sUse J if item should be placed outside the map frame and j if inside.\n", tab[shift]);
+		if (string) GMT_Usage (API, 2+shift, "%s %s", option, string);
+		GMT_Usage (API, 5+shift, "Positioning is specified via one of four coordinate systems: "
+			"Use -%sg to specify <refpoint> with map coordinates. "
+			"Use -%sj or -%sJ to specify bounding-box <refpoint> with 2-char justification code (BL, MC, etc). "
+			"se -%sn to specify <refpoint> with normalized coordinates in 0-1 range. "
+			"Use -%sx to specify <refpoint> with plot coordinates. "
+			"All except -%sx require the -R and -J options to be set. "
+			"Use J if item should be placed outside the map frame and j if inside.\n",
+				option, option, option, option, option, option);
 	}
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is irrelevant */
 		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC", "ML"};
-		gmt_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>.\n", tab[shift], type[kind]);
-		gmt_message (GMT, "\t   %sIf +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%sj),\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  or the mirror opposite of <refpoint> (with -%sJ), or %s (else).\n", tab[shift], option, just[kind]);
-		gmt_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from <refpoint> in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
+		GMT_Usage (API, 5+shift, "Append 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>."
+			"If +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%sj), "
+			"or the mirror opposite of <refpoint> (with -%sJ), or %s (else). "
+			"Optionally, append +o<dx>[/<dy>] to offset %s from <refpoint> in direction implied by <justify> [0/0].\n", type[kind], option, option, just[kind], type[kind]);
 	}
 }
 
