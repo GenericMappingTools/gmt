@@ -26,7 +26,7 @@ Synopsis
 [ |-N|\ [**p**\|\ *dpi* ]]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**] ]
+[ |-S|\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**][**+x**\ *label*][**+y**\ *unit*] ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *scale* ]

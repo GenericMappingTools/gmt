@@ -9906,6 +9906,7 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool conf_update) {
 	/* We must adjust all frame items with unspecified size according to plot dimension */
 	bool geo_frame = false;
+	bool auto_scale = false;
 	double fontsize, scale;
 	double const pt = 1.0/72.0;	/* points to inch */
 
@@ -9938,40 +9939,46 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		scale = fontsize / 10.0;	/* scaling for offsets, pen widths and lengths normalized to the modern 10p size */
 	}
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed primary annotation font size: %g p  Dimension scaling: %g\n", fontsize, scale);
-
 	/* Only apply the automatic scaling to items NOT specifically set via a --PAR=value option */
 
 	if (gmt_M_is_dnan (GMT->current.setting.font_annot[GMT_PRIMARY].size)) {
 		GMT->current.setting.font_annot[GMT_PRIMARY].size = fontsize;
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_ANNOT_PRIMARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.font_annot[GMT_SECONDARY].size)) {
 		GMT->current.setting.font_annot[GMT_SECONDARY].size = scale * 12.0;	/* Modern 12p vs 10p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_ANNOT_SECONDARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.font_label.size)) {
 		GMT->current.setting.font_label.size = scale * 14.0;	/* Modern 14p vs 10p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_LABEL] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.font_heading.size)) {
 		GMT->current.setting.font_heading.size = scale * 28.0;	/* Modern 28p vs 10p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_HEADING] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.font_tag.size)) {
 		GMT->current.setting.font_tag.size = scale * 16.0;		/* Modern 16p vs 10p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_TAG] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.font_title.size)) {
 		GMT->current.setting.font_title.size = scale * 22.0;	/* Modern 22p vs 10p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_TITLE] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.font_subtitle.size)) {
 		GMT->current.setting.font_subtitle.size = scale * 18.0;	/* Modern 18p vs 10p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_SUBTITLE] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.font_logo.size)) {
 		GMT->current.setting.font_logo.size = scale * 8.0;		/* Classic 8p vs 10p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_FONT_LOGO] = true;
 	}
 
@@ -9979,26 +9986,32 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_annot_offset[GMT_PRIMARY])) {
 		GMT->current.setting.map_annot_offset[GMT_PRIMARY] = 3 * pt * scale; /* 3p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_ANNOT_OFFSET_PRIMARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_annot_offset[GMT_SECONDARY])) {
 		GMT->current.setting.map_annot_offset[GMT_SECONDARY] = 3 * pt * scale; /* 3p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_label_offset)) {
 		GMT->current.setting.map_label_offset = 6 * pt * scale;	/* 6p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_LABEL_OFFSET] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_title_offset)) {
 		GMT->current.setting.map_title_offset = 12 * pt * scale;	/* 12p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_TITLE_OFFSET] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_heading_offset)) {
 		GMT->current.setting.map_heading_offset = 16 * pt * scale;	/* 16p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_HEADING_OFFSET] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_annot_min_spacing)) {
 		GMT->current.setting.map_annot_min_spacing = 28 * pt * scale; /* 28p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_ANNOT_MIN_SPACING] = true;
 		snprintf (GMT->current.setting.map_annot_min_spacing_txt, GMT_LEN16, "%.6gp", GMT->current.setting.map_annot_min_spacing / pt);
 	}
@@ -10007,6 +10020,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_frame_width)) {
 		GMT->current.setting.map_frame_width = 3 * pt * scale; /* 3p */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_FRAME_WIDTH] = true;
 	}
 
@@ -10022,6 +10036,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 			GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = 4 * pt * scale;	/* 4p */
 			GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  = 2 * pt * scale;	/* 2p */
 		}
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_TICK_LENGTH_PRIMARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER])) {
@@ -10034,6 +10049,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 			GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 12 * pt * scale;	/* 12p */
 			GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  = 3  * pt * scale;	/* 3p */
 		}
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_TICK_LENGTH_SECONDARY] = true;
 	}
 
@@ -10045,6 +10061,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		if (reach < 1.0) reach *= 60.0, f *= 60.0;
 		reach = rint (reach) / f;	/* Integer degrees, minutes or seconds */
 		GMT->current.setting.map_polar_cap[0] = 90.0 - reach; /* Max 5 degrees from pole */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_POLAR_CAP] = true;
 	}
 
@@ -10052,29 +10069,37 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_frame_pen.width)) {
 		GMT->current.setting.map_frame_pen.width = 1.5 * scale; /* 1.5p (thicker) */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_FRAME_PEN] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_pen[GMT_PRIMARY].width)) {
 		GMT->current.setting.map_tick_pen[GMT_PRIMARY].width = 0.5 * scale;	/* 0.5p (thinner) */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_TICK_PEN_PRIMARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_pen[GMT_SECONDARY].width)) {
 		GMT->current.setting.map_tick_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_TICK_PEN_SECONDARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_grid_pen[GMT_PRIMARY].width)) {
 		GMT->current.setting.map_grid_pen[GMT_PRIMARY].width = 0.25 * scale;	/* 0.25p (default) */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_GRID_PEN_PRIMARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_grid_pen[GMT_SECONDARY].width)) {
 		GMT->current.setting.map_grid_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_GRID_PEN_SECONDARY] = true;
 	}
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_vector_shape)) {
 		GMT->current.setting.map_vector_shape = 0.5;
+		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_VECTOR_SHAPE] = true;
 	}
+
+	if (auto_scale) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Computed automatic parameters using dimension scaling: %g\n", scale);
 }
 
 GMT_LOCAL unsigned int gmtinit_parse_map_annot_oblique (struct GMT_CTRL *GMT, char *text) {
@@ -18890,7 +18915,7 @@ unsigned int gmt_file_type (struct GMT_CTRL *GMT, const char *file, unsigned int
 }
 #endif
 
-void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify) {
+void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int justify, struct GMT_OPTION *options) {
 	/* We wish to examine the previous -B setting for information as to which axes was
 	 * annotated and possibly labeled, and if the colorbar is requested to be placed on
 	 * such an axis side we need to make more space by increasing the offset. This is
@@ -18902,6 +18927,9 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	unsigned int pos = 0, sides[5];
 	bool add_label = false, add_annot = false, axis_set = false, was;
 	double GMT_LETTER_HEIGHT = 0.736;
+	struct GMT_OPTION *opt = NULL;
+	char *c = NULL;
+	unsigned int n_errors = 0;
 	FILE *fp = NULL;
 	/* Initialize the default settings before considering any -B history */
 	gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values for now */
@@ -18951,6 +18979,13 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
 	was = GMT->current.map.frame.draw;
 	gmtinit_conf_modern_override (GMT);	/* Reset */
+	(void)gmt_getdefaults (GMT, NULL);
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option != '-') continue;   /* Not a parameter setting */
+		if ((c = strchr (opt->arg, '=')) == NULL) continue;
+		c[0] = '\0';  /* Remove = */
+		n_errors += gmtlib_setparameter (GMT, opt->arg, &c[1], false);
+	}
 	gmt_M_memcpy (GMT->current.map.frame.side, sides, 5U, unsigned int);
 	GMT->current.map.frame.draw = was;
 }

@@ -112,11 +112,12 @@ struct PSSCALE_CTRL {
 	struct PSSCALE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSSCALE_S {	/* -S[+c|n][+s][+a<angle>] */
+	struct PSSCALE_S {	/* -S[+c|n][+s][+a<angle>][+x<label>][+y<unit>] */
 		bool active;
 		bool skip;
 		double angle;
 		unsigned int mode;
+		char unit[GMT_LEN256], label[GMT_LEN256];
 	} S;
 	struct PSSCALE_W {	/* -W<scale> */
 		bool active;
@@ -163,7 +164,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S[+a<angle>][+c|n][+s]] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S[+a<angle>][+c|n][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>]\n\t%s[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -215,6 +216,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to use any custom labels in the CPT for annotations, if available.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to use numerical values for annotations [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to skip drawing gridlines between different color sections [Default draws lines].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +x<label> to set a colorbar label [No label].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +y to set a colorbar unit [No unit].\n");
 	GMT_Option (API, "U,V,X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give file with colorbar-width (in %s) per color entry.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -351,6 +354,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				j = 0;
 				if (opt->arg[0] == 'i') Ctrl->L.interval = true, j = 1;
 				if (opt->arg[j]) Ctrl->L.spacing = gmt_M_to_inch (GMT, &opt->arg[j]);
+				if (c) c[0] = '+';	/* Restore option string */
 				break;
 			case 'M':
 				Ctrl->M.active = true;
@@ -372,16 +376,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				Ctrl->S.active = true;
 				Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;	/* The default */
 				if (opt->arg[0]) {	/* Modern syntax with modifiers */
-					if ((c = strstr (opt->arg, "+a"))) {
-						Ctrl->S.mode |= PSSCALE_ANNOT_ANGLED;
-						Ctrl->S.angle = atof (&c[2]);
+					if ((c = gmt_first_modifier (GMT, opt->arg, "acnsxy"))) {	/* Process any modifiers */
+						unsigned int pos = 0;	/* Reset to start of new word */
+						while (gmt_getmodopt (GMT, 'S', c, "acnsxy", &pos, txt_a, &n_errors) && n_errors == 0) {
+							switch (txt_a[0]) {
+								case 'a': Ctrl->S.angle = atof (&txt_a[1]); Ctrl->S.mode |= PSSCALE_ANNOT_ANGLED;	break;
+								case 'c': Ctrl->S.mode |= PSSCALE_ANNOT_CUSTOM;	break;
+								case 'n': Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;	break;
+								case 's': Ctrl->S.skip = true;	break;
+								case 'x': strncpy (Ctrl->S.label, &txt_a[1], GMT_LEN256); break;
+								case 'y': strncpy (Ctrl->S.unit,  &txt_a[1], GMT_LEN256); break;
+								default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+							}
+						}
 					}
-					if (strstr (opt->arg, "+c"))
-						Ctrl->S.mode |= PSSCALE_ANNOT_CUSTOM;
-					if (strstr (opt->arg, "+n"))	/* Default, but just in case */
-						Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;
-					if (strstr (opt->arg, "+s"))
-						Ctrl->S.skip = true;
 				}
 				else /* Backwards compatible -S means -S+s */
 					Ctrl->S.skip = true;
@@ -443,7 +451,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 	else if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT || strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
 		/* Args are +w<length>[/<width>][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
 		double bar_offset[2];	/* Will be initialized in gmt_auto_offsets_for_colorbar */
-		gmt_auto_offsets_for_colorbar (GMT, bar_offset, Ctrl->D.refpoint->justify);
+		gmt_auto_offsets_for_colorbar (GMT, bar_offset, Ctrl->D.refpoint->justify, options);
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 			Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 		else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
@@ -1026,7 +1034,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256-1);
 	strncpy (unit, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256-1);
 	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;
-
+	if (Ctrl->L.active) {
+		strncpy (label, Ctrl->S.label, GMT_LEN256-1);
+		strncpy (unit, Ctrl->S.unit, GMT_LEN256-1);
+	}
 	if (flip & PSSCALE_FLIP_ANNOT) {	/* Place annotations on the opposite side */
 		justify = l_justify = (Ctrl->D.horizontal) ? PSL_BC : PSL_MR;
 		y_base = width;

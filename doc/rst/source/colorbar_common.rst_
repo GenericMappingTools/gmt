@@ -134,9 +134,9 @@ Optional Arguments
 .. _-L:
 
 **-L**\ [**i**][*gap*]
+
     Gives equal-sized color rectangles. Default scales rectangles
-    according to the z-range in the CPT (Also see **-Z**). If set,
-    any equal interval annotation set with **-B** will be ignored. If
+    according to the z-range in the CPT (Also see **-Z**). If
     *gap* is appended and the CPT is discrete we will center each
     annotation on each rectangle, using the lower boundary z-value for
     the annotation. If **i** is prepended we annotate the interval range
@@ -173,12 +173,14 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**]
+**-S**\ [**+a**\ *angle*][**+c**\|\ **n**\ ][**+s**][**+x**\ *label*][**+y**\ *unit*]
     Control various aspects of color bar appearance when **-B** is *not* used.
     Append **+a** to place annotations at the given *angle* [default is no slanting].
     Append **+c** to use custom labels if given in the CPT as annotations.
     Append **+n** to use numerical labels [Default].
     Append **+s** to skip drawing gridlines separating different color intervals [Default draws gridlines].
+    If **-L** is used then **-B** cannot be used, hence you may optionally set a bar label via **+x**\ *label*
+    and any unit (i.e., y-label) via **+y**\ *unit*.
 
 .. _-U:
 
