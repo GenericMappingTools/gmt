@@ -4,6 +4,7 @@
 # Epicenter 54.844N 159.842W
 # Depth 31.0 km
 # UTC time 2020-10-06 05:54:50
+# Recorded at station Dolgoi Island, Mount Dutton, Alaska
 #
 # USGS event page: https://earthquake.usgs.gov/earthquakes/eventpage/us6000c5zm/executive
 #
@@ -39,7 +40,8 @@ gmt begin
 	2.25 10.0 CM 10p 2020-10-06 05:54:50 UTC
 	EOF
 	gmt grdimage -R190W/130W/30/75 @earth_relief_06m -Ba30+f -JM3.5c -I+d -Cterra --MAP_FRAME_TYPE=plain -X0.75c -Y0.5c -BWNbr --MAP_ANNOT_OBLIQUE=lat_parallel --FONT_ANNOT_PRIMARY=9p
-	echo 159.842W 54.844N | gmt plot -Sa0.5c -Gred -Wfaint
+	echo 161.86W 55.15N | gmt plot -St0.2c -GBlack
+	echo 159.842W 54.844N | gmt plot -Sa0.25c -Gred -Wfaint
 	gmt meca -Sm2.5c -M -G110/168/255 -T0 -W0.5p -Yh+0.5c <<- EOF
 	-159.70 54.81 39 0.82 -0.68 -0.14 0.63 0.34 -0.40 25
 	EOF
@@ -66,4 +68,4 @@ gmt begin
 gmt end show
 EOF
 # 3. Run the movie
-gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0+jTR+o0.5c/0.5c+gwhite+p0.25p -H8 -Pb+w0.4c+jBR -Fmp4 -V -W -Zs -M500,png --FORMAT_DATE_MAP=-
+gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0+jTR+o0.25/0.25c -Ls"Station: Dolgoi Island, Mount Dutton, Alaska"+jTL+o5.5c/0.25c -H8 -Pb+w0.4c+jBR -Fmp4 -V -W -Zs -M500,png --FORMAT_DATE_MAP=-
