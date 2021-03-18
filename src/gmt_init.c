@@ -7115,7 +7115,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 5, "-Jkf|Kf[<lon0>/]<scale>|<width> (Eckert IV). Give central meridian (opt) and scale).");
 
-			GMT_Usage (API, 5, "-Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI). Give central meridian (opt) and scale".);
+			GMT_Usage (API, 5, "-Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI). Give central meridian (opt) and scale.");
 
 			GMT_Usage (API, 5, "-Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Lambert Conformal Conic). "
 				"Give origin, 2 standard parallels, and true scale.");
