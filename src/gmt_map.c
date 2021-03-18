@@ -6713,9 +6713,9 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 #ifndef NO_THEMES
 	if (GMT->current.setting.run_mode == GMT_MODERN && gmt_M_axis_is_geo (GMT, axis)) {	/* Need more space for degree symbol and WESN letters not considered in the algorithm */
 		if (strchr (GMT->current.setting.format_geo_map, 'F'))	/* Need more space for degree symbol and letter */
-			d *= 1.25;
+			d *= 1.2;
 		else	/* Just more space for degree symbol */
-			d *= 1.15;
+			d *= 1.1;
 	}
 #endif
 
