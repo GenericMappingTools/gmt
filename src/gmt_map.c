@@ -6782,9 +6782,8 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	}
 	if (n) {
 		while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
-		if ((GMT->current.proj.projection == GMT_MOLLWEIDE || \
-			GMT->current.proj.projection == GMT_HAMMER || \
-			GMT->current.proj.projection == GMT_ECKERT4) && i == 6) /* Certain global projections */
+		if ((GMT->current.proj.projection == GMT_MOLLWEIDE || GMT->current.proj.projection == GMT_HAMMER || \
+			GMT->current.proj.projection == GMT_ECKERT4) && i == 6) /* Rounded misc. projections */
 			d = maj[i-1] * p; 		/* Annotation interval needs to be less than 90 */
 		else d = maj[i] * p;		/* Scale up intervals in multiple of unit */
 		f = sub[i] * p;
