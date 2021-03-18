@@ -6782,7 +6782,13 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	}
 	if (n) {
 		while (i < n && maj[i] < d) i++;	/* Wind up to largest reasonable interval */
-		d = maj[i] * p, f = sub[i] * p;		/* Scale up intervals in multiple of unit */
+		if ((GMT->current.proj.projection == GMT_MOLLWEIDE || \
+			GMT->current.proj.projection == GMT_HAMMER || \
+			GMT->current.proj.projection == GMT_ECKERT4) && \
+			fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) == 180 && i == 6) /* Certain global projections */
+			d = maj[i-1] * p; 		/* Annotation interval needs to be less than 90 */
+		else d = maj[i] * p;		/* Scale up intervals in multiple of unit */
+		f = sub[i] * p;
 	}
 	if (is_time) {	/* Last check to change a 12 month unit to 1 year and 24 hours to 1 day */
 		if (unit == 'O' && d == 12.0) d = 1.0, f /= 12.0, unit = 'Y';
