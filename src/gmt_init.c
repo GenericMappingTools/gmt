@@ -6905,7 +6905,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 		"Use -R<xmin/xmax/ymin/ymax>+u<unit> for regions given in projected coordinates, "
 		"with <unit> selected from %s. "
 		"Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. "
-		"Append +r if -R specifies the coordinates of the lower left and"
+		"Append +r if -R specifies the coordinates of the lower left and "
 		"upper right corners of a rectangular area.", GMT_LEN_UNITS2_DISPLAY);
 	if (GMT->current.setting.run_mode == GMT_MODERN)
 		GMT_Usage (API, 5, "Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable). "
@@ -7419,7 +7419,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 2, "-e Only accept input data records that contain the string \"pattern\". "
 				"Use -e~\"pattern\" to only accept data records that DO NOT contain this pattern. "
-				"If your pattern begins with ~, escape it with \\~.  To match against"
+				"If your pattern begins with ~, escape it with \\~.  To match against "
 				"extended regular expressions use -e[~]/regexp/[i] (i for case-insensitive). "
 				"Give +f<file> for a file list with such patterns, one per line. "
 				"To give a single pattern starting with +f, escape it with \\+f.");
@@ -7451,9 +7451,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Specify i(nput) or o(utput) [Default is both input and output]. "
 				"Give one or more columns (or column ranges) separated by commas. "
 				"Append T (Calendar format), t (time relative to TIME_EPOCH), "
-				"f (floating point), x (longitude), y (latitude) to each item. "
-				"-f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates). "
-				"-f[i|o]c means -f[i|o]0-1f (Cartesian coordinates). "
+				"f (floating point), x (longitude), or  (latitude) to each item. "
+				"-f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates), "
+				"-f[i|o]c means -f[i|o]0-1f (Cartesian coordinates) while "
 				"-fp[<unit>] means input x,y are in projected coordinates.");
 			break;
 
@@ -7461,14 +7461,14 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 2, "-g Use data point separations to determine if there are data gaps. "
 				"Append x|X or y|Y to identify data gaps in x or y coordinates, "
-				"respectively, and append d|D for distance gaps.  Upper case X|Y|D means"
-				"we first project the points (requires -J).  Append <gap>[+n|p]; +n uses"
+				"respectively, and append d|D for distance gaps.  Upper case X|Y|D means "
+				"we first project the points (requires -J).  Append <gap>[+n|p]; +n uses "
 				"d=prev-curr, +p uses d=curr-prev [d=|curr-prev|]; d must exceed <gap> to detect a gap. "
 				"For geographic data: choose from %s [Default is meter (%c)]. "
 				"For gaps based on mapped coordinates: choose unit from %s [%s]. "
 				"For time data: the unit is controlled by TIME_UNIT. "
 				"For generic data: the unit is as the data implies (user units). "
-				"Repeat the -g option to specify multiple criteria, and add -gan"
+				"Repeat the -g option to specify multiple criteria, and add -gan "
 				"to indicate that all criteria must be met [just one must be met].",
 				GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT, GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
@@ -7484,7 +7484,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 5, "Append +m to insert a new segment header and <segheader> content after the headers [none].");
 			GMT_Usage (API, 5, "Append +r to add a <remark> comment to the output [none].");
 			GMT_Usage (API, 5, "Append +t to add a <title> comment to the output [none]. "
-				"(these last two strings may contain \\n to indicate line-breaks)");
+				"Note: <remark> and <title> may contain \\n to indicate line-breaks. ");
 			GMT_Usage (API, 5, "For binary files, <n> is considered to mean number of bytes.");
 			break;
 
@@ -7508,15 +7508,15 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Append +A to save the anti-aliasing counter to a grid for debugging. "
 #endif
 				"Append +a to switch off anti-aliasing (except for l) [Default: on]. "
-				"Append +b<BC> to change boundary conditions.  <BC> can be either"
+				"Append +b<BC> to change boundary conditions.  <BC> can be either "
 				"g for geographic, p for periodic, and n for natural boundary conditions. "
 				"For p and n you may optionally append x or y [default is both]: "
 				"x for periodic boundary conditions on x, "
 				"y for periodic boundary conditions on y. "
 				"[Default: Natural conditions, unless grid is known to be geographic]. "
 				"Append +c to clip interpolated grid to input z-min/max [Default may exceed limits]. "
-				"Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of"
-				"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate"
+				"Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of "
+				"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate "
 				"about half way from a non-NaN to a NaN node [Default: 0.5].");
 			break;
 
@@ -7544,7 +7544,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'q':	/* -q option for input/output row selection */
 
 			GMT_Usage (API, 2, "-q Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows]. "
-				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead."
+				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead. "
 				"Append +f or +s to reset row counters per table or segment [per set (+a)]. "
 				"For limits on data values instead, append +c<col> and give data limits for column <col>.");
 			break;
@@ -7552,7 +7552,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'u':	/* -qi option for input only */
 
 			GMT_Usage (API, 2, "-qi Select input rows to process [Default reads all rows]. "
-				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead. n"
+				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead. "
 				"Append +f or +s to reset row counters per table or segment [per set (+a)]. "
 				"For limits on data values instead, append +c<col> and give data limits for input column <col>.");
 			break;
@@ -7795,9 +7795,9 @@ void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 		"For geographic regions in degrees you can optionally append units from this list: "
 		"(d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot. "
 		"Append +e to adjust the region to fit increments [Adjust increment to fit domain]. "
-		"Alternatively, specify number of nodes by appending +n. Then, the increments"
+		"Alternatively, specify number of nodes by appending +n. Then, the increments "
 		"are calculated from the given domain and node-registration settings. "
-		"(see Appendix B for details).  Note: If -R<grdfile> was used then -%c"
+		"(see Appendix B for details).  Note: If -R<grdfile> was used then -%c "
 		"(and -R and maybe -r) have been set; use -%c to override those increments.", option, GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, option, option);
 }
 
@@ -8376,15 +8376,15 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 				"Determine the grid interpolation mode: "
 				"b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor [Default: bicubic]. "
 				"Append +a switch off antialiasing (except for l) [Default: on]. "
-				"Append +b<BC> to change boundary conditions.  <BC> can be either"
-				"g for geographic boundary conditions, or one or both of"
-				"x for periodic boundary conditions on x, or"
-				"y for periodic boundary conditions on y."
+				"Append +b<BC> to change boundary conditions.  <BC> can be either "
+				"g for geographic boundary conditions, or one or both of "
+				"x for periodic boundary conditions on x, or "
+				"y for periodic boundary conditions on y. "
 				"[Default: Natural conditions, unless grid is known to be geographic]. "
 				"Append +c to clip interpolated grid to input z-min/max [Default may exceed limits]. "
-				"Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of"
-				"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate"
-				"about half way from a non-NaN to a NaN node [Default: 0.5].\n", GMT_n_OPT);
+				"Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of "
+				"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate "
+				"about half way from a non-NaN to a NaN node [Default: 0.5].", GMT_n_OPT);
 			break;
 
 		case 'o':	/* -o option for output column order */
