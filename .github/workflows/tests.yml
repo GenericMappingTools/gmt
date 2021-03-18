@@ -133,26 +133,11 @@ jobs:
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
 
       - name: Check a few simple commands
-        run: |
-          set -x -e
-          gmt --version
-          gmt-config --all
-          gmt defaults -Vd
-          gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
-          gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-          gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
-          gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
+        run: bash ci/simple-gmt-tests.sh
 
       - name: Check a few simple commands (Windows)
         shell: cmd
-        run: |
-          gmt --version
-          bash %INSTALLDIR%/bin/gmt-config --all
-          gmt defaults -Vd
-          gmt pscoast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -P -Vd > test.ps
-          gmt begin && gmt coast -R0/10/0/10 -JM6i -Ba -Ggray -ENG+p1p,blue -Vd && gmt end
-          gmt grdimage @earth_relief_01d -JH10c -Baf -pdf map
-          gmt earthtide -T2018-06-18T12:00:00 -Gsolid_tide_up.grd
+        run: call ci/simple-gmt-tests.bat
         if: runner.os == 'Windows'
 
       # Run full tests and rerun failed tests
