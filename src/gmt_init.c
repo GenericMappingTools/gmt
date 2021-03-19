@@ -7476,13 +7476,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, GMT_INDENT_1, "-h[i|o][<n>][+c][+d][+m<segheader>][+r<remark>][+t<title>] Input/output file has [%d] header record(s) [%s]. "
 				"Optionally, append i for input or o for output only and number of header records [0]. "
-				"Note: -hi turns off the writing of all headers on output since none will be read.",
+				"Note: -hi turns off the writing of all headers on output since none will be read.  Optionally, append modifiers:",
 				GMT->current.setting.io_n_header_items, GMT_choice[GMT->current.setting.io_header[GMT_IN]]);
-			GMT_Usage (API, GMT_INDENT_3, "Append +c to add header record with column information [none].");
-			GMT_Usage (API, GMT_INDENT_3, "Append +d to delete headers before adding new ones [Default will append headers].");
-			GMT_Usage (API, GMT_INDENT_3, "Append +m to insert a new segment header and <segheader> content after the headers [none].");
-			GMT_Usage (API, GMT_INDENT_3, "Append +r to add a <remark> comment to the output [none].");
-			GMT_Usage (API, GMT_INDENT_3, "Append +t to add a <title> comment to the output [none]. "
+			GMT_Usage (API, GMT_INDENT_3, "+c: Add header record with column information [none].");
+			GMT_Usage (API, GMT_INDENT_3, "+d: Delete headers before adding new ones [Default will append headers].");
+			GMT_Usage (API, GMT_INDENT_3, "+m: Insert a new segment header and <segheader> content after the headers [none].");
+			GMT_Usage (API, GMT_INDENT_3, "+r: Add a <remark> comment to the output [none].");
+			GMT_Usage (API, GMT_INDENT_3, "+t: Add a <title> comment to the output [none]. "
 				"Note: <remark> and <title> may contain \\n to indicate line-breaks. ");
 			GMT_Usage (API, GMT_INDENT_2, "For binary files, <n> is considered to mean number of bytes instead of records.");
 			break;
@@ -8359,13 +8359,13 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 			GMT_Usage (API, GMT_INDENT_1, "%s "
 				"Specify if Input/output file has header record(s). "
 				"Optionally, append i for input only and/or number of header records [0]. "
-				"-hi turns off the writing of all headers on output. "
+				"-hi turns off the writing of all headers on output. Optional modifiers: "
 				"Append +c to add header record with column information [none]. "
 				"Append +d to delete headers before adding new ones [Default will append headers]. n"
 				"Append +r to add a <remark> comment to the output [none]. "
 				"Append +t to add a <title> comment to the output [none]. "
 				"(these strings may contain \\n to indicate line-breaks. "
-				"For binary files, <n> is considered to mean number of bytes.", GMT_h_OPT);
+				"For binary files, <n> is considered to mean number of bytes instead of records.", GMT_h_OPT);
 			break;
 
 		case 'i':	/* -i option for input column order */
