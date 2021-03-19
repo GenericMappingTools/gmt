@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Movie of seismic waveforms from 2020-10-06 Alaska earthquake
-# Epicenter 54.844N 159.842W
+# Epicenter 54.851N 159.851W
 # Depth 31.0 km
 # UTC time 2020-10-06 05:54:50
 # Recorded at station Dolgoi Island, Mount Dutton, Alaska
