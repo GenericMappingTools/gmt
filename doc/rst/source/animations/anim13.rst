@@ -14,5 +14,5 @@ includes a source map and some metadata, plus a timer and progress indicator.
 .. literalinclude:: /_verbatim/anim13.txt
    :language: bash
 
-..  youtube:: eq_-2nYYf-s
+..  youtube:: S-kRGxwOGJw
     :width: 100%
