@@ -13,7 +13,7 @@ These are symbols used to illustrate sightings of whales.
 
    users-contrib-symbols/biology/Cetacea.rst
 
-.. cssclass:: gmtgallary
+.. cssclass:: gmtgallery
 
 .. jinja::
 
@@ -134,7 +134,7 @@ Structural geology symbols
 
 These are symbols used in structural geology.
 
-.. cssclass:: gmtgallary
+.. cssclass:: gmtgallery
 
 .. jinja::
 
