@@ -13373,11 +13373,11 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, unsigned int inden
 				current_width = indent + 3;	/* Indent plus 3 spaces */
 			}
 			else {	/* Split in the middle of an option so append breakline and start new line with ellipsis after indent */
-				strcat (message, GMT_BREAK_LINE);
+				strcat (message, GMT_LINE_BREAK);
 				strcat (message, "\n");
 				for (j = 0; j < indent; j++) strcat (message, " ");	/* Initial indent */
 				strcat (message, "    ");	/* 4 spaces indent */
-				strcat (message, GMT_CONT_LINE);		/* And the ellipsis */
+				strcat (message, GMT_LINE_CONT);		/* And the ellipsis */
 				current_width = indent + 5;	/* Indent plus the 5 characters */
 			}
 			W[k].space = 0;	/* Can be no leading space if starting a the line */

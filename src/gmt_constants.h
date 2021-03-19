@@ -319,8 +319,8 @@ enum GMT_time_period {
 #define GMT_INDENT_2	5	/* Second indent for option's continued line is 3 further spaces (i.e., width of "-X ") */
 #define GMT_INDENT_3	8	/* Third indent for option's sub-sections is another 3 spaces */
 #define GMT_INDENT_4	10	/* Fourth indent for option's sub-sections is another 2 spaces */
-#define GMT_BREAK_LINE	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
-#define GMT_CONT_LINE	"\xe2\x80\xa6"	/* Ellipsis for continue symbol in UTF-8 */
+#define GMT_LINE_BREAK	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
+#define GMT_LINE_CONT	"\xe2\x80\xa6"	/* Ellipsis for continue symbol in UTF-8 */
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
