@@ -185,7 +185,7 @@ Miscellaneous symbols
 
 These are general-purpose symbols you may find useful.
 
-.. cssclass:: gmtgallary
+.. cssclass:: gmtgallery
 
 .. jinja::
 
