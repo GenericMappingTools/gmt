@@ -48,7 +48,7 @@ gmt begin
 	2.25 12.5 CM 18p 2020-10-06
 	2.25 11.7 CM 9p SE of Sand Point, Alaska
 	2.25 11 CM 10p 54.851@.N, 159.851@.W
-	2.25 10.5 CM 10p 31.0 km, Mw 6.0
+	2.25 10.5 CM 10p 31.0 km, Mw 5.9
 	2.25 10.0 CM 10p 2020-10-06 05:54:50 UTC
 	EOF
 	gmt grdimage -R190W/130W/30/75 @earth_relief_06m -Ba30+f -JM3.5c -I+d -Cterra --MAP_FRAME_TYPE=plain -X0.75c -Y0.5c -BWNbr --MAP_ANNOT_OBLIQUE=lat_parallel --FONT_ANNOT_PRIMARY=9p
