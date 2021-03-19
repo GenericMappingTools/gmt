@@ -54,7 +54,7 @@ gmt begin
 	gmt meca -Sm2.5c -M -G110/168/255 -T0 -W0.5p -Yh+0.5c <<- EOF
 	-159.70 54.81 39 0.82 -0.68 -0.14 0.63 0.34 -0.40 25
 	EOF
-gmt end show
+gmt end
 EOF
 # 2. Set up main movie script
 cat << EOF > main.sh
@@ -68,7 +68,7 @@ gmt begin
 		gmt events E.txt -Sc0.5p -Gblue -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0} -c
 		printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p
 	gmt subplot end
-gmt end show
+gmt end
 EOF
 # 3. Run the movie
 gmt movie main.sh -Iinc.sh -Sbpre.sh -CHD -Ttimes.txt -Nanim13 -Lc0+jTR+o0.25/0.25c -Ls"Station: Dolgoi Island, Mount Dutton, Alaska"+jTL+o5.5c/0.25c -H8 -Pb+w0.4c+jBR -Fmp4 -V -W -Zs -M500,png --FORMAT_DATE_MAP=-
