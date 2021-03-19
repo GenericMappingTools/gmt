@@ -8070,7 +8070,7 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
 	 * 16	= Accepts +z (not mathangle, geovector)
 	 */
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, GMT_INDENT_2, "Append length of vector head, with optional modifiers "
+	GMT_Usage (API, GMT_INDENT_3, "Append length of vector head, with optional modifiers "
 		"[Left and right are defined by looking from start to end of vector]");
 	GMT_Usage (API, GMT_INDENT_3, "+a<angle> to set angle of the vector head apex [30]");
 	GMT_Usage (API, GMT_INDENT_3, "+b to place a vector head at the beginning of the vector [none]. "
@@ -8116,8 +8116,7 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 		"f: Each file is a separate group; reference point is reset to first point in the group. "
 		"s: Each segment is a group; reference point is reset to first point in the group [Default]. "
 		"r: Each segment is a group, but reference point is reset to each point in the group. "
-		"Only available with the -%cr scheme. "
-		"<refpoint> : Specify a fixed external reference point instead.", option);
+		"Only available with the -%cr scheme: Append a fixed external reference point instead.", option);
 }
 
 /*! For programs that can read *.img grids */
