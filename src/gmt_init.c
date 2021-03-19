@@ -7050,7 +7050,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"for minimum map dimension [Default +dw is width]. "
 				"When the central meridian (lon0) is optional and omitted, the center of the "
 				"longitude range set by -R is used. The default standard parallel is the equator. "
-				"Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given.\n",
+				"Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given. Available projections:\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
@@ -7301,7 +7301,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'R':	/* Generic [Default] Region option */
 
 			gmtinit_explain_R_geo (GMT);
-			GMT_Usage (API, GMT_INDENT_2, "Or use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where "
+			GMT_Usage (API, GMT_INDENT_2, "Alternatively, use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where "
 				"<code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) "
 				"and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).");
 			break;
@@ -7824,12 +7824,12 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 		GMT_Usage (API, GMT_INDENT_1, "-%s<fill> %s Specify <fill> as one of:", longoption, string);
 	else
 		GMT_Usage (API, GMT_INDENT_1, "-%c<fill> %s Specify <fill> as one of:", option, string);
-	GMT_Usage (API, GMT_INDENT_2, "1) <gray> or <red>/<green>/<blue>, all in the range 0-255;");
-	GMT_Usage (API, GMT_INDENT_2, "2) #rrggbb, all in the range 0-255 using hexadecimal numbers;");
-	GMT_Usage (API, GMT_INDENT_2, "3) <c>/<m>/<y>/<k> in range 0-100%%;");
-	GMT_Usage (API, GMT_INDENT_2, "4) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;");
-	GMT_Usage (API, GMT_INDENT_2, "5) any valid color name;");
-	GMT_Usage (API, GMT_INDENT_2, "6) P|p<pattern>[+b<color>][+f<color>][+r<dpi>]; "
+	GMT_Usage (API, GMT_INDENT_2, "<gray> or <red>/<green>/<blue>, all in the range 0-255;");
+	GMT_Usage (API, GMT_INDENT_2, "#rrggbb, all in the range 0-255 using hexadecimal numbers;");
+	GMT_Usage (API, GMT_INDENT_2, "<c>/<m>/<y>/<k> in range 0-100%%;");
+	GMT_Usage (API, GMT_INDENT_2, "<hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;");
+	GMT_Usage (API, GMT_INDENT_2, "any valid color name;");
+	GMT_Usage (API, GMT_INDENT_2, "P|p<pattern>[+b<color>][+f<color>][+r<dpi>]; "
 		"Give <pattern> number from 1-90 or a filename, optionally add +r<dpi> [%g]. "
 		"Optionally, use +f<color> or +b<color> to change fore- or background colors (no <color> sets transparency).", PSL_DOTS_PER_INCH_PATTERN);
 	GMT_Usage (API, GMT_INDENT_2, "For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].");
@@ -8105,18 +8105,18 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	/* mode == 0 for formatting and 1 for plotting */
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *verb[2] = {"Form", "Draw"}, *count[2] = {"four", "three"};
-	GMT_Usage (API, GMT_INDENT_1, "-%c Alter the way points are connected and the data are segmented. ", option);
-	GMT_Usage (API, GMT_INDENT_2, "Append one of %s line connection schemes: "
-		"c: %s continuous line segments for each group [Default]. "
-		"r: %s line segments from a reference point reset for each group. "
-		"n: %s networks of line segments between all points in each group.", count[mode], verb[mode], verb[mode], verb[mode]);
-	if (mode == 0) GMT_Usage (API, GMT_INDENT_3, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
-	GMT_Usage (API, GMT_INDENT_2, "Optionally, append one of five ways to define a \"group\": "
-		"a: All data is consider a single group; reference point is first point in the group. "
-		"f: Each file is a separate group; reference point is reset to first point in the group. "
-		"s: Each segment is a group; reference point is reset to first point in the group [Default]. "
-		"r: Each segment is a group, but reference point is reset to each point in the group. "
-		"Only available with the -%cr scheme: Append a fixed external reference point instead.", option);
+	GMT_Usage (API, GMT_INDENT_1, "-%c Alter the way points are connected and the data are segmented. "
+		"Append one of %s line connection schemes: ", option, count[mode]);
+	GMT_Usage (API, GMT_INDENT_2, "c: %s continuous line segments for each group [Default].", verb[mode]);
+	GMT_Usage (API, GMT_INDENT_2, "r: %s line segments from a reference point reset for each group.", verb[mode]);
+	GMT_Usage (API, GMT_INDENT_2, "n: %s networks of line segments between all points in each group.", verb[mode]);
+	if (mode == 0) GMT_Usage (API, GMT_INDENT_2, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
+	GMT_Usage (API, GMT_INDENT_2, "Optionally, append one of five ways to define a \"group\":");
+	GMT_Usage (API, GMT_INDENT_2, "a: All data is consider a single group; reference point is first point in the group.");
+	GMT_Usage (API, GMT_INDENT_2, "f: Each file is a separate group; reference point is reset to first point in the group.");
+	GMT_Usage (API, GMT_INDENT_2, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
+	GMT_Usage (API, GMT_INDENT_2, "r: Each segment is a group, but reference point is reset to each point in the group." 
+		"Alternatively, append a fixed external reference point instead.");
 }
 
 /*! For programs that can read *.img grids */

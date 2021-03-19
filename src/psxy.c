@@ -497,7 +497,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONS:\n\n");
 	GMT_Option (API, "<");
 	GMT_Usage (API, GMT_INDENT_1, "-A Suppress drawing geographic line segments as great circle arcs, i.e., draw "
 		"straight lines unless m or p is appended to first follow meridian, "
