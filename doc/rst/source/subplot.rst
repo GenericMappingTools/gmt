@@ -125,7 +125,7 @@ Optional Arguments (begin mode)
 **-D**
     Use the prevailing defaults settings (via gmt.conf or **--PAR**\ =\ *value*) and the selections made
     via **-B**, **-C**, **-M** and **-S** to determine the panel sizes (if using **-Ff**) and panel spacings only, but
-    do *not* draw and annotated any frames.  This option is useful if you wish to lay down a partial subplot
+    do *not* draw and annotate any frames.  This option is useful if you wish to lay down a partial subplot
     with annotations and frames, but then want to plot data inside it separately later without redrawing
     the frames.  With different **-B**, **-C**, **-M** and **-S** choices the two subplots may not align, but with
     **-D** they will.  **Note**: It is assumed that **-F** stays the same [Draw and annotate frames as indicated].
