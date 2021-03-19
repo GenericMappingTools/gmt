@@ -214,7 +214,7 @@ Here are some of the shortcuts included in [`bashrc_for_gmt`](/admin/bashrc_for_
 
 We use GitHub Actions Continuous Integration (CI) services to build and test the project on Linux, macOS and Windows.
 
-There are 11 configuration files located in `.github/workflows`:
+There are 11 configuration files located in `.github/workflows/`:
 
 1. `backport.yml` (Backports PRs into the 6.1 branch)
 
@@ -224,7 +224,7 @@ There are 11 configuration files located in `.github/workflows`:
 
   This workflow is run on every commit to the *master* branch and Pull Request branches. The workflow configures
   and builds GMT on Linux, macOS, and Windows and runs some simple tests. The workflow uses the scripts in the `ci/`
-  directory for downloading/installing dependencies (`ci/download-coastlines` and `ci/install-dependencies-*.sh`),
+  directory for downloading/installing dependencies (`ci/download-coastlines.sh` and `ci/install-dependencies-*.sh`),
   configuring GMT (`ci/config-gmt-*.sh`), building GMT (`ci/build-gmt.sh`), and running some simple
   tests (`ci/simple-gmt-tests.*`).
 
@@ -236,8 +236,8 @@ There are 11 configuration files located in `.github/workflows`:
 4. `ci-caches.yml` (Cache GMT remote data files and Windows vcpkg libraries needed for GitHub Actions CI)
 
   This workflow is run every Sunday at 12:00 (UTC). If new remote files are needed urgently, maintainers can
-  manually uncomment the 'pull_request:' line in the ``ci-caches.yml`` file to refresh the cache. It uses the script
-  `ci/install-dependencies-windows.sh` to cache the vcpkg libraries.
+  manually uncomment the 'pull_request:' line in the ``ci-caches.yml`` file to refresh the cache. The workflow uses the
+  script `ci/install-dependencies-windows.sh` to cache the vcpkg libraries.
 
 5. `code-validator.yml` (Validate code consistency)
 
@@ -248,13 +248,13 @@ There are 11 configuration files located in `.github/workflows`:
 
 6. `docker.yml` (Build GMT on different Linux distros using dockers)
 
-  This workflow is run when pull requests are merged into the *master* branch. It downloads/installs dependencies,
+  This workflow is run when Pull Requests are merged into the *master* branch. It downloads/installs dependencies
   and configures and builds GMT on different Linux distributions using dockers.
 
 7. `docs.yml`  (Build documentation on Linux/macOS/Windows)
 
-  This workflow is run when pull requests are merged into the *master* branch, if the pull request involved changes to
-  files in the `doc/`, `.github/workflows/`, and/or `ci/` directories.
+  This workflow is run when Pull Requests are merged into the *master* branch, if the Pull Request involved changes to
+  files in the `doc/`, `.github/workflows/`, or `ci/` directories.
 
   The workflow also handles the documentation deployment:
 
@@ -264,7 +264,7 @@ There are 11 configuration files located in `.github/workflows`:
 
 8. `draft-release.yml` (Drafts the next release notes)
 
-  This workflow is run to update the next releases notes as pull requests are merged into the *master* branch.
+  This workflow is run to update the next releases notes as Pull Requests are merged into the *master* branch.
 
 9. `lint-checker.yml` (Run cppchecks)
 
@@ -278,6 +278,6 @@ There are 11 configuration files located in `.github/workflows`:
 
 11. `tests.yml`  (Tests on Linux/macOS/Windows)
 
-  This workflow is run when pull requests are merged into the *master* branch, if the pull request involved changes
+  This workflow is run when Pull Requests are merged into the *master* branch, if the Pull Request involved changes
   to the folders that contain source code, workflows, tests, or scripts for generating documentation figures. It runs
   the full GMT test suite on Linux, macOS, and Windows.
