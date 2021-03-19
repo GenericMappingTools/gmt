@@ -13349,7 +13349,6 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, unsigned int inden
 	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
 	unsigned int width, k, j, current_width = 0;
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
-	static char *brk = "\xe2\x8f\x8e", *cnt = "\xe2\x80\xa6";	/* return symbol and ellipsis */
 	char message[GMT_MSGSIZ] = {""};
 
 	/* Start with any fixed indent */
@@ -13374,11 +13373,11 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, unsigned int inden
 				current_width = indent + 3;	/* Indent plus 3 spaces */
 			}
 			else {	/* Split in the middle of an option so append breakline and start new line with ellipsis after indent */
-				strcat (message, brk);
+				strcat (message, GMT_BREAK_LINE);
 				strcat (message, "\n");
 				for (j = 0; j < indent; j++) strcat (message, " ");	/* Initial indent */
 				strcat (message, "    ");	/* 4 spaces indent */
-				strcat (message, cnt);		/* And the ellipsis */
+				strcat (message, GMT_CONT_LINE);		/* And the ellipsis */
 				current_width = indent + 5;	/* Indent plus the 5 characters */
 			}
 			W[k].space = 0;	/* Can be no leading space if starting a the line */
