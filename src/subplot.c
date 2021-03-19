@@ -114,7 +114,7 @@ struct SUBPLOT_CTRL {
 		bool active;
 		double gap[4];	/* Internal margins (in inches) on the 4 sides [0/0/0/0] */
 	} C;
-	struct SUBPLOT_D {	/* -D dimensions only  */
+	struct SUBPLOT_D {	/* -D determine correct dimensions but do not draw frames and annotations  */
 		bool active;
 	} D;
 	struct SUBPLOT_F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
@@ -420,7 +420,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 
-			case 'D':	/* Use -B -S, --MAP_*=value  etc for dimensions and spacing calculations but do not draw any frames or annotations */
+			case 'D':	/* Use -B, -C, -M -S, --MAP_*=value and gmt.conf for dimensions and spacing calculations but do not draw any frames or annotations */
 				Ctrl->D.active = true;
 				break;
 
