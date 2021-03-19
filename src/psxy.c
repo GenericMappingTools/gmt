@@ -530,11 +530,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If no intensity is given we expect it to follow symbol size in the data record.");
 	GMT_Option (API, "K");
 	GMT_Usage (API, GMT_INDENT_1, "-L Force closed polygons.  Alternatively, append modifiers to build polygon from a line: ");
-	GMT_Usage (API, GMT_INDENT_2, "Append +d to build symmetrical envelope around y(x) using deviations dy(x) from col 3. ");
-	GMT_Usage (API, GMT_INDENT_2, "Append +D to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 3-4.");
-	GMT_Usage (API, GMT_INDENT_2, "Append +b to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from cols 3-4.");
-	GMT_Usage (API, GMT_INDENT_2, "Append +xl|r|x0 to connect 1st and last point to anchor points at xmin, xmax, or x0.");
-	GMT_Usage (API, GMT_INDENT_2, "Append +yb|t|y0 to connect 1st and last point to anchor points at ymin, ymax, or y0.");
+	GMT_Usage (API, GMT_INDENT_2, "+d: Build symmetrical envelope around y(x) using deviations dy(x) from col 3. ");
+	GMT_Usage (API, GMT_INDENT_2, "+D: Build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 3-4.");
+	GMT_Usage (API, GMT_INDENT_2, "+b: Build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from cols 3-4.");
+	GMT_Usage (API, GMT_INDENT_2, "+xl|r|x0: Connect 1st and last point to anchor points at xmin, xmax, or x0.");
+	GMT_Usage (API, GMT_INDENT_2, "+yb|t|y0: Connect 1st and last point to anchor points at ymin, ymax, or y0.");
 	GMT_Usage (API, GMT_INDENT_2, "Polygon may be painted (-G) and optionally outlined via +p<pen> [no outline].");
 	GMT_Usage (API, GMT_INDENT_1, "-N Do not skip or clip symbols that fall outside the map border [clipping is on]. "
 		"Use -Nr to turn off clipping and plot repeating symbols for periodic maps. "
