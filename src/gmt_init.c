@@ -6902,10 +6902,10 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 		"Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds]. "
 		"Use -R<xmin/xmax/ymin/ymax>+u<unit> for regions given in projected coordinates, "
 		"with <unit> selected from %s. "
-		"Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. "
+		"Use [yyyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. "
 		"Append +r if -R specifies the coordinates of the lower left and "
 		"upper right corners of a rectangular area.", GMT_LEN_UNITS2_DISPLAY);
-	if (GMT->current.setting.run_mode == GMT_MODERN)
+	if (GMT->current.setting.run_mode == GMT_MODERN) {
 		GMT_Usage (API, GMT_INDENT_2, "Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable). "
 		"Use -R<gridfile> to use its limits (and increments if applicable). "
 		"Use -Rg and -Rd as shorthands for -R0/360/-90/90 and -R-180/180/-90/90. "
@@ -6914,9 +6914,10 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 		"<code1>,<code2>,... etc., using the 2-character ISO country codes (see pscoast -E+l for list). "
 		"To select a state of a country (if available), append .state, e.g, US.TX for Texas. "
 		"To select a whole continent, give =AF|AN|AS|EU|OC|NA|SA as <code>. "
-		"Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>"
+		"Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
 		"to round region to these multiples; use +R to extend region by those increments instead, "
 		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.", GMT_REGION_INCFACTOR);
+	}
 }
 
 void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
@@ -7300,8 +7301,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'R':	/* Generic [Default] Region option */
 
 			gmtinit_explain_R_geo (GMT);
-			GMT_Usage (API, GMT_INDENT_2, "Or use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where"
-				"<code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right)"
+			GMT_Usage (API, GMT_INDENT_2, "Or use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where "
+				"<code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) "
 				"and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).");
 			break;
 
@@ -7689,13 +7690,13 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	if (kind == 1) {
 		GMT_Usage (API, indent, "+l<text> Use text as label (quote text if containing spaces).");
 		GMT_Usage (API, indent, "+L<d|D|f|h|n|N|x> Sets label according to given flag: "
-			"d Cartesian plot distance; append a desired unit from %s, "
-			"D Map distance; append a desired unit from %s, "
-			"f Label is last column of given label location file, "
-			"h Use segment header labels (via -Lstring), "
-			"n Use the current segment number (starting at 0), "
-			"N Use current file number / segment number (starting at 0/0), or"
-			"x Like h, but use headers in file with crossing lines instead.", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
+			"d) Cartesian plot distance; append a desired unit from %s, "
+			"D) Map distance; append a desired unit from %s, "
+			"f) Use given label location file with label in last column, "
+			"h) Use segment header labels (via -Lstring), "
+			"n) Use the current segment number (starting at 0), "
+			"N) Use current file number / segment number (starting at 0/0), or "
+			"x) Like h, but use headers in file with crossing lines instead.", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	}
 	if (kind < 2)
 		GMT_Usage (API, indent, "+n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.");
@@ -7743,39 +7744,46 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	GMT_Usage (API, indent, "d<dist>[%s] or D<dist>[%s]  [Default is d%g%c].",
 		GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
 	GMT_Usage (API, indent+3, "d: Give distance between %ss with specified map unit in %s.", feature[kind], GMT_DIM_UNITS_DISPLAY);
-	GMT_Usage (API, indent+3, "D: Specify geographic distance between %ss in %s, "
-		"The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].", feature[kind], GMT_LEN_UNITS_DISPLAY);
-	GMT_Usage (API, indent+3, "f<file.d> reads file <file.d> and places %ss at locations "
-		"that match individual points along the %ss.\n", feature[kind], type[kind]);
-	GMT_Usage (API, indent+3, "l|L<line1>[,<line2>,...] Give start and stop coordinates for "
+	GMT_Usage (API, indent+3, "D: Specify geographic distance between %ss in %s. "
+		"The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].", feature[kind], GMT_LEN_UNITS_DISPLAY, type[kind]);
+	GMT_Usage (API, indent+3, "f<file.txt>: Read file <file.txt> and places %ss at locations "
+		"that match individual points along the %ss.", feature[kind], type[kind]);
+	if (kind == 0) {
+		GMT_Usage (API, indent+3, "l|L<line1>[,<line2>,...]: Give start and stop coordinates for "
 		"straight line segments; %ss will be placed where these "
 		"lines intersect %ss.  The format of each <line> "
-		"is <start>/<stop>, where <start> or <stop> = <lon/lat> or a "
-		"2-character XY key that uses the \"pstext\"-style justification "
-		"format to specify a point on the map as [LCR][BMT].\n", feature[kind], type[kind]);
-	if (kind == 0) {
-		GMT_Usage (API, indent+3, "In addition, you can use Z-, Z+ to mean the global "
-			"minimum and maximum locations in the grid.");
+		"is <start>/<stop>, where <start> or <stop> is <lon/lat> or a "
+		"2-character XY key that uses the standard text justification codes "
+		"to specify a point on the map as [LCR][BMT]. In addition, you can use Z-, Z+ "
+		"to mean the global minimum and maximum locations in the grid.", feature[kind], type[kind]);
 	}
-	GMT_Usage (API, indent+3, "L Let point pairs define great circles [Straight lines]. ");
-	GMT_Usage (API, indent+3, "n|N<n_%s> sets number of equidistant %ss per %s: "
-		"N: Starts %s exactly at the start of %s, "
+	else {
+		GMT_Usage (API, indent+3, "l|L<line1>[,<line2>,...]: Give start and stop coordinates for "
+		"straight line segments; %ss will be placed where these "
+		"lines intersect %ss.  The format of each <line> "
+		"is <start>/<stop>, where <start> or <stop> is <lon/lat> or a "
+		"2-character XY key that uses the standard text justification codes "
+		"to specify a point on the map as [LCR][BMT].", feature[kind], type[kind]);
+	}
+	GMT_Usage (API, indent+3, "L: Let point pairs define great circles [Straight lines]. ");
+	GMT_Usage (API, indent+3, "n|N<n_%s>: Set number of equidistant %ss per %s. "
+		"N: Start %s exactly at the start of %s, "
 		"[Default centers the %ss on the %s]. "
-		"N-1 places a single %s at start of the %s, while "
-		"N+1 places a single %s at the end of the %s. "
+		"N-1: Place a single %s at start of the %s. "
+		"N+1: Place a single %s at the end of the %s. "
 		"Append /<min_dist> to enforce a minimum spacing between "
-		"consecutive %ss [0]\n", feature[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind],
+		"consecutive %ss [0].", feature[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind],
 			type[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind]);
 	if (kind == 1) {
-		GMT_Usage (API, indent+3, "s|S<n_%s> sets number of equidistant %s per segmented %s. "
+		GMT_Usage (API, indent+3, "s|S<n_%s>: Set number of equidistant %s per segmented %s. "
 			"Similar to n|N but splits input lines to series of 2-point segments first.", feature[kind], feature[kind], type[kind]);
 	}
-	GMT_Usage (API, indent+3, "x|X<xfile.d> reads the multi-segment file <xfile.d> and places "
+	GMT_Usage (API, indent+3, "x|X<xfile.txt>: Read the multi-segment file <xfile.txt> and places "
 		"settings at intersections between %ss and lines in "
-		"<xfile.d>.  Use X to resample the lines first.", feature[kind], type[kind]);
+		"<xfile.txt>.  Use uppercase X to resample the lines first.", feature[kind], type[kind]);
 	if (kind < 2) {
-		GMT_Usage (API, indent+3, "For all options, append +r<radius> to specify minimum "
-			"radial separation between labels [0]");
+		GMT_Usage (API, indent+3, "For all placement selections, append +r<radius> to specify minimum "
+			"radial separation between labels [0].");
 	}
 }
 
@@ -7794,7 +7802,7 @@ void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 		"(d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot. "
 		"Append +e to adjust the region to fit increments [Adjust increment to fit domain]. "
 		"Alternatively, specify number of nodes by appending +n. Then, the increments "
-		"are calculated from the given domain and node-registration settings. "
+		"are calculated from the given domain and node-registration settings "
 		"(see Appendix B for details).  Note: If -R<grdfile> was used then -%c "
 		"(and -R and maybe -r) have been set; use -%c to override those increments.", option, GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, option, option);
 }
