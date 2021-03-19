@@ -7035,7 +7035,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, GMT_INDENT_2, "(2) Axes parameters are specified via one or more invocations of "
 				"-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>");
 			GMT_Usage (API, GMT_INDENT_2, "<intervals> is composed of concatenated [<type>]<stride>[l|p] sub-strings. "
-				"See basemap man page for more details and examples of all settings.");
+				"See basemap documentation for more details and examples of all settings.");
 			break;
 
 		case 'J':	/* Map projection option */
@@ -7405,7 +7405,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'c':	/* -c option advances subplot panel focus under modern mode */
 
 			if (GMT->current.setting.run_mode == GMT_MODERN || GMT->current.setting.use_modern_name)	/* -c has no use in classic */
-				GMT_Usage (API, GMT_INDENT_1, "-c Move to next subplot panel or append row,col or index of desired panel.");
+				GMT_Usage (API, GMT_INDENT_1, "-c Move to next subplot panel [Default] or append row,col or index of desired panel.");
 			break;
 
 		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
@@ -7430,11 +7430,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'l':	/* -l option to set up auto-legend items*/
 
-			GMT_Usage (API, GMT_INDENT_1, "-l Add symbol, line or polygon to the legend. Optionally, append label and any of the legend codes"
-				"+D<pen>, +G<gap>, +H<header>, +L[<just>/]<txt>, +N<cols>, +S<size>, +V[<pen>]. "
+			GMT_Usage (API, GMT_INDENT_1, "-l Add symbol, line or polygon to the legend. Optionally, append label and any of the legend codes "
+				"+D<pen>, +G<gap>, +H<header>, +L[<just>/]<txt>, +N<cols>, +S<size>, and +V[<pen>]. "
 				"You may also use set +f<font> to override the font used for the label. "
 				"Change frame fill, pen, offset with +g<fill> [white], +p<pen> [1p], +o<off> [0.2c]. "
-				"You can also choose legend placement codes +j<just> and +s<scale>, corresponding"
+				"You can also choose legend placement codes +j<just> and +s<scale>, corresponding "
 				"to legend command line options -Dj|J<just> and -S<scale>, respectively.");
 			break;
 
@@ -7449,8 +7449,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Specify i(nput) or o(utput) [Default is both input and output]. "
 				"Give one or more columns (or column ranges) separated by commas. "
 				"Append T (Calendar format), t (time relative to TIME_EPOCH), "
-				"f (floating point), x (longitude), or  (latitude) to each item. "
-				"-f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates), "
+				"f (floating point), x (longitude), or y (latitude) to each item. "
+				"Note: -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates), "
 				"-f[i|o]c means -f[i|o]0-1f (Cartesian coordinates) while "
 				"-fp[<unit>] means input x,y are in projected coordinates.");
 			break;
@@ -7460,75 +7460,75 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, GMT_INDENT_1, "-g Use data point separations to determine if there are data gaps. "
 				"Append x|X or y|Y to identify data gaps in x or y coordinates, "
 				"respectively, and append d|D for distance gaps.  Upper case X|Y|D means "
-				"we first project the points (requires -J).  Append <gap>[+n|p]; +n uses "
-				"d=prev-curr, +p uses d=curr-prev [d=|curr-prev|]; d must exceed <gap> to detect a gap. "
-				"For geographic data: choose from %s [Default is meter (%c)]. "
-				"For gaps based on mapped coordinates: choose unit from %s [%s]. "
-				"For time data: the unit is controlled by TIME_UNIT. "
-				"For generic data: the unit is as the data implies (user units). "
-				"Repeat the -g option to specify multiple criteria, and add -gan "
-				"to indicate that all criteria must be met [just one must be met].",
+				"we first project the points (requires -J).  Optionally append <gap>[+n|p]: +n uses "
+				"d=prev-curr, +p uses d=curr-prev [Default is d=|curr-prev|]; d must exceed <gap> to detect a gap. "
+				"For geographic data: Choose unit from %s [Default is meter (%c)]. "
+				"For gaps based on mapped coordinates: Choose unit from %s [%s]. "
+				"For time data the unit is determined by TIME_UNIT. "
+				"For generic data a unit is not specified. "
+				"Repeat the -g option to specify multiple criteria, and add -ga "
+				"to indicate that all criteria must be met [Default is just one must be met].",
 				GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT, GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
 		case 'h':	/* Header */
 
-			GMT_Usage (API, GMT_INDENT_1, "-h[i|o][<n>][+c][+d][+m<segheader>][+r<remark>][+t<title>] Input/output file has [%d] Header record(s) [%s]. "
-				"Optionally, append i for input or o for output only and/or number of header records [0]. "
-				"-hi turns off the writing of all headers on output since none will be read.",
+			GMT_Usage (API, GMT_INDENT_1, "-h[i|o][<n>][+c][+d][+m<segheader>][+r<remark>][+t<title>] Input/output file has [%d] header record(s) [%s]. "
+				"Optionally, append i for input or o for output only and number of header records [0]. "
+				"Note: -hi turns off the writing of all headers on output since none will be read.",
 				GMT->current.setting.io_n_header_items, GMT_choice[GMT->current.setting.io_header[GMT_IN]]);
-			GMT_Usage (API, GMT_INDENT_2, "Append +c to add header record with column information [none].");
-			GMT_Usage (API, GMT_INDENT_2, "Append +d to delete headers before adding new ones [Default will append headers].");
-			GMT_Usage (API, GMT_INDENT_2, "Append +m to insert a new segment header and <segheader> content after the headers [none].");
-			GMT_Usage (API, GMT_INDENT_2, "Append +r to add a <remark> comment to the output [none].");
-			GMT_Usage (API, GMT_INDENT_2, "Append +t to add a <title> comment to the output [none]. "
+			GMT_Usage (API, GMT_INDENT_3, "Append +c to add header record with column information [none].");
+			GMT_Usage (API, GMT_INDENT_3, "Append +d to delete headers before adding new ones [Default will append headers].");
+			GMT_Usage (API, GMT_INDENT_3, "Append +m to insert a new segment header and <segheader> content after the headers [none].");
+			GMT_Usage (API, GMT_INDENT_3, "Append +r to add a <remark> comment to the output [none].");
+			GMT_Usage (API, GMT_INDENT_3, "Append +t to add a <title> comment to the output [none]. "
 				"Note: <remark> and <title> may contain \\n to indicate line-breaks. ");
-			GMT_Usage (API, GMT_INDENT_2, "For binary files, <n> is considered to mean number of bytes.");
+			GMT_Usage (API, GMT_INDENT_2, "For binary files, <n> is considered to mean number of bytes instead of records.");
 			break;
 
 		case 'i':	/* -i option for input column order */
 
 			GMT_Usage (API, GMT_INDENT_1, "-i Set alternate input column order and optional transformations [Default reads all columns in original order]. "
-				"Append list of columns; t[<word>] = trailing text; use <word> to pick a word from the text. Use -in for considering numerical input only.");
+				"Append list of columns; t[<word>] selects the trailing text; append <word> to pick a word from the text. Use -in to select numerical input only.");
 			break;
 
 		case 'A':	/* -j option for spherical distance calculation mode */
 
 			GMT_Usage (API, GMT_INDENT_1, "-j Set spherical distance calculation mode for modules that offer that flexibility. "
-				"Append f for Flat Earth, g for Great Circle [Default], and e for Ellipsoidal mode.");
+				"Append f for Flat Earth, g for Great Circle [Default], or e for Ellipsoidal mode.");
 			break;
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
 			GMT_Usage (API, GMT_INDENT_1, "-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Specify the grid interpolation mode: "
-				"(b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default is bicubic]. "
+				"b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor [Default is bicubic]. "
 #ifdef DEBUG
 				"Append +A to save the anti-aliasing counter to a grid for debugging. "
 #endif
-				"Append +a to switch off anti-aliasing (except for l) [Default: on]. "
+				"Append +a to switch off anti-aliasing (except for linear) [Default: is on]. "
 				"Append +b<BC> to change boundary conditions.  <BC> can be either "
 				"g for geographic, p for periodic, and n for natural boundary conditions. "
-				"For p and n you may optionally append x or y [default is both]: "
+				"For p and n you may optionally append x or y [Default is both]: "
 				"x for periodic boundary conditions on x, "
 				"y for periodic boundary conditions on y. "
-				"[Default: Natural conditions, unless grid is known to be geographic]. "
+				"[Default is Natural conditions, unless grid is known to be geographic]. "
 				"Append +c to clip interpolated grid to input z-min/max [Default may exceed limits]. "
 				"Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of "
 				"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate "
-				"about half way from a non-NaN to a NaN node [Default: 0.5].");
+				"about half way from a non-NaN to a NaN node [Default is 0.5].");
 			break;
 
 		case 'o':	/* -o option for output column order */
 
-			GMT_Usage (API, GMT_INDENT_1, "-o Set alternate output column order [Default writes all columns in order]. "
-				"Append list of columns; t[<word>] = trailing text; use <word> for writing a single word from the text. "
-				"Use -on for numerical output only.");
+			GMT_Usage (API, GMT_INDENT_1, "-o Set alternate output column order [Default writes all columns in normal order]. "
+				"Append list of columns; t[<word>] selects the trailing text; append <word> for writing a single word from the text. "
+				"Use -on to select numerical output only.");
 			break;
 
 		case 'p':	/* Enhanced pseudo-perspective 3-D plot settings */
 		case 'E':	/* GMT4: For backward compatibility */
 			if (gmt_M_compat_check (GMT, 4) || options[k] == 'p') {
-				GMT_Usage (API, GMT_INDENT_1, "-%c Select a 3-D pseudo perspective view.  Append the"
+				GMT_Usage (API, GMT_INDENT_1, "-%c Select a 3-D pseudo perspective view.  Append the "
 					"<azimuth>/<elevation> of the viewpoint [180/90]. "
 					"When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis]. "
 					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. "
@@ -7543,7 +7543,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, GMT_INDENT_1, "-q Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows]. "
 				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead. "
-				"Append +f or +s to reset row counters per table or segment [per set (+a)]. "
+				"Append +f or +s to reset row counters per file or segment [Default is per set (+a)]. "
 				"For limits on data values instead, append +c<col> and give data limits for column <col>.");
 			break;
 
@@ -7579,26 +7579,26 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Append +r to reverse the test (only output record that fail the NaN-test).");
 			break;
 
-		case 'F':	/* -r Pixel registration option  */
+		case 'F':	/* -r grid registration option  */
 
-			GMT_Usage (API, GMT_INDENT_1, "-r Set (g)ridline- or (p)ixel-registration [Just -r sets pixel registration]. "
-				"If not given we default to gridline registration.");
+			GMT_Usage (API, GMT_INDENT_1, "-r Set (g)ridline- or (p)ixel-registration [Plain -r sets pixel registration]. "
+				"If -r is not given then we default to gridline registration.");
 			break;
 
 		case 't':	/* -t layer transparency option  */
 
 			GMT_Usage (API, GMT_INDENT_1, "-t Set the layer transparency from 0-100 [Default is 0; opaque]. "
-				"Requires conversion to PDF or raster formats.");
+				"Requires conversion to PDF or raster formats to take effect.");
 			break;
 
 		case 'T':	/* Same -t but with extension for variable fill/stroke transparency option  */
 
 			GMT_Usage (API, GMT_INDENT_1, "-t Set the layer transparency from 0-100 [Default is 0; opaque]. "
-				"Requires conversion to PDF or raster formats. "
-				"For separate transparency for fill and stroke, append /<transp2> as well. n"
-				"For plotting symbols with variable transparency read from file, append no value"
+				"Requires conversion to PDF or raster formats to take effect. "
+				"For separate transparency for fill and stroke, append /<transp2> as well. "
+				"For plotting symbols with variable transparency read from file, append no value "
 				"and give the transparency as the last numerical value in the data record. "
-				"Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.");
+				"Use the +f (fill) and +s (stroke) modifiers to indicate the target for transparency or if we expect one or two transparencies.");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
@@ -7613,7 +7613,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, GMT_INDENT_1, "-+ (or +) Print longer synopsis message.");
 			GMT_Usage (API, GMT_INDENT_1, "-? (or no arguments) Print this usage message.");
 			GMT_Usage (API, GMT_INDENT_1, "--PAR=<value> Temporarily override GMT default setting(s) (repeatable).");
-			GMT_Usage (API, GMT_INDENT_1, "(See %s man page for GMT default parameters).", GMT_SETTINGS_FILE);
+			GMT_Usage (API, GMT_INDENT_1+2, "(See %s documentation for GMT default parameters).", GMT_SETTINGS_FILE);
 			break;
 
 		case ';':	/* Trailer message without --PAR=value etc */
@@ -8419,10 +8419,10 @@ void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 		case 'w':	/* -w option for cyclicity */
 
 			GMT_Usage (API, GMT_INDENT_1, "%s "
-				"Wrapped selected column [0] with specified cyclicity: "
+				"Wrap selected column [0] with specified cyclicity. "
 				"Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles. "
-				"Alternatively append c<period>[/<phase>] for custom cyclicity. "
-				"Select another column than x via +c<col>.\n", GMT_w_OPT);
+				"Alternatively append c<period>[/<phase>] for custom cyclicity (and nonzero phase). "
+				"Select another column than x (0) via +c<col>.\n", GMT_w_OPT);
 			break;
 
 		case ':':	/* lon/lat vs lat/lon i/o option  */
