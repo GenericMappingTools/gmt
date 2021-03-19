@@ -7526,9 +7526,9 @@ int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	GMT_Usage (API, GMT_INDENT_1, "-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
 	GMT_Usage (API, GMT_INDENT_2, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
-	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
-	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) GMT_Usage (API, GMT_INDENT_2, "%s", GMT_CPT_master[k]);
-	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
+	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "     %s\n", GMT_CPT_master[k]);
+	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
 	GMT_Usage (API, GMT_INDENT_2, "[For more, visit soliton.vm.bytemark.co.uk/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]. "
 		"Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear "
 		"continuous CPT from those colors automatically.");
@@ -14076,10 +14076,11 @@ void gmt_list_custom_symbols (struct GMT_CTRL *GMT) {
 	}
 
 	GMT_Usage (API, GMT_INDENT_3, "Available custom symbols (See Appendix N):");
-	gmt_message (GMT, "\t     ---------------------------------------------------------\n");
-	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0)) GMT_Usage (API, GMT_INDENT_3, "%s", buffer);
+	gmt_message (GMT, "        ---------------------------------------------------------\n");
+	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0))
+		gmt_message (GMT, "        %s", buffer);
 	fclose (fp);
-	gmt_message (GMT, "\t     ---------------------------------------------------------\n");
+	gmt_message (GMT, "        ---------------------------------------------------------\n");
 }
 
 /*! . */

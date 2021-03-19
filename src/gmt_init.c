@@ -5491,7 +5491,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					case '-':	/* Enforce Southern hemisphere convention for y */
 						GMT->current.proj.utm_hemisphere = -1;
 						break;
-					case '+':	/* Enforce Norther hemisphere convention for y */
+					case '+':	/* Enforce Northern hemisphere convention for y */
 						GMT->current.proj.utm_hemisphere = +1;
 						break;
 					default:	/* Decide in gmt_map_setup based on -R */
@@ -6952,28 +6952,28 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Append +i<val> to annotate along parallel or meridian <val> [0] when no such axes can be plotted. "
 				"Append +n to have no frame and annotations whatsoever [Default is controlled by WESNZ/wesnz]. "
 				"Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines]. "
-				"Note: the +o modifier is ignored unless gridlines are specified via the axes parameters (below). "
+				"Note: The +o modifier is ignored unless gridlines are specified via the axes parameters (below). "
 				"Append +t<title> to place a title over the map frame [no title]. Optionally also set +s<subtitle>. "
 				"Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"<break>\" to mark breaks. "
 				"A single-line <title> and <subtitle> may contain LaTeX code enclosed by @[ .... @[ (or alternatively <math> ... </math>). "
-				"Using LaTeX expressions require you to have a functioning latex and dvips installation, including required fonts. "
-				"For 3-D plots the Z|z[<corners>] controls the vertical axis.  The <corners> specifies"
+				"Using LaTeX expressions requires you to have a functioning latex and dvips installation, including required fonts. "
+				"For 3-D plots the Z|z[<corners>] controls the vertical axis.  The <corners> specifies "
 				"at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner, "
 				"2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis]. "
-				"The +w draws the outline of the xz and yz planes [no outlines]. n"
+				"The +w draws the outline of the xz and yz planes [no outlines]. "
 				"The +x|y|z[<fill>] paint the yz, xz, xy planes [no fill]. The +g<fill> sets all three planes. "
 				"In addition, +b will erect a 3-D frame box to outline the 3-D domain [no frame box].");
-			GMT_Usage (API, GMT_INDENT_2, "2. Axes settings control the annotation, tick, and grid intervals and labels. n"
+			GMT_Usage (API, GMT_INDENT_2, "2. Axes settings control the annotation, tick, and grid intervals and labels. "
 				"The full axes specification is");
-			GMT_Usage (API, GMT_INDENT_3, "-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>");
+			GMT_Usage (API, GMT_INDENT_4, "-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>");
 			GMT_Usage (API, GMT_INDENT_2, "Alternatively, you may break this syntax into two separate -B options:");
-			GMT_Usage (API, GMT_INDENT_3, "-B[p|s][x|y|z][+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]");
-			GMT_Usage (API, GMT_INDENT_3, "-B[p|s][x|y|z]<intervals>");
+			GMT_Usage (API, GMT_INDENT_4, "-B[p|s][x|y|z][+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]");
+			GMT_Usage (API, GMT_INDENT_4, "-B[p|s][x|y|z]<intervals>");
 			GMT_Usage (API, GMT_INDENT_2, "There are two levels of annotations: Primary and secondary (most situations only require primary). "
 				"The -B[p] sets (p)rimary (more frequent) annotations while -Bs sets (s)econdary (less frequent) annotations. "
 				"The [x|y|z] selects which axes the settings apply to.  If none are given we default to xy. "
-				"To specify different settings for different axes you must repeat the -B axes option for"
-				"each dimension., i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings. "
+				"To specify different settings for different axes you must repeat the -B axes option for "
+				"each dimension, i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings. "
 				"To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>. "
 				"To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>. "
 				"Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap]. "
@@ -6982,19 +6982,19 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes. "
 				"For another axis label on the opposite axis, use +s|S as well. "
 				"Use quotes if any of the <label>, <prefix> or <unit> have spaces. "
-				"For Cartesian axes you can have different labels on the left vs right or bottom vs top"
+				"For Cartesian axes you can have different labels on the left vs right or bottom vs top "
 				"by separating the two labels with ||, e.g., +l\"Left label||Right label\". "
 				"A <label> may contain LaTeX code enclosed by @[ .... @[  (or alternatively <math> ... </math>). "
-				"Using LaTeX expressions require you to have a functioning latex and dvips installation, including required fonts. "
+				"Using LaTeX expressions requires you to have a functioning latex and dvips installation, including required fonts. "
 				"Geographic map annotations will automatically have degree, minute, seconds units. "
-				"The <intervals> setting controls the annotation spacing and is a textstring made up of one or"
-				"more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a"
+				"The <intervals> setting controls the annotation spacing and is a textstring made up of one or "
+				"more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a "
 				"indicates annotation and major tick interval, f minor tick interval, and g grid interval. "
 				"Here, <stride> is the spacing between ticks or annotations, the (optional, and with required sign)"
-				"<phase> specifies phase-shifted annotations/ticks by that amount, and the (optional)"
-				"<unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be"
+				"<phase> specifies phase-shifted annotations/ticks by that amount, and the (optional) "
+				"<unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be "
 				"no spaces between the substrings; just append items to make one very long string. "
-				"For custom annotations or intervals, let <intervals> be c<intfile>; see man page for details. "
+				"For custom annotations or intervals, let <intervals> be c<intfile>; see documentation for details. "
 				"The optional <unit> modifies the <stride> value accordingly.");
 			GMT_Usage (API, GMT_INDENT_2, "For geographic maps you may use:");
 			GMT_Usage (API, GMT_INDENT_3, "d: arc degree [Default].");
@@ -7041,49 +7041,49 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'J':	/* Map projection option */
 
-			GMT_Usage (API, GMT_INDENT_1, "-J Select the map proJection. The projection type is identified by a 1- or"
-				"2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash"
-				"(e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either"
-				"as 1:<xxxx> or in %s/degree along the standard parallel. Alternatively, when"
-				"the projection ID is Capitalized, <scale>|<width> denotes the width of the"
-				"plot in %s. Append +dh for map height, +du for maximum map dimension, or +dl"
+			GMT_Usage (API, GMT_INDENT_1, "-J Select the map proJection. The projection type is identified by a 1- or "
+				"2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash "
+				"(e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either "
+				"as 1:<xxxx> or in %s/degree along the standard parallel. Alternatively, when "
+				"the projection ID is Capitalized, <scale>|<width> denotes the width of the "
+				"plot in %s. Append +dh for map height, +du for maximum map dimension, or +dl "
 				"for minimum map dimension [Default +dw is width]. "
-				"When the central meridian (lon0) is optional and omitted, the center of the"
+				"When the central meridian (lon0) is optional and omitted, the center of the "
 				"longitude range set by -R is used. The default standard parallel is the equator. "
 				"Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given.\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
 			GMT_Usage (API, GMT_INDENT_2, "-Ja|A<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Lambert Azimuthal Equal Area). "
-				"<lon0>/<lat0> is the center of the projection. "
+				"<lon0>/<lat0> is the center of the projection, and "
 				"<horizon> is max distance from center of the projection (<= 180, default 90). "
-				"<scale> can also be given as <radius>/<lat>, where <radius> is the distance"
+				"The <scale> can also be given as <radius>/<lat>, where <radius> is the distance "
 				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Albers Equal-Area Conic). "
-				"Give origin, 2 standard parallels, and true scale.");
+				"Give origin, two standard parallels, and true <scale>.");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jc|C<lon0>/<lat0>/<scale>|<width> (Cassini). Give central point and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Jc|C<lon0>/<lat0>/<scale>|<width> (Cassini). Give central point and <scale>.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Stereographic). "
-				"Give central meridian (opt), standard parallel (opt) and scale. "
+				"Optionally give central meridian and standard parallel and <scale>. Common parallels: "
 				"<lat0> = 66.159467 (Miller's modified Gall), 55 (Kamenetskiy's First), "
-				"45 (Gall Stereographic), 30 (Bolshoi Sovietskii Atlas Mira), and 0 (Braun).");
+				"45 (Gall Stereographic), 30 (Bolshoi Sovietskii Atlas Mira), and 0 (Braun) [Default].");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Equidistant Conic). "
-				"Give origin, 2 standard parallels, and true scale.");
+				"Give origin, two standard parallels, and true <scale>.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Je|E<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Azimuthal Equidistant). "
-				"<lon0>/<lat0> is the center of the projection. "
+				"<lon0>/<lat0> is the center of the projection, and "
 				"<horizon> is max distance from center of the projection (<= 180, default 180). "
-				"<scale> can also be given as <radius>/<lat>, where <radius> is the distance"
-				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+				"The <scale> can also be given as <radius>/<lat>, where <radius> is the distance "
+				"in %s to the oblique parallel <lat0>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jf|F<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Gnomonic). "
-				"<lon0>/<lat0> is the center of the projection. "
+				"<lon0>/<lat0> is the center of the projection, and "
 				"<horizon> is max distance from center of the projection (< 90, default 60). "
-				"<scale> can also be given as <radius>/<lat>, where <radius> is distance"
-				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance "
+				"in %s to the oblique parallel <lat0>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jg|G<lon0>/<lat0>/<scale>|<width> (Orthographic). "
 				"<lon0>/<lat0> is the center of the projection. "
@@ -7093,50 +7093,50 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, GMT_INDENT_2, "-Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective). "
 				"<lon0>/<lat0> is the center of the projection, while "
 				"<altitude> is the height (in km) of the viewpoint above local sea level.");
-			GMT_Usage (API, GMT_INDENT_3, "1. If <altitude> less than 10 then it is the distance "
-				"from center of earth to viewpoint in earth radi.i");
-			GMT_Usage (API, GMT_INDENT_3, "2. If <altitude> has a suffix of 'r' then it is the radius "
-				"from the center of earth in kilometers");
-			GMT_Usage (API, GMT_INDENT_2, "<azimuth> is azimuth east of North of view, "
-				"<tilt> is the upward tilt of the plane of projection, "
-				"if <tilt> < 0 then viewpoint is centered on the horizon. "
+			GMT_Usage (API, GMT_INDENT_3+1, "1. If <altitude> less than 10 then it is the distance "
+				"from center of earth to viewpoint in earth radii.");
+			GMT_Usage (API, GMT_INDENT_3+1, "2. If <altitude> has a suffix of 'r' then it is the radius "
+				"from the center of earth in kilometers.");
+			GMT_Usage (API, GMT_INDENT_3, "   <azimuth> is azimuth east of North of view, "
+				"<tilt> is the upward tilt of the plane of projection; "
+				"if <tilt> < 0 then viewpoint is centered on the horizon, "
 				"<twist> is the CW twist of the viewpoint in degree, "
-				"<width> is width of the viewpoint in degree, and "
-				"<height> is the height of the viewpoint in degrees. "
-				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance"
-				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+				"<Width> is width of the viewpoint in degree, and "
+				"<Height> is the height of the viewpoint in degrees. "
+				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance "
+				"in %s to the oblique parallel <lat0>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff). Give central meridian (opt) and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff). Give optional central meridian and <scale>.");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Ji|I[<lon0>/]<scale>|<width> (Sinusoidal). Give central meridian (opt) and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Ji|I[<lon0>/]<scale>|<width> (Sinusoidal). Give optional central meridian and <scale>.");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jj|J[<lon0>/]<scale>|<width> (Miller). Give central meridian (opt) and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Jj|J[<lon0>/]<scale>|<width> (Miller). Give optional central meridian and <scale>.");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jkf|Kf[<lon0>/]<scale>|<width> (Eckert IV). Give central meridian (opt) and scale).");
+			GMT_Usage (API, GMT_INDENT_2, "-Jkf|Kf[<lon0>/]<scale>|<width> (Eckert IV). Give optional central meridian and <scale>).");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI). Give central meridian (opt) and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI). Give optional central meridian and <scale>.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Lambert Conformal Conic). "
 				"Give origin, 2 standard parallels, and true scale.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jm|M[<lon0>/[<lat0>/]]<scale>|<width> (Mercator). "
-				"Give central meridian (opt), true scale parallel (opt), and scale.");
+				"Give optional central meridian and true scale parallel, and <scale>.");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jn|N[<lon0>/]<scale>|<width> (Robinson projection). Give central meridian (opt) and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Jn|N[<lon0>/]<scale>|<width> (Robinson projection). Give optional central meridian and <scale>.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jo|O<parameters>[+v] (Oblique Mercator).  Specify one of three definitions:");
 			GMT_Usage (API, GMT_INDENT_3, "-Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scale>|<width>. "
 				"Give origin, azimuth of oblique equator, and scale at oblique equator");
-			GMT_Usage (API, GMT_INDENT_3, "-Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>."
+			GMT_Usage (API, GMT_INDENT_3, "-Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>. "
 				"Give origin, second point on oblique equator, and scale at oblique equator.");
 			GMT_Usage (API, GMT_INDENT_3, "-Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>."
 				"Give origin, pole of projection, and scale at oblique equator. "
 				"Specify region in oblique degrees OR use -R<...>+r. "
-				"Upper-case A|B|C removes enforcement of a northern hemisphere pole. "
+				"Uppercase A|B|C removes enforcement of a northern hemisphere pole. "
 				"Append +v to make the oblique Equator the y-axis [x-axis].");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius)). "
-				"Linear scaling for polar coordinates.  Give scale in %s/units. ",
+				"Linear scaling for polar coordinates.  Give <scale> in %s/units. ",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			GMT_Usage (API, GMT_INDENT_3, "Append +a to use azimuths (CW from North) instead of directions (CCW from East) [Default].");
 			GMT_Usage (API, GMT_INDENT_3, "Append +f to flip radial direction so that south is on the outside and north is at the center. "
@@ -7145,50 +7145,50 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Append <radius> to indicate the radius at the center.");
 			GMT_Usage (API, GMT_INDENT_3, "Append +r to offset the radial values [0].");
 			GMT_Usage (API, GMT_INDENT_3, "Append +t to set <origin> value for angles or azimuths [0].");
-			GMT_Usage (API, GMT_INDENT_3, "Append +z to annotate depths rather than radius [Default]. Alternatively, if you provided depths"
+			GMT_Usage (API, GMT_INDENT_3, "Append +z to annotate depths rather than radius [Default]. Alternatively, if you provided depths "
 				"then append p (planetary radius) or <radius> to annotate r = radius - z instead.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic). "
-				"Give central meridian (opt), reference parallel (opt, default = equator), and scale.");
+				"Give optional central meridian and reference parallel [Default is equator], and <scale>.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jq|Q[<lon0>/[<lat0>/]]<scale>|<width> (Equidistant Cylindrical). "
-				"Give central meridian (opt), standard parallel (opt), and scale. "
+				"Give optional central meridian and standard parallel, and <scale>. Common parallels: "
 				"<lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular), "
 				"45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann), "
-				"37.5 (Min. overall distortion), and 0 (Plate Carree, default)");
+				"37.5 (Min. overall distortion), and 0 (Plate Carree [default]).");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jr|R[<lon0>/]<scale>|<width> (Winkel Tripel). Give central meridian and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Jr|R[<lon0>/]<scale>|<width> (Winkel Tripel). Give optional central meridian and <scale>.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Js|S<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Stereographic). "
 				"<lon0>/<lat0> is the center or the projection, "
-				"<horizon> is max distance from center of the projection (< 180, default 90), and"
-				"<scale> is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>)"
-				"or <radius>/<lat> (distance in %s to the [oblique] parallel <lat>.",
+				"<horizon> is max distance from center of the projection (< 180, default 90), and "
+				"<scale> is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>) "
+				"or <radius>/<lat> (distance in %s to the (oblique) parallel <lat0>.",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jt|T<lon0>/[<lat0>/]<scale>|<width> (Transverse Mercator). Give central meridian and scale. "
-				"Optionally, also give the central parallel (default = equator).");
+				"Optionally, also give the central parallel [Default is equator].");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Ju|U<zone>/<scale>|<width> (UTM). "
-				"Give zone (A,B,Y,Z, or 1-60 (negative for S hemisphere) or append GMT-X) and scale. "
+				"Give zone (A,B,Y,Z, or 1-60 (negative for S hemisphere) or append code C-X) and <scale>. "
 				"Or, give -Ju|U<scale>|<width> to have the UTM zone determined from the region.");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jv|V[<lon0>/]<scale>|<width> (van der Grinten). Give central meridian (opt) and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Jv|V[<lon0>/]<scale>|<width> (van der Grinten). Give optional central meridian  and <scale>.");
 
-			GMT_Usage (API, GMT_INDENT_2, "-Jw|W[<lon0>/]<scale>|<width> (Mollweide). Give central meridian (opt) and scale.");
+			GMT_Usage (API, GMT_INDENT_2, "-Jw|W[<lon0>/]<scale>|<width> (Mollweide). Give optional central meridian and <scale>.");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jy|Y[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Equal-area). "
-				"Give central meridian (opt), standard parallel (opt) and scale, "
+				"Give optional central meridian and standard parallel, and <scale>. Common parallels:  "
 				"<lat0> = 50 (Balthasart), 45 (Gall), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards), "
 				"37.0666 (Caster), 30 (Behrmann), and 0 (Lambert [Default])");
 
 			GMT_Usage (API, GMT_INDENT_2, "-Jx|X<x-scale|<width>[/<y-scale|height>] (Linear, log, power scaling). "
-				"<scale> in %s/units (or 1:xxxx). Optionally, append to <x-scale> and/or <y-scale> one of"
+				"<scale> in %s/units (or 1:xxxx). Optionally, append to <x-scale> and/or <y-scale> one of "
 				"d for Geographic coordinate (in degrees), "
 				"l for Log10 projection, "
-				"p<power> for x^power projection. "
+				"p<power> for x^power projection, "
 				"t for calendar time projection using relative time coordinates, "
-				"or T forCalendar time projection using absolute time coordinates. "
+				"or T for Calendar time projection using absolute time coordinates. "
 				"Use / to specify separate x/y scaling (e.g., -Jx0.5c/0.3c).  If 1:xxxxx is used it implies -R is in meters. "
 				"If -JX is used then give axes lengths rather than scales.",
 					GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
@@ -7324,13 +7324,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, GMT_INDENT_1, "-U Plot GMT Unix System Time stamp [and optionally appended text or command line]. "
 				"Set the justification point via +j<code> [BL] and an optional offset [-54p/-54p]. "
-				"[Add +c to have the command line plotted [%s].", GMT_choice[GMT->current.setting.map_logo]);
+				"(Add +c to have the command line plotted [%s]).", GMT_choice[GMT->current.setting.map_logo]);
 			break;
 
 		case 'V':	/* Verbose */
 
 			GMT_Usage (API, GMT_INDENT_1, "-V Change the verbosity level (currently %c). "
-				"Choose among 7 levels; each level adds more messages:", V_code[GMT->current.setting.verbose]);
+				"Choose among 7 levels; each level adds more detailed messages:", V_code[GMT->current.setting.verbose]);
 			GMT_Usage (API, GMT_INDENT_3, "q - Quiet, not even fatal error messages.");
 			GMT_Usage (API, GMT_INDENT_3, "e - Error messages only.");
 			GMT_Usage (API, GMT_INDENT_3, "w - Warnings [Default].");
@@ -7830,7 +7830,7 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 	GMT_Usage (API, GMT_INDENT_2, "4) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;");
 	GMT_Usage (API, GMT_INDENT_2, "5) any valid color name;");
 	GMT_Usage (API, GMT_INDENT_2, "6) P|p<pattern>[+b<color>][+f<color>][+r<dpi>]; "
-		"Give <pattern> number from 1-90 or a filename, optionally add +r<dpi> [%d]. "
+		"Give <pattern> number from 1-90 or a filename, optionally add +r<dpi> [%g]. "
 		"Optionally, use +f<color> or +b<color> to change fore- or background colors (no <color> sets transparency).", PSL_DOTS_PER_INCH_PATTERN);
 	GMT_Usage (API, GMT_INDENT_2, "For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].");
 }
@@ -7859,7 +7859,7 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 	else
 		GMT_Usage (API, GMT_INDENT_1, "-%c %s", option, msg);
 	GMT_Usage (API, GMT_INDENT_2, "<pen> is a comma-separated list of three optional items in the order: "
-		"<width>[%s], <color>, and <style>[%s].\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+		"<width>[%s], <color>, and <style>[%s].", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	GMT_Usage (API, GMT_INDENT_3, "<width> >= 0.0 sets pen width (default units are points); alternatively a pen "
 		"name: Choose among faint, default, or [thin|thick|fat][er|est], or wide.");
 	GMT_Usage (API, GMT_INDENT_3, "<color> = (1) <gray> or <red>/<green>/<blue>, all in range 0-255; "
@@ -7876,22 +7876,22 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 	if (mode)
 		GMT_Usage (API, GMT_INDENT_2, "Additional line attribute modifiers are also available:");
 	if (mode & 2) {
-		GMT_Usage (API, GMT_INDENT_3, "+o<offset> Trim the line from the end inward by the specified amount. "
+		GMT_Usage (API, GMT_INDENT_3, "+o<offset>: Trim the line from the end inward by the specified amount. "
 			"Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian]. "
 			"To trim the two ends differently, give two offsets separated by a slash (/).", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	}
 	if (mode & 1)
-		GMT_Usage (API, GMT_INDENT_3, "+s Draw line using a Bezier spline through projected coordinates [Linear spline].");
+		GMT_Usage (API, GMT_INDENT_3, "+s: Draw line using a Bezier spline through projected coordinates [Linear spline].");
 	if (mode & 4) {
-		GMT_Usage (API, GMT_INDENT_3, "+v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines. "
+		GMT_Usage (API, GMT_INDENT_3, "+v[b|e]<vecspecs>: Add vector head with the given specs at the ends of lines. "
 			"Use +ve and +vb separately to give different endings (+v applies to both). "
-			"See vector specifications for details. Note: +v must be last modifier for a pen.\n");
+			"See vector specifications for details. Note: +v must be last modifier for a pen.");
 	}
 	if (mode & 8) {
-		GMT_Usage (API, GMT_INDENT_3, "+c Controls how pens and fills are affected if a CPT is specified via -C: "
-			"Append l to let pen colors follow the CPT setting, or"
+		GMT_Usage (API, GMT_INDENT_3, "+c: Control how pens and fills are affected if a CPT is specified via -C: "
+			"Append l to let pen colors follow the CPT setting, or "
 			"Append f to let fill/font colors follow the CPT setting. "
-			"Default activates both effects.\n");
+			"Default activates both effects.");
 	}
 }
 
@@ -7922,19 +7922,19 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 		GMT_Usage (API, GMT_INDENT_2+shift, "Positioning is specified via one of four coordinate systems: "
 			"Use -%sg to specify <refpoint> with map coordinates. "
 			"Use -%sj or -%sJ to specify bounding-box <refpoint> with 2-char justification code (BL, MC, etc). "
-			"se -%sn to specify <refpoint> with normalized coordinates in 0-1 range. "
+			"Use -%sn to specify <refpoint> with normalized coordinates in 0-1 range. "
 			"Use -%sx to specify <refpoint> with plot coordinates. "
 			"All except -%sx require the -R and -J options to be set. "
-			"Use J if item should be placed outside the map frame and j if inside.\n",
+			"Use J if item should be placed outside the map frame and j if inside.",
 				option, option, option, option, option, option);
 	}
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is irrelevant */
 		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC", "ML"};
-		GMT_Usage (API, GMT_INDENT_2+shift, "Append 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>."
+		GMT_Usage (API, GMT_INDENT_2+shift, "Append 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>. "
 			"If +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%sj), "
 			"or the mirror opposite of <refpoint> (with -%sJ), or %s (else). "
-			"Optionally, append +o<dx>[/<dy>] to offset %s from <refpoint> in direction implied by <justify> [0/0].\n", type[kind], option, option, just[kind], type[kind]);
+			"Optionally, append +o<dx>[/<dy>] to offset %s from <refpoint> in direction implied by <justify> [0/0].", type[kind], option, option, just[kind], type[kind]);
 	}
 }
 
@@ -8005,7 +8005,7 @@ void gmt_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	GMT_Usage (API, GMT_INDENT_3, "Directional rose: Add +f to draws a \"fancy\" rose [Default is plain]. "
 		"Optionally, add <level> of fancy rose: 1 draws E-W, N-S directions [Default], "
 		"2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW directions.");
-	GMT_Usage (API, GMT_INDENT_3, "Magnetic compass rose:  Optional add +d<dec>[/<dlabel>], where <dec> is the"
+	GMT_Usage (API, GMT_INDENT_3, "Magnetic compass rose:  Optional add +d<dec>[/<dlabel>], where <dec> is the "
 		"magnetic declination and <dlabel> is an optional label for the magnetic compass needle. "
 		"If +d does not include <dlabel> we default to \"delta = <declination>\". "
 		"Set <dlabel> to \"-\" to disable the declination label. "
