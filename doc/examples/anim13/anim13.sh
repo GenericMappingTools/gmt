@@ -10,6 +10,9 @@
 #
 # DEM:  @earth_relief_06m
 # Data: @waveform_AV.DOL.txt
+# 
+# The data file @waveform_AV.DOL.txt contains 4 columns: 
+# UTC times, and three-component movement in east-west, north-south and up-down directions
 #
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/eq_-2nYYf-s
