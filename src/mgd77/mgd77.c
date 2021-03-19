@@ -4293,7 +4293,7 @@ void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 }
 
 void MGD77_Cruise_Explain (struct GMT_CTRL *GMT) {
-	GMT_Usage (GMT->parent, 2, "<cruises> can be one of five kinds of specifiers: "
+	GMT_Usage (GMT->parent, GMT_INDENT_1, "<cruises> can be one of five kinds of specifiers: "
 		"1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc., "
 		"2) 2-character <agency> codes which will return all cruises from each agency, "
 		"3) 4-character <agency><vessel> codes, which will return all cruises from those vessels, "

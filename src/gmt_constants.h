@@ -313,6 +313,12 @@ enum GMT_time_period {
  */
 #define GMT_CPTFILE_MODIFIERS "hiuU"
 
+/* Settings for usage message indents */
+
+#define GMT_INDENT_1	2	/* First indent for all options */
+#define GMT_INDENT_2	5	/* Second indent for option's continued line */
+#define GMT_INDENT_3	7	/* Third indent for option's sub-sections */
+
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
 	GMT_LEFT_RIGHT = 1,
