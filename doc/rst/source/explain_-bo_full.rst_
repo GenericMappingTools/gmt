@@ -1,5 +1,3 @@
-.. _-bo_full:
-
 **-bo**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
     Select native binary output. Here, *ncols* is the actual number
     of data columns of type *type*, which must be one of **c**, **u**, **h**,

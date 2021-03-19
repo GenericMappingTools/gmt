@@ -1,5 +1,3 @@
-.. _-d_full:
-
 **-d**\ [**i**\|\ **o**]\ *nodata*
     Control how user-coded missing data values are translated to official
     NaN values in GMT.  For input data we replace any value that equals

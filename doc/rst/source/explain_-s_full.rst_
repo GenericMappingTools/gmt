@@ -1,5 +1,3 @@
-.. _-s_full:
-
 **-s**\ [*cols*][**+a**][**+r**]
     Suppress output of data records whose *z*-value(s) equal NaN [Default
     outputs all records]. By default, we only consider the third data column

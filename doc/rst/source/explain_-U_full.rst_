@@ -1,5 +1,3 @@
-.. _-U_full:
-
 **-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
     Draw the GMT system time stamp on the plot.
     By appending **+j**\ *just* [BL] and/or **+o**\ *dx/dy* [-54p/-54p], the

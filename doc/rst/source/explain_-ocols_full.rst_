@@ -1,5 +1,3 @@
-.. _-ocols_full:
-
 **-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
     Select specific data columns for primary output, in arbitrary order. Columns
     not listed will be skipped. Give columns (or column ranges

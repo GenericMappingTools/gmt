@@ -1,5 +1,3 @@
-.. _-R_full:
-
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*]
     *xmin*, *xmax*, *ymin*, and *ymax* specify the region of interest.
     For geographic regions, these limits correspond to *west*, *east*,
