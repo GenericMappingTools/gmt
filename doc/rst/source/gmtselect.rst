@@ -176,8 +176,10 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1.
+.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: _Syntax:
+    :end-before: _Description:
 
 .. _-V:
 

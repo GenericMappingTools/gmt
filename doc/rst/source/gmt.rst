@@ -222,7 +222,8 @@ modules. No space between the option flag and the associated arguments.
 .. _-R_full:
 .. _-R:
 
-.. include:: explain_-R_full.rst_
+.. |Add_-R| replace:: |Add_-R_links|
+.. include:: explain_-R.rst_
 
 .. _-Rz_full:
 .. _-Rz:

@@ -119,9 +119,10 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input)
+.. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input) |Add_-R_links|
 .. include:: ../../explain_-R.rst_
-
+    :start-after: _Syntax:
+    :end-before: _Description:
 .. _-S:
 
 **-S**\ *radius*
