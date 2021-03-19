@@ -47,7 +47,7 @@ gmt begin
 	gmt text -R0/4.5/0/13 -Jx1c -F+j+f -B0 -X-5.25c -Y-0.5c <<- EOF
 	2.25 12.5 CM 18p 2020-10-06
 	2.25 11.7 CM 9p SE of Sand Point, Alaska
-	2.25 11 CM 10p 54.844@.N, 159.842@.W
+	2.25 11 CM 10p 54.851@.N, 159.851@.W
 	2.25 10.5 CM 10p 31.0 km, Mw 6.0
 	2.25 10.0 CM 10p 2020-10-06 05:54:50 UTC
 	EOF
