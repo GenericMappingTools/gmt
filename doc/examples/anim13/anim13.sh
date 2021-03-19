@@ -12,8 +12,8 @@
 # Data: @waveform_AV.DOL.txt
 #
 # The finished movie is available in our YouTube channel as well:
-# https://youtu.be/xxxxxxxxxx
-# The 66-sec, 1081 frame movie took ~15 minutes to render on a 24-core MacPro 2013.
+# https://youtu.be/eq_-2nYYf-s
+# The 66-sec, 1561 frame movie took ~15 minutes to render on a 24-core MacPro 2013.
 
 # 0. Create an include file with key parameters
 cat << EOF > inc.sh
