@@ -4293,13 +4293,13 @@ void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 }
 
 void MGD77_Cruise_Explain (struct GMT_CTRL *GMT) {
-	gmt_message (GMT, "\t<cruises> can be one of five kinds of specifiers:\n");
-	gmt_message (GMT, "\t1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc.\n");
-	gmt_message (GMT, "\t2) 2-character <agency> codes which will return all cruises from each agency.\n");
-	gmt_message (GMT, "\t3) 4-character <agency><vessel> codes, which will return all cruises from those vessels.\n");
-	gmt_message (GMT, "\t4) A single =<list>, where <list> is a table with NGDC IDs, one per line.\n");
-	gmt_message (GMT, "\t5) If nothing is specified we return all cruises in the data base.\n");
-	gmt_message (GMT, "\t   [See the documentation for agency and vessel codes].\n");
+	GMT_Usage (GMT->parent, 2, "<cruises> can be one of five kinds of specifiers: "
+		"1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc., "
+		"2) 2-character <agency> codes which will return all cruises from each agency, "
+		"3) 4-character <agency><vessel> codes, which will return all cruises from those vessels, "
+		"4) A single =<list>, where <list> is a table with NGDC IDs, one per line, "
+		"5) If nothing is specified we return all cruises in the data base. "
+		"[See the documentation for agency and vessel codes].");
 }
 
 GMT_LOCAL int mgd77_compare_L (const void *p1, const void *p2) {
@@ -4543,7 +4543,7 @@ void MGD77_Set_Unit (struct GMT_CTRL *GMT, char *dist, double *scale, int way) {
 				*scale = METERS_IN_A_SURVEY_FOOT;
 				break;
 			default:	/* Meter assumed */
-				gmt_message (GMT, "Not a valid unit: %c [meter assumed]\n", c);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Not a valid unit: %c [meter assumed]\n", c);
 				*scale = 1.0;
 				break;
 		}
@@ -4555,61 +4555,61 @@ int MGD77_Fatal_Error (struct GMT_CTRL *GMT, int error) {
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Error [%d]: ", error);
 	switch (error) {
 		case MGD77_NO_HEADER_REC:
-			gmt_message (GMT, "Header record not found");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Header record not found");
 			break;
 		case MGD77_ERROR_READ_HEADER_ASC:
-			gmt_message (GMT, "Failure while reading ASCII header record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading ASCII header record");
 			break;
 		case MGD77_ERROR_READ_HEADER_BIN:
-			gmt_message (GMT, "Failure while reading binary header record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading binary header record");
 			break;
 		case MGD77_ERROR_WRITE_HEADER_ASC:
-			gmt_message (GMT, "Failure while writing ASCII header record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while writing ASCII header record");
 			break;
 		case MGD77_ERROR_WRITE_HEADER_BIN:
-			gmt_message (GMT, "Failure while writing binary header record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while writing binary header record");
 			break;
 		case MGD77_WRONG_HEADER_REC:
-			gmt_message (GMT, "Wrong header record was read");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Wrong header record was read");
 			break;
 		case MGD77_NO_DATA_REC:
-			gmt_message (GMT, "Data record not found");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Data record not found");
 			break;
 		case MGD77_ERROR_READ_ASC_DATA:
-			gmt_message (GMT, "Failure while reading ASCII data record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading ASCII data record");
 			break;
 		case MGD77_ERROR_READ_BIN_DATA:
-			gmt_message (GMT, "Failure while reading binary data record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading binary data record");
 			break;
 		case MGD77_ERROR_WRITE_ASC_DATA:
-			gmt_message (GMT, "Failure while writing ASCII data record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while writing ASCII data record");
 			break;
 		case MGD77_ERROR_WRITE_BIN_DATA:
-			gmt_message (GMT, "Failure while writing binary data record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while writing binary data record");
 			break;
 		case MGD77_WRONG_DATA_REC_LEN:
-			gmt_message (GMT, "Data record has incorrect length");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Data record has incorrect length");
 			break;
 		case MGD77_ERROR_CONV_DATA_REC:
-			gmt_message (GMT, "Failure while converting a field in current data record");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while converting a field in current data record");
 			break;
 		case MGD77_ERROR_NOT_MGD77PLUS:
-			gmt_message (GMT, "File is not in MGD77+ format");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "File is not in MGD77+ format");
 			break;
 		case MGD77_UNKNOWN_FORMAT:
-			gmt_message (GMT, "Unknown file format specifier");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown file format specifier");
 			break;
 		case MGD77_UNKNOWN_MODE:
-			gmt_message (GMT, "Unknown file open/create mode");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown file open/create mode");
 			break;
 		case MGD77_ERROR_NOSUCHCOLUMN:
-			gmt_message (GMT, "Column not in present file");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Column not in present file");
 			break;
 		case MGD77_BAD_ARG:
-			gmt_message (GMT, "Bad arument given to mgd77_place_text");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad arument given to mgd77_place_text");
 			break;
 		default:
-			gmt_message (GMT, "Unrecognized error");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized error");
 			break;
 	}
 

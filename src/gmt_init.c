@@ -2553,27 +2553,27 @@ GMT_LOCAL void gmtinit_verify_encodings (struct GMT_CTRL *GMT) {
 	/* First check for degree symbol */
 
 	if (GMT->current.setting.ps_encoding.code[gmt_ring] == 32 && GMT->current.setting.ps_encoding.code[gmt_degree] == 32) {	/* Neither /ring or /degree encoded */
-		gmt_message (GMT, "Selected character encoding does not have suitable degree symbol - will use space instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have suitable degree symbol - will use space instead\n");
 	}
 	else if (GMT->current.setting.map_degree_symbol == gmt_ring && GMT->current.setting.ps_encoding.code[gmt_ring] == 32) {		/* want /ring but only /degree is encoded */
-		gmt_message (GMT, "Selected character encoding does not have ring symbol - will use degree symbol instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have ring symbol - will use degree symbol instead\n");
 		GMT->current.setting.map_degree_symbol = gmt_degree;
 	}
 	else if (GMT->current.setting.map_degree_symbol == gmt_degree && GMT->current.setting.ps_encoding.code[gmt_degree] == 32) {	/* want /degree but only /ring is encoded */
-		gmt_message (GMT, "Selected character encoding does not have degree symbol - will use ring symbol instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have degree symbol - will use ring symbol instead\n");
 		GMT->current.setting.map_degree_symbol = gmt_ring;
 	}
 
 	/* Then single quote for minute symbol... */
 
 	if (GMT->current.setting.map_degree_symbol < 2 && GMT->current.setting.ps_encoding.code[gmt_squote] == 32) {
-		gmt_message (GMT, "Selected character encoding does not have minute symbol (single quote) - will use space instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have minute symbol (single quote) - will use space instead\n");
 	}
 
 	/* ... and double quote for second symbol */
 
 	if (GMT->current.setting.map_degree_symbol < 2 && GMT->current.setting.ps_encoding.code[gmt_dquote] == 32) {
-		gmt_message (GMT, "Selected character encoding does not have second symbol (double quote) - will use space instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have second symbol (double quote) - will use space instead\n");
 	}
 }
 
@@ -5330,10 +5330,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 			GMT->current.proj.pars[4] = GMT->current.proj.pars[5] = GMT->current.proj.pars[6] = GMT->current.proj.pars[7] = GMT->current.proj.pars[8] = GMT->current.proj.pars[9] = 0.0;
 
 			if (GMT->current.proj.g_debug > 1) {
-				gmt_message (GMT, "genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, j);
-				gmt_message (GMT, "initial error %d\n", error);
-				gmt_message (GMT, "j = %d\n", j);
-				gmt_message (GMT, "width_given %d\n", width_given);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, j);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper:  initial error %d  j = %d  width_given %d\n", error, j, width_given);
 			}
 
 			n = sscanf(args+i, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s",
@@ -5343,7 +5341,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 
 			if (GMT->current.proj.g_debug > 1) {
 				for (i = 0 ; i < n ; i ++) {
-					gmt_message (GMT, "txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
 				}
 				fflush (NULL);
 			}
@@ -5355,7 +5353,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					GMT->current.proj.pars[2] = 1.0 / (GMT->current.proj.pars[2] * GMT->current.proj.unit);
 				}
 				error += (m == 0) ? 1 : 0;
-				if (error) gmt_message (GMT, "scale entered but couldn't read\n");
+				if (error) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: scale entered but couldn't read\n");
 			}
 			else  if (width_given) {
 				GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-1][0]));
@@ -5370,12 +5368,12 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				}
 				else
 					error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
-				if (error) gmt_message (GMT, "error in reading last lat value\n");
+				if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "genper: error in reading last lat value\n");
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &(txt_arr[0][0]), GMT_IS_LON, &GMT->current.proj.pars[0]), &(txt_arr[0][0]));
-			if (error) gmt_message (GMT, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[1][0]), GMT_IS_LAT, &GMT->current.proj.pars[1]), &(txt_arr[1][0]));
-			if (error) gmt_message (GMT, "error reading latitude '%s'\n", &(txt_arr[1][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading latitude '%s'\n", &(txt_arr[1][0]));
 
 			/* g_alt    GMT->current.proj.pars[4] = atof(txt_c); */
 			nlen = (int)strlen(&(txt_arr[2][0]));
@@ -5384,7 +5382,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				txt_arr[2][nlen-1] = 0;
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &(txt_arr[2][0]), GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &(txt_arr[2][0]));
-			if (error) gmt_message (GMT, "error reading altitude '%s'\n", &(txt_arr[2][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading altitude '%s'\n", &(txt_arr[2][0]));
 
 			/* g_az    GMT->current.proj.pars[5] = atof(txt_d); */
 			nlen = (int)strlen(&(txt_arr[3][0]));
@@ -5393,7 +5391,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				txt_arr[3][nlen-1] = 0;
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[3][0]), GMT_IS_GEO, &GMT->current.proj.pars[5]), &(txt_arr[3][0]));
-			if (error) gmt_message (GMT, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
 
 			/* g_tilt    GMT->current.proj.pars[6] = atof(txt_e); */
 			nlen = (int)strlen(&(txt_arr[4][0]));
@@ -5402,7 +5400,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 				txt_arr[4][nlen-1] = 0;
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[4][0]), GMT_IS_GEO, &GMT->current.proj.pars[6]), &(txt_arr[4][0]));
-			if (error) gmt_message (GMT, "error reading tilt '%s'\n", &(txt_arr[4][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading tilt '%s'\n", &(txt_arr[4][0]));
 
 			if (n > 6) {
 				/*g_twist   GMT->current.proj.pars[7] = atof(txt_f); */
@@ -5412,22 +5410,22 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 					txt_arr[5][nlen-1] = 0;
 				}
 				error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[5][0]), GMT_IS_GEO, &GMT->current.proj.pars[7]), &(txt_arr[5][0]));
-				if (error) gmt_message (GMT, "error reading twist '%s'\n", &(txt_arr[5][0]));
+				if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading twist '%s'\n", &(txt_arr[5][0]));
 
 				/*g_width   GMT->current.proj.pars[8] = atof(txt_f); */
 				if (n > 7) {
 					error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[6][0]), GMT_IS_GEO, &GMT->current.proj.pars[8]), &(txt_arr[6][0]));
-					if (error) gmt_message (GMT, "error reading width '%s'\n", &(txt_arr[6][0]));
+					if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading width '%s'\n", &(txt_arr[6][0]));
 
 					if (n > 8) {
 						/* g_height  GMT->current.proj.pars[9] = atof(txt_g); */
 						error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[7][0]), GMT_IS_GEO, &GMT->current.proj.pars[9]), &(txt_arr[7][0]));
-						if (error) gmt_message (GMT, "error height '%s'\n", &(txt_arr[7][0]));
+						if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error height '%s'\n", &(txt_arr[7][0]));
 					}
 				}
 			}
 			error += (GMT->current.proj.pars[2] <= 0.0 || (k >= 0 && width_given));
-			if (error) gmt_message (GMT, "final error %d\n", error);
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "final error %d\n", error);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
 
@@ -7735,49 +7733,49 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind) {
 	unsigned int i;
 	double gap;
-	char pad[16];
 	char *type[3] = {"contour", "quoted line", "decorated line"};
 	char *feature[3] = {"label", "label", "symbol"};
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	gap = (GMT->current.setting.proj_length_unit == GMT_CM) ? 10.0 / 2.54 : 4.0;
 	gap *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 
-	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
-	gmt_message (GMT, "%sd<dist>[%s] or D<dist>[%s]  [Default is d%g%c].\n",
-		pad, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
-	gmt_message (GMT, "%s   d: Give distance between %ss with specified map unit in %s.\n", pad, feature[kind], GMT_DIM_UNITS_DISPLAY);
-	gmt_message (GMT, "%s   D: Specify geographic distance between %ss in %s,\n", pad, feature[kind], GMT_LEN_UNITS_DISPLAY);
-	gmt_message (GMT, "%s   The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].\n", pad, feature[kind]);
-	gmt_message (GMT, "%sf<file.d> reads file <file.d> and places %ss at locations\n", pad, feature[kind]);
-	gmt_message (GMT, "%s   that match individual points along the %ss.\n", pad, type[kind]);
-	gmt_message (GMT, "%sl|L<line1>[,<line2>,...] Give start and stop coordinates for\n", pad);
-	gmt_message (GMT, "%s   straight line segments; %ss will be placed where these\n", pad, feature[kind]);
-	gmt_message (GMT, "%s   lines intersect %ss.  The format of each <line>\n", pad, type[kind]);
-	gmt_message (GMT, "%s   is <start>/<stop>, where <start> or <stop> = <lon/lat> or a\n", pad);
-	gmt_message (GMT, "%s   2-character XY key that uses the \"pstext\"-style justification\n", pad);
-	gmt_message (GMT, "%s   format to specify a point on the map as [LCR][BMT].\n", pad);
+	GMT_Usage (API, indent, "%sd<dist>[%s] or D<dist>[%s]  [Default is d%g%c].",
+		GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
+	GMT_Usage (API, indent+3, "d: Give distance between %ss with specified map unit in %s.", feature[kind], GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, indent+3, "D: Specify geographic distance between %ss in %s, "
+		"The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].", feature[kind], GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, indent+3, "f<file.d> reads file <file.d> and places %ss at locations "
+		"that match individual points along the %ss.\n", feature[kind], type[kind]);
+	GMT_Usage (API, indent+3, "l|L<line1>[,<line2>,...] Give start and stop coordinates for "
+		"straight line segments; %ss will be placed where these "
+		"lines intersect %ss.  The format of each <line> "
+		"is <start>/<stop>, where <start> or <stop> = <lon/lat> or a "
+		"2-character XY key that uses the \"pstext\"-style justification "
+		"format to specify a point on the map as [LCR][BMT].\n", feature[kind], type[kind]);
 	if (kind == 0) {
-		gmt_message (GMT, "%s   In addition, you can use Z-, Z+ to mean the global\n", pad);
-		gmt_message (GMT, "%s   minimum and maximum locations in the grid.\n", pad);
+		GMT_Usage (API, indent+3, "In addition, you can use Z-, Z+ to mean the global "
+			"minimum and maximum locations in the grid.");
 	}
-	gmt_message (GMT, "%s   L Let point pairs define great circles [Straight lines].\n", pad);
-	gmt_message (GMT, "%sn|N<n_%s> sets number of equidistant %ss per %s.\n", pad, feature[kind], feature[kind], type[kind]);
-	gmt_message (GMT, "%s   N: Starts %s exactly at the start of %s\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s     [Default centers the %ss on the %s].\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s   N-1 places a single %s at start of the %s, while\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s   N+1 places a single %s at the end of the %s.\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s   Append /<min_dist> to enforce a minimum spacing between\n", pad);
-	gmt_message (GMT, "%s   consecutive %ss [0]\n", pad, feature[kind]);
+	GMT_Usage (API, indent+3, "L Let point pairs define great circles [Straight lines]. ");
+	GMT_Usage (API, indent+3, "n|N<n_%s> sets number of equidistant %ss per %s: "
+		"N: Starts %s exactly at the start of %s, "
+		"[Default centers the %ss on the %s]. "
+		"N-1 places a single %s at start of the %s, while "
+		"N+1 places a single %s at the end of the %s. "
+		"Append /<min_dist> to enforce a minimum spacing between "
+		"consecutive %ss [0]\n", feature[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind],
+			type[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind]);
 	if (kind == 1) {
-		gmt_message (GMT, "%ss|S<n_%s> sets number of equidistant %s per segmented %s.\n", pad, feature[kind], feature[kind], type[kind]);
-		gmt_message (GMT, "%s   Same as n|N but splits input lines to series of 2-point segments first.\n", pad);
+		GMT_Usage (API, indent+3, "s|S<n_%s> sets number of equidistant %s per segmented %s. "
+			"Similar to n|N but splits input lines to series of 2-point segments first.", feature[kind], feature[kind], type[kind]);
 	}
-	gmt_message (GMT, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places\n", pad);
-	gmt_message (GMT, "%s   %ss at intersections between %ss and lines in\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s   <xfile.d>.  Use X to resample the lines first.\n", pad);
+	GMT_Usage (API, indent+3, "x|X<xfile.d> reads the multi-segment file <xfile.d> and places "
+		"settings at intersections between %ss and lines in "
+		"<xfile.d>.  Use X to resample the lines first.", feature[kind], type[kind]);
 	if (kind < 2) {
-		gmt_message (GMT, "%s   For all options, append +r<radius> to specify minimum\n", pad);
-		gmt_message (GMT, "%s   radial separation between labels [0]\n", pad);
+		GMT_Usage (API, indent+3, "For all options, append +r<radius> to specify minimum "
+			"radial separation between labels [0]");
 	}
 }
 
@@ -9803,9 +9801,9 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file, bool theme
 		if (!theme) {	/* Must check validity and version */
 			if (rec != 2) { /* Nothing */ }
 			else if (strlen (line) < 7 || (ver = strtol (&line[6], NULL, 10)) < 5 )
-				gmt_message (GMT, "Your %s file (%s) may not be GMT %d compatible\n", GMT_SETTINGS_FILE, file, gmt_version_major);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your %s file (%s) may not be GMT %d compatible\n", GMT_SETTINGS_FILE, file, gmt_version_major);
 			else if (!strncmp (&line[6], "5.0.0", 5))
-				gmt_message (GMT, "Your %s file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", GMT_SETTINGS_FILE, file, file);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your %s file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", GMT_SETTINGS_FILE, file, file);
 		}
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\0') continue;	/* Skip Blank lines */
@@ -9826,7 +9824,7 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file, bool theme
 
 	gmtinit_verify_encodings (GMT);
 
-	if (error) gmt_message (GMT, "%d GMT Defaults conversion errors in file %s!\n", error, file);
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "%d GMT Defaults conversion errors in file %s!\n", error, file);
 
 	return (GMT_NOERROR);
 }
@@ -9848,7 +9846,7 @@ GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
 		error = gmtinit_loaddefaults (GMT, theme_file, true);
 	}
 	else
-		gmt_message (GMT, "Theme %s file not found - ignored\n", GMT->current.setting.theme);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Theme %s file not found - ignored\n", GMT->current.setting.theme);
 	return (error);
 }
 

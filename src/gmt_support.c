@@ -7523,14 +7523,15 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
-	gmt_message (GMT, "\t-%c Specify a colortable [Default is %s]:\n", option, GMT->current.setting.cpt);
-	gmt_message (GMT, "\t   [Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]\n");
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, 2, "-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
+	GMT_Usage (API, 5, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
 	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
-	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "\t   %s\n", GMT_CPT_master[k]);
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) GMT_Usage (API, 5, "%s", GMT_CPT_master[k]);
 	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
-	gmt_message (GMT, "\t   [For more, visit soliton.vm.bytemark.co.uk/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]\n");
-	gmt_message (GMT, "\t   Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear\n");
-	gmt_message (GMT, "\t   continuous CPT from those colors automatically.\n");
+	GMT_Usage (API, 5, "[For more, visit soliton.vm.bytemark.co.uk/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]. "
+		"Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear "
+		"continuous CPT from those colors automatically.");
 
 	return (GMT_NOERROR);
 }
@@ -14064,6 +14065,7 @@ void gmt_list_custom_symbols (struct GMT_CTRL *GMT) {
 
 	FILE *fp = NULL;
 	char list[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""};
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	/* Open the list in $GMT->session.SHAREDIR */
 
@@ -14073,9 +14075,9 @@ void gmt_list_custom_symbols (struct GMT_CTRL *GMT) {
 		return;
 	}
 
-	gmt_message (GMT, "\t     Available custom symbols (See Appendix N):\n");
+	GMT_Usage (API, 7, "Available custom symbols (See Appendix N):");
 	gmt_message (GMT, "\t     ---------------------------------------------------------\n");
-	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0)) gmt_message (GMT, "\t     %s", buffer);
+	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0)) GMT_Usage (API, 7, "%s", buffer);
 	fclose (fp);
 	gmt_message (GMT, "\t     ---------------------------------------------------------\n");
 }
