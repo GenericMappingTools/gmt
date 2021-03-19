@@ -222,7 +222,8 @@ modules. No space between the option flag and the associated arguments.
 .. _-R_full:
 .. _-R:
 
-.. |Add_-R| replace:: |Add_-R_links|
+.. |Add_-R| replace:: :ref:`(See cookbook information) <cookbook/options:Data domain or map region: The **-R** option>`.
+
 .. include:: explain_-R.rst_
 
 .. _-Rz_full:
