@@ -31,8 +31,17 @@ gmt begin
 	gmt events @waveform_AV.DOL.txt -R\${PLOT_DOMAIN} -JX20cT/3.5c -Ar\${DPI} -i0,3+s1e-6,0 -f2T --GMT_INTERPOLANT=\${SPLINE} > Z.txt
 	# 1b. Setup the desired output times (24 frames per second)
 	gmt math -T\${TIME_RANGE}/24+i -o0 T --TIME_UNIT=s --FORMAT_CLOCK_OUT=hh:mm:ss.xxxxx = times.txt
-	# 1c. Create background page with location map and metadata
-	gmt text -R0/4.5/0/13 -Jx1c -F+j+f -B0 -X0.25c -Y0.25c <<- EOF
+	# 1c. Lay down the static part of the subplot
+	gmt subplot begin 3x1 -Fs18.25c/3.5c -A -M0 -R\${PLOT_DOMAIN} -X5.5c -Y0.75c
+		gmt subplot set 0 -A"Z"
+		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWsrt -W0.5p,darkgray -i0,3+s1e-6
+		gmt subplot set 1 -A"N"
+		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWsrt -W0.5p,darkgray -i0,2+s1e-6
+		gmt subplot set 2 -A"E"
+		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,1+s1e-6
+	gmt subplot end
+	# 1d. Create location map and metadata
+	gmt text -R0/4.5/0/13 -Jx1c -F+j+f -B0 -X-5.25c -Y-0.5c <<- EOF
 	2.25 12.5 CM 18p 2020-10-06
 	2.25 11.7 CM 9p SE of Sand Point, Alaska
 	2.25 11 CM 10p 54.844@.N, 159.842@.W
@@ -51,18 +60,12 @@ EOF
 cat << EOF > main.sh
 gmt begin
 	gmt set FORMAT_DATE_MAP "o dd yyyy" FORMAT_CLOCK_MAP hh:mm FONT_ANNOT_PRIMARY +9p TIME_INTERVAL_FRACTION 0.01 FORMAT_CLOCK_MAP hh:mm:ss
-	gmt subplot begin 3x1 -Fs18.25c/3.5c -A -M0 -R\${PLOT_DOMAIN} -X5.5c -Y0.75c
-		gmt subplot set 0 -A"Z"
-		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWsrt -W0.5p,darkgray -i0,3+s1e-6
-		gmt events Z.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
+	gmt subplot begin 3x1 -Fs18.25c/3.5c -D -M0 -R\${PLOT_DOMAIN} -X5.5c -Y0.75c
+		gmt events Z.txt -Sc0.5p -Gred -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0} -c
 		printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p
-		gmt subplot set 1 -A"N"
-		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWsrt -W0.5p,darkgray -i0,2+s1e-6
-		gmt events N.txt -Sc0.5p -Ggreen -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
+		gmt events N.txt -Sc0.5p -Ggreen -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0} -c
 		printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p
-		gmt subplot set 2 -A"E"
-		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,1+s1e-6
-		gmt events E.txt -Sc0.5p -Gblue -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0}
+		gmt events E.txt -Sc0.5p -Gblue -Es+d0.5+r0.5 -Ms4+c1 -Mi0.5 -Mt+c0 -T\${MOVIE_COL0} -c
 		printf "%s -2.6\n%s 2.8\n" \${MOVIE_COL0} \${MOVIE_COL0} | gmt plot -W0.5p
 	gmt subplot end
 gmt end show
