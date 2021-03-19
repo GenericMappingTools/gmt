@@ -1,7 +1,7 @@
 .. _anim13:
 
-(13) Animating Time-Series
-==========================
+(13) Animating time-series (seismograms)
+=========================================
 
 Here we demonstrate how one can animate a time-series so that the line grows in length and temporarily
 change pen thickness and color/intensity as it is being written.  The trick we use is to convert the
