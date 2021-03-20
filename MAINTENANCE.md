@@ -225,7 +225,7 @@ There are 11 configuration files located in `.github/workflows/`:
   This workflow is run on every commit to the *master* branch and Pull Request branches. The workflow configures
   and builds GMT on Linux, macOS, and Windows and runs some simple tests. The workflow uses the scripts in the `ci/`
   directory for downloading/installing dependencies (`ci/download-coastlines.sh` and `ci/install-dependencies-*.sh`),
-  configuring GMT (`ci/config-gmt-*.sh`), building GMT (`ci/build-gmt.sh`), and running some simple
+  configuring GMT (`ci/config-gmt-*.sh`), building GMT, and running some simple
   tests (`ci/simple-gmt-tests.*`).
 
 3. `check-links.yml` (Check links in the repository and website)
@@ -236,7 +236,7 @@ There are 11 configuration files located in `.github/workflows/`:
 4. `ci-caches.yml` (Cache GMT remote data files and Windows vcpkg libraries needed for GitHub Actions CI)
 
   This workflow is run every Sunday at 12:00 (UTC). If new remote files are needed urgently, maintainers can
-  manually uncomment the 'pull_request:' line in the ``ci-caches.yml`` file to refresh the cache. The workflow uses the
+  manually uncomment the 'pull_request:' line in the `ci-caches.yml` file to refresh the cache. The workflow uses the
   script `ci/install-dependencies-windows.sh` to cache the vcpkg libraries.
 
 5. `code-validator.yml` (Validate code consistency)
@@ -264,7 +264,11 @@ There are 11 configuration files located in `.github/workflows/`:
 
 8. `draft-release.yml` (Drafts the next release notes)
 
-  This workflow is run to update the next releases notes as Pull Requests are merged into the *master* branch.
+   This workflow is run to draft the next release notes when new tags are made. It downloads
+   GMT tarballs, macOS bundle and Windows installers from the GMT FTP server, calculate their
+   sha256sums and save into `gmt-X.Y.Z-checksums.txt`, draft the release notes, and uploads 
+   them as release assets. Maintainers still need to review the draft release notes and
+   click the "publish" button. 
 
 9. `lint-checker.yml` (Run cppchecks)
 
