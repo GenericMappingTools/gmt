@@ -212,15 +212,15 @@ Here are some of the shortcuts included in [`bashrc_for_gmt`](/admin/bashrc_for_
 
 ## Continuous Integration
 
-We use GitHub Actions Continuous Integration (CI) services to build and test the project on Linux, macOS and Windows.
+We use GitHub Actions Continuous Integration (CI) services to build and test the project on Linux, macOS, and Windows.
 
 There are 11 configuration files located in `.github/workflows/`:
 
-1. `backport.yml` (Backports PRs with specific labels into the matching branch)
+1. `backport.yml` (Backports Pull Requests with specific labels into the matching branch)
 
-   This workflow backports PRs labelled by "backport xxx" into the "xxx" branch. For example, the workflow can
-   backport a PR labelled "backport 6.1" into the "6.1" branch. This workflow does not apply to PRs from forks
-   [issue #3827](https://github.com/GenericMappingTools/gmt/issues/3827).
+   This workflow backports Pull Requests labelled by "backport xxx" into the "xxx" branch. For example, the workflow
+   backports Pull Requests labelled "backport 6.1" into the "6.1" branch. This workflow does not apply to Pull Requests
+   from forks ([issue #3827](https://github.com/GenericMappingTools/gmt/issues/3827)).
 
 2. `build.yml` (Build GMT and run a few simple tests)
 
