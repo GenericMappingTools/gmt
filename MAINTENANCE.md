@@ -278,12 +278,12 @@ There are 11 configuration files located in `.github/workflows/`:
 
 10. `scm-check.yml` (Check for new scientific color maps releases)
 
-   This workflows is run every Sunday at 12:00 (UTC) to check whether there has been a new release of the
-   [Scientific colour maps](http://www.fabiocrameri.ch/colourmaps.php). If a new release is found, it will open an
-   issue automatically.
+    This workflows is run every Sunday at 12:00 (UTC) to check whether there has been a new release of the
+    [Scientific colour maps](http://www.fabiocrameri.ch/colourmaps.php). If a new release is found, it will open an
+    issue automatically.
 
 11. `tests.yml`  (Tests on Linux/macOS/Windows)
 
-   This workflow is run when Pull Requests are merged into the *master* branch, if the Pull Request involved changes
-   to the folders that contain source code, workflows, tests, or scripts for generating documentation figures. It runs
-   the full GMT test suite on Linux, macOS, and Windows.
+    This workflow is run when Pull Requests are merged into the *master* branch, if the Pull Request involved changes
+    to the folders that contain source code, workflows, tests, or scripts for generating documentation figures. It runs
+    the full GMT test suite on Linux, macOS, and Windows.
