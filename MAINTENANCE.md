@@ -12,6 +12,7 @@ Below are instructions for developers and advanced users.
 - [Updating the development source codes](#updating-the-development-source-codes)
 - [Debugging GMT](#debugging-gmt)
 - [Using build and test aliases](#using-build-and-test-aliases)
+- [Continuous Integration](#continuous-integration)
 
 ## Building the source code
 
@@ -208,3 +209,81 @@ Here are some of the shortcuts included in [`bashrc_for_gmt`](/admin/bashrc_for_
 - `vpngdbuild` and `vpdfdbuild` can be used to open the results from all failing image-based tests.
 - `view_png_failures_r` and `view_pdf_failures_r` can be used for view failures of the release build with a lag between
   opening each file.
+
+## Continuous Integration
+
+We use GitHub Actions Continuous Integration (CI) services to build and test the project on Linux, macOS, and Windows.
+
+There are 11 configuration files located in `.github/workflows/`:
+
+1. `backport.yml` (Backports Pull Requests with specific labels into the matching branch)
+
+   This workflow backports Pull Requests labelled by "backport xxx" into the "xxx" branch. For example, the workflow
+   backports Pull Requests labelled "backport 6.1" into the "6.1" branch. This workflow does not apply to Pull Requests
+   from forks ([issue #3827](https://github.com/GenericMappingTools/gmt/issues/3827)).
+
+2. `build.yml` (Build GMT and run a few simple tests)
+
+   This workflow is run on every commit to the *master* branch and Pull Request branches. The workflow configures
+   and builds GMT on Linux, macOS, and Windows and runs some simple tests. The workflow uses the scripts in the `ci/`
+   directory for downloading/installing dependencies (`ci/download-coastlines.sh` and `ci/install-dependencies-*.sh`),
+   configuring GMT (`ci/config-gmt-*.sh`), building GMT, and running some simple
+   tests (`ci/simple-gmt-tests.*`).
+
+3. `check-links.yml` (Check links in the repository and website)
+
+   This workflow is run every Sunday at 12:00 (UTC) to check all external links in plaintext and HTML files. It will
+   create an issue if broken links are found.
+
+4. `ci-caches.yml` (Cache GMT remote data files and Windows vcpkg libraries needed for GitHub Actions CI)
+
+   This workflow is run every Sunday at 12:00 (UTC). If new remote files are needed urgently, maintainers can
+   manually uncomment the 'pull_request:' line in the `ci-caches.yml` file to refresh the cache. The workflow uses the
+   script `ci/install-dependencies-windows.sh` to cache the vcpkg libraries.
+
+5. `code-validator.yml` (Validate code consistency)
+
+   This workflow is run on every commit to the *master* branch and Pull Request branches. It runs the scripts
+   `src/gmt_make_PSL_strings.sh`, `src/gmt_make_enum_dicts.sh`, and `src/gmt_make_module_purpose.sh` and exits with an
+   error if any changes are detected by git. It also checks the GMT version year in `ConfigDefault.cmake` and the
+   permissions of the bash scripts.
+
+6. `docker.yml` (Build GMT on different Linux distros using dockers)
+
+   This workflow is run when Pull Requests are merged into the *master* branch. It downloads/installs dependencies
+   and configures and builds GMT on different Linux distributions using dockers.
+
+7. `docs.yml`  (Build documentation on Linux/macOS/Windows)
+
+   This workflow is run when Pull Requests are merged into the *master* branch, if the Pull Request involved changes to
+   files in the `doc/`, `.github/workflows/`, or `ci/` directories.
+
+   The workflow also handles the documentation deployment:
+
+   * Updating the development documentation by pushing the built HTML pages from the *master* branch into the `dev`
+     folder of the *gh-pages* branch.
+   * Updating the `latest` documentation link to the new release.
+
+8. `draft-release.yml` (Drafts the next release notes)
+
+   This workflow is run to draft the next release notes when new tags are made. It downloads
+   GMT tarballs, macOS bundle and Windows installers from the GMT FTP server, calculate their
+   sha256sums and save into `gmt-X.Y.Z-checksums.txt`, draft the release notes, and uploads
+   them as release assets. Maintainers still need to review the draft release notes and
+   click the "publish" button.
+
+9. `lint-checker.yml` (Run cppchecks)
+
+   This workflow is run every day at 12:00 (UTC) to run `admin/run_cppcheck.sh` on the source code.
+
+10. `scm-check.yml` (Check for new scientific color maps releases)
+
+    This workflows is run every Sunday at 12:00 (UTC) to check whether there has been a new release of the
+    [Scientific colour maps](http://www.fabiocrameri.ch/colourmaps.php). If a new release is found, it will open an
+    issue automatically.
+
+11. `tests.yml`  (Tests on Linux/macOS/Windows)
+
+    This workflow is run when Pull Requests are merged into the *master* branch, if the Pull Request involved changes
+    to the folders that contain source code, workflows, tests, or scripts for generating documentation figures. It runs
+    the full GMT test suite on Linux, macOS, and Windows.
