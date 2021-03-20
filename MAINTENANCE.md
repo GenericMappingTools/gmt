@@ -218,7 +218,7 @@ There are 11 configuration files located in `.github/workflows/`:
 
 1. `backport.yml` (Backports PRs into the 6.1 branch)
 
-  This workflow backports PRs labels by "backport 6.1" into the 6.1 branch.
+   This workflow backports PRs labels by "backport 6.1" into the 6.1 branch.
 
 2. `build.yml` (Build GMT and run a few simple tests)
 
