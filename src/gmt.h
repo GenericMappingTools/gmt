@@ -129,7 +129,7 @@ EXTERN_MSC int GMT_Get_Info            (void *API, unsigned int family, void *da
 EXTERN_MSC int GMT_Get_Values          (void *API, const char *arg, double *par, int maxpar);
 EXTERN_MSC int GMT_Report              (void *API, unsigned int level, const char *message, ...);
 EXTERN_MSC int GMT_Message             (void *API, unsigned int mode, const char *format, ...);
-EXTERN_MSC int GMT_Usage               (void *API, unsigned int indent, const char *format, ...);
+EXTERN_MSC int GMT_Usage               (void *API, int indent, const char *format, ...);
 EXTERN_MSC char * GMT_Error_Message    (void *API);
 EXTERN_MSC int GMT_Handle_Messages     (void *API, unsigned int mode, unsigned int method, void *dest);
 

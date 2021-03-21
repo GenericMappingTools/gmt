@@ -13345,7 +13345,10 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	return (array);
 }
 
-GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, unsigned int indent, FILE *fp, const char *in_line) {
+static  int gmtapi_indent[7] = {0, 2, 5, 8, 10, 12, 14};
+
+#if 0
+GMT_LOCAL void gmtapi_wrap_the_line_orig (struct GMTAPI_CTRL *API, int indent, FILE *fp, const char *in_line) {
 	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
 	unsigned int width, k, j, current_width = 0;
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
@@ -13387,9 +13390,55 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, unsigned int inden
 	free (W);	/* Free the structure array */
 	API->print_func (fp, message);	/* Do the printing */
 }
+#endif
+
+GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int indent, FILE *fp, const char *in_line) {
+	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
+	bool jumpstart = (indent < 0);
+	int width, k, j, current_width = 0;
+	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
+	char message[GMT_MSGSIZ] = {""};
+
+	/* Start with any fixed indent */
+	indent = abs (indent);	/* In case it was negative */
+	if (jumpstart) indent++;
+	for (j = 0; j < gmtapi_indent[indent]; j++) strcat (message, " ");	/* Starting spaces */
+	current_width = gmtapi_indent[indent];
+	if (jumpstart) indent--;
+	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
+		width = (W[k+1].space) ? API->terminal_width : API->terminal_width - 1;	/* May need one space for ellipsis at end */
+		if ((current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
+			if (W[k].space)	/* This word requires a leading space */
+				strcat (message, " ");
+			strcat (message, W[k].word);
+			current_width += strlen (W[k].word) + W[k].space;	/* Update line width so far */
+			free (W[k].word);	/* Free the word we are done with */
+			if (W[k+1].word == NULL)	/* Finalize the last line */
+				strcat (message, "\n");
+		}
+		else {	/* Must split at the current break point and continue on next line */
+			if (W[k].space) { /* No break character needed since space separation is expected */
+				strcat (message, "\n");	/* Move to new line */
+				for (j = 0; j < gmtapi_indent[indent+1]; j++) strcat (message, " ");	/* Initial indent plus next indent*/
+				current_width = gmtapi_indent[indent+1];	/* Indent plus next indent */
+			}
+			else {	/* Split in the middle of an option so append breakline and start new line with ellipsis after indent */
+				strcat (message, GMT_LINE_BREAK);
+				strcat (message, "\n");
+				for (j = 0; j < gmtapi_indent[indent+1]+1; j++) strcat (message, " ");	/* Initial indent plus next plus 1 */
+				strcat (message, GMT_LINE_CONT);		/* And the ellipsis */
+				current_width = gmtapi_indent[indent+1] + 1;	/* Indent plus the next indent plus 1 */
+			}
+			W[k].space = 0;	/* Can be no leading space if starting a the line */
+			k--;	/* Since k will be incremented by loop and we did not write this word yet */
+		}
+	}
+	free (W);	/* Free the structure array */
+	API->print_func (fp, message);	/* Do the printing */
+}
 
 /*! . */
-int GMT_Usage (void *V_API, unsigned int indent, const char *format, ...) {
+int GMT_Usage (void *V_API, int indent, const char *format, ...) {
 	/* Wrapped usage message independent of verbosity.
 	 * indent is the starting indent of the line
 	 * format and optional args must be printed to a string first, then wrapped.
