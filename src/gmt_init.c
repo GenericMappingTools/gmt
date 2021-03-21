@@ -7615,7 +7615,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 1, "-+ (or +) Print longer synopsis message.");
 			GMT_Usage (API, 1, "-? (or no arguments) Print this usage message.");
 			GMT_Usage (API, 1, "--PAR=<value> Temporarily override GMT default setting(s) (repeatable).");
-			GMT_Usage (API, 1+2, "(See %s documentation for GMT default parameters).", GMT_SETTINGS_FILE);
+			GMT_Usage (API, -1, "(See %s documentation for GMT default parameters).", GMT_SETTINGS_FILE);
 			break;
 
 		case ';':	/* Trailer message without --PAR=value etc */
