@@ -6898,7 +6898,8 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
 
 GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, 1, "-R Specify the min/max coordinates of your data region in user units. "
+	GMT_Usage (API, 1, "%s", GMT_Rgeo_OPT);
+	GMT_Usage (API, -1, "Specify the min/max coordinates of your data region in user units. "
 		"Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds]. "
 		"Use -R<xmin/xmax/ymin/ymax>+u<unit> for regions given in projected coordinates, "
 		"with <unit> selected from %s. "
@@ -6906,7 +6907,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 		"Append +r if -R specifies the coordinates of the lower left and "
 		"upper right corners of a rectangular area.", GMT_LEN_UNITS2_DISPLAY);
 	if (GMT->current.setting.run_mode == GMT_MODERN) {
-		GMT_Usage (API, 2, "Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable). "
+		GMT_Usage (API, -1, "Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable). "
 		"Use -R<gridfile> to use its limits (and increments if applicable). "
 		"Use -Rg and -Rd as shorthands for -R0/360/-90/90 and -R-180/180/-90/90. "
 		"Derive region from closed polygons from the Digital Chart of the World (DCW): "
@@ -7294,9 +7295,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'S':	/* CarteSian Region option */
 
-			GMT_Usage (API, 1, "-R Specify the xmin/xmax/ymin/ymax coordinates of data region in user units. n"
-				"Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time coordinates. "
-				"Or, give a gridfile to use its region (and increments, registration if applicable).");
+			GMT_Usage (API, 1, "%s", GMT_Rx_OPT);
+			GMT_Usage (API, -1, "Specify the coordinates of data region in user units. "
+				"Use [yyyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time coordinates. "
+				"Or, give a <gridfile> to use its region (and increments, registration if applicable).");
 			break;
 
 		case 'G':	/* Geographic Region option */
@@ -7361,7 +7363,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'x':	/* Just linear -Jx|X allowed for this program */
 
-			GMT_Usage (API, 1, "-Jx|X for linear projection.  Scale in %s/units (or width in %s). "
+			GMT_Usage (API, 1, "-Jx|X<scl>|<height>[d|l|p<power>|t|T][/<scl>|<height>[d|l|p<power>|t|T]]");
+			GMT_Usage (API, -1, "Scaling for linear projection.  Scale in %s/units (or width in %s). "
 				"Use / to specify separate x/y scaling. If -JX is used then give axes lengths in %s rather than scales.",
 				GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 				GMT->session.unit_name[GMT->current.setting.proj_length_unit]); 
@@ -7377,26 +7380,26 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 #endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
 
-			GMT_Usage (API, 2, "-JZ|z For z component of 3-D projections.  Same syntax as -JX|x, i.e., "
-				"-Jz|Z<z-scl>|<height>[d|l|p<power>|t|T] (Linear, log, and power projections).");
+			GMT_Usage (API, 1, "-Jz|Z<z-scl>|<height>[d|l|p<power>|t|T]");
+			GMT_Usage (API, -1, "Scaling for z-component of 3-D projections.  Same syntax as -JX|x for Linear, log, and power projections.");
 			break;
 
 		case 'a':	/* -a option for aspatial field substitution into data columns */
 
 			GMT_Usage (API, 1, "%s", GMT_a_OPT);
-			GMT_Usage (API, 1, "Aspatial data selection.  Give one or more comma-separated <col>=<name> associations. "
+			GMT_Usage (API, -1, "Aspatial data selection.  Give one or more comma-separated <col>=<name> associations. "
 				"[Default selects all aspatial fields].");
 			break;
 
 		case 'C':	/* -b binary option with input only */
 
 			GMT_Usage (API, 1, "%s", GMT_bi_OPT);
-			GMT_Usage (API, -1, "Select binary input; [<n>]<type>[w][+l|b]; <type> = c|u|h|H|i|I|l|L|f|D.");
+			GMT_Usage (API, -1, "Select binary input; <type> = c|u|h|H|i|I|l|L|f|D.");
 			break;
 
 		case '0':	/* -bi/-bo addendum when input format is unknown */
 
-			GMT_Usage (API, -1, "Prepend <n> for the number of columns for each <type>.");
+			GMT_Usage (API, -1, "Prepend <ncols> for the number of columns for each <type>.");
 			break;
 
 		case '1':	/* -bi/-bo addendum when input format is unknown */
@@ -7407,13 +7410,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case '6':
 		case '7':
 
-			GMT_Usage (API, -1, "Prepend <n> for the number of columns for each <type> in binary file(s) [%c].", options[k]);
+			GMT_Usage (API, -1, "Prepend <ncols> for the number of columns for each <type> in binary file(s) [%c].", options[k]);
 			break;
 
 		case 'D':	/* -b binary option with output only */
 
 			GMT_Usage (API, 1, "%s", GMT_bo_OPT);
-			GMT_Usage (API, -1, "Select binary output; append <type>[w][+l|b]; <type> = c|u|h|H|i|I|l|L|f|D.");
+			GMT_Usage (API, -1, "Select binary output; <type> = c|u|h|H|i|I|l|L|f|D.");
 			break;
 
 		case 'c':	/* -c option advances subplot panel focus under modern mode */
@@ -7458,10 +7461,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 2, "+S Set the current symbol <size>.");
 			GMT_Usage (API, 2, "+V Enable vertical lines between columns, optionally append <pen>].");
 			GMT_Usage (API, 2, "+f Set <font> used for the label.");
-			GMT_Usage (API, 2, "+g Set a frame fill <fill> [white]");
+			GMT_Usage (API, 2, "+g Set a frame fill <fill> [white].");
 			GMT_Usage (API, 2, "+j Set the justification of the legend [BL].");
 			GMT_Usage (API, 2, "+o Shift legend placement from reference point by <off> [0.2c].");
-			GMT_Usage (API, 2, "+p Draw frame outline, optionally append <pen> [1p]");
+			GMT_Usage (API, 2, "+p Draw frame outline, optionally append <pen> [1p].");
 			GMT_Usage (API, 2, "+s Set an overall symbol scale [1].");
 			GMT_Usage (API, 2, "+w Set a specific legend width [auto].");
 			break;
@@ -8088,22 +8091,21 @@ void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	static char *type[5] = {"logo", "image", "legend", "scale", "vertical scale"};
 	assert (kind < 5);
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	GMT_Usage (API, 1, "-%c %s", option, string);
-	GMT_Usage (API, 2, "Without further options: draw border around the %s panel (using MAP_FRAME_PEN) "
-		"[Default is no border]. "
-		"Append +c<clearance> where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp]. "
-		"Note: For a map inset the default clearance is zero. "
+	GMT_Usage (API, 1, "-%c%s", option, GMT_PANEL);
+	GMT_Usage (API, -1, "%s", string);
+	GMT_Usage (API, -1, "Without further options: draw frame around the %s panel (using MAP_FRAME_PEN) "
+		"[Default is no frame].  Available modifiers:", type[kind]);
+	GMT_Usage (API, 2, "+c<clearance> Set clearance where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp]. "
+		"Note: For a map inset the default clearance is zero.", GMT_FRAME_CLEARANCE);
 #ifdef DEBUG
-		"Append +d to draw guide lines for debugging. "
+	GMT_Usage (API, 2, "+d Draw guide lines for debugging.");
 #endif
-		"Append +g<fill> to set the fill for the %s panel [Default is no fill]. "
-		"Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp]. "
-		"Append +p[<pen>] to draw the border and optionally change the border pen [%s]. "
-		"Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp]. "
-		"Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the %s panel [Default is %gp/%gp/gray50].",
-			type[kind], GMT_FRAME_CLEARANCE, GMT_FRAME_GAP, type[kind],
-			gmt_putpen (GMT, &GMT->current.setting.map_frame_pen),
-			GMT_FRAME_RADIUS, type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+	GMT_Usage (API, 2, "+g Set the <fill> for the %s panel [Default is no fill].", type[kind]);
+	GMT_Usage (API, 2, "+i Draw secondary inner frame boundary [Default gap is %gp].", GMT_FRAME_GAP);
+	GMT_Usage (API, 2, "+p Draw the border and optionally change the border <pen> [%s]. ", gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
+	GMT_Usage (API, 2, "+r Draw rounded rectangles instead [Default <radius> is %gp].", GMT_FRAME_RADIUS);
+	GMT_Usage (API, 2, "+s Place a shadow behind the %s panel [Default is %gp/%gp/gray50].",
+		type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 }
 /*! .
 	\param GMT ...
