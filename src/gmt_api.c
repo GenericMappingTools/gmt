@@ -13350,20 +13350,19 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	return (array);
 }
 
-GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int indent, FILE *fp, const char *in_line) {
+GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *fp, const char *in_line) {
 	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
-	bool jumpstart = (indent < 0);
-	int width, k, j, current_width = 0;
+	bool keep_same_indent = (level < 0);
+	int width, k, j, next_level, current_width = 0;
 	static int gmtapi_indent[7] = {0, 2, 5, 7, 10, 12, 15};
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
 	char message[GMT_MSGSIZ] = {""};
 
 	/* Start with any fixed indent */
-	indent = abs (indent);	/* In case it was negative */
-	if (jumpstart) indent++;
-	for (j = 0; j < gmtapi_indent[indent]; j++) strcat (message, " ");	/* Starting spaces */
-	current_width = gmtapi_indent[indent];
-	if (jumpstart) indent--;
+	level = abs (level);	/* In case it was negative */
+	next_level = (keep_same_indent) ? level : level + 1;	/* Do we indent when we wrap or not */
+	for (j = 0; j < gmtapi_indent[level]; j++) strcat (message, " ");	/* Starting spaces */
+	current_width = gmtapi_indent[level];
 	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
 		width = (W[k+1].space) ? API->terminal_width : API->terminal_width - 1;	/* May need one space for ellipsis at end */
 		if ((current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
@@ -13378,15 +13377,15 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int indent, FILE *
 		else {	/* Must split at the current break point and continue on next line */
 			if (W[k].space) { /* No break character needed since space separation is expected */
 				strcat (message, "\n");	/* Move to new line */
-				for (j = 0; j < gmtapi_indent[indent+1]; j++) strcat (message, " ");	/* Initial indent plus next indent*/
-				current_width = gmtapi_indent[indent+1];	/* Indent plus next indent */
+				for (j = 0; j < gmtapi_indent[next_level]; j++) strcat (message, " ");	/* Initial indent plus possibly next indent*/
+				current_width = gmtapi_indent[next_level];	/* Indent plus next indent */
 			}
 			else {	/* Split in the middle of an option so append breakline and start new line with ellipsis after indent */
 				strcat (message, GMT_LINE_BREAK);
 				strcat (message, "\n");
-				for (j = 0; j < gmtapi_indent[indent+1]; j++) strcat (message, " ");	/* Initial indent plus next indent */
+				for (j = 0; j < gmtapi_indent[next_level]; j++) strcat (message, " ");	/* Initial indent plus possibly next indent */
 				strcat (message, GMT_LINE_CONT);		/* And the ellipsis */
-				current_width = gmtapi_indent[indent+1];	/* Indent plus the next indent */
+				current_width = gmtapi_indent[next_level];	/* Indent plus the next indent */
 			}
 			W[k].space = 0;	/* Can be no leading space if starting a the line */
 			k--;	/* Since k will be incremented by loop and we did not write this word yet */
@@ -13397,38 +13396,38 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int indent, FILE *
 }
 
 /*! . */
-int GMT_Usage (void *V_API, int indent, const char *format, ...) {
+int GMT_Usage (void *V_API, int level, const char *format, ...) {
 	/* Wrapped usage message independent of verbosity.
-	 * indent is the starting indent level of the line
+	 * level is the starting indent level of the line
 	 * format and optional args must be printed to a string first, then wrapped.
 	 *
-	 * Explanation for the use of indent:
+	 * Explanation for the use of level:
 	 * 0  : Only use for the synopsis message where we start all the way to the left.
 	 *      Once the first line wraps we indent all subsequent lines by the same amount.
 	 *      Below, | here means the start of the terminal's left margin and the number
-	 *      in braces {2} indicates which indent was used for that line.
+	 *      in braces {2} indicates which level was used for that line.
 	 *      |usage: gmt gmtsimplify [<table>] -T<tolerance>[<unit>] [-Q...]<return> {0}
 	 *      |  [-d[i|o]<nodata>] [-e[~]<pattern>] ...
-	 * 1  : First indent is used for listing of options:
+	 * 1  : First level is used for listing of options:
 	 *      |  -Rwest/east/south/north[+r]   {1}
 	 *      |     Set the region of the plot, blah blah...
-	 *      The text set with indent = 1 that wraps will indent one more step
-	 * -1 : A negative indent will act as if the given line has already wrapped
-	 *      once and thus indents right away.  Thus, multi-line wrapped text will
-	 *      all share the same left margin.
-	 *      |     Furthermore, this options is deadly because ... {-1}
+	 *      The text set with level = 1 that wraps will indent one more step
+	 * -1 : A negative level means no indent once the line wraps. Thus, multi-line
+	 *      wrapped text will all share the same left margin.
+	 *      |  Furthermore, this options is deadly because ... {-1}
+	 *      |  and that is why we skip this line.
 	 * 2  : Used for a paragraph under an option that should be wrapped and indented
 	 *      if it exceeds a line, e.g.
 	 *      |     You may optionally do this or that or this or that, for instance, {2}
 	 *      |       you could append a constant....
-	 * -2 : Same as -1 but for indent 2.  Immediate indent and stays at that level.
+	 * -2 : Same as -1 but for level 2.  No further indent, just stays at that level.
 	 * 3  : Used to indent separate modifiers under an option.  E.g. (for +a,b below):
 	 *      |  -Q<value][+a][+b]...   {1}
 	 *      |     Mess up the plot by random lines ... blah blah.  Available modifiers: {-1}
 	 *      |       +a Draw random lines from a Poisson distribution so that we get {3}
 	 *      |          a quirky plot.
 	 *      |       +b Add 7 to all answers just for fun.  {3}
-	 * -3:  Same as -1 but for indent 3.  Immediate indent and stays at that level.
+	 * -3:  Same as -1 but for level 3.  No further indent, just stay at that level.
 	 * etc, etc.
 	 */
 	struct GMTAPI_CTRL *API = NULL;
@@ -13445,14 +13444,14 @@ int GMT_Usage (void *V_API, int indent, const char *format, ...) {
 	va_end (args);
 	assert (strlen (API->message) < GMT_MSGSIZ);
 	if (API->GMT) err = API->GMT->session.std[GMT_ERR];
-	gmtapi_wrap_the_line (API, indent, err, API->message);
+	gmtapi_wrap_the_line (API, level, err, API->message);
 	return_error (V_API, GMT_NOERROR);
 }
 
 #ifdef FORTRAN_API
-int GMT_Usage_ (unsigned int *indent, const char *format, int len) {
+int GMT_Usage_ (unsigned int *level, const char *format, int len) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
-	return (GMT_Usage (GMT_FORTRAN, *indent, format));
+	return (GMT_Usage (GMT_FORTRAN, *level, format));
 }
 #endif
 

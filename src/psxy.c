@@ -636,7 +636,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Usage (API, 1, "-T Ignore all input files.");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", 15);
-	GMT_Usage (API, 2, "To assign pen outline color via -Z, give append +z).");
+	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
 	GMT_Usage (API, 1, "-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>. "
 		"To use <color> for fill, select -G+z. "
