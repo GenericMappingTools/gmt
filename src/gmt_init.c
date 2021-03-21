@@ -7049,13 +7049,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"plot in %s. Optional modifiers:",
 					GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 					GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			GMT_Usage (API, 2, "+dh Specifying map height.");
-			GMT_Usage (API, 2, "+du Specifying maximum map dimension.");
-			GMT_Usage (API, 2, "+dl Specifying minimum map dimension.");
-			GMT_Usage (API, 2, "+dw Specifying map width [Default].");
+			GMT_Usage (API, 3, "+dh Specifying map height.");
+			GMT_Usage (API, 3, "+du Specifying maximum map dimension.");
+			GMT_Usage (API, 3, "+dl Specifying minimum map dimension.");
+			GMT_Usage (API, 3, "+dw Specifying map width [Default].");
 			GMT_Usage (API, -2, "When the central meridian (lon0) is optional and omitted, the center of the "
 				"longitude range set by -R is used. The default standard parallel is the equator. "
-				"Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given. Available projections:\n");
+				"Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given. Available projections:");
 	
 			GMT_Usage (API, 2, "-Ja|A<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Lambert Azimuthal Equal Area). "
 				"<lon0>/<lat0> is the center of the projection, and "
@@ -7095,12 +7095,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective). "
 				"<lon0>/<lat0> is the center of the projection, while "
-				"<altitude> is the height (in km) of the viewpoint above local sea level.");
-			GMT_Usage (API, 3, "If <altitude> less than 10 then it is the distance "
-				"from center of earth to viewpoint in earth radii.");
-			GMT_Usage (API, 3, "If <altitude> has a suffix of 'r' then it is the radius "
-				"from the center of earth in kilometers.");
-			GMT_Usage (API, 3, "   <azimuth> is azimuth east of North of view, "
+				"<altitude> is the height (in km) of the viewpoint above local sea level."
+				"If <altitude> less than 10 then it is the distance "
+				"from center of earth to viewpoint in earth radii. "
+				"If <altitude> has a suffix of 'r' then it is the radius "
+				"from the center of earth in kilometers. "
+				"<azimuth> is azimuth east of North of view, "
 				"<tilt> is the upward tilt of the plane of projection; "
 				"if <tilt> < 0 then viewpoint is centered on the horizon, "
 				"<twist> is the CW twist of the viewpoint in degree, "
@@ -7133,22 +7133,22 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 3, "-Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>. "
 				"Give origin, second point on oblique equator, and scale at oblique equator.");
 			GMT_Usage (API, 3, "-Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>."
-				"Give origin, pole of projection, and scale at oblique equator. "
-				"Specify region in oblique degrees OR use -R<...>+r. "
+				"Give origin, pole of projection, and scale at oblique equator.");
+			GMT_Usage (API, -3, "Specify region in oblique degrees OR use -R<...>+r. "
 				"Uppercase A|B|C removes enforcement of a northern hemisphere pole. "
 				"Append +v to make the oblique Equator the y-axis [x-axis].");
 
 			GMT_Usage (API, 2, "-Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius)). "
-				"Linear scaling for polar coordinates.  Give <scale> in %s/units. ",
+				"Linear scaling for polar coordinates.  Give <scale> in %s/units. Optional modifiers:",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			GMT_Usage (API, 3, "Append +a to use azimuths (CW from North) instead of directions (CCW from East) [Default].");
-			GMT_Usage (API, 3, "Append +f to flip radial direction so that south is on the outside and north is at the center. "
+			GMT_Usage (API, 3, "+a Use azimuths (CW from North) instead of directions (CCW from East) [Default].");
+			GMT_Usage (API, 3, "+f Flip radial direction so south is on the outside and north is at the center. "
 				"Append e to indicate data are elevations in degrees (s/n must be in 0-90 range). "
 				"Append p to set r = current planetary radius to be the center. "
 				"Append <radius> to indicate the radius at the center.");
-			GMT_Usage (API, 3, "Append +r to offset the radial values [0].");
-			GMT_Usage (API, 3, "Append +t to set <origin> value for angles or azimuths [0].");
-			GMT_Usage (API, 3, "Append +z to annotate depths rather than radius [Default]. Alternatively, if you provided depths "
+			GMT_Usage (API, 3, "+r Offset the radial values [0].");
+			GMT_Usage (API, 3, "+t Set <origin> value for angles or azimuths [0].");
+			GMT_Usage (API, 3, "+z Annotate depths rather than radius [Default]. Alternatively, if you provided depths "
 				"then append p (planetary radius) or <radius> to annotate r = radius - z instead.");
 
 			GMT_Usage (API, 2, "-Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic). "
