@@ -6940,54 +6940,42 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'B':	/* Tickmark option */
 
-			GMT_Usage (API, 1, "-B Specify both (1) basemap frame settings and (2) axes parameters. "
-				"Frame settings are modified via an optional single invocation of");
-			GMT_Usage (API, 3, "-B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]");
-			GMT_Usage (API, 2, "Axes parameters are specified via one or more invocations of");
-			GMT_Usage (API, 3, "-B[p|s][x|y|z]<info>\n");
-			GMT_Usage (API, 2, "1. Frame settings control which axes to plot, frame fill, title (and subtitle), and type of gridlines. "
+			GMT_Usage (API, 1, "-B Specify both (1) basemap frame settings and (2) axes parameters. ");
+			GMT_Usage (API, 2, "Frame settings are modified via an optional single invocation of "
+				 "-B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]");
+			GMT_Usage (API, 2, "Axes parameters are specified via one or more invocations of "
+				"-B[p|s][x|y|z]<info>\n");
+			GMT_Usage (API, -2, "Frame settings control which axes to plot, frame fill, title (and subtitle), and type of gridlines. "
 				"<axes> is a combination of W,E,S,N,Z and plots those axes only [Default is WESNZ (all)]. "
 				"Use lower case w,e,s,n,z just to draw and tick (but not annotate) those axes, "
 				"and use l,r,b,t,u just to draw (but not annotate and tick) those axes. "
-				"Append +g<fill> to paint the inside of the map region before further plotting [no fill]. "
-				"Append +i<val> to annotate along parallel or meridian <val> [0] when no such axes can be plotted. "
-				"Append +n to have no frame and annotations whatsoever [Default is controlled by WESNZ/wesnz]. "
-				"Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines]. "
-				"Note: The +o modifier is ignored unless gridlines are specified via the axes parameters (below). "
-				"Append +t<title> to place a title over the map frame [no title]. Optionally also set +s<subtitle>. "
-				"Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"<break>\" to mark breaks. "
-				"A single-line <title> and <subtitle> may contain LaTeX code enclosed by @[ .... @[ (or alternatively <math> ... </math>). "
-				"Using LaTeX expressions requires you to have a functioning latex and dvips installation, including required fonts. "
 				"For 3-D plots the Z|z[<corners>] controls the vertical axis.  The <corners> specifies "
 				"at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner, "
-				"2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis]. "
-				"The +w draws the outline of the xz and yz planes [no outlines]. "
-				"The +x|y|z[<fill>] paint the yz, xz, xy planes [no fill]. The +g<fill> sets all three planes. "
-				"In addition, +b will erect a 3-D frame box to outline the 3-D domain [no frame box].");
-			GMT_Usage (API, 2, "2. Axes settings control the annotation, tick, and grid intervals and labels. "
+				"2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis]. Optional modifiers:");
+			GMT_Usage (API, 3, "+b Erect a 3-D frame box to outline the 3-D domain [no frame box].");
+			GMT_Usage (API, 3, "+g Paint the inside of the map region with <fill> before further plotting [no fill].");
+			GMT_Usage (API, 3, "+i Annotate along parallel or meridian <val> [0] when no such axes can be plotted.");
+			GMT_Usage (API, 3, "+n No frame and annotations whatsoever [Default is controlled by WESNZ/wesnz].");
+			GMT_Usage (API, 3, "+o Draw oblique gridlines about <plon>/<plat> [regular gridlines]. "
+				"Note: The +o modifier is ignored unless gridlines are specified via the axes parameters (below).");
+			GMT_Usage (API, 3, "+s Place a <subtitle> over the map frame [no subtitle]. Requires +t as well.");
+			GMT_Usage (API, 3, "+t Place a <title> over the map frame [no title]. "
+				"Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"<break>\" to mark breaks. "
+				"A single-line <title> and <subtitle> may contain LaTeX code enclosed by @[ .... @[ (or alternatively <math> ... </math>). "
+				"Using LaTeX expressions requires you to have a functioning latex and dvips installation, including required fonts.");
+			GMT_Usage (API, 3, "+w Draw the outline of the xz and yz planes [no outlines].");
+			GMT_Usage (API, 3, "+x|y|z[<fill>] paint the yz, xz, xy planes [no fill]. The +g<fill> sets all three planes. ");
+			GMT_Usage (API, -2, "Axes settings control the annotation, tick, and grid intervals and labels. "
 				"The full axes specification is");
-			GMT_Usage (API, 4, "-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>");
-			GMT_Usage (API, 2, "Alternatively, you may break this syntax into two separate -B options:");
-			GMT_Usage (API, 4, "-B[p|s][x|y|z][+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]");
-			GMT_Usage (API, 4, "-B[p|s][x|y|z]<intervals>");
-			GMT_Usage (API, 2, "There are two levels of annotations: Primary and secondary (most situations only require primary). "
+			GMT_Usage (API, 3, "-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>");
+			GMT_Usage (API, -2, "Alternatively, you may break this syntax into two separate -B options:");
+			GMT_Usage (API, 3, "-B[p|s][x|y|z][+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]");
+			GMT_Usage (API, 3, "-B[p|s][x|y|z]<intervals>");
+			GMT_Usage (API, -2, "There are two levels of annotations: Primary and secondary (most situations only require primary). "
 				"The -B[p] sets (p)rimary (more frequent) annotations while -Bs sets (s)econdary (less frequent) annotations. "
 				"The [x|y|z] selects which axes the settings apply to.  If none are given we default to xy. "
 				"To specify different settings for different axes you must repeat the -B axes option for "
 				"each dimension, i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings. "
-				"To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>. "
-				"To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>. "
-				"Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap]. "
-				"Cartesian y- and z-axes take optional +a<angle> for slanted or +ap for parallel annotations [+an]. "
-				"Geographic axes take optional +f for \"fancy\" annotations with W|E|S|N suffices. "
-				"To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes. "
-				"For another axis label on the opposite axis, use +s|S as well. "
-				"Use quotes if any of the <label>, <prefix> or <unit> have spaces. "
-				"For Cartesian axes you can have different labels on the left vs right or bottom vs top "
-				"by separating the two labels with ||, e.g., +l\"Left label||Right label\". "
-				"A <label> may contain LaTeX code enclosed by @[ .... @[  (or alternatively <math> ... </math>). "
-				"Using LaTeX expressions requires you to have a functioning latex and dvips installation, including required fonts. "
-				"Geographic map annotations will automatically have degree, minute, seconds units. "
 				"The <intervals> setting controls the annotation spacing and is a textstring made up of one or "
 				"more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a "
 				"indicates annotation and major tick interval, f minor tick interval, and g grid interval. "
@@ -6996,12 +6984,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"<unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be "
 				"no spaces between the substrings; just append items to make one very long string. "
 				"For custom annotations or intervals, let <intervals> be c<intfile>; see documentation for details. "
-				"The optional <unit> modifies the <stride> value accordingly.");
-			GMT_Usage (API, 2, "For geographic maps you may use:");
+				"The optional <unit> modifies the <stride> value accordingly. For geographic maps you may use:");
 			GMT_Usage (API, 3, "d: arc degree [Default].");
 			GMT_Usage (API, 3, "m: arc minute.");
 			GMT_Usage (API, 3, "s: arc second.");
-			GMT_Usage (API, 2, "For time axes, several units are recognized:");
+			GMT_Usage (API, -2, "For time axes, several units are recognized:");
 			GMT_Usage (API, 3, "Y: year - plot using all 4 digits.");
 			GMT_Usage (API, 3, "y: year - plot only last 2 digits.");
 			GMT_Usage (API, 3, "O: month - format annotation according to FORMAT_DATE_MAP.");
@@ -7022,19 +7009,31 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 3, "m: minute - plot as 2-digit integer (0-59).");
 			GMT_Usage (API, 3, "S: second - format annotation according to FORMAT_CLOCK_MAP.");
 			GMT_Usage (API, 3, "s: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).");
-			GMT_Usage (API, 2, "Cartesian intervals take no units. "
+			GMT_Usage (API, -2, "Cartesian intervals take no units. "
 				"When <stride> is omitted, a reasonable value will be determined automatically, e.g., -Bafg. "
 				"Log10 axis: Append l to annotate log10 (value) or p for 10^(log10(value)) [Default annotates value]. "
-				"Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear]. "
-				"See basemap documentation for more details and examples of all settings.");
+				"Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear]. Optional modifiers: ");
+			GMT_Usage (API, 3, "+p Prepend <prefix> to each annotation (e.g., $ 10, $ 20 ...).");
+			GMT_Usage (API, 3, "+u Append <unit> to each annotation (e.g., 5 km, 10 km ...).");
+			GMT_Usage (API, 3, "+a Append <angle> for slanted or use +an|p for orthogonal|parallel annotations [+ap].");
+			GMT_Usage (API, 3, "+f Let geographic axes place \"fancy\" annotations with W|E|S|N suffices.");
+			GMT_Usage (API, 3, "+l Place <label> for the axis.  Use +L to enforce horizontal labels for y-axes. "
+				"For another axis label on the opposite axis, use +s|S as well. "
+				"Use quotes if any of the <label>, <prefix> or <unit> have spaces. "
+				"For Cartesian axes you can have different labels on the left vs right or bottom vs top "
+				"by separating the two labels with ||, e.g., +l\"Left label||Right label\". "
+				"A <label> may contain LaTeX code enclosed by @[ .... @[  (or alternatively <math> ... </math>). "
+				"Using LaTeX expressions requires you to have a functioning latex and dvips installation, including required fonts. "
+				"Geographic map annotations will automatically have degree, minute, seconds units.");
+			GMT_Usage (API, -2, "See basemap documentation for more details and examples of all settings.");
 			break;
 
 		case 'b':	/* Condensed tickmark option */
 
 			GMT_Usage (API, 1, "-B Specify both (1) basemap frame settings and (2) axes parameters.");
-			GMT_Usage (API, 2, "(1) Frame settings are modified via an optional single invocation of "
+			GMT_Usage (API, 2, "Frame settings are modified via an optional single invocation of "
 				"-B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]");
-			GMT_Usage (API, 2, "(2) Axes parameters are specified via one or more invocations of "
+			GMT_Usage (API, 2, "Axes parameters are specified via one or more invocations of "
 				"-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>");
 			GMT_Usage (API, -2, "<intervals> is composed of concatenated [<type>]<stride>[l|p] sub-strings. "
 				"See basemap documentation for more details and examples of all settings.");
@@ -7097,9 +7096,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective). "
 				"<lon0>/<lat0> is the center of the projection, while "
 				"<altitude> is the height (in km) of the viewpoint above local sea level.");
-			GMT_Usage (API, 3+1, "1. If <altitude> less than 10 then it is the distance "
+			GMT_Usage (API, 3, "If <altitude> less than 10 then it is the distance "
 				"from center of earth to viewpoint in earth radii.");
-			GMT_Usage (API, 3+1, "2. If <altitude> has a suffix of 'r' then it is the radius "
+			GMT_Usage (API, 3, "If <altitude> has a suffix of 'r' then it is the radius "
 				"from the center of earth in kilometers.");
 			GMT_Usage (API, 3, "   <azimuth> is azimuth east of North of view, "
 				"<tilt> is the upward tilt of the plane of projection; "
