@@ -7494,9 +7494,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -1, "Use data point separations to determine if there are data gaps. "
 				"Append x|X or y|Y to identify data gaps in x or y coordinates, "
 				"respectively, and append d|D for distance gaps.  Upper case X|Y|D means "
-				"we first project the points (requires -J).  Optionally append <gap>[+n|p]: +n uses "
-				"d=prev-curr, +p uses d=curr-prev [Default is d=|curr-prev|]; d must exceed <gap> to detect a gap. "
-				"For geographic data: Choose unit from %s [Default is meter (%c)]. "
+				"we first project the points (requires -J).  Optionally append"
+			GMT_Usage (API, 3, "+n Let d = prev-curr; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
+			GMT_Usage (API, 3, "+p Let d = curr-prev; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
+			GMT_Usage (API, -1, "For geographic data: Choose unit from %s [Default is meter (%c)]. "
 				"For gaps based on mapped coordinates: Choose unit from %s [%s]. "
 				"For time data the unit is determined by TIME_UNIT. "
 				"For generic data a unit is not specified. "
@@ -7512,11 +7513,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Optionally, append i for input or o for output only and number of header records [0]. "
 				"Note: -hi turns off the writing of all headers on output since none will be read.  Optional modifiers:",
 				GMT->current.setting.io_n_header_items, GMT_choice[GMT->current.setting.io_header[GMT_IN]]);
-			GMT_Usage (API, 2, "+c Add header record with column information [none].");
-			GMT_Usage (API, 2, "+d Delete headers before adding new ones [Default will append headers].");
-			GMT_Usage (API, 2, "+m Insert a new segment header and <segheader> content after the headers [none].");
-			GMT_Usage (API, 2, "+r Add a <remark> comment to the output [none].");
-			GMT_Usage (API, 2, "+t Add a <title> comment to the output [none]. "
+			GMT_Usage (API, 3, "+c Add header record with column information [none].");
+			GMT_Usage (API, 3, "+d Delete headers before adding new ones [Default will append headers].");
+			GMT_Usage (API, 3, "+m Insert a new segment header and <segheader> content after the headers [none].");
+			GMT_Usage (API, 3, "+r Add a <remark> comment to the output [none].");
+			GMT_Usage (API, 3, "+t Add a <title> comment to the output [none]. "
 				"Note: <remark> and <title> may contain \\n to indicate line-breaks. ");
 			GMT_Usage (API, -1, "For binary files, <n> is considered to mean number of bytes instead of records.");
 			break;
@@ -7527,10 +7528,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -1, "Set alternate input column order and optional transformations [Default reads all columns in original order]. "
 				"Append list of columns; t[<word>] selects the trailing text; append <word> to pick a word from the text. Use -in to select numerical input only. "
 				"Optional modifiers per column or column group:");
-			GMT_Usage (API, 2, "+d Divide column by appended divisor.");
-			GMT_Usage (API, 2, "+l Take log10 of column.");
-			GMT_Usage (API, 2, "+o Offset column by adding appended constant.");
-			GMT_Usage (API, 2, "+s Scale column by appended factor.");
+			GMT_Usage (API, 3, "+d Divide column by appended <divisor>.");
+			GMT_Usage (API, 3, "+l Take log10 of column.");
+			GMT_Usage (API, 3, "+o Add to column the appended <offset>.");
+			GMT_Usage (API, 3, "+s Multiply column by appended <scale>.");
 			break;
 
 		case 'A':	/* -j option for spherical distance calculation mode */
@@ -7546,17 +7547,17 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -1, "Specify the grid interpolation mode: "
 				"b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor [Default is bicubic]. Optional modifiers:");
 #ifdef DEBUG
-				GMT_Usage (API, 2, "+A Save the anti-aliasing counter to a grid for debugging.");
+				GMT_Usage (API, 3, "+A Save the anti-aliasing counter to a grid for debugging.");
 #endif
-				GMT_Usage (API, 2, "+a switch off anti-aliasing (except for linear) [Default: is on].");
-				GMT_Usage (API, 2, "+b<BC> Change boundary conditions.  <BC> can be either "
+				GMT_Usage (API, 3, "+a switch off anti-aliasing (except for linear) [Default: is on].");
+				GMT_Usage (API, 3, "+b<BC> Change boundary conditions.  <BC> can be either "
 					"g for geographic, p for periodic, and n for natural boundary conditions. "
 					"For p and n you may optionally append x or y [Default is both]: "
 					"x for periodic boundary conditions on x, "
 					"y for periodic boundary conditions on y. "
 					"[Default is Natural conditions, unless grid is known to be geographic].");
-				GMT_Usage (API, 2, "+c Clip interpolated grid to input z-min/max [Default may exceed limits].");
-				GMT_Usage (API, 2, "+t<threshold> Change the minimum weight in vicinity of NaNs. A threshold of "
+				GMT_Usage (API, 3, "+c Clip interpolated grid to input z-min/max [Default may exceed limits].");
+				GMT_Usage (API, 3, "+t<threshold> Change the minimum weight in vicinity of NaNs. A threshold of "
 					"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate "
 					"about half way from a non-NaN to a NaN node [Default is 0.5].");
 			break;
@@ -7580,8 +7581,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 					"For a plain rotation about the z-axis, give rotation angle only "
 					"and optionally use +w or +v to select location of axis [plot origin]. "
 					"Optional modifiers:");
-				GMT_Usage (API, 2, "+w<lon0>/<lat0>[/<z0>] Specify a fixed coordinate point");
-				GMT_Usage (API, 2, "+v<x0>/<y0> Set a fixed projected point [region center and page center");
+				GMT_Usage (API, 3, "+w<lon0>/<lat0>[/<z0>] Specify a fixed coordinate point");
+				GMT_Usage (API, 3, "+v<x0>/<y0> Set a fixed projected point [region center and page center");
 			}
 			break;
 
@@ -7590,9 +7591,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 1, "%s", GMT_q_OPT);
 			GMT_Usage (API, -1, "Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows]. "
 				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 2, "+c<col> Set limits on data values for specified column instead");
-			GMT_Usage (API, 2, "+f Reset row counters per file [Default is per set (+a)].");
-			GMT_Usage (API, 2, "+s Reset row counters per segment [Default is per set (+a)].");
+			GMT_Usage (API, 3, "+c<col> Set limits on data values for specified column instead");
+			GMT_Usage (API, 3, "+f Reset row counters per file [Default is per set (+a)].");
+			GMT_Usage (API, 3, "+s Reset row counters per segment [Default is per set (+a)].");
 			break;
 
 		case 'u':	/* -qi option for input only */
@@ -7600,19 +7601,19 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 1, "%s", GMT_qi_OPT);
 			GMT_Usage (API, -1, "Select input rows to process [Default reads all rows]. "
 				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 2, "+c<col> Set limits on data values for specified input column instead");
-			GMT_Usage (API, 2, "+f Reset row counters per file [Default is per set (+a)].");
-			GMT_Usage (API, 2, "+s Reset row counters per segment [Default is per set (+a)].");
+			GMT_Usage (API, 3, "+c<col> Set limits on data values for specified input column instead");
+			GMT_Usage (API, 3, "+f Reset row counters per file [Default is per set (+a)].");
+			GMT_Usage (API, 3, "+s Reset row counters per segment [Default is per set (+a)].");
 			break;
 
 		case 'v':	/* -qo option for output only */
 
 			GMT_Usage (API, 1, "%s", GMT_qo_OPT);
-			GMT_Usage (API, 1, "Select output rows to process [Default writes all rows]. "
+			GMT_Usage (API, -1, "Select output rows to process [Default writes all rows]. "
 				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 2, "+c<col> Set limits on data values for specified output column instead");
-			GMT_Usage (API, 2, "+f Reset row counters per file [Default is per set (+a)].");
-			GMT_Usage (API, 2, "+s Reset row counters per segment [Default is per set (+a)].");
+			GMT_Usage (API, 3, "+c<col> Set limits on data values for specified output column instead");
+			GMT_Usage (API, 3, "+f Reset row counters per file [Default is per set (+a)].");
+			GMT_Usage (API, 3, "+s Reset row counters per segment [Default is per set (+a)].");
 			break;
 
 		case 'w':	/* -w option for cyclicity */
@@ -7621,45 +7622,46 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -1, "Wrapped selected column [0] with specified cyclicity: "
 				"Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles. "
 				"Alternatively, append c<period>[/<phase>] for custom cyclicity.");
-			GMT_Usage (API, 2, "+c<col> Select another column than x for wrapping.");
+			GMT_Usage (API, 3, "+c<col> Select another column than x for wrapping.");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */
 
 			GMT_Usage (API, 1, "%s", GMT_s_OPT);
-			GMT_Usage (API, 1, "Suppress output of data records whose z-value(s) equal NaN [Default prints all records]. "
+			GMT_Usage (API, -1, "Suppress output of data records whose z-value(s) equal NaN [Default prints all records]. "
 				"Append <cols> to test all specified column(s) [2]. Optional modifiers:");
-			GMT_Usage (API, 2, "+a Suppress records where any column equals NaN [all columns must equal NaN].");
-			GMT_Usage (API, 2, "+r Reverse the test (only output record that fail the NaN-test).");
+			GMT_Usage (API, 3, "+a Suppress records where any column equals NaN [all columns must equal NaN].");
+			GMT_Usage (API, 3, "+r Reverse the test (only output record that fail the NaN-test).");
 			break;
 
 		case 'F':	/* -r grid registration option  */
 
 			GMT_Usage (API, 1, "%s", GMT_r_OPT);
-			GMT_Usage (API, 1, "Set (g)ridline- or (p)ixel-registration [Plain -r sets pixel registration]. "
+			GMT_Usage (API, -1, "Set (g)ridline- or (p)ixel-registration [Plain -r sets pixel registration]. "
 				"If -r is not given then we default to gridline registration.");
 			break;
 
 		case 't':	/* -t layer transparency option  */
 
 			GMT_Usage (API, 1, "%s", GMT_t_OPT);
-			GMT_Usage (API, 1, "Set the layer transparency from 0-100 [Default is 0; opaque]. "
+			GMT_Usage (API, -1, "Set the layer transparency from 0-100 [Default is 0; opaque]. "
 				"For separate transparency for fill and stroke, append /<transp2> as well. "
 				"Requires conversion to PDF or raster formats to take effect. Optional modifiers:");
-			GMT_Usage (API, 2, "+f Let transparency apply to fills only.");
-			GMT_Usage (API, 2, "+s Let transparency apply to strokes only.");
+			GMT_Usage (API, 3, "+f Let transparency apply to fills only.");
+			GMT_Usage (API, 3, "+s Let transparency apply to strokes only.");
 			break;
 
 		case 'T':	/* Same -t but with extension for variable fill/stroke transparency option  */
 
-			GMT_Usage (API, 1, "-t Set the layer transparency from 0-100 [Default is 0; opaque]. "
+			GMT_Usage (API, 1, "%s", GMT_tv_OPT);
+			GMT_Usage (API, -1, "Set the layer transparency from 0-100 [Default is 0; opaque]. "
 				"Requires conversion to PDF or raster formats to take effect. "
 				"For separate transparency for fill and stroke, append /<transp2> as well. "
 				"For plotting symbols with variable transparency read from file, append no value "
 				"and give the transparency as the last numerical value in the data record. Optional modifiers:");
-			GMT_Usage (API, 2, "+f Let transparency apply to fills only.");
-			GMT_Usage (API, 2, "+s Let transparency apply to strokes only.");
-			GMT_Usage (API, -1, "If no transparency is given then the modifiers inform us if we expect one or two transparencies from file.");
+			GMT_Usage (API, 3, "+f Let transparency apply to fills only.");
+			GMT_Usage (API, 3, "+s Let transparency apply to strokes only.");
+			GMT_Usage (API, -1, "If no transparency is given then the modifiers inform us if we expect one or two transparencies from file [1].");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */

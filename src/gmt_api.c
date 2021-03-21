@@ -13310,12 +13310,13 @@ int GMT_Report_ (unsigned int *level, const char *format, int len) {
 
 GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	/* Split line into an array of words where words are separated by either
-	 * a space (like between options) or the occurrence of "][" sequences.
+	 * a space (like between options), the occurrence of "][" sequences, or
+	 * items separated by slashes "/".
 	 * These are the places where we are allowed to break the line. */
 	struct GMT_WORD *array = NULL;
-	unsigned int n = 0, c, start = 0, next, end, j, stop, space = 0, n_alloc = GMT_LEN512;
+	unsigned int n = 0, c, start = 0, next, end, j, stop, space = 0, n_alloc = GMT_LEN256;
 	array = calloc (n_alloc, sizeof (struct GMT_WORD));
-	while (line[start]) {	/* More to chop up */
+	while (line[start]) {	/* More line to chop up */
 		/* Find the next break location */
 		stop = start;
 		while (line[stop] && !(line[stop] == ' ' || line[stop] == '/' || (line[stop] == ']' && line[stop+1] == '['))) stop++;
@@ -13331,6 +13332,10 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 		array[n].word = calloc (end - start + 1, sizeof (char));	/* Allocate space for word */
 		for (j = start, c = 0; j < end; j++, c++) array[n].word[c] = line[j];
 		n++;	/* Got another word */
+		if (n == n_alloc) {	/* Need more memory, must be a long line */
+			n_alloc += GMT_LEN256;
+			array = realloc (array, n_alloc*sizeof (struct GMT_WORD));
+		}
 		start = next;	/* Advance to start of next word */
 	}
 	/* Finalize array length - keep one extra to indicate end of array */
@@ -13349,7 +13354,7 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int indent, FILE *
 	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
 	bool jumpstart = (indent < 0);
 	int width, k, j, current_width = 0;
-	static int gmtapi_indent[7] = {0, 2, 5, 8, 10, 12, 14};
+	static int gmtapi_indent[7] = {0, 2, 5, 7, 10, 12, 15};
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
 	char message[GMT_MSGSIZ] = {""};
 
@@ -13394,8 +13399,37 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int indent, FILE *
 /*! . */
 int GMT_Usage (void *V_API, int indent, const char *format, ...) {
 	/* Wrapped usage message independent of verbosity.
-	 * indent is the starting indent of the line
+	 * indent is the starting indent level of the line
 	 * format and optional args must be printed to a string first, then wrapped.
+	 *
+	 * Explanation for the use of indent:
+	 * 0  : Only use for the synopsis message where we start all the way to the left.
+	 *      Once the first line wraps we indent all subsequent lines by the same amount.
+	 *      Below, | here means the start of the terminal's left margin and the number
+	 *      in braces {2} indicates which indent was used for that line.
+	 *      |usage: gmt gmtsimplify [<table>] -T<tolerance>[<unit>] [-Q...]<return> {0}
+	 *      |  [-d[i|o]<nodata>] [-e[~]<pattern>] ...
+	 * 1  : First indent is used for listing of options:
+	 *      |  -Rwest/east/south/north[+r]   {1}
+	 *      |     Set the region of the plot, blah blah...
+	 *      The text set with indent = 1 that wraps will indent one more step
+	 * -1 : A negative indent will act as if the given line has already wrapped
+	 *      once and thus indents right away.  Thus, multi-line wrapped text will
+	 *      all share the same left margin.
+	 *      |     Furthermore, this options is deadly because ... {-1}
+	 * 2  : Used for a paragraph under an option that should be wrapped and indented
+	 *      if it exceeds a line, e.g.
+	 *      |     You may optionally do this or that or this or that, for instance, {2}
+	 *      |       you could append a constant....
+	 * -2 : Same as -1 but for indent 2.  Immediate indent and stays at that level.
+	 * 3  : Used to indent separate modifiers under an option.  E.g. (for +a,b below):
+	 *      |  -Q<value][+a][+b]...   {1}
+	 *      |     Mess up the plot by random lines ... blah blah.  Available modifiers: {-1}
+	 *      |       +a Draw random lines from a Poisson distribution so that we get {3}
+	 *      |          a quirky plot.
+	 *      |       +b Add 7 to all answers just for fun.  {3}
+	 * -3:  Same as -1 but for indent 3.  Immediate indent and stays at that level.
+	 * etc, etc.
 	 */
 	struct GMTAPI_CTRL *API = NULL;
 	FILE *err = stderr;
