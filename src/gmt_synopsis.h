@@ -42,8 +42,8 @@
 
 /* Use b, f, h, when applies to both i and o, else use only the bi, bo, fi, fo variants */
 
-#define GMT_bi_OPT	"-bi[<ncol>][t][w][+l|b]"
-#define GMT_bo_OPT	"-bo[<ncol>][t][w][+l|b]"
+#define GMT_bi_OPT	"-bi[<ncols>][t][w][+l|b]"
+#define GMT_bo_OPT	"-bo[<ncols>][t][w][+l|b]"
 #define GMT_di_OPT	"-di<nodata>"
 #define GMT_do_OPT	"-do<nodata>"
 #define GMT_fi_OPT	"-f<info>"
@@ -108,7 +108,7 @@
 #define GMT_X_OPT	"-X[a|c|f|r]<xshift>"
 #define GMT_Y_OPT	"-Y[a|c|f|r]<yshift>"
 #define GMT_a_OPT	"-a<col>=<name>[,...]"
-#define GMT_b_OPT	"-b[i|o][<ncol>][t][w][+l|b]"
+#define GMT_b_OPT	"-b[i|o][<ncols>][t][w][+l|b]"
 #define GMT_d_OPT	"-d[i|o]<nodata>"
 #define GMT_e_OPT	"-e[~]<pattern>"
 #define GMT_f_OPT	"-f[i|o]<info>"
@@ -116,7 +116,7 @@
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
 #define GMT_i_OPT	"-i<cols>[+l][+d<divide>][+s<scale>][+o<offset>][,...][,t[<word>]]"
 #define GMT_j_OPT	"-je|f|g"
-#define GMT_l_OPT	"-l<label>[<mods>]"
+#define GMT_l_OPT	"-l[<label>][+D<pen>][+G<gap>][+H<header>][+L[<code>/]<txt>][+N<cols>][+S<size>[/<height>]][+V[<pen>]][+f<font>][+g<fill>][+j<just>][+o<off>][+p<pen>][+s<scale>][+w<width>]"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #define GMT_o_OPT	"-o<cols>[,...][t[<word>]]"
 #define GMT_q_OPT	"-q[i|o][~]<rows>[,...][+c<col>][+a|f|s]"

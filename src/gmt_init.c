@@ -7448,12 +7448,22 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'l':	/* -l option to set up auto-legend items*/
 
-			GMT_Usage (API, 1, "-l Add symbol, line or polygon to the legend. Optionally, append label and any of the legend codes "
-				"+D<pen>, +G<gap>, +H<header>, +L[<just>/]<txt>, +N<cols>, +S<size>, and +V[<pen>]. "
-				"You may also use set +f<font> to override the font used for the label. "
-				"Change frame fill, pen, offset with +g<fill> [white], +p<pen> [1p], +o<off> [0.2c]. "
-				"You can also choose legend placement codes +j<just> and +s<scale>, corresponding "
-				"to legend command line options -Dj|J<just> and -S<scale>, respectively.");
+			GMT_Usage (API, 1, "%s", GMT_l_OPT);
+			GMT_Usage (API, -1, "Add symbol, line or polygon to the legend. Optionally, append <label> and any of the legend codes:");
+			GMT_Usage (API, 2, "+D Draw horizontal line with specified <pen>.");
+			GMT_Usage (API, 2, "+G Add a vertical <gap> of given height.");
+			GMT_Usage (API, 2, "+H Place a <header> in the legend.");
+			GMT_Usage (API, 2, "+L Place a <label> with optional justification [L].");
+			GMT_Usage (API, 2, "+N Set current number of columns for symbols.");
+			GMT_Usage (API, 2, "+S Set the current symbol <size>.");
+			GMT_Usage (API, 2, "+V Enable vertical lines between columns, optionally append <pen>].");
+			GMT_Usage (API, 2, "+f Set <font> used for the label.");
+			GMT_Usage (API, 2, "+g Set a frame fill <fill> [white]");
+			GMT_Usage (API, 2, "+j Set the justification of the legend [BL].");
+			GMT_Usage (API, 2, "+o Shift legend placement from reference point by <off> [0.2c].");
+			GMT_Usage (API, 2, "+p Draw frame outline, optionally append <pen> [1p]");
+			GMT_Usage (API, 2, "+s Set an overall symbol scale [1].");
+			GMT_Usage (API, 2, "+w Set a specific legend width [auto].");
 			break;
 
 		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
@@ -7494,7 +7504,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'h':	/* Header */
 
-			GMT_Usage (API, 1, "-h[i|o][<n>][+c][+d][+m<segheader>][+r<remark>][+t<title>]");
+			GMT_Usage (API, 1, "%s", GMT_h_OPT);
 			GMT_Usage (API, -1, "Input/output file has [%d] header record(s) [%s]. "
 				"Optionally, append i for input or o for output only and number of header records [0]. "
 				"Note: -hi turns off the writing of all headers on output since none will be read.  Optional modifiers:",
@@ -7691,17 +7701,19 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 */
 void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
 	struct GMTAPI_CTRL *API = GMT->parent;
- 	GMT_Usage (API, 1, "-%c Place limits on coastline features from the GSHHG data base. "
+ 	GMT_Usage (API, 1, "%s", GMT_A_OPT);
+ 	GMT_Usage (API, -1, "Place limits on coastline features from the GSHHG data base. "
 		"Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels"
-		"will be skipped [0/4 (4 means lake inside island inside lake)]. "
-		"Select +a and one or two codes to control how Antarctica is handled: "
-		"Add g to use shelf ice grounding line for Antarctica coastline, or"
-		"add i to use ice/water front for Antarctica coastline [Default]. "
-		"Add s to skip Antarctica (all data south of %dS) [use all], or"
-		"add S to skip anything BUT Antarctica (all data north of %dS) [use all]. "
-		"Append +r to only get riverlakes from level 2, or +l to only get lakes [both]. "
-		"Append +p<percent> to exclude features whose size is < <percent>%% of the full-resolution feature [use all].",
-		option, abs(GSHHS_ANTARCTICA_LIMIT), abs(GSHHS_ANTARCTICA_LIMIT));
+		"will be skipped [Default is 0/4 (4 means lake inside island inside lake)].");
+		GMT_Usage (API, 2, "+a Control how Antarctica is handled: "
+		"Append g to use shelf ice grounding line for Antarctica coastline, or"
+		"append i to use ice/water front for Antarctica coastline [Default]. "
+		"Append s to skip Antarctica (all data south of %dS) [use all], or"
+		"append S to skip anything BUT Antarctica (all data north of %dS) [use all]. ",
+			abs(GSHHS_ANTARCTICA_LIMIT), abs(GSHHS_ANTARCTICA_LIMIT));
+		GMT_Usage (API, 2, "+l Only get lakes from level 2 [riverlakes and lakes].");
+		GMT_Usage (API, 2, "+r Only get riverlakes from level 2  [riverlakes and lakes]");
+		GMT_Usage (API, 2, "+p Exclude features whose size is < <percent>%% of the full-resolution feature [use all].");
 }
 
 /*! Contour/line specifications in *contour and psxy[z] */
@@ -7911,14 +7923,14 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 		"<width>[%s], <color>, and <style>[%s].", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	GMT_Usage (API, 3, "<width> >= 0.0 sets pen width (default units are points); alternatively a pen "
 		"name: Choose among faint, default, or [thin|thick|fat][er|est], or wide.");
-	GMT_Usage (API, 3, "<color> = (1) <gray> or <red>/<green>/<blue>, all in range 0-255; "
-		"(2) #rrggbb, all in the range 0-255 using hexadecimal numbers; "
-		"(3) <c>/<m>/<y>/<k> in 0-100%% range; "
-		"(4) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1; "
-		"(5) any valid color name.");
-	GMT_Usage (API, 3, "<style> = (1) pattern of dashes (-) and dots (.), scaled by <width>; "
-		"(2) \"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\"; "
-		"(3) <pattern>[:<offset>]; <pattern> holds lengths (default unit points) "
+	GMT_Usage (API, 3, "<color> = <gray> or <red>/<green>/<blue>, all in range 0-255; "
+		"#rrggbb, all in the range 0-255 using hexadecimal numbers; "
+		"<c>/<m>/<y>/<k> in 0-100%% range; "
+		"<hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1; "
+		"Any valid color name.");
+	GMT_Usage (API, 3, "<style> = pattern of dashes (-) and dots (.), scaled by <width>; "
+		"\"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\"; "
+		"<pattern>[:<offset>]; <pattern> holds lengths (default unit points) "
 		"of any number of lines and gaps separated by underscores. "
 		"The optional <offset> shifts elements from start of the line [0].");
 	GMT_Usage (API, 2, "For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
