@@ -8175,16 +8175,16 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	char *syntax = (mode) ? GMT_SEGMENTIZE3 : GMT_SEGMENTIZE4;
 	GMT_Usage (API, 1, "-%c%s", option, syntax);
 	GMT_Usage (API, -2, "Alter the way points are connected and the data are segmented. "
-		"Append one of %s line connection schemes: ", option, count[mode]);
-	GMT_Usage (API, 2, "c: %s continuous line segments for each group [Default].", verb[mode]);
-	GMT_Usage (API, 2, "p: %s line segments from a reference point reset for each group.", verb[mode]);
-	GMT_Usage (API, 2, "n: %s networks of line segments between all points in each group.", verb[mode]);
-	if (mode == 0) GMT_Usage (API, 2, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
+		"Append one of %s line connection schemes: ", count[mode]);
+	GMT_Usage (API, 3, "c: %s continuous line segments for each group [Default].", verb[mode]);
+	GMT_Usage (API, 3, "p: %s line segments from a reference point reset for each group.", verb[mode]);
+	GMT_Usage (API, 3, "n: %s networks of line segments between all points in each group.", verb[mode]);
+	if (mode == 0) GMT_Usage (API, 3, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
 	GMT_Usage (API, 2, "Optionally, append one of five ways to define a \"group\":");
-	GMT_Usage (API, 2, "a: All data is consider a single group; reference point is first point in the group.");
-	GMT_Usage (API, 2, "f: Each file is a separate group; reference point is reset to first point in the group.");
-	GMT_Usage (API, 2, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
-	GMT_Usage (API, 2, "r: Each segment is a group, but reference point is reset to each point in the group." 
+	GMT_Usage (API, 3, "a: All data is consider a single group; reference point is first point in the group.");
+	GMT_Usage (API, 3, "f: Each file is a separate group; reference point is reset to first point in the group.");
+	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
+	GMT_Usage (API, 3, "r: Each segment is a group, but reference point is reset to each point in the group." 
 		"Alternatively, append a fixed external reference point instead.");
 }
 
