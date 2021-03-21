@@ -210,7 +210,7 @@ Examples
 
 To find the extreme values in the remote file @ship_15.txt::
 
-    gmt info @ship_15.tx
+    gmt info @ship_15.txt
 
 Output should look like::
 
