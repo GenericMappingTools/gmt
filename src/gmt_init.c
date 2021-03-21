@@ -8172,7 +8172,8 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	/* mode == 0 for formatting and 1 for plotting */
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *verb[2] = {"Form", "Draw"}, *count[2] = {"four", "three"};
-	GMT_Usage (API, 1, "-%c%s", option, GMT_SEGMENTIZE);
+	char *syntax = (mode) ? GMT_SEGMENTIZE3 : GMT_SEGMENTIZE4;
+	GMT_Usage (API, 1, "-%c%s", option, syntax);
 	GMT_Usage (API, -2, "Alter the way points are connected and the data are segmented. "
 		"Append one of %s line connection schemes: ", option, count[mode]);
 	GMT_Usage (API, 2, "c: %s continuous line segments for each group [Default].", verb[mode]);
