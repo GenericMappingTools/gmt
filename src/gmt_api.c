@@ -13354,7 +13354,7 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
 	bool keep_same_indent = (level < 0);
 	int width, k, j, next_level, current_width = 0;
-	static int gmtapi_indent[7] = {0, 2, 5, 7, 10, 12, 15};
+	static int gmtapi_indent[7] = {0, 2, 5, 7, 10, 13, 15};
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
 	char message[GMT_MSGSIZ] = {""};
 

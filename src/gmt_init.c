@@ -7439,7 +7439,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Use -e~\"pattern\" to only accept data records that DO NOT contain this pattern. "
 				"If your pattern begins with ~, escape it with \\~.  To match against "
 				"extended regular expressions use -e[~]/regexp/[i] (i for case-insensitive).");
-			GMT_Usage (API, 3, "+f Read patterns from <file>, one per line.");
+			GMT_Usage (API, 3, "+f Read patterns from <file> instead, one per line.");
 			GMT_Usage (API, -2, "To give a single pattern starting with +f, escape it with \\+f.");
 			break;
 
@@ -7578,8 +7578,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 					"When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis]. "
 					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. "
 					"For a plain rotation about the z-axis, give rotation angle only "
-					"and optionally use +w or +v to select location of axis [plot origin]. "
-					"Optional modifiers:");
+					"and optionally use +w or +v to select location of axis. Optional modifiers:");
 				GMT_Usage (API, 3, "+w Specify a fixed coordinate point [region center]");
 				GMT_Usage (API, 3, "+v Set a fixed projected point [panel center");
 			}
@@ -7590,7 +7589,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 1, "%s", GMT_q_OPT);
 			GMT_Usage (API, -2, "Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows]. "
 				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 3, "+c<col> Set limits on data values for specified column instead");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified column <col> instead");
 			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
 			GMT_Usage (API, 3, "+f Reset row counters per file.");
 			GMT_Usage (API, 3, "+s Reset row counters per segment.");
@@ -7601,7 +7600,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 1, "%s", GMT_qi_OPT);
 			GMT_Usage (API, -2, "Select input rows to process [Default reads all rows]. "
 				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 3, "+c<col> Set limits on data values for specified input column instead");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified input column <col> instead");
 			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
 			GMT_Usage (API, 3, "+f Reset row counters per file.");
 			GMT_Usage (API, 3, "+s Reset row counters per segment.");
@@ -7612,7 +7611,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 1, "%s", GMT_qo_OPT);
 			GMT_Usage (API, -2, "Select output rows to process [Default writes all rows]. "
 				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 3, "+c<col> Set limits on data values for specified output column instead");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified output column <col> instead");
 			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
 			GMT_Usage (API, 3, "+f Reset row counters per file.");
 			GMT_Usage (API, 3, "+s Reset row counters per segment.");
@@ -7732,63 +7731,63 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	struct GMTAPI_CTRL *API = GMT->parent;
 	static char *type[3] = {"Contour", "Line", "Decorated line"};
 	static char *feature[3] = {"label", "label", "symbol"};
-
+	indent++;
 	if (kind == 0) {
-		GMT_Usage (API, indent, "+a<angle> will place all %s at a fixed angle. "
+		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
 			"Or, specify +an (line-normal) or +ap (line-parallel) [Default]. "
 			"For +ap, you may optionally append u for up-hill"
 			"and d for down-hill cartographic annotations.\n", feature[kind]);
 	}
 	else {
-		GMT_Usage (API, indent, "+a<angle> will place all %s at a fixed angle. "
+		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
 			"Or, specify +an (line-normal) or +ap (line-parallel) [Default].", feature[kind]);
 	}
-	if (kind < 2) GMT_Usage (API, indent, "+c<dx>[/<dy>] sets clearance between label and text box [15%%].");
-	GMT_Usage (API, indent, "+d turns on debug which draws helper points and lines; optionally add a pen [%s].", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
-	if (kind < 2) GMT_Usage (API, indent, "+e delays the plotting of the text as text clipping is set instead.");
-	if (kind < 2) GMT_Usage (API, indent, "+f sets specified label font [Default is %s].", gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
+	if (kind < 2) GMT_Usage (API, indent, "+c Set clearance <dx>[/<dy>] between label and text box [15%%].");
+	GMT_Usage (API, indent, "+d Debug mode which draws helper points and lines; optionally add a pen [%s].", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+	if (kind < 2) GMT_Usage (API, indent, "+e Delay plotting of text as text clipping is set instead.");
+	if (kind < 2) GMT_Usage (API, indent, "+f Set specified label <font> [Default is %s].", gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
 	if (kind < 2)
-		GMT_Usage (API, indent, "+g[<color>] paints text box [transparent]; append color [white].");
+		GMT_Usage (API, indent, "+g Paint text box [transparent]; optionally append <color> [white].");
 	else
-		GMT_Usage (API, indent, "+g<fill> sets the fill for the symbol [transparent]");
-	if (kind) GMT_Usage (API, indent, "+i makes the main line invisible [drawn using pen settings from -W].");
-	if (kind < 2) GMT_Usage (API, indent, "+j<just> sets %s justification [Default is MC].", feature[kind]);
+		GMT_Usage (API, indent, "+g Sets the <fill> for the symbol [transparent]");
+	if (kind) GMT_Usage (API, indent, "+i Make the main line invisible [drawn using pen settings from -W].");
+	if (kind < 2) GMT_Usage (API, indent, "+j Set %s <justification> [Default is MC].", feature[kind]);
 	if (kind == 1) {
-		GMT_Usage (API, indent, "+l<text> Use text as label (quote text if containing spaces).");
-		GMT_Usage (API, indent, "+L<d|D|f|h|n|N|x> Sets label according to given flag: "
-			"d) Cartesian plot distance; append a desired unit from %s, "
-			"D) Map distance; append a desired unit from %s, "
-			"f) Use given label location file with label in last column, "
-			"h) Use segment header labels (via -Lstring), "
-			"n) Use the current segment number (starting at 0), "
-			"N) Use current file number / segment number (starting at 0/0), or "
-			"x) Like h, but use headers in file with crossing lines instead.", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
+		GMT_Usage (API, indent, "+l Use <text> as label (quote text if containing spaces).");
+		GMT_Usage (API, indent, "+L Set label according to given flag: "
+			"d: Cartesian plot distance; append a desired unit from %s, "
+			"D: Map distance; append a desired unit from %s, "
+			"f: Use given label location file with label in last column, "
+			"h: Use segment header labels (via -Lstring), "
+			"n: Use the current segment number (starting at 0), "
+			"N: Use current file number / segment number (starting at 0/0), or "
+			"x: Like h, but use headers in file with crossing lines instead.", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	}
 	if (kind < 2)
-		GMT_Usage (API, indent, "+n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.");
+		GMT_Usage (API, indent, "+n Nudge label by <dx>[/<dy>] along line (+N for along x/y axis); ignored with +v.");
 	else
-		GMT_Usage (API, indent, "+n<dx>[/<dy>] to nudge symbol along line (+N for along x/y axis).");
-	if (kind < 2) GMT_Usage (API, indent, "+o to use rounded rectangular text box [Default is rectangular].");
-	GMT_Usage (API, indent, "+p[<pen>] draw outline of textbox [Default is no outline]. "
-		"Optionally append a pen [Default is default pen].");
-	if (kind == 2) GMT_Usage (API, indent, "+s<symbol><size> specifies the decorative symbol and its size.");
+		GMT_Usage (API, indent, "+n Nudge symbol by <dx>[/<dy>] along line (+N for along x/y axis).");
+	if (kind < 2) GMT_Usage (API, indent, "+o Use rounded rectangular text box [Default is rectangular].");
+	GMT_Usage (API, indent, "+p Draw outline of textbox [Default is no outline]. "
+		"Optionally append a <pen> [Default is default pen].");
+	if (kind == 2) GMT_Usage (API, indent, "+s Specify the decorative <symbol> and its <size>.");
 	if (kind < 2) {
-		GMT_Usage (API, indent, "+r<rmin> skips labels where radius of curvature < <rmin> [0].");
-		GMT_Usage (API, indent, "+t[<file>] saves (x y angle label) to <file> [%s_labels.txt].", type[kind%2]);
+		GMT_Usage (API, indent, "+r Skip labels where radius of curvature < <rmin> [0].");
+		GMT_Usage (API, indent, "+t Save (x y angle label) to <file> [%s_labels.txt].", type[kind%2]);
 	}
 	if (kind == 0) {
-		GMT_Usage (API, indent, "+u<unit> to append unit to all labels. "
+		GMT_Usage (API, indent, "+u Append <unit> to all labels. "
 			"If z is appended we use the z-unit from the grdfile [no unit].");
 	}
 	else
-		GMT_Usage (API, indent, "+u<unit> to append unit to all labels.");
-	if (kind < 2) GMT_Usage (API, indent, "+v for placing curved text along path [Default is straight].");
-	GMT_Usage (API, indent, "+w<n> sets how many (x,y) points to use for angle calculation [auto].");
+		GMT_Usage (API, indent, "+u Append <unit> to all labels.");
+	if (kind < 2) GMT_Usage (API, indent, "+v Place curved text along path [Default is straight].");
+	GMT_Usage (API, indent, "+w Specify <n> (x,y) points to use for angle calculation [auto].");
 	if (kind == 1) {
-		GMT_Usage (API, indent, "+x[first,last] adds <first> and <last> to these two labels [,']. "
+		GMT_Usage (API, indent, "+x Add <first>,<last> to these two labels [,']. "
 			"This modifier is only allowed if -SqN2 is used.");
 	}
-	if (kind < 2) GMT_Usage (API, indent, "+=<prefix> to give all labels a prefix.");
+	if (kind < 2) GMT_Usage (API, indent, "+= Give all labels a <prefix>.");
 }
 
 /*! Contour/line label placement specifications in *contour and psxy[z] */
@@ -7811,7 +7810,7 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	GMT_Usage (API, indent+1, "d: Give distance between %ss with specified map unit in %s.", feature[kind], GMT_DIM_UNITS_DISPLAY);
 	GMT_Usage (API, indent+1, "D: Specify geographic distance between %ss in %s. "
 		"The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].", feature[kind], GMT_LEN_UNITS_DISPLAY, type[kind]);
-	GMT_Usage (API, indent+1, "f<file.txt>: Read file <file.txt> and places %ss at locations "
+	GMT_Usage (API, indent+1, "f<file>: Read file <file> and place %ss at locations "
 		"that match individual points along the %ss.", feature[kind], type[kind]);
 	if (kind == 0) {
 		GMT_Usage (API, indent+1, "l|L<line1>[,<line2>,...]: Give start and stop coordinates for "
@@ -7843,9 +7842,9 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 		GMT_Usage (API, indent+1, "s|S<n_%s>: Set number of equidistant %s per segmented %s. "
 			"Similar to n|N but splits input lines to series of 2-point segments first.", feature[kind], feature[kind], type[kind]);
 	}
-	GMT_Usage (API, indent+1, "x|X<xfile.txt>: Read the multi-segment file <xfile.txt> and places "
+	GMT_Usage (API, indent+1, "x|X<file>: Read the multi-segment file <file> and places "
 		"settings at intersections between %ss and lines in "
-		"<xfile.txt>.  Use uppercase X to resample the lines first.", feature[kind], type[kind]);
+		"<file>.  Use uppercase X to resample the lines first.", feature[kind], type[kind]);
 	if (kind < 2) {
 		GMT_Usage (API, indent+1, "For all placement selections, append +r<radius> to specify minimum "
 			"radial separation between labels [0].");
@@ -7940,9 +7939,9 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 		"<pattern>[:<offset>]; <pattern> holds lengths (default unit points) "
 		"of any number of lines and gaps separated by underscores. "
 		"The optional <offset> shifts elements from start of the line [0].");
-	GMT_Usage (API, 2, "For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
+	GMT_Usage (API, -2, "For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
 	if (mode)
-		GMT_Usage (API, 2, "Additional line attribute modifiers are also available:");
+		GMT_Usage (API, -2, "Additional line attribute modifiers are also available:");
 	if (mode & 8) {
 		GMT_Usage (API, 3, "+c Control how pens and fills are affected if a CPT is specified via -C: "
 			"Append l to let pen colors follow the CPT setting, or "
@@ -8128,7 +8127,7 @@ void gmt_dist_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 }
 
 /*! Use mode to control which options are displayed */
-void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
+void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 	/* Mode is composed of bit-flags to control which lines are printed.
 	 * Items without if-test are common to all vectors.
 	 * 1	= Accepts +j (not mathangle)
@@ -8138,33 +8137,33 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
 	 * 16	= Accepts +z (not mathangle, geovector)
 	 */
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, 3, "Append length of vector head, with optional modifiers "
-		"[Left and right are defined by looking from start to end of vector]");
-	GMT_Usage (API, 3, "+a<angle> to set angle of the vector head apex [30]");
-	GMT_Usage (API, 3, "+b to place a vector head at the beginning of the vector [none]. "
+	GMT_Usage (API, -(level-1), "Append length of vector head. Note: "
+		"Left and right sides are defined by looking from start to end of vector. Optional modifiers:");
+	GMT_Usage (API, level, "+a Set <angle> of the vector head apex [30]");
+	GMT_Usage (API, level, "+b Place a vector head at the beginning of the vector [none]. "
 		"Append t for terminal, c for circle, s for square, a for arrow [Default], "
 		"i for tail, A for plain arrow, and I for plain tail. "
 		"Append l|r to only draw left or right side of this head [both sides].");
-	GMT_Usage (API, 3, "+e to place a vector head at the end of the vector [none]. "
+	GMT_Usage (API, level, "+e Place a vector head at the end of the vector [none]. "
 		"Append t for terminal, c for circle, s for square, a for arrow [Default], "
 		"i for tail, A for plain arrow, and I for plain tail. "
 		"Append l|r to only draw left or right side of this head [both sides].");
-	if (mode & 8) GMT_Usage (API, 3, "+g<fill> to set head fill; oexclude <fill> to turn off fill [default fill].");
-	GMT_Usage (API, 3, "+h sets the vector head shape in -2/2 range [%g].", GMT->current.setting.map_vector_shape);
-	if (mode & 1) GMT_Usage (API, 3, "+j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.");
-	GMT_Usage (API, 3, "+l to only draw left side of all specified vector heads [both sides].");
-	GMT_Usage (API, 3, "+m[f|r] to place vector head at mid-point of segment [Default expects +b|+e]. "
-		"Specify f or r for forward|reverse direction [forward]. "
+	if (mode & 8) GMT_Usage (API, level, "+g Set head <fill>; exclude <fill> to turn off fill [Default fill].");
+	GMT_Usage (API, level, "+h Set vector head shape in -2/2 range [%g].", GMT->current.setting.map_vector_shape);
+	if (mode & 1) GMT_Usage (API, level, "+j Justify vector at (b)eginning [default], (e)nd, or (c)enter.");
+	GMT_Usage (API, level, "+l Only draw left side of all specified vector heads [both sides].");
+	GMT_Usage (API, level, "+m Place vector head at mid-point of segment [Default expects +b|+e]. "
+		"Append f or r for forward|reverse direction [forward]. "
 		"Append t for terminal, c for circle, s for square, or a for arrow [Default]. "
 		"Append l|r to only draw left or right side of this head [both sides].");
-	GMT_Usage (API, 3, "+n<norm> to shrink attributes if vector length < <norm> [none].");
-	GMT_Usage (API, 3, "+o[<plon/plat>] sets pole [north pole] for great or small circles; only give length via input.");
-	if (mode & 4) GMT_Usage (API, 3, "+p[<pen>] to set pen attributes, exclude <pen> to turn off head outlines [default pen and outline].");
-	GMT_Usage (API, 3, "+q if start and stop opening angle is given instead of (azimuth,length) on input.");
-	GMT_Usage (API, 3, "+r to only draw right side of all specified vector heads [both sides].");
-	if (mode & 2) GMT_Usage (API, 3, "+s if (x,y) coordinates of tip is given instead of (azimuth,length) on input.");
-	GMT_Usage (API, 3, "+t[b|e]<trim(s)> to shift begin or end position along vector by given amount [no shifting].");
-	if (mode & 16) GMT_Usage (API, 3, "+z if (dx,dy) vector components are given instead of (azimuth,length) on input. "
+	GMT_Usage (API, level, "+n Shrink attributes if vector length < <norm> [none].");
+	GMT_Usage (API, level, "+o Sets pole <plon/plat> [Default is north pole] for great or small circles; only give length via input.");
+	if (mode & 4) GMT_Usage (API, level, "+p Set pen attributes; exclude <pen> to turn off head outlines [Default pen and outline].");
+	GMT_Usage (API, level, "+q Start and stop opening angles are given instead of (azimuth,length) on input.");
+	GMT_Usage (API, level, "+r Only draw right side of all specified vector heads [both sides].");
+	if (mode & 2) GMT_Usage (API, level, "+s Give (x,y) coordinates of tip instead of (azimuth,length) on input.");
+	GMT_Usage (API, level, "+t Shift (b)egin or (e)nd position along vector by given <trim(s)> [no shifting].");
+	if (mode & 16) GMT_Usage (API, level, "+z Give (dx,dy) vector components instead of (azimuth,length) on input. "
 		"Append <scale> to convert components to length in given unit.");
 }
 
@@ -8173,10 +8172,11 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	/* mode == 0 for formatting and 1 for plotting */
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *verb[2] = {"Form", "Draw"}, *count[2] = {"four", "three"};
-	GMT_Usage (API, 1, "-%c Alter the way points are connected and the data are segmented. "
+	GMT_Usage (API, 1, "-%c%s", option, GMT_SEGMENTIZE);
+	GMT_Usage (API, -2, "Alter the way points are connected and the data are segmented. "
 		"Append one of %s line connection schemes: ", option, count[mode]);
 	GMT_Usage (API, 2, "c: %s continuous line segments for each group [Default].", verb[mode]);
-	GMT_Usage (API, 2, "r: %s line segments from a reference point reset for each group.", verb[mode]);
+	GMT_Usage (API, 2, "p: %s line segments from a reference point reset for each group.", verb[mode]);
 	GMT_Usage (API, 2, "n: %s networks of line segments between all points in each group.", verb[mode]);
 	if (mode == 0) GMT_Usage (API, 2, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
 	GMT_Usage (API, 2, "Optionally, append one of five ways to define a \"group\":");
@@ -9539,9 +9539,9 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S) {
 	/* Parse segmentizing options in gmt convert (mode == 0) or psxy (mode == 1).
 	 * Syntax is given below (assuming option = -F here):
-	 * -F[c|n|r|v][a|f|s|R] or -Fr<origin>
-	 * where c = continuous [Defuult], n = network, r = reference point, and v = vectors.
-	 * a = all files, f = per file, s = per segment [Default], r = per record.
+	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|f|s|r] or -Fp<origin>
+	 * where <scheme> is c = continuous [Default], n = network, r = reference point, and v = vectors.
+	 * and impact is a = all files, f = per file, s = per segment [Default], r = per record.
 	 * Four different segmentizing schemes:
 	 * 1) -Fc: Continuous lines.  By default, lines are drawn on a segment by segment basis.
 	 *    Thus, -F or -Fc or -Fcs or -Fs is the standard default.  However, if we use
@@ -9554,7 +9554,7 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *   network for each segment, with f we group all segments in a file and construct a
 	 *   network for all those points, while with a with consider all points in the dataset
 	 *   to be one group. So only a|f|s is allowed.
-	 * 3) -Fr: Ref point.  Here, we construct line segments from the given reference point to
+	 * 3) -Fp: Ref point.  Here, we construct line segments from the given reference point to
 	 *   each of the points in the file.  If refpoint is given as two slash-separated coordinates
 	 *   then the refpoint is fixed throughout this construction.  However, refpoint may also be
 	 *   given as a, f, s and if so we pick the first point in the dataset, or first point in each
@@ -9568,13 +9568,13 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	switch (in_arg[0]) {	/* First set method */
 		case 'c': k = 1;	S->method  = SEGM_CONTINUOUS;	break;
 		case 'n': k = 1;	S->method  = SEGM_NETWORK;	break;
-		case 'r': k = 1;	S->method  = SEGM_REFPOINT;	break;
+		case 'p': case 'r': k = 1;	S->method  = SEGM_REFPOINT;	break;	/* Backwards support for r for refpoint, now p for point */
 		case 'v': k = 1;	S->method  = SEGM_VECTOR;	break;
 		default:  k = 0;	S->method  = SEGM_CONTINUOUS;	break;
 	}
 
 	switch (in_arg[k]) {	/* Now set level */
-		case 's': case '\0': S->level = SEGM_SEGMENT;	break;
+		case 's': case '\0': S->level = SEGM_SEGMENT;	break;	/* Default is segment */
 		case 'a': S->level = SEGM_DATASET;	break;
 		case 'f': S->level = SEGM_TABLE;	break;
 		case 'r': S->level = SEGM_RECORD;	break;
@@ -9594,7 +9594,7 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 		errors++;
 	}
 	if (S->method != SEGM_REFPOINT && S->level == SEGM_RECORD) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Only -Fr may accept refpoint = r\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Only -Fp may accept refpoint = r\n", option);
 		errors++;
 	}
 	if (mode == 1 && S->method == SEGM_VECTOR)	/* Only available for gmtconvert */

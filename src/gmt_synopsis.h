@@ -83,6 +83,11 @@
 
 #define GMT_PANEL	"[+c<clearance(s)>][+g<fill>][+i[[<gap>/]<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<fill>]]"
 
+/* Argument for segmentation option */
+
+#define GMT_SEGMENTIZE3	"[c|n|p][a|f|s|r|<refpoint>]"
+#define GMT_SEGMENTIZE4	"[c|n|p|v][a|f|s|r|<refpoint>]"
+
 /* Argument to *contour programs */
 
 #define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"

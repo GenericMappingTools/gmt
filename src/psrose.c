@@ -185,9 +185,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Override default labels [West,East,South,North (depending on GMT_LANGUAGE)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for full circle and 90W,90E,-,0 for half-circle].  If no argument \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   is given then labels will be disabled.  Give - to disable an individual label.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Specify arrow attributes.  If -E is used then the attributes apply to the -E vector(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Otherwise, if windrose mode is selected we apply vector attributes to individual directions.\n");
-	gmt_vector_syntax (API->GMT, 15);
+	GMT_Usage (API, 1, "-M Specify arrow attributes.  If -E is used then the attributes apply to the -E vector(s). "
+		"Otherwise, if windrose mode is selected we apply vector attributes to individual directions.");
+	gmt_vector_syntax (API->GMT, 15, 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [no normalization].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Only applicable if normalization has been specified with -Sn<radius>.\n");
