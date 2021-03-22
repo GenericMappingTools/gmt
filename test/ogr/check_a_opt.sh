@@ -57,4 +57,4 @@ echo "# Run gmt convert with -a with a mix of numerical and text requests" >> re
 gmt convert -a3=AnomEndQua,Chron,2=GeeK2007 gsml_testfile.gmt >> result.txt
 
 # An empty fail file means success
-diff -q --strip-trailing-cr results.txt answer.txt > fail
+diff -q --strip-trailing-cr result.txt answer.txt > fail
