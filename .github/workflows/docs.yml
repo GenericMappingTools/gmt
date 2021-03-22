@@ -26,6 +26,7 @@ jobs:
   docs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
 
     env:
       # directories

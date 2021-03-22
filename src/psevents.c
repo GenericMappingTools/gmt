@@ -803,9 +803,10 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			if (bad) {
 				GMT_Report (API, GMT_MSG_WARNING, "Interpolation  of time column with -F%c failed to give monotonically increasing values in %d places. Please use --GMT_INTERPOLANT=linear instead\n", Fmode, bad);
 			}
+
 			sprintf (TCLOCK, " --FORMAT_CLOCK_OUT=hh:mm:ss");
 			if (dt < 1.0) {	/* Need to make sure we pass a proper FORMAT_CLOCK_IN|OUT with enough precision for Step 3 to adequately reflect precision in input data */
-				int nx = (int)(-floor (log10 (dt)));	/* 0.9999 will give 1 and 0.09999 gives 2, etc */
+				int nx = gmt_get_precision_width (GMT, dt);
 				strcat (TCLOCK, ".");	/* Build ss.xxxx.... */
 				while (nx) {
 					strcat (TCLOCK, "x");

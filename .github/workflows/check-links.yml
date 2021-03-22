@@ -28,7 +28,7 @@ jobs:
           --exclude "^https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$"
           --exclude "^http://maps.google.com/mapfiles/kml/$"
           --exclude "^http://aa.usno.navy.mil/faq/docs/lawyers.php$"
-          --exclude "^Uhttp://my.server.com/images$"
+          --exclude "^uhttp://my.server.com/images$"
           --exclude "^-W@weight.png$"
           --verbose
           "**/*.rst"
