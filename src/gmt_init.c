@@ -7992,8 +7992,8 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 		if (string) GMT_Usage (API, 1+shift, "%s %s", option, string);
 		GMT_Usage (API, 2+shift, "Positioning is specified via one of four coordinate systems:");
 		GMT_Usage (API, 3+shift, "g: Give <refpoint> in map coordinates.");
-		GMT_Usage (API, 3+shift, "j: Give bounding-box inside <refpoint> via 2-char justification code (BL, MC, etc).");
-		GMT_Usage (API, 3+shift, "J: Give bounding-box outside refpoint> via 2-char justification code (BL, MC, etc).");
+		GMT_Usage (API, 3+shift, "j: Set inside-the-box <refpoint> via justification code (BL, MC, etc).");
+		GMT_Usage (API, 3+shift, "J: Set outside-the-box refpoint> via justification code (BL, MC, etc).");
 		GMT_Usage (API, 3+shift, "n: Give <refpoint> in normalized coordinates in 0-1 range.");
 		GMT_Usage (API, 3+shift, "x: Give <refpoint> in plot coordinates.");
 	}
