@@ -654,15 +654,6 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		gmt_M_free (G, new_args);
 	}
 
-	if (n_args == 1 && strchr ("BJR", head->option)) {
-		char string[3] = {""};
-		string[0] = head->option;
-		GMT_Option (API, string);
-		API->error = GMT_MODULE_USAGE;
-		GMT_Destroy_Options (API, &head);
-		return (NULL);
-
-	}
 	/* Check if we are in presence of a oneliner. If yes that implies MODERN mode. */
 	if (n_args_in == 0) {
 		int k;
@@ -1028,6 +1019,13 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current, struct GMT_OPTIO
 	return (GMT_OK);	/* No error encountered */
 }
 
+unsigned int gmtparse_count_opt (struct GMT_OPTION *options) {
+	unsigned int n = 0;
+	struct GMT_OPTION *opt = NULL;
+	for (opt = options; opt; opt = opt->next) n++;
+	return (n);
+}
+
 /*! . */
 int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION *options) {
 	/* GMT_Parse_Common parses the option list for a program and detects the GMT common options.
@@ -1049,6 +1047,15 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	 * by consulting the current GMT history machinery.  If not possible then we have an error to report */
 
 	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
+
+	if (gmtparse_count_opt (options) == 1 && strchr (given_options, options->option)) {
+		/* Gave a single valid common option with no argument means just issue that option's syntax message and exit */
+		char string[3] = {""};
+		string[0] = options->option;
+		GMT_Option (API, string);
+		return (GMT_MODULE_USAGE);
+	}
+
 	if (gmtparse_complete_options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
 
 	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmtparse_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */

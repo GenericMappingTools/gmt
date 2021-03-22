@@ -48,6 +48,7 @@ enum GMT_enum_gaps {GMT_NEGGAP_IN_COL = 0,	/* Check if previous minus current co
 
 #define GMT_SHORTHAND_OPTIONS	"BJRXYp"	/* All of the shorthand options */
 #define GMT_CRITICAL_OPT_ORDER	"V-JfrRbi"	/* If given options among these must be parsed first and in this order */
+#define GMT_COMMON_OPTIONS "BJKOPRUVWXYabcdefghijlnopqrstwx"	/* ALl common options */
 
 #define RSET	0	/* Index into R.active[] for -R */
 #define ISET	1	/* Index into R.active[] for -I (or similar option) */
