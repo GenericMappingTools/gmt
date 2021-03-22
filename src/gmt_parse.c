@@ -654,6 +654,15 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		gmt_M_free (G, new_args);
 	}
 
+	if (n_args == 1 && strchr ("BJR", head->option)) {
+		char string[3] = {""};
+		string[0] = head->option;
+		GMT_Option (API, string);
+		API->error = GMT_MODULE_USAGE;
+		GMT_Destroy_Options (API, &head);
+		return (NULL);
+
+	}
 	/* Check if we are in presence of a oneliner. If yes that implies MODERN mode. */
 	if (n_args_in == 0) {
 		int k;
