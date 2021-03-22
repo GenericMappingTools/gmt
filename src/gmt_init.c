@@ -7693,6 +7693,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"If no files are given, standard input is read.");
 			break;
 
+		case '-':	/* --PAR=arg message */
+			GMT_Usage (API, 1, "--PAR=<value> Temporarily override GMT default setting(s) (repeatable).");
+			GMT_Usage (API, -2, "(See %s documentation for GMT default parameters).", GMT_SETTINGS_FILE);
+			break;
+
 		default:	/* Pass through, no error, might be things like -y not available */
 			break;
 		}
@@ -8205,328 +8210,25 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 void gmt_img_syntax (struct GMT_CTRL *GMT) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	GMT_Usage (API, 2, "Give filename and append comma-separated scale, mode, and optionally max latitude. "
-		"The scale (typically 0.1 or 1) is used to multiply after read; give mode as follows: "
-		"0 = img file with no constraint code, interpolate to get data at track, "
-		"1 = img file with constraints coded, interpolate to get data at track, "
-		"2 = img file with constraints coded, gets data only at constrained points, NaN elsewhere, "
-		"3 = img file with constraints coded, gets 1 at constraints, 0 elsewhere. "
-		"For mode 2|3 you may want to consider the -n+t<threshold> setting.");
+		"The scale (typically 0.1 or 1) is used to multiply after read; give mode as follows:");
+	GMT_Usage (API, 3, "0: img file with no constraints coded, interpolate to get data at track.");
+	GMT_Usage (API, 3, "1: img file with constraints coded, interpolate to get data at track.");
+	GMT_Usage (API, 3, "2: img file with constraints coded, gets data only at constrained points, NaN elsewhere.");
+	GMT_Usage (API, 3, "3: img file with constraints coded, gets 1 at constraints, 0 elsewhere.");
+	GMT_Usage (API, -2, "For mode 2|3 you may want to consider the -n+t<threshold> setting.");
 }
 
 /*! . */
 void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 	/* The function print to stderr the syntax for the option indicated by
-	 * the variable <option>.  Only the common parameter options are covered
+	 * the variable <option>.  Only the common parameter options are covered.
+	 * It basically selects the shorter version of -B -J and calls GMT_Option.
 	 */
-
-	struct GMTAPI_CTRL *API = GMT->parent;
-	char *u = GMT->session.unit_name[GMT->current.setting.proj_length_unit];
-
+	char arg[3] = {""};
+	arg[0] = option;
+	if (strchr ("BJ", option)) arg[1] = '-';	/* Get short version of these two */
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure. Correct syntax:\n", option);
-
-	switch (option) {
-
-		case 'B':	/* Tickmark option */
-			GMT_Usage (API, 1, "-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>] OR");
-			GMT_Usage (API, 1, "-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]");
-			break;
-
-		case 'J':	/* Map projection option */
-			switch (GMT->current.proj.projection_GMT) {
-				case GMT_LAMB_AZ_EQ:
-					GMT_Usage (API, 1, "-Ja<lon0>/<lat0>[/<horizon>]/<scale> OR -JA<lon0>/<lat0>[/<horizon>]/<width>, "
-						"<horizon> is distance from center to perimeter (<= 180, default 90), "
-						"<scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s", u, u);
-					break;
-				case GMT_ALBERS:
-					GMT_Usage (API, 1, "-Jb<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JB<lon0>/<lat0>/<lat1>/<lat2>/<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_CASSINI:
-					GMT_Usage (API, 1, "-Jc<lon0>/<lat0><scale> OR -JC<lon0>/<lat0><width>, "
-						"<scale> is <1:xxxx> or %s/degree ,or use <width> in %s", u, u);
-					break;
-				case GMT_CYL_STEREO:
-					GMT_Usage (API, 1, "-Jcyl_stere/[<lon0>/[<lat0>/]]<scale> OR -JCyl_stere/[<lon0>/[<lat0>/]]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_ECONIC:
-					GMT_Usage (API, 1, "-Jd<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JD<lon0>/<lat0>/<lat1>/<lat2>/<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_AZ_EQDIST:
-					GMT_Usage (API, 1, "-Je<lon0>/<lat0>[/<horizon>]/<scale> OR -JE<lon0>/<lat0>[/<horizon>/<width>, "
-						"<horizon> is distance from center to perimeter (<= 180, default 180), "
-						"<scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s", u, u);
-					break;
-				case GMT_GNOMONIC:
-					GMT_Usage (API, 1, "-Jf<lon0>/<lat0>[/<horizon>]/<scale> OR -JF<lon0>/<lat0>[/<horizon>]/<width>, "
-						"<horizon> is distance from center to perimeter (< 90, default 60), "
-						"<scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s", u, u);
-					break;
-				case GMT_ORTHO:
-					GMT_Usage (API, 1, "Jg<lon0>/<lat0>[/<horizon>]/<scale> OR -JG<lon0>/<lat0>[/<horizon>]/<width>, "
-						"<horizon> is distance from center to perimeter (<= 90, default 90), "
-						"<scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s", u, u);
-					break;
-				case GMT_GENPER:
-					GMT_Usage (API, 1, "-Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale> OR\n\t-JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<width>, "
-						"<scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s", u, u);
-					break;
-				case GMT_HAMMER:
-					GMT_Usage (API, 1, "-Jh[<lon0>/]<scale> OR -JH[<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_SINUSOIDAL:
-					GMT_Usage (API, 1, "-Ji[<lon0>/]<scale> OR -JI[<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_MILLER:
-					GMT_Usage (API, 1, "-Jj[<lon0>/]<scale> OR -JJ[<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_ECKERT4:
-					GMT_Usage (API, 1, "-Jkf[<lon0>/]<scale> OR -JKf[<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_ECKERT6:
-					GMT_Usage (API, 1, "-Jk[s][<lon0>/]<scale> OR -JK[s][<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_LAMBERT:
-					GMT_Usage (API, 1, "-Jl<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JL<lon0>/<lat0>/<lat1>/<lat2>/<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_MERCATOR:
-					GMT_Usage (API, 1, "-Jm[<lon0>/[<lat0>/]]<scale> OR -JM[<lon0>/[<lat0>/]]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_ROBINSON:
-					GMT_Usage (API, 1, "-Jn[<lon0>/]<scale> OR -JN[<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_OBLIQUE_MERC:
-					GMT_Usage (API, 1, "-Jo[a]<lon0>/<lat0>/<azimuth>/<scale> OR -JO[a]<lon0>/<lat0>/<azimuth>/<width>");
-					GMT_Usage (API, 1, "-Jo[b]<lon0>/<lat0>/<b_lon>/<b_lat>/<scale> OR -JO[b]<lon0>/<lat0>/<b_lon>/<b_lat>/<width>");
-					GMT_Usage (API, 1, "-Joc<lon0>/<lat0>/<lonp>/<latp>/<scale> OR -JOc<lon0>/<lat0>/<lonp>/<latp>/<width>, "
-						"<scale> is <1:xxxx> or %s/oblique degree, or use <width> in %s", u, u);
-					break;
-				case GMT_WINKEL:
-					GMT_Usage (API, 1, "-Jr[<lon0>/]<scale> OR -JR[<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_POLYCONIC:
-					GMT_Usage (API, 1, "Jpoly/[<lon0>/[<lat0>/]]<scale> OR -JPoly/[<lon0>/[<lat0>/]]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_CYL_EQDIST:
-					GMT_Usage (API, 1, "-Jq[<lon0>/[<lat0>/]]<scale> OR -JQ[<lon0>/[<lat0>/]]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_STEREO:
-					GMT_Usage (API, 1, "-Js<lon0>/<lat0>[/<horizon>]/<scale> OR -JS<lon0>/<lat0>[/<horizon>]/<width>, "
-						"<horizon> is distance from center to perimeter (< 180, default 90), "
-						"<scale> is <1:xxxx>, <lat>/<1:xxxx>, or <radius> (in %s)/<lat>, or use <width> in %s", u, u);
-					break;
-				case GMT_TM:
-					GMT_Usage (API, 1, "-Jt<lon0>/[<lat0>/]<scale> OR -JT<lon0>/[<lat0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_UTM:
-					GMT_Usage (API, 1, "-Ju<zone>/<scale> OR -JU<zone>/<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s, "
-						"<zone is A, B, 1-60[w/ optional C-X except I, O], Y, Z", u, u);
-					break;
-				case GMT_VANGRINTEN:
-					GMT_Usage (API, 1, "-Jv<lon0>/<scale> OR -JV[<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_MOLLWEIDE:
-					GMT_Usage (API, 1, "-Jw[<lon0>/]<scale> OR -JW[<lon0>/]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_CYL_EQ:
-					GMT_Usage (API, 1, "-Jy[<lon0>/[<lat0>/]]<scale> OR -JY[<lon0>/[<lat0>/]]<width>, "
-						"<scale> is <1:xxxx> or %s/degree, or use <width> in %s", u, u);
-					break;
-				case GMT_POLAR:
-					GMT_Usage (API, 1, "-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]], "
-						"<scale> is %s/units, or use <width> in %s.  Optionally, "
-						"append +a for azimuths, +r for radial offset [0], +t for angular origin [0], +f to reverse "
-						"radial coordinates (e for elevation, p for planetary radius), and +z for annotating depth.. "
-						"(append p for planetary radius or another radius to annotate r = radius - z).", u, u);
-					break;
-				case GMT_LINEAR:
-					GMT_Usage (API, 1, "-Jx<x-scale>|<width>[d|l|p<power>|t|T][/<y-scale>|<height>[d|l|p<power>|t|T]], scale in %s/units, "
-						"or -Jz<z-scale>[l|p<power>], scale in %s/units. "
-						"Use / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx. "
-						"Use -JX (and/or -JZ) to give axes lengths rather than scales", u, u);
-					break;
-				default:
-					GMT_Usage (API, 1, "Projection not recognized!");
-					break;
-			}
-			break;
-
-		case 'K':
-			GMT_Usage (API, 1, "-%c More PostScript content will follow", option);
-			break;
-
-		case 'O':
-			GMT_Usage (API, 1, "-%c This is a PostScript overlay", option);
-			break;
-
-		case 'P':
-			GMT_Usage (API, 1, "-%c Turn on portrait mode", option);
-			break;
-
-		case 'R':	/* Region option */
-			GMT_Usage (API, 1, "-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>]. "
-				"Append +r if giving lower left and upper right coordinates. "
-				"-Rg or -Rd for global domain. "
-				"-R<grdfile> to take the domain from a grid file.");
-			break;
-
-		case 'U':	/* Set time stamp option */
-			GMT_Usage (API, 1, "%s. Plot the time stamp and optional command line or text.", GMT_U_OPT);
-			break;
-
-		case 'X':
-			GMT_Usage (API, 1, "%s. "
-				"Prepend a for temporary adjustment, c for center of page reference, "
-				"f for lower left corner of page reference, r (or none) for relative to"
-				"current position; u is unit (c, i, p).", GMT_X_OPT);
-			break;
-
-		case 'Y':
-			GMT_Usage (API, 1, "%s\n"
-				"Prepend a for temporary adjustment, c for center of page reference, "
-				"f for lower left corner of page reference, r (or none) for relative to"
-				"current position; u is unit (c, i, p).", GMT_Y_OPT);
-			break;
-
-		case 'Z':
-			if (gmt_M_compat_check (GMT, 4))
-				GMT_Usage (API, 1, "-Z<zlevel> set zlevel of basemap\n");
-			break;
-
-		case 'a':	/* -a option for aspatial field substitution into data columns */
-
-			GMT_Usage (API, 1, "%s. Specify the aspatial field information.", GMT_a_OPT);
-			break;
-
-		case 'b':	/* Binary i/o option  */
-			GMT_Usage (API, 1, "%s "
-				"Binary data, add i for input, o for output [Default is both]. "
-				"Here, t is c|u|h|H|i|I|l|L|f|d [Default is d (double)]. "
-				"Prepend the number of data columns. "
-				"Append w to byte swap an item; append +L|B to fix endianness of file.\n", GMT_b_OPT);
-			break;
-
-		case 'f':	/* Column information option  */
-			GMT_Usage (API, 1, "%s "
-				"Column information, add i for input, o for output [Default is both]. n"
-				"<colinfo> is <colno>|<colrange>u, where column numbers start at 0. "
-				"A range is given as <first>-<last>, e.g., 2-5., u is type: "
-				"t: relative time, T: absolute time, f: floating point, "
-				"x: longitude, y: latitude, g: short for 0x,1y.\n", GMT_f_OPT);
-			break;
-
-		case 'g':
-			GMT_Usage (API, 1, "%s. (Consult documentation)", GMT_g_OPT);
-			break;
-
-		case 'h':	/* Header */
-
-			GMT_Usage (API, 1, "%s "
-				"Specify if Input/output file has header record(s). "
-				"Optionally, append i for input only and/or number of header records [0]. "
-				"-hi turns off the writing of all headers on output. Optional modifiers: "
-				"Append +c to add header record with column information [none]. "
-				"Append +d to delete headers before adding new ones [Default will append headers]. n"
-				"Append +r to add a <remark> comment to the output [none]. "
-				"Append +t to add a <title> comment to the output [none]. "
-				"(these strings may contain \\n to indicate line-breaks. "
-				"For binary files, <n> is considered to mean number of bytes instead of records.", GMT_h_OPT);
-			break;
-
-		case 'i':	/* -i option for input column order */
-
-			GMT_Usage (API, 1, "%s "
-				"Set alternate numerical input column order and optional translations. Append ,t to include trailing text. "
-				"[Default reads all numerical columns in order, followed by any trailing text].", GMT_i_OPT);
-			break;
-
-		case 'n':	/* -n option for grid resampling parameters in BCR */
-
-			GMT_Usage (API, 1, "%s "
-				"Determine the grid interpolation mode: "
-				"b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor [Default: bicubic]. "
-				"Append +a switch off antialiasing (except for l) [Default: on]. "
-				"Append +b<BC> to change boundary conditions.  <BC> can be either "
-				"g for geographic boundary conditions, or one or both of "
-				"x for periodic boundary conditions on x, or "
-				"y for periodic boundary conditions on y. "
-				"[Default: Natural conditions, unless grid is known to be geographic]. "
-				"Append +c to clip interpolated grid to input z-min/max [Default may exceed limits]. "
-				"Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of "
-				"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate "
-				"about half way from a non-NaN to a NaN node [Default: 0.5].", GMT_n_OPT);
-			break;
-
-		case 'o':	/* -o option for output column order */
-
-			GMT_Usage (API, 1, "%s "
-				"Set alternate numerical output column order; end with [,]t[<word>] to output trailing text. "
-				"[Default writes all numerical columns in order, followed by any trailing text].", GMT_o_OPT);
-			break;
-
-		case 'p':
-			GMT_Usage (API, 1, "%s \n"
-				"Azimuth and elevation (and zlevel) of the viewpoint [180/90/bottom z-axis]. "
-				"Append +w and +v to set coordinates to a fixed viewpoint", GMT_p_OPT);
-			break;
-
-		case 's':	/* Skip records with NaN as z */
-			GMT_Usage (API, 1, "%s "
-				"Skip records whose <col> [2] output is NaN. "
-				"a skips if ANY columns is NaN, while r reverses the action.", GMT_s_OPT);
-			break;
-
-		case 't':	/* -t layer transparency option  */
-			GMT_Usage (API, 1, "%s Set the layer PDF transparency from 0-100 [Default is 0; opaque].", GMT_t_OPT);
-			break;
-
-		case 'x':	/* Number of threads */
-			GMT_Usage (API, 1, "%s "
-				"Control the number of processors used in multi-threading: "
-				"-x+a Use all available processors, "
-				"-xn Use n processors (not more than max available off course), "
-				"-x-n Use (all - n) processors.", GMT_x_OPT);
-			break;
-
-		case 'w':	/* -w option for cyclicity */
-
-			GMT_Usage (API, 1, "%s "
-				"Wrap selected column [0] with specified cyclicity. "
-				"Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles. "
-				"Alternatively append c<period>[/<phase>] for custom cyclicity (and nonzero phase). "
-				"Select another column than x (0) via +c<col>.\n", GMT_w_OPT);
-			break;
-
-		case ':':	/* lon/lat vs lat/lon i/o option  */
-			GMT_Usage (API, 1, "%s "
-				"Interpret first two columns, add i for input, o for output [Default is both]. "
-				"Swap 1st and 2nd column on input and/or output.", GMT_colon_OPT);
-			break;
-
-		case '-':	/* --PAR=value  */
-			GMT_Usage (API, 1, "--<PARAMETER>=<value>  See %s for list of parameters.", GMT_SETTINGS_FILE);
-			break;
-
-		default:
-			break;
-	}
+	GMT_Option (GMT->parent, arg);
 }
 
 int gmt_default_error (struct GMT_CTRL *GMT, char option) {
@@ -8538,9 +8240,9 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 
 	switch (option) {
 
-		case '-': break;	/* Skip indiscriminently */
-		case '=': break;	/* Skip indiscriminently */
-		case '>': break;	/* Skip indiscriminently since dealt with internally */
+		case '-': break;	/* Skip indiscriminately */
+		case '=': break;	/* Skip indiscriminately */
+		case '>': break;	/* Skip indiscriminately since dealt with internally */
 		case 'B': error += (GMT->common.B.active[GMT_PRIMARY] == false && GMT->common.B.active[GMT_SECONDARY] == false); break;
 		case 'J': error += GMT->common.J.active == false; break;
 		case 'K': error += GMT->common.K.active == false; break;

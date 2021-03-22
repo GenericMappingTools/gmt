@@ -7781,11 +7781,14 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	/* Determine the width of the current terminal */
 #ifdef WIN32
 	CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo (GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    GetConsoleScreenBufferInfo (GetStdHandle(STD_ERROR_HANDLE), &csbi);
     int n_columns = csbi.srWindow.Right;
 #else
 	struct winsize w;
-    ioctl (STDOUT_FILENO, TIOCGWINSZ, &w);
+	int err = 0;
+    if ((err = ioctl (STDERR_FILENO, TIOCGWINSZ, &w))) {
+ 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session: Unable to get terminal width via ioctl, err = %d\n", err);
+    }
     int n_columns = w.ws_col;
 #endif
 
@@ -7813,7 +7816,8 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 #ifdef WIN32
 	SetConsoleOutputCP (CP_UTF8);
 #endif
-	API->terminal_width = (n_columns > 25) ? n_columns : 100;	/* Character width of current terminal [100] */
+	API->terminal_width = (n_columns > 24) ? n_columns : 100;	/* Character width of current terminal [100] */
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session: Terminal width = %d\n", API->terminal_width);
 	/* Set temp directory used by GMT */
 
 #ifdef WIN32
@@ -13340,7 +13344,7 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	}
 	/* Finalize array length - keep one extra to indicate end of array */
 	array = realloc (array, (n+1)*sizeof (struct GMT_WORD));
-#if 0
+#if 0	/* Left for possible debug in case there are unresolved issues of breaking things up into words */
 	fprintf (stderr, "Found %d words\n", n);
 	for (j = 0; j < n; j++)
 		fprintf (stderr, "%2.2d: [%d] %s\n", j, array[j].space, array[j].word);
