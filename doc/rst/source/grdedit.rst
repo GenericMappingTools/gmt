@@ -116,10 +116,11 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| replace:: The new w/e/s/n values will
-    replace those in the grid, and the *x_inc*, *y_inc* values are
-    adjusted, if necessary.
+.. |Add_-R| replace:: The new w/e/s/n values will replace those in the grid, and the *x_inc*, *y_inc* values are
+    adjusted, if necessary. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: _Syntax:
+    :end-before: _Description:
 
 .. _-S:
 

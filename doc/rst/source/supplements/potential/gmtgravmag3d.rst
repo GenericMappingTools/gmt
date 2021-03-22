@@ -86,9 +86,10 @@ Required Arguments (not all)
 
 .. _-R:
 
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
-
+    :start-after: _Syntax:
+    :end-before: _Description:
 .. _-T:
 
 **-Tv**\ *vert_file* (must have when passing a *xyz_file*) OR **-Tr\|s**\ *raw_file*

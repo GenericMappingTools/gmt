@@ -76,69 +76,8 @@ importance (some are used a lot more than others).
 Data domain or map region: The **-R** option
 --------------------------------------------
 
-The **-R** option defines the map region or data domain of interest. It may be specified in one of seven ways. Options 1
-and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region <gmt_region>`:
-
-1. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+u**\ *unit*]. This is the standard way to specify Cartesian data domains and
-   geographic regions when using map projections where meridians and parallels are rectilinear. Optionally, append
-   **+u**\ *unit* to specify a region in projected units (e.g., UTM meters) where *xmin*/*xmax*/*ymin*/*ymax* are
-   Cartesian projected coordinates compatible with the chosen projection and *unit* is an allowable
-   :ref:`distance unit <dist-units>`.
-
-#. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is useful for map projections that are oblique,
-   making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
-   upper right corner geographic coordinates, followed by the modifier **+r**. This form guarantees a rectangular map
-   even though lines of equal longitude and latitude are not straight lines.
-#. **-R**\ **g** or **-R**\ **d**. These forms can be used to quickly specify the global domain (0/360 for **-Rg** and
-   -180/+180 for **-Rd** in longitude, with -90/+90 in latitude).
-
-#. **-R**\ *gridfile*. This will copy the domain settings found for the grid in specified file. Note that depending on
-   the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
-   Section `Grid registration: The -r option`_\ ).
-
-#. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]]. This indirectly supplies the region by consulting
-   the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
-   the codes. Simply append one or more comma-separated countries using the two-character
-   `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)>`_.
-   To select a state within a country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent,
-   prepend **=** to any of the continent codes **AF** (Africa), **AN** (Antarctica), **AS** (Asia), **EU** (Europe),
-   **OC** (Oceania), **NA** (North America), or **SA** (South America). The following modifiers can be appended:
-
-   - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
-     *winc*/*einc*/*sinc*/*ninc* [default is no adjustment]. For example, **-R**\ *FR*\ **+r**\ 1 will select the
-     national bounding box of France rounded to nearest integer degree.
-   - **+R** to extend the region outward by adding the amounts specified by *inc*, *xinc*/*yinc*, or
-     *winc*/*einc*/*sinc*/*ninc* [default is no extension].
-   - **+e** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
-     *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box extends by at least 0.25 times the increment
-     [default is no adjustment].
-
-#. **-R**\ *justify*\ *x0*/*y0*/*nx*/*ny*, where *justify* is a 2-character combination of **L**\|\ **C**\|\ **R** (for
-   left, center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom) (e.g., **BL** for lower left). The
-   two character code *justify* indicates which point on a rectangular grid region the *x0*/*y0* coordinates refer to
-   and the grid dimensions *nx* and *ny* are used with grid spacings given via **-I** to create the corresponding
-   region. This method can be used when creating grids. For example, **-RCM**\ *25*/*25*/*50*/*50* specifies a
-   *50*\ x\ *50* grid centered on *25*\ ,\ *25*.
-
-#. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*/*zmin*/*zmax*. This method can be used for perspective views with the **-Jz**
-   and the :ref:`-p <option_-p>` option, where the z-range (*zmin*/*zmax*) is appended to the first method to indicate
-   the third dimension. This is not used for :ref:`-p <option_-p>` without **-Jz**, in which case a perspective view of
-   the place is plotted with no third dimension.
-
-.. _gmt_region:
-
-.. figure:: /_images/GMT_-R.*
-   :width: 500 px
-   :align: center
-
-   The plot region can be specified in two different ways. (a) Extreme values for each dimension, or (b) coordinates of
-   lower left and upper right corners.
-
-.. toggle::
-
-   Here is the source script for the figure above:
-
-   .. literalinclude:: /_verbatim/GMT_-R.txt
+.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. include:: ../explain_-R.rst_
 
 For rectilinear projections the first two forms give identical results. Depending on the selected map projection (or
 the kind of expected input data), the boundary coordinates may take on several different formats:
@@ -212,6 +151,24 @@ Other coordinates:
     i.e., regular or exponential notations, with the enhancement to understand FORTRAN double precision output which
     may use **D** instead of **E** for exponents. These values are simply converted as they are to internal
     representation. [12]_
+
+**Examples**
+
+.. _gmt_region:
+
+.. figure:: /_images/GMT_-R.*
+   :width: 500 px
+   :align: center
+
+   The plot region can be specified in two different ways. (a) Extreme values for each dimension, or (b) coordinates of
+   lower left and upper right corners.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_-R.txt
+
 
 .. _option_-J:
 

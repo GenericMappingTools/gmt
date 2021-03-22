@@ -1,5 +1,3 @@
-.. _-l_full:
-
 **-l**\ [*label*]\ [**+D**\ *pen*][**+G**\ *gap*][**+H**\ *header*][**+L**\ [*code*/]\ *txt*][**+N**\ *cols*][**+S**\ *size*\ [/*height*]][**+V**\ [*pen*]][**+f**\ *font*][**+g**\ *fill*][**+j**\ *just*][**+o**\ *off*][**+p**\ *pen*][**+s**\ *scale*][**+w**\ *width*]
     Add a map legend entry to the session legend information file for the
     current plot.  Optionally append a text *label* to describe the entry.

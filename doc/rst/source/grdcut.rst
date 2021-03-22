@@ -65,8 +65,10 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| replace:: This defines the subregion to be cut out.
+.. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: _Syntax:
+    :end-before: _Description:
 
 .. _-S:
 

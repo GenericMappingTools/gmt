@@ -1,5 +1,3 @@
-.. _-t_full:
-
 **-t**\ *transp*\ [/*transp2*][**+f**\ \|\ **s**]
     Set transparency level(s) for an overlay, in [0-100] percent range. [Default
     is 0, i.e., opaque].  Only visible when PDF or raster format output is selected.

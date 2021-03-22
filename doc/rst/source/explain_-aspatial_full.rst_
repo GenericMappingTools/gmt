@@ -1,5 +1,3 @@
-.. _-aspatial_full:
-
 **-a**\ [*col*\ =]\ *name*\ [,\ *...*]
     Control how aspatial data are handled in GMT during input and output.
     *Reading OGR/GMT-formatted files*: To assign certain aspatial data

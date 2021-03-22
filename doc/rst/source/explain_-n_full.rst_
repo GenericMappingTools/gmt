@@ -1,5 +1,3 @@
-.. _-n_full:
-
 **-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+c**][**+t**\ *threshold*]
     Select grid interpolation mode by adding **b** for B-spline
     smoothing, **c** for bicubic interpolation, **l** for bilinear

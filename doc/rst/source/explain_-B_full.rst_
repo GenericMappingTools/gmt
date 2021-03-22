@@ -1,5 +1,3 @@
-.. _-B_full:
-
 **-B**\ [**p**\|\ **s**]\ *parameters*
     Set map Frame and Axes parameters. The Frame parameters are specified by
 
