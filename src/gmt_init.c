@@ -7340,13 +7340,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 1, "%s", GMT_V_OPT);
 			GMT_Usage (API, -2, "Change the verbosity level (currently %c). "
 				"Choose among 7 levels; each level adds more detailed messages:", V_code[GMT->current.setting.verbose]);
-			GMT_Usage (API, 3, "q Quiet, not even fatal error messages.");
-			GMT_Usage (API, 3, "e Error messages only.");
-			GMT_Usage (API, 3, "w Warnings [Default].");
-			GMT_Usage (API, 3, "t Timings (time-intensive operations only).");
-			GMT_Usage (API, 3, "i Informational messages (or just -V).");
-			GMT_Usage (API, 3, "c Compatibility warnings.");
-			GMT_Usage (API, 3, "d Debugging messages.");
+			GMT_Usage (API, 3, "q: Quiet, not even fatal error messages.");
+			GMT_Usage (API, 3, "e: Error messages only.");
+			GMT_Usage (API, 3, "w: Warnings [Default].");
+			GMT_Usage (API, 3, "t: Timings (time-intensive operations only).");
+			GMT_Usage (API, 3, "i: Informational messages (or just -V).");
+			GMT_Usage (API, 3, "c: Compatibility warnings.");
+			GMT_Usage (API, 3, "d: Debugging messages.");
 			break;
 
 		case 'X':
@@ -7986,23 +7986,24 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 	unsigned int shift = (kind == GMT_ANCHOR_INSET) ? 1 : 0;	/* Add additional "tab" to front of message */
 	if (part & 1) {	/* Here string is message, or NULL */
 		if (string) GMT_Usage (API, 1+shift, "%s %s", option, string);
-		GMT_Usage (API, 2+shift, "Positioning is specified via one of four coordinate systems: "
-			"Use -%sg to specify <refpoint> with map coordinates. "
-			"Use -%sj or -%sJ to specify bounding-box <refpoint> with 2-char justification code (BL, MC, etc). "
-			"Use -%sn to specify <refpoint> with normalized coordinates in 0-1 range. "
-			"Use -%sx to specify <refpoint> with plot coordinates. "
-			"All except -%sx require the -R and -J options to be set. "
-			"Use J if item should be placed outside the map frame and j if inside.",
-				option, option, option, option, option, option);
+		GMT_Usage (API, 2+shift, "Positioning is specified via one of four coordinate systems:");
+		GMT_Usage (API, 3+shift, "g: Give <refpoint> in map coordinates.");
+		GMT_Usage (API, 3+shift, "j: Give bounding-box inside <refpoint> via 2-char justification code (BL, MC, etc).");
+		GMT_Usage (API, 3+shift, "J: Give bounding-box outside refpoint> via 2-char justification code (BL, MC, etc).");
+		GMT_Usage (API, 3+shift, "n: Give <refpoint> in normalized coordinates in 0-1 range.");
+		GMT_Usage (API, 3+shift, "x: Give <refpoint> in plot coordinates.");
 	}
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is irrelevant */
 		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC", "ML"};
-		GMT_Usage (API, 2+shift, "Append 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>. "
-			"If +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%sj), "
-			"or the mirror opposite of <refpoint> (with -%sJ), or %s (else). "
-			"Optionally, append +o<dx>[/<dy>] to offset %s from <refpoint> in direction implied by <justify> [0/0].", type[kind], option, option, just[kind], type[kind]);
+		GMT_Usage (API, -(2+shift), "All except x require the -R and -J options to be set. Refpoint modifiers:");
+		GMT_Usage (API, 3+shift, "+j Append 2-char <justify> code to associate that anchor point on the %s with <refpoint>. "
+			"If +j<justify> is not given then <justify> will default to the same as <refpoint> (with j), "
+			"or the mirror opposite of <refpoint> (with -J), or %s (otherwise).", type[kind], just[kind]);
+		GMT_Usage (API, 3+shift, "+o Offset %s from <refpoint> by <dx>[/<dy>] in direction implied by <justify> [0/0].", type[kind]);
 	}
+	else
+		GMT_Usage (API, -(2+shift), "All except x require the -R and -J options to be set. ");
 }
 
 /*! .
@@ -8038,18 +8039,22 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	/* Used in psbasemap and pscoast */
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	GMT_Usage (API, 1, "-%c %s\n", option, string);
+	GMT_Usage (API, 1, "-%c%s", option, GMT_SCALE);
+	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
-	GMT_Usage (API, 2, "Set scale length with +w<length> and (for geographic projection) append a unit from %s [km]. "
-		"Several modifiers are optional: "
-		"Use +c to control where on a geographic map the map scale should apply [Default is at scale bar placement]. "
-		"Use +c with no arguments to select the center of the map as map scale origin. "
-		"Use +c<slat> (with central longitude) or +c<slon>/<slat> to specify map scale origin. "
-		"Add +f to draw a \"fancy\" scale [Default is plain]. "
-		"By default, the scale label equals the distance unit name and is placed on top [+at].  Use the +l<label> "
-		"and +a<align> mechanisms to specify another label and placement (t,b,l,r).  For the fancy scale, "
-		"+u appends units to annotations while for plain scale it uses unit abbreviation instead of name as label. "
-		"To get a vertical scale instead for Cartesian plots, append +v.", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Usage (API, 3, "+w Set scale <length> and (for geographic projection) append a unit from %s [km] (required).",
+		GMT_LEN_UNITS2_DISPLAY);
+	GMT_Usage (API, -2, "Several scale bar modifiers are optional:");
+	GMT_Usage (API, 3, "+a Append label alignment (choose among l(eft), r(ight), t(op), and b(ottom)) [t].");
+	GMT_Usage (API, 3, "+c Control where the map scale should apply. "
+		"If no arguments we select the center of the map. "
+		"Alternatively, give +c<slat> (with central longitude) or +c<slon>/<slat> [Default is at scale bar placement].");
+	GMT_Usage (API, 3, "+f Draw a \"fancy\" scale [Default is plain].");
+	GMT_Usage (API, 3, "+l Set scale <label> to use [By default, the label equals the distance unit name and is placed on top [+at].  Use the +l<label> "
+		"and +a<align> mechanisms to specify another label and placement.  For the fancy scale, "
+		"+u appends units to annotations while for plain scale it uses unit abbreviation instead of name as label.");
+	GMT_Usage (API, 3, "+u Append unit set by +w to all distance annotations (for the plain scale, +u will select unit to be appended to the distance length.");
+	GMT_Usage (API, 3, "+v Select a vertical scale instead for Cartesian plots.");
 }
 
 /*! .
@@ -8057,29 +8062,36 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	\param option ...
 	\param string ...
 */
-void gmt_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string) {
-	/* Used in psbasemap and pscoast */
+void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string) {
+	/* Used in psbasemap and pscoast -T option.  pass type as m or d */
 	struct GMTAPI_CTRL *API = GMT->parent;
-	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	GMT_Usage (API, 1, "-%c %s", option, string);
-	GMT_Usage (API, 2, "Choose between a directional (-Td) or magnetic (-Tm) rose. "
-		"Both share most modifiers for locating and sizing the rose.");
+	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T%c parsing failure.  Correct syntax:\n", type);
+	if (type == 'm')
+		GMT_Usage (API, 1, "-T%c%s", type, GMT_TROSE_MAG);
+	else
+		GMT_Usage (API, 1, "-T%c%s", type, GMT_TROSE_DIR);
+	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
-	GMT_Usage (API, 2, "Set the diameter of the rose with modifier +w<width>. "
-		"Several modifiers are optional:");
-	GMT_Usage (API, 3, "Add labels with +l, which places the letters W, E, S, N at the cardinal points. "
-		"Optionally, append comma-separated west, east, south, north labels instead.");
-	GMT_Usage (API, 3, "Directional rose: Add +f to draws a \"fancy\" rose [Default is plain]. "
-		"Optionally, add <level> of fancy rose: 1 draws E-W, N-S directions [Default], "
-		"2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW directions.");
-	GMT_Usage (API, 3, "Magnetic compass rose:  Optional add +d<dec>[/<dlabel>], where <dec> is the "
-		"magnetic declination and <dlabel> is an optional label for the magnetic compass needle. "
-		"If +d does not include <dlabel> we default to \"delta = <declination>\". "
-		"Set <dlabel> to \"-\" to disable the declination label. "
-		"Append +p<pen> to draw outline of secondary (outer) circle [no circle]. "
-		"Append +i<pen> to draw outline of primary (inner) circle [no circle]. "
-		"Append +t<pint>[/<sint>] to override default primary and secondary annotation/tick interval(s) [30/5/1].");
-	GMT_Usage (API, 3, "If the North label = \'*\' then a north star is plotted instead of the label.");
+	GMT_Usage (API, 3, "+w Set diameter of the rose (required). Several rose modifiers are optional:");
+	if (type == 'm') {
+		GMT_Usage (API, 3, "+d Set magnetic <declination>[/<dlabel>], where "
+			"<dlabel> is an optional label for the magnetic compass needle. "
+			"If +d does not include <dlabel> we default to \"delta = <declination>\". "
+			"Set <dlabel> to \"-\" to disable the declination label. ");
+		GMT_Usage (API, 3, "+i Draw outline of primary (inner) circle with <pen> [no circle].");
+		GMT_Usage (API, 3, "+l Place the letters W, E, S, N at the cardinal points. "
+			"Optionally, append comma-separated west, east, south, north custom labels instead.");
+		GMT_Usage (API, 3, "+p Draw outline of secondary (outer) circle with <pen> [no circle].");
+		GMT_Usage (API, 3, "+t Override default annotation and primary and secondary tick internals [30/5/1].");
+	}
+	else {
+		GMT_Usage (API, 3, "+f Draws a \"fancy\" rose [Default is plain]. "
+			"Optionally, add <level> of fancy rose: 1 draws E-W, N-S directions [Default], "
+			"2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW directions.");
+		GMT_Usage (API, 3, "+l Place the letters W, E, S, N at the cardinal points. "
+			"Optionally, append comma-separated west, east, south, north custom labels instead.");
+	}
+	GMT_Usage (API, -2, "Note: If the North label = \'*\' then a north star is plotted instead of the label.");
 }
 
 /*! .

@@ -109,7 +109,7 @@ EXTERN_MSC void gmt_syntax (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
 EXTERN_MSC void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part);
 EXTERN_MSC void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string);
-EXTERN_MSC void gmt_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string);
+EXTERN_MSC void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string);
 EXTERN_MSC void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind);
 EXTERN_MSC void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string);
