@@ -7202,10 +7202,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 1, "-J Select map proJection. (<scale> in %s/degree, <width> in %s). Modifiers:",
 				GMT->session.unit_name[GMT->current.setting.proj_length_unit],
 				GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			GMT_Usage (API, 2, "+dh Specifying map height.");
-			GMT_Usage (API, 2, "+du Specifying maximum map dimension.");
-			GMT_Usage (API, 2, "+dl Specifying minimum map dimension.");
-			GMT_Usage (API, 2, "+dw Specifying map width [Default].");
+			GMT_Usage (API, 3, "+dh Specifying map height.");
+			GMT_Usage (API, 3, "+du Specifying maximum map dimension.");
+			GMT_Usage (API, 3, "+dl Specifying minimum map dimension.");
+			GMT_Usage (API, 3, "+dw Specifying map width [Default].");
 			GMT_Usage (API, -2, "Azimuthal projections set -Rg unless polar aspect or -R<...>+r is set.");
 
 			GMT_Usage (API, 2, "-Ja|A<lon0>/<lat0>[/<hor>]/<scl> (or <radius>/<lat>)|<width> (Lambert Azimuthal EA)");
@@ -7330,9 +7330,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'U':	/* Plot time mark and [optionally] command line */
 
 			GMT_Usage (API, 1, "%s", GMT_U_OPT);
-			GMT_Usage (API, -2, "Plot GMT Unix System Time stamp and optionally appended text or command line. "
-				"Add +c to have the command line plotted [%s]. "
-				"Set the justification point via +j<code> [BL] and an optional offset via +o<dx>/<dy> [-54p/-54p].", GMT_choice[GMT->current.setting.map_logo]);
+			GMT_Usage (API, -2, "Plot GMT Unix System Time stamp and optionally append a <label>. Optional modifiers:");
+			GMT_Usage (API, 3, "+c Select the command line as the label [%s].", GMT_choice[GMT->current.setting.map_logo]);
+			GMT_Usage (API, 3, "+j Set frame justification point [BL].");
+			GMT_Usage (API, 3, "+o Offset stamp by <dx>/<dy> [-54p/-54p].");
 			break;
 
 		case 'V':	/* Verbose */
@@ -7421,14 +7422,14 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'c':	/* -c option advances subplot panel focus under modern mode */
 
 			if (GMT->current.setting.run_mode == GMT_MODERN || GMT->current.setting.use_modern_name)	/* -c has no use in classic */
-				GMT_Usage (API, 1, "%s", API->c_OPT);
+				GMT_Usage (API, 1, "%s", GMT_c0_OPT);
 				GMT_Usage (API, -2, "Move to next subplot panel [Default] or append <row>,<col> or <index> of desired panel.");
 			break;
 
 		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
 
 			GMT_Usage (API, 1, "%s", GMT_d_OPT);
-			GMT_Usage (API, -2, "On (i)nput, replace <nodata> with NaN; on (o)utput do the reverse.");
+			GMT_Usage (API, -2, "On (i)nput, replace <nodata> values with NaN; on (o)utput do the reverse.");
 			break;
 
 		case 'e':	/* -e option for ASCII grep operation on data records */
@@ -7444,13 +7445,13 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'k':	/* -di option to tell GMT the relationship between NaN and a nan-proxy for input */
 
-			GMT_Usage (API, 1, "%s Replace any <nodata> in input data with NaN.", GMT_di_OPT);
+			GMT_Usage (API, 1, "%s Replace any <nodata> values in input data with NaN.", GMT_di_OPT);
 			break;
 
 		case 'l':	/* -l option to set up auto-legend items*/
 
 			GMT_Usage (API, 1, "%s", GMT_l_OPT);
-			GMT_Usage (API, -2, "Add symbol, line or polygon to the legend. Optionally, append <label> and any of the legend codes:");
+			GMT_Usage (API, -2, "Add symbol, line or polygon to the legend. Optionally, append <label> and any of the optional legend codes:");
 			GMT_Usage (API, 3, "+D Draw horizontal line with specified <pen>.");
 			GMT_Usage (API, 3, "+G Add a vertical <gap> of given height.");
 			GMT_Usage (API, 3, "+H Place a <header> in the legend.");
@@ -7492,7 +7493,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -2, "Use data point separations to determine if there are data gaps. "
 				"Append x|X or y|Y to identify data gaps in x or y coordinates, "
 				"respectively, and append d|D for distance gaps.  Upper case X|Y|D means "
-				"we first project the points (requires -J).  Optionally append");
+				"we first project the points (requires -J).  Optional modifiers:");
 			GMT_Usage (API, 3, "+n Let d = prev-curr; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
 			GMT_Usage (API, 3, "+p Let d = curr-prev; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
 			GMT_Usage (API, -2, "For geographic data: Choose <gap> unit from %s [Default is meter (%c)]. "
@@ -7508,7 +7509,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "%s", GMT_h_OPT);
 			GMT_Usage (API, -2, "Input/output file has [%d] header record(s) [%s]. "
-				"Optionally, append i for input or o for output only and number of header records [0]. "
+				"Optionally, append i for input or o for output only and number of expected header records [0]. "
 				"Note: -hi turns off the writing of all headers on output since none will be read.  Optional modifiers:",
 				GMT->current.setting.io_n_header_items, GMT_choice[GMT->current.setting.io_header[GMT_IN]]);
 			GMT_Usage (API, 3, "+c Add header record with column information [none].");
@@ -7524,7 +7525,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "%s", GMT_i_OPT);
 			GMT_Usage (API, -2, "Set alternate input column order and optional transformations [Default reads all columns in original order]. "
-				"Append list of columns; t[<word>] selects the trailing text; append <word> to pick a word from the text. Use -in to select numerical input only. "
+				"Append list or ranges of columns; t[<word>] selects the trailing text; append <word> to pick a word from the text. Use -in to select numerical input only. "
 				"Optional modifiers per column or column group:");
 			GMT_Usage (API, 3, "+l Take log10 of column before any other transformations.");
 			GMT_Usage (API, 3, "+d Divide column by appended <divisor>.");
@@ -7536,7 +7537,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "%s", GMT_j_OPT);
 			GMT_Usage (API, -2, "Set spherical distance calculation mode for modules that offer that flexibility. "
-				"Append f for Flat Earth, g for Great Circle [Default], or e for Ellipsoidal mode.");
+				"Append e for Ellipsoidal, f for Flat, or g for Spherical Earth (Great Circle) [Default].");
 			break;
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
@@ -7545,17 +7546,17 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -2, "Specify the grid interpolation mode: "
 				"b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor [Default is bicubic]. Optional modifiers:");
 #ifdef DEBUG
-				GMT_Usage (API, 3, "+A Save the anti-aliasing counter to a grid for debugging.");
+				GMT_Usage (API, 3, "+A Save the anti-aliasing counter to nz_grd_counter.grd for debugging.");
 #endif
-				GMT_Usage (API, 3, "+a switch off anti-aliasing (except for linear) [Default: is on].");
-				GMT_Usage (API, 3, "+b<BC> Change boundary conditions.  <BC> can be either "
+				GMT_Usage (API, 3, "+a switch off anti-aliasing (except for linear) [Default is ON].");
+				GMT_Usage (API, 3, "+b Change boundary conditions. <BC> can be either "
 					"g for geographic, p for periodic, and n for natural boundary conditions. "
 					"For p and n you may optionally append x or y [Default is both]: "
 					"x for periodic boundary conditions on x, "
-					"y for periodic boundary conditions on y. "
+					"y for periodic boundary conditions on y "
 					"[Default is Natural conditions, unless grid is known to be geographic].");
 				GMT_Usage (API, 3, "+c Clip interpolated grid to input z-min/max [Default may exceed limits].");
-				GMT_Usage (API, 3, "+t<threshold> Change the minimum weight in vicinity of NaNs. A threshold of "
+				GMT_Usage (API, 3, "+t Change the minimum weight in vicinity of NaNs. A <threshold> of "
 					"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate "
 					"about half way from a non-NaN to a NaN node [Default is 0.5].");
 			break;
@@ -7564,7 +7565,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "%s", GMT_o_OPT);
 			GMT_Usage (API, -2, "Set alternate output column order [Default writes all columns in normal order]. "
-				"Append list of columns; t[<word>] selects the trailing text; append <word> for writing a single word from the text. "
+				"Append list or ranges of columns; t[<word>] selects the trailing text; append <word> for writing a single word from the text. "
 				"Use -on to select numerical output only.");
 			break;
 
@@ -7574,12 +7575,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				GMT_Usage (API, 1, "%s", GMT_p_OPT);
 				GMT_Usage (API, -2, "Select a 3-D pseudo perspective view.  Append the "
 					"<azimuth>/<elevation> of the viewpoint [180/90]. "
-					"When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis]. "
+					"When used with -Jz|Z, optionally add /<zlevel> for basemap level [bottom of z-axis]. "
 					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. "
 					"For a plain rotation about the z-axis, give rotation angle only "
 					"and optionally use +w or +v to select location of axis. Optional modifiers:");
-				GMT_Usage (API, 3, "+w Specify a fixed coordinate point [region center]");
-				GMT_Usage (API, 3, "+v Set a fixed projected point [panel center");
+				GMT_Usage (API, 3, "+w Specify a fixed coordinate point [region center].");
+				GMT_Usage (API, 3, "+v Set a fixed projected point [panel center].");
 			}
 			break;
 
@@ -7587,8 +7588,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "%s", GMT_q_OPT);
 			GMT_Usage (API, -2, "Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows]. "
-				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 3, "+c Set limits on data values for specified column <col> instead");
+				"Append comma-separated lists or ranges of rows; prepend ~ to exclude those ranges instead. Optional modifiers:");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified column <col> instead.");
 			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
 			GMT_Usage (API, 3, "+f Reset row counters per file.");
 			GMT_Usage (API, 3, "+s Reset row counters per segment.");
@@ -7598,8 +7599,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "%s", GMT_qi_OPT);
 			GMT_Usage (API, -2, "Select input rows to process [Default reads all rows]. "
-				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 3, "+c Set limits on data values for specified input column <col> instead");
+				"Append comma-separated lists or ranges of rows; prepend ~ to exclude those ranges instead. Optional modifiers:");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified input column <col> instead.");
 			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
 			GMT_Usage (API, 3, "+f Reset row counters per file.");
 			GMT_Usage (API, 3, "+s Reset row counters per segment.");
@@ -7609,8 +7610,8 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "%s", GMT_qo_OPT);
 			GMT_Usage (API, -2, "Select output rows to process [Default writes all rows]. "
-				"Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.");
-			GMT_Usage (API, 3, "+c Set limits on data values for specified output column <col> instead");
+				"Append comma-separated lists or ranges of rows; prepend ~ to exclude those ranges instead. Optional modifiers:");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified output column <col> instead.");
 			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
 			GMT_Usage (API, 3, "+f Reset row counters per file.");
 			GMT_Usage (API, 3, "+s Reset row counters per segment.");
@@ -7637,31 +7638,31 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'F':	/* -r grid registration option  */
 
 			GMT_Usage (API, 1, "%s", GMT_r_OPT);
-			GMT_Usage (API, -2, "Set (g)ridline- or (p)ixel-registration [Plain -r sets pixel registration]. "
+			GMT_Usage (API, -2, "Set (g)ridline- or (p)ixel-registration (-r with no argument sets pixel registration). "
 				"If -r is not given then we default to gridline registration.");
 			break;
 
 		case 't':	/* -t layer transparency option  */
 
 			GMT_Usage (API, 1, "%s", GMT_t_OPT);
-			GMT_Usage (API, -2, "Set the layer transparency from 0-100 [Default is 0; opaque]. "
-				"For separate transparency for fill and stroke, append /<transp2> as well. "
-				"Requires conversion to PDF or raster formats to take effect. Optional modifiers:");
-			GMT_Usage (API, 3, "+f Let transparency apply to fills only.");
-			GMT_Usage (API, 3, "+s Let transparency apply to strokes only.");
+			GMT_Usage (API, -2, "Set layer transparency from 0-100 [Default is 0; opaque]. "
+				"For separate transparencies for fill and stroke, append /<transp2> [Default is same for both]. Optional modifiers:");
+			GMT_Usage (API, 3, "+f Let <transp> apply to fill only.");
+			GMT_Usage (API, 3, "+s Let <transp> apply to stroke only.");
+			GMT_Usage (API, -2, "Note: Transparency requires conversion to PDF or raster formats to take effect.");
 			break;
 
 		case 'T':	/* Same -t but with extension for variable fill/stroke transparency option  */
 
 			GMT_Usage (API, 1, "%s", GMT_tv_OPT);
-			GMT_Usage (API, -2, "Set the layer transparency from 0-100 [Default is 0; opaque]. "
-				"Requires conversion to PDF or raster formats to take effect. "
-				"For separate transparency for fill and stroke, append /<transp2> as well. "
-				"For plotting symbols with variable transparency read from file, append no value "
-				"and give the transparency as the last numerical value in the data record. Optional modifiers:");
+			GMT_Usage (API, -2, "Set layer transparency from 0-100 [Default is 0; opaque]. "
+				"For separate transparencies for fill and stroke, append /<transp2>. "
+				"For plotting symbols with variable transparency read from file, append no values "
+				"and give the transparency as the last numerical value(s) in the data record. Optional modifiers:");
 			GMT_Usage (API, 3, "+f Let transparency apply to fills only.");
 			GMT_Usage (API, 3, "+s Let transparency apply to strokes only.");
-			GMT_Usage (API, -2, "If no transparency is given then the modifiers inform us if we expect one or two transparencies from file [1].");
+			GMT_Usage (API, -2, "If no transparency is given then use +f, +s to tell if we expect one or two transparencies from file [1].");
+			GMT_Usage (API, -2, "Note: Transparency requires conversion to PDF or raster formats to take effect.");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
@@ -7707,17 +7708,17 @@ void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
 	struct GMTAPI_CTRL *API = GMT->parent;
  	GMT_Usage (API, 1, "%s", GMT_A_OPT);
  	GMT_Usage (API, -2, "Place limits on coastline features from the GSHHG data base. "
-		"Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels"
-		"will be skipped [Default is 0/4 (4 means lake inside island inside lake)].");
+		"Features smaller than <min_area> (in km^2) or of levels (0-4) outside the <min_level>/<max_level> "
+		"range will be skipped [Default is 0/4 (0 is ocean and 4 means lake inside island inside lake)]. Optional modifiers:");
 		GMT_Usage (API, 3, "+a Control how Antarctica is handled: "
-		"Append g to use shelf ice grounding line for Antarctica coastline, or"
-		"append i to use ice/water front for Antarctica coastline [Default]. "
-		"Append s to skip Antarctica (all data south of %dS) [use all], or"
-		"append S to skip anything BUT Antarctica (all data north of %dS) [use all]. ",
+		"Append g to use shelf ice grounding line for Antarctica coastline, or "
+		"append i to use ice/water front instead [Default]. "
+		"Append s to skip Antarctica (all data south of %dS), or "
+		"S to skip anything BUT Antarctica (all data north of %dS) [use all data]. ",
 			abs(GSHHS_ANTARCTICA_LIMIT), abs(GSHHS_ANTARCTICA_LIMIT));
 		GMT_Usage (API, 3, "+l Only get lakes from level 2 [riverlakes and lakes].");
 		GMT_Usage (API, 3, "+r Only get riverlakes from level 2  [riverlakes and lakes]");
-		GMT_Usage (API, 3, "+p Exclude features whose size is < <percent>%% of the full-resolution feature [use all].");
+		GMT_Usage (API, 3, "+p Exclude features whose size is < <percent>%% of the full-resolution feature [use all features].");
 }
 
 /*! Contour/line specifications in *contour and psxy[z] */
@@ -7888,14 +7889,16 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 	else
 		GMT_Usage (API, 1, "-%c<fill>", option);
 	GMT_Usage (API, -2, "%s Specify <fill> as one of:", string);
-	GMT_Usage (API, 3, "<gray> or <red>/<green>/<blue>, all in the range 0-255;");
-	GMT_Usage (API, 3, "#rrggbb, all in the range 0-255 using hexadecimal numbers;");
-	GMT_Usage (API, 3, "<c>/<m>/<y>/<k> in range 0-100%%;");
-	GMT_Usage (API, 3, "<hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;");
-	GMT_Usage (API, 3, "Any valid color name;");
-	GMT_Usage (API, 3, "P|p<pattern>[+b<color>][+f<color>][+r<dpi>]; "
-		"Give <pattern> number from 1-90 or a filename, optionally add +r<dpi> [%g]. "
-		"Optionally, use +f<color> or +b<color> to change fore- or background colors (no <color> sets transparency).", PSL_DOTS_PER_INCH_PATTERN);
+	GMT_Usage (API, 3, "%s <gray> or <red>/<green>/<blue>, all in the range 0-255.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s #rrggbb, all in the range 0-255 using hexadecimal numbers.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <cyan>/<magenta>/<yellow>/<black> in range 0-100%%.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s A valid color name.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s P|p<pattern>[+b<color>][+f<color>][+r<dpi>]. "
+		"Give <pattern> number from 1-90 or a filename. Optional modifiers:", GMT_LINE_BULLET);
+	GMT_Usage (API, 5, "+r Specify the <dpi> of the pattern [%g]. ", PSL_DOTS_PER_INCH_PATTERN);
+	GMT_Usage (API, 5, "+b Change the background <color> (no <color> sets transparency).");
+	GMT_Usage (API, 5, "+f Change the foreground <color> (no <color> sets transparency).");
 	GMT_Usage (API, -2, "For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].");
 }
 
@@ -7926,13 +7929,13 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 	GMT_Usage (API, -2, "%s", msg);
 	GMT_Usage (API, 2, "<pen> is a comma-separated list of three optional items in the order: "
 		"<width>[%s], <color>, and <style>[%s].", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
-	GMT_Usage (API, 3, "<width> >= 0.0 sets pen width (default units are points); alternatively a pen "
-		"name: Choose among faint, default, or [thin|thick|fat][er|est], or wide.");
+	GMT_Usage (API, 3, "<width> >= 0.0 sets pen width (Default unit is point); alternatively, give a pen "
+		"name: Choose from faint, default, or [thin|thick|fat][er|est] and wide.");
 	GMT_Usage (API, 3, "<color> = <gray> or <red>/<green>/<blue>, all in range 0-255; "
 		"#rrggbb, all in the range 0-255 using hexadecimal numbers; "
-		"<c>/<m>/<y>/<k> in 0-100%% range; "
-		"<hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1; "
-		"Any valid color name.");
+		"<cyan>/<magenta>/<yellow>/<black> in 0-100%% range; "
+		"<hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1; "
+		"a valid color name.");
 	GMT_Usage (API, 3, "<style> = pattern of dashes (-) and dots (.), scaled by <width>; "
 		"\"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\"; "
 		"<pattern>[:<offset>]; <pattern> holds lengths (default unit points) "
@@ -8194,8 +8197,8 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	GMT_Usage (API, 3, "a: All data is consider a single group; reference point is first point in the group.");
 	GMT_Usage (API, 3, "f: Each file is a separate group; reference point is reset to first point in the group.");
 	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
-	GMT_Usage (API, 3, "r: Each segment is a group, but reference point is reset to each point in the group." 
-		"Alternatively, append a fixed external reference point instead.");
+	GMT_Usage (API, 3, "r: Each segment is a group, but reference point is reset to each point in the group.");
+	GMT_Usage (API, 3, "Alternatively, append a fixed external reference point instead.");
 }
 
 /*! For programs that can read *.img grids */

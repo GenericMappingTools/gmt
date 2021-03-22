@@ -14076,11 +14076,11 @@ void gmt_list_custom_symbols (struct GMT_CTRL *GMT) {
 	}
 
 	GMT_Usage (API, 3, "Available custom symbols (See Appendix N):");
-	gmt_message (GMT, "        ---------------------------------------------------------\n");
+	gmt_message (GMT, "       ---------------------------------------------------------\n");
 	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0))
-		gmt_message (GMT, "        %s", buffer);
+		gmt_message (GMT, "       %s", buffer);
 	fclose (fp);
-	gmt_message (GMT, "        ---------------------------------------------------------\n");
+	gmt_message (GMT, "       ---------------------------------------------------------\n");
 }
 
 /*! . */

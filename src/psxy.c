@@ -474,7 +474,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *mod_name = &name[4];	/* To skip the leading gmt for usage messages */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Include -T */
+	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Classic mode: Include -T */
 		GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|x|y]] "
 			"[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F%s] [-G<fill>|+z] "
 			"[-H[<scale>]] [-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s "
@@ -484,7 +484,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 				GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT,
 				GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 	}
-	else {	/* MOdern mode has no -T */
+	else {	/* Modern mode has no -T */
 		GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|x|y]] "
 			"[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F%s] [-G<fill>|+z] "
 			"[-H[<scale>]] [-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s "

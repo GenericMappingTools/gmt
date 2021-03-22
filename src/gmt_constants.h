@@ -317,6 +317,7 @@ enum GMT_time_period {
 
 #define GMT_LINE_BREAK	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
 #define GMT_LINE_CONT	"\xe2\x80\xa6"	/* Ellipsis for continue symbol in UTF-8 */
+#define GMT_LINE_BULLET "\xe2\x80\xa2"	/* Bullet glyph */
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
