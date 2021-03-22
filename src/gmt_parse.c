@@ -1020,6 +1020,7 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current, struct GMT_OPTIO
 }
 
 unsigned int gmtparse_count_opt (struct GMT_OPTION *options) {
+	/* Count and return how many options we got */
 	unsigned int n = 0;
 	struct GMT_OPTION *opt = NULL;
 	for (opt = options; opt; opt = opt->next) n++;
@@ -1049,7 +1050,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
 	if (gmtparse_count_opt (options) == 1 && strchr (given_options, options->option)) {
-		/* Gave a single valid common option with no argument means just issue that option's syntax message and exit */
+		/* Giving a single valid common option with no argument means just issue that option's syntax message and exit */
 		char string[3] = {""};
 		string[0] = options->option;
 		GMT_Option (API, string);
