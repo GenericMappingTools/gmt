@@ -91,6 +91,9 @@
 #define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"
 #define GMT_CONTT	"-T[h|l][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
 
+/* Arguments for psxy[z] polygon-creating option */
+#define PLOT_L_OPT "-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]"
+
 /* Options for coastline extraction  */
 #define GMT_A_OPT       "-A<min_area>[/<min_level>/<max_level>][+a[g|i][s|S]][+r|l][+p<percent>]"
 

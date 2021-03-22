@@ -35,6 +35,8 @@
 
 /* Control structure for psxy */
 
+#define PSXY_E_OPT "-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]"
+
 struct PSXY_CTRL {
 	bool no_RJ_needed;	/* Special case of -T and no -B when -R -J is not required */
 	struct PSXY_A {	/* -A[m|y|p|x|step] */
@@ -476,21 +478,21 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {	/* Classic mode: Include -T */
 		GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|x|y]] "
-			"[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F%s] [-G<fill>|+z] "
-			"[-H[<scale>]] [-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s "
+			"[%s] [-C<cpt>] [-D<dx>/<dy>] [%s] [-F%s] [-G<fill>|+z] "
+			"[-H[<scale>]] [-I[<intens>]] %s[%s] [-N[c|r]] %s%s "
 			"[-S[<symbol>][<size>]] [-T] [%s] [%s] [-W[<pen>][<attr>]] [%s] [%s] [-Z<value>|<file>[+f|l]] [%s] "
 			"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name,
-				GMT_J_OPT, GMT_Rgeoz_OPT, GMT_SEGMENTIZE3, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
+				GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, PSXY_E_OPT, GMT_SEGMENTIZE3, API->K_OPT, PLOT_L_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
 				GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT,
 				GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 	}
 	else {	/* Modern mode has no -T */
 		GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|x|y]] "
-			"[%s] [-C<cpt>] [-D<dx>/<dy>] [-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]] [-F%s] [-G<fill>|+z] "
-			"[-H[<scale>]] [-I[<intens>]] %s[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s%s "
+			"[%s] [-C<cpt>] [-D<dx>/<dy>] [%s] [-F%s] [-G<fill>|+z] "
+			"[-H[<scale>]] [-I[<intens>]] %s[%s] [-N[c|r]] %s%s "
 			"[-S[<symbol>][<size>]] [%s] [%s] [-W[<pen>][<attr>][+z]] [%s] [%s] [-Z<arg>[+f|l]] [%s] "
 			"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name,
-				GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_SEGMENTIZE3, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
+				GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, PSXY_E_OPT, GMT_SEGMENTIZE3, API->K_OPT, PLOT_L_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
 				GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT,
 				GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_q_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 	}
@@ -510,16 +512,18 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"and looks for -Z<value> options in each segment header. Then, color is "
 		"applied for polygon fill (-L) or polygon pen (no -L).", mod_name);
 	GMT_Usage (API, 1, "-D Offset symbol or line positions by <dx>/<dy> [no offset].");
-	GMT_Usage (API, 1, "-E Draw (symmetrical) standard error bars for x and/or y.  Append +a for "
-		"asymmetrical errors (reads two columns) [symmetrical reads one column]. "
-		"If X or Y are specified instead then a box-and-whisker diagram is drawn, "
+	GMT_Usage (API, 1, "%s", PSXY_E_OPT);
+	GMT_Usage (API, -2, "Draw (symmetrical) standard error bars for x and/or y. "
+		"If X or Y are specified then a box-and-whisker diagram is drawn instead, "
 		"requiring four extra columns with the 0%%, 25%%, 75%%, and 100%% quantiles. "
-		"The x or y coordinate is expected to represent the 50%% quantile. "
-		"Add cap <width> with +w [%gp] and error pen attributes with +p<pen>. "
-		"Given -C, use +cl to apply CPT color to error pen and +cf for error fill [both]. "
-		"Append +n for a notched box-and whisker (notch width represents uncertainty "
-		"in the median) - a 5th extra column with the sample size is then required. "
-		"The settings of -W, -G affect the appearance of the 25-75%% box.", EBAR_CAP_WIDTH);
+		"The x or y coordinate is expected to represent the 50%% quantile. Optional modifiers:");
+	GMT_Usage (API, 3, "+a Select asymmetrical errors (reads two columns) [symmetrical, reads one column].");
+	GMT_Usage (API, 3, "+p Set the error bar <pen> attributes.");
+	GMT_Usage (API, 3, "+n Select notched box-and whisker (notch width represents uncertainty "
+		"in the median); a 5th extra column with the sample size is required via the input.");
+	GMT_Usage (API, 3, "+w Change error cap <width> [%gp].", EBAR_CAP_WIDTH);
+	GMT_Usage (API, -2, "The settings of -W, -G affect the appearance of the 25-75%% box. "
+		"Given -C, use +cl to apply CPT color to error pen and +cf for error fill [both].");
 	gmt_segmentize_syntax (API->GMT, 'F', 1);
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Usage (API, -2, "The -G option can be present in all segment headers (not with -S). "
@@ -529,13 +533,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "-I Use the intensity to modulate the fill color (requires -C or -G). "
 		"If no intensity is given we expect it to follow symbol size in the data record.");
 	GMT_Option (API, "K");
-	GMT_Usage (API, 1, "-L Force closed polygons.  Alternatively, append modifiers to build polygon from a line: ");
-	GMT_Usage (API, 2, "+d: Build symmetrical envelope around y(x) using deviations dy(x) from col 3. ");
-	GMT_Usage (API, 2, "+D: Build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 3-4.");
-	GMT_Usage (API, 2, "+b: Build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from cols 3-4.");
-	GMT_Usage (API, 2, "+xl|r|x0: Connect 1st and last point to anchor points at xmin, xmax, or x0.");
-	GMT_Usage (API, 2, "+yb|t|y0: Connect 1st and last point to anchor points at ymin, ymax, or y0.");
-	GMT_Usage (API, 2, "Polygon may be painted (-G) and optionally outlined via +p<pen> [no outline].");
+	GMT_Usage (API, 1, "%s", PLOT_L_OPT);
+	GMT_Usage (API, -2, "Force closed polygons, or append modifiers to build polygon from a line:");
+	GMT_Usage (API, 3, "+d Symmetrical envelope around y(x) using deviations dy(x) from col 3.");
+	GMT_Usage (API, 3, "+D Asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 3-4.");
+	GMT_Usage (API, 3, "+b Asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from cols 3-4.");
+	GMT_Usage (API, 3, "+x Connect 1st and last point to anchor points at l (xmin), r (xmax), or x0.");
+	GMT_Usage (API, 3, "+y Connect 1st and last point to anchor points at b (ymin), t (ymax), or y0.");
+	GMT_Usage (API, 3, "+p Draw polygon outline with <pen> [no outline].");
+	GMT_Usage (API, -2, "The polygon created may be painted via -G.");
 	GMT_Usage (API, 1, "-N Do not skip or clip symbols that fall outside the map border [clipping is on]. "
 		"Use -Nr to turn off clipping and plot repeating symbols for periodic maps. "
 		"Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps. "
@@ -638,7 +644,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", 15);
 	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
-	GMT_Usage (API, 1, "-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>. "
+	GMT_Usage (API, 1, "-Z Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. "
 		"To use <color> for fill, select -G+z. "
 		"To use <color> for an outline pen, select -W<pen>+z.");
 	GMT_Option (API, "a,bi");

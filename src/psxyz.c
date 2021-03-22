@@ -159,7 +159,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *mod_name = &name[4];	/* To skip the leading gmt for usage messages */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[m|p|x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[m|p|x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s\n\t[%s] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, PLOT_L_OPT, API->O_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
@@ -189,7 +189,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.  Alternatively, append modifiers to build constant-z polygon from a line.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t%s\t   Force closed polygons.  Alternatively, append modifiers to build constant-z polygon from a line.\n", PLOT_L_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to build symmetrical envelope around y(x) using deviations dy(x) from col 4.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +D to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 4-5.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from cols 4-5.\n");

@@ -7331,7 +7331,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "%s", GMT_U_OPT);
 			GMT_Usage (API, -2, "Plot GMT Unix System Time stamp and optionally append a <label>. Optional modifiers:");
-			GMT_Usage (API, 3, "+c Select the command line as the label [%s].", GMT_choice[GMT->current.setting.map_logo]);
+			GMT_Usage (API, 3, "+c Use the command line as the label [%s].", GMT_choice[GMT->current.setting.map_logo]);
 			GMT_Usage (API, 3, "+j Set frame justification point [BL].");
 			GMT_Usage (API, 3, "+o Offset stamp by <dx>/<dy> [-54p/-54p].");
 			break;
@@ -7987,6 +7987,7 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "inset", "map scale", "map rose", "vertical scale"};
 	unsigned int shift = (kind == GMT_ANCHOR_INSET) ? 1 : 0;	/* Add additional "tab" to front of message */
+	shift = 0;
 	if (part & 1) {	/* Here string is message, or NULL */
 		if (string) GMT_Usage (API, 1+shift, "%s %s", option, string);
 		GMT_Usage (API, 2+shift, "Positioning is specified via one of four coordinate systems:");
@@ -8018,11 +8019,11 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	GMT_Usage (API, 1, "-%c %s", option, string);
-	GMT_Usage (API, 2, "Specify the map inset region using one of three specifications: "
-		"a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels. "
-		"Append +r if coordinates are the lower left and upper right corners of a rectangular area. "
-		"b) Give <xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] of bounding rectangle in projected coordinates [meters]. "
-		"c) Set reference point and dimensions of the inset:");
+	GMT_Usage (API, 2, "Specify the map inset region using one of three specifications:");
+	GMT_Usage (API, 3, "%s Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels. "
+		"Append +r if coordinates are the lower left and upper right corners of a rectangular area. ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Give <xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] of bounding rectangle in projected coordinates [meters].", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Set reference point and dimensions of the inset:", GMT_LINE_BULLET);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
 	GMT_Usage (API, 3, "Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).", GMT_DIM_UNITS_DISPLAY);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
@@ -8111,16 +8112,16 @@ void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	GMT_Usage (API, -2, "%s", string);
 	GMT_Usage (API, -2, "Without further options: draw frame around the %s panel (using MAP_FRAME_PEN) "
 		"[Default is no frame].  Available modifiers:", type[kind]);
-	GMT_Usage (API, 2, "+c<clearance> Set clearance where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp]. "
-		"Note: For a map inset the default clearance is zero.", GMT_FRAME_CLEARANCE);
+	GMT_Usage (API, 3, "+c Set <clearance> as either <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp]. "
+		"Note: For a map inset the default <clearance> is zero.", GMT_FRAME_CLEARANCE);
 #ifdef DEBUG
-	GMT_Usage (API, 2, "+d Draw guide lines for debugging.");
+	GMT_Usage (API, 3, "+d Draw guide lines for debugging.");
 #endif
-	GMT_Usage (API, 2, "+g Set the <fill> for the %s panel [Default is no fill].", type[kind]);
-	GMT_Usage (API, 2, "+i Draw secondary inner frame boundary [Default gap is %gp].", GMT_FRAME_GAP);
-	GMT_Usage (API, 2, "+p Draw the border and optionally change the border <pen> [%s]. ", gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
-	GMT_Usage (API, 2, "+r Draw rounded rectangles instead [Default <radius> is %gp].", GMT_FRAME_RADIUS);
-	GMT_Usage (API, 2, "+s Place a shadow behind the %s panel [Default is %gp/%gp/gray50].",
+	GMT_Usage (API, 3, "+g Set the <fill> for the %s panel [Default is no fill].", type[kind]);
+	GMT_Usage (API, 3, "+i Draw secondary inner frame boundary [Default gap is %gp].", GMT_FRAME_GAP);
+	GMT_Usage (API, 3, "+p Draw the border and optionally change the border <pen> [%s]. ", gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
+	GMT_Usage (API, 3, "+r Draw rounded rectangles instead [Default <radius> is %gp].", GMT_FRAME_RADIUS);
+	GMT_Usage (API, 3, "+s Place a shadow behind the %s panel [Default is %gp/%gp/gray50].",
 		type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 }
 /*! .
