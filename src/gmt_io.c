@@ -3369,6 +3369,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 			return ret_val;
 		}
 		ret_val |= gmtio_reconsider_rectype (GMT);	/* Consider the nature of aspatial information */
+		ret_val |= GMT_READ_DATA;	/* Since all shapefiles/OGR files have spatial plus aspatial data */
 	}
 
 	/* Tell user how we interpreted their first record */
