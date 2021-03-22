@@ -8042,9 +8042,8 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	GMT_Usage (API, 1, "-%c%s", option, GMT_SCALE);
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
-	GMT_Usage (API, 3, "+w Set scale <length> and (for geographic projection) append a unit from %s [km] (required).",
+	GMT_Usage (API, -2, "Set required scale via +w<length>, and (for geographic projection) append a unit from %s [km]. Other scale modifiers are optional:",
 		GMT_LEN_UNITS2_DISPLAY);
-	GMT_Usage (API, -2, "Several scale bar modifiers are optional:");
 	GMT_Usage (API, 3, "+a Append label alignment (choose among l(eft), r(ight), t(op), and b(ottom)) [t].");
 	GMT_Usage (API, 3, "+c Control where the map scale should apply. "
 		"If no arguments we select the center of the map. "
@@ -8072,7 +8071,7 @@ void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string) {
 		GMT_Usage (API, 1, "-T%c%s", type, GMT_TROSE_DIR);
 	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
-	GMT_Usage (API, 3, "+w Set diameter of the rose (required). Several rose modifiers are optional:");
+	GMT_Usage (API, -2, "Set required size of the rose via +w<diameter>. Other rose modifiers are optional:");
 	if (type == 'm') {
 		GMT_Usage (API, 3, "+d Set magnetic <declination>[/<dlabel>], where "
 			"<dlabel> is an optional label for the magnetic compass needle. "
