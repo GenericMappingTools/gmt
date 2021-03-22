@@ -7996,14 +7996,14 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is irrelevant */
 		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC", "ML"};
-		GMT_Usage (API, -(2+shift), "All except x require the -R and -J options to be set. Refpoint modifiers:");
+		GMT_Usage (API, -(2+shift), "All systems except x require the -R and -J options to be set. Refpoint modifiers:");
 		GMT_Usage (API, 3+shift, "+j Append 2-char <justify> code to associate that anchor point on the %s with <refpoint>. "
 			"If +j<justify> is not given then <justify> will default to the same as <refpoint> (with j), "
 			"or the mirror opposite of <refpoint> (with -J), or %s (otherwise).", type[kind], just[kind]);
 		GMT_Usage (API, 3+shift, "+o Offset %s from <refpoint> by <dx>[/<dy>] in direction implied by <justify> [0/0].", type[kind]);
 	}
 	else
-		GMT_Usage (API, -(2+shift), "All except x require the -R and -J options to be set. ");
+		GMT_Usage (API, -(2+shift), "All systems except x require the -R and -J options to be set. ");
 }
 
 /*! .
