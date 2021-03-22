@@ -7973,14 +7973,13 @@ void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	GMT_Usage (API, 1, "-%c<color>", option);
-	GMT_Usage (API, -2, "%s Specify <color> as one of: "
-		"<gray> or <red>/<green>/<blue>, all in range 0-255; "
-		"<c>/<m>/<y>/<k> in range 0-100%%; "
-		"<hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1; "
-		"Any valid color name.", string);
+	GMT_Usage (API, -2, "%s Specify <color> as one of: ", string);
+	GMT_Usage (API, 3, "%s <gray> or <red>/<green>/<blue>, all in range 0-255. ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <cyan>/<magenta>/<yellow>/<blackk> in range 0-100%%; ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1; ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Any valid color name.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
 }
-
 
 void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part) {
 	/* For -Dg|j|J|n|x */
@@ -8112,7 +8111,7 @@ void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	GMT_Usage (API, -2, "%s", string);
 	GMT_Usage (API, -2, "Without further options: draw frame around the %s panel (using MAP_FRAME_PEN) "
 		"[Default is no frame].  Available modifiers:", type[kind]);
-	GMT_Usage (API, 3, "+c Set <clearance> as either <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp]. "
+	GMT_Usage (API, 3, "+c Set <clearance> as either <gap>, <xgap>/<ygap>, or <lgap>/<rgap>/<bgap>/<tgap> [%gp]. "
 		"Note: For a map inset the default <clearance> is zero.", GMT_FRAME_CLEARANCE);
 #ifdef DEBUG
 	GMT_Usage (API, 3, "+d Draw guide lines for debugging.");
@@ -8171,7 +8170,7 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 		"Append t for terminal, c for circle, s for square, or a for arrow [Default]. "
 		"Append l|r to only draw left or right side of this head [both sides].");
 	GMT_Usage (API, level, "+n Shrink attributes if vector length < <norm> [none].");
-	GMT_Usage (API, level, "+o Sets pole <plon/plat> [Default is north pole] for great or small circles; only give length via input.");
+	GMT_Usage (API, level, "+o Set pole <plon/plat> [Default is north pole] for great or small circles; only give length via input.");
 	if (mode & 4) GMT_Usage (API, level, "+p Set pen attributes; exclude <pen> to turn off head outlines [Default pen and outline].");
 	GMT_Usage (API, level, "+q Start and stop opening angles are given instead of (azimuth,length) on input.");
 	GMT_Usage (API, level, "+r Only draw right side of all specified vector heads [both sides].");
@@ -8195,7 +8194,7 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 	GMT_Usage (API, 3, "n: %s networks of line segments between all points in each group.", verb[mode]);
 	if (mode == 0) GMT_Usage (API, 3, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
 	GMT_Usage (API, 2, "Optionally, append one of five ways to define a \"group\":");
-	GMT_Usage (API, 3, "a: All data is consider a single group; reference point is first point in the group.");
+	GMT_Usage (API, 3, "a: Data set is considered a single group; reference point is first point in the group.");
 	GMT_Usage (API, 3, "f: Each file is a separate group; reference point is reset to first point in the group.");
 	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
 	GMT_Usage (API, 3, "r: Each segment is a group, but reference point is reset to each point in the group.");
