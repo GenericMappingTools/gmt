@@ -7387,7 +7387,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'a':	/* -a option for aspatial field substitution into data columns */
 
 			GMT_Usage (API, 1, "%s", GMT_a_OPT);
-			GMT_Usage (API, -2, "Aspatial data selection.  Give one or more comma-separated <col>=<name> associations "
+			GMT_Usage (API, -2, "Aspatial data selection.  Give one or more comma-separated [<col>=]<name> associations "
 				"[Default selects all aspatial fields].");
 			break;
 
@@ -7935,37 +7935,37 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 	GMT_Usage (API, 2, "<pen> is a comma-separated list of three optional items in the order: "
 		"<width>[%s], <color>, and <style>[%s].", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
 	GMT_Usage (API, 3, "<width> >= 0.0 sets pen width (Default unit is point); alternatively, give a pen "
-		"name: Choose from faint, default, or [thin|thick|fat][er|est] and wide.");
-	GMT_Usage (API, 3, "<color> = <gray> or <red>/<green>/<blue>, all in range 0-255; "
-		"#rrggbb, all in the range 0-255 using hexadecimal numbers; "
-		"<cyan>/<magenta>/<yellow>/<black> in 0-100%% range; "
-		"<hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1; "
+		"name: Choose from faint, default, [thin|thick|fat][er|est] or wide.");
+	GMT_Usage (API, 3, "<color> = <gray> or <red>/<green>/<blue>, each in the range 0-255; "
+		"#rrggbb, each in the range 00-FF using hexadecimal numbers; "
+		"<cyan>/<magenta>/<yellow>/<black> each in 0-100%% range; "
+		"<hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1, respectively; "
 		"a valid color name.");
 	GMT_Usage (API, 3, "<style> = pattern of dashes (-) and dots (.), scaled by <width>; "
 		"\"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\"; "
 		"<pattern>[:<offset>]; <pattern> holds lengths (default unit points) "
 		"of any number of lines and gaps separated by underscores. "
-		"The optional <offset> shifts elements from start of the line [0].");
+		"The optional <offset> phase-shifts elements from start of the line [0].");
 	GMT_Usage (API, -2, "For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
 	if (mode)
 		GMT_Usage (API, -2, "Additional line attribute modifiers are also available:");
 	if (mode & 8) {
 		GMT_Usage (API, 3, "+c Control how pens and fills are affected if a CPT is specified via -C: "
 			"Append l to let pen colors follow the CPT setting, or "
-			"Append f to let fill/font colors follow the CPT setting. "
+			"append f to let fill/font colors follow the CPT setting. "
 			"Default activates both effects.");
 	}
 	if (mode & 2) {
 		GMT_Usage (API, 3, "+o Trim the line from the end inward by the specified amount. "
-			"Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian]. "
+			"Choose <unit> in plot distances (%s) or map distances (%s) [Cartesian]. "
 			"To trim the two ends differently, give two offsets separated by a slash (/).", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	}
 	if (mode & 1)
 		GMT_Usage (API, 3, "+s Draw line using a Bezier spline through projected coordinates [Linear spline].");
 	if (mode & 4) {
-		GMT_Usage (API, 3, "+v Add vector head with the given specs at the ends of lines. "
+		GMT_Usage (API, 3, "+v Add vector head with the given <specs> at the ends of lines. "
 			"Use +ve and +vb separately to give different endings (+v applies to both). "
-			"See vector specifications for details. Note: +v must be last modifier for a pen.");
+			"See vector specifications for details. Note: +v must be the last modifier for a pen.");
 	}
 }
 
