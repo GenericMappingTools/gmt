@@ -8,8 +8,8 @@ The **-R** option
 
 **Description**
 
-The **-R** option defines the map region or data domain of interest. It may be specified in one of seven ways. Options 1
-and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region <gmt_region>`:
+The **-R** option defines the map region or data domain of interest. It may be specified in one of seven ways (options 1
+and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region <gmt_region>`):
 
 1. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+u**\ *unit*]. This is the standard way to specify Cartesian data domains and
    geographic regions when using map projections where meridians and parallels are rectilinear. Optionally, append
