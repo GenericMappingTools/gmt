@@ -36,15 +36,14 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
+**-A**\ [**x**\|\ **y**]
     By default, geographic line segments are drawn as great circle arcs by resampling
-    coarse input data along such arcs. To disable this sampling and draw them as
-    straight lines, use the **-A** flag.  Alternatively, add **m** to draw
-    the line by first following a meridian, then a parallel. Or append **p**
-    to start following a parallel, then a meridian. (This can be practical
-    to draw a line along parallels, for example).  For Cartesian data, points
-    are simply connected, unless you append **x** or **y** to draw stair-case
-    curves that whose first move is along *x* or *y*, respectively.
+    coarse input points along such arcs. To disable this sampling and simply connect the
+    original points, use the **-A** flag (Cartesian data points are always connected as given).
+    Alternatively, add **y** to draw the line by first following y (or meridian), then x
+    (or a parallel). Or append **x** to first follow x (or a parallel), then y (or meridian).
+    For geographic data this lets you draw a line along parallels, for example, while for
+    Cartesian data it enables you to draw stair-case curves.
 
 .. _-B:
 

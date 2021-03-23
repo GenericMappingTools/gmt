@@ -36,7 +36,7 @@
 /* Control structure for psxyz */
 
 struct PSXYZ_CTRL {
-	struct PSXYZ_A {	/* -A[m|y|p|x|step] */
+	struct PSXYZ_A {	/* -A[x|y] */
 		bool active;
 		unsigned int mode;
 		double step;
@@ -159,7 +159,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *mod_name = &name[4];	/* To skip the leading gmt for usage messages */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[m|p|x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s\n\t[%s] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, PLOT_L_OPT, API->O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s\n\t[%s] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, PLOT_L_OPT, API->O_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
@@ -172,10 +172,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-Z,R3");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress drawing geographic line segments as great circle arcs, i.e., draw\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   straight lines unless m or p is appended to first follow meridian\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then parallel, or vice versa. Note: -A requires constant z-coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian data, use -Ax or -Ay to draw x- or y-staircase curves.\n");
+	GMT_Usage (API, 1, "-A[x|y]");
+	GMT_Usage (API, -2, "Suppress drawing geographic line segments as great circle arcs, i.e., draw "
+		"straight lines instead.  Two optional directives instead convert paths to staircase curves:");
+	GMT_Usage (API, 3, "x: First follow x (longitude), then y (latitude) for staircase curves.");
+	GMT_Usage (API, 3, "y: First follow y (latitude), then x (longitude) for staircase curves.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on t-value in 4rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, %s excepts lines/polygons\n", mod_name);
@@ -350,7 +351,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'A':	/* Turn off draw_arc mode */
 				Ctrl->A.active = true;
-				switch (opt->arg[0]) {
+				switch (opt->arg[0]) {	/* Allow for old-style m and p for backwards compatibility */
 					case 'm': case 'y': Ctrl->A.mode = GMT_STAIRS_Y; break;
 					case 'p': case 'x': Ctrl->A.mode = GMT_STAIRS_X; break;
 

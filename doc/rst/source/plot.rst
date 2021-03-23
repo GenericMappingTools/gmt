@@ -14,7 +14,7 @@ Synopsis
 
 **gmt plot** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
+[ |-A|\ [**x**\|\ **y**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
