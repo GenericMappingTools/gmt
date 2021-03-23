@@ -135,8 +135,10 @@ Optional Arguments
 
 .. _-R:
 
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: _Syntax:
+    :end-before: _Description:
 
 .. _-S:
 
