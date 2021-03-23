@@ -7438,7 +7438,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -2, "Only accept input data records that contain the string \"pattern\". "
 				"Use -e~\"pattern\" to only accept data records that DO NOT contain this pattern. "
 				"If your pattern begins with ~, escape it with \\~.  To match against "
-				"extended regular expressions use -e[~]/regexp/[i] (i for case-insensitive).");
+				"extended regular expressions use -e[~]/<regexp>/[i] (i for case-insensitive).");
 			GMT_Usage (API, 3, "+f Read patterns from <file> instead, one per line.");
 			GMT_Usage (API, -2, "To give a single pattern starting with +f, escape it with \\+f.");
 			break;
