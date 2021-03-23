@@ -501,17 +501,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONS:\n\n");
 	GMT_Option (API, "<");
-	GMT_Usage (API, 1, "-A Suppress drawing geographic line segments as great circle arcs, i.e., draw "
-		"straight lines unless m or p is appended to first follow meridian, "
-		"then parallel, or vice versa. "
-		"For Cartesian data, use -Ax or -Ay to draw x- or y-staircase curves.");
+	GMT_Usage (API, 1, "-A[m|p|x|y]");
+	GMT_Usage (API, -2, "Suppress drawing geographic line segments as great circle arcs, i.e., draw "
+		"straight lines instead.  Four appended directives convert paths to staircase curves:");
+	GMT_Usage (API, 3, "m: First follow meridian, then parallels (geographic data).");
+	GMT_Usage (API, 3, "p: First follow parallels, then meridians (geographic data).");
+	GMT_Usage (API, 3, "x: First follow x, then y for staircase curves (Cartesian data).");
+	GMT_Usage (API, 3, "y: First follow y, then x for staircase curves (Cartesian data).");
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "-C Use CPT (or specify -Ccolor1,color2[,color3,...]) to assign symbol "
-		"colors based on z-value in 3rd column. "
+	GMT_Usage (API, 1, "-C<cpt>|<color1>,<color2>[,<color3>,...]");
+	GMT_Usage (API, -2, "Assign symbol colors based on z-value in 3rd column. "
 		"Note: requires -S. Without -S, %s excepts lines/polygons "
 		"and looks for -Z<value> options in each segment header. Then, color is "
 		"applied for polygon fill (-L) or polygon pen (no -L).", mod_name);
-	GMT_Usage (API, 1, "-D Offset symbol or line positions by <dx>/<dy> [no offset].");
+	GMT_Usage (API, 1, "-D<dx>/<dy> Offset symbol or line positions by <dx>/<dy> [no offset].");
 	GMT_Usage (API, 1, "%s", PSXY_E_OPT);
 	GMT_Usage (API, -2, "Draw (symmetrical) standard error bars for x and/or y. "
 		"If X or Y are specified then a box-and-whisker diagram is drawn instead, "
