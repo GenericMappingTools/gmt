@@ -16,7 +16,7 @@ Synopsis
 *ingrid*
 |-G|\ *outgrid*
 |SYN_OPT-R|
-[ |-F|\ *polygonfile* ]
+[ |-F|\ *polygonfile*\ [**+c**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ *lon/lat/radius*\ [**+n**] ]
@@ -57,10 +57,10 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *polygonfile*
-    Specify a multisegment closed polygon file.  The output grid region will
-    reflect the bounding box of the polygon and all nodes outside the
-    polygon will be set to NaN.
+**-F**\ *polygonfile*\ [**+c**]
+    Specify a multisegment closed polygon file.  All grid nodes outside the
+    polygon will be set to NaN.  Optionally, append **+c** to crop the grid
+    region to reflect the bounding box of the polygon.
 
 .. _-J:
 

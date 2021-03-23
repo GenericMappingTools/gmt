@@ -42,8 +42,9 @@ struct GRDCUT_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct GRDCUT_F {	/* -Fpolfile */
+	struct GRDCUT_F {	/* -Fpolfile[+c] */
 		bool active;
+		bool crop;
 		char *file;
 	} F;
 	struct GRDCUT_G {	/* -G<output_grdfile> */
@@ -97,7 +98,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [-F<polygontable>] [%s] [-N[<nodata>]]\n\t[%s] [-S<lon>/<lat>/<radius>[+n]] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [-F<polygontable>[+c]] [%s] [-N[<nodata>]]\n\t[%s] [-S<lon>/<lat>/<radius>[+n]] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n\n",
 		name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -110,7 +111,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon table that describes the grid subset\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to extracted (nodes between bounding box and polygons will be set to NaN).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to extracted (nodes between grid boundary and polygons will be set to NaN).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to crop the grid to the polygon bounding box [leave region as is].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-J Specify oblique projection and compute corresponding rectangular\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   region that needs to be extracted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
@@ -154,8 +156,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 
 			case 'F':
 				Ctrl->F.active = true;
-				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (opt->arg[0]) {
+					if ((c = strstr (opt->arg, "+c"))) {
+						Ctrl->F.crop = true;
+						c[0] = '\0';	/* Chop off modifier for now */
+					}
+					Ctrl->F.file = strdup (opt->arg);
+					if (c) c[0] = '+';	/* Restore modifier */
+					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				}
+				else {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: No arguments given\n");
+					n_errors++;
+				}
 				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = true;
@@ -589,25 +602,29 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		wesn_new[YLO] = MAX (G->header->wesn[YLO], floor (D->min[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
-		wesn_new[YHI] = MIN (G->header->wesn[YHI], ceil  (D->max[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must worry about longitude */
-			if (gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI])) {
-				wesn_new[XLO] = floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X];
-				wesn_new[XHI] = ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X];
+		if (Ctrl->F.crop) {	/* Get new grid region from polygon bounding box */
+			wesn_new[YLO] = MAX (G->header->wesn[YLO], floor (D->min[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
+			wesn_new[YHI] = MIN (G->header->wesn[YHI], ceil  (D->max[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
+			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must worry about longitude */
+				if (gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI])) {
+					wesn_new[XLO] = floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X];
+					wesn_new[XHI] = ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X];
+				}
+				else {	/* The two domains could be off by 360 */
+					wesn_new[XLO] = G->header->wesn[XLO];	wesn_new[XHI] = G->header->wesn[XHI];
+					if (D->min[GMT_X] > wesn_new[XHI]) wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
+					else if (D->max[GMT_X] < wesn_new[XLO]) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
+					wesn_new[XLO] = MAX (wesn_new[XLO], floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+					wesn_new[XHI] = MIN (wesn_new[XHI], ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+				}
 			}
-			else {	/* The two domains could be off by 360 */
-				wesn_new[XLO] = G->header->wesn[XLO];	wesn_new[XHI] = G->header->wesn[XHI];
-				if (D->min[GMT_X] > wesn_new[XHI]) wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
-				else if (D->max[GMT_X] < wesn_new[XLO]) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
-				wesn_new[XLO] = MAX (wesn_new[XLO], floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
-				wesn_new[XHI] = MIN (wesn_new[XHI], ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+			else {	/* Plain Cartesian case */
+				wesn_new[XLO] = MAX (G->header->wesn[XLO], floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+				wesn_new[XHI] = MIN (G->header->wesn[XHI], ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
 			}
 		}
-		else {	/* Plain Cartesian case */
-			wesn_new[XLO] = MAX (G->header->wesn[XLO], floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
-			wesn_new[XHI] = MIN (G->header->wesn[XHI], ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
-		}
+		else	/* Keep the same region a before */
+			gmt_M_memcpy (wesn_new, G->header->wesn, 4U, double);
 	}
 	else {	/* Just the usual subset selection via -R.  First get the header */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
