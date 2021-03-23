@@ -589,10 +589,25 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		wesn_new[XLO] = MAX (G->header->wesn[XLO], floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
-		wesn_new[XHI] = MAX (G->header->wesn[XHI], ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
 		wesn_new[YLO] = MAX (G->header->wesn[YLO], floor (D->min[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
-		wesn_new[YHI] = MAX (G->header->wesn[YHI], ceil  (D->max[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
+		wesn_new[YHI] = MIN (G->header->wesn[YHI], ceil  (D->max[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must worry about longitude */
+			if (gmt_M_360_range (G->header->wesn[XLO], G->header->wesn[XHI])) {
+				wesn_new[XLO] = floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X];
+				wesn_new[XHI] = ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X];
+			}
+			else {	/* The two domains could be off by 360 */
+				wesn_new[XLO] = G->header->wesn[XLO];	wesn_new[XHI] = G->header->wesn[XHI];
+				if (D->min[GMT_X] > wesn_new[XHI]) wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
+				else if (D->max[GMT_X] < wesn_new[XLO]) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
+				wesn_new[XLO] = MAX (wesn_new[XLO], floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+				wesn_new[XHI] = MIN (wesn_new[XHI], ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+			}
+		}
+		else {	/* Plain Cartesian case */
+			wesn_new[XLO] = MAX (G->header->wesn[XLO], floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+			wesn_new[XHI] = MIN (G->header->wesn[XHI], ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+		}
 	}
 	else {	/* Just the usual subset selection via -R.  First get the header */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
@@ -722,7 +737,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			gmt_set_grddim (GMT, G->header);	/* Update dimensions given the change of pad */
 		}
 	}
-	if (!Ctrl->F.active && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file) */
+	if (!Ctrl->F.active && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file or already read if -F) */
 		Return (API->error);
 	}
 	if (gmt_M_file_is_memory (Ctrl->In.file) && (Ctrl->N.active || gmt_M_file_is_memory (Ctrl->G.file))) {
