@@ -43,9 +43,7 @@ Optional Arguments
     of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
     To specify custom text annotations for
     intervals, you must append ;\ *annotation* to each z-slice in the CPT.
-    For standard **-B** operations, see below.
-
-.. include:: explain_-B.rst_
+    For standard **-B** operations, |Add_-B_links|
 
 .. _-C:
 
