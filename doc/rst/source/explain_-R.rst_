@@ -3,12 +3,8 @@ The **-R** option
 
 **Syntax**
 
-.. _Syntax:
-
 **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+r**][**+u**\ *unit*]
     Specify the region of interest. |Add_-R|
-
-.. _Description:
 
 **Description**
 

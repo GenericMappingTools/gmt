@@ -147,12 +147,11 @@ Optional Arguments (begin mode)
     half the primary annotation font size, giving the full annotation font size as the default gap].
 
 .. _-R:
-
 .. |Add_-R| replace:: This is useful when all subplots share a common plot domain. In this module, the chosen region
     will also become the default for any data region needed by computational modules. |Add_-R_links|
 .. include:: explain_-R.rst_
-    :start-after: _Syntax:
-    :end-before: _Description:
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
