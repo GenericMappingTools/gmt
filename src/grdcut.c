@@ -42,6 +42,10 @@ struct GRDCUT_CTRL {
 		bool active;
 		char *file;
 	} In;
+	struct GRDCUT_F {	/* -Fpolfile */
+		bool active;
+		char *file;
+	} F;
 	struct GRDCUT_G {	/* -G<output_grdfile> */
 		bool active;
 		char *file;
@@ -85,6 +89,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->In.file);
+	gmt_M_str_free (C->F.file);
 	gmt_M_str_free (C->G.file);
 	gmt_M_free (GMT, C);
 }
@@ -92,7 +97,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [%s] [-N[<nodata>]]\n\t[%s] [-S<lon>/<lat>/<radius>[+n]] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [-F<polygontable>] [%s] [-N[<nodata>]]\n\t[%s] [-S<lon>/<lat>/<radius>[+n]] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n\n",
 		name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -104,6 +109,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   grid.  If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon table that describes the grid subset\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   to extracted (nodes between bounding box and polygons will be set to NaN).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-J Specify oblique projection and compute corresponding rectangular\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   region that needs to be extracted.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
@@ -145,6 +152,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 
 			/* Processes program-specific parameters */
 
+			case 'F':
+				Ctrl->F.active = true;
+				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				break;
 			case 'G':	/* Output file */
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
@@ -212,8 +224,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] + Ctrl->S.active + Ctrl->Z.active) != 1,
-	                                   "Must specify only one of the -R, -S or the -Z options\n");
+	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] + Ctrl->F.active + Ctrl->S.active + Ctrl->Z.active) != 1,
+	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
 
@@ -303,6 +315,18 @@ GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wes
 	return GMT_NOERROR;
 }
 
+GMT_LOCAL bool grdcut_node_is_outside (struct GMT_CTRL *GMT, struct GMT_DATASET *D, double lon, double lat) {
+	/* Returns true if the selected point is outside the polygon */
+	uint64_t seg;
+	unsigned int inside = 0;
+	for (seg = 0; seg < D->table[0]->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
+		if (gmt_polygon_is_hole (GMT, D->table[0]->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
+		inside = (gmt_inonout (GMT, lon, lat, D->table[0]->segment[seg]) > GMT_OUTSIDE);
+	}
+	return ((inside) ? false : true);	/* true if outside */
+}
+
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -317,6 +341,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	double wesn_new[4], wesn_old[4], wesn_requested[4];
 	double lon, lat, distance, radius;
 
+	struct GMT_DATASET *D = NULL;
 	struct GMT_GRID_HEADER test_header;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDCUT_CTRL *Ctrl = NULL;
@@ -557,6 +582,18 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			if (wesn_new[XHI] < 0.0)   wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
 		}
 	}
+	else if (Ctrl->F.active) {	/* ONly read in subset corresponding to the bounding box of the polygon */
+		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+			Return (API->error);	/* Get header only */
+		}
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error);
+		}
+		wesn_new[XLO] = MAX (G->header->wesn[XLO], floor (D->min[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+		wesn_new[XHI] = MAX (G->header->wesn[XHI], ceil  (D->max[GMT_X] / G->header->inc[GMT_X]) * G->header->inc[GMT_X]);
+		wesn_new[YLO] = MAX (G->header->wesn[YLO], floor (D->min[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
+		wesn_new[YHI] = MAX (G->header->wesn[YHI], ceil  (D->max[GMT_Y] / G->header->inc[GMT_Y]) * G->header->inc[GMT_Y]);
+	}
 	else {	/* Just the usual subset selection via -R.  First get the header */
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
@@ -659,6 +696,19 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	gmt_M_memcpy (wesn_old, G->header->wesn, 4, double);
 	nx_old = G->header->n_columns;		ny_old = G->header->n_rows;
 
+	if (Ctrl->F.active) {	/* Must reset nodes outside the polygon to NaN */
+		unsigned int row, col;
+		uint64_t n_nodes = 0;
+		gmt_set_inside_mode (GMT, D, GMT_IOO_UNKNOWN);
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file) */
+			Return (API->error);
+		}
+		gmt_M_grd_loop (GMT, G, row, col, node) {
+			if (grdcut_node_is_outside (GMT, D, G->x[col], G->y[row]))	/* Outside specified polygon */
+				G->data[node] = GMT->session.f_NaN;
+		}
+		GMT_Report (API, GMT_MSG_INFORMATION, "Set %" PRIu64 " nodes outside polygon to NaN\n", n_nodes);
+	}
 	if (Ctrl->N.active && extend) {	/* Determine the pad needed for the extended area */
 		gmt_M_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Default pad */
 		gmt_M_memcpy (pad, def_pad, 4, unsigned int);			/* Starting pad */
@@ -672,7 +722,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			gmt_set_grddim (GMT, G->header);	/* Update dimensions given the change of pad */
 		}
 	}
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file) */
+	if (!Ctrl->F.active && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY | add_mode, wesn_new, Ctrl->In.file, G) == NULL) {	/* Get subset (unless memory file) */
 		Return (API->error);
 	}
 	if (gmt_M_file_is_memory (Ctrl->In.file) && (Ctrl->N.active || gmt_M_file_is_memory (Ctrl->G.file))) {

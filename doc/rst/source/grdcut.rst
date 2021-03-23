@@ -12,8 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdcut** *ingrid* |-G|\ *outgrid*
+**gmt grdcut**
+*ingrid*
+|-G|\ *outgrid*
 |SYN_OPT-R|
+[ |-F|\ *polygonfile* ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ *lon/lat/radius*\ [**+n**] ]
@@ -51,6 +54,13 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-F:
+
+**-F**\ *polygonfile*
+    Specify a multisegment closed polygon file.  The output grid region will
+    reflect the bounding box of the polygon and all nodes outside the
+    polygon will be set to NaN.
 
 .. _-J:
 
