@@ -1204,7 +1204,7 @@ Input columns selection: The **-i** option
 
 **Syntax**
 
-**-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*]\
+**-i**\ *cols*\ [**+l**][**+d**\ *divisor*][**+s**\ *scale*]\
 [**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
 
 **Description**
