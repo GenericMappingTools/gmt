@@ -578,25 +578,11 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 --------------------------------------
 
-**Syntax**
+.. |Add_-U| unicode:: 0x20 .. just an invisible code
+.. include:: ../explain_-U.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
-
-**Description**
-
-The **-U** option draws the GMT system time stamp on the plot. The following modifiers are supported:
-
-- *label* to append the text string given in *label* (which must be surrounded by double qoutes if it contains spaces).
-- **+c** to plot the current command string.
-- **+j**\ *just* to specify the justification of the time stamp, where *just* is a two-character
-  :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**\ (eft), **C**\ (enter), or
-  **R**\ (ight)) and a vertical (**T**\ (op), **M**\ (iddle), or **B**\ (ottom)) code [default is **BL**].
-- **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` for the time stamp by *dx* and optionally
-  *dy* (if different than *dx*).
-
-The GMT parameters :term:`MAP_LOGO`, :term:`MAP_LOGO_POS`, :term:`FONT_LOGO` and :term:`FORMAT_TIME_STAMP` can affect
-the appearance; see the :doc:`../gmt.conf` man page for details. The time string will be in the locale set by the
-environment variable **TZ** (generally local time).
+**Examples**
 
 .. _fig_-U:
 
@@ -687,7 +673,7 @@ OGR/GMT GIS i/o: The **-a** option
 
 **Syntax**
 
-**-a**\ [*col*\ =]\ *name*\ [,\ *...*]
+**-a**\ [[*col*\ =]\ *name*\ ][,\ *...*]
 
 **Description**
 
