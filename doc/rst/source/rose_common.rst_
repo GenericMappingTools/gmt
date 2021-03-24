@@ -138,8 +138,10 @@ Optional Arguments
     as *azimuth + 180*.  Ignored if range is given as -90/90 or 0/180.
 
 .. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-V:
 
