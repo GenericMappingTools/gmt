@@ -230,17 +230,9 @@ usage.
 Map frame and axes annotations: The **-B** option
 -------------------------------------------------
 
-This is potentially the most complicated option in GMT, but most examples of its usage are actually quite simple. We
-distinguish between two sets of information: :ref:`Frame settings <cookbook/options:Frame settings>` and
-:ref:`Axes settings <cookbook/options:Axes settings>`.  These are set separately by their own **-B** invocations; hence
-multiple **-B** specifications may be specified. The :ref:`Frame settings <cookbook/options:Frame settings>` cover
-things such as which axes should be plotted, canvas fill, plot title (and subtitle), and what type of gridlines be
-drawn, whereas the :ref:`Axes settings <cookbook/options:Axes settings>` deal with annotation, tick, and gridline
-intervals, axes labels, and annotation units.
-
 .. |Add_-B| unicode:: 0x20 .. just an invisible code
 .. include:: ../explain_-B.rst_
-    :start-after: **Description**
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 Geographic basemaps
 ^^^^^^^^^^^^^^^^^^^
