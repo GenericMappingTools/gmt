@@ -1,5 +1,3 @@
-.. _-icols_full:
-
 **-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
     Select specific data columns for primary input, in arbitrary order. Columns
     not listed will be skipped. Give individual columns (or column ranges

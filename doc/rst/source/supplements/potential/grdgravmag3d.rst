@@ -118,9 +118,10 @@ Optional Arguments
       **-Q**\ *region* Same syntax as **-R**.
 
 .. _-R:
-
-.. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input)
+.. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input) |Add_-R_links|
 .. include:: ../../explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 

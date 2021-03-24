@@ -1,5 +1,3 @@
-.. _-V_full:
-
 **-V**\ [*level*]
     Select verbose mode, which modulates the messages written to *stderr*.
     Choose among 7 levels of verbosity; each level adds more messages:

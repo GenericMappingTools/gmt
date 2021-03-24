@@ -76,6 +76,11 @@
 
 .. |SYN_OPT-Area| replace:: |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
 
+.. |Add_-B_links| replace:: :ref:`(See full description) <-B_full>` :ref:`(See cookbook information)
+    <cookbook/options:Map frame and axes annotations: The **-B** option>`.
+
+.. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
+    <cookbook/options:Data domain or map region: The **-R** option>`.
 
 .. |br| raw:: html
 

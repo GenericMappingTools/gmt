@@ -1,5 +1,3 @@
-.. _-w_full:
-
 **-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\ [/*phase*][**+c**\ *col*]
     Convert the input *x*-coordinate to a cyclical coordinate, or select another
     column instead via the **+c** modifier.  Append the cycle code of interest.

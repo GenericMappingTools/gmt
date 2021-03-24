@@ -114,11 +114,11 @@ Optional Arguments
     by appending **+1** or **+2**, respectively.
 
 .. _-R:
-
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of the grid. If this subsection exceeds the
-    boundaries of the grid, only the common region will be output.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
+    boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -153,7 +153,7 @@ Optional Arguments
 
 **-Z**\ [*levels*]
     Read all 2-D input grids given on the command line and assume they represent
-    the layers in a 3-D cube [Default reads a single 3-D data cube]. 
+    the layers in a 3-D cube [Default reads a single 3-D data cube].
     Optionally, append *levels* and assign these to the cube constructed from the grids.
     The *levels* may be specified the same way as in **-T**.  If not given then we default
     to an integer *levels* array starting at 0.

@@ -37,8 +37,10 @@ Optional Arguments
 .. include:: explain_clabelinfo.rst_
 
 .. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -134,9 +136,10 @@ Optional Arguments
     Optionally, append **+z** to exclude the zero contour.
 
 .. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| replace:: [Default is region defined in the grid file].
 .. include:: explain_-Rz.rst_

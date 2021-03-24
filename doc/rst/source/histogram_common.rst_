@@ -38,8 +38,10 @@ Optional Arguments
     axes are flipped.
 
 .. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -122,9 +124,10 @@ Optional Arguments
     reverse cumulative histogram.
 
 .. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| replace:: If not given, we will automatically find reasonable values for the region.
 .. include:: explain_-Rz.rst_

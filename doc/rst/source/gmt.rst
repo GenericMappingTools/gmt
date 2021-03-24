@@ -200,86 +200,164 @@ Description
 These are all the common GMT options that remain the same for all GMT
 modules. No space between the option flag and the associated arguments.
 
-.. include:: explain_-B_full.rst_
+.. _-B_full:
+.. _-B:
+.. |Add_-B| replace:: :ref:`(See cookbook information) <cookbook/options:Map frame and axes annotations: The **-B** option>`.
+.. include:: explain_-B.rst_
+
+.. _-J_full:
+.. _-J:
 
 .. include:: explain_-J_full.rst_
 
+.. _-Jz_full:
+.. _-Jz:
+
 .. include:: explain_-Jz_full.rst_
+
+.. _-Jproj_full:
 
 .. include:: explain_-Jproj_full.rst_
 
-.. include:: explain_-R_full.rst_
+.. _-R_full:
+.. _-R:
+.. |Add_-R| replace:: :ref:`(See cookbook information) <cookbook/options:Data domain or map region: The **-R** option>`.
+.. include:: explain_-R.rst_
+
+.. _-Rz_full:
+.. _-Rz:
 
 .. include:: explain_-Rz_full.rst_
 
+.. _-U_full:
+.. _-U:
+
 .. include:: explain_-U_full.rst_
+
+.. _-V_full:
+.. _-V:
 
 .. include:: explain_-V_full.rst_
 
+.. _-XY_full:
+.. _-X:
+
 .. include:: explain_-XY_full.rst_
 
+.. _-aspatial_full:
+
 .. include:: explain_-aspatial_full.rst_
+
+.. _-bi_full:
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi_full.rst_
 
+.. _-bo_full:
+
 .. include:: explain_-bo_full.rst_
+
+.. _-c_full:
 
 .. |Add_-c| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-c_full.rst_
 
+.. _-d_full:
+
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d_full.rst_
+
+.. _-di_full:
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di_full.rst_
 
+.. _-do_full:
+
 .. |Add_-do| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-do_full.rst_
+
+.. _-e_full:
 
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-e_full.rst_
 
+.. _-f_full:
+
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f_full.rst_
+
+.. _-g_full:
 
 .. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g_full.rst_
 
+.. _-h_full:
+
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h_full.rst_
 
+.. _-icols_full:
+
 .. include:: explain_-icols_full.rst_
+
+.. _-distcalc_full:
 
 .. |Add_-j| unicode:: 0x20 .. just an invisible code
 .. include:: explain_distcalc_full.rst_
 
+.. _-l_full:
+
 .. include:: explain_-l_full.rst_
+
+.. _-n_full:
 
 .. include:: explain_-n_full.rst_
 
+.. _-ocols_full:
+
 .. include:: explain_-ocols_full.rst_
 
+.. _perspective_full:
+
 .. include:: explain_perspective_full.rst_
+
+.. _-q_full:
 
 .. |Add_-q| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-q_full.rst_
 
+.. _-qi_full:
+
 .. |Add_-qi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-qi_full.rst_
+
+.. _-qo_full:
 
 .. |Add_-qo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-qo_full.rst_
 
+.. _nodereg_full:
+
 .. include:: explain_nodereg_full.rst_
+
+.. _-s_full:
 
 .. include:: explain_-s_full.rst_
 
+.. _-t_full:
+
 .. include:: explain_-t_full.rst_
+
+.. _-w_full:
 
 .. include:: explain_-w_full.rst_
 
+.. _core_full:
+
 .. include:: explain_core_full.rst_
+
+.. _colon_full:
 
 .. include:: explain_colon_full.rst_
 

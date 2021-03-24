@@ -64,9 +64,10 @@ Optional Arguments
     Append *nodata* value to initialize nodes outside current region [Default is NaN].
 
 .. _-R:
-
-.. |Add_-R| replace:: This defines the subregion to be cut out.
+.. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 

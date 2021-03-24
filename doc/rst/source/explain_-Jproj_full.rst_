@@ -1,5 +1,3 @@
-.. _-Jproj_full:
-
 **-J**\ *proj*\|\ **EPSG:n**
    Starting at GMT6 it is possible to use the `PROJ <https://proj.org/>`_ library to do coordinate and datum transforms.
    This is achieved via GDAL so it requires that GMT build is linked to that library. It is, however,

@@ -78,12 +78,12 @@ Required Arguments
 .. include:: explain_-J.rst_
 
 .. _-R:
-
-.. |Add_-R| replace:: Special case for the UTM
-    projection: If **-C** is used and **-R** is not given then the
-    region is set to coincide with the given UTM zone so as to preserve
-    the full ellipsoidal solution (See RESTRICTIONS for more information).
+.. |Add_-R| replace:: Special case for the UTM projection: If **-C** is used and **-R** is not given then the
+    region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
+    (See :ref:`mapproject:Restrictions` for more information). |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------

@@ -59,11 +59,11 @@ Optional Arguments
     is the 1-D indexing that GMT uses when referring to grid nodes.
 
 .. _-R:
-
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of the grid. If this subsection exceeds the
-    boundaries of the grid, only the common region will be output.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
+    boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-V:
 

@@ -1,5 +1,3 @@
-.. _-qi_full:
-
 **-qi**\ [~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
     Select specific data rows to be read during input [all].
     Give individual rows (or row ranges in the format *start*\ [:*inc*]:*stop*, where

@@ -130,11 +130,11 @@ Optional Arguments
     :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with **-F**.
 
 .. _-R:
-
-.. |Add_-R| replace:: You may ask to project only
-    a subset of the grid by specifying a smaller input *w/e/s/n* region
-    [Default is the region given by the grid file].
+.. |Add_-R| replace:: You may ask to project only a subset of the grid by specifying a smaller input *w/e/s/n* region
+    [Default is the region given by the grid file]. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-V:
 

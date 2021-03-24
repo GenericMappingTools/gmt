@@ -26,8 +26,10 @@ Optional Arguments
 ------------------
 
 .. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -90,9 +92,10 @@ Optional Arguments
     **Note**: If the CPT is categorical then only **-Qm** is available (but see **-T**).
 
 .. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| replace:: This option may be used to
     indicate the range used for the 3-D axes [Default is region given by

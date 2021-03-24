@@ -106,8 +106,10 @@ Optional Arguments (begin mode)
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
 
 .. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -147,9 +149,11 @@ Optional Arguments (begin mode)
     half the primary annotation font size, giving the full annotation font size as the default gap].
 
 .. _-R:
-
-.. |Add_-R| replace:: This is useful when all subplots share a common plot domain. In this module, the chosen region will also become the default for any data region needed by computational modules.
+.. |Add_-R| replace:: This is useful when all subplots share a common plot domain. In this module, the chosen region
+    will also become the default for any data region needed by computational modules. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 

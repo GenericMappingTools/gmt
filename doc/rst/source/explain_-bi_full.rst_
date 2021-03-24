@@ -1,5 +1,3 @@
-.. _-bi_full:
-
 **-bi**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
     Select native binary format for primary input (secondary inputs are always ASCII).
     Here, *ncols* is the number of data columns of

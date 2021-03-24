@@ -175,9 +175,10 @@ Optional Arguments
     [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
 
 .. _-R:
-
-.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1.
+.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-V:
 
