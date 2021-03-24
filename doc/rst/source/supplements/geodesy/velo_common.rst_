@@ -131,8 +131,10 @@ Optional Arguments
     See `Vector Attributes`_ for specifying additional attributes.
 
 .. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: ../../explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
