@@ -112,7 +112,7 @@ Optional Arguments
 
 **-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**]
     Compute the *min*\ /*max* values of the first *n* columns to the nearest multiple
-    of the provided increments (separate the *n* increments by slashes) [2].
+    of the provided increments (separate the *n* increments by slashes) [default is 2 columns].
     By default, output results in the form **-R**\ *w/e/s/n*, unless **-C** is
     set in which case we output each *min* and *max* value in separate output columns.
     If only one increment is given we also use it for the second
@@ -263,4 +263,3 @@ See Also
 :doc:`gmt`,
 :doc:`gmtconvert`,
 :doc:`plot`
-
