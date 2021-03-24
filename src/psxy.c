@@ -564,21 +564,25 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[Note: if -C is selected then 3rd means 4th column, etc.]. "
 		"Symbols A, C, D, G, H, I, N, S, T are adjusted to have same area "
 		"as a circle of the specified diameter.");
-	GMT_Usage (API, 2, "Bars: Append +b[<base>] to give the y-value of the base [Default = 0 (1 for log-scales)]. "
-		"Append u if width is in x-input units [Default is %s]. "
-		"Use +B instead if heights are measured relative to base [relative to origin]. "
-		"Use upper case -SB for horizontal bars (<base> then refers to x "
-		"and width may be in y-units) [Default is vertical]. To read the <base> "
-		"value from file, specify +b with no trailing value. "
-		"For multi-band bars append +v<nbands>; then <nbands> values will "
-		"be read from file instead of just one.  Use +i if value increments are given instead. "
-		"Multiband bars requires -C with one color per band (values 0, 1, ...). "
-		"For -SB the input band values are x (or dx) values instead of y (or d). "
-		"Normally, multiband bars are stacked on top of each other.  For side-by-side placement instead, "
-		"append +s[<gap>], where optional <gap> is gaps between bars in fraction (or percent) of <size> [no gap].",
+
+	GMT_Usage (API, 2, "Bars: -Sb|B[<size_x|size_y>[c|i|p|u]][+b|B[<base>]][+v|i<nz>][+s[<gap>]]");
+	GMT_Usage (API, -3, "Place horizontal or vertical bars. Use upper case -SB for horizontal bars "
+		"(<base> then refers to x and width may be in y-units) [Default is vertical]. Append size "
+		"and use unit u if size is given in x-input units [Default is %s]. Available modifiers:",
 			API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Usage (API, 2, "Decorated line: Give [d|f|l|n|s|x]<info>[:<symbolinfo>], where "
-		"<code><info> controls placement of a symbol along lines.  Select from these codes:");
+		GMT_Usage (API, 4, "+B Heights are measured relative to <base> [relative to origin].");
+		GMT_Usage (API, 4, "+b Set <base>. Alternatively, leave <base> off to read it from file.");
+		GMT_Usage (API, 4, "+i Increments are given instead or values for multiband bars.");
+		GMT_Usage (API, 4, "+s Side-by-side placement of multiband bars [stacked multiband bars]. "
+			"Optionally, append <gap> between bars in fraction (or percent) of <size> [no gap].");
+		GMT_Usage (API, 4, "+v For multi-band bars, append <nbands>; then <nbands> values will "
+			"be read from file instead of just one.");
+		GMT_Usage (API, -3, "Multiband bars requires -C with one color per band (values 0, 1, ...). "
+			"For -SB the input band values are x (or dx) values instead of y (or dy). ");
+
+
+	GMT_Usage (API, 2, "Decorated line: -S~[d|n|l|s|x]<info>[:<symbolinfo>]");
+	GMT_Usage (API, -3, "The <code><info> settings control placement of symbols along lines.  Select from these codes:");
 	gmt_cont_syntax (API->GMT, 3, 2);
 	GMT_Usage (API, 3, "<symbolinfo> controls the symbol attributes.  Choose optional modifiers:");
 	gmt_label_syntax (API->GMT, 3, 2);
@@ -596,10 +600,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"in column 3, or append a fixed dimension to -SJ instead. "
 		"Append any of the units in %s to the dimensions [Default is k]. "
 		"For linear projection and -SJ we scale dimensions by the map scale.", mod_name, GMT_LEN_UNITS_DISPLAY);
-	GMT_Usage (API, 2, "Fronts: Give <tickgap>[/<ticklen>][+l|r][i][+<type>][+o<offset>][+p[<pen>]]. "
-		"If <tickgap> is negative it means the number of gaps instead. "
-		"If <tickgap> has a leading + then <tickgap> is used exactly [adjusted to fit line length]. "
-		"If not given, <ticklen> defaults to 15%% of <tickgap>.  Append various modifiers:");
+
+	GMT_Usage (API, 2, "Fronts: -Sf<spacing>[/<ticklen>][+r+l][+f+t+s+c+b][+o<offset>][+p<pen>]");
+	GMT_Usage (API, -3, "If <spacing> is negative it means the number of gaps instead. "
+		"If <spacing> has a leading + then <spacing> is used exactly [adjusted to fit line length]. "
+		"If not given, <ticklen> defaults to 15%% of <spacing>.  Append various modifiers:");
 	GMT_Usage (API, 4, "+l Plot symbol to the left of the front [centered].");
 	GMT_Usage (API, 4, "+r Plot symbol to the right of the front [centered].");
 	GMT_Usage (API, 4, "+i Make main front line invisible [drawn using pen settings from -W].");
@@ -612,35 +617,52 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 4, "+o Plot first symbol when along-front distance is <offset> [0].");
 	GMT_Usage (API, 4, "+p Append <pen> for front symbol outline; if no <pen> then no outline [Outline with -W pen].");
 	GMT_Usage (API, -3, "Only one of +b|c|f|i|s|S|t may be selected.");
-	GMT_Usage (API, 2, "Kustom: Append <symbolname> immediately after 'k'; this will look for "
+
+	GMT_Usage (API, 2, "Kustom: -Sk|K<symbolname>[/<size>]");
+	GMT_Usage (API, -3, "Append <symbolname> immediately after 'k|K'; this will look for "
 		"<symbolname>.def or <symbolname>.eps in the current directory, in $GMT_USERDIR, "
-		"or in $GMT_SHAREDIR (searched in that order). "
+		"or in $GMT_SHAREDIR (searched in that order). Give full path if located elsewhere. "
 		"Use upper case 'K' if your custom symbol refers a variable symbol, ?.");
 	gmt_list_custom_symbols (API->GMT);
-	GMT_Usage (API, 2, "Letter: append +t<string> after symbol size, and optionally +f<font> and +j<justify>.");
+
+
+	GMT_Usage (API, 2, "Letter: -Sl[<size>]+t<string>[+f<font>][+j<justify]");
+	GMT_Usage (API, -3, "Specify <size> of letter; append required and optional modifiers:");
+	GMT_Usage (API, 4, "+t Specify <string> to use (required).");
+	GMT_Usage (API, 4, "+f Set specific <font> for text placement [FONT_ANNOT_PRIMARY].");
+	GMT_Usage (API, 4, "+j Change the text justification via <justify> [CM].");
+
 	GMT_Usage (API, 2, "Mathangle: radius, start, and stop directions of math angle must be in columns 3-5. "
 		"If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.");
 	gmt_vector_syntax (API->GMT, 0, 4);
-	GMT_Usage (API, 2, "Quoted line: Give [d|f|l|n|s|x]<info>[:<labelinfo>], where "
-		"<code><info> controls placement of labels along lines.  Select from these codes:");
+
+	GMT_Usage (API, 2, "Quoted line: -Sq[d|n|l|s|x]<info>[:<labelinfo>]");
+	GMT_Usage (API, -3, "The <code><info> settings control placement of labels along lines.  Select from these codes:");
 	gmt_cont_syntax (API->GMT, 3, 1);
 	GMT_Usage (API, 3, "<labelinfo> controls the label attributes.  Choose from these choices:");
 	gmt_label_syntax (API->GMT, 3, 1);
 	GMT_Usage (API, 2, "Rectangles: If not given, the x- and y-dimensions must be in columns 3-4. "
 		"Append +s if instead the diagonal corner coordinates are given in columns 3-4.");
 	GMT_Usage (API, 2, "Rounded rectangles: If not given, the x- and y-dimensions and corner radius must be in columns 3-5.");
-	GMT_Usage (API, 2, "Vectors: Direction and length must be in columns 3-4. "
+
+	GMT_Usage (API, 2, "Vectors: -Sv|V<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]");
+	GMT_Usage (API, -3, "Direction and length must be in columns 3-4. "
 		"If -SV rather than -Sv is selected, %s will expect azimuth and "
 		"length and convert azimuths based on the chosen map projection.", mod_name);
 	gmt_vector_syntax (API->GMT, 19, 4);
-	GMT_Usage (API, 2, "Wedges: Append [<outerdiameter>[<startdir><stopdir>]] or we read these parameters from file from column 3. "
+
+	GMT_Usage (API, 2, "Wedges: -Sw|W[<outerdiameter>[/<startdir>/<stopdir>]][+a[<dr>][+i<inner_diameter>][+r[<da>]]]");
+	GMT_Usage (API, -3, "Append [<outerdiameter>[<startdir><stopdir>]] or we read these parameters from file from column 3. "
 		"If -SW rather than -Sw is selected, specify two azimuths instead of directions. "
 		"-SW: Specify <outerdiameter><unit> with units either from %s or %s [Default is k]. "
 		"-Sw: Specify <outerdiameter><unit> with units from %s [Default is %s].", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY,
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Usage (API, 3, "Append +a[<dr>] to just draw arc(s) or +r[<da>] to just draw radial lines [wedge].");
-	GMT_Usage (API, 3, "Append +i[<innerdiameter>] for a nonzero inner diameter; we read from file if not appended.");
-	GMT_Usage (API, 2, "Geovectors: Azimuth and length must be in columns 3-4. "
+	GMT_Usage (API, 3, "+a Just draw arc(s), optionally specify <dr> increment [wedge].");
+	GMT_Usage (API, 3, "+i Append nonzero <innerdiameter>; we read it from file if not appended.");
+	GMT_Usage (API, 3, "+r Just draw radial lines, optionally specify <da> increment [wedge].");
+
+	GMT_Usage (API, 2, "Geovectors: -S=<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]");
+	GMT_Usage (API, -3, "Azimuth and length must be in columns 3-4. "
 		"Append any of the units in %s to length [k].", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3, 4);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
