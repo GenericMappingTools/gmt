@@ -167,7 +167,6 @@ Optional Arguments
     setting applies to **-A**, **-L**, **-T**, **-Fp**, **-Ft**, and
     **-Fz**, unless overruled by options to those arguments.
 
-.. _-X:
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
     :start-after: **Syntax**

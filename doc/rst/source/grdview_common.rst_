@@ -147,7 +147,6 @@ Optional Arguments
         0.25p, color = black, style = solid]. You must also select **-N**
         for the facade outline to be drawn.
 
-.. _-X:
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
     :start-after: **Syntax**

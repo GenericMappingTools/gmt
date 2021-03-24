@@ -188,7 +188,6 @@ Optional Arguments
     **-C**). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to the contour annotations.  Select **+c** for both effects.
 
-.. _-X:
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
     :start-after: **Syntax**

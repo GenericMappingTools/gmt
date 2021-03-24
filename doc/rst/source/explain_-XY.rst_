@@ -3,8 +3,12 @@ The **-X** **-Y** options
 
 **Syntax**
 
+.. _-X:
+
 **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
     Shift plot origin. |Add_-XY|
+
+.. _-Y:
 
 **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*]
     Shift plot origin. |Add_-XY|

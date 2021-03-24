@@ -195,7 +195,6 @@ Optional Arguments
     Multiply all *z*-values in the CPT by the provided *scale*.
     By default the CPT is used as is.
 
-.. _-X:
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
     :start-after: **Syntax**

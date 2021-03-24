@@ -226,7 +226,6 @@ Optional Arguments
     Repeat **-W** as needed. When specific level pens are set, those not
     listed will not be drawn [Default draws all levels; but see **-A**].
 
-.. _-X:
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
     :start-after: **Syntax**

@@ -101,7 +101,6 @@ Optional Arguments
 **-W**\ [*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set pen attributes for the outline of symbols.
 
-.. _-X:
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
     :start-after: **Syntax**

@@ -216,7 +216,6 @@ Optional Arguments
     file is applied to symbol fill only [Default].  Use just **+c** to set both
     pen and fill color.
 
-.. _-X:
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
     :start-after: **Syntax**
