@@ -241,8 +241,9 @@ modules. No space between the option flag and the associated arguments.
 
 .. _-XY_full:
 .. _-X:
-
-.. include:: explain_-XY_full.rst_
+.. _-Y:
+.. |Add_-XY| replace:: :ref:`(See cookbook information) <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+.. include:: explain_-XY.rst_
 
 .. _-aspatial_full:
 
