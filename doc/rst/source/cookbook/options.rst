@@ -673,7 +673,7 @@ OGR/GMT GIS i/o: The **-a** option
 
 **Syntax**
 
-**-a**\ [*col*\ =]\ *name*\ [,\ *...*]
+**-a**\ [[*col*\ =]\ *name*\ ][,\ *...*]
 
 **Description**
 
