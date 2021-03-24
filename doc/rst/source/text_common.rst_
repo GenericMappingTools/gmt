@@ -206,9 +206,10 @@ Optional Arguments
     **-C**) [Default is width = default, color = black, style = solid].
     **Note**: cannot be used with LaTeX expressions.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

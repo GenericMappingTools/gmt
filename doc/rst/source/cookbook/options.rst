@@ -613,27 +613,11 @@ Verbose feedback: The **-V** option
 Plot positioning and layout: The **-X** **-Y** options
 ------------------------------------------------------
 
-**Syntax**
+.. |Add_-XY| unicode:: 0x20 .. just an invisible code
+.. include:: ../explain_-XY.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
-- **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*]
-
-**Description**
-
-The **-X** and **-Y** options shift the plot origin relative to the current origin by (*xshift*,\ *yshift*). Optionally,
-append the length unit (**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`, :term:`MAP_ORIGIN_Y`) for new
-plots\ [14]_. Subsequent overlays will be co-registered with the previous plot unless the origin is shifted using these
-options. The following modifiers are supported [default is **r**]:
-
-- Prepend **a** to shift the origin back to the original position after plotting.
-- Prepend **c** to center the plot on the center of the paper (optionally add a *shift*).
-- Prepend **f** to shift the origin relative to the fixed lower left.
-- Prepend **r** to move the origin relative to its current location.
-
-When **-X** or **-Y** are used without any further arguments, the values from the last use of that option in a previous
-GMT command will be used. Note that **-X** and **-Y** can also access the previous plot bounding box dimensions *w* and
-*h* and construct offsets that involves them.  For instance, to move the origin up 2 cm beyond the height of the
-previous plot, use **-Y**\ *h*\ +2c. To move the origin half the width to the right, use **-X**\ *w*\ /2.
+**Examples**
 
 .. _XY_options:
 
@@ -1272,7 +1256,7 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
    resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
-   function of wavenumber :math:`k_j` [Marks and Smith, 2007 [15]_.
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007 [14]_.
 
 .. toggle::
 
@@ -1573,8 +1557,5 @@ Footnotes
    Please consult the man page for *printf* or any book on C.
 
 .. [14]
-   Ensures that boundary annotations do not fall off the page.
-
-.. [15]
    Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307),
    http://doi.org/10.1029/2006GL028857.

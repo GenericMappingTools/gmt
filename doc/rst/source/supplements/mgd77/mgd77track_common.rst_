@@ -110,18 +110,19 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-W:
 
 **-W**\ [*pen*]
     Append *pen* used for the trackline. [Defaults:
     width = default, color = black, style = solid].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
-
-.. |Add_-V| replace:: |Add_-V_links|
-.. include:: /explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 

@@ -12,8 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdcut** *ingrid* |-G|\ *outgrid*
+**gmt grdcut**
+*ingrid*
+|-G|\ *outgrid*
 |SYN_OPT-R|
+[ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ *lon/lat/radius*\ [**+n**] ]
@@ -51,6 +54,14 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-F:
+
+**-F**\ *polygonfile*\ [**+c**][**+i**]
+    Specify a multisegment closed polygon file.  All grid nodes outside the
+    polygon will be set to NaN.  Append **+i** to invert that and set all
+    nodes inside the polygon to NaN instead. Optionally, append **+c** to
+    crop the grid region to reflect the bounding box of the polygon.
 
 .. _-J:
 
@@ -142,6 +153,13 @@ distance of 500 km from the point 45,30 try::
 
     gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
 
+To create a topography grid with data only inside France and set it
+to NaN outside France, based on the 10x10 minute DEM, try::
+
+    gmt coast -EFR -M > FR.txt
+    gmt grdcut @earth_relief_10m -FFR.txt+c -GFR_only.grd
+    gmt grdimage FR_only.grd -B -pdf map
+    
 See Also
 --------
 

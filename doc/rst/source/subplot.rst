@@ -185,9 +185,10 @@ Optional Arguments (begin mode)
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help.rst_
 

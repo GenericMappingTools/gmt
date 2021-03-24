@@ -190,9 +190,10 @@ Optional Arguments
     **-C**). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to the contour annotations.  Select **+c** for both effects.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 3 input columns]. Use 4-byte integer triplets for node ids (**-E**).
 .. include:: explain_-bi.rst_

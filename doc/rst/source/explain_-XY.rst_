@@ -1,6 +1,32 @@
+The **-X** **-Y** options
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Syntax**
+
+.. _-X:
+
 **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
+    Shift plot origin. |Add_-XY|
 
 .. _-Y:
 
-**-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*] :ref:`(more ...) <-XY_full>`
-    Shift plot origin.
+**-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*]
+    Shift plot origin. |Add_-XY|
+
+**Description**
+
+The **-X** and **-Y** options shift the plot origin relative to the current origin by (*xshift*,\ *yshift*). Optionally,
+append the length unit (**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`, :term:`MAP_ORIGIN_Y`) for new
+plots, which ensures that boundary annotations fit on the page. Subsequent overlays will be co-registered with the
+previous plot unless the origin is shifted using these options. The following modifiers are supported
+[default is **r**]:
+
+- Prepend **a** to shift the origin back to the original position after plotting.
+- Prepend **c** to center the plot on the center of the paper (optionally add a *shift*).
+- Prepend **f** to shift the origin relative to the fixed lower left.
+- Prepend **r** to move the origin relative to its current location.
+
+When **-X** or **-Y** are used without any further arguments, the values from the last use of that option in a previous
+GMT command will be used. Note that **-X** and **-Y** can also access the previous plot bounding box dimensions *w* and
+*h* and construct offsets that involves them.  For instance, to move the origin up 2 cm beyond the height of the
+previous plot, use **-Y**\ *h*\ +2c. To move the origin half the width to the right, use **-X**\ *w*\ /2.

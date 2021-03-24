@@ -99,9 +99,12 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
-.. _-X:
 
+.. _-X:
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
