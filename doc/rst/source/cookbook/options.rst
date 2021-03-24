@@ -603,26 +603,9 @@ Timestamps on plots: The **-U** option
 Verbose feedback: The **-V** option
 -----------------------------------
 
-**Syntax**
-
-**-V**\ [*level*]
-
-**Description**
-
-The **-V** option controls the verbosity mode, which determines which messages are sent to standard error. Choose among
-7 levels of verbosity; each level adds more messages:
-
-- **q** - Quiet, not even fatal error messages are produced.
-- **e** - Error messages only.
-- **w** - Warnings.
-- **t** - Timings (report runtimes for time-intensive algorithms).
-- **i** - Informational messages (same as **-V** only).
-- **c** - Compatibility warnings (if compiled with backward-compatibility).
-- **d** - Debugging messages.
-
-
-This option can also be set by specifying the default :term:`GMT_VERBOSE` as **quiet**, **error**, **warning**,
-**timing**, **compat**, **information**, or **debug**, in order of increased verbosity [default is **warning**].
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: ../explain_-V.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-X:
 .. _option_-Y:

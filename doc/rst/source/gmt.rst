@@ -235,9 +235,8 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-U.rst_
 
 .. _-V_full:
-.. _-V:
-
-.. include:: explain_-V_full.rst_
+.. |Add_-V| replace:: :ref:`(See cookbook information) <cookbook/options:Verbose feedback: The **-V** option>`.
+.. include:: explain_-V.rst_
 
 .. _-XY_full:
 .. _-X:
