@@ -64,11 +64,10 @@ Optional Arguments
 .. include:: explain_-I.rst_
 
 .. _-R:
-
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
-    :start-after: _Syntax:
-    :end-before: _Description:
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-T:
 

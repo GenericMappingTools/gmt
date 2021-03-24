@@ -85,11 +85,11 @@ Required Arguments (not all)
       - *sphere,rad/z_center[/x0/y0/npts/n_slices]* Sphere of radius *rad* and center at depth *z_center*
 
 .. _-R:
-
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
-    :start-after: _Syntax:
-    :end-before: _Description:
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-T:
 
 **-Tv**\ *vert_file* (must have when passing a *xyz_file*) OR **-Tr\|s**\ *raw_file*

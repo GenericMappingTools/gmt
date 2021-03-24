@@ -22,11 +22,10 @@ Required Arguments
 .. include:: explain_-J.rst_
 
 .. _-R:
-
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
-    :start-after: _Syntax:
-    :end-before: _Description:
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
@@ -46,8 +45,10 @@ Optional Arguments
     Cartesian data it enables you to draw stair-case curves.
 
 .. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 

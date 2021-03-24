@@ -202,8 +202,8 @@ modules. No space between the option flag and the associated arguments.
 
 .. _-B_full:
 .. _-B:
-
-.. include:: explain_-B_full.rst_
+.. |Add_-B| replace:: :ref:`(See cookbook information) <cookbook/options:Map frame and axes annotations: The **-B** option>`.
+.. include:: explain_-B.rst_
 
 .. _-J_full:
 .. _-J:
@@ -221,9 +221,7 @@ modules. No space between the option flag and the associated arguments.
 
 .. _-R_full:
 .. _-R:
-
 .. |Add_-R| replace:: :ref:`(See cookbook information) <cookbook/options:Data domain or map region: The **-R** option>`.
-
 .. include:: explain_-R.rst_
 
 .. _-Rz_full:
