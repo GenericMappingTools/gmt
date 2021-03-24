@@ -133,7 +133,6 @@ Optional Arguments
     output. Optionally, append **n** for combining the edges into
     closed Voronoi polygons.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

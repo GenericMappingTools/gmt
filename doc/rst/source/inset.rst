@@ -109,6 +109,9 @@ Optional Arguments (end mode)
 .. _inset_end-V:
 
 .. include:: explain_-V.rst_
+    :start-after: .. _-V:
+    :end-before: **Description**
+
 .. include:: explain_help_nopar.rst_
 
 

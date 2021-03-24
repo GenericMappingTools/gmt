@@ -21,7 +21,6 @@ Required Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -45,7 +44,6 @@ Optional Arguments
     are simply connected, unless you append **x** or **y** to draw stair-case
     curves that whose first move is along *x* or *y*, respectively.
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -184,7 +182,6 @@ Optional Arguments
     Ignore all input files.  If **-B** is not used then **-R -J** are not required.
     Typically used to move plot origin via **-X** and **-Y**.
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**

@@ -115,7 +115,6 @@ Optional Arguments
 **-Q**
     Make the final image opaque by removing the alpha layer (if present).
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

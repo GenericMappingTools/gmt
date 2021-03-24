@@ -16,7 +16,6 @@ Required Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -36,7 +35,6 @@ Optional Arguments
     allowed. The sampling interval is controlled via :term:`MAP_LINE_STEP` parameter. The coordinates are written to
     *file* or to standard output if no file is specified.
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -64,7 +62,6 @@ Optional Arguments
 
 .. include:: explain_-T_rose.rst_
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**

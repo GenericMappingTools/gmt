@@ -31,7 +31,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -97,7 +96,6 @@ Optional Arguments
     Convert color image to monochrome grayshades using the (television)
     YIQ-transformation.
 
-.. _-R:
 .. |Add_-R| replace:: (Used only with **-p**) |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -106,7 +104,6 @@ Optional Arguments
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**

@@ -37,7 +37,6 @@ Optional Arguments
     from y = 0].  The plot dimensions remain the same, but the two
     axes are flipped.
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -123,7 +122,6 @@ Optional Arguments
     Draw a cumulative histogram. Append **r** to instead compute the
     reverse cumulative histogram.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -138,7 +136,6 @@ Optional Arguments
     Draws a stairs-step diagram which does not include the internal bars
     of the default histogram.
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**

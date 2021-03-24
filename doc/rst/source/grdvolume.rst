@@ -86,7 +86,6 @@ Optional Arguments
     versus contour value rather than the contour with the maximum height
     to pick the best contour value (requires **-C**).
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

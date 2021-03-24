@@ -180,7 +180,6 @@ Optional Arguments
     If **-L** is used then **-B** cannot be used, hence you may optionally set a bar label via **+x**\ *label*
     and any unit (i.e., y-label) via **+y**\ *unit*.
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**

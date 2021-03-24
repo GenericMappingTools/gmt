@@ -114,7 +114,6 @@ Optional Arguments
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values.
 
-.. _-R:
 .. |Add_-R| replace:: The new w/e/s/n values will replace those in the grid, and the *x_inc*, *y_inc* values are
     adjusted, if necessary. |Add_-R_links|
 .. include:: explain_-R.rst_

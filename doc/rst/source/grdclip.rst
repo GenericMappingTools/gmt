@@ -48,7 +48,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-R:
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_

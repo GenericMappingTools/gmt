@@ -31,7 +31,6 @@ Required Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -56,7 +55,6 @@ Optional Arguments
     curves that whose first move is along *x* or *y*, respectively. **Note**:
     The **-A** option requires constant *z*-coordinates.
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -152,7 +150,6 @@ Optional Arguments
 
 .. include:: explain_3D_symbols.rst_
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**

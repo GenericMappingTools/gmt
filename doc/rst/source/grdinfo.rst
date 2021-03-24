@@ -151,7 +151,6 @@ Optional Arguments
     All input files must be data 3-D netCDF data cube files [all files are 2-D grids].
     Not compatible with **-D**, **-E**, **-F**, and **-Ib**.
 
-.. _-R:
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of the input grid(s). If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. If **-Q** is used you must also
     append limits in the *z* dimension. |Add_-R_links|

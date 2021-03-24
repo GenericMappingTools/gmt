@@ -97,7 +97,6 @@ Required Arguments
     more distant points are ignored.  Alternatively, use **-Nn** to call
     GDALʻs nearest neighbor algorithm instead.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

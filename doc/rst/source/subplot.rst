@@ -105,7 +105,6 @@ Optional Arguments (begin mode)
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -148,7 +147,6 @@ Optional Arguments (begin mode)
     the margins for the two opposing sides (e.g., east plus west or south plus north margins) [Default is
     half the primary annotation font size, giving the full annotation font size as the default gap].
 
-.. _-R:
 .. |Add_-R| replace:: This is useful when all subplots share a common plot domain. In this module, the chosen region
     will also become the default for any data region needed by computational modules. |Add_-R_links|
 .. include:: explain_-R.rst_

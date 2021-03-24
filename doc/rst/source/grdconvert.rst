@@ -92,7 +92,6 @@ Optional Arguments
     that do not recognize GMT headers. It
     only applies to native grids and is ignored for netCDF output.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

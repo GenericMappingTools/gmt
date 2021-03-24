@@ -59,7 +59,6 @@ Optional Arguments
 **-N**\ [*nodata*]
     Sets the node value that identifies a point as a member of a hole [Default is NaN].
 
-.. _-R:
 .. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

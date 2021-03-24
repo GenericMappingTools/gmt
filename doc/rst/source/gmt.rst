@@ -201,7 +201,6 @@ These are all the common GMT options that remain the same for all GMT
 modules. No space between the option flag and the associated arguments.
 
 .. _-B_full:
-.. _-B:
 .. |Add_-B| replace:: :ref:`(See cookbook information) <cookbook/options:Map frame and axes annotations: The **-B** option>`.
 .. include:: explain_-B.rst_
 
@@ -220,7 +219,6 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-Jproj_full.rst_
 
 .. _-R_full:
-.. _-R:
 .. |Add_-R| replace:: :ref:`(See cookbook information) <cookbook/options:Data domain or map region: The **-R** option>`.
 .. include:: explain_-R.rst_
 
@@ -230,7 +228,6 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-Rz_full.rst_
 
 .. _-U_full:
-.. _-U:
 .. |Add_-U| replace:: :ref:`(See cookbook information) <cookbook/options:Timestamps on plots: The **-U** option>`.
 .. include:: explain_-U.rst_
 

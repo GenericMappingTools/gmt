@@ -113,7 +113,6 @@ Optional Arguments
     You may optionally evaluate the first or second derivative of the spline
     by appending **+1** or **+2**, respectively.
 
-.. _-R:
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_

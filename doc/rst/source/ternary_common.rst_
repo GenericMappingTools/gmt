@@ -87,7 +87,6 @@ Optional Arguments
 
 .. include:: explain_symbols_ternary.rst_
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**

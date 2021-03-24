@@ -135,7 +135,6 @@ Optional Arguments
     *filename*. Order in which traces are listed is not significant -
     the entire space is checked for each trace.
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
     :start-after: **Syntax**

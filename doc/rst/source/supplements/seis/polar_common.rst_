@@ -62,7 +62,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: ../../explain_-B.rst_
     :start-after: **Syntax**
@@ -129,7 +128,6 @@ Optional Arguments
     append **+o** to offset the text string by *dx*/*dy*.
     [Default to write station code above the symbol; the default font size is 12p]
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
     :start-after: **Syntax**

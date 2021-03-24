@@ -132,7 +132,6 @@ Optional Arguments
     instead. This option eliminates the need to specify options **-R**,
     **-I**, and **-r**.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
     :start-after: **Syntax**

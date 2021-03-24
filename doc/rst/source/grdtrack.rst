@@ -194,7 +194,6 @@ Optional Arguments
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain].
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

@@ -55,7 +55,6 @@ Optional Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -72,7 +71,6 @@ Optional Arguments
     beneath the logo.  Append **n** to skip the label placement, and append
     **u** to place the URL to the GMT site instead [plot the label].
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
     :start-after: **Syntax**

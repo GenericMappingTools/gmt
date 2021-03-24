@@ -79,7 +79,6 @@ Optional Arguments
     Option **-M+r** alone instructs the program to read with GDAL (and save with GMT). This option is needed when reading
     OGR vector data. **-M+w** indicates that the output will be saved with GDAL.
 
-.. _-R:
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_

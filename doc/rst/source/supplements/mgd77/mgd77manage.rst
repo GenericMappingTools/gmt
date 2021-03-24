@@ -196,7 +196,6 @@ Optional Arguments
     Append the distance unit (see `Units`_). [Default is **-Nk** (km)].
     Only relevant when **-Ag**\|\ **i** is selected.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
     :start-after: **Syntax**

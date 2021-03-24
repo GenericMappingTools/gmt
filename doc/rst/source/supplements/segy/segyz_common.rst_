@@ -124,7 +124,6 @@ Optional Arguments
     location. First parameter for x, second for y. Default has X and Y
     given by trace number.
 
-.. _-U:
 .. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
     :start-after: **Syntax**
