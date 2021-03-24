@@ -78,6 +78,7 @@ Data domain or map region: The **-R** option
 
 .. |Add_-R| unicode:: 0x20 .. just an invisible code
 .. include:: ../explain_-R.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 For rectilinear projections the first two forms give identical results. Depending on the selected map projection (or
 the kind of expected input data), the boundary coordinates may take on several different formats:

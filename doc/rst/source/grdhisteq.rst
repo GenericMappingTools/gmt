@@ -94,12 +94,12 @@ Optional Arguments
     Quadratic output. Selects quadratic histogram equalization. [Default is linear].
 
 .. _-R:
-
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
-    :start-after: _Syntax:
-    :end-before: _Description:
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code

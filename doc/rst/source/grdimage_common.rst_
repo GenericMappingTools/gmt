@@ -138,11 +138,10 @@ Optional Arguments
     append an alternate color to select another pixel value to be transparent.
 
 .. _-R:
-
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
-    :start-after: _Syntax:
-    :end-before: _Description:
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| replace:: You may ask for a larger
     *w/e/s/n* region to have more room between the image and the axes. A

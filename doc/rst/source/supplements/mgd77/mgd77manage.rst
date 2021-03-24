@@ -197,11 +197,11 @@ Optional Arguments
     Only relevant when **-Ag**\|\ **i** is selected.
 
 .. _-R:
-
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
-    :start-after: _Syntax:
-    :end-before: _Description:
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-V:
 
 .. |Add_-V| unicode:: 0x20 .. just an invisible code
