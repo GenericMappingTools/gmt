@@ -140,7 +140,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	bool one_F;
+	bool F_or_R;
 	unsigned int n_errors = 0, k, n_files = 0;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -249,11 +249,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && Ctrl->F.crop, "Option -F: Modifier +c cannot be used with -R\n");
-	if (GMT->common.R.active[RSET])
-		one_F = (Ctrl->F.crop) ? false : Ctrl->F.active;
-	else
-		one_F = Ctrl->F.active;
-	n_errors += gmt_M_check_condition (GMT, (one_F + Ctrl->S.active + Ctrl->Z.active) != 1,
+	F_or_R = GMT->common.R.active[RSET] | Ctrl->F.active;
+	n_errors += gmt_M_check_condition (GMT, (F_or_R + Ctrl->S.active + Ctrl->Z.active) != 1,
 	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
