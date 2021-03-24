@@ -106,8 +106,10 @@ Optional Arguments (begin mode)
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
 
 .. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
