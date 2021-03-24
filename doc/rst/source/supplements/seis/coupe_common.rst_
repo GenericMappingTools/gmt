@@ -213,9 +213,10 @@ Optional Arguments
     Set pen attributes for text string or default pen attributes for
     fault plane edges. [Defaults: default,black,solid].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_

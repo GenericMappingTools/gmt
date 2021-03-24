@@ -155,9 +155,10 @@ Optional Arguments
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
     (requires **-E**) [Default is same as sector outline].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
