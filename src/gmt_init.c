@@ -8133,15 +8133,16 @@ void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsig
 	\param option ...
 	\param string ...
 */
-void gmt_dist_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+void gmt_dist_syntax (struct GMT_CTRL *GMT, char *option, char *string) {
 	/* Used by many modules */
 	struct GMTAPI_CTRL *API = GMT->parent;
-	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	GMT_Usage (API, 1, "-%c %s"
+	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option[0]);
+	GMT_Usage (API, 1, "-%s", option);
+	GMT_Usage (API, -2, "%s"
 		"Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), "
 		"d (arc degree), m (arc minute), or s (arc second) [%c]. "
 		"Spherical distances are based on great-circle calculations; "
-		"see -j<mode> for other modes of measurements.", option, string, GMT_MAP_DIST_UNIT);
+		"see -j<mode> for other modes of measurements.", string, GMT_MAP_DIST_UNIT);
 }
 
 /*! Use mode to control which options are displayed */

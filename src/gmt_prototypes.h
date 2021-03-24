@@ -117,7 +117,7 @@ EXTERN_MSC void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longopt
 EXTERN_MSC void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error);
 EXTERN_MSC void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
-EXTERN_MSC void gmt_dist_syntax (struct GMT_CTRL *GMT, char option, char *string);
+EXTERN_MSC void gmt_dist_syntax (struct GMT_CTRL *GMT, char *option, char *string);
 EXTERN_MSC void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level);
 EXTERN_MSC void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode);
 EXTERN_MSC void gmt_img_syntax (struct GMT_CTRL *GMT);

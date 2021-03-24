@@ -1659,7 +1659,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   <limit> can be any number, or the letter d for min (or max) input data value,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or the filename of a grid with bounding values.  [Default solution is unconstrained].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Example: -Ll0 enforces a non-negative solution.\n");
-	gmt_dist_syntax (API->GMT, 'M', "Set maximum radius for masking the grid away from data points [no masking].");
+	gmt_dist_syntax (API->GMT, "M<radius>", "Set maximum radius for masking the grid away from data points [no masking].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian grids with different x and y units you may append <xlim>/<ylim>;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   this fills all nodes within the rectangular area of the given half-widths.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   One can also achieve the rectangular selection effect by using the -M<n_cells>c\n");

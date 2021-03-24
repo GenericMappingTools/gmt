@@ -109,7 +109,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to initialize nodes outside current region [Default is NaN].\n");
 	GMT_Option (API, "V");
-	gmt_dist_syntax (API->GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
+	gmt_dist_syntax (API->GMT, "S<lon>/<lat>/<radius>[+n]", "Specify an origin and radius to find the corresponding rectangular area.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to set all nodes in the subset outside the circle to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify an optional range and determine the corresponding rectangular region\n");

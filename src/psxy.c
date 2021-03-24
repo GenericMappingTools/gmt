@@ -529,9 +529,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Usage (API, -2, "The -G option can be present in all segment headers (not with -S). "
 		"To assign fill color via -Z, give -G+z).");
-	GMT_Usage (API, 1, "-H Scale symbol sizes (set via -S or input column) by factors read from scale column. "
+	GMT_Usage (API, 1, "-H[<scale>]");
+	GMT_Usage (API, -2, "Scale symbol sizes (set via -S or input column) by factors read from scale column. "
 		"The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.");
-	GMT_Usage (API, 1, "-I Use the intensity to modulate the fill color (requires -C or -G). "
+	GMT_Usage (API, 1, "-I[<intens>]");
+	GMT_Usage (API, -2, "Use the intensity to modulate the fill color (requires -C or -G). "
 		"If no intensity is given we expect it to follow symbol size in the data record.");
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "%s", PLOT_L_OPT);
@@ -543,12 +545,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+y Connect 1st and last point to anchor points at b (ymin), t (ymax), or y0.");
 	GMT_Usage (API, 3, "+p Draw polygon outline with <pen> [no outline].");
 	GMT_Usage (API, -2, "The polygon created may be painted via -G.");
-	GMT_Usage (API, 1, "-N Do not skip or clip symbols that fall outside the map border [clipping is on]. "
+	GMT_Usage (API, 1, "-N[c|r]");
+	GMT_Usage (API, -2, "Do Not skip or clip symbols that fall outside the map border [clipping is on]. "
 		"Use -Nr to turn off clipping and plot repeating symbols for periodic maps. "
 		"Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps. "
 		"[Default will clip or skip symbols that fall outside and plot repeating symbols].");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "-S Select symbol type and symbol size (in %s).  Choose from these symbols:",
+	GMT_Usage (API, 1, "-S[<symbol>][<size>]");
+	GMT_Usage (API, -2, "Select symbol type and symbol size (in %s).  Choose from these symbols:",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Usage (API, -3, "-(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse, "
 		"(f)ront, octa(g)on, (h)exagon, (i)nvtriangle, (j)rotated rectangle, "
@@ -645,9 +649,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", 15);
 	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
-	GMT_Usage (API, 1, "-Z Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. "
-		"To use <color> for fill, select -G+z. "
-		"To use <color> for an outline pen, select -W<pen>+z.");
+	GMT_Usage (API, 1, "-Z<arg>[+f|l]");
+	GMT_Usage (API, -2, "Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. ");
+	GMT_Usage (API, 3, "%s To use <color> for fill, select -G+z. ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s To use <color> for an outline pen, select -W<pen>+z.", GMT_LINE_BULLET);
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Usage (API, 2, "Default is the required number of columns.");
 	GMT_Option (API, "c,di,e,f,g,h,i,l,p,qi,T,w,:,.");
