@@ -153,8 +153,10 @@ Optional Arguments
 .. include:: explain_3D_symbols.rst_
 
 .. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-V:
 

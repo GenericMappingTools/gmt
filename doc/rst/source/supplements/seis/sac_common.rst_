@@ -147,8 +147,10 @@ Optional Arguments
         **+s**\ *shift*: shift all traces by *shift* seconds.
 
 .. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-V:
 
