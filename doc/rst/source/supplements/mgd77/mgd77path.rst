@@ -54,10 +54,10 @@ Optional Arguments
     tab-separated ASCII table files, respectively. The option may be
     repeated to ignore more than one format. [Default ignores none].
 
-.. _-V:
-
-.. |Add_-V| replace:: Reports the total number of cruises found.
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: Reports the total number of cruises found. |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_help.rst_
 

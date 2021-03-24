@@ -51,10 +51,10 @@ Optional Arguments
     be found there; otherwise it will use the GMT server.  The **-S** option forces **docs** to
     read the file from the web server first.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help_nopar.rst_
 

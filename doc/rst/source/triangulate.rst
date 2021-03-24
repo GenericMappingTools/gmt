@@ -152,10 +152,10 @@ Optional Arguments
     the **-G** option [Default will not output the triangulation or
     Voronoi polygons is gridding is selected].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

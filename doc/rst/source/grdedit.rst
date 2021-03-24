@@ -137,10 +137,10 @@ Optional Arguments
     have their domain shrunk by the same amount.
     This is a *non-destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_

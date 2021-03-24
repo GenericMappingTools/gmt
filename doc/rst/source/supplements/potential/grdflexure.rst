@@ -176,6 +176,11 @@ Optional Arguments
     We then write a separate model grid file for each given time step; see *-G** for output
     file template format.
 
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-W:
 
 **-W**\ *wd*\ [**k**]
@@ -189,11 +194,6 @@ Optional Arguments
     Specify reference depth to flexed surface (e.g., Moho) in m; append **k** for km.
     Must be positive. [0].  We subtract this value from the flexed surface before
     writing the results.
-
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to

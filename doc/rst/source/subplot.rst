@@ -180,10 +180,10 @@ Optional Arguments (begin mode)
     While individual subplots can have titles (see **-S** or **-B**), the entire figure may also have a
     overarching *heading* [no heading]. Font is determined by setting :term:`FONT_HEADING`.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-X:
 
@@ -232,6 +232,8 @@ Optional Arguments (set mode)
 .. _subplot_set-V:
 
 .. include:: explain_-V.rst_
+    :start-after: .. _-V:
+    :end-before: **Description**
 
 Any number of plotting command can now take place and all output will be directed to the
 selected subplot.  There are a few other rules that need to be followed:
@@ -259,6 +261,8 @@ Optional Arguments (end mode)
 .. _subplot_end-V:
 
 .. include:: explain_-V.rst_
+    :start-after: .. _-V:
+    :end-before: **Description**
 
 Examples
 --------

@@ -162,10 +162,10 @@ Optional Arguments
    a weighted least squares fit.  Note that **-W** only has an effect if **-C** is used.
    [Default uses no weights or uncertainties].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-d.rst_

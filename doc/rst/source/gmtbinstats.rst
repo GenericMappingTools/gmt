@@ -120,10 +120,10 @@ Optional Arguments
     *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in **-R** to
     fit a whole number of hexagons. **Note**: Hexagonal tiling requires Cartesian data.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

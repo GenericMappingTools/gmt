@@ -146,10 +146,10 @@ Optional Arguments
     Name of output grid file with scalar magnitudes of gradient vectors.
     Requires **-D** but makes **-G** optional.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to

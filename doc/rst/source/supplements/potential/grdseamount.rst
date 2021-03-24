@@ -200,6 +200,11 @@ Optional Arguments
     may have individual units appended, otherwise we assume year).  Note that a grid
     will be written for all time-steps even if there are no loads or no changes.
 
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-Z:
 
 **-Z**\ *level*
@@ -219,9 +224,6 @@ Optional Arguments
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: ../../explain_-V.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_

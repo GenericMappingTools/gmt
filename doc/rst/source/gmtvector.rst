@@ -124,10 +124,10 @@ Optional Arguments
     **-E**, and **-N**. **Note**: For **-Tt** and geographic coordinates we will
     perform a great circle calculation unless **-je** is selected.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 or 3 input columns].
 .. include:: explain_-bi.rst_

@@ -77,10 +77,10 @@ Optional Arguments
     nodes on or inside the circle are contained in the subset. If
     **+n** is appended we set all nodes outside the circle to NaN.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

@@ -69,10 +69,10 @@ Optional Arguments
     your data are known to be integer values.  Repeat the option
     for as many replacements as are needed.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help.rst_
 

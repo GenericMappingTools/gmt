@@ -256,10 +256,10 @@ Optional Arguments
     in the *maskgrid* that are not equal to NaN. This option eliminates
     the need to specify options **-R**, **-I**, and **-r**.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
