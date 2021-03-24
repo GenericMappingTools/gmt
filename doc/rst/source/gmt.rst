@@ -231,8 +231,8 @@ modules. No space between the option flag and the associated arguments.
 
 .. _-U_full:
 .. _-U:
-
-.. include:: explain_-U_full.rst_
+.. |Add_-U| replace:: :ref:`(See cookbook information) <cookbook/options:Timestamps on plots: The **-U** option>`.
+.. include:: explain_-U.rst_
 
 .. _-V_full:
 .. _-V:
