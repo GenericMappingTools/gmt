@@ -843,8 +843,10 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 
 	if (API->GMT->current.setting.use_modern_name) {	/* Make some checks needed to handle synopsis and usage messages in classic vs modern mode */
 		if (head == NULL) {	/* Gave none or a single argument */
-			if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
+			if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
 				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
+				API->GMT->current.setting.run_mode = GMT_MODERN;	/* Safe here to flag it as modern since no session will be started */
+			}
 			return;
 		}
 		if (head->next == NULL) {	/* Gave a single argument */
