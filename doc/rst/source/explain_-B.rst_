@@ -33,8 +33,8 @@ to **-B** to control the Frame settings:
    - **l**\ (eft), **r**\ (ight), **b**\ (ottom), **t**\ (op) and/or (for 3-D plots) **u**\ (p) indicate axes that
      should be drawn without tick-marks or annotations.
 
-- *axes*\ **code** (for 3-D plots) where **code** is any combination of the corner ids **1**, **2**, **3**, **4**. By
-  default, a single vertical axes will be plotted for 3-D plots at the most suitable map corner. **code** can be used
+- **Z**\|\ **z**\ *code* (for 3-D plots) where *code* is any combination of the corner ids **1**, **2**, **3**, **4**.
+  By default, a single vertical axes will be plotted for 3-D plots at the most suitable map corner. *code* can be used
   to override this, where **1** represents the south-western (lower-left) corner, **2** the south-eastern (lower-right),
   **3** the north-eastern (upper-right), and **4** the north-western (upper-left) corner.
 
@@ -131,7 +131,7 @@ you need to embed such sequences (e.g., **+t**\ "Solving a+b=c") you need to rep
 :doc:`octal equivalent </cookbook/octal-codes>` \\053, (e.g., **+t**\ "Solving a\\053b=c").
 
 **NOTE**: For non-geographical projections: Give negative scale (in **-Jx**) or axis length (in **-JX**) to change the
-direction of increasing coordinates (i.e., to make the y-axis positive down)
+direction of increasing coordinates (i.e., to make the y-axis positive down).
 
 .. _option_-B_int:
 
