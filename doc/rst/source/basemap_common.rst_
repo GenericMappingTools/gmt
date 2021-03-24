@@ -74,8 +74,10 @@ Optional Arguments
 .. include:: explain_-V.rst_
 
 .. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-f| replace:: This applies only to the coordinates specified in the |-R| option.
 .. include:: explain_-f.rst_

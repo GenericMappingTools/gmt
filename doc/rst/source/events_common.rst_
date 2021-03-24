@@ -204,8 +204,10 @@ Optional Arguments
     Specify symbol outline pen attributes [Default is no outline].
 
 .. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

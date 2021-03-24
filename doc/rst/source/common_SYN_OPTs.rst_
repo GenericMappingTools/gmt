@@ -82,6 +82,9 @@
 .. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
     <cookbook/options:Data domain or map region: The **-R** option>`.
 
+.. |Add_-XY_links| replace:: :ref:`(See full description) <-XY_full>` :ref:`(See cookbook information)
+    <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+
 .. |br| raw:: html
 
    <br />
