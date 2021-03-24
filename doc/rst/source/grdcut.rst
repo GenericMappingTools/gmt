@@ -154,6 +154,13 @@ distance of 500 km from the point 45,30 try::
 
     gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
 
+To create a topography grid with data only inside France and set it
+to NaN outside France, based on the 10x10 minute DEM, try::
+
+    gmt coast -EFR -M > FR.txt
+    gmt grdcut @earth_relief_10m -FFR.txt+c -GFR_only.grd
+    gmt grdimage FR_only.grd -B -pdf map
+    
 See Also
 --------
 

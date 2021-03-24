@@ -247,7 +247,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && Ctrl->F.crop, "Option -F: Modifier +c cannot be used with -R\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && Ctrl->F.crop, "Option -F: Modifier +c cannot be used with -R\n");
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[RSET] + Ctrl->F.crop + Ctrl->S.active + Ctrl->Z.active) != 1,
 	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
