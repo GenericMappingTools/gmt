@@ -111,10 +111,11 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**]
-    Report the min/max of the first *n* columns to the nearest multiple
-    of the provided increments (separate the *n* increments by slashes),
-    and output results in the form **-R**\ *w/e/s/n* (unless **-C** is
-    set). If only one increment is given we also use it for the second
+    Compute the *min*\ /*max* values of the first *n* columns to the nearest multiple
+    of the provided increments (separate the *n* increments by slashes) [default is 2 columns].
+    By default, output results in the form **-R**\ *w/e/s/n*, unless **-C** is
+    set in which case we output each *min* and *max* value in separate output columns.
+    If only one increment is given we also use it for the second
     column (for backwards compatibility). To override this behavior, use
     **-Ip**\ *dx*. If the input *x*- and *y*-coordinates all have the
     same phase shift relative to the *dx* and *dy* increments then we
@@ -262,4 +263,3 @@ See Also
 :doc:`gmt`,
 :doc:`gmtconvert`,
 :doc:`plot`
-
