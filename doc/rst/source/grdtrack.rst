@@ -194,7 +194,6 @@ Optional Arguments
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain].
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -242,10 +241,10 @@ Optional Arguments
    and give *radius* = 0 if you do not want to limit the radius search.
    To instead replace the input point with the coordinates of the nearest node, append **+p**.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

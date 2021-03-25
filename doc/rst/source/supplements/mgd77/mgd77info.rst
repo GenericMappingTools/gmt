@@ -103,10 +103,10 @@ Optional Arguments
     TOKYO, (J5) KOBE UNIV, (J7) UNIV OF RYUKYUS, (J8) J.O.D.C. JAPAN,
     (J9) CHIBA UNIV, (JA) INST.POLAR RES., (ZZ) INST NOT CODED.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_help.rst_
 

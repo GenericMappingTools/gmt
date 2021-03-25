@@ -84,7 +84,6 @@ Required Arguments (not all)
 
       - *sphere,rad/z_center[/x0/y0/npts/n_slices]* Sphere of radius *rad* and center at depth *z_center*
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
     :start-after: **Syntax**
@@ -106,10 +105,10 @@ Required Arguments (not all)
 Optional Arguments
 ------------------
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-E:
 

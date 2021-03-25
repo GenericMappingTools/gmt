@@ -117,7 +117,6 @@ Optional Arguments
 
       **-Q**\ *region* Same syntax as **-R**.
 
-.. _-R:
 .. |Add_-R| replace:: **Note**: This overrides the source grid region (Default: use same region as input) |Add_-R_links|
 .. include:: ../../explain_-R.rst_
     :start-after: **Syntax**
@@ -130,10 +129,10 @@ Optional Arguments
     This option serves to speed up the computation by not computing the effect of prisms that
     are further away than *radius* from the current node.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

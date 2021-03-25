@@ -114,7 +114,6 @@ Optional Arguments
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values.
 
-.. _-R:
 .. |Add_-R| replace:: The new w/e/s/n values will replace those in the grid, and the *x_inc*, *y_inc* values are
     adjusted, if necessary. |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -137,10 +136,10 @@ Optional Arguments
     have their domain shrunk by the same amount.
     This is a *non-destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_

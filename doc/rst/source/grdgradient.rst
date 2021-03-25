@@ -133,7 +133,6 @@ Optional Arguments
     **-Qr** to read these values.  Using **-QR** will read then delete the
     statistics file. See TILES for more information.
 
-.. _-R:
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -146,10 +145,10 @@ Optional Arguments
     Name of output grid file with scalar magnitudes of gradient vectors.
     Requires **-D** but makes **-G** optional.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to

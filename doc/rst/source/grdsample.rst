@@ -63,7 +63,6 @@ Optional Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -76,10 +75,10 @@ Optional Arguments
     grid-registered, the output will be pixel-registered and vice-versa.
     This is a *destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

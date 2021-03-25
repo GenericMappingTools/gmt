@@ -117,6 +117,11 @@ Optional Arguments
 **-T**\ *wfile*
     Supply a file with pre-existing deformations [undeformed surface].
 
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-W:
 
 **-W**\ *wd*
@@ -129,11 +134,6 @@ Optional Arguments
 **-Z**\ *zm*
     Specify reference depth to flexed surface in m; append k for km.  Must be positive [0].
     We add this value to the flexed surface before output.
-
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bi.rst_

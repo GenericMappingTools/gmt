@@ -55,7 +55,6 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -97,10 +96,10 @@ Optional Arguments
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 4 input columns].
 .. include:: explain_-bi.rst_

@@ -112,10 +112,10 @@ Optional Arguments
     triangles or polygons]. When used with **-A** we store arc length in
     the segment header in chosen unit (see **-L**).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
