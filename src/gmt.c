@@ -359,7 +359,8 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-sharedir     Show directory for shared GMT resources.\n");
 			fprintf (stderr, "  --show-userdir      Show full path of user's ~/.gmt dir\n");
 			fprintf (stderr, "  --version           Print GMT version number.\n\n");
-			fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
+			fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n");
+			fprintf (stderr, "if <module-options> is a single common option with no arguments we print the option usage.\n\n");
 		}
 		status = GMT_RUNTIME_ERROR;
 	} /* status == GMT_NOT_A_VALID_OPTION */

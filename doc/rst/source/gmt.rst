@@ -12,13 +12,13 @@ Introduction
 ------------
 
 GMT is a collection of freely available command-line tools under the GNU LGPL that allows you to
-manipulate x,y and x,y,z data sets (filtering, trend fitting, gridding,
+manipulate (*x,y*) and (*x,y,z*) data sets (filtering, trend fitting, gridding,
 projecting, etc.) and produce illustrations ranging from
 simple x-y plots, via contour maps, to artificially illuminated surfaces
 and 3-D perspective views in black/white or full color. Linear, log10,
 and power scaling is supported in addition to over 30 common map
 projections. The processing and display routines within GMT are
-completely general and will handle any (x,y) or (x,y,z) data as input.
+completely general and will handle any (*x,y*) or (*x,y,z*) data as input.
 
 Synopsis
 --------
@@ -27,8 +27,9 @@ Synopsis
 
 **gmt** *module* *module-options*
     Starts a given GMT *module* with the *module-options*
-    that pertain to that particular module.  A few special commands
-    are also available:
+    that pertain to that particular module.  If *module-options* is a single common
+    option with no arguments then report the usage description for that option.
+    A few special commands are also available:
 
 **gmt clear** *items*
     Deletes current defaults, or the cache, data or sessions directories.
@@ -68,6 +69,11 @@ For information on any module, load the module documentation
 in your browser via gmt :doc:`docs`, e.g.::
 
     gmt docs grdimage
+
+You can also position the browser at the explanation for a particular option by
+appending the option, e.g.,::
+
+    gmt docs grdimage -A
 
 If no module is given then several other options are available:
 
