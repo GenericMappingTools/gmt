@@ -13444,6 +13444,7 @@ int GMT_Usage (void *V_API, int level, const char *format, ...) {
 	 * etc, etc.
 	 */
 	struct GMTAPI_CTRL *API = NULL;
+	unsigned int k = 0;
 	FILE *err = stderr;
 	va_list args;
 
@@ -13457,7 +13458,11 @@ int GMT_Usage (void *V_API, int level, const char *format, ...) {
 	va_end (args);
 	assert (strlen (API->message) < GMT_MSGSIZ);
 	if (API->GMT) err = API->GMT->session.std[GMT_ERR];
-	gmtapi_wrap_the_line (API, level, err, API->message);
+	if (API->message[0] == '\n') {
+		API->print_func (err, "\n");	/* Blank line to separate paragraphs */
+		k = 1;
+	}
+	gmtapi_wrap_the_line (API, level, err, &(API->message)[k]);
 	return_error (V_API, GMT_NOERROR);
 }
 

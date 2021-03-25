@@ -512,7 +512,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Note: requires -S. Without -S, %s excepts lines/polygons "
 		"and looks for -Z<value> options in each segment header. Then, color is "
 		"applied for polygon fill (-L) or polygon pen (no -L).", mod_name);
-	GMT_Usage (API, 1, "-D<dx>/<dy> Offset symbol or line positions by <dx>/<dy> [no offset].");
+	GMT_Usage (API, 1, "-D<dx>/<dy>.");
+	GMT_Usage (API, -2, "Offset symbol or line positions by <dx>/<dy> [no offset].");
 	GMT_Usage (API, 1, "%s", PSXY_E_OPT);
 	GMT_Usage (API, -2, "Draw (symmetrical) standard error bars for x and/or y. "
 		"If X or Y are specified then a box-and-whisker diagram is drawn instead, "
