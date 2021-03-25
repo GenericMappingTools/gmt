@@ -46,7 +46,7 @@ Required Arguments
      limiting the length of the cross-section, *dip* is the dip of the plane
      on which the cross-section is made [90], *width* is the width in km of the
      cross-section on each side of a vertical plane or above and under an
-     oblique plane, and *dmin* and *dmax* are the distances min and max from
+     oblique plane [infinity], and *dmin* and *dmax* are the distances min and max from
      horizontal plane in km, along steepest descent direction. Add **+r** to get the
      plot domain from the cross-section parameters.
 
