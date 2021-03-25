@@ -583,7 +583,6 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 	}
 	nz = (int)Ctrl->T.T.n;		z = Ctrl->T.T.array;
-
 	if (Ctrl->T.T.list && (Pin->mode & GMT_CPT_TEMPORARY)) {	/* Array was passed as a comma-separated list of z-values so make sure it matches a list of colors, if given */
 		/* Got -Zcolor,color,... and -Tz,z,z */
 		int k;
@@ -623,6 +622,10 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 			gmt_invert_cpt (GMT, Pout);
 		if (Ctrl->Q.mode == 1)
 			gmt_undo_log10 (GMT, Pout);
+	}
+	else if (nz < 2) {
+		GMT_Report (API, GMT_MSG_ERROR, "Need at least two nodes to form a CPT slice, your choice only resulted in %d nodes\n", nz);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Pout == NULL) {	/* Meaning it was not created above */

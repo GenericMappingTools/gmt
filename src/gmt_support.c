@@ -8819,7 +8819,8 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 	/* Must set default annotation flags */
 	for (i = 0; i < P->n_colors; i++) P->data[i].annot = 1;
-	P->data[i-1].annot = 3;
+	if (i) P->data[i-1].annot = 3;
+	else P->data[i].annot = 3;
 
 	gmtsupport_copy_palette_hdrs (GMT, P, Pin);
 	return (P);
