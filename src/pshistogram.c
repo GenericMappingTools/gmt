@@ -358,6 +358,9 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 	struct GMT_PEN *pen = &Ctrl->W.pen;
 	struct GMT_FILL *fill = &Ctrl->G.fill;
 
+	if (gmt_M_is_dnan (D->font.size))	/* Did not specify another font and this one was NaN in modern mode */
+		D->font = GMT->current.setting.font_annot[GMT_PRIMARY];		/* Update font */
+
 	if (flip_to_y) {	/* Trick by cross-referencing x with y for horizontal bars */
 		px = y;
 		py = x;
