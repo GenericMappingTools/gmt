@@ -263,10 +263,10 @@ Optional Arguments
     positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
     *foreground* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

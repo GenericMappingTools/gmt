@@ -196,16 +196,15 @@ Optional Arguments
     Append the distance unit (see `Units`_). [Default is **-Nk** (km)].
     Only relevant when **-Ag**\|\ **i** is selected.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace::
     This applies to the input 1- or 2-column data files specified under some

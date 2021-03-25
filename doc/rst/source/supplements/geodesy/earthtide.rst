@@ -81,7 +81,6 @@ Optional Arguments
 .. include:: ../../explain_-I.rst_
 
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
     :start-after: **Syntax**
@@ -106,10 +105,10 @@ Optional Arguments
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_help.rst_
 

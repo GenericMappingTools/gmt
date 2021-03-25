@@ -86,7 +86,6 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -200,12 +199,12 @@ Optional Arguments
     set to the same value. [Default = 0 for both gives minimum curvature
     solution.]
 
-.. _-V:
-
 .. |Add_-V| replace::
     **-V3** will report the convergence after each iteration;
-    **-V** will report only after each regional grid is converged.
+    **-V** will report only after each regional grid is converged. |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

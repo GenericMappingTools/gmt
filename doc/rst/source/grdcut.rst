@@ -12,8 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdcut** *ingrid* |-G|\ *outgrid*
+**gmt grdcut**
+*ingrid*
+|-G|\ *outgrid*
 |SYN_OPT-R|
+[ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ *lon/lat/radius*\ [**+n**] ]
@@ -52,6 +55,14 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-F:
+
+**-F**\ *polygonfile*\ [**+c**][**+i**]
+    Specify a multisegment closed polygon file.  All grid nodes outside the
+    polygon will be set to NaN.  Append **+i** to invert that and set all
+    nodes inside the polygon to NaN instead. Optionally, append **+c** to
+    crop the grid region to reflect the bounding box of the polygon.
+
 .. _-J:
 
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
@@ -63,7 +74,6 @@ Optional Arguments
     Allow grid to be extended if new **-R** exceeds existing boundaries.
     Append *nodata* value to initialize nodes outside current region [Default is NaN].
 
-.. _-R:
 .. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -77,10 +87,10 @@ Optional Arguments
     nodes on or inside the circle are contained in the subset. If
     **+n** is appended we set all nodes outside the circle to NaN.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -142,6 +152,13 @@ distance of 500 km from the point 45,30 try::
 
     gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
 
+To create a topography grid with data only inside France and set it
+to NaN outside France, based on the 10x10 minute DEM, try::
+
+    gmt coast -EFR -M > FR.txt
+    gmt grdcut @earth_relief_10m -FFR.txt+c -GFR_only.grd
+    gmt grdimage FR_only.grd -B -pdf map
+    
 See Also
 --------
 

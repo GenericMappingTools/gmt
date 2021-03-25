@@ -192,10 +192,10 @@ Optional Arguments
     *px/py* sets the position of the rotation pole of the projection.
     (Definition 3).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

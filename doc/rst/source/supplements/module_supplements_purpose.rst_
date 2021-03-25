@@ -4,9 +4,9 @@
 
 .. |gpsgridder_purpose| replace:: Interpolate GPS strains using Green's functions for elastic deformation
 
-.. |velo_purpose| replace:: Plot velocity vectors, crosses, and wedges
+.. |velo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
-.. |psvelo_purpose| replace:: Plot velocity vectors, crosses, and wedges
+.. |psvelo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
 .. |gshhg_purpose| replace:: Extract data tables from binary GSHHG or WDBII data files
 

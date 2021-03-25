@@ -52,7 +52,6 @@ Required Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -70,7 +69,6 @@ Optional Arguments
     Angles are given as azimuths; convert them to directions using the
     current projection.
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -189,15 +187,15 @@ Optional Arguments
     indicates the shift relative to the text box [4\ **p**/-4\ **p**] and *shade*
     sets the fill color to use for shading [gray50].
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
-
+    :start-after: **Syntax**
+    :end-before: **Description**
 .. _-W:
 
 **-W**\ *pen*
@@ -205,9 +203,10 @@ Optional Arguments
     **-C**) [Default is width = default, color = black, style = solid].
     **Note**: cannot be used with LaTeX expressions.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

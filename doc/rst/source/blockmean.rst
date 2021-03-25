@@ -67,7 +67,6 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -116,10 +115,10 @@ Optional Arguments
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
     to report the sum of weights [Default (or **-Sm** reports mean value].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

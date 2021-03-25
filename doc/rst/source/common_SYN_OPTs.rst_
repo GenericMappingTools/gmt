@@ -82,6 +82,15 @@
 .. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
     <cookbook/options:Data domain or map region: The **-R** option>`.
 
+.. |Add_-XY_links| replace:: :ref:`(See full description) <-XY_full>` :ref:`(See cookbook information)
+    <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+
+.. |Add_-U_links| replace:: :ref:`(See full description) <-U_full>` :ref:`(See cookbook information)
+    <cookbook/options:Timestamps on plots: The **-U** option>`.
+
+.. |Add_-V_links| replace:: :ref:`(See full description) <-V_full>` :ref:`(See cookbook information)
+    <cookbook/options:Verbose feedback: The **-V** option>`.
+
 .. |br| raw:: html
 
    <br />

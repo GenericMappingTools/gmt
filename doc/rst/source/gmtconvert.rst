@@ -208,10 +208,10 @@ Optional Arguments
     trailing text to the comparison as well, add the column *t* to the list.
     If no numerical columns are specified, just *t*, then we only consider trailing text.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
