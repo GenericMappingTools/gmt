@@ -852,7 +852,10 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 		if (head->next == NULL) {	/* Gave a single argument */
 			if (head->option == GMT_OPT_USAGE || head->option == GMT_OPT_SYNOPSIS || (head->option == '+' && !head->arg[0])) modern = 1;
 			if (modern) usage = true;
-			if (head->arg[0] && strchr (GMT_COMMON_OPTIONS, head->arg[0]) && head->arg[1]) modern = 1;
+			if (!head->arg[0] && strchr (GMT_COMMON_OPTIONS, head->option)) {
+				API->GMT->current.setting.run_mode = GMT_MODERN;	/* Safe here to flag it as modern since no session will be started */
+				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
+			}
 		}
 	}
 

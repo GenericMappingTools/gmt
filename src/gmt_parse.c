@@ -1049,7 +1049,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 
 	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
 
-	if (gmtparse_count_opt (options) == 1 && strchr (given_options, options->option)) {
+	if (gmtparse_count_opt (options) == 1 && strchr (given_options, options->option) && !options->arg[0]) {
 		/* Giving a single valid common option with no argument means just issue that option's syntax message and exit */
 		char string[3] = {""};
 		string[0] = options->option;

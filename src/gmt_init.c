@@ -14683,6 +14683,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	gmt_M_unused(this_module_kw);
 	#endif
 
+	/* First get out of here if given a single non-argument common option */
+
+	if (options && (*options)->next == NULL && strchr (GMT_COMMON_OPTIONS, (*options)->option) && !(*options)->arg[0]) {
+		return (gmtinit_begin_module_sub (API, lib_name, mod_name, Ccopy));
+	}
 	/* First handle any half-hearted naming of remote datasets where _g or _p should be appended */
 
 	if (options) {
