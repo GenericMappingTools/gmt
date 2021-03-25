@@ -113,7 +113,6 @@ Optional Arguments
     You may optionally evaluate the first or second derivative of the spline
     by appending **+1** or **+2**, respectively.
 
-.. _-R:
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -144,10 +143,10 @@ Optional Arguments
     and no output times are set with **-T** we simply rewrite the grid-produced cube as
     a 3-D data cube file and exit.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

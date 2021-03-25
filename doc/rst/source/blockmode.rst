@@ -68,7 +68,6 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -139,10 +138,10 @@ Optional Arguments
     (Quicker) Finds mode *z* and mean (*x*,\ *y*) [Default finds mode
     *x*, mode *y*, mode *z*].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

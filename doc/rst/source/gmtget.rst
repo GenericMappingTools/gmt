@@ -88,10 +88,10 @@ PARAMETER
     that are tiled, the *size* is set to N/A (tile sizes vary but are usually just
     a few Mb each) and *nitems* indicates the number of tiles.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help.rst_
 

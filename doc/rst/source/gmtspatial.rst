@@ -193,10 +193,10 @@ Optional Arguments
     that when the **-R** clipping is in effect we will also look for
     polygons of length 4 or 5 that exactly match the **-R** clipping polygon.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_

@@ -77,7 +77,6 @@ Required Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
-.. _-R:
 .. |Add_-R| replace:: Special case for the UTM projection: If **-C** is used and **-R** is not given then the
     region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
     (See :ref:`mapproject:Restrictions` for more information). |Add_-R_links|
@@ -221,10 +220,10 @@ Optional Arguments
     after the inverse projection). Make sure that the
     :term:`PROJ_ELLIPSOID` setting is correct for your case.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

@@ -3,6 +3,8 @@ The **-U** option
 
 **Syntax**
 
+.. _-U:
+
 **-U**\ [*label*\|\ **+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
     Draw GMT time stamp logo on plot. |Add_-U|
 
