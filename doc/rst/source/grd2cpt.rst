@@ -188,7 +188,6 @@ Optional Arguments
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**

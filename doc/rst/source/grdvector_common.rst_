@@ -34,7 +34,6 @@ Optional Arguments
     The grid files contain polar (r, theta) components instead of
     Cartesian (x, y) [Default is Cartesian components].
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -69,7 +68,6 @@ Optional Arguments
     *size* [Default is 0, i.e., stick-plot]. See VECTOR ATTRIBUTES for
     specifying additional attributes.
 
-.. _-R:
 .. |Add_-R| replace:: Specify a subset of the grid. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -102,14 +100,15 @@ Optional Arguments
     be used to convert vector azimuths in cases when a negative scale is used in
     one of both directions (e.g., positive down).
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -117,9 +116,10 @@ Optional Arguments
     Set pen attributes used for vector outlines [Default: width =
     default, color = black, style = solid].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

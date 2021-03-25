@@ -578,25 +578,11 @@ annotations on the *x*-axis and irregular annotations on the *y*-axis.
 Timestamps on plots: The **-U** option
 --------------------------------------
 
-**Syntax**
+.. |Add_-U| unicode:: 0x20 .. just an invisible code
+.. include:: ../explain_-U.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-U**\ [*label*][**+c**][**+j**\ *just*][**+o**\ *dx*/*dy*]
-
-**Description**
-
-The **-U** option draws the GMT system time stamp on the plot. The following modifiers are supported:
-
-- *label* to append the text string given in *label* (which must be surrounded by double qoutes if it contains spaces).
-- **+c** to plot the current command string.
-- **+j**\ *just* to specify the justification of the time stamp, where *just* is a two-character
-  :ref:`justification code <Reference_Points>` that is a combination of a horizontal (**L**\ (eft), **C**\ (enter), or
-  **R**\ (ight)) and a vertical (**T**\ (op), **M**\ (iddle), or **B**\ (ottom)) code [default is **BL**].
-- **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` for the time stamp by *dx* and optionally
-  *dy* (if different than *dx*).
-
-The GMT parameters :term:`MAP_LOGO`, :term:`MAP_LOGO_POS`, :term:`FONT_LOGO` and :term:`FORMAT_TIME_STAMP` can affect
-the appearance; see the :doc:`../gmt.conf` man page for details. The time string will be in the locale set by the
-environment variable **TZ** (generally local time).
+**Examples**
 
 .. _fig_-U:
 
@@ -617,26 +603,9 @@ environment variable **TZ** (generally local time).
 Verbose feedback: The **-V** option
 -----------------------------------
 
-**Syntax**
-
-**-V**\ [*level*]
-
-**Description**
-
-The **-V** option controls the verbosity mode, which determines which messages are sent to standard error. Choose among
-7 levels of verbosity; each level adds more messages:
-
-- **q** - Quiet, not even fatal error messages are produced.
-- **e** - Error messages only.
-- **w** - Warnings.
-- **t** - Timings (report runtimes for time-intensive algorithms).
-- **i** - Informational messages (same as **-V** only).
-- **c** - Compatibility warnings (if compiled with backward-compatibility).
-- **d** - Debugging messages.
-
-
-This option can also be set by specifying the default :term:`GMT_VERBOSE` as **quiet**, **error**, **warning**,
-**timing**, **compat**, **information**, or **debug**, in order of increased verbosity [default is **warning**].
+.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. include:: ../explain_-V.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-X:
 .. _option_-Y:
@@ -644,27 +613,11 @@ This option can also be set by specifying the default :term:`GMT_VERBOSE` as **q
 Plot positioning and layout: The **-X** **-Y** options
 ------------------------------------------------------
 
-**Syntax**
+.. |Add_-XY| unicode:: 0x20 .. just an invisible code
+.. include:: ../explain_-XY.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- **-X**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*xshift*]
-- **-Y**\ [**a**\|\ **c**\|\ **f**\|\ **r**][*yshift*]
-
-**Description**
-
-The **-X** and **-Y** options shift the plot origin relative to the current origin by (*xshift*,\ *yshift*). Optionally,
-append the length unit (**c**, **i**, or **p**). Default is (:term:`MAP_ORIGIN_X`, :term:`MAP_ORIGIN_Y`) for new
-plots\ [14]_. Subsequent overlays will be co-registered with the previous plot unless the origin is shifted using these
-options. The following modifiers are supported [default is **r**]:
-
-- Prepend **a** to shift the origin back to the original position after plotting.
-- Prepend **c** to center the plot on the center of the paper (optionally add a *shift*).
-- Prepend **f** to shift the origin relative to the fixed lower left.
-- Prepend **r** to move the origin relative to its current location.
-
-When **-X** or **-Y** are used without any further arguments, the values from the last use of that option in a previous
-GMT command will be used. Note that **-X** and **-Y** can also access the previous plot bounding box dimensions *w* and
-*h* and construct offsets that involves them.  For instance, to move the origin up 2 cm beyond the height of the
-previous plot, use **-Y**\ *h*\ +2c. To move the origin half the width to the right, use **-X**\ *w*\ /2.
+**Examples**
 
 .. _XY_options:
 
@@ -687,7 +640,7 @@ OGR/GMT GIS i/o: The **-a** option
 
 **Syntax**
 
-**-a**\ [*col*\ =]\ *name*\ [,\ *...*]
+**-a**\ [[*col*\ =]\ *name*\ ][,\ *...*]
 
 **Description**
 
@@ -1303,7 +1256,7 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
    Intermediate wavelengths will experience attenuated amplitudes as well. b) Transfer function for
    resampling data from a pixel-registered to a gridline-registered grid format illustrates the loss
    of amplitude that will occur.  There is also a linear change in phase from 0 to 90 degrees as a
-   function of wavenumber :math:`k_j` [Marks and Smith, 2007 [15]_.
+   function of wavenumber :math:`k_j` [Marks and Smith, 2007 [14]_.
 
 .. toggle::
 
@@ -1604,8 +1557,5 @@ Footnotes
    Please consult the man page for *printf* or any book on C.
 
 .. [14]
-   Ensures that boundary annotations do not fall off the page.
-
-.. [15]
    Marks, K. M., and W. H. F. Smith, 2007, Some remarks on resolving seamounts in satellite gravity, Geophys. Res. Lett., 34 (L03307),
    http://doi.org/10.1029/2006GL028857.

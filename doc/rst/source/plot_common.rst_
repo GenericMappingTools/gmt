@@ -21,7 +21,6 @@ Required Arguments
 .. |Add_-J| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-J.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -45,7 +44,6 @@ Optional Arguments
     are simply connected, unless you append **x** or **y** to draw stair-case
     curves that whose first move is along *x* or *y*, respectively.
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -184,14 +182,15 @@ Optional Arguments
     Ignore all input files.  If **-B** is not used then **-R -J** are not required.
     Typically used to move plot origin via **-X** and **-Y**.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -217,9 +216,10 @@ Optional Arguments
     we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

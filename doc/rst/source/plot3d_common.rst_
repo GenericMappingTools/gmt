@@ -31,7 +31,6 @@ Required Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -56,7 +55,6 @@ Optional Arguments
     curves that whose first move is along *x* or *y*, respectively. **Note**:
     The **-A** option requires constant *z*-coordinates.
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -152,14 +150,15 @@ Optional Arguments
 
 .. include:: explain_3D_symbols.rst_
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -174,9 +173,10 @@ Optional Arguments
     we will cycle through the pen colors implied by :term:`COLOR_SET` and change on a per-segment
     or per-table basis.  The *width*, *style*, or *transparency* settings are unchanged.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

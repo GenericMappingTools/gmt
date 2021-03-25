@@ -68,7 +68,6 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -124,10 +123,10 @@ Optional Arguments
     that only the cell where point lies is masked, **-S**\ 1\ **c** masks one cell beyond that
     (i.e. makes a 3x3 neighborhood), and so on.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns (3 with **-Sz**)].
 .. include:: explain_-bi.rst_

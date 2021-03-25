@@ -39,7 +39,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: ../../explain_-B.rst_
     :start-after: **Syntax**
@@ -146,14 +145,15 @@ Optional Arguments
 
         **+s**\ *shift*: shift all traces by *shift* seconds.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -161,9 +161,10 @@ Optional Arguments
     Set pen attributes for all traces unless overruled by *pen* specified in *saclist*.
     [Defaults: width = default, color = black, style = solid].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_

@@ -37,7 +37,6 @@ Optional Arguments
     from y = 0].  The plot dimensions remain the same, but the two
     axes are flipped.
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -123,7 +122,6 @@ Optional Arguments
     Draw a cumulative histogram. Append **r** to instead compute the
     reverse cumulative histogram.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -138,23 +136,25 @@ Optional Arguments
     Draws a stairs-step diagram which does not include the internal bars
     of the default histogram.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
 **-W**\ *pen*
     Draw bar outline (or stair-case curve) using the specified pen thickness. [Default is no outline].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

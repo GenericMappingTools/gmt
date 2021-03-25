@@ -60,10 +60,10 @@ Optional Arguments
     the raw, punchcard-formatted MGD77 original header block, append
     **r** instead. For the M77T format, append **t** instead.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_help.rst_
 

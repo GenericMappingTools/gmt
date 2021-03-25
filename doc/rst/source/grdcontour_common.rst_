@@ -36,7 +36,6 @@ Optional Arguments
 
 .. include:: explain_clabelinfo.rst_
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -135,7 +134,6 @@ Optional Arguments
     length units in current plot units after projecting the coordinates.
     Optionally, append **+z** to exclude the zero contour.
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -170,14 +168,15 @@ Optional Arguments
     outside the innermost contour since only the mean value of the contour coordinates
     is used to position the label.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -191,9 +190,10 @@ Optional Arguments
     **-C**). If instead modifier **+cf** is appended then the color from the cpt
     file is applied to the contour annotations.  Select **+c** for both effects.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

@@ -105,7 +105,6 @@ Optional Arguments (begin mode)
     use **+R** for uppercase Roman numerals [Arabic numerals].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -148,7 +147,6 @@ Optional Arguments (begin mode)
     the margins for the two opposing sides (e.g., east plus west or south plus north margins) [Default is
     half the primary annotation font size, giving the full annotation font size as the default gap].
 
-.. _-R:
 .. |Add_-R| replace:: This is useful when all subplots share a common plot domain. In this module, the chosen region
     will also become the default for any data region needed by computational modules. |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -180,14 +178,15 @@ Optional Arguments (begin mode)
     While individual subplots can have titles (see **-S** or **-B**), the entire figure may also have a
     overarching *heading* [no heading]. Font is determined by setting :term:`FONT_HEADING`.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help.rst_
 
@@ -232,6 +231,8 @@ Optional Arguments (set mode)
 .. _subplot_set-V:
 
 .. include:: explain_-V.rst_
+    :start-after: .. _-V:
+    :end-before: **Description**
 
 Any number of plotting command can now take place and all output will be directed to the
 selected subplot.  There are a few other rules that need to be followed:
@@ -259,6 +260,8 @@ Optional Arguments (end mode)
 .. _subplot_end-V:
 
 .. include:: explain_-V.rst_
+    :start-after: .. _-V:
+    :end-before: **Description**
 
 Examples
 --------

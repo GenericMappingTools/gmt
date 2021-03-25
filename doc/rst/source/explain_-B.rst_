@@ -3,6 +3,8 @@ The **-B** option
 
 **Syntax**
 
+.. _-B:
+
 **-B**\ [**p**\|\ **s**]\ *parameters*
     Set map boundary frame and axes attributes. |Add_-B|
 

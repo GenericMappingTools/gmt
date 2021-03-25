@@ -99,7 +99,6 @@ Optional Arguments
     manipulated [Default will insist that each grid domain is within
     1e-4 \* grid_spacing of the domain of the first grid listed].
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -114,10 +113,10 @@ Optional Arguments
     follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
     LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-aspatial.rst_
 

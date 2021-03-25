@@ -27,7 +27,7 @@
       then *justify* defaults to the same as *refpoint*; if **J** is used then *justify* defaults to the mirror opposite
       of *refpoint*; if **g**, **n**, or **x** is used to set the reference point then *justify* defaults to **MC**.
     - **+l**\ [*label*] to add a scale label. If *label* is not provided, we use the distance unit provided in **+w**
-      [default is **k**\ (m)]. The label alignment is set by **+a** [default is **t**\ (op)].
+      [default is **k**\ (m)]. The label alignment is set by **+a** [default is **t**\ (op)]. Requires **+f**.
     - **+o**\ *dx*\ [/*dy*] to offset the :ref:`anchor point <Anchor_Point_o>` by *dx* and optionally *dy* (if different
       than *dx*).
     - **+u** to append the :ref:`unit <tbl-distunits>` set by **+w** to all distance annotations along the scale (for

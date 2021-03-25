@@ -1257,6 +1257,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 #endif
 
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
+		if (I && !need_to_project) {
+			gmt_M_memcpy (wesn, GMT->common.R.active[RSET] ? GMT->common.R.wesn : I->header->wesn, 4, double);
+			need_to_project = (gmt_whole_earth (GMT, I->header->wesn, wesn));	/* Must project global images even if not needed for grids */
+		}
 		if (Ctrl->I.derive) {	/* Cannot auto-derive intensities from an image */
 			GMT_Report (API, GMT_MSG_WARNING, "Cannot derive intensities from an input image file; -I ignored\n");
 			Ctrl->I.derive = use_intensity_grid = false;

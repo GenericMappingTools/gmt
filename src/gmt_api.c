@@ -12899,6 +12899,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		else info[ku].pos -= nn[info[ku].direction][K_SECONDARY];	/* Move any primary objects to start of list for this direction */
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", input_pos, output_pos);
+#if 0
+	{	/* Left here for simple debugging with messages on the GMT side */
+		text = GMT_Create_Cmd (API, *head);
+		GMT_Report (API, GMT_MSG_NOTICE, "GMT_Encode_Options: Revised command before memory-substitution: %s\n", text);
+		GMT_Destroy_Cmd (API, &text);
+	}
+#endif
 	/* Just checking that the options were properly processed */
 	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 		static char *omode[2] = {"Primary", "Secondary"};

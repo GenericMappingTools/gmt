@@ -129,17 +129,16 @@ Optional Arguments
     should be the projected measure unit [Default is set by
     :term:`PROJ_LENGTH_UNIT` in :doc:`gmt.conf`]. Cannot be used with **-F**.
 
-.. _-R:
 .. |Add_-R| replace:: You may ask to project only a subset of the grid by specifying a smaller input *w/e/s/n* region
     [Default is the region given by the grid file]. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-n.rst_
 

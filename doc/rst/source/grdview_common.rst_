@@ -25,7 +25,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-B:
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
     :start-after: **Syntax**
@@ -91,7 +90,6 @@ Optional Arguments
 
     **Note**: If the CPT is categorical then only **-Qm** is available (but see **-T**).
 
-.. _-R:
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -121,14 +119,15 @@ Optional Arguments
     custom pen if the default pen is not to your liking. As this option
     produces a flat surface it cannot be combined with **-JZ** or **-Jz**.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -147,9 +146,10 @@ Optional Arguments
         0.25p, color = black, style = solid]. You must also select **-N**
         for the facade outline to be drawn.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-n.rst_
 

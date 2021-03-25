@@ -201,7 +201,6 @@ These are all the common GMT options that remain the same for all GMT
 modules. No space between the option flag and the associated arguments.
 
 .. _-B_full:
-.. _-B:
 .. |Add_-B| replace:: :ref:`(See cookbook information) <cookbook/options:Map frame and axes annotations: The **-B** option>`.
 .. include:: explain_-B.rst_
 
@@ -220,7 +219,6 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-Jproj_full.rst_
 
 .. _-R_full:
-.. _-R:
 .. |Add_-R| replace:: :ref:`(See cookbook information) <cookbook/options:Data domain or map region: The **-R** option>`.
 .. include:: explain_-R.rst_
 
@@ -230,19 +228,16 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-Rz_full.rst_
 
 .. _-U_full:
-.. _-U:
-
-.. include:: explain_-U_full.rst_
+.. |Add_-U| replace:: :ref:`(See cookbook information) <cookbook/options:Timestamps on plots: The **-U** option>`.
+.. include:: explain_-U.rst_
 
 .. _-V_full:
-.. _-V:
-
-.. include:: explain_-V_full.rst_
+.. |Add_-V| replace:: :ref:`(See cookbook information) <cookbook/options:Verbose feedback: The **-V** option>`.
+.. include:: explain_-V.rst_
 
 .. _-XY_full:
-.. _-X:
-
-.. include:: explain_-XY_full.rst_
+.. |Add_-XY| replace:: :ref:`(See cookbook information) <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+.. include:: explain_-XY.rst_
 
 .. _-aspatial_full:
 
