@@ -5210,7 +5210,7 @@ GMT_LOCAL int gmtmath_VPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	double x, mu, kappa, q;
 	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
 
-	if (S[last]->constant) {	/* KAPPA is a constant; set once and compute q once */
+	if (S[last]->constant) {	/* KAPPA is a constant; set once and compute q once for efficiency in avoiding gmt_io calls in the loop */
 		kappa = S[last]->factor;
 		q = 1.0 / (TWO_PI * gmt_i0 (GMT, kappa));
 	}
