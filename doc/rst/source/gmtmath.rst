@@ -67,7 +67,7 @@ Required Arguments
     once if necessary.
 *outfile*
     The name of a table data file that will hold the final result. If
-    not given then the output is sent to stdout.
+    not given then the output is sent to *stdout*.
 
 Optional Arguments
 ------------------
@@ -189,7 +189,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 185 operators. Here, "args" are the number of input
+Choose among the following operators. Here, "args" are the number of input
 and output arguments.
 
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -544,6 +544,8 @@ and output arguments.
 | **VAR**         | 1 1    | Variance of A                                                                              |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **VARW**        | 2 1    | Weighted variance of A for weights in B                                                    |
++-----------------+--------+--------------------------------------------------------------------------------------------+
+| **VPDF**        | 3 1    | Von Mises density distribution V(x,my,kappa), with angles = A, mu = B, and kappa = C       |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **WCDF**        | 3 1    | Weibull cumulative distribution function for x = A, scale = B, and shape = C               |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
