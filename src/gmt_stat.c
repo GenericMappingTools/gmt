@@ -2812,3 +2812,50 @@ void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	else
 		gmtstat_get_cart_cellarea (GMT, G);
 }
+
+double gmt_von_mises_mean_and_kappa (struct GMT_CTRL *GMT, double *data, double *w, uint64_t n, double *kappa) {
+	/* Return the mean and kappa for a von Mises fit to (possibly weighted) data.
+	 * It is assumed that data have been scaled to 0-2*pi. Weights w is possibly NULL for no weights */
+	uint64_t k, m = 0;
+	double mean = 0.0, x_r = 0.0, y_r = 0.0, s_w = 0.0, ww = 1.0;
+	double lo, hi, midval, range2, delta_R, s, c, R_bar;
+
+	for (k = 0; k < n; k++) {
+		if (gmt_M_is_dnan (data[k])) continue;
+		if (w) ww = w[k];	/* Otherwise it is a constant 1 */
+		sincos (data[k], &s, &c);
+		x_r += c * ww;	y_r += s * ww;
+		s_w += ww;
+	}
+	if (s_w > 0.0) {	/* Can compute the statistics */
+		x_r /= s_w;	y_r /= s_w;
+		mean = atan2 (y_r, x_r);
+	}
+	else {	/* No data, basically */
+		*kappa = GMT->session.d_NaN;
+		return (GMT->session.d_NaN);
+	}
+	/* Here we have actual values */
+	R_bar = hypot (x_r, y_r);
+	if (R_bar >= 0.999) {	/* Just return a big kappa for R almost = 1 */
+		*kappa = 500.0;	/* kappa = 500 gives R_bar = 0.998999916722 so close enough */
+		return (mean);
+	}
+	/* Compute kappa by a dumb bisection search */
+	lo = 0.0;	hi = 500.0;
+	while (fabs (hi - lo) > GMT_CONV8_LIMIT) {
+		midval = 0.5 * (hi + lo);
+		range2 = 0.5 * (hi - lo);
+		delta_R = (gmt_i1 (GMT, midval) / gmt_i0 (GMT, midval)) - R_bar;
+		if (delta_R > GMT_CONV8_LIMIT)	/* Need a smaller R next time */
+			hi -= range2;
+		else if (delta_R < -GMT_CONV8_LIMIT)	/* Need a larger R next time */
+			lo += range2;
+		else 	/* Got it, set lo = hi to exit loop */
+			lo = hi;
+	}
+	*kappa = midval;
+
+	return (mean);
+}
+

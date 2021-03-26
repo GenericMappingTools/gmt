@@ -466,6 +466,16 @@ GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint6
 
 	if (n < 3) return (-1);
 
+	if (GMT->common.w.active) {	/* Test wrapping on circle */
+		double *d = gmt_M_memory (GMT, NULL, n, double);
+		double f = TWO_PI / GMT->current.io.cycle_range;
+		for (i = 0; i < n; i++)
+			d[i] = f * data[i];
+		stats[0] = gmt_von_mises_mean_and_kappa (GMT, d, NULL, n, &stats[3]) / f;
+		stats[6] = f;	/* Save this here since probably needed to draw the Von Mises curve */
+		gmt_M_free (GMT, d);
+		return (0);	/* Since only L2 solution is available */
+	}
 	gmt_M_tic (GMT);	/* Initialize elapsed time */
 
 	if (selected[PSHISTOGRAM_L1] || selected[PSHISTOGRAM_LMS])	/* Must sort array */
@@ -832,6 +842,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	/* Now must specify either fill color with -G or outline pen with -W */
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->C.active || Ctrl->I.active || Ctrl->G.active || Ctrl->W.active), "Must specify either fill (-G) or lookup colors (-C), outline pen attributes (-W), or both.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both fill (-G) and lookup colors (-C).\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && (Ctrl->N.selected[PSHISTOGRAM_L1] || Ctrl->N.selected[PSHISTOGRAM_LMS]), "Option -N: Only -N is supported when -w is selected.\n");
 	n_errors += gmt_check_binary_io (GMT, 0);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
@@ -850,7 +861,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	char format[GMT_BUFSIZ] = {""};
 
-	double *data = NULL, *weights = NULL, stats[6], area, tmp, x_min, x_max, *in = NULL;
+	double *data = NULL, *weights = NULL, stats[7], area, tmp, x_min, x_max, *in = NULL;
 
 	struct PSHISTOGRAM_INFO F;
 	struct PSHISTOGRAM_CTRL *Ctrl = NULL;
@@ -892,7 +903,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	gmt_M_memset (&F, 1, struct PSHISTOGRAM_INFO);
-	gmt_M_memset (stats, 6, double);
+	gmt_M_memset (stats, 7, double);
 	F.hist_type  = Ctrl->Z.mode;
 	F.cumulative = Ctrl->Q.mode;
 	F.center_box = Ctrl->F.active;
@@ -1312,7 +1323,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
 		unsigned int type, k, NP = 101U;
-		double f, z, xtmp, ytmp, inc;
+		double f, z, xtmp, ytmp, inc, sum_q = 0.0;
 		double *xp = gmt_M_memory (GMT, NULL, NP, double);
 		double *yp = gmt_M_memory (GMT, NULL, NP, double);
 		inc = (F.wesn[XHI] - F.wesn[XLO]) / (NP - 1);
@@ -1321,11 +1332,18 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			/* Draw this estimation of a normal distribution */
 			gmt_setpen (GMT, &Ctrl->N.pen[type]);
 			f = (Ctrl->Q.active) ? 0.5 : 1.0 / (stats[type+3] * sqrt (M_PI * 2.0));
+			if (GMT->common.w.active) f = 1.0 / (TWO_PI * gmt_i0 (GMT, stats[3]));
 			f *= area;
+			fprintf (stderr, "Area = %g\n", area);
 			for (k = 0; k < NP; k++) {
 				xp[k] = F.wesn[XLO] + inc * k;
 				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
-				if (Ctrl->Q.active) {	/* Want a cumulative curve */
+				if (GMT->common.w.active) {
+					double q = f * exp (stats[3] * cos ((xp[k] * stats[6]) - stats[0]));
+					sum_q += q;
+					yp[k] = q;
+				}
+				else if (Ctrl->Q.active) {	/* Want a cumulative curve */
 					yp[k] = f * (1.0 + erf (z / M_SQRT2));
 					if (Ctrl->Q.mode == -1) yp[k] = f - yp[k];
 				}
@@ -1347,6 +1365,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 				xp[k] = xtmp;	yp[k] = ytmp;
 			}
 			PSL_plotline (PSL, xp, yp, NP, PSL_MOVE|PSL_STROKE);
+			fprintf (stderr, "sum_q = %g\n", sum_q);
 		}
 		gmt_M_free (GMT, xp);
 		gmt_M_free (GMT, yp);
