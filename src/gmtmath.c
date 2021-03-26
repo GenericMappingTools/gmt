@@ -669,7 +669,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	UPPER      1  1    The highest (maximum) value of A\n"
 		"	VAR        1  1    Variance of A\n"
 		"	VARW       2  1    Weighted variance of A for weights in B\n"
-		"	VPDF       1  1    Von Mises probability density function for angles = A and kappa = B\n"
+		"	VPDF       3  1    Von Mises probability density function for angles = A, mu = B, and kappa = C\n"
 		"	WCDF       3  1    Weibull cumulative distribution function for x = A, scale = B, and shape = C\n"
 		"	WCRIT      3  1    Weibull distribution critical value for alpha = A, scale = B, and shape = C\n"
 		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
