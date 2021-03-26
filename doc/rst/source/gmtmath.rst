@@ -668,6 +668,7 @@ Notes On Operators
    ROLL to get to the item of interest.  Without **-Q**, these operators work
    across the three columns and modify the three column entries, returning their
    result as a single three-column item on the stack.
+#. The **VPDF** operator expects angles in degrees.
 
 Macros
 ------
