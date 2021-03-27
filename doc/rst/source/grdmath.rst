@@ -151,11 +151,11 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following operators. "args" are the number of input
+Choose among the following operators. "Args" are the number of input
 and output arguments.
 
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| Operator      | args  | Returns                                                                                                |
+| Operator      | Args  | Returns                                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ABS**       | 1 1   | abs (A)                                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
