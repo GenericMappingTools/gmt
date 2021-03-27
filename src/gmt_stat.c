@@ -1439,7 +1439,7 @@ double gmt_fisher_pdf (struct GMT_CTRL *GMT, double plon, double plat, double lo
 	/* Fisher 3-D probability density function centered on (plon, plat) evaluated at
 	 * another point (lon, lat), given kappa */
 	double p, cos_psi;
-	cos_psi = gmtmap_great_circle_dist_cos (GMT, plon, plat, lon, lat);
+	cos_psi = gmtlib_great_circle_dist_cos (GMT, plon, plat, lon, lat);
 	p = kappa * exp (kappa * cos_psi) / (2.0 * TWO_PI * sinh (kappa));
 	return (p);
 }

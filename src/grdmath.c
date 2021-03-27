@@ -2404,13 +2404,11 @@ GMT_LOCAL void grdmath_FISHER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 	if (stack[prev2]->constant) lon = stack[prev2]->factor;
 	if (stack[prev1]->constant) lat = stack[prev1]->factor;
 	if (stack[last]->constant) kappa = stack[last]->factor;
-	for (row = 0; row < info->G->header->n_rows; row++) {
-		for (col = 0, node = gmt_M_ijp (info->G->header, row, 0); col < info->G->header->n_columns; col++, node++) {
-			if (!stack[prev2]->constant) lon = stack[prev2]->G->data[node];
-			if (!stack[prev1]->constant) lat = stack[prev1]->G->data[node];
-			if (!stack[last]->constant) kappa = stack[last]->G->data[node];
-			stack[prev2]->G->data[node] = (float)gmt_fisher_pdf (GMT, lon, lat, info->d_grd_x[col], info->d_grd_y[row], kappa);
-		}
+	grdmath_grd_padloop (GMT, info->G, row, col, node) {
+		if (!stack[prev2]->constant) lon = stack[prev2]->G->data[node];
+		if (!stack[prev1]->constant) lat = stack[prev1]->G->data[node];
+		if (!stack[last]->constant) kappa = stack[last]->G->data[node];
+		stack[prev2]->G->data[node] = (float)gmt_fisher_pdf (GMT, lon, lat, info->d_grd_x[col], info->d_grd_y[row], kappa);
 	}
 }
 
@@ -5729,7 +5727,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 224
+#define GRDMATH_N_OPERATORS 225
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
