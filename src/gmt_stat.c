@@ -58,6 +58,7 @@
  *	gmt_weibull_crit      :
  *	gmt_binom_pdf         :
  *	gmt_binom_cdf         :
+ *	gmt_vonmises_pdf      :
  *	gmt_zdist             :
  *	gmt_zcrit             :
  *	gmt_tcrit             :
@@ -1423,6 +1424,14 @@ double gmt_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p) {
 			c += gmt_binom_pdf (GMT, j, n, p);
 	}
 	return (c);
+}
+
+double gmt_vonmises_pdf (struct GMT_CTRL *GMT, double x, double mu, double kappa) {
+	double p;
+	gmt_M_unused(GMT);
+	/* Von Mises distribution, expects x and mu in degrees */
+	p = exp (kappa * cosd (x - mu)) / (TWO_PI * gmt_i0 (GMT, kappa));
+	return (p);
 }
 
 double gmt_zdist (struct GMT_CTRL *GMT, double x) {
