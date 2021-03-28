@@ -88,14 +88,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	if (classic) {
-		GMT_Usage (API, 0, "usage: %s %s %s [%s] [-A[<file>]] [-D%s] | [-D%s] [-F[d|l|t]%s] %s "
+		GMT_Usage (API, 0, "usage: %s %s %s [-A[<file>]] [%s] [-D%s] | [-D%s] [-F[d|l|t]%s] %s "
 			"[-L%s] %s%s[-Td%s] [-Tm%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]\n",
 			name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_INSET_A_CL, GMT_INSET_B_CL, GMT_PANEL,
 			API->K_OPT, GMT_SCALE, API->O_OPT, API->P_OPT, GMT_TROSE_DIR, GMT_TROSE_MAG, GMT_U_OPT, GMT_V_OPT,
 			GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	}
 	else {
-		GMT_Usage (API, 0, "usage: %s %s %s [%s] [-A[<file>]] [-F[l|t]%s] %s [-L%s] "
+		GMT_Usage (API, 0, "usage: %s %s %s [-A[<file>]] [%s] [-F[l|t]%s] %s [-L%s] "
 			"%s%s[-Td%s] [-Tm%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]\n",
 			name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_PANEL, API->K_OPT, GMT_SCALE,
 			API->O_OPT, API->P_OPT, GMT_TROSE_DIR, GMT_TROSE_MAG, GMT_U_OPT, GMT_V_OPT,
@@ -105,8 +105,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "JZ,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONS:\n\n");
-	GMT_Usage (API, 1, "-A No plotting, just write coordinates of the (possibly oblique) rectangular map boundary "
+	GMT_Message (API, GMT_TIME_NONE, "\nOPTIONS:\n");
+	GMT_Usage (API, 1, "\n-A No plotting, just write coordinates of the (possibly oblique) rectangular map boundary "
 		"to given file (or stdout).  Requires -R and -J only.  Spacing along border "
 		"in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].",
 		API->GMT->session.u2u[GMT_INCH][GMT_PT] * API->GMT->current.setting.map_line_step);

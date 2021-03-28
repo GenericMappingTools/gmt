@@ -501,20 +501,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONS:\n\n");
 	GMT_Option (API, "<");
-	GMT_Usage (API, 1, "-A[x|y]");
+	GMT_Usage (API, 1, "\n-A[x|y]");
 	GMT_Usage (API, -2, "Suppress drawing geographic line segments as great circle arcs, i.e., draw "
 		"straight lines instead.  Two optional directives instead convert paths to staircase curves:");
 	GMT_Usage (API, 3, "x: First follow x (longitude), then y (latitude) for staircase curves.");
 	GMT_Usage (API, 3, "y: First follow y (latitude), then x (longitude) for staircase curves.");
 	GMT_Option (API, "B-");
-	GMT_Usage (API, 1, "-C<cpt>|<color1>,<color2>[,<color3>,...]");
+	GMT_Usage (API, 1, "\n-C<cpt>|<color1>,<color2>[,<color3>,...]");
 	GMT_Usage (API, -2, "Assign symbol colors based on z-value in 3rd column. "
 		"Note: requires -S. Without -S, %s excepts lines/polygons "
 		"and looks for -Z<value> options in each segment header. Then, color is "
 		"applied for polygon fill (-L) or polygon pen (no -L).", mod_name);
-	GMT_Usage (API, 1, "-D<dx>/<dy>.");
+	GMT_Usage (API, 1, "\n-D<dx>/<dy>.");
 	GMT_Usage (API, -2, "Offset symbol or line positions by <dx>/<dy> [no offset].");
-	GMT_Usage (API, 1, "%s", PSXY_E_OPT);
+	GMT_Usage (API, 1, "\n%s", PSXY_E_OPT);
 	GMT_Usage (API, -2, "Draw (symmetrical) standard error bars for x and/or y. "
 		"If X or Y are specified then a box-and-whisker diagram is drawn instead, "
 		"requiring four extra columns with the 0%%, 25%%, 75%%, and 100%% quantiles. "
@@ -530,14 +530,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
 	GMT_Usage (API, -2, "The -G option can be present in all segment headers (not with -S). "
 		"To assign fill color via -Z, give -G+z).");
-	GMT_Usage (API, 1, "-H[<scale>]");
+	GMT_Usage (API, 1, "\n-H[<scale>]");
 	GMT_Usage (API, -2, "Scale symbol sizes (set via -S or input column) by factors read from scale column. "
 		"The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.");
-	GMT_Usage (API, 1, "-I[<intens>]");
+	GMT_Usage (API, 1, "\n-I[<intens>]");
 	GMT_Usage (API, -2, "Use the intensity to modulate the fill color (requires -C or -G). "
 		"If no intensity is given we expect it to follow symbol size in the data record.");
 	GMT_Option (API, "K");
-	GMT_Usage (API, 1, "%s", PLOT_L_OPT);
+	GMT_Usage (API, 1, "\n%s", PLOT_L_OPT);
 	GMT_Usage (API, -2, "Force closed polygons, or append modifiers to build polygon from a line:");
 	GMT_Usage (API, 3, "+d Symmetrical envelope around y(x) using deviations dy(x) from col 3.");
 	GMT_Usage (API, 3, "+D Asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 3-4.");
@@ -546,13 +546,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+y Connect 1st and last point to anchor points at b (ymin), t (ymax), or y0.");
 	GMT_Usage (API, 3, "+p Draw polygon outline with <pen> [no outline].");
 	GMT_Usage (API, -2, "The polygon created may be painted via -G.");
-	GMT_Usage (API, 1, "-N[c|r]");
+	GMT_Usage (API, 1, "\n-N[c|r]");
 	GMT_Usage (API, -2, "Do Not skip or clip symbols that fall outside the map border [clipping is on]. "
 		"Use -Nr to turn off clipping and plot repeating symbols for periodic maps. "
 		"Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps. "
 		"[Default will clip or skip symbols that fall outside and plot repeating symbols].");
 	GMT_Option (API, "O,P");
-	GMT_Usage (API, 1, "-S[<symbol>][<size>]");
+	GMT_Usage (API, 1, "\n-S[<symbol>][<size>]");
 	GMT_Usage (API, -2, "Select symbol type and symbol size (in %s).  Choose from these symbols:",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Usage (API, -3, "-(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse, "
@@ -667,12 +667,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append any of the units in %s to length [k].", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3, 4);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
-		GMT_Usage (API, 1, "-T Ignore all input files.");
+		GMT_Usage (API, 1, "\n-T Ignore all input files.");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", 15);
 	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
-	GMT_Usage (API, 1, "-Z<arg>[+f|l]");
+	GMT_Usage (API, 1, "\n-Z<arg>[+f|l]");
 	GMT_Usage (API, -2, "Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. ");
 	GMT_Usage (API, 3, "%s To use <color> for fill, select -G+z. ", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s To use <color> for an outline pen, select -W<pen>+z.", GMT_LINE_BULLET);
