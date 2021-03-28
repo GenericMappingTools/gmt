@@ -163,6 +163,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.PREF.dip = 90.0;	/* Vertical is the default dip */
+	C->A.p_width = 20000;	/* Infinity, basically */
 	C->L.pen = C->T.pen = C->P2.pen = C->T2.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->L.pen.width = C->T.pen.width = C->P2.pen.width = C->T2.pen.width = -1.0;
@@ -459,7 +460,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1>/<lat1>/<strike>/<length>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1>/<y1>/<x2>/<y2>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1>/<y1>/<strike>/<length>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For -Aa|b, <width>, <p_length>, <dmin> and <dmax> must be given in km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For -Aa|b, the default <dip> is 90 and default <width> = infinity.  Also,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <width>, <p_length>, <dmin> and <dmax> must be given in km.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to determine the plot domain (-R) from the cross-section parameters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on depth-value in 3rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select format type and symbol size.\n");
