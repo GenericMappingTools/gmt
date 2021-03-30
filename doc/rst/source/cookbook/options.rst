@@ -652,8 +652,8 @@ Binary input with **-bi** option
 .. include:: ../explain_-bi_full.rst_
     :start-after: ^^^^^^^^^^^^^^^^^^
 
-Binary input with **-bo** option
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Binary output with **-bo** option
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. include:: ../explain_-bo_full.rst_
     :start-after: ^^^^^^^^^^^^^^^^^^
