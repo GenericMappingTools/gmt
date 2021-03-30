@@ -638,57 +638,8 @@ Plot positioning and layout: The **-X** **-Y** options
 OGR/GMT GIS i/o: The **-a** option
 ----------------------------------
 
-**Syntax**
-
-**-a**\ [[*col*\ =]\ *name*\ ][,\ *...*]
-
-**Description**
-
-GMT relies on external tools to translate geospatial files such as
-shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
-package can do such translations and preserve the aspatial metadata via
-a new OGR/GMT format specification (See Chapter :doc:`ogrgmt-format`).
-For this to be useful we need a mechanism to associate certain metadata values with
-required input and output columns expected by GMT programs. The **-a**
-option allows you to supply one or more comma-separated associations
-*col=name*, where *name* is the name of an aspatial attribute field in a
-OGR/GMT file and whose value we wish to as data input for column *col*.
-The given aspatial field thus replaces any other value already set. Note
-that *col = 0* is the first data columns. Note that if no aspatial
-attributes are needed then the **-a** option is not needed – GMT will
-still process and read such data files.
-
-OGR/GMT input with **-a** option
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you need to populate GMT data columns with (constant) values
-specified by aspatial attributes, use **-a** and append any number of
-comma-separated *col=name* associations. E.g., *2=depth* will read the
-spatial *x,y* columns from the file and add a third (*z*) column based
-on the value of the aspatial field called *depth*. You can also
-associate aspatial fields with other settings such as labels, fill
-colors, pens, and values used to look-up colors. Do so by letting the
-*col* value be one of **D**, **G**, **L**, **T**, **W**, or **Z**. This
-works analogously to how standard multi-segment files can pass such
-options via its segment headers (See Chapter :doc:`file-formats`).
-
-OGR/GMT output with **-a** option
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can also make GMT table-writing tools output the OGR/GMT format
-directly. Again, specify if certain GMT data columns with constant
-values should be stored as aspatial metadata using the
-*col=name*\ [:*type*], where you can optionally specify what data type
-it should be (double, integer, string, logical, byte, or datetime)
-[double is default]. As for input, you can also use the special *col*
-entries of **D**, **G**, **L**, **T**, **W**, or **Z** to have values
-stored as options in segment headers be used as the source for the name
-aspatial field. Finally, for output you must append
-+\ **g**\ *geometry*, where *geometry* can be any of
-[**M**]\ **POINT**\|\ **LINE**\|\ **POLY**; the
-**M** represent the multi-versions of these three geometries. Use
-upper-case +\ **G** to signal that you want to split any line or polygon
-features that straddle the Dateline.
+.. include:: ../explain_-aspatial_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-binary:
 
