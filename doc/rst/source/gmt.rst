@@ -212,7 +212,7 @@ modules. No space between the option flag and the associated arguments.
 
 .. _-Jz_full:
 .. _-Jz:
-.. include:: explain_-Jz_full.rst_
+.. include:: explain_-Jz.rst_
 
 .. _-Jproj_full:
 
