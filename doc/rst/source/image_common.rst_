@@ -85,10 +85,10 @@ Optional Arguments
    use **-GP** to invert patterns in other GMT plotting programs.  Ignored
    if used with color images.
 
-.. _-J:
-
 .. |Add_-J| replace:: (Used only with **-p**)
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 

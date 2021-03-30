@@ -42,10 +42,10 @@ Optional Arguments
     Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25*, to compute sun parameters
     for this date. If necessary, append time zone via **+z**\ *TZ*.
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 

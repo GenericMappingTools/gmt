@@ -72,10 +72,10 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-R| replace:: Special case for the UTM projection: If **-C** is used and **-R** is not given then the
     region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution

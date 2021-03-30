@@ -25,10 +25,10 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-J:
-
-.. |Add_-J| replace:: [Not mandatory when -D].
+.. |Add_-J| replace:: [Not mandatory with |-D|]. |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_

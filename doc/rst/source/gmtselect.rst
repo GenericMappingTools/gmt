@@ -139,10 +139,10 @@ Optional Arguments
 
     **z** select records NOT within the range specified by **-Z**.
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
