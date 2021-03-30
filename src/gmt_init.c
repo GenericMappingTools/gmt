@@ -13806,7 +13806,6 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			while (*c != GMT_ASCII_GS) P->Byannot[k++] = *(c++);	/* Copy it over until end */
 			P->Byannot[k] = '\0';
 			found = true;	/* We are done */
-			fprintf (stderr, "GPT Bxannot = %s and BXlabel = %s\n", P->Bxannot, P->Bxlabel);
 		}
 	}
 	fclose (fp);

@@ -644,7 +644,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 			}
 			if (Bx) {	/* Did get separate x-axis annotation settings */
 				if ((c = gmt_first_modifier (GMT, Bx->arg, "ls"))) {	/* Gave valid axes modifiers for custom labels */
-					pos = 0;
+					pos = error = 0;
 					while (gmt_getmodopt (GMT, 'B', c, "ls", &pos, p, &error) && error == 0) {
 						switch (p[0]) {
 							case 'l':	/* Regular x-axis label */
@@ -655,9 +655,8 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 								break;
 						}
 					}
-					fprintf (stderr, "GOT Xlabel Bx->arg = %s: %s\n", Bx->arg, Ctrl->S[GMT_X].label[GMT_PRIMARY]);
-					if (Ctrl->S[GMT_X].label[GMT_PRIMARY] || Ctrl->S[GMT_X].label[GMT_SECONDARY]) Ctrl->S[GMT_X].has_label = true;
 					c[0] = '\0';	/* Chop off for now */
+					if (Ctrl->S[GMT_X].label[GMT_PRIMARY] || Ctrl->S[GMT_X].label[GMT_SECONDARY]) Ctrl->S[GMT_X].has_label = true;
 				}
 				Ctrl->S[GMT_X].b = strdup (&Bx->arg[1]);
 				if (c) c[0] = '+';
