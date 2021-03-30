@@ -7047,7 +7047,8 @@ GMT_LOCAL unsigned int gmtsupport_set_geo (struct GMT_CTRL *GMT) {
 /*! . */
 int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n) {
 	bool separate;
-	unsigned int last, i, pos, bit = 1, geo = gmtsupport_set_geo (GMT);	/* true unless clearly -R is Cartesian */
+	unsigned int last, i, pos, side = GMT_X, geo = gmtsupport_set_geo (GMT);	/* true unless clearly -R is Cartesian */
+	unsigned geo_bit[2] = {GMT_IS_LON, GMT_IS_LAT};
 	char p[GMT_BUFSIZ];
 	double scale = 1.0;
 
@@ -7081,7 +7082,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_NNODES;
 			if (last) last--;	/* Coverity rightly points out that if last == 0 it would become 4294967295 */
 		}
-		if (geo == 0 || (separate && (geo & bit) == 0) ) {	/* Gave a unit to a Cartesian axes that does not take any unit */
+		if (geo == 0 || (separate && (side <= GMT_Y && (geo & geo_bit[side]) == 0)) ) {	/* Gave a unit to a Cartesian axes that does not take any unit */
 			if (p[last] && strchr (GMT_LEN_UNITS "c", p[last])) {
 				if (separate) {	/* Report per axis since separate increments where given */
 					static char *A = "xyzvuw";
@@ -7149,7 +7150,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 		}
 		inc[i] *= scale;
 		i++;	/* Goto next increment */
-		bit <<= 1;
+		side++;
 	}
 	if (geo) {
 		if (geo == (GMT_IS_LON+GMT_IS_LAT))	/* Regular lon/lat region presumably */
