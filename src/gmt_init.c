@@ -13589,7 +13589,7 @@ GMT_LOCAL int gmtinit_get_current_panel (struct GMTAPI_CTRL *API, int fig, int *
 	}
 	fclose (fp);
 	if (*row < 0 || *col < 0) {
-		GMT_Report (API, GMT_MSG_ERROR, "Current panel has row or column outsiden range!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Current panel has row or column outside range!\n");
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
@@ -13806,6 +13806,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			while (*c != GMT_ASCII_GS) P->Byannot[k++] = *(c++);	/* Copy it over until end */
 			P->Byannot[k] = '\0';
 			found = true;	/* We are done */
+			fprintf (stderr, "GPT Bxannot = %s and BXlabel = %s\n", P->Bxannot, P->Bxlabel);
 		}
 	}
 	fclose (fp);
