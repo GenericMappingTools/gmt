@@ -59,10 +59,10 @@ Required Arguments
     Specify the name of the output grid file. (See :ref:`Grid File Formats
     <grd_inout_full>`).
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------

@@ -124,10 +124,10 @@ Optional Arguments
     Alternatively, append *low/high* intensities to specify an
     asymmetric range [Default is no illumination].
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
