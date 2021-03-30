@@ -357,7 +357,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore modifiers */
-				if (pos && neg) Ctrl->G.fill[1-k] = Ctrl->G.fill[k];	/* Duplicate fill */
+				if (pos && neg) Ctrl->G.active[PSWIGGLE_NEG] = true, Ctrl->G.fill[PSWIGGLE_NEG] = Ctrl->G.fill[PSWIGGLE_POS];	/* Duplicate fill */
 				break;
 			case 'I':
 				Ctrl->I.value = atof (opt->arg);

@@ -98,7 +98,8 @@ Optional Arguments
     wiggles [Default is no fill]. Optionally, append **+p** to fill
     positive areas (this is the default behavior). Append **+n** to fill
     negative areas. Append **+n+p** to fill both positive and negative
-    areas with the same fill.
+    areas with the same fill.  **Note**: You will need to repeat the **-G** option
+    to select different fills for the positive and negative wiggles.
 
 .. _-I:
 
