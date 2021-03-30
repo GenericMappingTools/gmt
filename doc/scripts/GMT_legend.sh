@@ -3,8 +3,7 @@
 # Testing gmt legend capabilities for tables with colors
 
 gmt begin GMT_legend
-gmt set FONT_ANNOT_PRIMARY 12p  FONT_LABEL 12p
-
+gmt set GMT_THEME cookbook
 cat <<EOF > table.txt
 #G 0.04i
 H 24 Times-Roman Eight Largest Cities in North America
@@ -91,7 +90,7 @@ T Many of these cities have hosted World Cup Soccer (WC) and some
 T have hosted the Olympics (OL).  The rest is just some basic information
 T about each city, such as climate and population.  Of course, this is all
 T an excuse to demonstrate variable-width tables and row coloring.
-#G 0.1i
+G 0.15i
 EOF
 cat << EOF > t.cpt
 1	red
@@ -103,6 +102,6 @@ cat << EOF > t.cpt
 7	magenta
 8	white
 EOF
-gmt legend -Dx0/0+w5.6i+jBL+l1.2 -C0.05i -F+p+gsnow1 -B0 table.txt --FONT_ANNOT_PRIMARY=12p  --FONT_LABEL=12p
+gmt legend -Dx0/0+w5.6i+jBL+l1.2 -C0.05i -F+p+gsnow1 -B0 table.txt --FONT_LABEL=12p
 rm -f table.txt t.cpt
 gmt end show

@@ -134,10 +134,10 @@ Optional Arguments
     distances are Cartesian in same units as x,y and angles are
     counter-clockwise from horizontal].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2, 3, or 5 input columns as set by **-S**].
 .. include:: explain_-bi.rst_

@@ -76,6 +76,24 @@
 
 .. |SYN_OPT-Area| replace:: |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
 
+.. |Add_-B_links| replace:: :ref:`(See full description) <-B_full>` :ref:`(See cookbook information)
+    <cookbook/options:Map frame and axes annotations: The **-B** option>`.
+
+.. |Add_-J_links| replace:: :ref:`(See full description) <-J_full>` :ref:`(See cookbook summary)
+    <cookbook/options:Coordinate transformations and map projections: The **-J** option>`
+    :ref:`(See projections table) <proj-codes>`.
+
+.. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
+    <cookbook/options:Data domain or map region: The **-R** option>`.
+
+.. |Add_-XY_links| replace:: :ref:`(See full description) <-XY_full>` :ref:`(See cookbook information)
+    <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+
+.. |Add_-U_links| replace:: :ref:`(See full description) <-U_full>` :ref:`(See cookbook information)
+    <cookbook/options:Timestamps on plots: The **-U** option>`.
+
+.. |Add_-V_links| replace:: :ref:`(See full description) <-V_full>` :ref:`(See cookbook information)
+    <cookbook/options:Verbose feedback: The **-V** option>`.
 
 .. |br| raw:: html
 

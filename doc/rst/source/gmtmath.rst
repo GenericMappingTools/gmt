@@ -67,7 +67,7 @@ Required Arguments
     once if necessary.
 *outfile*
     The name of a table data file that will hold the final result. If
-    not given then the output is sent to stdout.
+    not given then the output is sent to *stdout*.
 
 Optional Arguments
 ------------------
@@ -146,10 +146,10 @@ Optional Arguments
     no arguments; this also implies **-Ca**.
     For details on array creation, see `Generate 1D Array`_.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
@@ -189,7 +189,7 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 185 operators. Here, "args" are the number of input
+Choose among the following operators. Here, "args" are the number of input
 and output arguments.
 
 +-----------------+--------+--------------------------------------------------------------------------------------------+
@@ -545,6 +545,8 @@ and output arguments.
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **VARW**        | 2 1    | Weighted variance of A for weights in B                                                    |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
+| **VPDF**        | 3 1    | Von Mises density distribution V(x,mu,kappa), with angles = A, mu = B, and kappa = C       |
++-----------------+--------+--------------------------------------------------------------------------------------------+
 | **WCDF**        | 3 1    | Weibull cumulative distribution function for x = A, scale = B, and shape = C               |
 +-----------------+--------+--------------------------------------------------------------------------------------------+
 | **WCRIT**       | 3 1    | Weibull distribution critical value for alpha = A, scale = B, and shape = C                |
@@ -666,6 +668,7 @@ Notes On Operators
    ROLL to get to the item of interest.  Without **-Q**, these operators work
    across the three columns and modify the three column entries, returning their
    result as a single three-column item on the stack.
+#. The **VPDF** operator expects angles in degrees.
 
 Macros
 ------

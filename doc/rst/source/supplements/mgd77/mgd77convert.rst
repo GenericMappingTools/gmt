@@ -85,10 +85,10 @@ Optional Arguments
     such reports [stderr]. Append a combination of **w** for warnings and
     **e** for errors, and append **+l** to send such log information to stdout.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_help.rst_
 
@@ -173,4 +173,4 @@ References
 ncBrowse, see `<https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_
 ncView, see `<http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_
 The Marine Geophysical Data Exchange Format - "MGD77", see
-`<http://www.NCEI.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
+`<https://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_

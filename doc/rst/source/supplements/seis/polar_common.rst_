@@ -33,10 +33,10 @@ Required Arguments
 **-D**\ *lon/lat*
     Centers the focal sphere at given longitude and latitude point on the map.
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-J.rst_
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 
@@ -62,9 +62,10 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: ../../explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-E:
 
@@ -127,23 +128,26 @@ Optional Arguments
     append **+o** to offset the text string by *dx*/*dy*.
     [Default to write station code above the symbol; the default font size is 12p]
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
 **-W**\ [**-**\|\ **+**][*pen*][*attr*] :ref:`(more ...) <-Wpen_attrib>`
     Set current pen attributes [Default pen is default,black,solid].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_
 

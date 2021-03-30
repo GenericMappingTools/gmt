@@ -177,10 +177,10 @@ Optional Arguments
     Moho [and swell] average compensation depths (in meters positive down – the depth). For the "load from
     top" model you only have to provide *zm*, but for the "loading from below" don't forget *zl*.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to

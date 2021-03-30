@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 792 612
 %%HiResBoundingBox: 0 0 792.0000 612.0000
-%%Title: GMT v6.2.0_7d97e26-dirty_2020.10.08 [64-bit] Document from colorbar
+%%Title: GMT v6.2.0_c68e366-dirty_2021.03.15 [64-bit] Document from colorbar
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Oct  8 13:37:44 2020
+%%CreationDate: Mon Mar 15 18:49:27 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -635,6 +660,20 @@ end
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
     psl_label dup sd neg 0 exch G show
+    U
+} def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
     U
 } def
 /PSL_nclip 0 def
@@ -718,32 +757,32 @@ N 683 0 M 0 236 D S
 N 377 0 M 0 236 D S
 N 0 0 M 0 236 D S
 8 W
-N 3780 0 M 0 -83 D S
-N 3619 0 M 0 -83 D S
-N 3319 0 M 0 -83 D S
-N 2761 0 M 0 -83 D S
-N 2385 0 M 0 -83 D S
-N 2029 0 M 0 -83 D S
-N 1695 0 M 0 -83 D S
-N 1276 0 M 0 -83 D S
-N 879 0 M 0 -83 D S
-N 683 0 M 0 -83 D S
-N 377 0 M 0 -83 D S
-N 0 0 M 0 -83 D S
-3780 -437 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+N 3780 0 M 0 -67 D S
+N 3619 0 M 0 -67 D S
+N 3319 0 M 0 -67 D S
+N 2761 0 M 0 -67 D S
+N 2385 0 M 0 -67 D S
+N 2029 0 M 0 -67 D S
+N 1695 0 M 0 -67 D S
+N 1276 0 M 0 -67 D S
+N 879 0 M 0 -67 D S
+N 683 0 M 0 -67 D S
+N 377 0 M 0 -67 D S
+N 0 0 M 0 -67 D S
+3780 -387 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (0) mr Z U
-3619 -437 M V -90 R (23) mr Z U
-3319 -437 M V -90 R (66) mr Z U
-2761 -437 M V -90 R (146) mr Z U
-2385 -437 M V -90 R (200) mr Z U
-2029 -437 M V -90 R (251) mr Z U
-1695 -437 M V -90 R (299) mr Z U
-1276 -437 M V -90 R (359) mr Z U
-879 -437 M V -90 R (416) mr Z U
-683 -437 M V -90 R (444) mr Z U
-377 -437 M V -90 R (488) mr Z U
-0 -437 M V -90 R (542) mr Z U
+3619 -387 M V -90 R (23) mr Z U
+3319 -387 M V -90 R (66) mr Z U
+2761 -387 M V -90 R (146) mr Z U
+2385 -387 M V -90 R (200) mr Z U
+2029 -387 M V -90 R (251) mr Z U
+1695 -387 M V -90 R (299) mr Z U
+1276 -387 M V -90 R (359) mr Z U
+879 -387 M V -90 R (416) mr Z U
+683 -387 M V -90 R (444) mr Z U
+377 -387 M V -90 R (488) mr Z U
+0 -387 M V -90 R (542) mr Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -795,31 +834,32 @@ N 687 0 M 0 236 D S
 N 344 0 M 0 236 D S
 N 0 0 M 0 236 D S
 8 W
-N 3780 0 M 0 -83 D S
-N 3436 0 M 0 -83 D S
-N 3092 0 M 0 -83 D S
-N 2749 0 M 0 -83 D S
-N 2405 0 M 0 -83 D S
-N 2062 0 M 0 -83 D S
-N 1718 0 M 0 -83 D S
-N 1374 0 M 0 -83 D S
-N 1031 0 M 0 -83 D S
-N 687 0 M 0 -83 D S
-N 344 0 M 0 -83 D S
-N 0 0 M 0 -83 D S
-3780 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+N 3780 0 M 0 -67 D S
+N 3436 0 M 0 -67 D S
+N 3092 0 M 0 -67 D S
+N 2749 0 M 0 -67 D S
+N 2405 0 M 0 -67 D S
+N 2062 0 M 0 -67 D S
+N 1718 0 M 0 -67 D S
+N 1374 0 M 0 -67 D S
+N 1031 0 M 0 -67 D S
+N 687 0 M 0 -67 D S
+N 344 0 M 0 -67 D S
+N 0 0 M 0 -67 D S
+3780 -117 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (Neogene) ml Z U
-3436 -167 M V -90 R (Paleogene) ml Z U
-3092 -167 M V -90 R (Cretaceous) ml Z U
-2749 -167 M V -90 R (Jurassic) ml Z U
-2405 -167 M V -90 R (Triassic) ml Z U
-2062 -167 M V -90 R (Permian) ml Z U
-1718 -167 M V -90 R (Carboniferous) ml Z U
-1374 -167 M V -90 R (Devonian) ml Z U
-1031 -167 M V -90 R (Silurian) ml Z U
-687 -167 M V -90 R (Ordovician) ml Z U
-344 -167 M V -90 R (Cambrian) ml Z U
+3436 -117 M V -90 R (Paleogene) ml Z U
+3092 -117 M V -90 R (Cretaceous) ml Z U
+2749 -117 M V -90 R (Jurassic) ml Z U
+2405 -117 M V -90 R (Triassic) ml Z U
+2062 -117 M V -90 R (Permian) ml Z U
+1718 -117 M V -90 R (Carboniferous) ml Z U
+1374 -117 M V -90 R (Devonian) ml Z U
+1031 -117 M V -90 R (Silurian) ml Z U
+687 -117 M V -90 R (Ordovician) ml Z U
+344 -117 M V -90 R (Cambrian) ml Z U
+0 -117 M V -90 R (Precambrian) ml Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -870,19 +910,19 @@ N 1031 0 M 0 236 D S
 N 687 0 M 0 236 D S
 N 344 0 M 0 236 D S
 N 0 0 M 0 236 D S
-3608 -83 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+3608 -50 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (Neogene) ml Z U
-3264 -83 M V -90 R (Paleogene) ml Z U
-2921 -83 M V -90 R (Cretaceous) ml Z U
-2577 -83 M V -90 R (Jurassic) ml Z U
-2233 -83 M V -90 R (Triassic) ml Z U
-1890 -83 M V -90 R (Permian) ml Z U
-1546 -83 M V -90 R (Carboniferous) ml Z U
-1203 -83 M V -90 R (Devonian) ml Z U
-859 -83 M V -90 R (Silurian) ml Z U
-515 -83 M V -90 R (Ordovician) ml Z U
-172 -83 M V -90 R (Cambrian) ml Z U
+3264 -50 M V -90 R (Paleogene) ml Z U
+2921 -50 M V -90 R (Cretaceous) ml Z U
+2577 -50 M V -90 R (Jurassic) ml Z U
+2233 -50 M V -90 R (Triassic) ml Z U
+1890 -50 M V -90 R (Permian) ml Z U
+1546 -50 M V -90 R (Carboniferous) ml Z U
+1203 -50 M V -90 R (Devonian) ml Z U
+859 -50 M V -90 R (Silurian) ml Z U
+515 -50 M V -90 R (Ordovician) ml Z U
+172 -50 M V -90 R (Cambrian) ml Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -934,19 +974,19 @@ O0
 122 -104 D
 P S
 2 setlinecap
-3608 -83 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+3608 -50 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (Neogene) ml Z U
-3264 -83 M V -90 R (Paleogene) ml Z U
-2921 -83 M V -90 R (Cretaceous) ml Z U
-2577 -83 M V -90 R (Jurassic) ml Z U
-2233 -83 M V -90 R (Triassic) ml Z U
-1890 -83 M V -90 R (Permian) ml Z U
-1546 -83 M V -90 R (Carboniferous) ml Z U
-1203 -83 M V -90 R (Devonian) ml Z U
-859 -83 M V -90 R (Silurian) ml Z U
-515 -83 M V -90 R (Ordovician) ml Z U
-172 -83 M V -90 R (Cambrian) ml Z U
+3264 -50 M V -90 R (Paleogene) ml Z U
+2921 -50 M V -90 R (Cretaceous) ml Z U
+2577 -50 M V -90 R (Jurassic) ml Z U
+2233 -50 M V -90 R (Triassic) ml Z U
+1890 -50 M V -90 R (Permian) ml Z U
+1546 -50 M V -90 R (Carboniferous) ml Z U
+1203 -50 M V -90 R (Devonian) ml Z U
+859 -50 M V -90 R (Silurian) ml Z U
+515 -50 M V -90 R (Ordovician) ml Z U
+172 -50 M V -90 R (Cambrian) ml Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -998,31 +1038,32 @@ N 3092 0 M 0 236 D S
 N 3436 0 M 0 236 D S
 N 3780 0 M 0 236 D S
 8 W
-N 0 0 M 0 -83 D S
-N 344 0 M 0 -83 D S
-N 687 0 M 0 -83 D S
-N 1031 0 M 0 -83 D S
-N 1374 0 M 0 -83 D S
-N 1718 0 M 0 -83 D S
-N 2062 0 M 0 -83 D S
-N 2405 0 M 0 -83 D S
-N 2749 0 M 0 -83 D S
-N 3092 0 M 0 -83 D S
-N 3436 0 M 0 -83 D S
-N 3780 0 M 0 -83 D S
-0 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+N 0 0 M 0 -67 D S
+N 344 0 M 0 -67 D S
+N 687 0 M 0 -67 D S
+N 1031 0 M 0 -67 D S
+N 1374 0 M 0 -67 D S
+N 1718 0 M 0 -67 D S
+N 2062 0 M 0 -67 D S
+N 2405 0 M 0 -67 D S
+N 2749 0 M 0 -67 D S
+N 3092 0 M 0 -67 D S
+N 3436 0 M 0 -67 D S
+N 3780 0 M 0 -67 D S
+0 -117 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (Neogene) ml Z U
-344 -167 M V -90 R (Paleogene) ml Z U
-687 -167 M V -90 R (Cretaceous) ml Z U
-1031 -167 M V -90 R (Jurassic) ml Z U
-1374 -167 M V -90 R (Triassic) ml Z U
-1718 -167 M V -90 R (Permian) ml Z U
-2062 -167 M V -90 R (Carboniferous) ml Z U
-2405 -167 M V -90 R (Devonian) ml Z U
-2749 -167 M V -90 R (Silurian) ml Z U
-3092 -167 M V -90 R (Ordovician) ml Z U
-3436 -167 M V -90 R (Cambrian) ml Z U
+344 -117 M V -90 R (Paleogene) ml Z U
+687 -117 M V -90 R (Cretaceous) ml Z U
+1031 -117 M V -90 R (Jurassic) ml Z U
+1374 -117 M V -90 R (Triassic) ml Z U
+1718 -117 M V -90 R (Permian) ml Z U
+2062 -117 M V -90 R (Carboniferous) ml Z U
+2405 -117 M V -90 R (Devonian) ml Z U
+2749 -117 M V -90 R (Silurian) ml Z U
+3092 -117 M V -90 R (Ordovician) ml Z U
+3436 -117 M V -90 R (Cambrian) ml Z U
+3780 -117 M V -90 R (Precambrian) ml Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -1074,19 +1115,19 @@ O0
 -122 -104 D
 P S
 2 setlinecap
-172 -83 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+172 -50 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (Neogene) ml Z U
-515 -83 M V -90 R (Paleogene) ml Z U
-859 -83 M V -90 R (Cretaceous) ml Z U
-1203 -83 M V -90 R (Jurassic) ml Z U
-1546 -83 M V -90 R (Triassic) ml Z U
-1890 -83 M V -90 R (Permian) ml Z U
-2233 -83 M V -90 R (Carboniferous) ml Z U
-2577 -83 M V -90 R (Devonian) ml Z U
-2921 -83 M V -90 R (Silurian) ml Z U
-3264 -83 M V -90 R (Ordovician) ml Z U
-3608 -83 M V -90 R (Cambrian) ml Z U
+515 -50 M V -90 R (Paleogene) ml Z U
+859 -50 M V -90 R (Cretaceous) ml Z U
+1203 -50 M V -90 R (Jurassic) ml Z U
+1546 -50 M V -90 R (Triassic) ml Z U
+1890 -50 M V -90 R (Permian) ml Z U
+2233 -50 M V -90 R (Carboniferous) ml Z U
+2577 -50 M V -90 R (Devonian) ml Z U
+2921 -50 M V -90 R (Silurian) ml Z U
+3264 -50 M V -90 R (Ordovician) ml Z U
+3608 -50 M V -90 R (Cambrian) ml Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -1153,32 +1194,32 @@ N 3096 0 M 0 236 D S
 N 3403 0 M 0 236 D S
 N 3780 0 M 0 236 D S
 8 W
-N 0 0 M 0 -83 D S
-N 160 0 M 0 -83 D S
-N 460 0 M 0 -83 D S
-N 1018 0 M 0 -83 D S
-N 1395 0 M 0 -83 D S
-N 1750 0 M 0 -83 D S
-N 2085 0 M 0 -83 D S
-N 2503 0 M 0 -83 D S
-N 2901 0 M 0 -83 D S
-N 3096 0 M 0 -83 D S
-N 3403 0 M 0 -83 D S
-N 3780 0 M 0 -83 D S
-0 -437 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+N 0 0 M 0 -67 D S
+N 160 0 M 0 -67 D S
+N 460 0 M 0 -67 D S
+N 1018 0 M 0 -67 D S
+N 1395 0 M 0 -67 D S
+N 1750 0 M 0 -67 D S
+N 2085 0 M 0 -67 D S
+N 2503 0 M 0 -67 D S
+N 2901 0 M 0 -67 D S
+N 3096 0 M 0 -67 D S
+N 3403 0 M 0 -67 D S
+N 3780 0 M 0 -67 D S
+0 -387 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (0) mr Z U
-160 -437 M V -90 R (23) mr Z U
-460 -437 M V -90 R (66) mr Z U
-1018 -437 M V -90 R (146) mr Z U
-1395 -437 M V -90 R (200) mr Z U
-1750 -437 M V -90 R (251) mr Z U
-2085 -437 M V -90 R (299) mr Z U
-2503 -437 M V -90 R (359) mr Z U
-2901 -437 M V -90 R (416) mr Z U
-3096 -437 M V -90 R (444) mr Z U
-3403 -437 M V -90 R (488) mr Z U
-3780 -437 M V -90 R (542) mr Z U
+160 -387 M V -90 R (23) mr Z U
+460 -387 M V -90 R (66) mr Z U
+1018 -387 M V -90 R (146) mr Z U
+1395 -387 M V -90 R (200) mr Z U
+1750 -387 M V -90 R (251) mr Z U
+2085 -387 M V -90 R (299) mr Z U
+2503 -387 M V -90 R (359) mr Z U
+2901 -387 M V -90 R (416) mr Z U
+3096 -387 M V -90 R (444) mr Z U
+3403 -387 M V -90 R (488) mr Z U
+3780 -387 M V -90 R (542) mr Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -1229,32 +1270,32 @@ N 687 0 M 0 236 D S
 N 344 0 M 0 236 D S
 N 0 0 M 0 236 D S
 8 W
-N 3780 0 M 0 -83 D S
-N 3436 0 M 0 -83 D S
-N 3092 0 M 0 -83 D S
-N 2749 0 M 0 -83 D S
-N 2405 0 M 0 -83 D S
-N 2062 0 M 0 -83 D S
-N 1718 0 M 0 -83 D S
-N 1374 0 M 0 -83 D S
-N 1031 0 M 0 -83 D S
-N 687 0 M 0 -83 D S
-N 344 0 M 0 -83 D S
-N 0 0 M 0 -83 D S
-3780 -437 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+N 3780 0 M 0 -67 D S
+N 3436 0 M 0 -67 D S
+N 3092 0 M 0 -67 D S
+N 2749 0 M 0 -67 D S
+N 2405 0 M 0 -67 D S
+N 2062 0 M 0 -67 D S
+N 1718 0 M 0 -67 D S
+N 1374 0 M 0 -67 D S
+N 1031 0 M 0 -67 D S
+N 687 0 M 0 -67 D S
+N 344 0 M 0 -67 D S
+N 0 0 M 0 -67 D S
+3780 -387 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (0) mr Z U
-3436 -437 M V -90 R (23) mr Z U
-3092 -437 M V -90 R (66) mr Z U
-2749 -437 M V -90 R (146) mr Z U
-2405 -437 M V -90 R (200) mr Z U
-2062 -437 M V -90 R (251) mr Z U
-1718 -437 M V -90 R (299) mr Z U
-1374 -437 M V -90 R (359) mr Z U
-1031 -437 M V -90 R (416) mr Z U
-687 -437 M V -90 R (444) mr Z U
-344 -437 M V -90 R (488) mr Z U
-0 -437 M V -90 R (542) mr Z U
+3436 -387 M V -90 R (23) mr Z U
+3092 -387 M V -90 R (66) mr Z U
+2749 -387 M V -90 R (146) mr Z U
+2405 -387 M V -90 R (200) mr Z U
+2062 -387 M V -90 R (251) mr Z U
+1718 -387 M V -90 R (299) mr Z U
+1374 -387 M V -90 R (359) mr Z U
+1031 -387 M V -90 R (416) mr Z U
+687 -387 M V -90 R (444) mr Z U
+344 -387 M V -90 R (488) mr Z U
+0 -387 M V -90 R (542) mr Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -1305,19 +1346,19 @@ N 1031 0 M 0 236 D S
 N 687 0 M 0 236 D S
 N 344 0 M 0 236 D S
 N 0 0 M 0 236 D S
-3608 -353 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+3608 -320 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (0) mr Z U
-3264 -353 M V -90 R (23) mr Z U
-2921 -353 M V -90 R (66) mr Z U
-2577 -353 M V -90 R (146) mr Z U
-2233 -353 M V -90 R (200) mr Z U
-1890 -353 M V -90 R (251) mr Z U
-1546 -353 M V -90 R (299) mr Z U
-1203 -353 M V -90 R (359) mr Z U
-859 -353 M V -90 R (416) mr Z U
-515 -353 M V -90 R (444) mr Z U
-172 -353 M V -90 R (488) mr Z U
+3264 -320 M V -90 R (23) mr Z U
+2921 -320 M V -90 R (66) mr Z U
+2577 -320 M V -90 R (146) mr Z U
+2233 -320 M V -90 R (200) mr Z U
+1890 -320 M V -90 R (251) mr Z U
+1546 -320 M V -90 R (299) mr Z U
+1203 -320 M V -90 R (359) mr Z U
+859 -320 M V -90 R (416) mr Z U
+515 -320 M V -90 R (444) mr Z U
+172 -320 M V -90 R (488) mr Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -1369,19 +1410,19 @@ O0
 122 -104 D
 P S
 2 setlinecap
-3608 -353 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+3608 -320 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (0) mr Z U
-3264 -353 M V -90 R (23) mr Z U
-2921 -353 M V -90 R (66) mr Z U
-2577 -353 M V -90 R (146) mr Z U
-2233 -353 M V -90 R (200) mr Z U
-1890 -353 M V -90 R (251) mr Z U
-1546 -353 M V -90 R (299) mr Z U
-1203 -353 M V -90 R (359) mr Z U
-859 -353 M V -90 R (416) mr Z U
-515 -353 M V -90 R (444) mr Z U
-172 -353 M V -90 R (488) mr Z U
+3264 -320 M V -90 R (23) mr Z U
+2921 -320 M V -90 R (66) mr Z U
+2577 -320 M V -90 R (146) mr Z U
+2233 -320 M V -90 R (200) mr Z U
+1890 -320 M V -90 R (251) mr Z U
+1546 -320 M V -90 R (299) mr Z U
+1203 -320 M V -90 R (359) mr Z U
+859 -320 M V -90 R (416) mr Z U
+515 -320 M V -90 R (444) mr Z U
+172 -320 M V -90 R (488) mr Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -1432,19 +1473,19 @@ N 1031 0 M 0 236 D S
 N 687 0 M 0 236 D S
 N 344 0 M 0 236 D S
 N 0 0 M 0 236 D S
-3608 -827 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+3608 -793 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (023) mr Z U
-3264 -827 M V -90 R (2366) mr Z U
-2921 -827 M V -90 R (66146) mr Z U
-2577 -827 M V -90 R (146200) mr Z U
-2233 -827 M V -90 R (200251) mr Z U
-1890 -827 M V -90 R (251299) mr Z U
-1546 -827 M V -90 R (299359) mr Z U
-1203 -827 M V -90 R (359416) mr Z U
-859 -827 M V -90 R (416444) mr Z U
-515 -827 M V -90 R (444488) mr Z U
-172 -827 M V -90 R (488542) mr Z U
+3264 -793 M V -90 R (2366) mr Z U
+2921 -793 M V -90 R (66146) mr Z U
+2577 -793 M V -90 R (146200) mr Z U
+2233 -793 M V -90 R (200251) mr Z U
+1890 -793 M V -90 R (251299) mr Z U
+1546 -793 M V -90 R (299359) mr Z U
+1203 -793 M V -90 R (359416) mr Z U
+859 -793 M V -90 R (416444) mr Z U
+515 -793 M V -90 R (444488) mr Z U
+172 -793 M V -90 R (488542) mr Z U
 -90 R
 -236 0 T
 0 setlinecap
@@ -1496,19 +1537,19 @@ O0
 122 -104 D
 P S
 2 setlinecap
-3608 -827 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+3608 -793 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 167 F0
 V -90 R (023) mr Z U
-3264 -827 M V -90 R (2366) mr Z U
-2921 -827 M V -90 R (66146) mr Z U
-2577 -827 M V -90 R (146200) mr Z U
-2233 -827 M V -90 R (200251) mr Z U
-1890 -827 M V -90 R (251299) mr Z U
-1546 -827 M V -90 R (299359) mr Z U
-1203 -827 M V -90 R (359416) mr Z U
-859 -827 M V -90 R (416444) mr Z U
-515 -827 M V -90 R (444488) mr Z U
-172 -827 M V -90 R (488542) mr Z U
+3264 -793 M V -90 R (2366) mr Z U
+2921 -793 M V -90 R (66146) mr Z U
+2577 -793 M V -90 R (146200) mr Z U
+2233 -793 M V -90 R (200251) mr Z U
+1890 -793 M V -90 R (251299) mr Z U
+1546 -793 M V -90 R (299359) mr Z U
+1203 -793 M V -90 R (359416) mr Z U
+859 -793 M V -90 R (416444) mr Z U
+515 -793 M V -90 R (444488) mr Z U
+172 -793 M V -90 R (488542) mr Z U
 -90 R
 -236 0 T
 0 setlinecap

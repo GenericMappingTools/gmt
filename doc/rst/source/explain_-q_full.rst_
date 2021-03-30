@@ -1,5 +1,3 @@
-.. _-q_full:
-
 **-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
     Select specific data rows to be read (**-qi** [Default]) or written (**-qo**) [all].
     Give individual rows (or row ranges in the format *start*\ [:*inc*]:*stop*, where

@@ -12,10 +12,10 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-J.rst_
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-R:
 
@@ -40,9 +40,10 @@ Optional Arguments
     The line pen defaults to that given via **-W** but can be overridden
     by using **+p**\ *pen* [0.25p].
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: ../../explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -96,6 +97,14 @@ Optional Arguments
     compressional quadrants of the focal mechanism beach balls are
     shaded. [Default is black].
 
+.. _-H:
+
+**-H**\ [*scale*]
+    Scale symbol sizes and pen widths on a per-record basis using the *scale* read from the
+    data set, given as the first column after the (optional) *size* column [no scaling].
+    The symbol size is either provided by **-S** or via the input *size* column.  Alternatively,
+    append a constant *scale* that should be used instead of reading a scale column.
+
 .. _-I:
 
 **-I**\ *intens*
@@ -140,14 +149,15 @@ Optional Arguments
     by drawing only the nodal planes and the circumference.
     For non-double couple mechanisms, **-T**\ *0* option overlays best double couple transparently.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -157,9 +167,10 @@ Optional Arguments
     setting applies to **-A**, **-L**, **-T**, **-Fp**, **-Ft**, and
     **-Fz**, unless overruled by options to those arguments.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-di.rst_

@@ -3369,6 +3369,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 			return ret_val;
 		}
 		ret_val |= gmtio_reconsider_rectype (GMT);	/* Consider the nature of aspatial information */
+		ret_val |= GMT_READ_DATA;	/* Since all shapefiles/OGR files have spatial plus aspatial data */
 	}
 
 	/* Tell user how we interpreted their first record */
@@ -4695,7 +4696,7 @@ int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *nam
 	return status;
 }
 
-GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
+int gmt_get_precision_width (struct GMT_CTRL *GMT, double x) {
 	/* Here, x < 1 seconds and we want to determine an approximate precision with max truncation error of GMT_CONV4_LIMIT */
 	int k = -1;
 	double trunc_err, inv_x = 1.0 / x;
@@ -4713,7 +4714,8 @@ GMT_LOCAL int gmtio_get_precision_width (struct GMT_CTRL *GMT, double x) {
 	return (k + 1);
 }
 
-GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+void gmt_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t chunk) {
+	/* Either just scan the first chunk items of the first segment.  If 0 we mean all */
 	bool abstime_found = false;
 	unsigned int col, row;
 	int w_max = 0, this_w;
@@ -4732,14 +4734,15 @@ GMT_LOCAL void gmtio_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATA
 	 * To assist the user we will scan the first segment's rows up to MIN (20, n_rows) and make our best guess
 	 * from that subset.  We will give information messages about our decision but not a warning. */
 
+	if (chunk == 0) chunk = UINTMAX_MAX;	/* Basically use all */
 	S = D->table[0]->segment[0];	/* The first segment */
 	for (col = 0; col < D->n_columns; col++) {
 		if (GMT->current.io.col_type[GMT_OUT][col] != GMT_IS_ABSTIME) continue;	/* Not an abstime column */
-		for (row = 0; row < MIN (S->n_rows, 20); row++) {	/* Maximum 20 rows are examined */
+		for (row = 0; row < MIN (S->n_rows, chunk); row++) {	/* Maximum 20 rows are examined */
 			sub = S->data[col][row] - floor (S->data[col][row]);	/* Fractional second */
 			if (sub > sub_max) sub_max = sub;
 			if (gmt_M_is_zero (sub)) continue;	/* Not checking zeros for width */
-			if ((this_w = gmtio_get_precision_width (GMT, sub)) > w_max)
+			if ((this_w = gmt_get_precision_width (GMT, sub)) > w_max)
 				w_max = this_w;
 		}
 	}
@@ -4763,7 +4766,7 @@ void gmt_increase_abstime_format_precision (struct GMT_CTRL *GMT, unsigned int c
 	if (strcmp (GMT->current.setting.format_clock_out, "hh:mm:ss")) return;	/* User has changed from default format - do nothing */
 	sub = dt - floor (dt);	/* Fractional second */
 	if (gmt_M_is_zero (sub)) return;	/* Not checking zeros for width */
-	w = gmtio_get_precision_width (GMT, sub);	/* Get desired precision */
+	w = gmt_get_precision_width (GMT, sub);	/* Get desired precision */
 	strcat (GMT->current.setting.format_clock_out, ".");
 	while (w) {
 		strcat (GMT->current.setting.format_clock_out, "x");
@@ -4792,7 +4795,7 @@ int gmtlib_write_dataset (struct GMT_CTRL *GMT, void *dest, unsigned int dest_ty
 		strcpy (open_mode, (append) ? "a" : "w");
 	GMT->current.io.record_type[GMT_OUT] = D->type;
 
-	gmtio_check_abstime_format (GMT, D);	/* If some columns are absolute time destined for ASCII formatting, we may need to change FORMAT_CLOCK_OUT template */
+	gmt_check_abstime_format (GMT, D, 20);	/* If some columns are absolute time destined for ASCII formatting, we may need to change FORMAT_CLOCK_OUT template */
 
 	/* Convert any destination type to stream */
 

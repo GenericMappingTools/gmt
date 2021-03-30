@@ -1,6 +1,6 @@
 #
 # This workflow checks if Scientific Colour Maps has a new release.
-# If a new release if found, it will open a issue automatically.
+# If a new release if found, it will open an issue automatically.
 #
 # http://www.fabiocrameri.ch/colourmaps.php
 #

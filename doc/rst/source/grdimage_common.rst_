@@ -38,10 +38,10 @@ Required Arguments
     2-D gridded data set or image to be plotted (see :ref:`Grid File Formats
     <grd_inout_full>`).
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -61,9 +61,10 @@ Optional Arguments
     then we will write a GeoTiff image if the GMT projection syntax translates into a PROJ syntax,
     otherwise a plain tiff file is produced. (2) Any vector elements will be lost.
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -135,10 +136,10 @@ Optional Arguments
     If input is instead an image then black pixels are set to be transparent;
     append an alternate color to select another pixel value to be transparent.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| replace:: You may ask for a larger
     *w/e/s/n* region to have more room between the image and the axes. A
@@ -146,18 +147,20 @@ Optional Arguments
     subset of the grid [Default is the region given by the grid file].
 .. include:: explain_-Rz.rst_
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

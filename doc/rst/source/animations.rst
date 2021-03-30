@@ -21,7 +21,7 @@ examples have been purposefully made simpler by selecting lower frame rates
 and coarser grids so that the automatic building of the documentation (which
 includes the animations) does not take excessive time.
 
-.. cssclass:: gmtgallary
+.. cssclass:: gmtgallery
 
 .. jinja::
 
@@ -70,6 +70,11 @@ includes the animations) does not take excessive time.
      :width: 100%
 
   :doc:`/animations/anim12`
+
+- .. youtube:: S-kRGxwOGJw
+     :width: 100%
+
+  :doc:`/animations/anim13`
 
 .. toctree::
    :hidden:

@@ -1387,6 +1387,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			movie_close_files (Ctrl);
 			Return (GMT_RUNTIME_ERROR);
 		}
+		gmt_check_abstime_format (GMT, D, 20);	/* Make sure we have enough ss.xxxx decimals given the time spacing */
 	}
 	n_data_frames = n_frames;
 
@@ -1578,6 +1579,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
+			gmt_check_abstime_format (GMT, D, 20);	/* Make sure we have enough ss.xxxx decimals given the time spacing */
 		}
 		else if (gmt_count_char (GMT, Ctrl->T.file, '/') == 2) {	/* Give a vector specification -Tmin/max/inc, call gmtmath */
 			char output[GMT_VF_LEN] = {""}, cmd[GMT_LEN128] = {""};

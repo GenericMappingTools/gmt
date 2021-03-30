@@ -3,6 +3,7 @@
 # Makes a plot of the general movie dimensions
 #
 gmt begin GMT_movie_canvas ps
+	gmt set GMT_THEME cookbook
 	gmt basemap -R0/24/0/13.5 -Jx1c -B0
 	gmt plot -W0.5p,- <<- EOF
 	>

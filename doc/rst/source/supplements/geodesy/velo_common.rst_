@@ -16,10 +16,10 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_intables.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-J.rst_
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-R:
 
@@ -130,9 +130,10 @@ Optional Arguments
     Modify vector parameters. For vector heads, append vector head *size* [Default is 9p].
     See `Vector Attributes`_ for specifying additional attributes.
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: ../../explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -162,6 +163,14 @@ Optional Arguments
     **Note**: Using **-C** (and optionally **-Z**) will update the symbol fill
     color based on the selected measure in **-Z** [magnitude].
 
+.. _-H:
+
+**-H**\ [*scale*]
+    Scale symbol sizes and pen widths on a per-record basis using the *scale* read from the
+    data set, given as the first column after the (optional) *z* and *size* columns [no scaling].
+    The symbol size is either provided by **-S** or via the input *size* column.  Alternatively,
+    append a constant *scale* that should be used instead of reading a scale column.
+
 .. _-I:
 
 **-I**\ *intens*
@@ -187,14 +196,15 @@ Optional Arguments
     Do **NOT** skip symbols that fall outside the frame boundary
     specified by **-R**. [Default plots symbols inside frame only].
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: ../../explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -206,9 +216,10 @@ Optional Arguments
     file is applied to symbol fill only [Default].  Use just **+c** to set both
     pen and fill color.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: ../../explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -246,13 +257,13 @@ Data Column Order
 -----------------
 
 The **-S** option determines how many data columns are required to generate
-the selected symbol.  In addition, your use of options **-I** and **-t** will
-require extra columns, as will a **-S** option without the *scale* or a user-column
+the selected symbol.  In addition, your use of options **-H**,  **-I** and **-t** will
+require extra columns, as will a **-S** option without the *size* or a user-column
 selected via **-Zu** for color lookup purposes.  The order of the data record
 is fixed regardless of option order, even if not all items may be activated.
 We expect data columns to come in the following order::
 
-    lon lat symbol-columns [usercol] [scale] [intens] [transp [transp2]] [trailing-text]
+    lon lat symbol-columns [usercol] [size] [scale] [intens] [transp [transp2]] [trailing-text]
 
 where *symbol-columns* represent the normally required data columns, and items
 given in brackets are optional and under the control of the stated options

@@ -146,7 +146,7 @@ If you already have the dev version then you may just need to run `conda activat
    directory created by xcodebuild so that PyGMT can find the GMT library, and set $GMT_SHAREDIR to point to the full path that
    contains the share directory.
 
-#. Open Xcode, select scheme "libgmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+#. Open Xcode, select scheme "gmtlib", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
    say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
 
 #. Type python in the terminal to get a python console, attach the process id or name to Xcode (menu item Debug->Attach to Process by PID or Name),
@@ -171,7 +171,7 @@ done you can proceed to installing the master GMT.jl:
 
 #. When done, end package install mode by hitting backspace.  Then, load and precompile GMT by typing "using GMT".
 
-#. Open Xcode, select scheme "libgmt", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
+#. Open Xcode, select scheme "gmtlib", navigate to gmt_api.c in the source listing, and set a stop point in the editor,
    say in *GMT_Call_Module* or *GMT_Create_Session* and Xcode will stop at the breakpoint when it is reached.
 
 #. Attach the Julia process id or name in Xcode (menu item Debug->Attach to Process by PID or Name), and run GMT.jl

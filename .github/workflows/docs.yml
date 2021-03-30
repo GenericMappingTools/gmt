@@ -9,6 +9,10 @@ on:
     branches:
       - master
       - 6.[0-9]+
+    paths:
+      - 'doc/**'
+      - '.github/workflows/**'
+      - 'ci/**'
   release:
     types:
       - published
@@ -22,6 +26,7 @@ jobs:
   docs:
     name: ${{ matrix.name }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
 
     env:
       # directories

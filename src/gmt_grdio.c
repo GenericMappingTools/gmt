@@ -828,7 +828,8 @@ void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 		/* Change name of variable and unit to lower case for comparison */
 		gmt_str_tolower (string[i]);
 
-		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] <= 360.0)) {
+		/* PW: This test was <= 360 but if you have grids from 340-375 and it says longitude then we should not make it Cartesian */
+		if ((!strncmp (string[i], "longitude", 9U) || strstr (string[i], "degrees_e")) && (header->wesn[XLO] > -360.0 && header->wesn[XHI] < 720.0)) {
 			/* Input data type is longitude */
 			gmt_set_column_type (GMT, GMT_IN, i, GMT_IS_LON);
 		}
@@ -1041,7 +1042,7 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 	int val;
 	unsigned int direction = (magic) ? GMT_IN : GMT_OUT, pos = 0;
 	char tmp[GMT_LEN512] = {""};	/* But it's copied at most 256 chars into header->name so 256 should do */
-	char *c = NULL, *f = NULL;	/* Various char pointers used to deal with file modifiers */
+	char *c = NULL, *f = NULL, *ext = NULL;	/* Various char pointers used to deal with file modifiers */
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (file[0] == '@') pos = 1;	/* At this point we will already have downloaded any remote file so skip the @ */
@@ -1155,6 +1156,10 @@ int gmt_grd_get_format (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER
 		/* Then check for ESRI grid */
 		if (gmtlib_is_esri_grid (GMT, header) == GMT_NOERROR)
 			return (GMT_NOERROR);
+		/* Rule out dumb *.txt and *.lis files before GDAL checks to avoid dumb error message */
+		ext = gmt_get_ext (file);
+		if (ext && (!strcmp (ext, "txt") || !strcmp (ext, "lis")))
+			return (GMT_GRDIO_UNKNOWN_FORMAT);
 #ifdef HAVE_GDAL
 		/* Then check for GDAL grid */
 		if (gmtlib_is_gdal_grid (GMT, header) == GMT_NOERROR)

@@ -1,5 +1,3 @@
-.. _nodereg_full:
-
 **-r**\ [**g**\|\ **p**]
     Force **g**\ridline or **p**\ ixel node registration [gridline]. Just **-r** sets pixel registration.
     If no **-r** is given then gridline registration is selected.

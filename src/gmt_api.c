@@ -843,8 +843,10 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 
 	if (API->GMT->current.setting.use_modern_name) {	/* Make some checks needed to handle synopsis and usage messages in classic vs modern mode */
 		if (head == NULL) {	/* Gave none or a single argument */
-			if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
+			if (API->GMT->current.setting.run_mode == GMT_CLASSIC) {
 				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
+				API->GMT->current.setting.run_mode = GMT_MODERN;	/* Safe here to flag it as modern since no session will be started */
+			}
 			return;
 		}
 		if (head->next == NULL) {	/* Gave a single argument */
@@ -12897,6 +12899,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		else info[ku].pos -= nn[info[ku].direction][K_SECONDARY];	/* Move any primary objects to start of list for this direction */
 	}
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Found %d inputs and %d outputs that need memory hook-up\n", input_pos, output_pos);
+#if 0
+	{	/* Left here for simple debugging with messages on the GMT side */
+		text = GMT_Create_Cmd (API, *head);
+		GMT_Report (API, GMT_MSG_NOTICE, "GMT_Encode_Options: Revised command before memory-substitution: %s\n", text);
+		GMT_Destroy_Cmd (API, &text);
+	}
+#endif
 	/* Just checking that the options were properly processed */
 	if (gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 		static char *omode[2] = {"Primary", "Secondary"};
@@ -13050,7 +13059,7 @@ int GMT_Get_Default (void *V_API, const char *keyword, char *value) {
 			strcpy (value, "rows");
 	}
 	else {	/* Must process as a GMT setting */
-		strcpy (value, gmtlib_putparameter (API->GMT, keyword));
+		strcpy (value, gmtlib_getparameter (API->GMT, keyword));
 		error = (value[0] == '\0') ? GMT_OPTION_NOT_FOUND : GMT_NOERROR;
 	}
 	return_error (V_API, error);

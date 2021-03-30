@@ -979,6 +979,8 @@ GMT_LOCAL int gmtsupport_pen2name (double width) {
 
 	int i, k;
 
+	if (gmt_M_is_dnan (width)) return -2;	/* Pen width undefined */
+	
 	for (i = 0, k = GMT_NOTSET; k < 0 && i < GMT_N_PEN_NAMES; i++) if (gmt_M_eq (width, GMT_penname[i].width)) k = i;
 
 	return (k);
@@ -995,6 +997,8 @@ GMT_LOCAL int gmtsupport_getpenwidth (struct GMT_CTRL *GMT, char *line, struct G
 		/* Pen thickness with optional unit at end */
 		P->width = gmt_convert_units (GMT, line, GMT_PT, GMT_PT);
 	}
+	else if (!strcmp (line, "auto"))
+		P->width = GMT->session.d_NaN;
 	else {	/* Pen name was given - these refer to fixed widths in points */
 		if ((n = gmtsupport_name2pen (line)) < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pen name %s not recognized!\n", line);
@@ -6672,8 +6676,10 @@ int gmt_getfont (struct GMT_CTRL *GMT, char *buffer, struct GMT_FONT *F) {
 
 	/* Assign font size, type, and fill, if given */
 	if (!size[0] || size[0] == '-') { /* Skip */ }
+	else if (!strncmp (size, "auto", 4U))
+		F->size = GMT->session.d_NaN;
 	else if ((pointsize = gmt_convert_units (GMT, size, GMT_PT, GMT_PT)) < GMT_CONV4_LIMIT)
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of font size not recognised. Using default.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of font size not recognized. Using default.\n");
 	else
 		F->size = pointsize;
 	if (!name[0] || name[0] == '-') { /* Skip */ }
@@ -6703,15 +6709,21 @@ char *gmt_putfont (struct GMT_CTRL *GMT, struct GMT_FONT *F) {
 	/* gmt_putfont creates a GMT textstring equivalent of the specified font */
 
 	static char text[GMT_BUFSIZ];
+	char size[GMT_LEN32] = {""};
+
+	if (gmt_M_is_dnan (F->size))
+		snprintf (size, GMT_LEN32, "auto,");
+	else
+		snprintf (size, GMT_LEN32, "%gp,", F->size);
 
 	if (F->form & 2) {
 		if (F->form & 8)
-			snprintf (text, GMT_BUFSIZ, "%gp,%s,%s=~%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
+			snprintf (text, GMT_BUFSIZ, "%s%s,%s=~%s", size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
 		else
-			snprintf (text, GMT_BUFSIZ, "%gp,%s,%s=%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
+			snprintf (text, GMT_BUFSIZ, "%s%s,%s=%s", size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill), gmt_putpen (GMT, &F->pen));
 	}
 	else
-		snprintf (text, GMT_BUFSIZ, "%gp,%s,%s", F->size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill));
+		snprintf (text, GMT_BUFSIZ, "%s%s,%s", size, GMT->session.font[F->id].name, gmtlib_putfill (GMT, &F->fill));
 	return (text);
 }
 
@@ -6925,24 +6937,47 @@ char *gmt_putpen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 
 	k = gmtsupport_pen2name (P->width);
 	if (P->style[0]) {
-		if (k < 0)
+		if (k == -2)	/* Width is undefined */
+			snprintf (text, GMT_BUFSIZ, "%s,%s:%.5gp", gmt_putcolor (GMT, P->rgb), P->style, P->offset);
+		else if (k == -1)	/* Width has no name */
 			snprintf (text, GMT_BUFSIZ, "%.5gp,%s,%s:%.5gp", P->width, gmt_putcolor (GMT, P->rgb), P->style, P->offset);
-		else
+		else	/* Named pen width */
 			snprintf (text, GMT_BUFSIZ, "%s,%s,%s:%.5gp", GMT_penname[k].name, gmt_putcolor (GMT, P->rgb), P->style, P->offset);
 		for (i = 0; text[i]; i++) if (text[i] == ' ') text[i] = '_';
 	}
-	else
-		if (k < 0)
+	else {
+		if (k == -2)	/* Width is undefined */
+			snprintf (text, GMT_BUFSIZ, "%s", gmt_putcolor (GMT, P->rgb));
+		else if (k == -1)	/* Width has no name */
 			snprintf (text, GMT_BUFSIZ, "%.5gp,%s", P->width, gmt_putcolor (GMT, P->rgb));
-		else
+		else	/* Named pen width */
 			snprintf (text, GMT_BUFSIZ, "%s,%s", GMT_penname[k].name, gmt_putcolor (GMT, P->rgb));
-
+	}
 	return (text);
 }
 
 void gmt_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 	for (int k = 0; k < 2; k++) {
 		gmt_M_free (GMT, P->end[k].V);
+	}
+}
+
+void gmt_scale_pen (struct GMT_CTRL *GMT, struct GMT_PEN *P, double scale) {
+	/* Scale all pen attributes by given scale. Note: P as assumed to be reset to nominal values before scaling */
+	P->width  *= scale;
+	P->offset *= scale;
+	if (P->style[0]) {	/* Must scale the dashes and gaps and update string */
+		unsigned int pos = 0;
+		char tmp[GMT_PEN_LEN] = {""}, p[GMT_LEN64] = {""};
+		double w;
+		while ((gmt_strtok (P->style, "+", &pos, p))) {
+			w = atof (p) * scale;	/* New gap or dash length */
+			snprintf (p, GMT_LEN64, "%.3g", w);
+			if (tmp[0]) strcat (tmp, " ");	/* If not first then we need space between items */
+			strcat (tmp, p);
+		}
+		/* Update the style attribute */
+		strncpy (P->style, tmp, GMT_PEN_LEN);
 	}
 }
 
@@ -7012,7 +7047,8 @@ GMT_LOCAL unsigned int gmtsupport_set_geo (struct GMT_CTRL *GMT) {
 /*! . */
 int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n) {
 	bool separate;
-	unsigned int last, i, pos, bit = 1, geo = gmtsupport_set_geo (GMT);	/* true unless clearly -R is Cartesian */
+	unsigned int last, i, pos, side = GMT_X, geo = gmtsupport_set_geo (GMT);	/* true unless clearly -R is Cartesian */
+	unsigned geo_bit[2] = {GMT_IS_LON, GMT_IS_LAT};
 	char p[GMT_BUFSIZ];
 	double scale = 1.0;
 
@@ -7046,7 +7082,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 			if (i < 2) GMT->current.io.inc_code[i] |= GMT_INC_IS_NNODES;
 			if (last) last--;	/* Coverity rightly points out that if last == 0 it would become 4294967295 */
 		}
-		if (geo == 0 || (separate && (geo & bit) == 0) ) {	/* Gave a unit to a Cartesian axes that does not take any unit */
+		if (geo == 0 || (separate && (side <= GMT_Y && (geo & geo_bit[side]) == 0)) ) {	/* Gave a unit to a Cartesian axes that does not take any unit */
 			if (p[last] && strchr (GMT_LEN_UNITS "c", p[last])) {
 				if (separate) {	/* Report per axis since separate increments where given */
 					static char *A = "xyzvuw";
@@ -7114,7 +7150,7 @@ int gmt_getincn (struct GMT_CTRL *GMT, char *line, double inc[], unsigned int n)
 		}
 		inc[i] *= scale;
 		i++;	/* Goto next increment */
-		bit <<= 1;
+		side++;
 	}
 	if (geo) {
 		if (geo == (GMT_IS_LON+GMT_IS_LAT))	/* Regular lon/lat region presumably */
@@ -8784,7 +8820,8 @@ struct GMT_PALETTE *gmt_sample_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *Pi
 
 	/* Must set default annotation flags */
 	for (i = 0; i < P->n_colors; i++) P->data[i].annot = 1;
-	P->data[i-1].annot = 3;
+	if (i) P->data[i-1].annot = 3;
+	else P->data[i].annot = 3;
 
 	gmtsupport_copy_palette_hdrs (GMT, P, Pin);
 	return (P);

@@ -22,7 +22,7 @@ cat << EOF > main.sh
 gmt begin
 	let k=\${MOVIE_FRAME}+1
 	gmt greenspline @Table_5_11.txt -R0/6.5/0/6.5 -I0.05 -Sc -Gt.nc -Z1 -Cn\${k} -Emisfit.txt
-	gmt grdcontour t.nc -C25 -A50 -Baf -BWsNE -JX4i -Gl3.6/6.5/4.05/0.75 -Xc -Y0.4i
+	gmt grdcontour t.nc -C25 -A50 -Baf -BWsNE -JX4i -Gl3.6/6.5/4.05/0.75 -Xc -Y0.6i
 	gmt plot misfit.txt -Ct.cpt -Sc0.15c -Wfaint -i0,1,4
 	printf "%2.2d" \$k | gmt text -F+cTR+jTR+f18p -Dj0.1i -Gwhite -W0.25p
 	gmt colorbar -Ct.cpt -DJBC+e -Bxaf -By+l"misfit"

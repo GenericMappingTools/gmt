@@ -1,17 +1,16 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612 792             
-%%Title: GMT v5.3.0_r16661 [64-bit] Document from psscale
-%%Creator: GMT5
-%%For: pwessel
+%%HiResBoundingBox: 0 0 612.0000 792.0000
+%%Title: GMT v6.2.0_99b7aea-dirty_2021.03.11 [64-bit] Document from colorbar
+%%Creator: GMT6
+%%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Tue Jun 28 15:45:47 2016
+%%CreationDate: Thu Mar 11 16:09:20 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
 %%Pages: 1
 %%EndComments
-
 %%BeginProlog
 250 dict begin
 /! {bind def} bind def
@@ -112,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -554,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -568,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -638,95 +662,108 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
-
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
-
 %%Page: 1 1
-
 %%BeginPageSetup
 V 0.06 0.06 scale
 %%EndPageSetup
-
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
+%PSL_End_Header
+gsave
 0 A
 FQ
 O0
 1200 1200 TM
-
 % PostScript produced by:
-%@GMT: psscale -Ct.cpt -K -P -Baf -Dx0/0 -W0.001
+%@GMT: gmt colorbar -B -Dx0/0+w4.5i/0.1i+h -W0.001
 %@PROJ: xy -8.00000000 3.00000000 0.00000000 0.10000000 -8.000 3.000 0.000 0.100 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 V N 0 0 T 5400 120 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 2700 /Height 1 /BitsPerComponent 8
    /ImageMatrix [2700 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-G[BdSBi%cO!!$soZV31"bjn:Wd1.+:c*B(E;EJ^=U!e\m#!iDY!>2m((6CmomsA3iKjFD*A[tt3>NAsiQ9u2d"h=f1s*O&6
-^9+#BC>NlXfN!i31`H<'%c<5rhFeB]]`SJ@rOJ,*m8'<@CQEI#^J[3J[.^!,dFte@U:&mp5\kk:LOQ'h1:6bA'PQl$ld=Eb
-Q"]RHrFkS&`r9Jgk5UthpC3L?m?j8h(rB]Tl3WF!#c"Ud>3g:=_:?-=j'%@:W%npb$KH4ukOcaVod(CH-7O8)bBpKo4o!_P
-@RE)bWLM>a9l!fd3n5dh3i0;9FeFXKe<N4lar".Ka#aH'SYFe4aaAkcYp4TmRC/]P/1AIFm@kEaJer9l0A?3mXh=J\o_B9j
->RP2I3H_KmrVSt(o*<M&9oRaPqWrXqm![#M,C-/K1t+^WDST'"j/2.+VsEbFeKmr?-;N)<9\.-Xf#19`a%fUS9N4GV<(2dJ
-7ZLP>N)tZqWsF,S*qHBpGcWH0X=S=te:4jTDcG]m<8mFJET:bipQH5n-cMZQMEOFdY)X4,Ntf/7(V1(m\-s0YI[koXEPD$@
-T$pN-j%unr@'9I$gicM3o-hZU;3'`_RDj^#Hm%0c+PW\VbIBe&YC>a3LXL5S-%GPYId[phonh#gMLOk+S`pmgg*8`9,P\**
-n5FPnO565%](m`'r#aG$n(#)2?+aZQ);hDKNiLOB<M^f%jF5S"4l"0TWe5Ak,OJl/g6]t3"3T+HPjJA9m*FEb5&EsgUlDdc
-Q*n)T\[Ru@fYfVZcSTHK(tLJOlPOt`l$KGpH`H:V.VT+K1kRQP5q1?WKPF=WeM!Z\(Jsbq.Je=#I5tF`LTDjJl"-"LUa04P
-;--08'bYWm"C42WLI]_5_!>t03ZS(c1u*!B;CqT_$CJKc]j8gFG-R]%=a*q@"F#Ai0EE'+I<jUk#4s/(*Fu86LX;FMo]U-F
-hd6-[4_hr,E%<bS3A(1-j^FT^TV9F<n3,te-ri&?g^FWY#(i=$.03!>G@1&J\rkt[-%e-6hgtVHDh&c`8`%PSl^)rMI@K:(
--%[2,l_)j1]_[p@_0tR;"Lf,LJ8:j]C[miGD_/X3Y(9o*)0bWDjj'<qEDFR_i+jGNFOXQLFjOBQ[9nQm?]26tLU13GZeL;F
-gP!&lK"'Qn\(sNXfhSd)8[-lBYgt+(lP$B/M,sM0<hGL*pQI-=O=Up*/.Rdo^*[&(+e'Q"RieDm+/bKsTU;:ER/K]54\[ds
-6T$ks2)1hor(/\.:GXo+R@)>e;cAF=)8k7"Bjh%MZt*<BZ)k'+ChuAFXY&;QNbr^,$9C/B3BF$C\A3*)!kHV%gkuuZQS,+A
-^'nV`\7E+\nuc6V\[d9=GBa&:X-qSBJH?>mJZ#E]b=cgQ3[jXo(>cPEo^NOM]F"9((&I_4rV]/m5_(7::_XTh$4_gI\g7gm
-&Vl*u_nr)*iSoY!EFbjj.LLM![Nmn;&ebA,NKr;0,E7VF`lCF[&u:A@=a0=H,pe,qp[2T?-YHqoTF?U>iUJZ)+brUAP"9UK
-=\b[3WDkR<7a%XWEuBp!-54O2jenp8Ze<^Te:P'7!Y2,Yb:NkGdgIreMKlcX4s-5]=Y(*u$\_E>W'i0hO[q`k<3"$^;IjEm
-V(u1f:/7cn%[Q5=QK@4njl_sH'L3$6bDV6-MMn/S,o$bUASEU#XK8G7]W.\->$5!6<E0L/WMukNe^`4#_\sF3)B0Xa_j[$_
-*l+56Rp0:&XfZHEp@`YUXJ;Pc';e[,\mT9\\f95Le'e]jlg&m'lUM@+*[(_r6\rd=@DiH2$0!CM'JY>eL)<ES+=:MqLhXd9
-@M\JR0aF1<]Ke"j(B<k&#%LTc@/~>
+G[BdSG?!(7!!$soZV2l>AiZ##g9>4]=n^'og9>3R/+(I8a:^c>!>,lS$7I$9HQNK:E5t[4Nm4gfa>u;@+\Rn+Jgc%s^[h^.
+GQ(UGhXC&"fN!i31`H<'%c)fhhFeB]]c@<ZrOESTm8'6>CQG_f^Jm?L[.]tUdFte@U:&mp5\kk:LOQ48ASCJ%'klueCXLj7
+Q"]RHI;&#;a8]Yi(]KsBpC3L?m?ji#(rB]Tno9W\/4O&s[+aJ4SZ?=sa44eZ?tCH]'uK3mbj(20l&@4WM-'<pQM+]:](+>,
+`4@RA@i(uPMq4b;FJr>WF])"JEdoHLW&&QaPr>N!:Nd"U3^e$0P(e)D@XI731?5oCnm!VmhBmR"-@"+1riDC"d)'"#8R6#l
+5&KFED+]92`1DI?2#i(dhoM1#UsCnpk8GaElH)ie8PeUWZZZ&r>23q2ibV?+9MPFYFkfZ5luZ7OFOe(hb35hIW2YZqWJZMR
+o'jclYfX24M6c&rdb>G36/s7Ma%HKSMZ(SQDi?.C7MWY4$D5]in&Ik'Nse)m(OD#S>T"u0+3A^Gc?C;S]/6&@ngN,S;6JqU
+Nl+\RrD9rY@(,Hqgj2e723;B0OC^Tu1[CBqp1G<<B,^GS>j0B+X&"'@U%I,-aWJ3Zhg<=THc9WD7)/DN:A5$Dm1u;Y(AuT4
+po,eBa0,&u?2W_trXWc#pRSs84*ek-e%S\U*EAqbX\(b)_>UBdHan_"76B[/Hcj1uPg>W:#F*?&.G=UQfUoSuIGC:`;(HEh
+$YsZ:F)M`@Y`WYP^bi-*(tLGNCD_Dul$FoEHRe6+b%V'V1kQF05r$o_Lh]aWeM!TZk>Ckm.Jc&8I5tF`Ml\9Nl",tKUa04P
+;--08'bYWm"C42WLI]]__s;:33ZS(c'\mU";CqTO&t$1<_QN"j]3*FNXSXNfJNH+D(lO@+^AQi2#4r#]?"C>)qp;;'oZ1l&
+hHB[r4^uBLE%<b]3A'mZjWU'sTY\_(i+D2Tc.&RUi$RY^A0ABZP7iE<J*4ci9AcWA6-8&-c*s@[80;f'-HR3PD>eLYV/MMZ
+Tg[6pEujo<MHAZ],e,LUS`$s9AT06NFY-qkdVI$3^bnsO(NE3R/pGfMNH7?k"CD27TY9J;XI\KgXR-prm96%I3h4H@SB]f5
+RuM[Y/U6T`GjB2LX6g%jSHQ"L"A<$pV*<;DOD(n[B^lDNHp>aN!6P-]am9Sllq=Y;&[LXuZKX*$l$!i*itR]@'U,.<`i#cT
+Vl<-uW((F!7Xri=S>TZ&5Vk0iK>tn>',-,".FZKLC2V>&Y[CU;-<XK&ChmgpN=FXn2Arm.9<ks%\Tj7shuId<*P"p?>\E5!
+(Dedmd\Sd%=5N&^4?#3\n*\K9E[C\L<D_W4+n5+<G^0Uu>m#f;hEi;+Ts(ZhqK8a/TCBi0Tte>J$j[CJ#)[<T'EnY+Dqu&`
+^+Bg)(5IQ.6USh$@H-cq8ON^Rc5fJeUa.Ds)BCE?HWPO^Shqbu)B12dMp&V[59i?5bY1RK9ME[K@R1kA-c=tU"@<ld#UPVo
+A?q^lO]/5e2N="sVe7e&3D:ca`QCnIb%7oQaiSfW.<un.*g`?,VP`LRV%rKE"aiKj4hXZ7-km#^,#OJ)>U5G^$E7!eOeKk?
+"H-isiiK4j\K!0Bc7[5\.ETgdc-(b%kEcquPSFs#Mi,XkMXob9BLtcaBk^"=)77&hZD+'+<`N."%BHJ-WJ/mQe^`:'2o$=N
+)]ukaR[T[R/M/QVYdUtu-*4en]`Y-0WB+I&[CQash;-lhlg=(f#jXkM,6e^3YT^q0`%YX'nJEtf)afQ/-4lAs.E"&Z"u2$\
+Js\pL,G)af&C1p6&W?[5IfiK(g0O~>
 U
 2 setlinecap
 N 0 120 M 5400 0 D S
 N 0 0 M 0 120 D S
 N 5400 0 M 0 120 D S
 N 0 0 M 5400 0 D S
-/PSL_A0_y 83 def
+/PSL_A0_y 67 def
 /PSL_A1_y 0 def
 8 W
-N 1473 0 M 0 -83 D S
-N 3927 0 M 0 -83 D S
-/PSL_AH0 0
+N 1473 0 M 0 -67 D S
+N 3927 0 M 0 -67 D S
 /MM {neg M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-5) sh mx
 (0) sh mx
 def
-/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+/PSL_A0_y PSL_A0_y 50 add PSL_AH0 add def
 1473 PSL_A0_y MM
 (-5) bc Z
 3927 PSL_A0_y MM
 (0) bc Z
-N 0 0 M 0 -42 D S
-N 491 0 M 0 -42 D S
-N 982 0 M 0 -42 D S
-N 1964 0 M 0 -42 D S
-N 2455 0 M 0 -42 D S
-N 2945 0 M 0 -42 D S
-N 3436 0 M 0 -42 D S
-N 4418 0 M 0 -42 D S
-N 4909 0 M 0 -42 D S
-N 5400 0 M 0 -42 D S
+N 0 0 M 0 -33 D S
+N 491 0 M 0 -33 D S
+N 982 0 M 0 -33 D S
+N 1964 0 M 0 -33 D S
+N 2455 0 M 0 -33 D S
+N 2945 0 M 0 -33 D S
+N 3436 0 M 0 -33 D S
+N 4418 0 M 0 -33 D S
+N 4909 0 M 0 -33 D S
+N 5400 0 M 0 -33 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
 %%EndObject
@@ -734,21 +771,20 @@ N 5400 0 M 0 -42 D S
 FQ
 O0
 0 600 TM
-
 % PostScript produced by:
-%@GMT: psscale -Cglobe -O -K -Baf -Dx0/0 -W0.001 -Y0.5i
+%@GMT: gmt colorbar -Cglobe -B -Dx0/0+w4.5i/0.1i+h -W0.001 -Y0.5i
 %@PROJ: xy -10.00000000 10.00000000 0.00000000 0.10000000 -10.000 10.000 0.000 0.100 +xy
-%%BeginObject PSL_Layer_2
+%%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 V N 0 0 T 5400 120 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 2700 /Height 1 /BitsPerComponent 8
    /ImageMatrix [2700 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
 G[BdUG?C)b*Pc[$S![b\P>p!Z6VL5&`*Sa(CeS?=8[D*#%""`lW/->j6;^$J7/$#aEU4.ThKpo<bq0&16#clS@Xl/eI1Pc-
-ma(T@T6pK"TBFC&n<!Ie,QAd5MtDe&Tq644k`=!Sou-^OqLdb&-O`02a!*`2Z%/f<QAY@Ua2rX:;m-+=Xj@`ZRe;H?7o/1V
+ma(T@T6pK"TBFC&n<!Ie,QAd5MtDe&Tq644k`=!Sou-^OqLdb&57B^J`$.GEZ%/f$QAY@Ua2rX:;m-+=Xj@`ZRe;H?7o/1V
 lA:Pks-`EAs"K2NP772>N!"tUhFe]7L5`oJN:>@+rYgN%*@#8C,P+Dp_%oMN'r0W"D56]WB"(Jd]?K"l*8C5Tm-sT24FEmX
 4.t1QU>K#tpJ4VUPH"]U#D*9fJr9h"8lVKqWj$MDGblma>/dR?ZKd\@"sp0Ea_b)L=r$rnKqM]plqiL!'p7<mEN_L):G.dO
 UD<>:V(?dT(,mY"+-IoYb7[;@'1_q``qkm;oV^L2:VG;FG,I!AZ7f^f0CrMBFLjEs6#ZJ7hOKAjT'Vl:XI1-o9MaeE2oqBN
@@ -771,23 +807,23 @@ SNVnVSYH;jT_%>D?m*Ml(G;AR+;>eh#mgXcTqNkcN"R2'"!Sp#P=`o.Yn3Ca3#n"b\6Qu4+[/,_,S2)l
 .#LEEU8*W39FN4*()4g.U%ik)6:(uL9LMHDUse=7P`gVr;aD9l91.t.-mJhYK?R"7Pu=on.R8/8b/p@<k#R)H4A(&dW%'3g
 'GdF;,#DQM9IVDVV59ghPa.s5E`>m:C-cDWWi@8n<EGra)H9p6WirHjl5J/0&iHY(<nB[fWif(P7A=sJQdg/VlQkanf<)32
 W)m8s\pbik3k7;*3[Kn\h13)[)@b+6U3D=J0YOMjNR5:,Dj9)q^$AkXTJoX7-G<XUDUZ4meHEQWH;jJ(d^uF-I<sB7*mgCM
-p[D&[a8Hr_?39Z~>
+p[D&[a8Hr_J-,9~>
 U
 2 setlinecap
 N 0 120 M 5400 0 D S
 N 0 0 M 0 120 D S
 N 5400 0 M 0 120 D S
 N 0 0 M 5400 0 D S
-/PSL_A0_y 83 def
+/PSL_A0_y 67 def
 /PSL_A1_y 0 def
 8 W
-N 0 0 M 0 -83 D S
-N 1350 0 M 0 -83 D S
-N 2700 0 M 0 -83 D S
-N 4050 0 M 0 -83 D S
-N 5400 0 M 0 -83 D S
-/PSL_AH0 0
+N 0 0 M 0 -67 D S
+N 1350 0 M 0 -67 D S
+N 2700 0 M 0 -67 D S
+N 4050 0 M 0 -67 D S
+N 5400 0 M 0 -67 D S
 /MM {neg M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-10) sh mx
@@ -796,7 +832,7 @@ PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reenco
 (5) sh mx
 (10) sh mx
 def
-/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+/PSL_A0_y PSL_A0_y 50 add PSL_AH0 add def
 0 PSL_A0_y MM
 (-10) bc Z
 1350 PSL_A0_y MM
@@ -807,22 +843,22 @@ def
 (5) bc Z
 5400 PSL_A0_y MM
 (10) bc Z
-N 270 0 M 0 -42 D S
-N 540 0 M 0 -42 D S
-N 810 0 M 0 -42 D S
-N 1080 0 M 0 -42 D S
-N 1620 0 M 0 -42 D S
-N 1890 0 M 0 -42 D S
-N 2160 0 M 0 -42 D S
-N 2430 0 M 0 -42 D S
-N 2970 0 M 0 -42 D S
-N 3240 0 M 0 -42 D S
-N 3510 0 M 0 -42 D S
-N 3780 0 M 0 -42 D S
-N 4320 0 M 0 -42 D S
-N 4590 0 M 0 -42 D S
-N 4860 0 M 0 -42 D S
-N 5130 0 M 0 -42 D S
+N 270 0 M 0 -33 D S
+N 540 0 M 0 -33 D S
+N 810 0 M 0 -33 D S
+N 1080 0 M 0 -33 D S
+N 1620 0 M 0 -33 D S
+N 1890 0 M 0 -33 D S
+N 2160 0 M 0 -33 D S
+N 2430 0 M 0 -33 D S
+N 2970 0 M 0 -33 D S
+N 3240 0 M 0 -33 D S
+N 3510 0 M 0 -33 D S
+N 3780 0 M 0 -33 D S
+N 4320 0 M 0 -33 D S
+N 4590 0 M 0 -33 D S
+N 4860 0 M 0 -33 D S
+N 5130 0 M 0 -33 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 setlinecap
 %%EndObject
@@ -830,30 +866,34 @@ N 5130 0 M 0 -42 D S
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: psxy -R0/4.5/0/1 -Jx1i -O -K -Sv0.1i+a80+b -W1p -Gblack
+%@GMT: gmt plot -R0/4.5/0/1 -Jx1i -Sv0.1i+a80+b -W1p -Gblack
 %@PROJ: xy 0.00000000 4.50000000 0.00000000 1.00000000 0.000 4.500 0.000 1.000 +xy
-%%BeginObject PSL_Layer_3
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 5400 0 D
 0 1200 D
 -5400 0 D
+P
 PSL_clip N
-17 W
+/PSL_vecheadpen {17 W 0 A [] 0 B} def
 V
+17 W
 {0 A} FS
 O1
 17 W
 V 2700 120 T 90 R
-N 120 0 M 120 0 D S
+N 90 0 M 150 0 D S
+PSL_vecheadpen
+17 W
 0 0 M
 120 -101 D
-0 202 D
+-30 101 D
+30 101 D
 P clip fs P S U
 U
 PSL_cliprestore
@@ -862,30 +902,32 @@ PSL_cliprestore
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: pstext -R0/4.5/0/1 -Jx1i -O -F+f12p+jCB
+%@GMT: gmt text -F+f12p+jCB -R0/4.5/0/1 -Jx1i
 %@PROJ: xy 0.00000000 4.50000000 0.00000000 1.00000000 0.000 4.500 0.000 1.000 +xy
-%%BeginObject PSL_Layer_4
+%%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 5400 0 D
 0 1200 D
 -5400 0 D
+P
 PSL_clip N
 2700 420 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (HINGE) bc Z
 PSL_cliprestore
 %%EndObject
+grestore
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
+%PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
-
 %%Trailer
-
 end
 %%EOF

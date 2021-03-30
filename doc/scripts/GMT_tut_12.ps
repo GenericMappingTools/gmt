@@ -1,17 +1,16 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_018e7ad_2019.10.04 [64-bit] Document from grdcontour
+%%HiResBoundingBox: 0 0 612.0000 792.0000
+%%Title: GMT v6.2.0_2cec3a0_2021.03.18 [64-bit] Document from grdcontour
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Fri Oct  4 21:33:00 2019
+%%CreationDate: Thu Mar 18 17:55:42 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
 %%Pages: 1
 %%EndComments
-
 %%BeginProlog
 250 dict begin
 /! {bind def} bind def
@@ -112,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -554,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -568,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -638,43 +662,87 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
-
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
-PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
-
 %%Page: 1 1
-
 %%BeginPageSetup
 V 0.06 0.06 scale
 %%EndPageSetup
-
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
 /PSL_plot_completion {} def
-/PSL_movie_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
 FQ
 O0
 1200 1200 TM
-
 % PostScript produced by:
 %@GMT: gmt grdcontour ship.nc -JM6i -B -C250 -A1000 -R245/255/20/30
-%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: 72 72 432 474.909
+%@PROJ: merc 245.00000000 255.00000000 20.00000000 30.00000000 -556597.454 556597.454 2258423.649 3482189.085 +proj=merc +lon_0=250 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+8 W
+0 A
+N 720 0 M 0 -82 D S
+N 720 7915 M 0 82 D S
+N 2160 0 M 0 -82 D S
+N 2160 7915 M 0 82 D S
+N 3600 0 M 0 -82 D S
+N 3600 7915 M 0 82 D S
+N 5040 0 M 0 -82 D S
+N 5040 7915 M 0 82 D S
+N 6480 0 M 0 -82 D S
+N 6480 7915 M 0 82 D S
+N 0 0 M -82 0 D S
+N 7200 0 M 82 0 D S
+N 0 1534 M -82 0 D S
+N 7200 1534 M 82 0 D S
+N 0 3089 M -82 0 D S
+N 7200 3089 M 82 0 D S
+N 0 4669 M -82 0 D S
+N 7200 4669 M 82 0 D S
+N 0 6277 M -82 0 D S
+N 7200 6277 M 82 0 D S
+N 0 7915 M -82 0 D S
+N 7200 7915 M 82 0 D S
+720 -131 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(114°W) tc Z
+2160 -131 M (112°W) tc Z
+3600 -131 M (110°W) tc Z
+5040 -131 M (108°W) tc Z
+6480 -131 M (106°W) tc Z
+-131 0 M (20°N) mr Z
+-131 1534 M (22°N) mr Z
+-131 3089 M (24°N) mr Z
+-131 4669 M (26°N) mr Z
+-131 6277 M (28°N) mr Z
+-131 7915 M (30°N) mr Z
 clipsave
 0 0 M
 7200 0 D
@@ -682,10 +750,10 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
+V
 /PSL_setboxpen {4 W 0 A [] 0 B} def
 /PSL_setboxrgb {1 A} def
 /PSL_path_pen [
-PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 	(4 W 0 A \[\] 0 B)
 	(4 W 0 A \[\] 0 B)
 	(12 W 0 A \[\] 0 B)
@@ -10037,132 +10105,86 @@ S
 PSL_cliprestore
 U
 [] 0 B
+U
 PSL_cliprestore
-25 W
-8 W
-N 720 0 M 0 -83 D S
-N 720 7915 M 0 83 D S
-N 2160 0 M 0 -83 D S
-N 2160 7915 M 0 83 D S
-N 3600 0 M 0 -83 D S
-N 3600 7915 M 0 83 D S
-N 5040 0 M 0 -83 D S
-N 5040 7915 M 0 83 D S
-N 6480 0 M 0 -83 D S
-N 6480 7915 M 0 83 D S
-N 0 0 M -83 0 D S
-N 7200 0 M 83 0 D S
-N 0 1534 M -83 0 D S
-N 7200 1534 M 83 0 D S
-N 0 3089 M -83 0 D S
-N 7200 3089 M 83 0 D S
-N 0 4669 M -83 0 D S
-N 7200 4669 M 83 0 D S
-N 0 6277 M -83 0 D S
-N 7200 6277 M 83 0 D S
-N 0 7915 M -83 0 D S
-N 7200 7915 M 83 0 D S
-83 W
-N -42 0 M 0 764 D S
-N 7242 0 M 0 764 D S
-1 A
-N -42 764 M 0 770 D S
-N 7242 764 M 0 770 D S
+24 W
 0 A
-N -42 1534 M 0 774 D S
-N 7242 1534 M 0 774 D S
+49 W
+N -24 0 M 0 764 D S
+N 7224 0 M 0 764 D S
 1 A
-N -42 2308 M 0 781 D S
-N 7242 2308 M 0 781 D S
+N -24 764 M 0 770 D S
+N 7224 764 M 0 770 D S
 0 A
-N -42 3089 M 0 787 D S
-N 7242 3089 M 0 787 D S
+N -24 1534 M 0 774 D S
+N 7224 1534 M 0 774 D S
 1 A
-N -42 3876 M 0 793 D S
-N 7242 3876 M 0 793 D S
+N -24 2308 M 0 781 D S
+N 7224 2308 M 0 781 D S
 0 A
-N -42 4669 M 0 801 D S
-N 7242 4669 M 0 801 D S
+N -24 3089 M 0 787 D S
+N 7224 3089 M 0 787 D S
 1 A
-N -42 5470 M 0 807 D S
-N 7242 5470 M 0 807 D S
+N -24 3876 M 0 793 D S
+N 7224 3876 M 0 793 D S
 0 A
-N -42 6277 M 0 815 D S
-N 7242 6277 M 0 815 D S
+N -24 4669 M 0 801 D S
+N 7224 4669 M 0 801 D S
 1 A
-N -42 7092 M 0 823 D S
-N 7242 7092 M 0 823 D S
-N 0 -42 M 720 0 D S
-N 0 7957 M 720 0 D S
+N -24 5470 M 0 807 D S
+N 7224 5470 M 0 807 D S
 0 A
-N 720 -42 M 720 0 D S
-N 720 7957 M 720 0 D S
+N -24 6277 M 0 815 D S
+N 7224 6277 M 0 815 D S
 1 A
-N 1440 -42 M 720 0 D S
-N 1440 7957 M 720 0 D S
+N -24 7092 M 0 823 D S
+N 7224 7092 M 0 823 D S
+N 0 -24 M 720 0 D S
+N 0 7940 M 720 0 D S
 0 A
-N 2160 -42 M 720 0 D S
-N 2160 7957 M 720 0 D S
+N 720 -24 M 720 0 D S
+N 720 7940 M 720 0 D S
 1 A
-N 2880 -42 M 720 0 D S
-N 2880 7957 M 720 0 D S
+N 1440 -24 M 720 0 D S
+N 1440 7940 M 720 0 D S
 0 A
-N 3600 -42 M 720 0 D S
-N 3600 7957 M 720 0 D S
+N 2160 -24 M 720 0 D S
+N 2160 7940 M 720 0 D S
 1 A
-N 4320 -42 M 720 0 D S
-N 4320 7957 M 720 0 D S
+N 2880 -24 M 720 0 D S
+N 2880 7940 M 720 0 D S
 0 A
-N 5040 -42 M 720 0 D S
-N 5040 7957 M 720 0 D S
+N 3600 -24 M 720 0 D S
+N 3600 7940 M 720 0 D S
 1 A
-N 5760 -42 M 720 0 D S
-N 5760 7957 M 720 0 D S
+N 4320 -24 M 720 0 D S
+N 4320 7940 M 720 0 D S
 0 A
-N 6480 -42 M 720 0 D S
-N 6480 7957 M 720 0 D S
-8 W
-N -83 0 M 7366 0 D S
-N -83 -83 M 7366 0 D S
-N 7200 -83 M 0 8081 D S
-N 7283 -83 M 0 8081 D S
-N 7283 7915 M -7366 0 D S
-N 7283 7998 M -7366 0 D S
-N 0 7998 M 0 -8081 D S
-N -83 7998 M 0 -8081 D S
-720 -167 M 200 F0
-(-114°) tc Z
-720 8082 M (-114°) bc Z
-2160 -167 M (-112°) tc Z
-2160 8082 M (-112°) bc Z
-3600 -167 M (-110°) tc Z
-3600 8082 M (-110°) bc Z
-5040 -167 M (-108°) tc Z
-5040 8082 M (-108°) bc Z
-6480 -167 M (-106°) tc Z
-6480 8082 M (-106°) bc Z
--167 0 M (20°) mr Z
-7367 0 M (20°) ml Z
--167 1534 M (22°) mr Z
-7367 1534 M (22°) ml Z
--167 3089 M (24°) mr Z
-7367 3089 M (24°) ml Z
--167 4669 M (26°) mr Z
-7367 4669 M (26°) ml Z
--167 6277 M (28°) mr Z
-7367 6277 M (28°) ml Z
--167 7915 M (30°) mr Z
-7367 7915 M (30°) ml Z
+N 5040 -24 M 720 0 D S
+N 5040 7940 M 720 0 D S
+1 A
+N 5760 -24 M 720 0 D S
+N 5760 7940 M 720 0 D S
+0 A
+N 6480 -24 M 720 0 D S
+N 6480 7940 M 720 0 D S
+5 W
+N -49 0 M 7298 0 D S
+N -49 -49 M 7298 0 D S
+N 7200 -49 M 0 8013 D S
+N 7249 -49 M 0 8013 D S
+N 7249 7915 M -7298 0 D S
+N 7249 7964 M -7298 0 D S
+N 0 7964 M 0 -8013 D S
+N -49 7964 M 0 -8013 D S
 %%EndObject
-
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
-
 %%Trailer
-
 end
 %%EOF

@@ -19,7 +19,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* style for example gallery */
-.gmtgallary li {
+.gmtgallery li {
 	list-style: none;
 	width: 180px;
 	display: inline-grid;

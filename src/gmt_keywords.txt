@@ -73,6 +73,7 @@ GMT_HISTORY			# Should we update the command history?
 GMT_INTERPOLANT			# Spline interpolant
 GMT_LANGUAGE			# Language used for annotations
 GMT_MAX_CORES			# Maximum number of cores a multi-threaded module can use [0 = all available]
+GMT_THEME			# Group of GMT defaults to override
 GMT_TRIANGULATE			# Triangulation algorithm
 GMT_VERBOSE			# Verbosity level
 #-------------------------------------------------------

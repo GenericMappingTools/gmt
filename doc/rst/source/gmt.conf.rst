@@ -11,20 +11,22 @@ Description
 
 The following is a list of the parameters that are user-definable in
 GMT. The parameter names are always given in **UPPER CASE**. The
-parameter values are case-insensitive unless otherwise noted. The system
-defaults are given in brackets [default is **value**], with units specified for dimensional
-quantities. Most parameters can be changed by using :doc:`gmtset`, editing a
-**gmt.conf** file that can be acquired using :doc:`gmtdefaults`, or setting
-parameters on-the-fly via the **--PARAMETER**\ =\ *VALUE* option to any GMT
-program. However, a few are static and are only read via the **gmt.conf** file;
-these are labeled (*static*). Several parameters take only **true** or **false**.
-It is recommended that users specify the units for distances and lengths by
-appending **c** (cm), **i** (inch), or **p** (points) when changing parameters
-using any of these methods. By default, when no unit is specified the value will
-be assumed to be cm for parameters not related to fonts or pen thicknesses and
-will be assumed to be points for parameters related to fonts or pen thicknesses.
-The interpretation of unitless dimensional quantities can be changed using the
-parameter :term:`PROJ_LENGTH_UNIT` or specifying US units when building GMT.
+parameter values are case-insensitive unless otherwise noted. Theme-independent
+system defaults are given in brackets [default is **value**], with units
+specified for dimensional quantities, while theme-dependent defaults are
+outlined in the **GMT_THEME** :doc:`settings table <theme-settings>`. Most parameters
+can be changed by using :doc:`gmtset`, editing a **gmt.conf** file that can be
+acquired using :doc:`gmtdefaults`, or setting parameters on-the-fly via the
+**--PARAMETER**\ =\ *VALUE* option to any GMT program. However, a few are static
+and are only read via the **gmt.conf** file; these are labeled (*static*).
+Several parameters take only **true** or **false**. It is recommended that users
+specify the units for distances and lengths by appending **c** (cm),
+**i** (inch), or **p** (points) when changing parameters using any of these
+methods. By default, when no unit is specified the value will be assumed to be
+cm for parameters not related to fonts or pen thicknesses and will be assumed to
+be points for parameters related to fonts or pen thicknesses. The interpretation
+of unitless dimensional quantities can be changed using the parameter
+:term:`PROJ_LENGTH_UNIT` or specifying US units when building GMT.
 
 Common Specifications
 ---------------------
@@ -67,33 +69,39 @@ COLOR Parameters
         Default CPT table when none is selected [default is **turbo**].
 
     **COLOR_HSV_MAX_S**
-        Maximum saturation (0-1) assigned for most positive intensity value [default is **0.1**].
+        Maximum saturation (0-1) assigned for most positive intensity value
+        [default is **0.1**].
 
     **COLOR_HSV_MIN_S**
-        Minimum saturation (0-1) assigned for most negative intensity value [default is **1.0**].
+        Minimum saturation (0-1) assigned for most negative intensity value
+        [default is **1.0**].
 
     **COLOR_HSV_MAX_V**
-        Maximum value (0-1) assigned for most positive intensity value [default is **1.0**].
+        Maximum value (0-1) assigned for most positive intensity value
+        [default is **1.0**].
 
     **COLOR_HSV_MIN_V**
-        Minimum value (0-1) assigned for most negative intensity value [default is **0.3**].
+        Minimum value (0-1) assigned for most negative intensity value
+        [default is **0.3**].
 
     **COLOR_MODEL**
         Selects in which color space a CPT should be interpolated.
         By default, color interpolation takes place directly on the RGB
         values which can produce some unexpected hues, whereas interpolation
         directly on the HSV values better preserves those hues. The choices
-        are: **none** (default: use whatever the **COLOR_MODEL** setting in the
+        are: **none** (use whatever the **COLOR_MODEL** setting in the
         CPT demands), **rgb** (force interpolation in RGB),
         **hsv** (force interpolation in HSV), **cmyk** (assumes colors are
         in CMYK but interpolates in RGB) [default is **none**].
 
     **COLOR_NAN**
-        Color used for the non-defined areas of images (i.e., where z = NaN) [default is **128**].
+        Color used for the non-defined areas of images (i.e., where z = NaN)
+        [default is **128**].
 
     **COLOR_SET**
-        Default comma-separated list of colors (or a *categorical* CPT name) for automatic,
-        sequential color assignments [default is **#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F**].
+        Default comma-separated list of colors (or a *categorical* CPT name) for
+        automatic, sequential color assignments
+        [default is **#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F**].
 
 .. _DIR Parameters:
 
@@ -103,11 +111,12 @@ DIR Parameters
 .. glossary::
 
     **DIR_CACHE**
-        Cache directory where we save remote filenames starting in **@** (e.g., @hotspots.txt) [default is **~/.gmt/cache**].
+        Cache directory where we save remote filenames starting in **@**
+        (e.g., @hotspots.txt) [default is **~/.gmt/cache**].
 
     **DIR_DATA**
-        Session data directory. Overrides the value of the environment variable **$GMT_DATADIR**
-        (see :ref:`Directory parameters` in the CookBook).
+        Session data directory. Overrides the value of the environment variable
+        **$GMT_DATADIR** (see :ref:`Directory parameters` in the CookBook).
 
     **DIR_DCW**
         Path to optional Digital Chart of the World polygon files.
@@ -123,41 +132,53 @@ FONT Parameters
 .. glossary::
 
     **FONT**
-        Sets the default for all fonts, except :term:`FONT_LOGO`. This setting is
-        not included in the **gmt.conf** file.
+        Sets the default for all fonts, except :term:`FONT_LOGO`. This setting
+        is not included in the **gmt.conf** file.
 
     **FONT_ANNOT**
-        Sets both :term:`FONT_ANNOT_PRIMARY` and :term:`FONT_ANNOT_SECONDARY` to the value specified.
-        This setting is not included in the **gmt.conf** file.
+        Sets both :term:`FONT_ANNOT_PRIMARY` and :term:`FONT_ANNOT_SECONDARY` to
+        the value specified. This setting is not included in the **gmt.conf** file.
 
     **FONT_ANNOT_PRIMARY**
-        Font used for primary annotations, etc. [default is **12p,Helvetica,black**]. When
-        **+** is prepended, scale fonts, offsets and tick-lengths relative
-        to :term:`FONT_ANNOT_PRIMARY`.
+        Font used for primary annotations, etc [default is :doc:`theme dependent
+        <theme-settings>`]. When **+** is prepended, scale fonts, offsets and
+        tick-lengths relative to :term:`FONT_ANNOT_PRIMARY`. Choose **auto** for
+        :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **FONT_ANNOT_SECONDARY**
-        Font to use for time axis secondary annotations
-        [default is **14p,Helvetica,black**].
+        Font to use for time axis secondary annotations [default is
+        :doc:`theme dependent <theme-settings>`] Choose **auto** for
+        :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **FONT_HEADING**
-        Font to use when plotting headings above subplots [default is **32p,Helvetica,black**].
+        Font to use when plotting headings above subplots [default is
+        :doc:`theme dependent <theme-settings>`]. Choose **auto** for
+        :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **FONT_LABEL**
-        Font to use when plotting labels below axes [default is **16p,Helvetica,black**].
+        Font to use when plotting labels below axes [default is :doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
     **FONT_LOGO**
-        Font to use for text plotted as part of the GMT time logo
-        [default is **8p,Helvetica,black**].
+        Font to use for text plotted as part of the GMT time logo [:doc:`theme
+        dependent <theme-settings>`]. Choose **auto** for :ref:`automatic scaling
+        with plot size <auto-scaling>`.
 
     **FONT_SUBTITLE**
-        Font to use when plotting titles over graphs that involve a subtitle [default is **18p,Helvetica,black**].
+        Font to use when plotting titles over graphs that involve a subtitle
+        [default is :doc:`theme dependent <theme-settings>`]. Choose **auto** for
+        :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **FONT_TAG**
         Font to use for subplot panel tags such as a), ii)
-        [default is **20p,Helvetica,black**].
+        [default is :doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **FONT_TITLE**
-        Font to use when plotting titles over graphs [default is **24p,Helvetica,black**].
+        Font to use when plotting titles over graphs [default is :doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot
+        size <auto-scaling>`.
 
 .. _FORMAT Parameters:
 
@@ -186,15 +207,15 @@ FORMAT Parameters
         smallest unit (e.g., seconds), append **.xxx**, where the number of x
         indicates the desired precision. If no floating point is indicated
         then the smallest specified unit will be rounded off to nearest
-        integer. For 12-hour clocks, append **am**, **AM**, **a.m.**, or **A.M.** (GMT
-        will replace a\|A with p\|P for pm). If your template starts with a
+        integer. For 12-hour clocks, append **am**, **AM**, **a.m.**, or **A.M.**
+        (GMT will replace a\|A with p\|P for pm). If your template starts with a
         leading hyphen (**-**) then each integer item (y,m,d) will be printed
         without leading zeros (default uses fixed width formats). As
         examples, try hh:mm, hh.mm.ss, hh:mm:ss.xxxx, hha.m., etc.
-        [default is **hh:mm:ss**]. If the format is simply **-** then no clock is output and
-        the ISO T divider between date and clock is omitted.  **Note**: When
-        high-precision time-series are written to ASCII output the default
-        format may not be adequate.  Many modules automatically handle
+        [default is **hh:mm:ss**]. If the format is simply **-** then no clock
+        is output and the ISO T divider between date and clock is omitted.
+        **Note**: When high-precision time-series are written to ASCII output
+        the default format may not be adequate.  Many modules automatically handle
         this by extending the format, but you should be alert of unusual
         situations where data may appear truncated to nearest second.
 
@@ -204,10 +225,10 @@ FORMAT Parameters
         strings in data fields. You may specify either Gregorian calendar
         format or ISO week calendar format. Gregorian calendar: Use any
         combination of **yyyy** (or **yy** for 2-digit years; if so see
-        :term:`TIME_Y2K_OFFSET_YEAR`), **mm** (or **o** for abbreviated month name in
-        the current time language), and **dd**, with or without delimiters. For
-        day-of-year data, use **jjj** instead of **mm** and/or **dd**. Examples can be
-        ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc. ISO
+        :term:`TIME_Y2K_OFFSET_YEAR`), **mm** (or **o** for abbreviated month
+        name in the current time language), and **dd**, with or without delimiters.
+        For day-of-year data, use **jjj** instead of **mm** and/or **dd**. Examples
+        can be ddmmyyyy, yy-mm-dd, dd-o-yyyy, yyyy/dd/mm, yyyy-jjj, etc. ISO
         Calendar: Expected template is **yyyy[-]W[-]ww[-]d**, where ww is ISO
         week and d is ISO week day. Either template must be consistent,
         e.g., you cannot specify months if you do not specify years.
@@ -229,8 +250,8 @@ FORMAT Parameters
         date strings in data fields. You may specify either Gregorian
         calendar format or ISO week calendar format. Gregorian calendar: Use
         any combination of **yyyy** (or **yy** for 2-digit years; if so see
-        :term:`TIME_Y2K_OFFSET_YEAR`), **mm** (or **o** for abbreviated month name in
-        the current time language), and **dd**, with or without delimiters. For
+        :term:`TIME_Y2K_OFFSET_YEAR`), **mm** (or **o** for abbreviated month name
+        in the current time language), and **dd**, with or without delimiters. For
         day-of-year data, use **jjj** instead of mm and/or dd. As examples, try
         yy/mm/dd, yyyy=jjj, dd-o-yyyy, dd-mm-yy, yy-mm, etc. ISO Calendar:
         Expected template is **yyyy[-]W[-]ww[-]d**, where ww is ISO week and d
@@ -238,8 +259,8 @@ FORMAT Parameters
         cannot specify months if you do not specify years. As examples, try
         yyyyWww, yy-W-ww-d, etc. If your template starts with a leading
         hyphen (**-**) then each integer item (y,m,d) will be printed without
-        leading zeros (default uses fixed width formats) [default is **yyyy-mm-dd**]. If
-        the format is simply **-** then no date is output and the ISO T divider
+        leading zeros (default uses fixed width formats) [default is **yyyy-mm-dd**].
+        If the format is simply **-** then no date is output and the ISO T divider
         between date and clock is omitted.
 
     **FORMAT_GEO_MAP**
@@ -247,8 +268,9 @@ FORMAT Parameters
         coordinate is to be plotted. This template is then used to guide the
         plotting of geographical coordinates in data fields. See
         :term:`FORMAT_GEO_OUT` for details. In addition, you can append **A**
-        which plots the absolute value of the coordinate [default is **ddd:mm:ss**].
-        Not all items may be plotted as this depends on the annotation interval.
+        which plots the absolute value of the coordinate. Not all items may be
+        plotted as this depends on the annotation interval. [default is
+        :doc:`theme dependent <theme-settings>`].
 
     **FORMAT_GEO_OUT**
         Formatting template that indicates how an output geographical
@@ -281,8 +303,8 @@ FORMAT Parameters
     **FORMAT_FLOAT_OUT**
         Format (C language printf syntax) to be used when printing double
         precision floating point numbers to output files. For geographic
-        coordinates, see :term:`FORMAT_GEO_OUT`. [default is **%.12g**]. To give some
-        columns a separate format, supply one or more comma-separated
+        coordinates, see :term:`FORMAT_GEO_OUT`. [default is **%.12g**]. To give
+        some columns a separate format, supply one or more comma-separated
         *cols*:*format* specifications, where *cols* can be specific columns
         (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
         3-7). The last specification without column information will
@@ -291,8 +313,8 @@ FORMAT Parameters
         columns.
 
     **FORMAT_TIME_MAP**
-        Sets both :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP` to the value specified.
-        This setting is not included in the **gmt.conf** file.
+        Sets both :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
+        to the value specified. This setting is not included in the **gmt.conf** file.
 
     **FORMAT_TIME_PRIMARY_MAP**
         Controls how primary month-, week-, and weekday-names are formatted.
@@ -304,7 +326,8 @@ FORMAT Parameters
         Controls how secondary month-, week-, and weekday-names are
         formatted. Choose among **full**, **abbreviated**, and
         **character**. If the leading **f**, **a**, or **c** are replaced
-        with **F**, **A**, and **C** the entire annotation will be in upper case [default is **full**].
+        with **F**, **A**, and **C** the entire annotation will be in upper case
+        [default is **full**].
 
     **FORMAT_TIME_STAMP**
         Defines the format of the time information in the UNIX time stamp.
@@ -322,50 +345,50 @@ GMT Miscellaneous Parameters
     **GMT_COMPATIBILITY**
         Determines if the current GMT version should be able to parse command-line
         options for a prior major release.  Specify the major release version number,
-        e.g., 4-6. If 4 is set we will parse obsolete GMT 4 options and issue warnings; if 5
-        is set then parsing GMT 4 only syntax will result in errors [4]; likewise
-        for 6: obsolete syntax from early GMT 5 will be considered errors.
+        e.g., 4-6. If 4 is set we will parse obsolete GMT 4 options and issue warnings;
+        if 5 is set then parsing GMT 4 only syntax will result in errors [default is 4];
+        likewise for 6: obsolete syntax from early GMT 5 will be considered errors.
 
     **GMT_DATA_SERVER**
-        Name (or URL) of a GMT data server [**oceania**]. Please set to the
-        data server closest to your location for faster data download.  See
+        Name (or URL) of a GMT data server [default is **oceania**]. Please set
+        to the data server closest to your location for faster data download. See
         `Data Server Mirrors <https://www.generic-mapping-tools.org/mirrors/>`_
         for a list of the currently available mirrors.
 
     **GMT_DATA_SERVER_LIMIT**
-        Upper limit on the size of remote file to download [default is **unlimited**].  Give
-        the maximum file size in bytes, or append **k**, **m**, or **g** for kilo-, mega-,
-        or giga-bytes.
+        Upper limit on the size of remote file to download [default is **unlimited**].
+        Give the maximum file size in bytes, or append **k**, **m**, or **g** for
+        kilo-, mega-, or giga-bytes.
 
     **GMT_DATA_UPDATE_INTERVAL**
         Specifies how often we update the local catalog of data available on
-        the remote server and pruning expired data sets [default is **1d**].  Allowable time
-        units are **d** (days), **w** (week), **o** (month, here 30 days).
-        To turn off periodic updates entirely, specify interval as **off**, **never**,
-        **infinity**, or just **0**.
+        the remote server and pruning expired data sets [default is **1d**].
+        Allowable time units are **d** (days), **w** (week), **o** (month,
+        here 30 days). To turn off periodic updates entirely, specify interval
+        as **off**, **never**, **infinity**, or just **0**.
 
     **GMT_EXPORT_TYPE**
-        This setting is only used by external interfaces and controls the
-        data type used for table entries.  Choose from **double**,
-        **single**, **[u]long**, **[u]int**, **[u]short**, and **[u]char** [default is **double**].
+        This setting is only used by external interfaces and controls the data
+        type used for table entries.  Choose from **double**, **single**,
+        **[u]long**, **[u]int**, **[u]short**, and **[u]char** [default is **double**].
 
     **GMT_EXTRAPOLATE_VAL**
-        Determines what to do if extrapolating beyond the data domain.
-        Choose among **NaN**, **extrap** or **extrapval**,\ *value*. In
-        the first case return NaN for any element of x that is outside range.
-        Second case lets the selected algorithm compute the
-        extrapolation values. Third case sets the extrapolation values to
-        the constant value passed in *value* (this value must off course be
-        numeric) [default is **NaN**].
+        Determines what to do if extrapolating beyond the data domain. Choose
+        among **NaN**, **extrap** or **extrapval**,\ *value*. In the first case
+        return NaN for any element of x that is outside range. Second case lets
+        the selected algorithm compute the extrapolation values. Third case sets
+        the extrapolation values to the constant value passed in *value* (this
+        value must off course be numeric) [default is **NaN**].
 
     **GMT_CUSTOM_LIBS**
         Comma-separated list of GMT-compliant shared libraries that extend
-        the capability of GMT with additional custom modules [default is **none**]. Alternatively,
-        provide a directory name, that MUST end with a slash (or back slash),
-        to use all shared libraries in that directory. On Windows, if the dir
-        name is made up only of a single slash ('/') search inside a subdirectory
-        called **gmt_plugins** of the directory that contains the **gmt** executable.
-        See the API documentation for how to build your own shared modules.
+        the capability of GMT with additional custom modules [default is **none**].
+        Alternatively, provide a directory name, that MUST end with a slash (or
+        back slash), to use all shared libraries in that directory. On Windows,
+        if the dir name is made up only of a single slash ('/') search inside a
+        subdirectory called **gmt_plugins** of the directory that contains the
+        **gmt** executable. See the API documentation for how to build your own
+        shared modules.
 
     **GMT_FFT**
         Determines which Fast Fourier Transform (FFT) should be used among
@@ -383,8 +406,8 @@ GMT Miscellaneous Parameters
         **$GMT_USERDIR** is not writable, in the current directory. To use this
         feature append *planner_flag*, which can be one of *measure*,
         *patient*, *exhaustive* and *estimate* which pick a (probably
-        sub-optimal) plan quickly [default is *estimate*]. See FFTW reference for details.
-        **Note**: If you need a single transform of a
+        sub-optimal) plan quickly [default is *estimate*]. See FFTW reference for
+        details. **Note**: If you need a single transform of a
         given size only, the one-time cost of the smart planner becomes
         significant. In that case, stick to the default planner, *estimate*,
         based on heuristics.
@@ -450,6 +473,15 @@ GMT Miscellaneous Parameters
         Sets the upper limit on the number of cores any multi-threaded module might
         use (whether **-x** is selected or not) [default is **0** (i.e., unlimited)].
 
+    **GMT_THEME**
+        Override GMT default settings with those of the selected theme.  Choose from
+        *classic* [Default for classic mode], *modern* [Default for modern mode],
+        and *minimal*. You can also create and use your own themes by compiling
+        files of desired settings and place them in your GMT user themes directory
+        (usually ~/.gmt/themes) and name them *theme*.conf. See the
+        :doc:`theme settings table<theme-settings>` for parameters associated with
+        each theme.
+
     **GMT_TRIANGULATE**
         Determines if we use the **Watson** or **Shewchuk**
         algorithm (if configured during installation) for triangulation.
@@ -483,36 +515,40 @@ I/O Parameters
 
     **IO_GRIDFILE_FORMAT**
         Default file format for grids, with optional scale, offset and
-        invalid value, written as *ff*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]. The
-        2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
-        :doc:`grdconvert` and Section :ref:`grid-file-format` of the
-        GMT Technical Reference and Cookbook for more information.
-        You may the scale as **a** for auto-adjusting the scale and/or offset of
-        packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
-        =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).  When *invalid* is omitted
-        the appropriate value for the given format is used (NaN or largest negative). [default is **nf**].
+        invalid value, written as *ff*\ [**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*].
+        The 2-letter format indicator can be one of [**abcegnrs**][**bsifd**]. See
+        :doc:`grdconvert` and Section :ref:`grid-file-format` of the GMT Technical
+        Reference and Cookbook for more information. You may the scale as **a**
+        for auto-adjusting the scale and/or offset of packed integer grids
+        (=\ *ID*\ **+s**\ *a* is a shorthand for =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
+        When *invalid* is omitted the appropriate value for the given format is used
+        (NaN or largest negative) [default is **nf**].
 
     **IO_GRIDFILE_SHORTHAND**
         If **true**, all grid file names are examined to see if they use the
-        file extension shorthand discussed in Section :ref:`grid-file-format` of the GMT
-        Technical Reference and Cookbook. If **false**, no filename expansion is done [default is **false**].
+        file extension shorthand discussed in Section :ref:`grid-file-format` of
+        the GMT Technical Reference and Cookbook. If **false**, no filename
+        expansion is done [default is **false**].
 
     **IO_HEADER**
-        (**-h**) Specifies whether input/output ASCII files have header record(s) or not [default is **false**].
+        (**-h**) Specifies whether input/output ASCII files have header record(s)
+        or not [default is **false**].
 
     **IO_HEADER_MARKER**
         Give a string from which any character will indicate a header record in
-        an incoming ASCII data table if found in the first position [default is **#%!;"'**]. If another marker
-        should be used for output than the first character in the list, then append a single
-        character for the output header record marker. The two sets must be separated by a comma.
-        **Note**: A maximum of 7 input markers can be specified.
+        an incoming ASCII data table if found in the first position [default is **#%!;"'**].
+        If another marker should be used for output than the first character in
+        the list, then append a single character for the output header record
+        marker. The two sets must be separated by a comma. **Note**: A maximum
+        of 7 input markers can be specified.
 
     **IO_LONLAT_TOGGLE**
         (**-:**) Set if the first two columns of input and output files
         contain (latitude,longitude) or (y,x) rather than the expected
         (longitude,latitude) or (x,y). false means we have (x,y) both on
         input and output. **true** means both input and output should be (y,x).
-        **IN** means only input has (y,x), while **OUT** means only output should be (y,x). [default is **false**].
+        **IN** means only input has (y,x), while **OUT** means only output should
+        be (y,x) [default is **false**].
 
     **IO_N_HEADER_RECS**
         Specifies how many header records to expect if **-h** is used [default is **0**].
@@ -525,10 +561,10 @@ I/O Parameters
         Determines what happens when input records containing NaNs for *x*
         or *y* (and in some cases *z*) are read. This may happen, for instance,
         when there is text or other junk present instead of data coordinates, and
-        the conversion to a data value fails and yields a NaN.  Choose between **skip**,
-        which will report how many bad records were skipped, and **pass**,
-        which will quietly pass these records on to the calling
-        programs [default is **pass**]. For most programs this will result in output records with
+        the conversion to a data value fails and yields a NaN.  Choose between
+        **skip**, which will report how many bad records were skipped, and **pass**,
+        which will quietly pass these records on to the calling programs [default
+        is **pass**]. For most programs this will result in output records with
         NaNs as well, but some will interpret these NaN records to indicate
         gaps in a series; programs may then use that information to detect
         segmentation (if applicable).
@@ -545,7 +581,7 @@ I/O Parameters
         [128,256). Setting :term:`IO_NC4_CHUNK_SIZE` will produce netCDF version 4
         files, which can only be read with the netCDF 4 library, unless all
         dimensions are less than 128 or **c**\ lassic is specified for
-        classic netCDF. [default is **auto**]
+        classic netCDF [default is **auto**]
 
     **IO_NC4_DEFLATION_LEVEL**
         Sets the compression level for netCDF4 files upon output. Values
@@ -554,19 +590,19 @@ I/O Parameters
         improve performance and reduce the size of certain data. While
         higher compression levels further reduce the data size, they do so
         at the cost of extra processing time. This parameter does not
-        apply to classic netCDF files. [default is **3**]
+        apply to classic netCDF files [default is **3**].
 
     **IO_SEGMENT_BINARY**
         Determines how binary data records with all values set to NaN are
         interpreted.  Such records are considered to be encoded segment
         headers in binary files provided the number of columns equals or
-        exceeds the current setting of IO_SEGMENT_BINARY [default is **2**].  Specify **0**
-        or **off** to deactivate the segment header determination.
+        exceeds the current setting of IO_SEGMENT_BINARY [default is **2**].
+        Specify **0** or **off** to deactivate the segment header determination.
 
     **IO_SEGMENT_MARKER**
         This holds the character we expect to indicate a segment header in
-        an incoming ASCII data or text table [default is **>**]. If this marker should be
-        different for output then append another character for the output
+        an incoming ASCII data or text table [default is **>**]. If this marker
+        should be different for output then append another character for the output
         segment marker. The two characters must be separated by a **comma**. Two
         marker characters have special meaning: **B** means "blank line" and
         will treat blank lines as initiating a new segment, whereas **N** means
@@ -587,45 +623,52 @@ MAP Parameters
     **MAP_ANNOT_MIN_ANGLE**
         If the angle between the map boundary and the annotation baseline is
         less than this minimum value (in degrees), the annotation is not
-        plotted (this may occur for certain oblique projections.) Give a
+        plotted (this may occur for certain oblique projections). Give a
         value in the range [0,90] [default is **20**].
 
     **MAP_ANNOT_MIN_SPACING**
         If an annotation would be plotted less than this minimum distance
         from its closest neighbor, the annotation is not plotted (this may
-        occur for certain oblique projections.) [default is **0p**]
+        occur for certain oblique or polar projections) [default is
+        :doc:`theme dependent <theme-settings>`]. Choose **auto** for
+        :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_OBLIQUE**
         This argument is a comma-separated list of up to seven keywords:
         **separate** means longitudes will be annotated on the lower and upper
         boundaries only, and latitudes will be annotated on the left and right
-        boundaries only;
-        **anywhere** means annotations will occur wherever an imaginary gridline
-        crosses the map boundaries; **lon_horizontal** means longitude annotations
-        will be plotted horizontally; **lat_horizontal** means latitude annotations
-        will be plotted horizontally; **tick_extend** means tick-marks are extended
-        so the distance from the tip of the oblique tick to the map frame equals
-        the specified tick length; **tick_normal** means tick-marks will be drawn
-        normal to the border regardless of gridline angle; **lat_parallel** means
-        latitude annotations will be plotted parallel to the border. [default is **anywhere**].
+        boundaries only; **anywhere** means annotations will occur wherever an
+        imaginary gridline crosses the map boundaries; **lon_horizontal** means
+        longitude annotations will be plotted horizontally; **lat_horizontal**
+        means latitude annotations will be plotted horizontally; **tick_extend**
+        means tick-marks are extended so the distance from the tip of the oblique
+        tick to the map frame equals the specified tick length; **tick_normal**
+        means tick-marks will be drawn normal to the border regardless of
+        gridline angle; **lat_parallel** means latitude annotations will be
+        plotted parallel to the border [default is **anywhere**].
 
     **MAP_ANNOT_OFFSET**
-        Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and :term:`MAP_ANNOT_OFFSET_SECONDARY` to the value specified.
+        Sets both :term:`MAP_ANNOT_OFFSET_PRIMARY` and
+        :term:`MAP_ANNOT_OFFSET_SECONDARY` to the value specified.
         This setting is not included in the **gmt.conf** file.
 
     **MAP_ANNOT_OFFSET_PRIMARY**
-        Distance from end of tick-mark to start of annotation [default is **5p**].
+        Distance from end of tick-mark to start of annotation [default is
+        :doc:`theme dependent <theme-settings>`]. Choose **auto** for
+        :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_OFFSET_SECONDARY**
         Distance from base of primary annotation to the top of the secondary
-        annotation [default is **5p**] (Only applies to time axes with both primary and
-        secondary annotations).
+        annotation (Only applies to time axes with both primary and secondary
+        annotations) [default is :doc:`theme dependent <theme-settings>`]. Choose
+        **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_ANNOT_ORTHO**
         Determines which axes will get their annotations (for Cartesian
-        projections) plotted orthogonally to the axes. Combine any **w**,
-        **e**, **s**, **n**, **z** (uppercase allowed as well). [default is **we**] (if nothing specified).
-        Note that this setting can be overridden via the **+a** modifier in **-B**.
+        projections) plotted orthogonally to the axes. Combine any **w**, **e**,
+        **s**, **n**, **z** (uppercase allowed as well) [default is **we**] (if
+        nothing specified). Note that this setting can be overridden via the
+        **+a** modifier in **-B**.
 
     **MAP_DEFAULT_PEN**
         Sets the default of all pens related to **-W** options. Prepend
@@ -636,8 +679,8 @@ MAP Parameters
         [default is **0.25p,black**].
 
     **MAP_DEGREE_SYMBOL**
-        Determines what symbol is used to plot the degree symbol on
-        geographic map annotations. Choose between **ring**, **degree**, **colon**, or
+        Determines what symbol is used to plot the degree symbol on geographic
+        map annotations. Choose between **ring**, **degree**, **colon**, or
         **none** [default is **degree**].
 
     **MAP_FRAME_AXES**
@@ -647,10 +690,14 @@ MAP Parameters
         to draw the axis only, but not annotate.   To *just* draw an axis
         without annotation and ticks you can use the **l**\ (eft), **r**\ (ight),
         **b**\ (ottom), **t**\ (op) and (for 3-D) **u**\ (p) codes. Add an
-        optional **+b** to draw a cube of axes in perspective view. [default is **WESNZ**].
+        optional **+b** to draw a cube of axes in perspective view. Choose
+        **auto** for :ref:`automatic selection <auto-scaling>` [default is
+        :doc:`theme dependent <theme-settings>`].
 
     **MAP_FRAME_PEN**
-        Pen attributes used to draw plain map frame [default is **thicker,black**].
+        Pen attributes used to draw plain map frame [default is :doc:`theme dependent
+        <theme-settings>`]. Choose **auto** for :ref:`automatic scaling with plot size
+        <auto-scaling>`.
 
     **MAP_FRAME_PERCENT**
         Percentage of the fancy frame width to use for the internal checkerboard
@@ -659,23 +706,23 @@ MAP Parameters
     **MAP_FRAME_TYPE**
         Choose between **inside**, **plain** and **fancy** (thick boundary,
         alternating black/white frame; append **-rounded** for rounded corners)
-        [default is **fancy**]. For some map projections (e.g., Oblique Mercator), plain is
-        the only option even if fancy is set as default. In general, fancy
-        only applies to situations where the projected x and y directions
-        parallel the longitude and latitude directions (e.g., rectangular
-        projections, polar projections). For situations where all boundary
-        ticks and annotations must be inside the maps (e.g., for preparing
-        geotiffs), chose **inside**.  Finally, for Cartesian plots you can
-        also choose **graph**\ , which adds a vector to the end of each axis.
-        This works best when you reduce the number of axes plotted to one
-        per dimension. By default, the vector tip extends the length of each axis by 7.5%.
-        Alternatively, append ,\ *length*, where the optional *unit*
-        may be **%** (then *length* is the alternate extension in percent) or one
-        of **c**, **i**, or **p** (then *length* is the absolute extension
-        of the axis to the start of the vector base instead).  The vector stem
-        is set to match :term:`MAP_FRAME_WIDTH`, while the vector
-        head length and width are 10 and 5 times this width, respectively.  You
-        may control its shape via :term:`MAP_VECTOR_SHAPE`.
+        [default is :doc:`theme dependent <theme-settings>`]. For some map
+        projections (e.g., Oblique Mercator), plain is the only option even if
+        fancy is set as default. In general, fancy only applies to situations
+        where the projected x and y directions parallel the longitude and
+        latitude directions (e.g., rectangular projections, polar projections).
+        For situations where all boundary ticks and annotations must be inside
+        the maps (e.g., for preparing geotiffs), chose **inside**.  Finally,
+        for Cartesian plots you can also choose **graph**\ , which adds a vector
+        to the end of each axis. This works best when you reduce the number of
+        axes plotted to one per dimension.  By default, the vector tip extends
+        the length of each axis by 7.5%. Alternatively, append ,\ *length*,
+        where the optional *unit* may be **%** (then *length* is the alternate
+        extension in percent) or one of **c**, **i**, or **p** (then *length*
+        is the absolute extension of the axis to the start of the vector base
+        instead).  The vector stem is set to match :term:`MAP_FRAME_WIDTH`, while
+        the vector head length and width are 10 and 5 times this width,
+        respectively.  You may control its shape via :term:`MAP_VECTOR_SHAPE`.
 
         .. toggle::
 
@@ -690,13 +737,14 @@ MAP Parameters
                Appearance of different **MAP_FRAME_TYPE** settings
 
     **MAP_FRAME_WIDTH**
-        Width (> 0) of map borders for fancy map frame [default is **5p**]. **Note**: For fancy
-        frames, :term:`MAP_FRAME_PEN` is automatically set to 0.1 times the
-        :term:`MAP_FRAME_WIDTH` setting.
+        Width (> 0) of map borders for fancy map frame [default is :doc:`theme dependent
+        <theme-settings>`]. **Note**: For fancy frames, :term:`MAP_FRAME_PEN`
+        is automatically set to 0.1 times the :term:`MAP_FRAME_WIDTH` setting.
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_GRID_CROSS_SIZE**
-        Sets both :term:`MAP_GRID_CROSS_SIZE_PRIMARY` and :term:`MAP_GRID_CROSS_SIZE_SECONDARY` to the value specified.
-        This setting is not included in the **gmt.conf** file.
+        Sets both :term:`MAP_GRID_CROSS_SIZE_PRIMARY` and :term:`MAP_GRID_CROSS_SIZE_SECONDARY`
+        to the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_GRID_CROSS_SIZE_PRIMARY**
         Size of grid cross at lon-lat intersections. **0** means draw
@@ -720,17 +768,23 @@ MAP Parameters
 
     **MAP_GRID_PEN_PRIMARY**
         Pen attributes used to draw primary grid lines in dpi units or
-        points (append **p**) [default is **0.25p,black**].
+        points (append **p**) [default is :doc:`theme dependent <theme-settings>`].
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_GRID_PEN_SECONDARY**
         Pen attributes used to draw secondary grid lines in dpi units or
-        points (append **p**) [default is **thinner,black**].
+        points (append **p**) [default is :doc:`theme dependent <theme-settings>`].
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_HEADING_OFFSET**
-        Distance from top of subplot panel titles to the base of the heading [default is **18p**].
+        Distance from top of subplot panel titles to the base of the heading
+        [default is :doc:`theme dependent <theme-settings>`]. Choose **auto** for
+        :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_LABEL_OFFSET**
-        Distance from base of axis annotations to the top of the axis label [default is **8p**].
+        Distance from base of axis annotations to the top of the axis label
+        [default is :doc:`theme dependent <theme-settings>`]. Choose **auto**
+        for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_LINE_STEP**
         Determines the maximum length (> 0) of individual straight
@@ -757,55 +811,63 @@ MAP Parameters
         Controls the appearance of gridlines near the poles for all
         azimuthal projections and a few others in which the geographic poles
         are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
-        Sinusoidal and van der Grinten). Specify either **none** (in which case there
-        is no special handling) or *pc_lat*/*pc_dlon*. In that case, normal
-        gridlines are only drawn between the latitudes
-        -*pc_lat*/+\ *pc_lat*, and above those latitudes the gridlines are
-        spaced at the (presumably coarser) *pc_dlon* interval; the two
-        domains are separated by a small circle drawn at the *pc_lat*
-        latitude [default is **85/90**]. Note for r-theta (polar) projection where r = 0 is
-        at the center of the plot the meaning of the cap is reversed, i.e.,
-        the default 85/90 will draw a r = 5 radius circle at the center of
-        the map with less frequent radial lines there.
+        Sinusoidal and van der Grinten). Specify either **none** (in which case
+        there is no special handling) or *pc_lat*/*pc_dlon*. In that case, normal
+        gridlines are only drawn between the latitudes -*pc_lat*/+\ *pc_lat*, and
+        above those latitudes the gridlines are spaced at the (presumably coarser)
+        *pc_dlon* interval; the two domains are separated by a small circle drawn
+        at the *pc_lat* latitude. Alternatively, give **auto** to determine a
+        *pc_lat* suitable for your region [default is
+        :doc:`theme dependent <theme-settings>`]. Note for r-theta (polar)
+        projection where r = 0 is at the center of the plot the meaning of the
+        cap is reversed, i.e., *85/90* will draw a r = 5 radius circle at the
+        center of the map with less frequent radial lines there.
 
     **MAP_SCALE_HEIGHT**
         Sets the height (> 0) on the map of the map scale bars drawn by
         various programs [default is **5p**].
 
     **MAP_TICK_LENGTH**
-        Sets both :term:`MAP_TICK_LENGTH_PRIMARY` and :term:`MAP_TICK_LENGTH_SECONDARY` to the value specified.
-        This setting is not included in the **gmt.conf** file.
+        Sets both :term:`MAP_TICK_LENGTH_PRIMARY` and :term:`MAP_TICK_LENGTH_SECONDARY`
+        to the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_TICK_LENGTH_PRIMARY**
-        The length of a primary major/minor tick-marks [default is **5p/2.5p**]. If only
-        the first value is set, the second is assumed to be 50% of the first.
+        The length of a primary major/minor tick-marks [default is :doc:`theme dependent
+        <theme-settings>`]. If only the first value is set, the second
+        is assumed to be 50% of the first. Choose **auto** for :ref:`automatic
+        scaling with plot size <auto-scaling>`.
 
     **MAP_TICK_LENGTH_SECONDARY**
-        The length of a secondary major/minor tick-marks [default is **15p/3.75p**]. If
-        only the first value is set, the second is assumed to be 25% of the first.
+        The length of a secondary major/minor tick-marks [default is :doc:`theme dependent
+        <theme-settings>`]. If only the first value is set, the second is assumed
+        to be 25% of the first. Choose **auto** for :ref:`automatic scaling with
+        plot size <auto-scaling>`.
 
     **MAP_TICK_PEN**
-        Sets both :term:`MAP_TICK_PEN_PRIMARY` and :term:`MAP_TICK_PEN_SECONDARY` to the value specified.
-        This setting is not included in the **gmt.conf** file.
+        Sets both :term:`MAP_TICK_PEN_PRIMARY` and :term:`MAP_TICK_PEN_SECONDARY`
+        to the value specified. This setting is not included in the **gmt.conf** file.
 
     **MAP_TICK_PEN_PRIMARY**
         Pen attributes to be used for primary tick-marks in dpi units or
-        points (append **p**) [default is **thinner,black**].
+        points (append **p**) [default is :doc:`theme dependent <theme-settings>`].
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_TICK_PEN_SECONDARY**
         Pen attributes to be used for secondary tick-marks in dpi units or
-        points (append **p**) [default is **thinner,black**].
+        points (append **p**) [default is :doc:`theme dependent <theme-settings>`].
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_TITLE_OFFSET**
         Distance from top of axis annotations (or axis label, if present) to
-        base of plot title [default is **14p**].
+        base of plot title [default is :doc:`theme dependent <theme-settings>`].
+        Choose **auto** for :ref:`automatic scaling with plot size <auto-scaling>`.
 
     **MAP_VECTOR_SHAPE**
         Determines the shape of the head of a vector. Normally (i.e., for
         vector_shape = **0**), the head will be triangular, but can be changed
-        to an arrow (**1**) or an open V (**2**).
-        Intermediate settings give something in between. Negative values (up
-        to **-2**) are allowed as well [default is **0**].
+        to an arrow (**1**) or an open V (**2**). Intermediate settings give
+        something in between. Negative values (up to **-2**) are allowed as well
+        [default is :doc:`theme dependent <theme-settings>`].
 
 .. _Projection Parameters:
 
@@ -815,15 +877,16 @@ Projection Parameters
 .. glossary::
 
     **PROJ_AUX_LATITUDE**
-        Only applies when geodesics are approximated by great circle
-        distances on an equivalent sphere. Select from **authalic**, **geocentric**,
-        **conformal**, **meridional**, **parametric**, or **none** (i.e., geodetic) [default is **authalic**]. When not none
-        we convert any latitude used in the great circle calculation to the
-        chosen auxiliary latitude before doing the distance calculation. See
-        also :term:`PROJ_MEAN_RADIUS`.
+        Only applies when geodesics are approximated by great circle distances on
+        an equivalent sphere. Select from **authalic**, **geocentric**,
+        **conformal**, **meridional**, **parametric**, or **none** (i.e., geodetic)
+        [default is **authalic**]. When not none we convert any latitude used in
+        the great circle calculation to the chosen auxiliary latitude before
+        doing the distance calculation. See also :term:`PROJ_MEAN_RADIUS`.
 
     **PROJ_ELLIPSOID**
-        The (case sensitive) name of the ellipsoid used for the map projections [WGS-84]. Choose among:
+        The (case sensitive) name of the ellipsoid used for the map projections
+        [WGS-84]. Choose among:
 
         - *Airy*: Applies to Great Britain (1830)
         - *Airy-Ireland*: Applies to Ireland in 1965 (1830)
@@ -932,16 +995,16 @@ Projection Parameters
 
     **PROJ_LENGTH_UNIT**
         Sets the default unit length. Choose between **c**\ m, **i**\ nch, or
-        **p**\ oint [default is **c** *(or i)*].
-        **Note**: In GMT, one point is defined as 1/72 inch (the PostScript definition),
-        while it is often defined as 1/72.27 inch in the typesetting industry.
-        There is no universal definition.)
+        **p**\ oint [default is **c** *(or i)*]. **Note**: In GMT, one point is
+        defined as 1/72 inch (the PostScript definition), while it is often
+        defined as 1/72.27 inch in the typesetting industry. There is no universal
+        definition.)
 
     **PROJ_MEAN_RADIUS**
         Applies when geodesics are approximated by great circle distances on
         an equivalent sphere or when surface areas are computed. Select from
-        **mean** (R_1), **authalic** (R_2), **volumetric** (R_3), **meridional**, or
-        **quadratic** [default is **authalic**].
+        **mean** (R_1), **authalic** (R_2), **volumetric** (R_3), **meridional**,
+        or **quadratic** [default is **authalic**].
 
     **PROJ_SCALE_FACTOR**
         Changes the default map scale factor used for the Polar
@@ -959,22 +1022,23 @@ PostScript Parameters
 
     **PS_CHAR_ENCODING**
         (*static*) Names the eight bit character set being used for text in
-        files and in command line parameters. This allows GMT to ensure
-        that the PostScript output generates the correct characters on the
-        plot. Choose from **Standard**, **Standard+**, **ISOLatin1**, **ISOLatin1+**, and
-        **ISO-8859-x** (where *x* is in the ranges 1-11 or 13-16). See
-        Appendix F for details [default is **ISOLatin1+** *(or Standard+)*].
-        **Note**: Normally the character set is written as part of the PostScript header.
+        files and in command line parameters. This allows GMT to ensure that the
+        PostScript output generates the correct characters on the plot. Choose from
+        **Standard**, **Standard+**, **ISOLatin1**, **ISOLatin1+**, and
+        **ISO-8859-x** (where *x* is in the ranges 1-11 or 13-16). See Appendix F
+        for details [default is **ISOLatin1+** *(or Standard+)*]. **Note**:
+        Normally the character set is written as part of the PostScript header.
         If you need to switch to another character set for a later overlay then
-        you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line and
-        not via gmt :doc:`/gmtset`.  Finally, note 6, 8, and 11 do not work with standard fonts.
+        you must use **--PS_CHAR_ENCODING**\ =\ *encoding* on the command line
+        and not via gmt :doc:`/gmtset`.  Finally, note 6, 8, and 11 do not work
+        with standard fonts.
 
     **PS_COLOR_MODEL**
-        Determines whether PostScript output should use **RGB**, **HSV**, **CMYK**, or
-        **GRAY** when specifying color [default is **rgb**]. Note if **HSV** is selected it does
-        not apply to images which in that case uses **RGB**. When selecting
-        **GRAY**, all colors will be converted to gray scale using YIQ
-        (television) conversion.
+        Determines whether PostScript output should use **RGB**, **HSV**, **CMYK**,
+        or **GRAY** when specifying color [default is **rgb**]. Note if **HSV**
+        is selected it does not apply to images which in that case uses **RGB**.
+        When selecting **GRAY**, all colors will be converted to gray scale using
+        YIQ (television) conversion.
 
     **PS_COMMENTS**
         (*static*) If **true** we will issue comments in the PostScript file
@@ -983,17 +1047,17 @@ PostScript Parameters
         which yields a somewhat slimmer PostScript file [default is **false**].
 
     **PS_CONVERT**
-        Comma-separated list of optional module arguments that we should
-        supply when :doc:`psconvert` is called implicitly under modern mode [**A**].
+        Comma-separated list of optional module arguments that we should supply
+        when :doc:`psconvert` is called implicitly under modern mode [**A**].
         Ignored when psconvert is called on the command line explicitly.
         The option arguments must be listed without their leading option hyphen.
 
     **PS_IMAGE_COMPRESS**
         Determines if PostScript images are compressed using the Run-Length
         Encoding scheme (**rle**), Lempel-Ziv-Welch compression (**lzw**), DEFLATE
-        compression (**deflate**\ [,\ *level*]), or not at all (**none**) [default is **deflate,5**]. When
-        specifying **deflate**, the compression level (1–9) may optionally be
-        appended.
+        compression (**deflate**\ [,\ *level*]), or not at all (**none**) [default
+        is **deflate,5**]. When specifying **deflate**, the compression level
+        (1–9) may optionally be appended.
 
     **PS_LINE_CAP**
         Determines how the ends of a line segment will be drawn. Choose
@@ -1010,15 +1074,18 @@ PostScript Parameters
         frame; if the angle is too acute, a bevel join is used instead, with
         threshold set by :term:`PS_MITER_LIMIT`), **round** join where a
         circular arc is used to fill in the cracks at the kinks, and **bevel**
-        join which is a miter join that is cut off so kinks are triangular in shape [default is **miter**].
+        join which is a miter join that is cut off so kinks are triangular in
+        shape [default is **miter**].
 
     **PS_MEDIA**
-        *Classic mode:* Sets the physical size of the current plotting paper [default is **a4** *(or letter)*].
-        *Modern mode:* If user selects PostScript output then the above applies as well.
-        For other graphics formats (PDF and rasters), the media size is determined automatically
-        by cropping to fit the plot exactly (but see :term:`PS_CONVERT`).  However,
-        if a specific media size is desired then the :term:`PS_MEDIA` may be specified as well.
-        The following formats (and their widths and heights in points) are recognized:
+        *Classic mode:* Sets the physical size of the current plotting paper
+        [default is **a4** *(or letter)*]. *Modern mode:* If user selects
+        PostScript output then the above applies as well. For other graphics
+        formats (PDF and rasters), the media size is determined automatically
+        by cropping to fit the plot exactly (but see :term:`PS_CONVERT`). However,
+        if a specific media size is desired then the :term:`PS_MEDIA` may be
+        specified as well. The following formats (and their widths and heights
+        in points) are recognized:
 
         ======== ======== ======== ========== ======== ========
         Media    width    height   Media      width    height
@@ -1042,8 +1109,8 @@ PostScript Parameters
         B5       501      709
         ======== ======== ======== ========== ======== ========
 
-        For a completely custom format (e.g., for large format plotters) you
-        may also specify **WxH**, where **W** and **H** are in points unless you append
+        For a completely custom format (e.g., for large format plotters) you may
+        also specify **WxH**, where **W** and **H** are in points unless you append
         a unit to each dimension (**c**, **i**, **m** or **p** [default is **p**]).
         Additional user-specific formats may be saved as separate line in a
         gmt_custom_media.conf file stored in ~/.gmt.  Each record would have a
@@ -1077,9 +1144,10 @@ PostScript Parameters
 
     **PS_TRANSPARENCY**
         Sets the transparency mode to use when preparing PS for rendering to
-        PDF. Choose from **Color**, **ColorBurn**, **ColorDodge**, **Darken**, **Difference**,
-        **Exclusion**, **HardLight**, **Hue**, **Lighten**, **Luminosity**, **Multiply**, **Normal**,
-        **Overlay**, **Saturation**, **SoftLight**, and **Screen** [default is **Normal**].
+        PDF. Choose from **Color**, **ColorBurn**, **ColorDodge**, **Darken**,
+        **Difference**, **Exclusion**, **HardLight**, **Hue**, **Lighten**,
+        **Luminosity**, **Multiply**, **Normal**, **Overlay**, **Saturation**,
+        **SoftLight**, and **Screen** [default is **Normal**].
 
 .. _Calendar/Time Parameters:
 
@@ -1111,11 +1179,11 @@ Calendar/Time Parameters
         given. (2) **+n**\ *unit* : activate interval adjustment for input by
         truncate to previous whole number of *n* units and then center time
         on the following interval. (3) **-n**\ *unit*. Same, but center time on
-        the previous interval [default is **off**].
-        For example, with **TIME_IS_INTERVAL** =+1o, an input data string
-        like 1999-12 will be interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December),
-        while if **TIME_IS_INTERVAL** = **off** then that date is interpreted to mean
-        1999-12-01T00:00:00.0 (start of December).
+        the previous interval [default is **off**]. For example, with
+        **TIME_IS_INTERVAL** =+1o, an input data string like 1999-12 will be
+        interpreted to mean 1999-12-15T12:00:00.0 (exactly middle of December),
+        while if **TIME_IS_INTERVAL** = **off** then that date is interpreted
+        to mean 1999-12-01T00:00:00.0 (start of December).
 
     **TIME_REPORT**
         Controls if a time-stamp should be issued at start of all progress

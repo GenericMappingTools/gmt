@@ -199,10 +199,10 @@ Optional Arguments
     PDF file from the list of input PS or PDF files. It requires the **-F** option.
     See also **NOTES** below.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

@@ -14,9 +14,10 @@ None.
 Optional Arguments
 ------------------
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -41,10 +42,10 @@ Optional Arguments
     Add **+d**\ *date* in ISO format, e.g, **+d**\ *2000-04-25*, to compute sun parameters
     for this date. If necessary, append time zone via **+z**\ *TZ*.
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 
@@ -57,10 +58,10 @@ Optional Arguments
     Invert the sense of what is inside and outside the terminator.  Only
     used with clipping (**-G**) and cannot be used together with **-B**.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-T:
 
@@ -72,14 +73,15 @@ Optional Arguments
 
     Refer to https://en.wikipedia.org/wiki/Twilight for definitions of different twilights.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -87,9 +89,10 @@ Optional Arguments
     Set pen attributes for lines or the outline of symbols [Defaults:
     width = default, color = black, style = solid].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
