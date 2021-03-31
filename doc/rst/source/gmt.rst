@@ -258,19 +258,10 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-c_full.rst_
 
 .. _-d_full:
-
-.. |Add_-d| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-d_full.rst_
-
 .. _-di_full:
-
-.. |Add_-di| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-di_full.rst_
-
 .. _-do_full:
 
-.. |Add_-do| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-do_full.rst_
+.. include:: explain_-d_full.rst_
 
 .. _-e_full:
 
