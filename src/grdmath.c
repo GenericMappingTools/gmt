@@ -259,6 +259,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	EXTREMA    1  1    Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere\n"
 		"	FCRIT      3  1    F distribution critical value for alpha = A, nu1 = B, and nu2 = C\n"
 		"	FCDF       3  1    F cumulative distribution function for F = A, nu1 = B, and nu2 = C\n"
+		"	FISHER     3  1    Fisher probability density function at grid nodes given stack lon,lat (A, B) and kappa (C)\n"
 		"	FLIPLR     1  1    Reverse order of values in each row\n"
 		"	FLIPUD     1  1    Reverse order of values in each column\n"
 		"	FLOOR      1  1    floor (A) (greatest integer <= A)\n"
@@ -391,6 +392,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	UPPER      1  1    The highest (maximum) value of A\n"
 		"	VAR        1  1    Variance of A\n"
 		"	VARW       2  1    Weighted variance of A for weights in B\n"
+		"	VPDF       3  1    Von Mises probability density function for angles = A, mu = B and kappa = C\n"
 		"	WCDF       3  1    Weibull cumulative distribution function for x = A, scale = B, and shape = C\n"
 		"	WCRIT      3  1    Weibull distribution critical value for alpha = A, scale = B, and shape = C\n"
 		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
@@ -2388,6 +2390,26 @@ GMT_LOCAL void grdmath_FCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 			nu2 = lrint ((stack[last]->constant)  ? stack[last]->factor  : (double)stack[last]->G->data[node]);
 			stack[prev2]->G->data[node] = (float)gmt_f_cdf (GMT, F, nu1, nu2);
 		}
+	}
+}
+
+GMT_LOCAL void grdmath_FISHER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: FISHER 3 1 Fisher probability density function for lon = A, lat = B and kappa = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col;
+	double F, lon, lat, kappa;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant) lon = stack[prev2]->factor;
+	if (stack[prev1]->constant) lat = stack[prev1]->factor;
+	if (stack[last]->constant) kappa = stack[last]->factor;
+	grdmath_grd_padloop (GMT, info->G, row, col, node) {
+		if (!stack[prev2]->constant) lon = stack[prev2]->G->data[node];
+		if (!stack[prev1]->constant) lat = stack[prev1]->G->data[node];
+		if (!stack[last]->constant) kappa = stack[last]->G->data[node];
+		stack[prev2]->G->data[node] = (float)gmt_fisher_pdf (GMT, lon, lat, info->d_grd_x[col], info->d_grd_y[row], kappa);
 	}
 }
 
@@ -5314,6 +5336,25 @@ GMT_LOCAL void grdmath_VARW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = var;
 }
 
+GMT_LOCAL void grdmath_VPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: VPDF 3 1 Von Mises probability density function for angles = A, mu = B and kappa = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col;
+	double x, mu, kappa;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev1]->constant) mu = stack[prev1]->factor;
+	if (stack[last]->constant) kappa = stack[prev1]->factor;
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		x = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		if (!stack[prev1]->constant) mu = (double)stack[prev1]->G->data[node];
+		if (!stack[last]->constant) kappa = (double)stack[last]->G->data[node];
+		stack[prev2]->G->data[node] = (float)gmt_vonmises_pdf (GMT, x, mu, kappa);
+	}
+}
+
 GMT_LOCAL void grdmath_WCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: WCDF 3 1 Weibull cumulative distribution function for x = A, scale = B, and shape = C.  */
 {
@@ -5706,7 +5747,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 224
+#define GRDMATH_N_OPERATORS 226
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5936,6 +5977,8 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[221] = grdmath_DOT;	n_args[221] = 2;	n_out[221] = 1;
 	ops[222] = grdmath_BLEND;	n_args[222] = 3;	n_out[222] = 1;
 	ops[223] = grdmath_DAYNIGHT;	n_args[223] = 3;	n_out[223] = 1;
+	ops[224] = grdmath_VPDF;	n_args[224] = 3;	n_out[224] = 1;
+	ops[225] = grdmath_FISHER;	n_args[225] = 3;	n_out[225] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6352,6 +6395,8 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"DOT",	/* id = 221 */
 		"BLEND",	/* id = 222 */
 		"DAYNIGHT",	/* id = 223 */
+		"VPDF",	/* id = 224 */
+		"FISHER",	/* id = 225 */
 		"" /* last element is intentionally left blank */
 	};
 

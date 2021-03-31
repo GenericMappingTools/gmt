@@ -261,9 +261,9 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, j, n = 0;
+	unsigned int n_errors = 0, error, k, j, n = 0, pos;
 	bool B_args = false, noB = false;
-	char *c = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""};
+	char *c = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL, *Bframe = NULL, *Bx = NULL, *By = NULL, *Bxy = NULL;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
@@ -642,10 +642,48 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 			}
-			if (Bxy || Bx)	/* Did get x-axis annotation settings */
-				Ctrl->S[GMT_X].b = (Bx) ? strdup (Bx->arg) : strdup (Bxy->arg);
-			if (Bxy || By)	/* Did get y-axis annotation settings */
-				Ctrl->S[GMT_Y].b = (By) ? strdup (By->arg) : strdup (Bxy->arg);
+			if (Bx) {	/* Did get separate x-axis annotation settings */
+				if ((c = gmt_first_modifier (GMT, Bx->arg, "ls"))) {	/* Gave valid axes modifiers for custom labels */
+					pos = error = 0;
+					while (gmt_getmodopt (GMT, 'B', c, "ls", &pos, p, &error) && error == 0) {
+						switch (p[0]) {
+							case 'l':	/* Regular x-axis label */
+								Ctrl->S[GMT_X].label[GMT_PRIMARY] = strdup (&p[1]);	break;
+							case 's':	/* Secondary x-axis label */
+								Ctrl->S[GMT_X].label[GMT_SECONDARY] = strdup (&p[1]);	break;
+							default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+								break;
+						}
+					}
+					c[0] = '\0';	/* Chop off for now */
+					if (Ctrl->S[GMT_X].label[GMT_PRIMARY] || Ctrl->S[GMT_X].label[GMT_SECONDARY]) Ctrl->S[GMT_X].has_label = true;
+				}
+				Ctrl->S[GMT_X].b = strdup (&Bx->arg[1]);
+				if (c) c[0] = '+';
+			}
+			else if (Bxy)	/* Did common x and y-axes annotation settings */
+				Ctrl->S[GMT_X].b = strdup (Bxy->arg);
+			if (By) {	/* Did get y-axis annotation settings */
+				if ((c = gmt_first_modifier (GMT, By->arg, "ls"))) {	/* Gave valid axes modifiers for custom labels */
+					pos = 0;
+					while (gmt_getmodopt (GMT, 'B', c, "ls", &pos, p, &error) && error == 0) {
+						switch (p[0]) {
+							case 'l':	/* Regular y-axis label */
+								Ctrl->S[GMT_Y].label[GMT_PRIMARY] = strdup (&p[1]);	break;
+							case 's':	/* Secondary y-axis label */
+								Ctrl->S[GMT_Y].label[GMT_SECONDARY] = strdup (&p[1]);	break;
+							default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+								break;
+						}
+					}
+					if (Ctrl->S[GMT_Y].label[GMT_PRIMARY] || Ctrl->S[GMT_Y].label[GMT_SECONDARY]) Ctrl->S[GMT_Y].has_label = true;
+					c[0] = '\0';	/* Chop off for now */
+				}
+				Ctrl->S[GMT_Y].b = strdup (&By->arg[1]);
+				if (c) c[0] = '+';
+			}
+			else if (Bxy)	/* Did common x and y-axes annotation settings */
+				Ctrl->S[GMT_Y].b = strdup (Bxy->arg);
 			if (noB) { /* Make sure we turn off everything */
 				Ctrl->S[GMT_X].extra = strdup ("+n");
 				Ctrl->In.no_B = true;

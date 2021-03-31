@@ -6321,7 +6321,7 @@ GMT_LOCAL double gmtmap_geodesic_dist_cos (struct GMT_CTRL *GMT, double lonS, do
 }
 
 /*! . */
-GMT_LOCAL double gmtmap_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
+double gmtlib_great_circle_dist_cos (struct GMT_CTRL *GMT, double lon1, double lat1, double lon2, double lat2) {
 	/* Return cosine of great circle distance */
 
 	double sin_half_squared = gmtmap_haversine (GMT, lon1, lat1, lon2, lat2);
@@ -6409,7 +6409,7 @@ GMT_LOCAL int gmtmap_set_distaz (struct GMT_CTRL *GMT, unsigned int mode, unsign
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using geodesics in %s\n", type_name[type], unit_name);
 			break;
 		case GMT_DIST_COS+GMT_GREATCIRCLE:	/* 2-D lon, lat data, and Green's function needs cosine of spherical distance */
-			GMT->current.map.dist[type].func = &gmtmap_great_circle_dist_cos;
+			GMT->current.map.dist[type].func = &gmtlib_great_circle_dist_cos;
 			GMT->current.map.azimuth_func = &gmtmap_az_backaz_sphere;
 			GMT->current.map.second_point = &gmtmap_translate_point_spherical;
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s distance calculation will be using great circle approximation with %s auxiliary latitudes and return cosine of spherical angles.\n",

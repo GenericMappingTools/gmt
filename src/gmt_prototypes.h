@@ -783,6 +783,8 @@ EXTERN_MSC double gmt_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, d
 EXTERN_MSC double gmt_weibull_pdf (struct GMT_CTRL *GMT, double x, double scale, double shape);
 EXTERN_MSC double gmt_weibull_cdf (struct GMT_CTRL *GMT, double x, double scale, double shape);
 EXTERN_MSC double gmt_weibull_crit (struct GMT_CTRL *GMT, double p, double scale, double shape);
+EXTERN_MSC double gmt_vonmises_pdf (struct GMT_CTRL *GMT, double x, double mu, double kappa);
+EXTERN_MSC double gmt_fisher_pdf (struct GMT_CTRL *GMT, double plon, double plat, double lon, double lat, double kappa);
 EXTERN_MSC void gmt_getmad (struct GMT_CTRL *GMT, double *x, uint64_t n, double location, double *scale);
 EXTERN_MSC void gmt_getmad_f (struct GMT_CTRL *GMT, gmt_grdfloat *x, uint64_t n, double location, double *scale);
 EXTERN_MSC double gmt_psi (struct GMT_CTRL *GMT, double z[], double p[]);

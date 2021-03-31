@@ -28,6 +28,6 @@ Image formats recognized
 ------------------------
 
 We automatically recognize image formats via their magic bytes.  For formats
-that could contain either an image of a data set (e.g., geotiff) we determine
+that could contain either an image or a data set (e.g., geotiff) we determine
 which case it is and act accordingly.  If your favorite image format is not
 automatically detected then please let us know its magic bytes so we can add it.

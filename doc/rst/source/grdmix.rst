@@ -34,7 +34,7 @@ Description
 -----------
 
 **grdmix** will perform various operations involving images and grids.
-We either use a *alpha* grid, image, or constant to add a new alpha
+We either use an *alpha* grid, image, or constant to add a new alpha
 (transparency) layer to the image given as *raster1*, or we will blend
 the two *raster1* and *raster2* (grids or images) using the *weights* for
 *raster1* and the complementary *1 - weights* for *raster2* and save to

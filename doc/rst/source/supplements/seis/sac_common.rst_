@@ -26,10 +26,10 @@ Required Arguments
     The *X* and *Y* given here will override the position determined by command line options.
     *pen*, if given, will override the pen from **-W** option for current SAC file only.
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-J.rst_
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: /explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-R:
 

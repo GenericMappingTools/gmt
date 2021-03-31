@@ -669,6 +669,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	UPPER      1  1    The highest (maximum) value of A\n"
 		"	VAR        1  1    Variance of A\n"
 		"	VARW       2  1    Weighted variance of A for weights in B\n"
+		"	VPDF       3  1    Von Mises probability density function for angles = A, mu = B, and kappa = C\n"
 		"	WCDF       3  1    Weibull cumulative distribution function for x = A, scale = B, and shape = C\n"
 		"	WCRIT      3  1    Weibull distribution critical value for alpha = A, scale = B, and shape = C\n"
 		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
@@ -5201,6 +5202,31 @@ GMT_LOCAL int gmtmath_VARW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_VPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: VPDF 3 1 Von Mises probability density function for angles = A, mu = B and kappa = C.  */
+{
+	uint64_t s, row;
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	double x, mu, kappa, q;
+	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[last]->constant) {	/* KAPPA is a constant; set once and compute q once for efficiency in avoiding gmt_io calls in the loop */
+		kappa = S[last]->factor;
+		q = 1.0 / (TWO_PI * gmt_i0 (GMT, kappa));
+	}
+	if (S[prev1]->constant) mu = S[prev1]->factor;	/* mu is a constant; set once */
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];	/* Angle */
+		if (!S[prev1]->constant) mu = T_prev1->segment[s]->data[col][row];	/* Update mu */
+		if (!S[last]->constant) {	/* Must update kappa and hence q */
+			kappa = T->segment[s]->data[col][row];
+			q = 1.0 / (TWO_PI * gmt_i0 (GMT, kappa));
+		}
+		T_prev2->segment[s]->data[col][row] = q * exp (kappa * cosd (x - mu));
+	}
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: WCDF 3 1 Weibull cumulative distribution function for x = A, scale = B, and shape = C.  */
 {
@@ -5598,7 +5624,7 @@ GMT_LOCAL int gmtmath_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GMTMATH_N_OPERATORS 197
+#define GMTMATH_N_OPERATORS 198
 
 GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[]) {
 	/* Operator function	# of operands	# of outputs */
@@ -5800,6 +5826,7 @@ GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO
 	ops[194] = gmtmath_XYZ2HSV;	n_args[194] = 3;	n_out[194] = 3;
 	ops[195] = gmtmath_XYZ2LAB;	n_args[195] = 3;	n_out[195] = 3;
 	ops[196] = gmtmath_XYZ2RGB;	n_args[196] = 3;	n_out[196] = 3;
+	ops[197] = gmtmath_VPDF;	n_args[197] = 3;	n_out[197] = 1;
 }
 
 GMT_LOCAL void gmtmath_free_stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
@@ -6205,6 +6232,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		"XYZ2HSV",	/* id = 194 */
 		"XYZ2LAB",	/* id = 195 */
 		"XYZ2RGB",	/* id = 196 */
+		"VPDF",	/* id = 197 */
 		"" /* last element is intentionally left blank */
 	};
 

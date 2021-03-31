@@ -163,7 +163,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.PREF.dip = 90.0;	/* Vertical is the default dip */
-	C->A.p_width = DBL_MAX;	/* Infinity, basically */
+	C->A.p_width = 20000;	/* Infinity, basically */
 	C->L.pen = C->T.pen = C->P2.pen = C->T2.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->L.pen.width = C->T.pen.width = C->P2.pen.width = C->T2.pen.width = -1.0;
