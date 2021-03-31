@@ -683,20 +683,8 @@ panel.  **Note**: *row*, *col*, and *index* all start at 0.
 Missing data conversion: The **-d** option
 ------------------------------------------
 
-**Syntax**
-
-**-di**\|\ **o**\ *nodata*
-
-**Description**
-
-Within GMT, any missing values are represented by the IEEE NaN value.
-However, there are occasionally the need to handle user data where
-missing data are represented by some unlikely data value such as -99999.
-Since GMT cannot guess that in your data set -99999 is a special value,
-you can use the **-d** option to have such values replaced with NaNs.
-Similarly, should your GMT output need to conform to such a requirement
-you can replace all NaNs with the chosen nodata value.  If only input
-or output should be affected, use **-di** or **-do**, respectably.
+.. include:: ../explain_-d_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-e:
 
