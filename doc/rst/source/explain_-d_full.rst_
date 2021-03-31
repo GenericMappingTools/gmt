@@ -1,6 +1,21 @@
-**-d**\ [**i**\|\ **o**]\ *nodata*
-    Control how user-coded missing data values are translated to official
-    NaN values in GMT.  For input data we replace any value that equals
-    *nodata* with NaN. For output data we replace any NaN with the chosen
-    *nodata* value.  Use **-di** or **-do** to only affect input or output.
+The **-d** option
+^^^^^^^^^^^^^^^^^
 
+**Syntax**
+
+**-di**\|\ **o**\ *nodata*
+    Substitute specific values with NaN.
+
+**Description**
+
+The **-d** option allows user-coded missing data values to be translated to official NaN values in GMT. Within GMT,
+any missing values are represented by the IEEE NaN value. However, user data may occasionally denote missing data with
+an unlikely value (e.g., -99999). Since GMT cannot guess this special missing data value, you can use the **-d**
+option to have such values replaced with NaNs. Similarly, the **-d** option can replace all NaNs with the chosed
+*nodata* value should the GMT output need to conform to such a requirement.
+
+For input only, use **-di**\ *nodata* to examine all input columns. If any item equals *nodata*, the value is
+interpreted as a missing data item and is substituted with the value NaN.
+
+For output only, use **-do**\ *nodata* to examine all output columns. If any item equals NaN, the NaN value is
+substituted with the chosen missing data value *nodata*.
