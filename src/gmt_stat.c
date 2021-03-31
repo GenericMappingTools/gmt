@@ -2838,7 +2838,7 @@ void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 
 double gmt_von_mises_mean_and_kappa (struct GMT_CTRL *GMT, double *data, double *w, uint64_t n, double *kappa) {
 	/* Return the mean and kappa for a von Mises fit to (possibly weighted) data.
-	 * It is assumed that data have been scaled to 0-2*pi. Weights w is possibly NULL for no weights */
+	 * It is assumed that data have been scaled to 0-360. Weights w is possibly NULL for no weights */
 	uint64_t k, m = 0;
 	double mean = 0.0, x_r = 0.0, y_r = 0.0, s_w = 0.0, ww = 1.0;
 	double lo, hi, midval, range2, delta_R, s, c, R_bar;
@@ -2846,13 +2846,13 @@ double gmt_von_mises_mean_and_kappa (struct GMT_CTRL *GMT, double *data, double 
 	for (k = 0; k < n; k++) {
 		if (gmt_M_is_dnan (data[k])) continue;
 		if (w) ww = w[k];	/* Otherwise it is a constant 1 */
-		sincos (data[k], &s, &c);
+		sincosd (data[k], &s, &c);
 		x_r += c * ww;	y_r += s * ww;
 		s_w += ww;
 	}
 	if (s_w > 0.0) {	/* Can compute the statistics */
 		x_r /= s_w;	y_r /= s_w;
-		mean = atan2 (y_r, x_r);
+		mean = atan2d (y_r, x_r);
 	}
 	else {	/* No data, basically */
 		*kappa = GMT->session.d_NaN;

@@ -386,6 +386,8 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 			xval = 0.5 * (F->T->array[ibox] + F->T->array[ibox+1]);
 			if (F->cumulative)
 				area = F->boxh[ibox];	/* Just pick up the final bin as it has the entire sum */
+			//else if (GMT->common.w.active)	/* Add up sector areas */
+			//	area += F->boxh[ibox] * F->boxh[ibox];
 			else	/* Add up as we go along */
 				area += bin_width * F->boxh[ibox];
 			zval = pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
@@ -468,11 +470,12 @@ GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint6
 
 	if (GMT->common.w.active) {	/* Test wrapping on circle */
 		double *d = gmt_M_memory (GMT, NULL, n, double);
-		double f = TWO_PI / GMT->current.io.cycle_range;
+		double f = 360.0 / GMT->current.io.cycle_range;	/* COnvert data to a 0-360 circular data set */
 		for (i = 0; i < n; i++)
 			d[i] = f * data[i];
-		stats[0] = gmt_von_mises_mean_and_kappa (GMT, d, NULL, n, &stats[3]) / f;
-		stats[6] = R2D * f;	/* Save this here since probably needed to draw the Von Mises curve to convert to 0-360 angles */
+		stats[0] = gmt_von_mises_mean_and_kappa (GMT, d, NULL, n, &stats[3]);
+		stats[6] = f;	/* Save this here since probably needed to draw the Von Mises curve to convert to 0-360 angles */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "For wrapped data: mu = %g kappa = %g\n", stats[0], stats[3]);
 		gmt_M_free (GMT, d);
 		return (0);	/* Since only L2 solution is available */
 	}
@@ -1332,16 +1335,13 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			/* Draw this estimation of a normal distribution */
 			gmt_setpen (GMT, &Ctrl->N.pen[type]);
 			f = (Ctrl->Q.active) ? 0.5 : 1.0 / (stats[type+3] * sqrt (M_PI * 2.0));
-			if (GMT->common.w.active) f = 1.0;
+			if (GMT->common.w.active) f = stats[6] * D2R;	/* Scale area by bin-width in radians */
 			f *= area;
-			fprintf (stderr, "Area = %g\n", area);
 			for (k = 0; k < NP; k++) {
 				xp[k] = F.wesn[XLO] + inc * k;
 				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
-				if (GMT->common.w.active) {	/* stats[6] conveerts wrapped z to 0-36 degrees, stats[0] is mu and stats[3] is kappa */
+				if (GMT->common.w.active)	/* stats[6] converts wrapped z to 0-36 degrees, stats[0] is mu and stats[3] is kappa */
 					yp[k] = f * gmt_vonmises_pdf (GMT, stats[6] * xp[k], stats[0], stats[3]);
-					fprintf (stderr, "%g\t%g\n", xp[k], yp[k]);
-				}
 				else if (Ctrl->Q.active) {	/* Want a cumulative curve */
 					yp[k] = f * (1.0 + erf (z / M_SQRT2));
 					if (Ctrl->Q.mode == -1) yp[k] = f - yp[k];
