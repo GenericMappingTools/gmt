@@ -695,78 +695,16 @@ Data type selection: The **-f** option
 Data gap detection: The **-g** option
 -------------------------------------
 
-**Syntax**
-
-**-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\
-**z**\ *gap*\ [**+n**\|\ **p**]
-
-**Description**
-
-GMT has several mechanisms that can determine line
-segmentation. Typically, data segments are separated by multiple segment
-header records (see Chapter :doc:`file-formats`). However, if key data columns contain a
-NaN we may also use that information to break lines into multiple
-segments. This behavior is modified by the parameter
-:term:`IO_NAN_RECORDS` which by default is set to *skip*, meaning such
-records are considered bad and simply skipped. If you wish such records
-to indicate a segment boundary then set this parameter to *pass*.
-Finally, you may wish to indicate gaps based on the data values
-themselves. The **-g** option is used to detect gaps based on one or
-more criteria (use **-ga** if *all* the criteria must be met; otherwise
-only one of the specified criteria needs to be met to signify a data
-gap). Gaps can be based on excessive jumps in the *x*- or
-*y*-coordinates (**-gx** or **-gy**), or on the distance between points
-(**-gd**). Append the *gap* distance and optionally a unit for actual
-distances. For geographic data the optional unit may be arc
-**d**\ egree, **m**\ inute, and **s**\ econd, or m\ **e**\ ter
-[Default], **f**\ eet, **k**\ ilometer, **M**\ iles, or **n**\ autical
-miles. For programs that map data to map coordinates you can optionally
-specify these criteria to apply to the projected coordinates (by using
-upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
-**c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
-by :term:`PROJ_LENGTH_UNIT`]. **Note**: For **-gx** or **-gy** with time data
-the unit is instead controlled by :term:`TIME_UNIT`.
-Normally, a gap is computed as the absolute value of the
-specified distance measure (see above).  Append **+n** to compute the gap
-as previous minus current column value and **+p** for current minus previous
-column value.
+.. include:: ../explain_-g_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-h:
 
 Header data records: The **-h** option
 --------------------------------------
 
-**Syntax**
-
-**-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*]\
-[**+r**\ *remark*][**+t**\ *title*]
-
-**Description**
-
-The **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*] option
-lets GMT know that input file(s) have *n_recs* header records [0]. If
-there are more than one header record you must specify the number after
-the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
-that start with the character # are *automatically* considered header
-records and skipped, hence **-h** is not needed to skip such records.
-Thus, *n_recs* refers to general text lines that
-do *not* start with # and thus must specifically be skipped in order for
-the programs to function properly. The default number of such header
-records if **-h** is used is one of the many parameters in the :doc:`/gmt.conf` file
-(:term:`IO_N_HEADER_RECS`, by default 0), but can be overridden by
-**-h**\ *n_header_recs*. Normally, programs that both read and write
-tables will output the header records that are found on input. Use
-**-hi** to suppress the writing of header records. You can use the
-**-h** options modifiers to tell programs to output extra header
-records for titles (**+t**), remarks (**+r**), or column names (**+c**)
-identifying each data column, or delete (**+d**) the original headers.
-You can even add a single segment header (**+m**) after the initial header
-section.
-
-When **-b** is used to indicate binary data the **-h** takes on a
-slightly different meaning. Now, the *n_recs* argument is taken to mean
-how many *bytes* should be skipped (on input) or padded with the space
-character (on output).
+.. include:: ../explain_-h_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-i:
 
@@ -810,23 +748,8 @@ column). The chosen data columns will be used as given.
 Spherical distance calculations: The **-j** option
 --------------------------------------------------
 
-**Syntax**
-
-**-je**\|\ **f**\|\ **g**
-
-**Description**
-
-GMT has different ways to compute distances on planetary bodies.
-By default (**-jg**) we perform great circle distance calculations, and parameters such
-as distance increments or radii will be compared against calculated great
-circle distances. To simplify and speed up calculations you can select Flat
-Earth mode (**-jf**) instead, which gives an approximate but faster result.  Alternatively,
-you can select ellipsoidal (**-je**; i.e., geodesic) mode for the highest precision
-(and slowest calculation time).  All spherical distance calculations depend on
-the current ellipsoid (:term:`PROJ_ELLIPSOID`), the definition of
-the mean radius (:term:`PROJ_MEAN_RADIUS`), and the specification
-of latitude type (:term:`PROJ_AUX_LATITUDE`).  Geodesic distance
-calculations is also controlled by method (:term:`PROJ_GEODESIC`).
+.. include:: ../explain_distcalc_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _option_-l:
 
