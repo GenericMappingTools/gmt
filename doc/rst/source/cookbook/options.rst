@@ -718,7 +718,7 @@ Input columns selection: The **-i** option
 
 For example, to use the 4th, 7th, and 3rd data column as the required *x,y,z*
 to :doc:`/blockmean` you would specify **-i**\ 3,6,2 (since 0 is the first
-column). The chosen data columns will be used as given. 
+column). The chosen data columns will be used as given.
 
 .. _gmt_record:
 
@@ -797,29 +797,8 @@ look for the automatically generated on in the session directory.
 Grid interpolation parameters: The **-n** option
 ------------------------------------------------
 
-**Syntax**
-
-**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*]\
-[**+c**][**+t**\ *threshold*]
-
-**Description**
-The **-n**\ *type* option controls parameters used for
-2-D grids resampling. You can select the type of spline used (**-nb**
-for B-spline smoothing, **-nc** for bicubic [Default], **-nl** for
-bilinear, or **-nn** for nearest-node value). For programs that support
-it, antialiasing is by default on; optionally, append **+a** to switch
-off antialiasing. By default, boundary conditions are set according to
-the grid type and extent. Change boundary conditions by appending
-**+b**\ *BC*, where *BC* is either **g** for geographic boundary
-conditions or one (or both) of **n** and **p** for natural or periodic
-boundary conditions, respectively. Append **x** or **y** to only apply
-the condition in one dimension. E.g., **-nb+nxpy** would imply natural
-boundary conditions in the *x* direction and periodic conditions in the
-*y* direction. Finally, append **+t**\ *threshold* to control how close
-to nodes with NaN the interpolation should go. A *threshold* of 1.0
-requires all (4 or 16) nodes involved in the interpolation to be
-non-NaN. 0.5 will interpolate about half way from a non-NaN value; 0.1
-will go about 90% of the way, etc.
+.. include:: ../explain_-n_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-o:
 
