@@ -3,7 +3,7 @@ The **-i** option
 
 **Syntax**
 
-**-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+**-i**\ *cols*\ [**+l**][**+d**\ *divisor*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
     Select specific data columns for primary input, in arbitrary order.
 
 **Description**
@@ -15,7 +15,7 @@ be repeated. The chosen data columns will be used as given and columns not liste
 one of the following modifiers to any column or column range to transform the input columns:
 
 - **+l** to take the **log10** of the input values.
-- **+d** to divide the input values by the factor *divide* [default is 1].
+- **+d** to divide the input values by the factor *divisor* [default is 1].
 - **+s** to multiply the input values by the factor *scale* [default is 1].
 - **+o** to add the given *offset* to the input values [default is 0].
 
