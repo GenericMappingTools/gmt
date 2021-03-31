@@ -767,23 +767,8 @@ ignore all trailing text, use **-in**.
 Spherical distance calculations: The **-j** option
 --------------------------------------------------
 
-**Syntax**
-
-**-je**\|\ **f**\|\ **g**
-
-**Description**
-
-GMT has different ways to compute distances on planetary bodies.
-By default (**-jg**) we perform great circle distance calculations, and parameters such
-as distance increments or radii will be compared against calculated great
-circle distances. To simplify and speed up calculations you can select Flat
-Earth mode (**-jf**) instead, which gives an approximate but faster result.  Alternatively,
-you can select ellipsoidal (**-je**; i.e., geodesic) mode for the highest precision
-(and slowest calculation time).  All spherical distance calculations depend on
-the current ellipsoid (:term:`PROJ_ELLIPSOID`), the definition of
-the mean radius (:term:`PROJ_MEAN_RADIUS`), and the specification
-of latitude type (:term:`PROJ_AUX_LATITUDE`).  Geodesic distance
-calculations is also controlled by method (:term:`PROJ_GEODESIC`).
+.. include:: ../explain_distcalc_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _option_-l:
 
