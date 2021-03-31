@@ -736,37 +736,8 @@ column value.
 Header data records: The **-h** option
 --------------------------------------
 
-**Syntax**
-
-**-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*]\
-[**+r**\ *remark*][**+t**\ *title*]
-
-**Description**
-
-The **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*] option
-lets GMT know that input file(s) have *n_recs* header records [0]. If
-there are more than one header record you must specify the number after
-the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
-that start with the character # are *automatically* considered header
-records and skipped, hence **-h** is not needed to skip such records.
-Thus, *n_recs* refers to general text lines that
-do *not* start with # and thus must specifically be skipped in order for
-the programs to function properly. The default number of such header
-records if **-h** is used is one of the many parameters in the :doc:`/gmt.conf` file
-(:term:`IO_N_HEADER_RECS`, by default 0), but can be overridden by
-**-h**\ *n_header_recs*. Normally, programs that both read and write
-tables will output the header records that are found on input. Use
-**-hi** to suppress the writing of header records. You can use the
-**-h** options modifiers to tell programs to output extra header
-records for titles (**+t**), remarks (**+r**), or column names (**+c**)
-identifying each data column, or delete (**+d**) the original headers.
-You can even add a single segment header (**+m**) after the initial header
-section.
-
-When **-b** is used to indicate binary data the **-h** takes on a
-slightly different meaning. Now, the *n_recs* argument is taken to mean
-how many *bytes* should be skipped (on input) or padded with the space
-character (on output).
+.. include:: ../explain_-h_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-i:
 
