@@ -711,33 +711,14 @@ Header data records: The **-h** option
 Input columns selection: The **-i** option
 ------------------------------------------
 
-**Syntax**
+.. include:: ../explain_-icols_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*]\
-[**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+**Examples**
 
-**Description**
-
-The **-i**\ *columns* option allows you to specify which
-input file physical data columns to use and in what order. By default, GMT will
-read all the data columns in the file, starting with the first column
-(0). Using **-i** modifies that process and reads in a logical record based
-on columns from the physical record. For instance, to use the 4th,
-7th, and 3rd data column as the required *x,y,z* to
-:doc:`/blockmean` you would specify
-**-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
-will be used as given. Optionally, you can specify that input columns
-should be transformed according to a linear or logarithmic conversion.
-Do so by appending [**+l**][**+d**\ *factor*][**+s**\ *factor*][**+o**\ *offset*] to
-each column (or range of columns). All items are optional: The **+l**
-implies we should first take :math:`\log_{10}` of the data [leave as
-is]. Next, we may multiply or divide the result by the given *factor* [1]. Finally, we
-add in the specified *offset* [0].  If you want the trailing text to remain
-part of your subset logical record then you must also select the special column
-by requesting column **t**, otherwise we ignore trailing text.  If you only
-want to select one word from the trailing text, then append the word number
-(0 is the first word).  Finally, to use the entire numerical record and
-ignore all trailing text, use **-in**.
+For example, to use the 4th, 7th, and 3rd data column as the required *x,y,z*
+to :doc:`/blockmean` you would specify **-i**\ 3,6,2 (since 0 is the first
+column). The chosen data columns will be used as given. 
 
 .. _gmt_record:
 
