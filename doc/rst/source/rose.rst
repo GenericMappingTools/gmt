@@ -22,6 +22,7 @@ Synopsis
 [ |-J|\ **X**\ *diameter* ]
 [ |-L|\ [*wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*] ]
 [ |-M|\ *parameters* ]
+[ |-N| ]
 [ |-Q|\ *alpha* ]
 [ |-R|\ *r0*/*r1*/*az0*/*az1* ]
 [ |-S| ]
