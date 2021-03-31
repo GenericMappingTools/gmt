@@ -646,56 +646,17 @@ OGR/GMT GIS i/o: The **-a** option
 Binary table i/o: The **-b** option
 -----------------------------------
 
-**Syntax**
+Binary input with **-bi** option
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**-bi**\|\ **o**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
+.. include:: ../explain_-bi_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^
 
-**Description**
+Binary output with **-bo** option
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-All GMT programs that accept table data as *primary* input may read ASCII, native
-binary, shapefiles, or netCDF tables (Any *secondary* input files provided via command line
-options are always expected to be in ASCII format). Native binary files may have a header section
-and the **-h**\ *n* option (see Section `Header data records: The -h option`_) can be used to
-skip the first *n* bytes. The data record can be in any format, you may mix
-different data types and even byte-swap individual columns or the entire record. When using
-native binary data the user must be aware of the fact that GMT has no
-way of determining the actual number of columns in the file. You must
-therefore pass that information to GMT via the binary
-**-bi** *n*\ **t** option, where *n* is the number of data
-columns of given type **t**, where **t** must be one of **c** (signed 1-byte character,
-int8_t), **u** (unsigned 1-byte character, uint8_t), **h** (signed
-2-byte int, int16_t), **H** (unsigned 2-byte int, uint16_t), **i**
-(signed 4-byte int, int32_t), **I** (unsigned 4-byte int, uint32_t),
-**l** (signed 8-byte int, int64_t), **L** (unsigned 8-byte int,
-uint64_t), **f** (4-byte single-precision float), and **d** (8-byte
-double-precision float). In addition, use **x** to skip *n* bytes
-anywhere in the record. For a mixed-type data record you can concatenate
-several [*n*]\ **t** combinations, separated by commas. You may append
-**w** to any of the items to force byte-swapping. Alternatively, append
-**+l**\|\ **b** to indicate that the entire data file should be
-read or written as little- or big-endian, respectively. Here, *n* is the
-number of each item in your binary file. Note that *n* may be larger
-than *m*, the number of columns that the GMT program requires to do
-its task. If *n* is not given then it defaults to *m* and all columns
-are assumed to be of the single specified type **t** [**d** (double), if
-not set]. If *n* < *m* an error is generated. Multiple segment
-files are allowed and the segment headers are assumed to be records
-where all the fields equal NaN.
-
-For native binary output, use the **-bo** option; see **-bi** for further details.
-
-Because of its meta data, reading netCDF tables (i.e., netCDF files
-containing 1-dimensional arrays) is quite a bit less complex than
-reading native binary files. When feeding netCDF tables to programs like
-:doc:`/plot`, the program will automatically
-recognize the format and read whatever amount of columns are needed for
-that program. To steer which columns are to be read, the user can append
-the suffix **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the netCDF file
-name, where *var1*, *var2*, etc. are the names of the variables to be
-processed. No **-bi** option is needed in this case.
-
-Currently, netCDF tables can only be input, not output. For more
-information, see Chapter :doc:`file-formats`.
+.. include:: ../explain_-bo_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^
 
 .. _option_-c:
 
