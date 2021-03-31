@@ -766,7 +766,7 @@ A simple plot with two symbols can obtain a legend by using this option and modi
 
 .. literalinclude:: /_verbatim/GMT_autolegend.txt
 
-As the script shows, when no *specfile* is given to :doc:`/legend` then we look for the automatically generated on in
+As the script shows, when no *specfile* is given to :doc:`/legend` then we look for the automatically generated one in
 the session directory.
 
 .. _auto_legend:
