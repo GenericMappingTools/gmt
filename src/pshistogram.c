@@ -472,7 +472,7 @@ GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint6
 		for (i = 0; i < n; i++)
 			d[i] = f * data[i];
 		stats[0] = gmt_von_mises_mean_and_kappa (GMT, d, NULL, n, &stats[3]) / f;
-		stats[6] = f;	/* Save this here since probably needed to draw the Von Mises curve */
+		stats[6] = R2D * f;	/* Save this here since probably needed to draw the Von Mises curve to convert to 0-360 angles */
 		gmt_M_free (GMT, d);
 		return (0);	/* Since only L2 solution is available */
 	}
@@ -1332,16 +1332,15 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			/* Draw this estimation of a normal distribution */
 			gmt_setpen (GMT, &Ctrl->N.pen[type]);
 			f = (Ctrl->Q.active) ? 0.5 : 1.0 / (stats[type+3] * sqrt (M_PI * 2.0));
-			if (GMT->common.w.active) f = 1.0 / (TWO_PI * gmt_i0 (GMT, stats[3]));
+			if (GMT->common.w.active) f = 1.0;
 			f *= area;
 			fprintf (stderr, "Area = %g\n", area);
 			for (k = 0; k < NP; k++) {
 				xp[k] = F.wesn[XLO] + inc * k;
 				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
 				if (GMT->common.w.active) {
-					double q = f * exp (stats[3] * cos ((xp[k] * stats[6]) - stats[0]));
-					sum_q += q;
-					yp[k] = q;
+					yp[k] = sqrt (f) * gmt_vonmises_pdf (GMT, stats[6] * xp[k], stats[0], stats[3]);
+					fprintf (stderr, "%g\t%g\n", xp[k], yp[k]);
 				}
 				else if (Ctrl->Q.active) {	/* Want a cumulative curve */
 					yp[k] = f * (1.0 + erf (z / M_SQRT2));
@@ -1365,7 +1364,6 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 				xp[k] = xtmp;	yp[k] = ytmp;
 			}
 			PSL_plotline (PSL, xp, yp, NP, PSL_MOVE|PSL_STROKE);
-			fprintf (stderr, "sum_q = %g\n", sum_q);
 		}
 		gmt_M_free (GMT, xp);
 		gmt_M_free (GMT, yp);
