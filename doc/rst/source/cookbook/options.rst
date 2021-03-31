@@ -703,25 +703,8 @@ or output should be affected, use **-di** or **-do**, respectably.
 Data record pattern matching: The **-e** option
 -----------------------------------------------
 
-**Syntax**
-
-**-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
-
-**Description**
-
-Modules that read ASCII tables will normally process all the data records
-that are read.  The **-e** option offers a built-in pattern scanner that
-will only pass records that match the given *pattern* or regular expressions.
-The test can also be inverted to only pass data records that *do not* match
-the pattern.  The test is *not* applied to header or segment headers.
-To reverse the search, i.e., to only accept data records that do *not*
-contain the specified pattern, use **-e~**. Should your pattern happen
-to start with ~ you will need to escape this character with a backslash
-[Default accepts all data records]. For matching data records
-against extended `Regular Expressions <https://en.wikipedia.org/wiki/Regular_expression>`_,
-please enclose the expression in slashes. Append **i** for case-insensitive matching.
-To supply a list of such patterns, give **+f**\ *file* with one pattern per line.
-To give a single pattern starting with **+f**, escape it with a backslash.
+.. include:: ../explain_-e_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-f:
 
