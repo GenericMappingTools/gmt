@@ -791,26 +791,13 @@ Grid interpolation parameters: The **-n** option
 Output columns selection: The **-o** option
 -------------------------------------------
 
-**Syntax**
+.. include:: ../explain_-ocols_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
+**Examples**
 
-**Description**
-
-The **-o**\ *columns* option allows you to specify which
-columns to write on output and in what order. By default, GMT will
-write all the data columns produced by the program. Using **-o**
-modifies that process. For instance, to write just the 4th and 2nd data
-column to the output you would use **-o**\ 3,1 (since 0 is the first column).
-You can also use a column more than once, e.g., **-o**\ 3,1,3, to
-duplicate a column on output.  Finally, if your logical record in memory
-contains trailing text then you can include that by including the special
-column **t** to your selections.  The text is always written after any
-numerical columns.  If you only want to output one word from the trailing
-text, then append the word number (0 is the first word).  Note that if you
-wanted to scale or shift the output values you need to do so during reading,
-using the **-i** option. To output all numerical columns and ignoring
-trailing text, use **-on**.
+To write out just the 4th and 2nd data column to the output, use **-o**\ 3,1 (since 0 is the first column).
+To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3.
 
 .. _option_-p:
 
