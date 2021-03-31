@@ -1338,8 +1338,8 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			for (k = 0; k < NP; k++) {
 				xp[k] = F.wesn[XLO] + inc * k;
 				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
-				if (GMT->common.w.active) {
-					yp[k] = sqrt (f) * gmt_vonmises_pdf (GMT, stats[6] * xp[k], stats[0], stats[3]);
+				if (GMT->common.w.active) {	/* stats[6] conveerts wrapped z to 0-36 degrees, stats[0] is mu and stats[3] is kappa */
+					yp[k] = f * gmt_vonmises_pdf (GMT, stats[6] * xp[k], stats[0], stats[3]);
 					fprintf (stderr, "%g\t%g\n", xp[k], yp[k]);
 				}
 				else if (Ctrl->Q.active) {	/* Want a cumulative curve */
