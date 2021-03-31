@@ -4,7 +4,7 @@ The **-d** option
 **Syntax**
 
 **-di**\|\ **o**\ *nodata*
-    Substitute specific values with NaN
+    Substitute specific values with NaN.
 
 **Description**
 
