@@ -105,6 +105,13 @@ Optional Arguments
     using **-M** will add vector heads to all individual directions
     using the supplied attributes.
 
+.. _-N:
+
+**-N**
+    Normalize rose plots for area (i.e., take :math:`sqrt(r)` before plotting
+    [default is no normalization]. Only applicable if normalization has been
+    specified with **-Sn**\ *radius*.
+
 .. _-Q:
 
 **-Q**\ [*alpha*]
