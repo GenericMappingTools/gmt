@@ -1,3 +1,0 @@
-**-do**\ *nodata*
-    Examine all output columns and if any item equals NaN we substitute
-    it with the chosen missing data value *nodata*.

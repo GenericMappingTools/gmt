@@ -671,45 +671,16 @@ Selecting subplot panels: The **-c** option
 Missing data conversion: The **-d** option
 ------------------------------------------
 
-**Syntax**
-
-**-di**\|\ **o**\ *nodata*
-
-**Description**
-
-Within GMT, any missing values are represented by the IEEE NaN value.
-However, there are occasionally the need to handle user data where
-missing data are represented by some unlikely data value such as -99999.
-Since GMT cannot guess that in your data set -99999 is a special value,
-you can use the **-d** option to have such values replaced with NaNs.
-Similarly, should your GMT output need to conform to such a requirement
-you can replace all NaNs with the chosen nodata value.  If only input
-or output should be affected, use **-di** or **-do**, respectably.
+.. include:: ../explain_-d_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-e:
 
 Data record pattern matching: The **-e** option
 -----------------------------------------------
 
-**Syntax**
-
-**-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
-
-**Description**
-
-Modules that read ASCII tables will normally process all the data records
-that are read.  The **-e** option offers a built-in pattern scanner that
-will only pass records that match the given *pattern* or regular expressions.
-The test can also be inverted to only pass data records that *do not* match
-the pattern.  The test is *not* applied to header or segment headers.
-To reverse the search, i.e., to only accept data records that do *not*
-contain the specified pattern, use **-e~**. Should your pattern happen
-to start with ~ you will need to escape this character with a backslash
-[Default accepts all data records]. For matching data records
-against extended `Regular Expressions <https://en.wikipedia.org/wiki/Regular_expression>`_,
-please enclose the expression in slashes. Append **i** for case-insensitive matching.
-To supply a list of such patterns, give **+f**\ *file* with one pattern per line.
-To give a single pattern starting with **+f**, escape it with a backslash.
+.. include:: ../explain_-e_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-f:
 

@@ -4,6 +4,7 @@ The **-a** option
 **Syntax**
 
 **-a**\ [[*col*\ =]\ *name*\ ][,\ *...*]
+    Control how aspatial data are handled in GMT during input and output.
 
 **Description**
 
