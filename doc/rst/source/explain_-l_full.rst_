@@ -22,7 +22,7 @@ in :doc:`/legend`, which provides more details and customization):
 - **+G** to add the vertical space specified by *gap* [default is no extra space].
 - **+H** to add the specified legend *header* [default is no header].
 - **+L** to set a line *text*. Optionally, prepend a horizontal justification code **L**\ (eft), **C**\ (enter),
-  or **R**\ (ight) for *text* [default is **C**\ (enter)].
+  or **R**\ (ight) for *text* [default is **C**].
 - **+N** to change the number of columns used to set the following legend items to *cols* [default is 1].
 - **+S** to override the *size* of the current symbol for the legend or set a *height* if plotting a line or contour
   [default uses the same symbol as plotted].
@@ -30,19 +30,17 @@ in :doc:`/legend`, which provides more details and customization):
   no vertical line].
 - **+f** to set the *font* used for the legend header [default is :term:`FONT_TITLE`].
 - **+g** to set the *fill* used for the legend frame [default is white].
-- **+j** to set placement of the legend using the two-character justification code *justify* [default is **TR**],
-- **+o** to set the offset from legend frame to anchor point [default is 0.2c],
-- **+p** to set the pen used for the legend frame [default is 1p].
-- **+s**\ *scale* to resize all symbol and length sizes in the legend.
-- **+w**\ *width* to set legend frame width [default is auto].
+- **+j** to set placement of the legend using the two-character justification code *justify* [default is **TR**].
+- **+o** to set the *offset* from legend frame to anchor point [default is 0.2c].
+- **+p** to set the *pen* used for the legend frame [default is 1p].
+- **+s** to resize all symbol and length sizes in the legend by *scale* [default is no scaling].
+- **+w** to set legend frame *width* [default is auto].
 
-**Note**: Default pen is given by :term:`MAP_DEFAULT_PEN`.
-
-**Note**: **+H**, **+g**, **+j**, **+o**, **+p**, **+w**, and **+s** will only take effect if appended to the very \
-first **-l** option for a plot. The **+N** modifier, if appended to the first **-l** option, affects the legend width
-(unless set via **+w**); otherwise it just subdivides the available width among the specified columns. If **legend**
-is not called explicitly we will call it implicitly when finishing the plot via :doc:`/end`.
-
-**Note**: If auto-coloring is used for pens or fills and **-l** is set then *label* may contain a C-format for integers
-(e.g., %3.3d) or just # and we will use the sequence number with the format to build the label entries.  Alternatively,
-give a list of comma-separated labels, or give no label if your segment headers contain label settings.
+**Note**: Default pen is given by :term:`MAP_DEFAULT_PEN`. **Note**: **+H**, **+g**, **+j**, **+o**, **+p**, **+w**, and
+**+s** will only take effect if appended to the very \ first **-l** option for a plot. The **+N** modifier, if appended
+to the first **-l** option, affects the legend width (unless set via **+w**); otherwise it just subdivides the available
+width among the specified columns. If **legend** is not called explicitly we will call it implicitly when finishing the
+plot via :doc:`/end`. **Note**: If auto-coloring is used for pens or fills and **-l** is set then *label* may contain a
+C-format for integers (e.g., %3.3d) or just # and we will use the sequence number with the format to build the label
+entries.  Alternatively, give a list of comma-separated labels, or give no label if your segment headers contain label
+settings.
