@@ -756,32 +756,18 @@ Spherical distance calculations: The **-j** option
 Setting automatic legend entries: The **-l** option
 ---------------------------------------------------
 
-**Syntax**
+.. include:: ../explain_-l_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-l**\ [*label*]\ [**+D**\ *pen*][**+G**\ *gap*][**+H**\ *header*]\
-[**+L**\ [*code*/]\ *txt*][**+N**\ *cols*][**+S**\ *size*\ [/*height*]]\
-[**+V**\ [*pen*]][**+f**\ *font*][**+g**\ *fill*][**+j**\ *just*]\
-[**+o**\ *off*][**+p**\ *pen*][**+s**\ *scale*][**+w**\ *width*]
+**Examples**
 
-**Description**
-
-Map or plot legends are created by :doc:`/legend` and normally this module
-will read a *specfile* that outlines how the legend should look.  You can
-make very detailed and complicated legends by mixing a variety of items,
-such as symbol, free text, colorbars, scales, images, and more.  Yet, for
-the vast majority of plots displaying symbols or lines a simple legend will suffice.
-The **-l** option is used to automatically build the *specfile* as we plot
-the various layers that will make up our illustration.  Apart from setting
-the label string that goes with the current symbol or line, you can select
-from a series of modifiers that mirror the effect of control codes normally
-added to the *specfile* by hand.  For instance, a simple plot with two
-symbols can obtain a legend by using this option and modifiers and is shown
-in Figure :ref:`Auto Legend <auto_legend>`:
+A simple plot with two symbols can obtain a legend by using this option and modifiers and is shown in Figure
+:ref:`Auto Legend <auto_legend>`:
 
 .. literalinclude:: /_verbatim/GMT_autolegend.txt
 
-As the script shows, when no *specfile* is given to :doc:`/legend` then we
-look for the automatically generated on in the session directory.
+As the script shows, when no *specfile* is given to :doc:`/legend` then we look for the automatically generated one in
+the session directory.
 
 .. _auto_legend:
 
