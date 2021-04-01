@@ -931,26 +931,8 @@ NaN-record treatment: The **-s** option
 Layer transparency: The **-t** option
 -------------------------------------
 
-**Syntax**
-
-**-t**\ *transp*\ [/*transp2*][**+f**\ \|\ **s**]
-
-**Description**
-
-While the PostScript language does not support transparency, PDF does,
-and via PostScript extensions one can manipulate the transparency
-levels of objects. The **-t** option allows you to change the
-transparency level for the current overlay by appending a percentage in
-the 0-100 range; the default is 0, or opaque. Transparency may also be
-controlled on a feature by feature basis when setting color or fill (see
-section :ref:`-Gfill_attrib`).  For separate transparency for fill and stroke,
-append /*transp2* as well. **Note**: The modules
-:doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change transparency
-on a record-by-record basis if **-t** is given without argument and the
-input file supplies variable transparencies as the last numerical column value(s).
-Use the **+f** and **+s** modifiers to indicate which transparency is provided
-or if we expect one or two transparencies.
-
+.. include:: ../explain_-t_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 .. _option_-w:
 
 Examining data cycles: The **-w** option
