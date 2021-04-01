@@ -804,53 +804,20 @@ To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3.
 Perspective view: The **-p** option
 -----------------------------------
 
-**Syntax**
-
-**-p**\ [**x**\|\ **y**\|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]]\
-[**+w**\ *lon0*/*lat0*\ [/*z0*]][**+v**\ *x0*/*y0*]
-
-**Description**
-
-All plotting programs that normally produce a flat, two-dimensional
-illustration can be told to view this flat illustration from a
-particular vantage point, resulting in a perspective view. You can
-select perspective view with the **-p** option by setting the azimuth
-and elevation of the viewpoint [Default is 180/90]. When **-p** is used
-in consort with **-Jz** or **-JZ**, a third value can be appended which
-indicates at which *z*-level all 2-D material, like the plot frame, is
-plotted (in perspective) [Default is at the bottom of the z-axis].
-For frames used for animation, we fix the center of your data domain.
-Specify another center using a particular world coordinate point with **+w**\ *lon0*/\ *lat0*\ [/*z0*],
-which will project to the center of your page size, or specify the coordinates of
-the projected 2-D view point with **+v**\ *x0/y0*. When **-p** is used without any further
-arguments, the values from the last use of **-p** in a previous
-GMT command will be used.  Alternatively, you can perform a simple rotation
-about the z-axis by just giving the rotation angle.  Optionally, use **+v**
-or **+w** to select another axis location than the plot origin.
+.. include:: ../explain_perspective_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-q:
 
 Data row selection: The **-q** option
 -------------------------------------
 
-**Syntax**
+.. include:: ../explain_-q_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+**Examples**
 
-**Description**
-
-Similar to how **-i** and **-o** control which data *columns* to read and write, the **-qi** (or just **-q**)
-and **-qo** options control which data *rows* to read and write [Default is all]. As for columns, you
-can specify specific rows, a range of rows, or several sets of row ranges. You can also
-invert your selections with a leading ~ and then we select all the rows *not* specified by
-your ranges.  Normally, the row counter starts at 0 and increases until the end of the
-data set (**+a**).  However, you can append **+f** to reset the counter at the start of each
-table (file) or **+s** to reset the counter at the start of each data segment. Thus, **-q**\ 1\ **+s**
-will only read the 2nd data record from each of the segments found.  Note that header records do not
-increase the row counters; only data records do.  Instead of rows you may specify data
-*limits* for a specified column by appending **+c**\ *col*.  Now, we will only select rows whose
-data for the given column *col* lie within the range(s) given by your *min*/*max* limits.  Also
-note that when **+c** is used the **+a**\|\ **f**\|\ **s** have no effect.
+Use **-q**\ 1\ **+s** to only read the 2nd data record from each of the segments found.
 
 .. _option_nodereg:
 

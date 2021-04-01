@@ -309,19 +309,10 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_perspective_full.rst_
 
 .. _-q_full:
-
-.. |Add_-q| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-q_full.rst_
-
 .. _-qi_full:
-
-.. |Add_-qi| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-qi_full.rst_
-
 .. _-qo_full:
 
-.. |Add_-qo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-qo_full.rst_
+.. include:: explain_-q_full.rst_
 
 .. _nodereg_full:
 
