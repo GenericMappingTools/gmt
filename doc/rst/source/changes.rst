@@ -4,6 +4,44 @@
 Changelog
 =========
 
+New Features in GMT 6.2
+=======================
+
+GMT 6.2 may be a minor revision to 6.0 but packs quite a punch. For general changes, we mention:
+
+#. Addition of themes (sets of GMT defaults) to GMT, with a new modern theme for modern mode.
+#. Auto scaling options for many GMT defaults.
+#. New animation showing seismic waveforms.
+#. Allow **+a**\ *angle* for y-axis as well as x-axis with the **-B** common option.
+#. General improvements to the automatic determination of frame attributes.
+#. API improvements to support the GMT/MEX, PyGMT, and GMT.jl environments.
+
+New Common Options in GMT 6.2:
+------------------------------
+
+New Modules in GMT 6.2:
+-----------------------
+
+New Core Module Features in GMT 6.2:
+------------------------------------
+
+#. :doc:`grdmath`: New FISHER and VPDF operators.
+#. :doc:`grdcut`: New **-F** option to clip a grid based on a polygon.
+#. :doc:`plot`: New **-H** option to scale the symnol size as well as the symbol pen outline attributes.
+#. :doc:`subplot`: New **-D** option to accept previous default plot settings.
+#: :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; support
+   slanted annotations with **-S**.
+#. :doc:`events`: New **-Z** option animate geodesy and seismology symbols.
+#. :doc:`histogram`: New **+b** modifier to **-C** to set color based on the bin value.
+#. :doc:`legend`: New **-M** option to handle both hidden and given information.
+
+Supplement updates in GMT 6.2:
+------------------------------
+
+#. :doc:`coupe`: Updated syntax for the **-A** option.
+#. :doc:`meca`, :doc:`coupe`, :doc:`velo`: New scaling option **-H**; allow variable transparency; allow adjusting
+   symbol color via intensity; allow setting symbol color using colormaps.
+
 Release of GMT 6.1.1
 ====================
 
@@ -30,7 +68,7 @@ changes, we mention
  #. Add modifier **+v** for a *vertical* oblique Equator in -JO [horizontal].
  #. New **-B** modifier **+i** for placing internal frame annotations
  #. New **-B** modifier **+f** to turn on fancy geographic annotations.
- #. New polar projection (**-JP**) modifiers  (**+f**\|\ **r**\|\ **t**\|\ **z**) adds new 
+ #. New polar projection (**-JP**) modifiers  (**+f**\|\ **r**\|\ **t**\|\ **z**) adds new
     capabilities for annotating azimuths, depths or radii.
  #. Revise verbosity default levels and their names and abbreviations.
  #. Add Web-Mercator as new sphere that can be selected.
@@ -40,7 +78,7 @@ changes, we mention
 
 New Common Options in GMT 6.1:
 ------------------------------
- #. **-l**: Add automatic legend entries from the modules :doc:`plot`, :doc:`plot3d`, 
+ #. **-l**: Add automatic legend entries from the modules :doc:`plot`, :doc:`plot3d`,
     :doc:`grdcontour` and :doc:`pscontour` in modern mode.
  #. **-q**\[**i**\|\ **o**\ ]: Select specific data rows to complement selection of data columns (via **-i**, **-o**).
 
