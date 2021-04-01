@@ -45,9 +45,9 @@ Default settings for build-in themes
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | :term:`MAP_FRAME_WIDTH`           | 5p                              | :ref:`auto <auto-scaling>`      | n/a                             |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
-| :term:`MAP_GRID_PEN_PRIMARY`      | default,black                   | :ref:`auto <auto-scaling>`      | thinner, lightgrey              |
+| :term:`MAP_GRID_PEN_PRIMARY`      | default,black                   | :ref:`auto <auto-scaling>`      | thinner,lightgrey               |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
-| :term:`MAP_GRID_PEN_SECONDARY`    | thinner,black                   | :ref:`auto <auto-scaling>`      | thinnest, lightgrey             |
+| :term:`MAP_GRID_PEN_SECONDARY`    | thinner,black                   | :ref:`auto <auto-scaling>`      | thinnest,lightgrey              |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | :term:`MAP_HEADING_OFFSET`        | 18p                             | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
