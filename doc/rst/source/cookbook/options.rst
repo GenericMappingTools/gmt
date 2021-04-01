@@ -967,62 +967,11 @@ or if we expect one or two transparencies.
 Examining data cycles: The **-w** option
 ----------------------------------------
 
-**Syntax**
+.. include:: ../explain_-w_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
+    :end-before: See the cookbook section
 
-**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\
-*period*\ [/*phase*][**+c**\ *col*]
-
-**Description**
-
-Temporal data (i.e., regular time series) can be analyzed for periods
-via standard spectral analysis, such as offered by :doc:`/spectrum1d`
-and :doc:`/grdfft`.  However, it is often of interest to examine aspects of
-such periodicities in the time domain.  To enable such analyses we need to
-convert our monotonically increasing time coordinates to periodic or *cyclic*
-coordinates so that data from many cycles can be stacked, binned, displayed in
-histograms, etc.  Here, **-w** is a powerful option that can simplify
-such analyses.  The conversion from input *x*, *y*, or *z* coordinates to
-wrapped, periodic coordinates follows the simple equation
-
-
-.. math::
-
-    t' = (t - \tau) \;\mathrm{mod}\; T,
-
-where *t* is the input coordinate, :math:`\tau` is a phase-shift (typically zero), and *T* is the
-desired period for the modulus operator, yielding cyclic coordinates :math:`t'`.
-GMT offers many standard time cycles in prescribed units plus a custom cycle for other
-types of Cartesian coordinates. Table :ref:`cycles <tbl-cycletype>` shows the values for
-units, phase and period that are prescribed and only requires the user to specify the
-corresponding wrapping code:
-
-.. _tbl-cycletype:
-
-+------------+---------------------------+------------+--------------+-----------+
-| **Code**   | **Purpose** (**unit**)    | **Period** |  **Phase**   | **Range** |
-+============+===========================+============+==============+===========+
-| **y**      | Yearly cycle (normalized) |  1 year    | 0            |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-| **a**      | Annual cycle (month)      |  1 year    | 0            |   0–12    |
-+------------+---------------------------+------------+--------------+-----------+
-| **w**      | Weekly cycle (day)        |  1 week    | 0            |   0–7     |
-+------------+---------------------------+------------+--------------+-----------+
-| **d**      | Daily cycle (hour)        |  1 day     | 0            |   0–24    |
-+------------+---------------------------+------------+--------------+-----------+
-| **h**      | Hourly cycle (minute)     |  1 hour    | 0            |   0–60    |
-+------------+---------------------------+------------+--------------+-----------+
-| **m**      | Minute cycle (second)     |  1 minute  | 0            |   0–60    |
-+------------+---------------------------+------------+--------------+-----------+
-| **s**      | Second cycle (second)     |  1 second  | 0            |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-| **c**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-
-You can append the input column with the coordinate to be wrapped to the **-w** option
-[we default to the first column, i.e., 0 if no column is specified].  Then, append one
-of the available codes from Table :ref:`cycles <tbl-cycletype>`. If the custom cycle
-**c** is chosen then you must also supply the *period* and optionally any *phase* [0]
-in the same units of your data (i.e., no units should be appended to **-w**).
+**Examples**
 
 To demonstrate the use of **-w** we will make a few plots of the daily discharge rate of
 the Mississippi river during the 1930-1940 period.  A simple time series plot is created by
