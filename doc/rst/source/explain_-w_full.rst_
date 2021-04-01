@@ -1,21 +1,56 @@
+The **-w** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
+
 **-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\ [/*phase*][**+c**\ *col*]
-    Convert the input *x*-coordinate to a cyclical coordinate, or select another
-    column instead via the **+c** modifier.  Append the cycle code of interest.
-    If the selected column contains absolute time then you can choose between
-    these specific temporal cycles:
-    **y** (yearly) converts time to a normalized year (0-1), while
-    **a** (annual) converts time to calendar months that are each normalized to 0-1,
-    then adds the integer month, yielding coordinates in the 0-12 range.
-    Code **w** converts time to 7 repeating weekdays yielding the range 0-7.
-    **Note**: Coordinates in the range 0-1 correspond to the
-    first day of the week [Monday] but can be changed via :term:`TIME_WEEK_START`.
-    Code **d** converts time to a cyclical day with range 0-24 hours,
-    **h** converts time to a cyclical hour with range 0-60 minutes,
-    **m** converts time to a cyclical minute with range 0-60 seconds, and
-    **s** converts time to a cyclical second with range 0-1 seconds.
-    Alternatively (and for any type of data) one can also select a custom *period*
-    and optional *phase* [0] via the **c** code, which results in normalized data
-    in the range 0-1.  **Note**: If a temporal cycle is indicated then we
-    implicitly set **-f** to indicate absolute time (unless already set separately).
-    See Section :ref:`Examining data cycles: The -w option <option_-w>` for
-    more discussion, including examples.
+    Convert input records to a cyclical coordinate.
+
+**Description**
+
+The **-w** option converts the input *x*-coordinate to a cyclical coordinate, or a different input column if selected
+via the **+c** modifier. Temporal data (i.e., regular time series) can be analyzed for periods via standard spectral
+analysis, such as offered by :doc:`/spectrum1d` and :doc:`/grdfft`.  However, it is often of interest to examine aspects
+of such periodicities in the time domain.  To enable such analyses we need to convert our monotonically increasing time
+coordinates to periodic or *cyclic* coordinates so that data from many cycles can be stacked, binned, displayed in
+histograms, etc. The conversion from input *x*, *y*, or *z* coordinates to wrapped, periodic coordinates follows the
+simple equation
+
+.. math::
+
+    t' = (t - \tau) \;\mathrm{mod}\; T,
+
+where *t* is the input coordinate, :math:`\tau` is a phase-shift (typically zero), and *T* is the desired period for the
+modulus operator, yielding cyclic coordinates :math:`t'`. GMT offers many standard time cycles in prescribed units plus
+a custom cycle for other types of Cartesian coordinates. The table below shows the values for units, phase and period
+that are prescribed and only requires the user to specify the corresponding wrapping code (**y**\|\ **a**\|\ **w**\|\
+**d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\):
+
++------------+---------------------------+------------+--------------+-----------+
+| **Code**   | **Purpose** (**unit**)    | **Period** |  **Phase**   | **Range** |
++============+===========================+============+==============+===========+
+| **y**      | Yearly cycle (normalized) |  1 year    | 0            |   0–1     |
++------------+---------------------------+------------+--------------+-----------+
+| **a**      | Annual cycle (month)      |  1 year    | 0            |   0–12    |
++------------+---------------------------+------------+--------------+-----------+
+| **w**      | Weekly cycle (day)        |  1 week    | 0            |   0–7     |
++------------+---------------------------+------------+--------------+-----------+
+| **d**      | Daily cycle (hour)        |  1 day     | 0            |   0–24    |
++------------+---------------------------+------------+--------------+-----------+
+| **h**      | Hourly cycle (minute)     |  1 hour    | 0            |   0–60    |
++------------+---------------------------+------------+--------------+-----------+
+| **m**      | Minute cycle (second)     |  1 minute  | 0            |   0–60    |
++------------+---------------------------+------------+--------------+-----------+
+| **s**      | Second cycle (second)     |  1 second  | 0            |   0–1     |
++------------+---------------------------+------------+--------------+-----------+
+| **c**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
++------------+---------------------------+------------+--------------+-----------+
+
+Optionally, append **+c**\ *col* to select the input column with the coordinates to be wrapped, [default *col* is 0
+(i.e., the first column)]. If the custom cycle **c** is chosen then you must also supply the *period* and optionally
+any *phase* [default is 0] in the same units of your data (i.e., no units should be appended to **-w**).
+
+**Note**: Coordinates for **w** in the range 0-1 correspond to the first day of the week [Monday] but can be changed
+via :term:`TIME_WEEK_START`. **Note**: If a temporal cycle is indicated then we implicitly set **-f** to indicate
+absolute time (unless already set separately). See the cookbook section :ref:`Examining data cycles: The -w option
+<option_-w>` for examples.

@@ -923,106 +923,26 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
 NaN-record treatment: The **-s** option
 ---------------------------------------
 
-**Syntax**
-
-**-s**\ [*cols*][**+a**][**+r**]
-
-**Description**
-
-We can use this option to suppress output for records whose *z*-value
-equals NaN (by default we output all records). Alternatively, append
-**+r** to reverse the suppression, i.e., only output the records whose
-*z*-value equals NaN. Use **-s+a** to suppress output records where one
-or more fields (and not necessarily *z*) equal NaN. Finally, you can
-supply a comma-separated list of all columns or column ranges to
-consider (before the optional modifiers) for this NaN test.
+.. include:: ../explain_-s_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-t:
 
 Layer transparency: The **-t** option
 -------------------------------------
 
-**Syntax**
-
-**-t**\ *transp*\ [/*transp2*][**+f**\ \|\ **s**]
-
-**Description**
-
-While the PostScript language does not support transparency, PDF does,
-and via PostScript extensions one can manipulate the transparency
-levels of objects. The **-t** option allows you to change the
-transparency level for the current overlay by appending a percentage in
-the 0-100 range; the default is 0, or opaque. Transparency may also be
-controlled on a feature by feature basis when setting color or fill (see
-section :ref:`-Gfill_attrib`).  For separate transparency for fill and stroke,
-append /*transp2* as well. **Note**: The modules
-:doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change transparency
-on a record-by-record basis if **-t** is given without argument and the
-input file supplies variable transparencies as the last numerical column value(s).
-Use the **+f** and **+s** modifiers to indicate which transparency is provided
-or if we expect one or two transparencies.
-
+.. include:: ../explain_-t_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 .. _option_-w:
 
 Examining data cycles: The **-w** option
 ----------------------------------------
 
-**Syntax**
+.. include:: ../explain_-w_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
+    :end-before: See the cookbook section
 
-**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\
-*period*\ [/*phase*][**+c**\ *col*]
-
-**Description**
-
-Temporal data (i.e., regular time series) can be analyzed for periods
-via standard spectral analysis, such as offered by :doc:`/spectrum1d`
-and :doc:`/grdfft`.  However, it is often of interest to examine aspects of
-such periodicities in the time domain.  To enable such analyses we need to
-convert our monotonically increasing time coordinates to periodic or *cyclic*
-coordinates so that data from many cycles can be stacked, binned, displayed in
-histograms, etc.  Here, **-w** is a powerful option that can simplify
-such analyses.  The conversion from input *x*, *y*, or *z* coordinates to
-wrapped, periodic coordinates follows the simple equation
-
-
-.. math::
-
-    t' = (t - \tau) \;\mathrm{mod}\; T,
-
-where *t* is the input coordinate, :math:`\tau` is a phase-shift (typically zero), and *T* is the
-desired period for the modulus operator, yielding cyclic coordinates :math:`t'`.
-GMT offers many standard time cycles in prescribed units plus a custom cycle for other
-types of Cartesian coordinates. Table :ref:`cycles <tbl-cycletype>` shows the values for
-units, phase and period that are prescribed and only requires the user to specify the
-corresponding wrapping code:
-
-.. _tbl-cycletype:
-
-+------------+---------------------------+------------+--------------+-----------+
-| **Code**   | **Purpose** (**unit**)    | **Period** |  **Phase**   | **Range** |
-+============+===========================+============+==============+===========+
-| **y**      | Yearly cycle (normalized) |  1 year    | 0            |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-| **a**      | Annual cycle (month)      |  1 year    | 0            |   0–12    |
-+------------+---------------------------+------------+--------------+-----------+
-| **w**      | Weekly cycle (day)        |  1 week    | 0            |   0–7     |
-+------------+---------------------------+------------+--------------+-----------+
-| **d**      | Daily cycle (hour)        |  1 day     | 0            |   0–24    |
-+------------+---------------------------+------------+--------------+-----------+
-| **h**      | Hourly cycle (minute)     |  1 hour    | 0            |   0–60    |
-+------------+---------------------------+------------+--------------+-----------+
-| **m**      | Minute cycle (second)     |  1 minute  | 0            |   0–60    |
-+------------+---------------------------+------------+--------------+-----------+
-| **s**      | Second cycle (second)     |  1 second  | 0            |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-| **c**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-
-You can append the input column with the coordinate to be wrapped to the **-w** option
-[we default to the first column, i.e., 0 if no column is specified].  Then, append one
-of the available codes from Table :ref:`cycles <tbl-cycletype>`. If the custom cycle
-**c** is chosen then you must also supply the *period* and optionally any *phase* [0]
-in the same units of your data (i.e., no units should be appended to **-w**).
+**Examples**
 
 To demonstrate the use of **-w** we will make a few plots of the daily discharge rate of
 the Mississippi river during the 1930-1940 period.  A simple time series plot is created by
@@ -1148,38 +1068,16 @@ discusses the four panels resulting from running the script below:
 Selecting number of CPU cores: The **-x** option
 ------------------------------------------------
 
-**Syntax**
-
-**-x**\ [[-]\ *n*]
-
-**Description**
-
-Specify the number of active cores to be used in any OpenMP-enabled
-multi-threaded algorithms. By default, we try to use all available cores.
-You may append *n* to only use *n* cores (if *n* is too large it will be truncated
-to the maximum number of cores available).  Finally, give a negative *n* to select
-all - *n*) cores (but at least one if *n* equals or exceeds all).  The **-x**
-option is only available to GMT modules compiled with OpenMP support, with
-the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel execution.
+.. include:: ../explain_core_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_colon:
 
 Latitude/Longitude or Longitude/Latitude?: The **-:** option
 ------------------------------------------------------------
 
-**Syntax**
-
-**-:**\ [**i**\|\ **o**]
-
-**Description**
-
-For geographical data, the first column is expected to contain
-longitudes and the second to contain latitudes. To reverse this
-expectation you must apply the **-:** option. Optionally, append **i**
-or **o** to restrict the effect to input or output only. Note that
-command line arguments that may take geographic coordinates (e.g.,
-**-R**) *always* expect longitude before latitude. Also, geographical
-grids are expected to have the longitude as first (minor) dimension.
+.. include:: ../explain_colon_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 Footnotes
 ---------
