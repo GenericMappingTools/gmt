@@ -7,10 +7,10 @@ Changelog
 New Features in GMT 6.2
 =======================
 
-GMT 6.2 may be a minor revision to 6.0 but packs quite a punch. For general changes, we mention:
+GMT 6.2 may be a minor revision but packs quite a punch. For general changes, we mention:
 
 #. Addition of themes (sets of GMT defaults) to GMT, with a new modern theme for modern mode.
-#. Auto scaling options for many GMT defaults.
+#. New auto scaling options for many GMT defaults.
 #. New animation showing seismic waveforms.
 #. Allow **+a**\ *angle* for y-axis as well as x-axis with the **-B** common option.
 #. General improvements to the automatic determination of frame attributes.
@@ -29,7 +29,7 @@ New Core Module Features in GMT 6.2:
 #. :doc:`grdcut`: New **-F** option to clip a grid based on a polygon.
 #. :doc:`plot`: New **-H** option to scale the symnol size as well as the symbol pen outline attributes.
 #. :doc:`subplot`: New **-D** option to accept previous default plot settings.
-#: :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; support
+#. :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; support
    slanted annotations with **-S**.
 #. :doc:`events`: New **-Z** option animate geodesy and seismology symbols.
 #. :doc:`histogram`: New **+b** modifier to **-C** to set color based on the bin value.
@@ -38,8 +38,9 @@ New Core Module Features in GMT 6.2:
 Supplement updates in GMT 6.2:
 ------------------------------
 
-#. :doc:`coupe`: Updated syntax for the **-A** option.
-#. :doc:`meca`, :doc:`coupe`, :doc:`velo`: New scaling option **-H**; allow variable transparency; allow adjusting
+#. :doc:`coupe </supplements/seis/coupe>`: Updated syntax for the **-A** option.
+#. :doc:`meca </supplements/seis/meca>`, :doc:`coupe </supplements/seis/coupe>`,
+   :doc:`velo </supplements/geodesy/velo>`: New scaling option **-H**; allow variable transparency; allow adjusting
    symbol color via intensity; allow setting symbol color using colormaps.
 
 Release of GMT 6.1.1
