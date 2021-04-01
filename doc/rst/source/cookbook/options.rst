@@ -824,22 +824,9 @@ Use **-q**\ 1\ **+s** to only read the 2nd data record from each of the segments
 Grid registration: The **-r** option
 ------------------------------------
 
-**Syntax**
-
-**-r**\ [**g**\|\ **p**]
-
-**Description**
-
-All 2-D grids in GMT have their nodes
-organized in one of two ways, known as *gridline*- and *pixel*-
-registration. The GMT default is gridline registration; programs that
-allow for the creation of grids can use the **-r** option (or **-rp**) to select
-pixel registration instead.  Most observed data tend to be in gridline
-registration while processed data sometime may be distributed in
-pixel registration.  While you may convert between the two registrations
-this conversion looses the Nyquist frequency and dampens the other
-high frequencies.  It is best to avoid any registration conversion if you
-can help it.  Planning ahead may be important.
+.. include:: ../explain_nodereg_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    :end-before: (Node registrations
 
 Gridline registration
 ^^^^^^^^^^^^^^^^^^^^^
@@ -858,7 +845,7 @@ to region and grid spacing by
    ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
    \end{array}
 
-which for the example in left side of Figure :ref:`Gridline registration
+which for the example in left side of Figure :ref:`Grid registration
 <Grid_registration>` yields nx = ny = 4.
 
 Pixel registration
