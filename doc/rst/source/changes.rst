@@ -7,17 +7,21 @@ Changelog
 New Features in GMT 6.2
 =======================
 
-GMT 6.2 may be a minor revision but packs quite a punch. For general changes, we mention:
+GMT 6.2 includes a new module, new common option, many general code and documentation improvements, and numerous
+bug fixes! Here are the general updates included in 6.2:
 
-#. Addition of themes (sets of GMT defaults) to GMT, with a default modern theme for modern mode, and auto scaling
-   options for many GMT defaults.
-#. New animation showing seismic waveforms.
-#. Support for **+a**\ *angle* for y-axis as well as x-axis with the **-B** common option.
+#. Addition of :doc:`theme-settings` (sets of GMT defaults), with a default modern theme for modern mode, and
+   :ref:`auto scaling options <cookbook/features:Automatic GMT settings>` for many GMT defaults.
+#. New :doc:`animation 13 <animations/anim13>` of seismic waveforms.
+#. Support for **+a**\ *angle* for y-axis as well as x-axis with the :ref:`-B axes settings <gmt:Axes settings>`.
 #. General improvements to the automatic determination of frame attributes.
-#. New **-i+d**\ *divisor* modifier to simplify scaling of input values.
-#. Allow parsing of -Jz1:zzzzzz for vertical scale.
-#. New GMT configuration parameter :term:`MAP_FRAME_PERCENT`.
-#. Enable writing of 3-D netCDF data cubes from greenspline and grdinterpolate.
+#. New **d**\ *divisor* modifier to the :ref:`-i option <gmt:The **-i** option>` to simplify scaling of input values.
+#. Allow parsing of **-Jz**\ *1:zzzzzz* for vertical scale.
+#. New GMT configuration parameters :term:`MAP_FRAME_PERCENT`, :term:`COLOR_SET`, and :term:`COLOR_CPT`.
+#. Enable writing of 3-D netCDF data cubes from :doc:`greenspline` and :doc:`grdinterpolate`.
+#. Support sequential auto-colors for polygon fills or line pens in plot and plot3d.
+#. Add support for reading variable in NetCDF-4 groups.
+#. Allow specifying the reciprocal increment for generating 1d arrays.
 #. Allow Latex expressions in single-line titles and Cartesian axes labels, add support for multi-line plot titles, and
    add support for subtitles.
 #. Many general documentation improvements.
@@ -26,26 +30,34 @@ GMT 6.2 may be a minor revision but packs quite a punch. For general changes, we
 New Common Options in GMT 6.2:
 ------------------------------
 
-#. **-w**: Convert selected coordinate to repeating cycles.
+#. :ref:`-w <gmt:The **-w** option>`: Convert selected coordinate to repeating cycles.
 
 New Modules in GMT 6.2:
 -----------------------
 
+#. :doc:`gmtbinstats`: Bin data and determine statistics per bin.
+
 New Core Module Features in GMT 6.2:
 ------------------------------------
 
-#. :doc:`grdmath`: New FISHER and VPDF operators.
+#. :doc:`grdmath`: New **FISHER** and **VPDF** operators.
 #. :doc:`grdcut`: New **-F** option to clip a grid based on a polygon.
+#. :doc:`grd2xyz`: New modifier for the **-W** option to set the length unit used.
 #. :doc:`plot`: New **-H** option to scale the symnol size as well as the symbol pen outline attributes.
 #. :doc:`subplot`: New **-D** option to accept previous default plot settings.
-#. :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; support
+#. :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; Support
    slanted annotations with **-S**.
 #. :doc:`events`: New **-Z** option to animate geodesy and seismology symbols; New **-H** option to enable text label
-   boxes.
+   boxes; Support plotting lines as series of closely spaced circles.
+#. :doc:`ternary`: Add support for drawing lines and polygons.
 #. :doc:`text`: New **-S** option to cast shade beneath a text box.
-#. :doc:`histogram`: New **+b** modifier to **-C** to set color based on the bin value.
+#. :doc:`histogram`: New **-E** option for custom bar widths and optional shift; New **+b** modifier to **-C** to set
+   color based on the bin value.
 #. :doc:`legend`: New **-M** option to handle both hidden and given information.
+#. :doc:`grdfft`: New **-Q** option for no wavenumber operations.
 #. :doc:`movie`: New modifiers to **-L** and **-P** to enable drop-shadow and rounded rectangular boxes.
+#. :doc:`makecpt`, :doc:`grd2cpt`: Simplify the addition of category labels to CPT files with **-F**.
+#. :doc:`gmtsplit`: New name for previous module splitxyz.
 
 Supplement updates in GMT 6.2:
 ------------------------------
