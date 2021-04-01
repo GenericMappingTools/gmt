@@ -936,19 +936,8 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
 NaN-record treatment: The **-s** option
 ---------------------------------------
 
-**Syntax**
-
-**-s**\ [*cols*][**+a**][**+r**]
-
-**Description**
-
-We can use this option to suppress output for records whose *z*-value
-equals NaN (by default we output all records). Alternatively, append
-**+r** to reverse the suppression, i.e., only output the records whose
-*z*-value equals NaN. Use **-s+a** to suppress output records where one
-or more fields (and not necessarily *z*) equal NaN. Finally, you can
-supply a comma-separated list of all columns or column ranges to
-consider (before the optional modifiers) for this NaN test.
+.. include:: ../explain_-s_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-t:
 
