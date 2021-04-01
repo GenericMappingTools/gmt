@@ -1137,19 +1137,8 @@ discusses the four panels resulting from running the script below:
 Selecting number of CPU cores: The **-x** option
 ------------------------------------------------
 
-**Syntax**
-
-**-x**\ [[-]\ *n*]
-
-**Description**
-
-Specify the number of active cores to be used in any OpenMP-enabled
-multi-threaded algorithms. By default, we try to use all available cores.
-You may append *n* to only use *n* cores (if *n* is too large it will be truncated
-to the maximum number of cores available).  Finally, give a negative *n* to select
-all - *n*) cores (but at least one if *n* equals or exceeds all).  The **-x**
-option is only available to GMT modules compiled with OpenMP support, with
-the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel execution.
+.. include:: ../explain_core_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_colon:
 
