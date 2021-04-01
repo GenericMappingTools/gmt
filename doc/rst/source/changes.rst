@@ -7,7 +7,7 @@ Changelog
 New Features in GMT 6.2
 =======================
 
-GMT 6.2 includes a new module, new common option, many general code and documentation improvements, and numerous
+GMT 6.2 includes a new module, new common option, general code and documentation improvements, and numerous
 bug fixes! Here are the general updates included in 6.2:
 
 #. Addition of :doc:`theme-settings` (sets of GMT defaults), with a default modern theme for modern mode, and
@@ -15,11 +15,9 @@ bug fixes! Here are the general updates included in 6.2:
 #. New :doc:`animation 13 <animations/anim13>` of seismic waveforms.
 #. Support for **+a**\ *angle* for y-axis as well as x-axis with the :ref:`-B axes settings <gmt:Axes settings>`.
 #. General improvements to the automatic determination of frame attributes.
-#. New **d**\ *divisor* modifier to the :ref:`-i option <gmt:The **-i** option>` to simplify scaling of input values.
+#. New **+d**\ *divisor* modifier to the :ref:`-i option <gmt:The **-i** option>` to simplify scaling of input values.
 #. Allow parsing of **-Jz**\ *1:zzzzzz* for vertical scale.
 #. New GMT configuration parameters :term:`MAP_FRAME_PERCENT`, :term:`COLOR_SET`, and :term:`COLOR_CPT`.
-#. Enable writing of 3-D netCDF data cubes from :doc:`greenspline` and :doc:`grdinterpolate`.
-#. Support sequential auto-colors for polygon fills or line pens in plot and plot3d.
 #. Add support for reading variable in NetCDF-4 groups.
 #. Allow specifying the reciprocal increment for generating 1d arrays.
 #. Allow Latex expressions in single-line titles and Cartesian axes labels, add support for multi-line plot titles, and
@@ -40,35 +38,37 @@ New Modules in GMT 6.2:
 New Core Module Features in GMT 6.2:
 ------------------------------------
 
-#. :doc:`grdmath`: New **FISHER** and **VPDF** operators.
-#. :doc:`grdcut`: New **-F** option to clip a grid based on a polygon.
-#. :doc:`grd2xyz`: New modifier for the **-W** option to set the length unit used.
-#. :doc:`plot`: New **-H** option to scale the symnol size as well as the symbol pen outline attributes.
-#. :doc:`subplot`: New **-D** option to accept previous default plot settings.
 #. :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; Support
    slanted annotations with **-S**.
 #. :doc:`events`: New **-Z** option to animate geodesy and seismology symbols; New **-H** option to enable text label
    boxes; Support plotting lines as series of closely spaced circles.
-#. :doc:`ternary`: Add support for drawing lines and polygons.
-#. :doc:`text`: New **-S** option to cast shade beneath a text box.
+#. :doc:`gmtsplit`: New name for previous module splitxyz.
+#. :doc:`grd2xyz`: New modifier for the **-W** option to set the length unit used.
+#. :doc:`grdcut`: New **-F** option to clip a grid based on a polygon.
+#. :doc:`grdfft`: New **-Q** option for no wavenumber operations.
+#. :doc:`grdmath`: New **FISHER** and **VPDF** operators.
+#. :doc:`greenspline`, :doc:`grdinterpolate`: Enable writing of 3-D netCDF data cubes.
 #. :doc:`histogram`: New **-E** option for custom bar widths and optional shift; New **+b** modifier to **-C** to set
    color based on the bin value.
 #. :doc:`legend`: New **-M** option to handle both hidden and given information.
-#. :doc:`grdfft`: New **-Q** option for no wavenumber operations.
-#. :doc:`movie`: New modifiers to **-L** and **-P** to enable drop-shadow and rounded rectangular boxes.
 #. :doc:`makecpt`, :doc:`grd2cpt`: Simplify the addition of category labels to CPT files with **-F**.
-#. :doc:`gmtsplit`: New name for previous module splitxyz.
+#. :doc:`movie`: New modifiers to **-L** and **-P** to enable drop-shadow and rounded rectangular boxes.
+#. :doc:`plot`, :doc:`plot3d`: New **-H** option to scale the symnol size as well as the symbol pen outline attributes;
+   Support sequential auto-colors for polygon fills or line pens.
+#. :doc:`subplot`: New **-D** option to accept previous default plot settings.
+#. :doc:`ternary`: Add support for drawing lines and polygons.
+#. :doc:`text`: New **-S** option to cast shade beneath a text box.
 
 Supplement updates in GMT 6.2:
 ------------------------------
 
 #. :doc:`coupe </supplements/seis/coupe>`: Updated syntax for the **-A** option.
-#. :doc:`meca </supplements/seis/meca>`, :doc:`coupe </supplements/seis/coupe>`,
+#. :doc:`coupe </supplements/seis/coupe>`, :doc:`meca </supplements/seis/meca>`,
    :doc:`velo </supplements/geodesy/velo>`: New scaling option **-H**; allow variable transparency; allow adjusting
    symbol color via intensity; allow setting symbol color using colormaps.
-#. :doc:`grdseamount </supplements/potential/grdseamount>`: Add polynomial seamount shape.
 #. :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>`: Add option to create geometric bodies (spheres, prisms,
    ellipsoids, etc.) and compute their effect.
+#. :doc:`grdseamount </supplements/potential/grdseamount>`: Add polynomial seamount shape.
 
 Release of GMT 6.1.1
 ====================
