@@ -1156,19 +1156,8 @@ the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel
 Latitude/Longitude or Longitude/Latitude?: The **-:** option
 ------------------------------------------------------------
 
-**Syntax**
-
-**-:**\ [**i**\|\ **o**]
-
-**Description**
-
-For geographical data, the first column is expected to contain
-longitudes and the second to contain latitudes. To reverse this
-expectation you must apply the **-:** option. Optionally, append **i**
-or **o** to restrict the effect to input or output only. Note that
-command line arguments that may take geographic coordinates (e.g.,
-**-R**) *always* expect longitude before latitude. Also, geographical
-grids are expected to have the longitude as first (minor) dimension.
+.. include:: ../explain_colon_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 Footnotes
 ---------
