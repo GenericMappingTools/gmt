@@ -9,15 +9,24 @@ New Features in GMT 6.2
 
 GMT 6.2 may be a minor revision but packs quite a punch. For general changes, we mention:
 
-#. Addition of themes (sets of GMT defaults) to GMT, with a new modern theme for modern mode.
-#. New auto scaling options for many GMT defaults.
+#. Addition of themes (sets of GMT defaults) to GMT, with a default modern theme for modern mode, and auto scaling
+   options for many GMT defaults.
 #. New animation showing seismic waveforms.
-#. Allow **+a**\ *angle* for y-axis as well as x-axis with the **-B** common option.
+#. Support for **+a**\ *angle* for y-axis as well as x-axis with the **-B** common option.
 #. General improvements to the automatic determination of frame attributes.
+#. New **-i+d**\ *divisor* modifier to simplify scaling of input values.
+#. Allow parsing of -Jz1:zzzzzz for vertical scale.
+#. New GMT configuration parameter :term:`MAP_FRAME_PERCENT`.
+#. Enable writing of 3-D netCDF data cubes from greenspline and grdinterpolate.
+#. Allow Latex expressions in single-line titles and Cartesian axes labels, add support for multi-line plot titles, and
+   add support for subtitles.
+#. Many general documentation improvements.
 #. API improvements to support the GMT/MEX, PyGMT, and GMT.jl environments.
 
 New Common Options in GMT 6.2:
 ------------------------------
+
+#. **-w**: Convert selected coordinate to repeating cycles.
 
 New Modules in GMT 6.2:
 -----------------------
@@ -31,9 +40,12 @@ New Core Module Features in GMT 6.2:
 #. :doc:`subplot`: New **-D** option to accept previous default plot settings.
 #. :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; support
    slanted annotations with **-S**.
-#. :doc:`events`: New **-Z** option animate geodesy and seismology symbols.
+#. :doc:`events`: New **-Z** option to animate geodesy and seismology symbols; New **-H** option to enable text label
+   boxes.
+#. :doc:`text`: New **-S** option to cast shade beneath a text box.
 #. :doc:`histogram`: New **+b** modifier to **-C** to set color based on the bin value.
 #. :doc:`legend`: New **-M** option to handle both hidden and given information.
+#. :doc:`movie`: New modifiers to **-L** and **-P** to enable drop-shadow and rounded rectangular boxes.
 
 Supplement updates in GMT 6.2:
 ------------------------------
@@ -42,6 +54,9 @@ Supplement updates in GMT 6.2:
 #. :doc:`meca </supplements/seis/meca>`, :doc:`coupe </supplements/seis/coupe>`,
    :doc:`velo </supplements/geodesy/velo>`: New scaling option **-H**; allow variable transparency; allow adjusting
    symbol color via intensity; allow setting symbol color using colormaps.
+#. :doc:`grdseamount </supplements/potential/grdseamount>`: Add polynomial seamount shape.
+#. :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>`: Add option to create geometric bodies (spheres, prisms,
+   ellipsoids, etc.) and compute their effect.
 
 Release of GMT 6.1.1
 ====================
