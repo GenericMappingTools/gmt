@@ -99,7 +99,7 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 	struct PSROSE_S {	/* -S[+a] */
 		bool active;
 		bool normalize;
-		bool area_norm;
+		bool area_normalize;
 		double scale;	/* Get this via -JX */
 	} S;
 	struct PSROSE_T {	/* -T */
@@ -361,7 +361,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'N':	/* Make sectors area be proportional to frequency instead of radius [DEPRECATED in 6.2] */
-				Ctrl->S.area_normalize = true;
+				if (opt->arg[0] == '\0')	/* Only plain -N is accepted to be backwards compatible */
+					Ctrl->S.area_normalize = true;
 				break;
 			case 'Q':	/* Set critical value [0.05] */
 				Ctrl->Q.active = true;
@@ -370,6 +371,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 			case 'S':	/* Normalization */
 				Ctrl->S.active = true;
 				Ctrl->S.normalize = true;
+				if (strstr (opt->arg, "+a"))
+					Ctrl->S.area_normalize = true;
 				break;
 			case 'T':	/* Oriented instead of directed data */
 				Ctrl->T.active = true;
