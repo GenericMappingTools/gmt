@@ -473,7 +473,7 @@ GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint6
 		double f = 360.0 / GMT->current.io.cycle_range;	/* COnvert data to a 0-360 circular data set */
 		for (i = 0; i < n; i++)
 			d[i] = f * data[i];
-		stats[0] = gmt_von_mises_mean_and_kappa (GMT, d, NULL, n, &stats[3]);
+		stats[0] = gmt_von_mises_mu_and_kappa (GMT, d, NULL, n, &stats[3]);
 		stats[6] = f;	/* Save this here since probably needed to draw the Von Mises curve to convert to 0-360 angles */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "For wrapped data: mu = %g kappa = %g\n", stats[0], stats[3]);
 		gmt_M_free (GMT, d);
