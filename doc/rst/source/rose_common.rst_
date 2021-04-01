@@ -105,13 +105,6 @@ Optional Arguments
     using **-M** will add vector heads to all individual directions
     using the supplied attributes.
 
-.. _-N:
-
-**-N**
-    Normalize rose plots for area (i.e., take :math:`sqrt(r)` before plotting
-    [default is no normalization]. Only applicable if normalization has been
-    specified with **-Sn**\ *radius*.
-
 .. _-Q:
 
 **-Q**\ [*alpha*]
@@ -131,9 +124,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**
+**-S**\ [**+a**]
     Normalize input radii (or bin counts if **-A** is used) by the largest
-    value so all radii (or bin counts) range from 0 to 1.
+    value so all radii (or bin counts) range from 0 to 1.  Optionally,
+    further normalize rose plots for area (i.e., take :math:`sqrt(r)` before
+    plotting [Default is no normalizations].
 
 .. _-T:
 
