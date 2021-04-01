@@ -1,7 +1,22 @@
+The **-t** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
+
 **-t**\ *transp*\ [/*transp2*][**+f**\ \|\ **s**]
-    Set transparency level(s) for an overlay, in [0-100] percent range. [Default
-    is 0, i.e., opaque].  Only visible when PDF or raster format output is selected.
-    Only the PNG format selection adds a transparency layer in the image (for further processing).
-    Normally, *transp* applies to both fill and stroke, but you can limit the transparency to
-    one of them by appending **+f** or **+s** for fill or stroke, respectively.  Alternatively,
-    append /*transp2* to set separate transparencies for fills and strokes.
+    Set transparency level(s) for an overlay.
+
+**Description**
+
+The **-t** option allows you to change the transparency level for the current overlay by appending the *transp*
+percentage in the 0-100 range [default is 0 (i.e., opaque)]. Normally, *transp* applies to both fill and stroke, but you
+can limit the transparency to one of them by appending **+f** or **+s** for fill or stroke, respectively. Alternatively,
+append /*transp2* to set separate transparencies for fills and strokes.
+
+
+Transparency may also be controlled on a feature by feature basis when setting color or fill (see the cookbook section
+:ref:`-Gfill_attrib`). **Note**: The modules :doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change
+transparency on a record-by-record basis if **-t** is given without argument and the input file supplies variable
+transparencies as the last numerical column value(s). **Note**: The transparency is only visible when PDF or raster
+format ouput is selected because the PostScript language does not support transparency. Only the PNG format selection
+adds a transparency layer in the image (for further processing).
