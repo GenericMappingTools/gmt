@@ -23,7 +23,7 @@ bug fixes! Here are the general updates included in 6.2:
 #. Allow Latex expressions in single-line titles and Cartesian axes labels, add support for multi-line plot titles, and
    add support for subtitles.
 #. Many general documentation improvements.
-#. API improvements to support the GMT/MEX, PyGMT, and GMT.jl environments.
+#. Various improvements to the API in support of developments taking place in the external wrappers (Python, Julia, Matlab).
 
 New Common Options in GMT 6.2:
 ------------------------------
