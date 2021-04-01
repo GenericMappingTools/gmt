@@ -53,7 +53,7 @@ New Core Module Features in GMT 6.2:
 #. :doc:`legend`: New **-M** option to handle both hidden and given information.
 #. :doc:`makecpt`, :doc:`grd2cpt`: Simplify the addition of category labels to CPT files with **-F**.
 #. :doc:`movie`: New modifiers to **-L** and **-P** to enable drop-shadow and rounded rectangular boxes.
-#. :doc:`plot`, :doc:`plot3d`: New **-H** option to scale the symnol size as well as the symbol pen outline attributes;
+#. :doc:`plot`, :doc:`plot3d`: New **-H** option to scale the symbol size as well as the symbol pen outline attributes;
    Support sequential auto-colors for polygon fills or line pens.
 #. :doc:`subplot`: New **-D** option to accept previous default plot settings.
 #. :doc:`ternary`: Add support for drawing lines and polygons.
