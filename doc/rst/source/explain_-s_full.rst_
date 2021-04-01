@@ -14,4 +14,5 @@ considers the third data column (i.e., *cols = 2*)]. Column ranges must be given
 *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if not specified. The following modifiers are supported:
 
 - **+r** to reverse the suppression, i.e., only output the records whose *z*-value equals NaN.
-- **+a** to suppress the output of the record if just one or more of the columns equal NaN [default uses *cols = 2*].
+- **+a** to suppress the output of the record if just one or more of the columns equal NaN [default skips record only
+  if values in all specified *cols* equal NaN]
