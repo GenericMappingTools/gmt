@@ -846,24 +846,12 @@ or **+w** to select another axis location than the plot origin.
 Data row selection: The **-q** option
 -------------------------------------
 
-**Syntax**
+.. include:: ../explain_-q_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+**Examples**
 
-**Description**
-
-Similar to how **-i** and **-o** control which data *columns* to read and write, the **-qi** (or just **-q**)
-and **-qo** options control which data *rows* to read and write [Default is all]. As for columns, you
-can specify specific rows, a range of rows, or several sets of row ranges. You can also
-invert your selections with a leading ~ and then we select all the rows *not* specified by
-your ranges.  Normally, the row counter starts at 0 and increases until the end of the
-data set (**+a**).  However, you can append **+f** to reset the counter at the start of each
-table (file) or **+s** to reset the counter at the start of each data segment. Thus, **-q**\ 1\ **+s**
-will only read the 2nd data record from each of the segments found.  Note that header records do not
-increase the row counters; only data records do.  Instead of rows you may specify data
-*limits* for a specified column by appending **+c**\ *col*.  Now, we will only select rows whose
-data for the given column *col* lie within the range(s) given by your *min*/*max* limits.  Also
-note that when **+c** is used the **+a**\|\ **f**\|\ **s** have no effect.
+Use **-q**\ 1\ **+s** to only read the 2nd data record from each of the segments found.
 
 .. _option_nodereg:
 
