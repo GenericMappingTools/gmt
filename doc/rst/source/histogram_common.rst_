@@ -115,12 +115,14 @@ Optional Arguments
     * 2 = LMS (least median of squares) mode and scale.
 
     The **-N** option may be repeated to draw several of these curves.
+    **Note**: If **-w** is used then only *mode* = 0 is available and we will
+    determine the parameters of the circular von Mises distribution instead.
 
 .. _-Q:
 
 **-Q**\ **r**
     Draw a cumulative histogram. Append **r** to instead compute the
-    reverse cumulative histogram.
+    reverse cumulative histogram.  Cannot be used with **-w**.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
