@@ -386,8 +386,6 @@ GMT_LOCAL double pshistogram_plot_boxes (struct GMT_CTRL *GMT, struct PSL_CTRL *
 			xval = 0.5 * (F->T->array[ibox] + F->T->array[ibox+1]);
 			if (F->cumulative)
 				area = F->boxh[ibox];	/* Just pick up the final bin as it has the entire sum */
-			//else if (GMT->common.w.active)	/* Add up sector areas */
-			//	area += F->boxh[ibox] * F->boxh[ibox];
 			else	/* Add up as we go along */
 				area += bin_width * F->boxh[ibox];
 			zval = pshistogram_set_xy_array (GMT, Ctrl, F, ibox, x, y, px, py);	/* Get polygon coordinates for this bar in plot units */
@@ -846,6 +844,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->C.active || Ctrl->I.active || Ctrl->G.active || Ctrl->W.active), "Must specify either fill (-G) or lookup colors (-C), outline pen attributes (-W), or both.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both fill (-G) and lookup colors (-C).\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && (Ctrl->N.selected[PSHISTOGRAM_L1] || Ctrl->N.selected[PSHISTOGRAM_LMS]), "Option -N: Only -N is supported when -w is selected.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && Ctrl->N.selected[PSHISTOGRAM_L2] && Ctrl->Q.active, "Option -N: Cannot use -Q when -w is selected.\n");
 	n_errors += gmt_check_binary_io (GMT, 0);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
@@ -1326,7 +1325,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 	
 	if (Ctrl->N.active) {	/* Want to draw one or more normal distributions; we use 101 points to do so */
 		unsigned int type, k, NP = 101U;
-		double f, z, xtmp, ytmp, inc, sum_q = 0.0;
+		double f, z, xtmp, ytmp, inc;
 		double *xp = gmt_M_memory (GMT, NULL, NP, double);
 		double *yp = gmt_M_memory (GMT, NULL, NP, double);
 		inc = (F.wesn[XHI] - F.wesn[XLO]) / (NP - 1);
@@ -1340,7 +1339,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			for (k = 0; k < NP; k++) {
 				xp[k] = F.wesn[XLO] + inc * k;
 				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
-				if (GMT->common.w.active)	/* stats[6] converts wrapped z to 0-36 degrees, stats[0] is mu and stats[3] is kappa */
+				if (GMT->common.w.active)	/* stats[6] converts wrapped z to 0-360 degrees, stats[0] is mu and stats[3] is kappa */
 					yp[k] = f * gmt_vonmises_pdf (GMT, stats[6] * xp[k], stats[0], stats[3]);
 				else if (Ctrl->Q.active) {	/* Want a cumulative curve */
 					yp[k] = f * (1.0 + erf (z / M_SQRT2));
