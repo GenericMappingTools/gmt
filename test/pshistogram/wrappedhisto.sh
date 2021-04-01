@@ -4,6 +4,6 @@
 # to this wrapped histogram.
 
 gmt begin wrappedhisto
-  gmt histogram -JX15c/10c test.txt  -T0.1 -BWSen -Bxa1Of1O+l"Months" -Byaf+l"Frequency"+u"%" -Z1 -N0+p2p -wa -Glightblue -Wthinnest,black --FORMAT_TIME_PRIMARY_MAP=c -R-5/7/0/0
-  gmt histogram test.txt -T1 -BWSen -Bxa1Of1O+l"Months" -Byaf+l"Frequency"+u"%" -D -Z1 -N0+p2p -wa -Glightblue -Wthinnest,black --FORMAT_TIME_PRIMARY_MAP=c -Y12c -R0/12/0/0
+  gmt histogram -JX15c/10c wrappedhisto.txt  -T0.1 -BWSen -Bxa1Of1O+l"Months" -Byaf+l"Frequency"+u"%" -Z1 -N0+p2p -wa -Glightblue -Wthinnest,black --FORMAT_TIME_PRIMARY_MAP=c -R-5/7/0/0
+  gmt histogram wrappedhisto.txt -T1 -BWSen -Bxa1Of1O+l"Months" -Byaf+l"Frequency"+u"%" -D -Z1 -N0+p2p -wa -Glightblue -Wthinnest,black --FORMAT_TIME_PRIMARY_MAP=c -Y12c -R0/12/0/0
 gmt end show
