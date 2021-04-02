@@ -791,101 +791,42 @@ Grid interpolation parameters: The **-n** option
 Output columns selection: The **-o** option
 -------------------------------------------
 
-**Syntax**
+.. include:: ../explain_-ocols_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
+**Examples**
 
-**Description**
-
-The **-o**\ *columns* option allows you to specify which
-columns to write on output and in what order. By default, GMT will
-write all the data columns produced by the program. Using **-o**
-modifies that process. For instance, to write just the 4th and 2nd data
-column to the output you would use **-o**\ 3,1 (since 0 is the first column).
-You can also use a column more than once, e.g., **-o**\ 3,1,3, to
-duplicate a column on output.  Finally, if your logical record in memory
-contains trailing text then you can include that by including the special
-column **t** to your selections.  The text is always written after any
-numerical columns.  If you only want to output one word from the trailing
-text, then append the word number (0 is the first word).  Note that if you
-wanted to scale or shift the output values you need to do so during reading,
-using the **-i** option. To output all numerical columns and ignoring
-trailing text, use **-on**.
+To write out just the 4th and 2nd data column to the output, use **-o**\ 3,1 (since 0 is the first column).
+To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3.
 
 .. _option_-p:
 
 Perspective view: The **-p** option
 -----------------------------------
 
-**Syntax**
-
-**-p**\ [**x**\|\ **y**\|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]]\
-[**+w**\ *lon0*/*lat0*\ [/*z0*]][**+v**\ *x0*/*y0*]
-
-**Description**
-
-All plotting programs that normally produce a flat, two-dimensional
-illustration can be told to view this flat illustration from a
-particular vantage point, resulting in a perspective view. You can
-select perspective view with the **-p** option by setting the azimuth
-and elevation of the viewpoint [Default is 180/90]. When **-p** is used
-in consort with **-Jz** or **-JZ**, a third value can be appended which
-indicates at which *z*-level all 2-D material, like the plot frame, is
-plotted (in perspective) [Default is at the bottom of the z-axis].
-For frames used for animation, we fix the center of your data domain.
-Specify another center using a particular world coordinate point with **+w**\ *lon0*/\ *lat0*\ [/*z0*],
-which will project to the center of your page size, or specify the coordinates of
-the projected 2-D view point with **+v**\ *x0/y0*. When **-p** is used without any further
-arguments, the values from the last use of **-p** in a previous
-GMT command will be used.  Alternatively, you can perform a simple rotation
-about the z-axis by just giving the rotation angle.  Optionally, use **+v**
-or **+w** to select another axis location than the plot origin.
+.. include:: ../explain_perspective_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-q:
 
 Data row selection: The **-q** option
 -------------------------------------
 
-**Syntax**
+.. include:: ../explain_-q_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+**Examples**
 
-**Description**
-
-Similar to how **-i** and **-o** control which data *columns* to read and write, the **-qi** (or just **-q**)
-and **-qo** options control which data *rows* to read and write [Default is all]. As for columns, you
-can specify specific rows, a range of rows, or several sets of row ranges. You can also
-invert your selections with a leading ~ and then we select all the rows *not* specified by
-your ranges.  Normally, the row counter starts at 0 and increases until the end of the
-data set (**+a**).  However, you can append **+f** to reset the counter at the start of each
-table (file) or **+s** to reset the counter at the start of each data segment. Thus, **-q**\ 1\ **+s**
-will only read the 2nd data record from each of the segments found.  Note that header records do not
-increase the row counters; only data records do.  Instead of rows you may specify data
-*limits* for a specified column by appending **+c**\ *col*.  Now, we will only select rows whose
-data for the given column *col* lie within the range(s) given by your *min*/*max* limits.  Also
-note that when **+c** is used the **+a**\|\ **f**\|\ **s** have no effect.
+Use **-q**\ 1\ **+s** to only read the 2nd data record from each of the segments found.
 
 .. _option_nodereg:
 
 Grid registration: The **-r** option
 ------------------------------------
 
-**Syntax**
-
-**-r**\ [**g**\|\ **p**]
-
-**Description**
-
-All 2-D grids in GMT have their nodes
-organized in one of two ways, known as *gridline*- and *pixel*-
-registration. The GMT default is gridline registration; programs that
-allow for the creation of grids can use the **-r** option (or **-rp**) to select
-pixel registration instead.  Most observed data tend to be in gridline
-registration while processed data sometime may be distributed in
-pixel registration.  While you may convert between the two registrations
-this conversion looses the Nyquist frequency and dampens the other
-high frequencies.  It is best to avoid any registration conversion if you
-can help it.  Planning ahead may be important.
+.. include:: ../explain_nodereg_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    :end-before: (Node registrations
 
 Gridline registration
 ^^^^^^^^^^^^^^^^^^^^^
@@ -904,7 +845,7 @@ to region and grid spacing by
    ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
    \end{array}
 
-which for the example in left side of Figure :ref:`Gridline registration
+which for the example in left side of Figure :ref:`Grid registration
 <Grid_registration>` yields nx = ny = 4.
 
 Pixel registration
@@ -982,106 +923,26 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
 NaN-record treatment: The **-s** option
 ---------------------------------------
 
-**Syntax**
-
-**-s**\ [*cols*][**+a**][**+r**]
-
-**Description**
-
-We can use this option to suppress output for records whose *z*-value
-equals NaN (by default we output all records). Alternatively, append
-**+r** to reverse the suppression, i.e., only output the records whose
-*z*-value equals NaN. Use **-s+a** to suppress output records where one
-or more fields (and not necessarily *z*) equal NaN. Finally, you can
-supply a comma-separated list of all columns or column ranges to
-consider (before the optional modifiers) for this NaN test.
+.. include:: ../explain_-s_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-t:
 
 Layer transparency: The **-t** option
 -------------------------------------
 
-**Syntax**
-
-**-t**\ *transp*\ [/*transp2*][**+f**\ \|\ **s**]
-
-**Description**
-
-While the PostScript language does not support transparency, PDF does,
-and via PostScript extensions one can manipulate the transparency
-levels of objects. The **-t** option allows you to change the
-transparency level for the current overlay by appending a percentage in
-the 0-100 range; the default is 0, or opaque. Transparency may also be
-controlled on a feature by feature basis when setting color or fill (see
-section :ref:`-Gfill_attrib`).  For separate transparency for fill and stroke,
-append /*transp2* as well. **Note**: The modules
-:doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change transparency
-on a record-by-record basis if **-t** is given without argument and the
-input file supplies variable transparencies as the last numerical column value(s).
-Use the **+f** and **+s** modifiers to indicate which transparency is provided
-or if we expect one or two transparencies.
-
+.. include:: ../explain_-t_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 .. _option_-w:
 
 Examining data cycles: The **-w** option
 ----------------------------------------
 
-**Syntax**
+.. include:: ../explain_-w_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
+    :end-before: See the cookbook section
 
-**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\
-*period*\ [/*phase*][**+c**\ *col*]
-
-**Description**
-
-Temporal data (i.e., regular time series) can be analyzed for periods
-via standard spectral analysis, such as offered by :doc:`/spectrum1d`
-and :doc:`/grdfft`.  However, it is often of interest to examine aspects of
-such periodicities in the time domain.  To enable such analyses we need to
-convert our monotonically increasing time coordinates to periodic or *cyclic*
-coordinates so that data from many cycles can be stacked, binned, displayed in
-histograms, etc.  Here, **-w** is a powerful option that can simplify
-such analyses.  The conversion from input *x*, *y*, or *z* coordinates to
-wrapped, periodic coordinates follows the simple equation
-
-
-.. math::
-
-    t' = (t - \tau) \;\mathrm{mod}\; T,
-
-where *t* is the input coordinate, :math:`\tau` is a phase-shift (typically zero), and *T* is the
-desired period for the modulus operator, yielding cyclic coordinates :math:`t'`.
-GMT offers many standard time cycles in prescribed units plus a custom cycle for other
-types of Cartesian coordinates. Table :ref:`cycles <tbl-cycletype>` shows the values for
-units, phase and period that are prescribed and only requires the user to specify the
-corresponding wrapping code:
-
-.. _tbl-cycletype:
-
-+------------+---------------------------+------------+--------------+-----------+
-| **Code**   | **Purpose** (**unit**)    | **Period** |  **Phase**   | **Range** |
-+============+===========================+============+==============+===========+
-| **y**      | Yearly cycle (normalized) |  1 year    | 0            |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-| **a**      | Annual cycle (month)      |  1 year    | 0            |   0–12    |
-+------------+---------------------------+------------+--------------+-----------+
-| **w**      | Weekly cycle (day)        |  1 week    | 0            |   0–7     |
-+------------+---------------------------+------------+--------------+-----------+
-| **d**      | Daily cycle (hour)        |  1 day     | 0            |   0–24    |
-+------------+---------------------------+------------+--------------+-----------+
-| **h**      | Hourly cycle (minute)     |  1 hour    | 0            |   0–60    |
-+------------+---------------------------+------------+--------------+-----------+
-| **m**      | Minute cycle (second)     |  1 minute  | 0            |   0–60    |
-+------------+---------------------------+------------+--------------+-----------+
-| **s**      | Second cycle (second)     |  1 second  | 0            |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-| **c**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-
-You can append the input column with the coordinate to be wrapped to the **-w** option
-[we default to the first column, i.e., 0 if no column is specified].  Then, append one
-of the available codes from Table :ref:`cycles <tbl-cycletype>`. If the custom cycle
-**c** is chosen then you must also supply the *period* and optionally any *phase* [0]
-in the same units of your data (i.e., no units should be appended to **-w**).
+**Examples**
 
 To demonstrate the use of **-w** we will make a few plots of the daily discharge rate of
 the Mississippi river during the 1930-1940 period.  A simple time series plot is created by
@@ -1207,38 +1068,16 @@ discusses the four panels resulting from running the script below:
 Selecting number of CPU cores: The **-x** option
 ------------------------------------------------
 
-**Syntax**
-
-**-x**\ [[-]\ *n*]
-
-**Description**
-
-Specify the number of active cores to be used in any OpenMP-enabled
-multi-threaded algorithms. By default, we try to use all available cores.
-You may append *n* to only use *n* cores (if *n* is too large it will be truncated
-to the maximum number of cores available).  Finally, give a negative *n* to select
-all - *n*) cores (but at least one if *n* equals or exceeds all).  The **-x**
-option is only available to GMT modules compiled with OpenMP support, with
-the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel execution.
+.. include:: ../explain_core_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_colon:
 
 Latitude/Longitude or Longitude/Latitude?: The **-:** option
 ------------------------------------------------------------
 
-**Syntax**
-
-**-:**\ [**i**\|\ **o**]
-
-**Description**
-
-For geographical data, the first column is expected to contain
-longitudes and the second to contain latitudes. To reverse this
-expectation you must apply the **-:** option. Optionally, append **i**
-or **o** to restrict the effect to input or output only. Note that
-command line arguments that may take geographic coordinates (e.g.,
-**-R**) *always* expect longitude before latitude. Also, geographical
-grids are expected to have the longitude as first (minor) dimension.
+.. include:: ../explain_colon_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 Footnotes
 ---------

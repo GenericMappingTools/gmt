@@ -89,16 +89,17 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 		bool active;
 		struct GMT_SYMBOL S;
 	} M;
-	struct PSROSE_N {	/* -N */
-		bool active;
-	} N;
+	//struct PSROSE_N {	/* -N [Deprecated to -S+a] */
+	//	bool active;
+	//} N;
 	struct PSROSE_Q {	/* -Q<alpha> */
 		bool active;
 		double value;
 	} Q;
-	struct PSROSE_S {	/* -S */
+	struct PSROSE_S {	/* -S[+a] */
 		bool active;
 		bool normalize;
+		bool area_normalize;
 		double scale;	/* Get this via -JX */
 	} S;
 	struct PSROSE_T {	/* -T */
@@ -157,8 +158,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-F] [-G<fill>] [-I]\n", name, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S] [-T] [%s]\n", GMT_U_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[+a]] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -189,14 +190,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Otherwise, if windrose mode is selected we apply vector attributes to individual directions.\n");
 	gmt_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize rose plots for area, i.e., take sqrt(r) before plotting [no normalization].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Only applicable if normalization has been specified with -Sn<radius>.\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set confidence level for Rayleigh test for uniformity [0.05].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specifies the region (<r0> = 0, <r1> = max_radius).  For azimuth:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify <theta0>/<theta1> = -90/90 or 0/180 (half-circles) or 0/360 only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <r0> = <r1> = 0, psrose will compute a reasonable <r1> value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize data, i.e., divide all radii (or bin counts) by the maximum radius (or count).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to normalize rose plots for area, i.e., take sqrt(r) before plotting [no area normalization].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Indicate that the vectors are oriented (two-headed), not directed [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This implies both <azimuth> and <azimuth> + 180 will be counted as inputs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -R sets a half-circle domain.\n");
@@ -360,8 +360,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 					Ctrl->M.S.v.status |= PSL_VEC_OUTLINE;
 				}
 				break;
-			case 'N':	/* Make sectors area be proportional to frequency instead of radius */
-				Ctrl->N.active = true;
+			case 'N':	/* Make sectors area be proportional to frequency instead of radius [DEPRECATED in 6.2] */
+				if (opt->arg[0] == '\0')	/* Only plain -N is accepted to be backwards compatible */
+					Ctrl->S.area_normalize = true;
 				break;
 			case 'Q':	/* Set critical value [0.05] */
 				Ctrl->Q.active = true;
@@ -370,6 +371,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 			case 'S':	/* Normalization */
 				Ctrl->S.active = true;
 				Ctrl->S.normalize = true;
+				if (strstr (opt->arg, "+a"))
+					Ctrl->S.area_normalize = true;
 				break;
 			case 'T':	/* Oriented instead of directed data */
 				Ctrl->T.active = true;
@@ -493,7 +496,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	if (Ctrl->A.rose) windrose = false;
 	sector_plot = (Ctrl->A.inc > 0.0);
 	if (sector_plot) windrose = false;	/* Draw rose diagram instead of sector diagram */
-	if (!Ctrl->S.normalize) Ctrl->N.active = false;	/* Only do this if data is normalized for length also */
+	if (!Ctrl->S.normalize) Ctrl->S.area_normalize = false;	/* Only do this if data is normalized for length also */
 	if (!Ctrl->I.active && !GMT->common.R.active[RSET]) automatic = true;
 	if (Ctrl->T.active) one_or_two = 2.0;
 	half_bin_width = Ctrl->D.active * Ctrl->A.inc * 0.5;
@@ -648,7 +651,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	if (Ctrl->A.inc > 0.0) {	/* Find max of the bins */
 		for (bin = 0; bin < n_bins; bin++) if (sum[bin] > max) max = sum[bin];
 		if (Ctrl->S.normalize) for (bin = 0; bin < n_bins; bin++) sum[bin] /= max;
-		if (Ctrl->N.active) for (bin = 0; bin < n_bins; bin++) sum[bin] = sqrt (sum[bin]);
+		if (Ctrl->S.area_normalize) for (bin = 0; bin < n_bins; bin++) sum[bin] = sqrt (sum[bin]);
 	}
 	else {	/* Find max length of individual vectors */
 		for (i = 0; i < n; i++) if (length[i] > max) max = length[i];
@@ -1031,7 +1034,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 			}
 		}
 		for (this_mode = 0; this_mode < n_modes; this_mode++) {
-			if (Ctrl->N.active) mode_length[this_mode] = sqrt (mode_length[this_mode]);
+			if (Ctrl->S.area_normalize) mode_length[this_mode] = sqrt (mode_length[this_mode]);
 			if (half_only && mode_direction[this_mode] > 90.0 && mode_direction[this_mode] <= 270.0) mode_direction[this_mode] -= 180.0;
 			angle = start_angle - mode_direction[this_mode];
 			sincosd (angle, &s, &c);

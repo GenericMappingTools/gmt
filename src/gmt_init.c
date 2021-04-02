@@ -14761,7 +14761,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if ((opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
 			/* Running psrose with old -S[n]<radius syntax and no -J.  Need to replace with new -J [-S] syntax */
 			struct GMT_OPTION *S = GMT_Find_Option (API, 'S', *options);
-			if (S && S->arg[0]) {	/* Gave -S option with some arguments */
+			if (S && S->arg[0] && strstr (S->arg, "+a") == NULL) {	/* Gave -S option with some arguments but not the new -S+a */
 				char j_code[GMT_LEN256] = {""};
 				unsigned int k, norm = (S->arg[0] == 'n') ? 1 : 0;
 				double radius;
