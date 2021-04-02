@@ -125,6 +125,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
+	C->N.pen = GMT->current.setting.map_default_pen;
 	C->M.S.symbol = PSL_VECTOR;
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->Q.value = 0.05;
