@@ -89,9 +89,11 @@ struct PSROSE_CTRL {	/* All control options for this program (except common args
 		bool active;
 		struct GMT_SYMBOL S;
 	} M;
-	//struct PSROSE_N {	/* -N [Deprecated to -S+a] */
-	//	bool active;
-	//} N;
+	struct PSROSE_N {	/* -N[<kind>]+p<pen>, <kind = 0 (for now) OR -N [Deprecated to -S+a] */
+		bool active;
+		bool selected;
+		struct GMT_PEN pen;
+	} N;
 	struct PSROSE_Q {	/* -Q<alpha> */
 		bool active;
 		double value;
@@ -123,6 +125,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	gmt_init_fill (GMT, &C->G.fill, -1.0, -1.0, -1.0);
+	C->N.pen = GMT->current.setting.map_default_pen;
 	C->M.S.symbol = PSL_VECTOR;
 	C->W.pen[0] = C->W.pen[1] = GMT->current.setting.map_default_pen;
 	C->Q.value = 0.05;
@@ -158,7 +161,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-F] [-G<fill>] [-I]\n", name, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N<mode>[+p<pen>]] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[+a]] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -190,6 +193,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Otherwise, if windrose mode is selected we apply vector attributes to individual directions.\n");
 	gmt_vector_syntax (API->GMT, 15);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p.\n", VECTOR_HEAD_LENGTH);
+	GMT_Message (API, GMT_TIME_NONE, "\t-N Append <mode> to draw the equivalent von Mises distribution; append desired pen [0.25p,black].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   <mode> selects which central location and scale to use:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     0 = mean and standard deviation [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     (Other modes may be added later).\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set confidence level for Rayleigh test for uniformity [0.05].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specifies the region (<r0> = 0, <r1> = max_radius).  For azimuth:\n");
@@ -363,6 +370,23 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 			case 'N':	/* Make sectors area be proportional to frequency instead of radius [DEPRECATED in 6.2] */
 				if (opt->arg[0] == '\0')	/* Only plain -N is accepted to be backwards compatible */
 					Ctrl->S.area_normalize = true;
+				else {	/* Modern -N to draw VPDF with a pen */
+					Ctrl->N.active = true;
+					switch (opt->arg[0]) {	/* See which distribution to draw */
+						case '0': break;	/* Only allowed mode for now */
+						default:
+							GMT_Report (API, GMT_MSG_ERROR, "Option -N: mode %c unrecognized.\n", opt->arg[0]);
+							n_errors++;
+							break;
+					}
+					Ctrl->N.selected = true;
+					if ((c = strstr (opt->arg, "+p")) != NULL) {
+						if (gmt_getpen (GMT, &c[2], &Ctrl->N.pen)) {
+							gmt_pen_syntax (GMT, 'N', NULL, " ", 0);
+							n_errors++;
+						}
+					}
+				}
 				break;
 			case 'Q':	/* Set critical value [0.05] */
 				Ctrl->Q.active = true;
@@ -416,6 +440,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Option -C: Cannot give both -C and -G\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->A.rose, "Option -C: Cannot be used with -A+r\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && !Ctrl->A.active, "Option -C: Requires -A\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->A.active, "Option -N: Requires -A\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !doubleAlmostEqual (range, 360.0), "Option -N: Requires the full circle in -R\n");
 	if (GMT->common.J.active) {	/* Impose our conditions on -JX */
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.string[0] != 'X', "Option -J: Must specify -JX<diameter>\n");
 		n_errors += gmt_M_check_condition (GMT, strchr (GMT->common.J.string, '/'), "Option -J: Must specify -JX<diameter>\n");
@@ -449,7 +475,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	char text[GMT_BUFSIZ] = {""}, format[GMT_BUFSIZ] = {""};
 
 	double max = 0.0, radius, az, x_origin, y_origin, tmp, one_or_two = 1.0, s, c, f;
-	double angle1, angle2, angle, x, y, mean_theta, mean_radius, xr = 0.0, yr = 0.0;
+	double angle1, angle2, angle, x, y, mean_theta, mean_radius, xr = 0.0, yr = 0.0, area = 0.0;
 	double x1, x2, y1, y2, total = 0.0, total_arc, off, max_radius, az_offset, start_angle;
 	double asize, lsize, this_az, half_bin_width, diameter, wesn[4], mean_vector, mean_resultant;
 	double *xx = NULL, *yy = NULL, *in = NULL, *sum = NULL, *azimuth = NULL, critical_resultant;
@@ -652,6 +678,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		for (bin = 0; bin < n_bins; bin++) if (sum[bin] > max) max = sum[bin];
 		if (Ctrl->S.normalize) for (bin = 0; bin < n_bins; bin++) sum[bin] /= max;
 		if (Ctrl->S.area_normalize) for (bin = 0; bin < n_bins; bin++) sum[bin] = sqrt (sum[bin]);
+		for (bin = 0; bin < n_bins; bin++) area += sum[bin];
 	}
 	else {	/* Find max length of individual vectors */
 		for (i = 0; i < n; i++) if (length[i] > max) max = length[i];
@@ -947,6 +974,26 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 			angle2 = angle1 + Ctrl->A.inc;
 			PSL_plotarc (PSL, 0.0, 0.0, sum[k] * Ctrl->S.scale, angle1, angle2, (k == 0) ? PSL_STROKE : PSL_DRAW);
 		}
+	}
+
+	if (Ctrl->N.active) {	/* Draw best-fitting probability distribution curve */
+		unsigned int k, NP = 361;
+		double a, mu, kappa, pdf, inc = 360.0 / (NP - 1), scl = 2.0 * area * Ctrl->A.inc * D2R;
+		double *xp = gmt_M_memory (GMT, NULL, NP, double);
+		double *yp = gmt_M_memory (GMT, NULL, NP, double);
+
+		mu = gmt_von_mises_mu_and_kappa (GMT, azimuth, length, n, &kappa);
+		for (k = 0; k < NP; k++) {
+			a = inc * k;
+			pdf = scl * gmt_vonmises_pdf (GMT, a, mu, kappa);
+			sincosd (start_angle - a, &s, &c);
+			xp[k] = c * pdf;
+			yp[k] = s * pdf;
+		}
+		gmt_setpen (GMT, &Ctrl->N.pen);
+		PSL_plotline (PSL, xp, yp, NP, PSL_MOVE|PSL_STROKE);
+		gmt_M_free (GMT, xp);
+		gmt_M_free (GMT, yp);
 	}
 
 	if (Ctrl->E.active) {

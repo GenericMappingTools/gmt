@@ -22,6 +22,7 @@ Synopsis
 [ |-K| ]
 [ |-L|\ [*wlabel*\ ,\ *elabel*\ ,\ *slabel*\ ,\ *nlabel*] ]
 [ |-M|\ *parameters* ]
+[ |-N|\ *mode*\ [**+p**\ *pen*] ]
 [ |-O| ] [ |-P| ]
 [ |-Q|\ *alpha* ]
 [ |-R|\ *r0*/*r1*/*az0*/*az1* ]
