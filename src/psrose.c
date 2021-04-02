@@ -369,6 +369,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[0] == '\0')	/* Only plain -N is accepted to be backwards compatible */
 					Ctrl->S.area_normalize = true;
 				else {	/* Modern -N to draw VPDF with a pen */
+					Ctrl->N.active = true;
 					switch (opt->arg[0]) {	/* See which distribution to draw */
 						case '0': break;	/* Only allowed mode for now */
 						default:
@@ -975,16 +976,15 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Draw best-fitting probability distribution curve */
 		unsigned int k, NP = 361;
-		double a, mu, kappa, pdf, inc = 360.0 / (NP - 1), scl = area * Ctrl->A.inc * D2R;
+		double a, mu, kappa, pdf, inc = 360.0 / (NP - 1), scl = 2.0 * area * Ctrl->A.inc * D2R;
 		double *xp = gmt_M_memory (GMT, NULL, NP, double);
 		double *yp = gmt_M_memory (GMT, NULL, NP, double);
 
 		mu = gmt_von_mises_mu_and_kappa (GMT, azimuth, length, n, &kappa);
-		fprintf (stderr, "mu, kappa, scale: %g %g %g\n", mu, kappa, scl);
 		for (k = 0; k < NP; k++) {
 			a = inc * k;
 			pdf = scl * gmt_vonmises_pdf (GMT, a, mu, kappa);
-			sincosd (a, &s, &c);
+			sincosd (start_angle - a, &s, &c);
 			xp[k] = c * pdf;
 			yp[k] = s * pdf;
 		}
