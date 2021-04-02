@@ -6964,6 +6964,7 @@ void gmt_freepen (struct GMT_CTRL *GMT, struct GMT_PEN *P) {
 
 void gmt_scale_pen (struct GMT_CTRL *GMT, struct GMT_PEN *P, double scale) {
 	/* Scale all pen attributes by given scale. Note: P as assumed to be reset to nominal values before scaling */
+	gmt_M_unused (GMT);
 	P->width  *= scale;
 	P->offset *= scale;
 	if (P->style[0]) {	/* Must scale the dashes and gaps and update string */
