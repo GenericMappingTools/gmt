@@ -723,13 +723,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 					case '1': mode = PSHISTOGRAM_L1;	break;
 					case '2': mode = PSHISTOGRAM_LMS;	break;
 					default:
-					GMT_Report (API, GMT_MSG_ERROR, "Option -N: mode %c unrecognized.\n", opt->arg[0]);
-					n_errors++;
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: mode %c unrecognized.\n", opt->arg[0]);
+						n_errors++;
+						break;
 				}
 				Ctrl->N.selected[mode] = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {
 					if (gmt_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
-						gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
+						gmt_pen_syntax (GMT, 'N', NULL, " ", 0);
 						n_errors++;
 					}
 				}
