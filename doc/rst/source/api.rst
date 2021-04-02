@@ -685,7 +685,7 @@ grid junk.nc in the current directory.  Plot it to see if it makes sense, e.g.
 
 .. code-block:: bash
 
-   gmt grdimage junk.nc > junk.ps
+   gmt grdimage junk.nc -Jx1:50 -Bafg > junk.ps
 
 If you intend to write applications that take any number of data files
 via the command line then there will be more book-keeping to deal with,
@@ -702,7 +702,7 @@ code, available from the repository gmt-custom, obtainable via
 
 .. code-block:: bash
 
-   git clone https://github.com/GenericMappingTools/gmt-custom.git
+   git clone https://github.com/GenericMappingTools/custom-supplements.git
 
 
 List of API functions
@@ -840,7 +840,7 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Put_Row_             | Export a grid row                                     |
     +--------------------------+-------------------------------------------------------+
-    | GMT_Put_Strings_         | Put user strings into vector or matrix container      |
+    | GMT_Put_Strings_         | Put user strings into various containers              |
     +--------------------------+-------------------------------------------------------+
     | GMT_Put_Vector_          | Put user vector into container                        |
     +--------------------------+-------------------------------------------------------+
@@ -1255,7 +1255,7 @@ and pass the ``par`` array with contents as indicated below:
   **GMT_IS_CUBE**.
     Same procedure as for **GMT_IS_GRID** but both ``wesn``, ``inc`` and ``par`` have one extra
     dimension for the depth or time axis.  For non-equidistant layers you need to use
-    ``par[2]`` to sets the number of layers, otherwise ``wesn`` and ``inc`` can set it all.
+    ``par[2]`` to sets the number of layers and use ``inc[2] = 0``, otherwise ``wesn`` and ``inc`` can set it all.
 
   **GMT_IS_DATASET**.
     We allocate an empty :ref:`GMT_DATASET <struct-dataset>` structure consisting of ``par[0]`` tables,
@@ -1360,12 +1360,19 @@ For vectors the same principles apply:
     int GMT_Put_Vector (void *API, struct GMT_VECTOR *V, unsigned int col,
 	unsigned int type, void *vector);
 
-where ``V`` is the :ref:`GMT_VECTOR <struct-vector>` created by GMT_Create_Data_, ``col`` is the vector
-column in question, ``type`` is one of the
-recognized data :ref:`types <tbl-types>` used for this vector, and ``vector`` is
-a pointer to this custom vector.  In addition, ``type`` may be also **GMT_DATETIME**, in which case
-we expect an array of strings with ISO datetime strings and we do the conversion to internal
-GMT time and allocate a vector to hold the result in the given ``col``.
+where ``V`` is the :ref:`GMT_VECTOR <struct-vector>` created by GMT_Create_Data_,
+``col`` is the vector column in question, ``type`` is one of the recognized data
+:ref:`types <tbl-types>` used for this vector, and ``vector`` is a pointer to the
+user's read-only custom vector.  In addition, ``type`` may also be  **GMT_TEXT**,
+in which case we expect an array of strings with numbers, longitudes, latitudes,
+or ISO datetime strings and we do the conversion to internal numerical values and
+allocate a vector to hold the result in the given ``col``.  By default that vector
+will be assigned to type **GMT_DOUBLE** but you can add another primary data type
+for the conversion if you prefer (e.g., **GMT_TEXT**\|\ **GMT_LONG** to get final 
+internal absolute time in integer seconds). For the special data type **GMT_TEXT** GMT
+allocates internal memory to hold the converted data and ``vector`` is not used
+any further.
+
 To extract a custom vector from an output :ref:`GMT_VECTOR <struct-vector>` you can use
 
 .. _GMT_Get_Vector:
@@ -1398,8 +1405,8 @@ of in *\ *major*, *\ *minor*, *\ *patch* args can be NULL. If they are not, one 
 version component. The *API* pointer is actually not used in this function, so passing NULL is the best
 option.
 
-Finally, for either vectors or matrices you may optionally add a pointer to an
-array of text strings, one per row.  This is done via
+Finally, for either vectors, matrices or palettes you may optionally add a pointer to an
+array of text strings, one per row (or CPT slice).  This is done via
 
 .. _GMT_Put_Strings:
 
@@ -1407,11 +1414,12 @@ array of text strings, one per row.  This is done via
 
     int GMT_Put_Strings (void *API, unsigned int family, void *X, char **array);
 
-where ``family`` is either GMT_IS_VECTOR or GMT_IS_MATRIX, ``X`` is either a
-:ref:`GMT_VECTOR <struct-vector>` or :ref:`GMT_MATRIX <struct-matrix>`, and
+where ``family`` is either GMT_IS_VECTOR, GMT_IS_MATRIX, or GMT_IS_PALETTE, ``X`` is either a
+:ref:`GMT_VECTOR <struct-vector>`, :ref:`GMT_MATRIX <struct-matrix>` or :ref:`GMT_MATRIX <struct-palette>`, and
 ``array`` is the a pointer to your string array.  You may add ``GMT_IS_DUPLICATE`` to
 ``family`` to indicate you want the array of strings to be duplicated; the default
-is to just set a pointer to ``array``.
+is to just set a pointer to ``array``.  For GMT_IS_PALETTE you must also add
+GMT_IS_PALETTE_LABEL or GMT_IS_PALETTE_KEY to indicate which strings are being set.
 
 To access the string array from an output vector or matrix container you will use
 
@@ -3795,7 +3803,7 @@ allocated will be *size * n_bands*, where the latter is one of the parameters in
   struct GMT_CUBE {
        struct GMT_GRID_HEADER *header;      /* The full GMT header for the grid */
        float                  *data;        /* Pointer to the float 3-D array */
-       unsigned int           mode;         /* Indicates input was list of 2-D grids rather than a cube */
+       unsigned int           mode;         /* Indicates data originated as a list of 2-D grids rather than a cube */
        double                 z_range[2];   /* Minimum/max z values (complements header->wesn) */
        double                 z_inc;        /* z increment (complements header->inc) (0 if variable z spacing) */
        double                 *x, *y, *z;   /* Arrays of x,y,z coordinates */

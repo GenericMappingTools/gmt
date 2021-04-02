@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -41,6 +41,15 @@ if (SPHINX_FOUND)
 		${CMAKE_CURRENT_BINARY_DIR}/source/_images
 		DEPENDS _docs_copy_rst_tree_source)
 
+	# Copy two C codes into the build tree, so that they can be included in the documentation
+	add_custom_target (_docs_rst_src
+		COMMAND ${CMAKE_COMMAND} -E copy
+			${CMAKE_SOURCE_DIR}/src/gmt_common_longoptions.h
+			${CMAKE_SOURCE_DIR}/src/blockmean.c
+			${CMAKE_CURRENT_BINARY_DIR}/source/
+			DEPENDS _docs_copy_rst_tree_source)
+	add_depend_to_target (docs_depends _docs_rst_src)
+
 	# clean target
 	add_custom_target (_rst_clean
 		# cmake<3.15 can't remove multiple directories using cmake -E remove_directory
@@ -74,6 +83,7 @@ if (SPHINX_FOUND)
 			-c "${CMAKE_CURRENT_BINARY_DIR}"
 			-d "${SPHINX_CACHE_DIR}"
 			-w "${CMAKE_CURRENT_BINARY_DIR}/man.log"
+			-t nosphinxpanels
 			${CMAKE_CURRENT_BINARY_DIR}/source
 			${CMAKE_CURRENT_BINARY_DIR}/man
 			COMMAND ${GZIP} -9 -n -f ${CMAKE_CURRENT_BINARY_DIR}/man/*.?

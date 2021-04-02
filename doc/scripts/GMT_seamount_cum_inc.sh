@@ -2,6 +2,7 @@
 # Plot 5 life-stages in growing volcanoes in crossection
 # Using un-truncated Gaussian shapes with linear flux
 gmt begin GMT_seamount_cum_inc ps
+	gmt set GMT_THEME cookbook
 	echo "100	75	50	5000	1	0" > t.txt
 	gmt grdseamount -R40/160/74/76+uk -I100 -Gsmtc_%05.2f.nc t.txt -T0.8/0/0.2 -Qc/l -Dk -Cg -Mc.lis
 	gmt grdseamount -R40/160/74/76+uk -I100 -Gsmti_%05.2f.nc t.txt -T0.8/0/0.2 -Qi/l -Dk -Cg -Mi.lis

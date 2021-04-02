@@ -445,10 +445,10 @@ Optional Arguments
     Instead, the application of these bit-flags can be controlled via
     the : (colon) modifier to OPT(F).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -628,4 +628,4 @@ References
 The Marine Geophysical Data Exchange Format - MGD77, see
 `<http://www.ngdc.noaa.gov/mgg/dat/geodas/docs/mgd77.txt>`_
 
-IGRF, see `<http://www.ngdc.noaa.gov/IAGA/vmod/igrf/>`_
+IGRF, see `<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_

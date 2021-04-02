@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 # share/CMakeLists.txt
 #
 
-set (_gmt_share_dirs cpt custom localization mgd77 mgg spotter x2sys)
+set (_gmt_share_dirs cpt custom localization mgd77 mgg spotter themes x2sys)
 
 # install target for data
 install (DIRECTORY ${_gmt_share_dirs}

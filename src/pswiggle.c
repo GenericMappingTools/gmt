@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -38,7 +38,7 @@
 #define THIS_MODULE_PURPOSE	"Plot z = f(x,y) anomalies along tracks"
 #define THIS_MODULE_KEYS	"<D{,>X}"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqtxy" GMT_OPT("EHMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqtxyw" GMT_OPT("EHMmc")
 
 #define PSWIGGLE_POS	0
 #define PSWIGGLE_NEG	1
@@ -55,6 +55,7 @@ struct PSWIGGLE_CTRL {
 	} C;
 	struct PSWIGGLE_D {	/* -D[g|j|J|n|x]<refpoint>+w<length>[+a][+j<justify>][+o<dx>[/<dy>]][+l<label>] */
 		bool active;
+		char *arg;
 		struct GMT_MAP_SCALE scale;
 	} D;
 	struct PSWIGGLE_F {	/* -F[+c<clearance>][+g<fill>][+i[<off>/][<pen>]][+p[<pen>]][+r[<radius>]][+s[<dx>/<dy>/][<shade>]][+d] */
@@ -105,6 +106,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->D.arg);
 	if (C->D.scale.refpoint) gmt_free_refpoint (GMT, &C->D.scale.refpoint);
 	gmt_M_free (GMT, C->D.scale.panel);
 	gmt_M_str_free (C->S.label);
@@ -224,7 +226,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>[+n][+p]] [-I<az>] [%s] %s%s%s[-T<trackpen>] [%s]\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] %s[%s] [%s] [%s] [%s]\n\t[%s] ",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s] [%s]\n\t[%s] %s] [%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -257,7 +259,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give the wiggle scale in data-units per %s.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append any unit from among %s [c].\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_Option (API, "bi3,c,di,e,f,g,h,i,p,qi,t,:,.");
+	GMT_Option (API, "bi3,c,di,e,f,g,h,i,p,qi,t,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -310,8 +312,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors += gmt_parse_g_option (GMT, txt_a);
 				}
 				else {
+					if (opt->arg[0])
+						Ctrl->D.arg = strdup (opt->arg);
+					else {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -D: No argument given!\n");
+						n_errors++;					
+					}
 					Ctrl->D.active = Ctrl->D.scale.vertical = true;
-					n_errors += gmt_getscale (GMT, 'D', opt->arg, &Ctrl->D.scale);
 				}
 				break;
 			case 'F':
@@ -350,7 +357,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore modifiers */
-				if (pos && neg) Ctrl->G.fill[1-k] = Ctrl->G.fill[k];	/* Duplicate fill */
+				if (pos && neg) Ctrl->G.active[PSWIGGLE_NEG] = true, Ctrl->G.fill[PSWIGGLE_NEG] = Ctrl->G.fill[PSWIGGLE_POS];	/* Duplicate fill */
 				break;
 			case 'I':
 				Ctrl->I.value = atof (opt->arg);
@@ -478,6 +485,8 @@ EXTERN_MSC int GMT_pswiggle (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+
+	if (Ctrl->D.active && gmt_getscale (GMT, 'D', Ctrl->D.arg, &Ctrl->D.scale)) Return (GMT_PARSE_ERROR);
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 

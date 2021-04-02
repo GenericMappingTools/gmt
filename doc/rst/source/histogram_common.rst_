@@ -37,18 +37,20 @@ Optional Arguments
     from y = 0].  The plot dimensions remain the same, but the two
     axes are flipped.
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
-**-C**\ *cpt*
-    Give a CPT. The bar-value for each bar is used to
-    look-up the bar color.  If modern mode and no argument is given
-    then we select the current CPT.  **Note**: We use the *count* in
-    each bin as the look-up value, unless **-Z** involves percentages,
-    in which case the look-up value is the *percentage* computed.
+**-C**\ *cpt*\ [**+b**]
+    Give a CPT. The mid-coordinate for each bar is used to look up
+    the bar color.  Alternatively, append **+b** to use the *bin* value
+    as the look-up value, unless **-Z** involves percentages,
+    in which case the look-up value is the *percentage* computed. If
+    we are in modern mode and no *cpt* is given then we select the
+    current CPT.
 
 .. _-D:
 
@@ -88,6 +90,10 @@ Optional Arguments
     ASCII table of the resulting x,y data instead. Upper case **O** will
     output all x,y bin data even when y == 0.
 
+.. _-Jz:
+
+.. include:: explain_-Jz.rst_
+
 .. _-L:
 
 **-Ll**\|\ **h**\|\ **b**
@@ -109,17 +115,19 @@ Optional Arguments
     * 2 = LMS (least median of squares) mode and scale.
 
     The **-N** option may be repeated to draw several of these curves.
+    **Note**: If **-w** is used then only *mode* = 0 is available and we will
+    determine the parameters of the circular von Mises distribution instead.
 
 .. _-Q:
 
 **-Q**\ **r**
     Draw a cumulative histogram. Append **r** to instead compute the
-    reverse cumulative histogram.
+    reverse cumulative histogram.  Cannot be used with **-w**.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| replace:: If not given, we will automatically find reasonable values for the region.
 .. include:: explain_-Rz.rst_
@@ -130,23 +138,25 @@ Optional Arguments
     Draws a stairs-step diagram which does not include the internal bars
     of the default histogram.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
 **-W**\ *pen*
     Draw bar outline (or stair-case curve) using the specified pen thickness. [Default is no outline].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -189,6 +199,8 @@ Optional Arguments
 .. include:: explain_-qi.rst_
 
 .. include:: explain_-t.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_help.rst_
 

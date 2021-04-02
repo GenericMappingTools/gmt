@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -110,6 +110,7 @@ struct GMT_PALETTE_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;			/* The internal number of the data set */
 	size_t n_alloc;            	/* Memory allocated so far */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc alloc_mode_text[2];	/* Allocation mode per label|key [GMT_ALLOC_INTERNALLY] */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	unsigned int auto_scale;	/* If 1 then we must resample to fit actual data range */
 	unsigned int skip;		/* true if current z-slice is to be skipped */
@@ -156,6 +157,7 @@ struct GMT_GRID_HEADER_HIDDEN {
 	int z_id;                        /* NetCDF: id of z field */
 	int ncid;                        /* NetCDF: file ID */
 	int xy_dim[2];                   /* NetCDF: dimension order of x and y; normally {1, 0} */
+	int xyz_id[3];                   /* NetCDF: id of x, y, and z (if cube) field */
 	size_t t_index[3];               /* NetCDF: index of higher coordinates */
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
 	size_t n_alloc;                  /* Bytes allocated for this grid */

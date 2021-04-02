@@ -18,8 +18,8 @@ Synopsis
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *preflight* ]
-[ **-Sf**\ *postflight* ]
+[ |-Sb|\ *preflight* ]
+[ |-Sf|\ *postflight* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*workdir*] ]
 [ |-Z| ]
@@ -117,10 +117,10 @@ Optional Arguments
     using the products or stacked data after the main processing is completed. It does not have to be a GMT
     script.
 
-.. _batch-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -176,6 +176,15 @@ The batch scripts will be able to find any files present in the starting directo
 as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
+
+Custom gmt.conf files
+---------------------
+
+If you have a gmt.conf file in the top directory with your main script prior to running **batch** then it will be
+used and shared across all the scripts created and executed *unless* your scripts use **-C** when starting a new
+modern mode session. The preferred ways of changing GMT defaults is via :doc:`gmtset` calls in your input scripts.
+**Note**: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the *preflight*
+script to be used by other scripts is futile.
 
 Constructing the Main Script
 ----------------------------

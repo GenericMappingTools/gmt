@@ -18,6 +18,7 @@ Synopsis
 [ |-C|\ *dx*/*dy* ]
 [ |-F|\ *box* ]
 [ |-J|\ *parameters* ]
+[ |-M| ]
 [ |SYN_OPT-R| ]
 [ |-S|\ *scale* ]
 [ |-T|\ *file* ]

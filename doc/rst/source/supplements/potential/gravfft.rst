@@ -61,14 +61,15 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D binary grid file to be operated on. (See GRID FILE FORMATS below).
+    2-D binary grid file to be operated on. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
     For cross-spectral operations, also give the second grid file *ingrid2*.
 
 .. _-G:
 
 **-G**\ *outfile*
     Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See GRID FILE FORMATS below).
+    (see **-E**). (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -176,18 +177,16 @@ Optional Arguments
     Moho [and swell] average compensation depths (in meters positive down – the depth). For the "load from
     top" model you only have to provide *zm*, but for the "loading from below" don't forget *zl*.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: ../../explain_help.rst_
-
-.. include:: ../../explain_grd_inout_short.rst_
 
 Grid Distance Units
 -------------------
@@ -337,7 +336,7 @@ Parker, R. L., 1972, The rapid calculation of potential anomalies, Geophys. J., 
 
 Wessel. P., 2001, Global distribution of seamounts inferred from gridded Geosat/ERS-1 altimetry,
 J. Geophys. Res., 106(B9), 19,431–19,441,
-`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/110.1029/2000JB000083>`_
+`http://dx.doi.org/10.1029/2000JB000083 <http://dx.doi.org/10.1029/2000JB000083>`_
 
 See Also
 --------

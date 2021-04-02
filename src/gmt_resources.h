@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -90,8 +90,8 @@ enum GMT_enum_type {
 	GMT_ULONG	=    7,  /* uint64_t, 8-byte unsigned integer type */
 	GMT_FLOAT	=    8,  /* 4-byte data float type */
 	GMT_DOUBLE	=    9,  /* 8-byte data float type */
-	GMT_TEXT	=   10,  /* Arbitrarily long text string [OGR/GMT use only] */
-	GMT_DATETIME	=   11,  /* string with date/time info [OGR/GMT use only] */
+	GMT_TEXT	=   16,  /* Arbitrarily long text string [OGR/GMT use only and GMT_Put_Vector only] */
+	GMT_DATETIME	=   32,  /* string with date/time info [OGR/GMT use and GMT_Put_Vector only] */
 	GMT_N_TYPES	=   12,  /* The number of supported data types above */
 	GMT_VIA_CHAR	=  100,  /* int8_t, 1-byte signed integer type */
 	GMT_VIA_UCHAR	=  200,  /* uint8_t, 1-byte unsigned integer type */
@@ -137,7 +137,7 @@ enum GMT_enum_container {
 	GMT_CONTAINER_ONLY	= 1U,   /* Create|read|write the container but no data array */
 	GMT_DATA_ONLY		= 2U,   /* Create|Read|write the container's array only */
 	GMT_WITH_STRINGS	= 32U,  /* Allocate string array also [DATASET, MATRIX, VECTOR only] */
-	GMT_CUBE_IS_STACK	= 64U,	/* Passed via mode to GMT_Read_Data if infile is a NULL-terminated array of files */
+	GMT_CUBE_IS_STACK	= 64U,	/* Set if source was a stack of 2-D grids */
 	GMT_NO_STRINGS		= 0U    /* Do not allocate string array also [Default] */
 };
 
@@ -153,6 +153,11 @@ enum GMT_enum_family {
 	GMT_IS_CUBE	  = 7,	/* Entity is set of user vectors */
 	GMT_IS_COORD	  = 8,	/* Entity is a double coordinate array */
 	GMT_N_FAMILIES	  = 9	/* Total number of families [API Developers only]  */
+};
+
+enum GMT_enum_CPT {
+	GMT_IS_PALETTE_KEY    = 1024,	/* Strings to GMT_Put_Strings are keys */
+	GMT_IS_PALETTE_LABEL  = 2048	/* Strings to GMT_Put_Strings are labels */
 };
 
 #define GMT_IS_CPT	GMT_IS_PALETTE		/* Backwards compatibility for < 5.3.3; */
@@ -768,7 +773,7 @@ struct GMT_CUBE {
 	double z_range[2];			/* Minimum/max z values (complements header->wesn[4]) */
 	double z_inc;				/* z increment (complements inc[2]) (0 if variable z spacing */
 	double *z;					/* Array of z values (complements x, y) */
-	char name[GMT_GRID_UNIT_LEN80];		/* Name of the 3-D variable, if read from file (or empty if just one) */
+	char name[GMT_GRID_VARNAME_LEN80];	/* Name of the 3-D variable, if read from file (or empty if just one) */
 	char units[GMT_GRID_UNIT_LEN80];	/* Units in 3rd direction (complements x_units, y_units, z_units)  */
 };
 

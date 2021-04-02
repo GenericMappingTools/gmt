@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ [*cpt*]]
 [ |-G|\ *drapegrid* \| |-G|\ *grd_r* |-G|\ *grd_g* |-G|\ *grd_b* ]
 [ |-I|\ [*intensgrid*\|\ *intensity*\|\ *modifiers*] ]
-[ **-Jz**\|\ **Z**\ *parameters* ]
+[ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-N|\ *level*\ [**+g**\ *fill*] ]
 [ |-Q|\ *args*\ [**+m**] ]
 [ |SYN_OPT-Rz| ]

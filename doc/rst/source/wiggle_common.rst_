@@ -19,15 +19,15 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
@@ -52,9 +52,10 @@ Optional Arguments
     the positive wiggle side.  If no azimuth is given the no
     preferred azimuth is enforced.  Default is **-A**\ 0.
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -81,21 +82,14 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]][**+s**\ [[*dx*/*dy*/][*shade*]]]
-    Without further options, draws a rectangular border around the vertical scale bar using
-    :term:`MAP_FRAME_PEN`; specify a different pen with **+p**\ *pen*.
-    Add **+g**\ *fill* to fill the scale panel [no fill].
-    Append **+c**\ *clearance* where *clearance* is either *gap*, *xgap*\ /\ *ygap*,
-    or *lgap*\ /\ *rgap*\ /\ *bgap*\ /\ *tgap* where these items are uniform, separate in
-    x- and y-direction, or individual side spacings between scale and border.
-    Append **+i** to draw a secondary, inner border as well. We use a uniform
-    *gap* between borders of 2\ **p** and the :term:`MAP_DEFAULT_PEN`
-    unless other values are specified. Append **+r** to draw rounded
-    rectangular borders instead, with a 6\ **p** corner radius. You can
-    override this radius by appending another value. Finally, append
-    **+s** to draw an offset background shaded region. Here, *dx*/*dy*
-    indicates the shift relative to the foreground frame
-    [4\ **p**/-4\ **p**] and *shade* sets the fill style to use for shading [gray50].
+**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]]\
+[**+s**\ [[*dx*/*dy*/][*shade*]]]
+
+    Without further options, draws a rectangular border around the vertical scale bar using :term:`MAP_FRAME_PEN`. The
+    following modifiers can be appended to |-F|, with additional explanation and examples provided in the
+    :ref:`Background-panel` cookbook section:
+
+    .. include:: explain_-F_box.rst_
 
 .. _-G:
 
@@ -104,7 +98,8 @@ Optional Arguments
     wiggles [Default is no fill]. Optionally, append **+p** to fill
     positive areas (this is the default behavior). Append **+n** to fill
     negative areas. Append **+n+p** to fill both positive and negative
-    areas with the same fill.
+    areas with the same fill.  **Note**: You will need to repeat the **-G** option
+    to select different fills for the positive and negative wiggles.
 
 .. _-I:
 
@@ -119,14 +114,17 @@ Optional Arguments
     Draw track [Default is no track]. Append pen attributes to use
     [Defaults: width = 0.25p, color = black, style = solid].
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -159,6 +157,8 @@ Optional Arguments
 .. include:: explain_-qi.rst_
 
 .. include:: explain_-t.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

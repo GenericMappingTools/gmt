@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -162,7 +162,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <nlevels> is not set we use the number of color slices in the chosen CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c[label>] to output a discrete CPT in categorical CPT format.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c[<label>] to output a discrete CPT in categorical CPT format.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The <label>, if present, sets the labels for each category. It may be a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   comma-separated list of category names, or <start>[-], where we automatically build\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.\n");
@@ -583,7 +583,6 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 	}
 	nz = (int)Ctrl->T.T.n;		z = Ctrl->T.T.array;
-
 	if (Ctrl->T.T.list && (Pin->mode & GMT_CPT_TEMPORARY)) {	/* Array was passed as a comma-separated list of z-values so make sure it matches a list of colors, if given */
 		/* Got -Zcolor,color,... and -Tz,z,z */
 		int k;
@@ -623,6 +622,10 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 			gmt_invert_cpt (GMT, Pout);
 		if (Ctrl->Q.mode == 1)
 			gmt_undo_log10 (GMT, Pout);
+	}
+	else if (nz < 2) {
+		GMT_Report (API, GMT_MSG_ERROR, "Need at least two nodes to form a CPT slice, your choice only resulted in %d nodes\n", nz);
+		Return (GMT_RUNTIME_ERROR);
 	}
 
 	if (Pout == NULL) {	/* Meaning it was not created above */

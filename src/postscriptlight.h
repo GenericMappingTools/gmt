@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2009-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -60,8 +60,8 @@ extern "C" {
 #define PSL_CIRCLE		((int)'c')
 #define PSL_DIAMOND		((int)'d')
 #define PSL_ELLIPSE		((int)'e')
-#define PSL_HEXAGON		((int)'h')
 #define PSL_OCTAGON		((int)'g')
+#define PSL_HEXAGON		((int)'h')
 #define PSL_INVTRIANGLE		((int)'i')
 #define PSL_ROTRECT		((int)'j')
 #define PSL_MARC		((int)'m')

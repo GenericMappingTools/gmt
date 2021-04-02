@@ -28,11 +28,12 @@ Optional Arguments
     [Default 0 means windrose diagram]. Append **+r** to draw rose
     diagram instead of sector diagram.
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links| Remember that "x" here is radial distance
+   and "y" is azimuth. The ylabel may be used to plot a figure caption. The
+   scale bar length is determined by the radial gridline spacing.
 .. include:: explain_-B.rst_
-|
-|   Remember that "x" here is radial distance and "y" is azimuth. The ylabel may be used to plot a figure caption. The scale bar length is determined by the radial gridline spacing.
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -123,9 +124,11 @@ Optional Arguments
 
 .. _-S:
 
-**-S**
+**-S**\ [**+a**]
     Normalize input radii (or bin counts if **-A** is used) by the largest
-    value so all radii (or bin counts) range from 0 to 1.
+    value so all radii (or bin counts) range from 0 to 1.  Optionally,
+    further normalize rose plots for area (i.e., take :math:`sqrt(r)` before
+    plotting [Default is no normalizations].
 
 .. _-T:
 
@@ -135,14 +138,15 @@ Optional Arguments
     compensate by counting each record twice: First as *azimuth* and second
     as *azimuth + 180*.  Ignored if range is given as -90/90 or 0/180.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -151,9 +155,10 @@ Optional Arguments
     outline]. Use **-Wv**\ *pen* to change pen used to draw vector
     (requires **-E**) [Default is same as sector outline].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -187,6 +192,8 @@ Optional Arguments
 .. include:: explain_-qi.rst_
 
 .. include:: explain_-t.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_help.rst_
 

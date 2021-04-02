@@ -11,8 +11,8 @@ These are some of the many ways to contribute:
 * :mag: Fixing typos and improving to the documentation
 * :bulb: Writing code for everyone to use
 
-If you get stuck at any point you can create an issue on GitHub (look for the *Issues*
-tab in the repository) or contact us at one of the other channels mentioned below.
+If you get stuck at any point you can create an [issue](https://github.com/GenericMappingTools/gmt/issues)
+on GitHub or contact us at one of the other channels mentioned below.
 
 For more information on contributing to open source projects,
 [GitHub's own guide](https://guides.github.com/activities/contributing-to-open-source/)
@@ -46,31 +46,32 @@ read it carefully.
   ["good first issues"](https://github.com/GenericMappingTools/gmt/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22)
   to indicate that they are beginner friendly, meaning that they don't require extensive
   knowledge of the project.
-* Report a bug you found through the [Github issues](https://github.com/GenericMappingTools/gmt/issues).
+* Report a bug through [Github issues](https://github.com/GenericMappingTools/gmt/issues).
 * Make a tutorial or example of how to do something.
 * Provide feedback about how we can improve the project or about your particular use
   case.
 * Contribute code you already have. It doesn't need to be perfect! We will help you
   clean things up, test it, etc.
+* Help answer questions on the [GMT Community Forum](https://forum.generic-mapping-tools.org/).
 
 
 ## How Can I Talk to You?
 
-Discussion often happens in the issues and pull requests.
-For general questions, you can post on the
-[GMT Community Forum](https://forum.generic-mapping-tools.org/).
+Discussion often happens in the issues and pull requests. For general questions, you can post on the
+[GMT Community Forum](https://forum.generic-mapping-tools.org/). We also host community meetings roughly monthly
+to discuss GMT development, which are announced on the [GMT Community Forum](https://forum.generic-mapping-tools.org/).
 
 
 ## Reporting a Bug
 
-Find the [Issues](https://github.com/GenericMappingTools/gmt/issues) tab on the top of
+Find the [issues](https://github.com/GenericMappingTools/gmt/issues) tab on the top of
 the Github repository and click *New Issue*.
 You'll be prompted to choose between different types of issue, like bug reports and
 feature requests.
 Choose the one that best matches your need.
-The Issue will be populated with one of our templates.
-**Please try to fillout the template with as much detail as you can**.
-Remember: the more information we have, the easier it will be for us to solve your
+The issue will be populated with one of our templates.
+**Please try to fill out the template with as much detail as you can**.
+Remember, the more information we have, the easier it will be for us to solve your
 problem.
 
 
@@ -79,7 +80,7 @@ problem.
 If you're browsing the documentation and notice a typo or something that could be
 improved, please consider letting us know. You can either
 [create an issue](#reporting-a-bug) on GitHub, or click the "Edit on GitHub" button
-at the top right corner of the documentation, and submit a fix (even better :star2:).
+at the top right corner of the documentation, and submit a pull request (even better :star2:).
 
 The GMT documentation is written in the plaintext markup language
 [reStructuredText (reST)](https://docutils.sourceforge.io/rst.html) and built
@@ -88,9 +89,9 @@ The reST plaintext files for the GMT documentation are located in the [doc/rst/s
 You may need to know some basic reST syntax before making changes. Please refer to our
 [reStructuredText Cheatsheet](https://docs.generic-mapping-tools.org/latest/rst-cheatsheet.html) for details.
 
-Usually you don't need to build the documentation locally for small changes.
-If you want, you can install Sphinx locally,
-then follow the [build instructions](MAINTENANCE.md#building-documentation).
+Usually you don't need to build the documentation locally for small changes. If you want, you can install Sphinx
+locally, then follow the instructions for [building GMT](BUILDING.md) and
+[building the documentation](MAINTENANCE.md#building-documentation).
 
 
 ## Contributing Code
@@ -130,7 +131,7 @@ General guidelines for pull requests (PRs):
   [guide](https://chris.beams.io/posts/git-commit/) on how to write good commit
   messages.
 * Be willing to accept criticism and work on improving your code; we don't want to break
-  other users' code, so care must be taken not to introduce bugs.
+  other users' code, so care must be taken to not introduce bugs.
 * Be aware that the pull request review process is not immediate, and is generally
   proportional to the size of the pull request.
 

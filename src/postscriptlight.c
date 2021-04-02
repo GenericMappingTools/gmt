@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2009-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -1063,6 +1063,7 @@ static void psl_rgb_to_hsv (double rgb[], double hsv[]) {
 	hsv[0] = 120.0 * imax + 60.0 * (rgb[(imax + 1) % 3] - rgb[(imax + 2) % 3]) / diff;
 	if (hsv[0] < 0.0) hsv[0] += 360.0;
 	if (hsv[0] > 360.0) hsv[0] -= 360.0;
+	hsv[0] /= 360.0;	/* All h,s,v values in PostScript are 0-1 range */
 }
 
 #if 0 /* Not used */

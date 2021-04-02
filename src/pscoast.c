@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -56,7 +56,7 @@
 #define THIS_MODULE_MODERN_NAME	"coast"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot continents, countries, shorelines, rivers, and borders"
-#define THIS_MODULE_KEYS	">?}"
+#define THIS_MODULE_KEYS	">?},>DE-lL"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdptxy" GMT_OPT("Zc")
 
@@ -103,6 +103,7 @@ struct PSCOAST_CTRL {
 	} I;
 	struct PSCOAST_L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
 		bool active;
+		char *arg;
 		struct GMT_MAP_SCALE scale;
 	} L;
 	struct PSCOAST_M {	/* -M */
@@ -166,6 +167,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *C) {	/* Deallo
 	if (!C) return;
 	gmt_DCW_free (GMT, &(C->E.info));
 	if (C->L.scale.refpoint) gmt_free_refpoint (GMT, &C->L.scale.refpoint);
+	gmt_M_str_free (C->L.arg);
 	gmt_M_free (GMT, C->L.scale.panel);
 	if (C->T.rose.refpoint) gmt_free_refpoint (GMT, &C->T.rose.refpoint);
 	gmt_M_free (GMT, C->T.rose.panel);
@@ -276,7 +278,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	unsigned int n_errors = 0, n_files = 0, k = 0, j = 0;
-	int ks;
+	int ks, error;
 	bool clipping, get_panel[2] = {false, false}, one = false;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -330,6 +332,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 			case 'E':	/* Select DCW items; repeatable */
 				Ctrl->E.active = true;
 				n_errors += gmt_DCW_parse (GMT, opt->option, opt->arg, &Ctrl->E.info);
+				Ctrl->E.info.options = options;
 				break;
 			case 'F':
 				if (gmt_M_compat_check (GMT, 5)) {	/* See if we got old -F for DCW stuff (now -E) */
@@ -416,7 +419,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':
 				Ctrl->L.active = true;
-				n_errors += gmt_getscale (GMT, 'L', opt->arg, &Ctrl->L.scale);
+				if (opt->arg[0])
+					Ctrl->L.arg = strdup (opt->arg);
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: No argument given!\n");
+					n_errors++;					
+				}
 				break;
 			case 'm':
 				if (gmt_M_compat_check (GMT, 4))	/* Warn and fall through on purpose */
@@ -518,7 +526,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
-	if (gmt_DCW_list (GMT, &(Ctrl->E.info))) return 1;	/* If +l|L was given we list countries and return */
+	if ((error = gmt_DCW_list (GMT, &(Ctrl->E.info)))) {	/* This is either success or failure... */
+		if (error != GMT_DCW_LIST) n_errors++;	/* Not good */
+		else return NOT_REALLY_AN_ERROR;	/* If +l|L was given we list countries and return a fake error that will be replaced by 0 */
+	}
 
 	if (!GMT->common.J.active) {	/* So without -J we can only do -M or report region only */
 		if (Ctrl->M.active) Ctrl->E.info.mode |= GMT_DCW_DUMP;
@@ -601,7 +612,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 	                                 "Cannot do clipping AND draw coastlines, rivers, or borders\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->E.active || Ctrl->W.active ||
 	                                 Ctrl->N.active || Ctrl->I.active || Ctrl->Q.active),
-	                                 "Must specify at least one of -C, -G, -S, -I, -N, -Q and -W\n");
+	                                 "Must specify at least one of -C, -G, -S, -E, -I, -N, -Q and -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->M.active && (Ctrl->E.active + Ctrl->N.active + Ctrl->I.active + Ctrl->W.active) != 1,
 	                                 "Option -M: Must specify one of -E, -I, -N, and -W\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.active && !(Ctrl->L.active || Ctrl->T.active),
@@ -799,6 +810,8 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+
+	if (Ctrl->L.active && gmt_getscale (GMT, 'L', Ctrl->L.arg, &Ctrl->L.scale)) Return (GMT_PARSE_ERROR);
 
 	base = gmt_set_resolution (GMT, &Ctrl->D.set, 'D');
 

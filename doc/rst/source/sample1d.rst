@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -100,10 +101,10 @@ Optional Arguments
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -134,11 +135,13 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. include:: explain_-q.rst_
-
 .. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_help.rst_
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,11 +66,11 @@ struct GMT_MATH_MACRO {
 struct GMT_KEYWORD_DICTIONARY {	/* Used for keyword-value lookup */
 	char separator;			/* Single character separating 2 or more identical specifications [0 for no repeat] */
 	char short_option;		/* Single character GMT option code */
-	char long_option[31];		/* Name of corresponding long option */
-	char short_directives[32];	/* Single character directives, comma-separated */
-	char long_directives[256];	/* Long name directives, comma-separated */
-	char short_modifiers[32];	/* Single character modifiers, comma-separated */
-	char long_modifiers[256];	/* Long name modifiers, comma-separated */
+	char long_option[GMT_LEN32-1];		/* Name of corresponding long option */
+	char short_directives[GMT_LEN32];	/* Single character directives, comma-separated */
+	char long_directives[GMT_LEN256];	/* Long name directives, comma-separated */
+	char short_modifiers[GMT_LEN32];	/* Single character modifiers, comma-separated */
+	char long_modifiers[GMT_LEN256];	/* Long name modifiers, comma-separated */
 };
 
 /*! Definition of structure use for finding optimal n_columns/n_rows for surface */
@@ -244,6 +244,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	bool is_world;			/* true if map has 360 degrees of longitude range */
 	bool is_world_tm;			/* true if GMT_TM map is global? */
 	bool lon_wrap;			/* true when longitude wrapping over 360 degrees is allowed */
+	bool lat_wrap;			/* true when "latitude" wrapping over 180 degrees is allowed (may be periodic time in y-axis instead) */
 	bool z_periodic;			/* true if grid values are 0-360 degrees (phases etc) */
 	bool loxodrome;				/* true if we are computing loxodrome distances */
 	unsigned int meridian_straight;		/* 1 if meridians plot as straight lines, 2 for special case */
@@ -260,6 +261,8 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	double dlon;				/* Steps taken in longitude along gridlines (gets reset in gmt_init.c) */
 	double dlat;				/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
 	double path_step;			/* Sampling interval if resampling of paths should be done */
+	double lon_wrap_range;		/* 360 for longitudes, but others values for periodic time */
+	double lat_wrap_range;		/* Usually means for for periodic time */
 	bool (*outside) (struct GMT_CTRL *, double, double);	/* Pointer to function checking if a lon/lat point is outside map */
 	bool (*overlap) (struct GMT_CTRL *, double, double, double, double);	/* Pointer to function checking for overlap between 2 regions */
 	bool (*will_it_wrap) (struct GMT_CTRL *, double *, double *, uint64_t, uint64_t *);	/* true if consecutive points indicate wrap */
@@ -277,6 +280,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	void (*get_crossings) (struct GMT_CTRL *, double *, double *, double, double, double, double);	/* Returns map crossings in x or y */
 	double (*geodesic_meter) (struct GMT_CTRL *, double, double, double, double);	/* pointer to geodesic function returning distance between two points points in meter */
 	double (*geodesic_az_backaz) (struct GMT_CTRL *, double, double, double, double, bool);	/* pointer to geodesic function returning azimuth or backazimuth between two points points */
+	void (*second_point) (struct GMT_CTRL *, double, double, double, double, double *, double *, double *);	/* pointer to function returning second point (and bakaz) given first point, az, and dist */
 };
 
 struct GMT_GCAL {	/* (proleptic) Gregorian calendar  */

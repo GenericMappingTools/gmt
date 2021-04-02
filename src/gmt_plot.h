@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,12 +47,13 @@
 #define GMT_SYMBOL_DRAW		((int)'D')
 #define GMT_SYMBOL_STROKE	((int)'S')
 #define GMT_SYMBOL_ARC		((int)'A')
-#define GMT_SYMBOL_ROTATE	((int)'R')
+#define GMT_SYMBOL_ROTATE	((int)'O')	/* Since R stands for rounded rectangle in plot */
 #define GMT_SYMBOL_VARROTATE	((int)'V')
 #define GMT_SYMBOL_AZIMROTATE	((int)'Z')
 #define GMT_SYMBOL_TEXTURE	((int)'T')
 #define GMT_SYMBOL_GEOVECTOR	((int)'=')
 #define GMT_SYMBOL_VARTEXT	((int)'L')
+#define GMT_SYMBOL_EPS	((int)'P')
 
 #define GMT_SYMBOL_LINE		0
 #define GMT_SYMBOL_NONE		((int)' ')

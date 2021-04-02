@@ -16,12 +16,13 @@ Synopsis
 |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
-[ |-C|\ *cpt* ]
+[ |-C|\ *cpt*\ [**+b**] ]
 [ |-D|\ [**+b**][**+f**\ *font*][**+o**\ *off*][**+r**] ]
 [ |-E|\ *width*\ [**+o**\ *offset*] ]
 [ |-F| ]
-[ |-G|\ *fill* ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
+[ |-G|\ *fill* ]
 [ |-I|\ [**o**\|\ **O**] ]
+[ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-L|\ **l**\|\ **h**\|\ **b**] ]
 [ |-N|\ [*mode*][**+p**\ *pen*] ]
 [ |-Q|\ **r** ]
@@ -43,6 +44,7 @@ Synopsis
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
 
 .. include:: histogram_common.rst_
@@ -54,7 +56,7 @@ Examples
 
 .. include:: oneliner_info.rst_
 
-To draw a histogram of the remote data v3206_06.t containing seafloor depths,
+To draw a histogram of the remote data v3206_06.txt containing seafloor depths,
 using a 250 meter bin width, center bars, and draw bar outline, use:
 
    ::
@@ -64,12 +66,14 @@ using a 250 meter bin width, center bars, and draw bar outline, use:
 If you know the distribution of your data, you may explicitly specify
 range and scales. E.g., to plot a histogram of the y-values (2nd column)
 in the file errors.xy using a 1 meter bin width, plot from -10 to +10
-meters @ 0.75 cm/m, annotate every 2 m and 100 counts, and use black
-bars, run:
+meters @ 0.75 cm/m and 0.01c/count in y, annotate every 2 m and 100 counts,
+and use black bars, run:
 
    ::
 
-    gmt histogram errors.xy -T1 -R-10/10/0/0 -Jxc/0.01c -Bx2+lError -By100+lCounts -Gblack -i1 -V -pdf plot
+    gmt begin plot
+      gmt histogram errors.xy -T1 -R-10/10/0/0 -Jx0.75c/0.01c -Bx2+lError -By100+lCounts -Gblack -i1
+    gmt end show
 
 Since no y-range was specified, **histogram** will calculate *ymax* in even
 increments of 100.

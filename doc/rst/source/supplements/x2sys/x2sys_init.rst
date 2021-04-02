@@ -114,10 +114,10 @@ Optional Arguments
     statistics on those COE that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 **-Wt**\|\ **d**\ *gap*
     Give **t** or **d** and append the corresponding maximum time gap

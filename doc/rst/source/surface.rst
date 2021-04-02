@@ -19,7 +19,7 @@ Synopsis
 [ |-C|\ *convergence_limit*\ [%] ]
 [ |-J|\ *parameters* ]
 [ |-D|\ *breakline_file*\ [**+z**\ [*level*]] ]
-[ |-L|\ **l**\ *lower* ] [ **-Lu**\ *upper* ]
+[ |-L|\ **l**\ *lower* ] [ |-L|\ **u**\ *upper* ]
 [ |-M|\ *max_radius* ]
 [ |-N|\ *max_iterations* ]
 [ |-Q| ]
@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -85,10 +86,10 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -115,14 +116,12 @@ Optional Arguments
     intermediate (coarser) grids the effective convergence limit is divided
     by the grid spacing multiplier.
 
-.. _-J:
-
-**-J**\ *parameters*
-
 .. |Add_-J| replace::
     Select the data map projection. This projection is only used to add a referencing info
     to the grid formats that support it. E.g. netCDF, GeoTIFF, and others supported by GDAL.
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-D:
 
@@ -200,12 +199,12 @@ Optional Arguments
     set to the same value. [Default = 0 for both gives minimum curvature
     solution.]
 
-.. _-V:
-
 .. |Add_-V| replace::
     **-V3** will report the convergence after each iteration;
-    **-V** will report only after each regional grid is converged.
+    **-V** will report only after each regional grid is converged. |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -242,6 +241,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

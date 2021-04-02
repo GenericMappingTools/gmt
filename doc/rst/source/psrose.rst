@@ -25,7 +25,7 @@ Synopsis
 [ |-O| ] [ |-P| ]
 [ |-Q|\ *alpha* ]
 [ |-R|\ *r0*/*r1*/*az0*/*az1* ]
-[ |-S| ]
+[ |-S|\ [**+a**] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]

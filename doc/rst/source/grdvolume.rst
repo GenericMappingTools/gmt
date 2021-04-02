@@ -41,7 +41,7 @@ Required Arguments
 ------------------
 
 *grdfile*
-    The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
+    The name of the input 2-D binary grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -86,15 +86,15 @@ Optional Arguments
     versus contour value rather than the contour with the maximum height
     to pick the best contour value (requires **-C**).
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -109,8 +109,6 @@ Optional Arguments
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

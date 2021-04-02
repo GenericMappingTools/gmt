@@ -33,7 +33,7 @@ jobs:
       - name: Download remote data
         run: |
           # list of datasets used in tests
-          data="@earth_relief_01d \
+          data="@earth_relief_01d earth_relief_01d_g \
                 @earth_relief_30m \
                 @earth_relief_20m \
                 @earth_relief_15m \

@@ -44,7 +44,7 @@ Common Options (Classic Mode)
      - Segment data by detecting gaps :ref:`(...) <-g_full>`
    * - **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
      - ASCII [*I*\|\ *O*] tables have header record[s] :ref:`(...) <-h_full>`
-   * - **-i**\ *cols*\ [**+l**][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+   * - **-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
      - Selection of input columns :ref:`(...) <-icols_full>`
    * - **-je**\|\ **f**\|\ **g**
      - Mode of spherical distance calculation :ref:`(...) <-distcalc_full>`
@@ -62,6 +62,8 @@ Common Options (Classic Mode)
      - Control treatment of NaN records :ref:`(...) <-s_full>`
    * - **-t**\ *transparency*
      - Set layer transparency :ref:`(...) <-t_full>`
+   * - **-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\ *period*\ [/*phase*][**+c**\ *col*]
+     - Convert selected coordinate to repeating cycles :ref:`(...) <-w_full>`
    * - **-x**\ [[-]\ *n*]
      - Set number of cores in multi-threaded modules :ref:`(...) <core_full>`
    * - **-:**\ [**i**\|\ **o**]

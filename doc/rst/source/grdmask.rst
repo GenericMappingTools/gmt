@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -60,16 +61,17 @@ Required Arguments
 .. _-G:
 
 **-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See GRID FILE FORMATS below).
+    Name of resulting output mask grid file. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-I:
 
 .. include:: explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -121,10 +123,10 @@ Optional Arguments
     that only the cell where point lies is masked, **-S**\ 1\ **c** masks one cell beyond that
     (i.e. makes a 3x3 neighborhood), and so on.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns (3 with **-Sz**)].
 .. include:: explain_-bi.rst_
@@ -146,9 +148,9 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. include:: explain_-qi.rst_
-
 .. include:: explain_distcalc.rst_
+
+.. include:: explain_-qi.rst_
 
 **-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
    Append **+b**\ *BC* to set any boundary conditions to be used,
@@ -160,13 +162,13 @@ Optional Arguments
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
-
-.. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
 

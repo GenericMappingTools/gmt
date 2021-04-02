@@ -9,6 +9,7 @@
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md) 
 
 ## What is GMT?
 
@@ -38,7 +39,7 @@ hobbyists.
 
 ## Installation
 
-GMT has been installed successfully under UNIX/Linux/macOS/FreeBSD on workstations. It
+GMT has been installed successfully under UNIX/Linux/macOS/FreeBSD/OpenBSD on workstations. It
 also installs under Windows and in UNIX emulators such as Cygwin or on virtual
 machines.  We anticipate few problems if you are installing the package on
 other platforms.
@@ -83,7 +84,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2020 by [the GMT Team](AUTHORS.md).
+Copyright (c) 1991-2021 by [the GMT Team](AUTHORS.md).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)

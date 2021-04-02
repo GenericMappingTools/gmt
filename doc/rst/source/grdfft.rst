@@ -45,12 +45,12 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D binary grid file to be operated on. (See GRID FILE FORMATS
-    below). For cross-spectral operations, also give the second grid
-    file *ingrid2*.
+    2-D binary grid file to be operated on (see :ref:`Grid File Formats <grd_inout_full>`).
+    For cross-spectral operations, also give the second grid file *ingrid2*.
+
 **-G**\ *outfile*
-    Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See GRID FILE FORMATS below).
+    Specify the name of the output grid file (see :ref:`Grid File Formats
+    <grd_inout_full>`) or the 1-D spectrum table (see **-E**).
 
 Optional Arguments
 ------------------
@@ -151,6 +151,8 @@ Optional Arguments
     is gravity anomalies in mGal and output should be geoid heights in
     meters. [Default is no scale].
 
+.. _-N:
+
 .. include:: explain_fft.rst_
 
 .. _-Q:
@@ -166,18 +168,16 @@ Optional Arguments
     Multiply each element by *scale* in the space domain (after the
     frequency domain operations). [Default is 1.0].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Grid Distance Units
 -------------------

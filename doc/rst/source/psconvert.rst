@@ -22,7 +22,7 @@ Synopsis
 [ |-H|\ *factor* ]
 [ |-I| ]
 [ |-L|\ *listfile* ]
-[ **-Mb**\|\ **f**\ *pslayer* ]
+[ |-M|\ **b**\|\ **f**\ *pslayer* ]
 [ |-Q|\ [**g**\|\ **p**\|\ **t**][1\|2\|4] ]
 [ |-S| ]
 [ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**] ]
@@ -199,10 +199,10 @@ Optional Arguments
     PDF file from the list of input PS or PDF files. It requires the **-F** option.
     See also **NOTES** below.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

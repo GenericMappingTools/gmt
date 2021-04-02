@@ -110,10 +110,10 @@ Optional Arguments
     for 4-byte float starting at byte *number*. If **-S** not set, assumes even
     spacing of samples at the *x_inc, y_inc* supplied with **-I**.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_

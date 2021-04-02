@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000
-%%Title: GMT v6.2.0_8a4275f-dirty_2020.10.14 [64-bit] Document from plot
+%%Title: GMT v6.2.0_99b7aea-dirty_2021.03.11 [64-bit] Document from plot
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Oct 14 15:24:17 2020
+%%CreationDate: Thu Mar 11 17:35:38 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -637,6 +662,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -681,6 +720,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1654 1181 M
 708 0 D
 S
@@ -1253,7 +1293,6 @@ N 1590 945 M -29 17 D S
 N 2204 591 M 29 -17 D S
 N 1654 1181 M -34 0 D S
 N 2362 1181 M 34 0 D S
-0 A [] 0 B
 25 W
 2362 1181 M
 0 40 D
@@ -1446,11 +1485,12 @@ P S
 14 -45 D
 8 -47 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (Default) bc Z
 1544 1763 M 83 F0
 V -30 R (0.6) tl Z U
@@ -1458,28 +1498,21 @@ V -30 R (0.6) tl Z U
 1780 2172 M V -30 R (1.0) tl Z U
 1587 1181 M V -90 R (0è) tc Z U
 2429 1181 M V -90 R (0è) bc Z U
-1533 1384 M V -60 R (30è) tc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1384 1533 M V -30 R (60è) tc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1181 1587 M (90è) tc Z
-1181 2429 M V -2.84217094304e-14 R (90è) bc Z U
-978 1533 M V 30 R (120è) tc Z U
-557 2262 M V 30 R (120è) bc Z U
-830 1384 M V 60 R (150è) tc Z U
-101 1805 M V 60 R (150è) bc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1181 1587 M (90èE) tc Z
+1181 2429 M V -2.84217094304e-14 R (90èE) bc Z U
+557 2262 M V 30 R (120èE) bc Z U
+101 1805 M V 60 R (150èE) bc Z U
 775 1181 M V -270 R (180è) tc Z U
 -67 1181 M V 90 R (180è) bc Z U
-830 978 M V -60 R (î150è) bc Z U
-101 557 M V 300 R (î150è) tc Z U
-978 830 M V -30 R (î120è) bc Z U
-557 101 M V 330 R (î120è) tc Z U
-1181 775 M (î90è) bc Z
-1181 -67 M V 360 R (î90è) tc Z U
-1384 830 M V 30 R (î60è) bc Z U
-1805 101 M V 390 R (î60è) tc Z U
-1533 978 M V 60 R (î30è) bc Z U
-2262 557 M V 420 R (î30è) tc Z U
+101 557 M V 300 R (150èW) tc Z U
+557 101 M V 330 R (120èW) tc Z U
+1181 775 M (90èW) bc Z
+1181 -67 M V 360 R (90èW) tc Z U
+1805 101 M V 390 R (60èW) tc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 0 -9055 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -1495,6 +1528,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2362 1181 M
 -1181 0 D
 S
@@ -1952,7 +1986,6 @@ N 1181 0 M 0 -33 D S
 N 1772 158 M 16 -29 D S
 N 2204 591 M 29 -17 D S
 N 2362 1181 M 34 0 D S
-0 A [] 0 B
 25 W
 2362 1181 M
 -2 -79 D
@@ -2069,28 +2102,30 @@ N 2362 1181 M 34 0 D S
 8 -79 D
 2 -39 D
 P S
-/PSL_H_y 267 def
+/PSL_H_y 233 def
 1181 2362 PSL_H_y add M
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053f) bc Z
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 1780 2172 M 83 F0
 V -30 R (0.4) tl Z U
 1583 1831 M V -30 R (0.6) tl Z U
 1387 1490 M V -30 R (0.8) tl Z U
 1190 1149 M V -30 R (1.0) tl Z U
 2429 1181 M V -90 R (0è) bc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1181 2429 M V -1.42108547152e-14 R (90è) bc Z U
-557 2262 M V 30 R (120è) bc Z U
-101 1805 M V 60 R (150è) bc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1181 2429 M V -1.42108547152e-14 R (90èE) bc Z U
+557 2262 M V 30 R (120èE) bc Z U
+101 1805 M V 60 R (150èE) bc Z U
 -67 1181 M V 90 R (180è) bc Z U
-101 557 M V 300 R (î150è) tc Z U
-557 101 M V 330 R (î120è) tc Z U
-1181 -67 M V 360 R (î90è) tc Z U
-1805 101 M V 390 R (î60è) tc Z U
-2262 557 M V 420 R (î30è) tc Z U
+101 557 M V 300 R (150èW) tc Z U
+557 101 M V 330 R (120èW) tc Z U
+1181 -67 M V 360 R (90èW) tc Z U
+1805 101 M V 390 R (60èW) tc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 -3018 -9055 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -2106,6 +2141,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2362 1181 M
 -656 0 D
 S
@@ -2987,7 +3023,6 @@ N 2204 591 M 29 -17 D S
 N 1636 919 M -29 16 D S
 N 2362 1181 M 34 0 D S
 N 1706 1181 M -33 0 D S
-0 A [] 0 B
 25 W
 1706 1181 M
 -1 35 D
@@ -3184,42 +3219,36 @@ P S
 8 -79 D
 2 -39 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053fe) bc Z
 1780 2172 M 83 F0
 V -30 R (0è) tl Z U
-1715 2058 M V -30 R (10è) tl Z U
-1649 1944 M V -30 R (20è) tl Z U
-1583 1831 M V -30 R (30è) tl Z U
-1518 1717 M V -30 R (40è) tl Z U
+1715 2058 M V -30 R (10èN) tl Z U
+1649 1944 M V -30 R (20èN) tl Z U
+1583 1831 M V -30 R (30èN) tl Z U
+1518 1717 M V -30 R (40èN) tl Z U
 2429 1181 M V -90 R (0è) bc Z U
 1639 1181 M V -90 R (0è) tc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1578 1410 M V -60 R (30è) tc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1410 1578 M V -30 R (60è) tc Z U
-1181 2429 M V -2.84217094304e-14 R (90è) bc Z U
-1181 1639 M (90è) tc Z
-557 2262 M V 30 R (120è) bc Z U
-952 1578 M V 30 R (120è) tc Z U
-101 1805 M V 60 R (150è) bc Z U
-784 1410 M V 60 R (150è) tc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1181 2429 M V -2.84217094304e-14 R (90èE) bc Z U
+1181 1639 M (90èE) tc Z
+557 2262 M V 30 R (120èE) bc Z U
+101 1805 M V 60 R (150èE) bc Z U
 -67 1181 M V 90 R (180è) bc Z U
 723 1181 M V -270 R (180è) tc Z U
-101 557 M V 300 R (î150è) tc Z U
-784 952 M V -60 R (î150è) bc Z U
-557 101 M V 330 R (î120è) tc Z U
-952 784 M V -30 R (î120è) bc Z U
-1181 -67 M V 360 R (î90è) tc Z U
-1181 723 M (î90è) bc Z
-1805 101 M V 390 R (î60è) tc Z U
-1410 784 M V 30 R (î60è) bc Z U
-2262 557 M V 420 R (î30è) tc Z U
-1578 952 M V 60 R (î30è) bc Z U
+101 557 M V 300 R (150èW) tc Z U
+557 101 M V 330 R (120èW) tc Z U
+1181 -67 M V 360 R (90èW) tc Z U
+1181 723 M (90èW) bc Z
+1805 101 M V 390 R (60èW) tc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 -6036 -9055 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -3235,6 +3264,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2362 1181 M
 -439 0 D
 S
@@ -4017,7 +4047,6 @@ N 2204 591 M 29 -17 D S
 N 1824 810 M -29 17 D S
 N 2362 1181 M 34 0 D S
 N 1923 1181 M -33 0 D S
-0 A [] 0 B
 25 W
 1923 1181 M
 0 25 D
@@ -4227,11 +4256,12 @@ P S
 8 -79 D
 2 -39 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053fp) bc Z
 1780 2172 M 83 F0
 V -30 R (1000) tl Z U
@@ -4240,28 +4270,23 @@ V -30 R (1000) tl Z U
 1616 1886 M V -30 R (2500) tl Z U
 2429 1181 M V -90 R (0è) bc Z U
 1856 1181 M V -90 R (0è) tc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1766 1519 M V -60 R (30è) tc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1519 1766 M V -30 R (60è) tc Z U
-1181 2429 M V -4.26325641456e-14 R (90è) bc Z U
-1181 1856 M (90è) tc Z
-557 2262 M V 30 R (120è) bc Z U
-843 1766 M V 30 R (120è) tc Z U
-101 1805 M V 60 R (150è) bc Z U
-596 1519 M V 60 R (150è) tc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1519 1766 M V -30 R (60èE) tc Z U
+1181 2429 M V -4.26325641456e-14 R (90èE) bc Z U
+557 2262 M V 30 R (120èE) bc Z U
+843 1766 M V 30 R (120èE) tc Z U
+101 1805 M V 60 R (150èE) bc Z U
 -67 1181 M V 90 R (180è) bc Z U
 506 1181 M V -270 R (180è) tc Z U
-101 557 M V 300 R (î150è) tc Z U
-596 843 M V -60 R (î150è) bc Z U
-557 101 M V 330 R (î120è) tc Z U
-843 596 M V -30 R (î120è) bc Z U
-1181 -67 M V 360 R (î90è) tc Z U
-1181 506 M (î90è) bc Z
-1805 101 M V 390 R (î60è) tc Z U
-1519 596 M V 30 R (î60è) bc Z U
-2262 557 M V 420 R (î30è) tc Z U
-1766 843 M V 60 R (î30è) bc Z U
+101 557 M V 300 R (150èW) tc Z U
+557 101 M V 330 R (120èW) tc Z U
+843 596 M V -30 R (120èW) bc Z U
+1181 -67 M V 360 R (90èW) tc Z U
+1805 101 M V 390 R (60èW) tc Z U
+1519 596 M V 30 R (60èW) bc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 0 -6036 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -4277,6 +4302,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1575 1181 M
 787 0 D
 S
@@ -5006,7 +5032,6 @@ N 1522 984 M -29 17 D S
 N 2204 591 M 29 -17 D S
 N 1575 1181 M -34 0 D S
 N 2362 1181 M 34 0 D S
-0 A [] 0 B
 25 W
 2362 1181 M
 0 40 D
@@ -5195,11 +5220,12 @@ P S
 8 -38 D
 5 -40 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053z) bc Z
 1780 2172 M 83 F0
 V -30 R (0) tl Z U
@@ -5208,28 +5234,20 @@ V -30 R (0) tl Z U
 1485 1660 M V -30 R (1500) tl Z U
 1508 1181 M V -90 R (0è) tc Z U
 2429 1181 M V -90 R (0è) bc Z U
-1464 1345 M V -60 R (30è) tc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1345 1464 M V -30 R (60è) tc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1181 1508 M (90è) tc Z
-1181 2429 M V -2.84217094304e-14 R (90è) bc Z U
-1018 1464 M V 30 R (120è) tc Z U
-557 2262 M V 30 R (120è) bc Z U
-898 1345 M V 60 R (150è) tc Z U
-101 1805 M V 60 R (150è) bc Z U
-854 1181 M V -270 R (180è) tc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1181 2429 M V -2.84217094304e-14 R (90èE) bc Z U
+1018 1464 M V 30 R (120èE) tc Z U
+557 2262 M V 30 R (120èE) bc Z U
+101 1805 M V 60 R (150èE) bc Z U
 -67 1181 M V 90 R (180è) bc Z U
-898 1018 M V -60 R (î150è) bc Z U
-101 557 M V 300 R (î150è) tc Z U
-1018 898 M V -30 R (î120è) bc Z U
-557 101 M V 330 R (î120è) tc Z U
-1181 854 M (î90è) bc Z
-1181 -67 M V 360 R (î90è) tc Z U
-1345 898 M V 30 R (î60è) bc Z U
-1805 101 M V 390 R (î60è) tc Z U
-1464 1018 M V 60 R (î30è) bc Z U
-2262 557 M V 420 R (î30è) tc Z U
+101 557 M V 300 R (150èW) tc Z U
+1018 898 M V -30 R (120èW) bc Z U
+557 101 M V 330 R (120èW) tc Z U
+1181 -67 M V 360 R (90èW) tc Z U
+1805 101 M V 390 R (60èW) tc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 -3018 -6036 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -5245,6 +5263,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2362 1181 M
 -535 0 D
 S
@@ -5732,7 +5751,6 @@ N 2204 591 M 29 -17 D S
 N 1740 858 M -29 17 D S
 N 2362 1181 M 34 0 D S
 N 1827 1181 M -33 0 D S
-0 A [] 0 B
 25 W
 1827 1181 M
 -3 65 D
@@ -5931,11 +5949,12 @@ P S
 8 -79 D
 2 -39 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053zp) bc Z
 1560 1790 M 83 F0
 V -30 R (4000) tl Z U
@@ -5943,28 +5962,23 @@ V -30 R (4000) tl Z U
 1745 2111 M V -30 R (6000) tl Z U
 2429 1181 M V -90 R (0è) bc Z U
 1760 1181 M V -90 R (0è) tc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1683 1471 M V -60 R (30è) tc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1471 1683 M V -30 R (60è) tc Z U
-1181 2429 M V -2.84217094304e-14 R (90è) bc Z U
-1181 1760 M (90è) tc Z
-557 2262 M V 30 R (120è) bc Z U
-892 1683 M V 30 R (120è) tc Z U
-101 1805 M V 60 R (150è) bc Z U
-680 1471 M V 60 R (150è) tc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1471 1683 M V -30 R (60èE) tc Z U
+1181 2429 M V -2.84217094304e-14 R (90èE) bc Z U
+557 2262 M V 30 R (120èE) bc Z U
+892 1683 M V 30 R (120èE) tc Z U
+101 1805 M V 60 R (150èE) bc Z U
 -67 1181 M V 90 R (180è) bc Z U
 602 1181 M V -270 R (180è) tc Z U
-101 557 M V 300 R (î150è) tc Z U
-680 892 M V -60 R (î150è) bc Z U
-557 101 M V 330 R (î120è) tc Z U
-892 680 M V -30 R (î120è) bc Z U
-1181 -67 M V 360 R (î90è) tc Z U
-1181 602 M (î90è) bc Z
-1805 101 M V 390 R (î60è) tc Z U
-1471 680 M V 30 R (î60è) bc Z U
-2262 557 M V 420 R (î30è) tc Z U
-1683 892 M V 60 R (î30è) bc Z U
+101 557 M V 300 R (150èW) tc Z U
+557 101 M V 330 R (120èW) tc Z U
+892 680 M V -30 R (120èW) bc Z U
+1181 -67 M V 360 R (90èW) tc Z U
+1805 101 M V 390 R (60èW) tc Z U
+1471 680 M V 30 R (60èW) bc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 -6036 -6036 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -5980,6 +5994,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1181 1654 M
 0 708 D
 S
@@ -6564,7 +6579,6 @@ N 945 1590 M 17 -29 D S
 N 591 2204 M -17 29 D S
 N 1181 1654 M 0 -34 D S
 N 1181 2362 M 0 34 D S
-0 A [] 0 B
 25 W
 1181 2362 M
 40 0 D
@@ -6755,11 +6769,12 @@ P S
 -45 14 D
 -47 8 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053a) bc Z
 1786 1503 M 83 F0
 V -60 R (0.6) tl Z U
@@ -6767,28 +6782,21 @@ V -60 R (0.6) tl Z U
 2195 1739 M V -60 R (1.0) tl Z U
 1181 1587 M (0è) tc Z
 1181 2429 M V -2.84217094304e-14 R (0è) bc Z U
-1384 1533 M V -30 R (30è) tc Z U
-1805 2262 M V -30 R (30è) bc Z U
-1533 1384 M V -60 R (60è) tc Z U
-2262 1805 M V -60 R (60è) bc Z U
-1587 1181 M V -90 R (90è) tc Z U
-2429 1181 M V -90 R (90è) bc Z U
-1533 978 M V 60 R (120è) bc Z U
-2262 557 M V 420 R (120è) tc Z U
-1384 830 M V 30 R (150è) bc Z U
-1805 101 M V 390 R (150è) tc Z U
+1805 2262 M V -30 R (30èE) bc Z U
+2262 1805 M V -60 R (60èE) bc Z U
+1587 1181 M V -90 R (90èE) tc Z U
+2429 1181 M V -90 R (90èE) bc Z U
+2262 557 M V 420 R (120èE) tc Z U
+1805 101 M V 390 R (150èE) tc Z U
 1181 775 M (180è) bc Z
 1181 -67 M V 360 R (180è) tc Z U
-978 830 M V -30 R (î150è) bc Z U
-557 101 M V 330 R (î150è) tc Z U
-830 978 M V -60 R (î120è) bc Z U
-101 557 M V 300 R (î120è) tc Z U
-775 1181 M V -270 R (î90è) tc Z U
--67 1181 M V 90 R (î90è) bc Z U
-830 1384 M V 60 R (î60è) tc Z U
-101 1805 M V 60 R (î60è) bc Z U
-978 1533 M V 30 R (î30è) tc Z U
-557 2262 M V 30 R (î30è) bc Z U
+557 101 M V 330 R (150èW) tc Z U
+101 557 M V 300 R (120èW) tc Z U
+775 1181 M V -270 R (90èW) tc Z U
+-67 1181 M V 90 R (90èW) bc Z U
+101 1805 M V 60 R (60èW) bc Z U
+557 2262 M V 30 R (30èW) bc Z U
+0 A
 %%EndObject
 0 -3018 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -6804,6 +6812,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1590 945 M
 614 -354 D
 S
@@ -7375,7 +7384,6 @@ N 1417 772 M -16 29 D S
 N 1772 158 M 16 -29 D S
 N 1590 945 M -29 17 D S
 N 2204 591 M 29 -17 D S
-0 A [] 0 B
 25 W
 2204 591 M
 37 69 D
@@ -7567,11 +7575,12 @@ P S
 -13 -46 D
 -17 -44 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053t30) bc Z
 1786 1503 M 83 F0
 V -60 R (0.6) tl Z U
@@ -7579,28 +7588,21 @@ V -60 R (0.6) tl Z U
 2195 1739 M V -60 R (1.0) tl Z U
 1533 978 M V 60 R (0è) bc Z U
 2262 557 M V 420 R (0è) tc Z U
-1587 1181 M V -90 R (30è) tc Z U
-2429 1181 M V -90 R (30è) bc Z U
-1533 1384 M V -60 R (60è) tc Z U
-2262 1805 M V -60 R (60è) bc Z U
-1384 1533 M V -30 R (90è) tc Z U
-1805 2262 M V -30 R (90è) bc Z U
-1181 1587 M (120è) tc Z
-1181 2429 M V -2.84217094304e-14 R (120è) bc Z U
-978 1533 M V 30 R (150è) tc Z U
-557 2262 M V 30 R (150è) bc Z U
+2429 1181 M V -90 R (30èE) bc Z U
+2262 1805 M V -60 R (60èE) bc Z U
+1384 1533 M V -30 R (90èE) tc Z U
+1805 2262 M V -30 R (90èE) bc Z U
+1181 2429 M V -2.84217094304e-14 R (120èE) bc Z U
+557 2262 M V 30 R (150èE) bc Z U
 830 1384 M V 60 R (180è) tc Z U
 100 1805 M V 60 R (180è) bc Z U
-775 1181 M V -270 R (î150è) tc Z U
--67 1181 M V 90 R (î150è) bc Z U
-830 978 M V -60 R (î120è) bc Z U
-100 557 M V 300 R (î120è) tc Z U
-978 830 M V -30 R (î90è) bc Z U
-557 100 M V 330 R (î90è) tc Z U
-1181 775 M (î60è) bc Z
-1181 -67 M V 360 R (î60è) tc Z U
-1384 830 M V 30 R (î30è) bc Z U
-1805 100 M V 390 R (î30è) tc Z U
+-67 1181 M V 90 R (150èW) bc Z U
+100 557 M V 300 R (120èW) tc Z U
+978 830 M V -30 R (90èW) bc Z U
+557 100 M V 330 R (90èW) tc Z U
+1181 -67 M V 360 R (60èW) tc Z U
+1805 100 M V 390 R (30èW) tc Z U
+0 A
 %%EndObject
 -3018 -3018 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -7616,6 +7618,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 945 1590 M
 -354 614 D
 S
@@ -8194,7 +8197,6 @@ N 772 1417 M 29 -16 D S
 N 158 1772 M -29 16 D S
 N 945 1590 M 17 -29 D S
 N 591 2204 M -17 29 D S
-0 A [] 0 B
 25 W
 591 2204 M
 69 37 D
@@ -8385,11 +8387,12 @@ P S
 -15 -6 D
 -28 -14 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053a\053t30) bc Z
 1544 1763 M 83 F0
 V -30 R (0.6) tl Z U
@@ -8397,28 +8400,21 @@ V -30 R (0.6) tl Z U
 1780 2172 M V -30 R (1.0) tl Z U
 978 1533 M V 30 R (0è) tc Z U
 557 2262 M V 30 R (0è) bc Z U
-1181 1587 M (30è) tc Z
-1181 2429 M V -2.84217094304e-14 R (30è) bc Z U
-1384 1533 M V -30 R (60è) tc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1533 1384 M V -60 R (90è) tc Z U
-2262 1805 M V -60 R (90è) bc Z U
-1587 1181 M V -90 R (120è) tc Z U
-2429 1181 M V -90 R (120è) bc Z U
-1533 978 M V 60 R (150è) bc Z U
-2262 557 M V 420 R (150è) tc Z U
+1181 2429 M V -2.84217094304e-14 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1533 1384 M V -60 R (90èE) tc Z U
+2262 1805 M V -60 R (90èE) bc Z U
+2429 1181 M V -90 R (120èE) bc Z U
+2262 557 M V 420 R (150èE) tc Z U
 1384 830 M V 30 R (180è) bc Z U
 1805 100 M V 390 R (180è) tc Z U
-1181 775 M (î150è) bc Z
-1181 -67 M V 360 R (î150è) tc Z U
-978 830 M V -30 R (î120è) bc Z U
-557 100 M V 330 R (î120è) tc Z U
-830 978 M V -60 R (î90è) bc Z U
-100 557 M V 300 R (î90è) tc Z U
-775 1181 M V -270 R (î60è) tc Z U
--67 1181 M V 90 R (î60è) bc Z U
-830 1384 M V 60 R (î30è) tc Z U
-100 1805 M V 60 R (î30è) bc Z U
+1181 -67 M V 360 R (150èW) tc Z U
+557 100 M V 330 R (120èW) tc Z U
+830 978 M V -60 R (90èW) bc Z U
+100 557 M V 300 R (90èW) tc Z U
+-67 1181 M V 90 R (60èW) bc Z U
+100 1805 M V 60 R (30èW) bc Z U
+0 A
 %%EndObject
 -6036 -3018 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -8434,6 +8430,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1181 1181 M
 1181 0 D
 S
@@ -9051,7 +9048,6 @@ N 1181 0 M 0 -33 D S
 N 1772 158 M 16 -29 D S
 N 2204 591 M 29 -17 D S
 N 2362 1181 M 34 0 D S
-0 A [] 0 B
 25 W
 2362 1181 M
 0 40 D
@@ -9169,11 +9165,12 @@ N 2362 1181 M 34 0 D S
 13 78 D
 8 78 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (Default) bc Z
 1190 1149 M 83 F0
 V -30 R (0.0) tl Z U
@@ -9183,17 +9180,18 @@ V -30 R (0.0) tl Z U
 1662 1967 M V -30 R (0.8) tl Z U
 1780 2172 M V -30 R (1.0) tl Z U
 2429 1181 M V -90 R (0è) bc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1181 2429 M V -1.42108547152e-14 R (90è) bc Z U
-557 2262 M V 30 R (120è) bc Z U
-101 1805 M V 60 R (150è) bc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1181 2429 M V -1.42108547152e-14 R (90èE) bc Z U
+557 2262 M V 30 R (120èE) bc Z U
+101 1805 M V 60 R (150èE) bc Z U
 -67 1181 M V 90 R (180è) bc Z U
-101 557 M V 300 R (î150è) tc Z U
-557 101 M V 330 R (î120è) tc Z U
-1181 -67 M V 360 R (î90è) tc Z U
-1805 101 M V 390 R (î60è) tc Z U
-2262 557 M V 420 R (î30è) tc Z U
+101 557 M V 300 R (150èW) tc Z U
+557 101 M V 330 R (120èW) tc Z U
+1181 -67 M V 360 R (90èW) tc Z U
+1805 101 M V 390 R (60èW) tc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 0 0 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -9209,6 +9207,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1706 1181 M
 656 0 D
 S
@@ -10088,7 +10087,6 @@ N 1636 919 M -29 16 D S
 N 2204 591 M 29 -17 D S
 N 1706 1181 M -33 0 D S
 N 2362 1181 M 34 0 D S
-0 A [] 0 B
 25 W
 2362 1181 M
 0 40 D
@@ -10286,11 +10284,12 @@ P S
 7 -35 D
 7 -69 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053r4c) bc Z
 1518 1717 M 83 F0
 V -30 R (0.2) tl Z U
@@ -10300,28 +10299,21 @@ V -30 R (0.2) tl Z U
 1780 2172 M V -30 R (1.0) tl Z U
 1639 1181 M V -90 R (0è) tc Z U
 2429 1181 M V -90 R (0è) bc Z U
-1578 1410 M V -60 R (30è) tc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1410 1578 M V -30 R (60è) tc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1181 1639 M (90è) tc Z
-1181 2429 M V -2.84217094304e-14 R (90è) bc Z U
-952 1578 M V 30 R (120è) tc Z U
-557 2262 M V 30 R (120è) bc Z U
-784 1410 M V 60 R (150è) tc Z U
-101 1805 M V 60 R (150è) bc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1181 1639 M (90èE) tc Z
+1181 2429 M V -2.84217094304e-14 R (90èE) bc Z U
+557 2262 M V 30 R (120èE) bc Z U
+101 1805 M V 60 R (150èE) bc Z U
 723 1181 M V -270 R (180è) tc Z U
 -67 1181 M V 90 R (180è) bc Z U
-784 952 M V -60 R (î150è) bc Z U
-101 557 M V 300 R (î150è) tc Z U
-952 784 M V -30 R (î120è) bc Z U
-557 101 M V 330 R (î120è) tc Z U
-1181 723 M (î90è) bc Z
-1181 -67 M V 360 R (î90è) tc Z U
-1410 784 M V 30 R (î60è) bc Z U
-1805 101 M V 390 R (î60è) tc Z U
-1578 952 M V 60 R (î30è) bc Z U
-2262 557 M V 420 R (î30è) tc Z U
+101 557 M V 300 R (150èW) tc Z U
+557 101 M V 330 R (120èW) tc Z U
+1181 723 M (90èW) bc Z
+1181 -67 M V 360 R (90èW) tc Z U
+1805 101 M V 390 R (60èW) tc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 -3018 0 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -10337,6 +10329,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2362 1181 M
 -656 0 D
 S
@@ -11216,7 +11209,6 @@ N 2204 591 M 29 -17 D S
 N 1636 919 M -29 16 D S
 N 2362 1181 M 34 0 D S
 N 1706 1181 M -33 0 D S
-0 A [] 0 B
 25 W
 1706 1181 M
 -1 35 D
@@ -11413,11 +11405,12 @@ P S
 8 -79 D
 2 -39 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 266 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 83 F0
 (100è) sh add def
 1181 2362 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053f\053r4c) bc Z
 1780 2172 M 83 F0
 V -30 R (0.0) tl Z U
@@ -11427,28 +11420,21 @@ V -30 R (0.0) tl Z U
 1518 1717 M V -30 R (0.8) tl Z U
 2429 1181 M V -90 R (0è) bc Z U
 1639 1181 M V -90 R (0è) tc Z U
-2262 1805 M V -60 R (30è) bc Z U
-1578 1410 M V -60 R (30è) tc Z U
-1805 2262 M V -30 R (60è) bc Z U
-1410 1578 M V -30 R (60è) tc Z U
-1181 2429 M V -2.84217094304e-14 R (90è) bc Z U
-1181 1639 M (90è) tc Z
-557 2262 M V 30 R (120è) bc Z U
-952 1578 M V 30 R (120è) tc Z U
-101 1805 M V 60 R (150è) bc Z U
-784 1410 M V 60 R (150è) tc Z U
+2262 1805 M V -60 R (30èE) bc Z U
+1805 2262 M V -30 R (60èE) bc Z U
+1181 2429 M V -2.84217094304e-14 R (90èE) bc Z U
+1181 1639 M (90èE) tc Z
+557 2262 M V 30 R (120èE) bc Z U
+101 1805 M V 60 R (150èE) bc Z U
 -67 1181 M V 90 R (180è) bc Z U
 723 1181 M V -270 R (180è) tc Z U
-101 557 M V 300 R (î150è) tc Z U
-784 952 M V -60 R (î150è) bc Z U
-557 101 M V 330 R (î120è) tc Z U
-952 784 M V -30 R (î120è) bc Z U
-1181 -67 M V 360 R (î90è) tc Z U
-1181 723 M (î90è) bc Z
-1805 101 M V 390 R (î60è) tc Z U
-1410 784 M V 30 R (î60è) bc Z U
-2262 557 M V 420 R (î30è) tc Z U
-1578 952 M V 60 R (î30è) bc Z U
+101 557 M V 300 R (150èW) tc Z U
+557 101 M V 330 R (120èW) tc Z U
+1181 -67 M V 360 R (90èW) tc Z U
+1181 723 M (90èW) bc Z
+1805 101 M V 390 R (60èW) tc Z U
+2262 557 M V 420 R (30èW) tc Z U
+0 A
 %%EndObject
 -6036 0 TM
 PSL_plot_completion /PSL_plot_completion {} def

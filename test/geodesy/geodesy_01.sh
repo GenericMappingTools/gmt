@@ -52,7 +52,7 @@ EOF
 
 # simpler colors, labeled with following font
 gmt set FONT_ANNOT_PRIMARY Helvetica
-gmt psvelo -Se0.2/0.39+f18p -R -J -A0.25c+p0.25p+e -O -Umeca_4 << EOF >> $ps
+gmt psvelo -Se0.2/0.39+f18p -R -J -A0.25c+p0.25p+e+gblack -O -Umeca_4 << EOF >> $ps
 # Long.   Lat.   Evel   Nvel   Esig   Nsig  CorEN SITE
 # (deg)  (deg)    (mm/yr)        (mm/yr)
    0.    -8.     0.0    0.0     4.0    6.0  0.100  4x6

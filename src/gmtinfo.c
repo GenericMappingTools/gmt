@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Get information about data tables"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vabdefghioqrs" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vabdefghioqrsw" GMT_OPT("HMm")
 
 EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
@@ -58,6 +58,7 @@ struct GMTINFO_CTRL {	/* All control options for this program (except common arg
 	} A;
 	struct GMTINFO_C {	/* -C */
 		bool active;
+		unsigned int extra;	/* Undocumented hidden feature only needed via gmt_init_module to get -R */
 	} C;
 	struct GMTINFO_D {	/* -D[dx[/dy[/<dz>..]]] */
 		bool active;
@@ -126,8 +127,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..][+e|r|R<incs>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
+		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -168,7 +169,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column; append +c<col> to use another column.\n");
 	GMT_Option (API, "V,a");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Reports the names and data types of the aspatial fields.\n");
-	GMT_Option (API, "bi2,d,e,f,g,h,i,o,qi,r,s,:,.");
+	GMT_Option (API, "bi2,d,e,f,g,h,i,o,qi,r,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -217,6 +218,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'C':	/* Column output */
 				Ctrl->C.active = true;
+				break;
+			case '0':	/* Hidden option to get 2 more columns back with column types */
+				Ctrl->C.extra = 2;	/* Need to report back x and y data types */
 				break;
 			case 'D':	/* Region adjustment Granularity */
 				Ctrl->D.active = true;
@@ -634,23 +638,23 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 				}
 				gmt_extend_region (GMT, wesn, Ctrl->I.extend, Ctrl->I.delta);	/* Possibly extend the region */
-				if (gmt_M_is_geographic (GMT, GMT_IN)) {
-					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
-						if (wesn[YLO] < -90.0) {
-							wesn[YLO] = -90.0;
-							GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YLO] to become < -90. Reset to -90.\n");
-						}
-						if (wesn[YHI] > 90.0) {
-							wesn[YHI] = 90.0;
-							GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YHI] to become > +90. Reset to +90.\n");
-						}
-						if (fabs (wesn[XHI] - wesn[XLO]) > 360.0) {
-							GMT_Report (API, GMT_MSG_WARNING,
-							            "Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
-							wesn[XLO] = (wesn[XLO] < 0.0) ? -180.0 : 0.0;
-							wesn[XHI] = (wesn[XLO] < 0.0) ? +180.0 : 360.0;
-							full_range = true;
-						}
+				if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+					if (wesn[YLO] < -90.0) {
+						wesn[YLO] = -90.0;
+						GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YLO] to become < -90. Reset to -90.\n");
+					}
+					if (wesn[YHI] > 90.0) {
+						wesn[YHI] = 90.0;
+						GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YHI] to become > +90. Reset to +90.\n");
+					}
+				}
+				if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+					if (fabs (wesn[XHI] - wesn[XLO]) > 360.0) {
+						GMT_Report (API, GMT_MSG_WARNING,
+						            "Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
+						wesn[XLO] = (wesn[XLO] < 0.0) ? -180.0 : 0.0;
+						wesn[XHI] = (wesn[XLO] < 0.0) ? +180.0 : 360.0;
+						full_range = true;
 					}
 				}
 				if (Ctrl->L.active) {
@@ -761,9 +765,14 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (do_report)
+			if (do_report) {
+				if (Ctrl->C.extra) {	/* Needed by gmtinit_get_region_from_data */
+					Out->data[4] = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+					Out->data[5] = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
+				}
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write data record to output destination */
-			got_stuff = true;		/* We have at lwesn[XHI] reported something */
+			}
+			got_stuff = true;		/* We have at least reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
 				xyzmin[col] = DBL_MAX;
 				xyzmax[col] = -DBL_MAX;
@@ -838,7 +847,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
 			first_data_record = false;
 			if (Ctrl->C.active) {
-				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(2*ncol), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(2*ncol+Ctrl->C.extra), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 					Return (error);
 			}
 			else if (Ctrl->E.active) {

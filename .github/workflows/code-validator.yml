@@ -1,4 +1,4 @@
-# Workflow to validify the consistence of the codes
+# Workflow to validify the consistency of the codes
 
 on:
   push:

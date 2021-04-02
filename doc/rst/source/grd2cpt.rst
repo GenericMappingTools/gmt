@@ -81,7 +81,7 @@ Required Arguments
 *grid*
     Names of one or more grid files used to derive the color palette
     table. All grids need to have the same size and dimensions. (See
-    GRID FILE FORMATS below).
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -144,8 +144,8 @@ Optional Arguments
 
 **-H**\
     Modern mode only: Write the CPT to standard output as well [Default saves
-    the CPT as the session current CPT].  Required for scripts used to make
-    animations via :doc:`movie` where we must pass named CPT files.
+    the CPT as the session current CPT]. Required for scripts used to make
+    animations via :doc:`movie` and :doc:`batch` where we must pass named CPT files.
 
 .. _-I:
 
@@ -156,7 +156,7 @@ Optional Arguments
     :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
     this change of *z*-direction happens before **-G** and **-S** values are used
-    so the latter much be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
+    so the latter must be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
 
 .. _-L:
 
@@ -188,10 +188,10 @@ Optional Arguments
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -238,8 +238,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_-ocols.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_transparency.rst_
 

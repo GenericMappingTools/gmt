@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -113,7 +113,8 @@ struct PSCONVERT_CTRL {
 		bool outline;      /* Draw frame around plot with selected pen (+p) [0.25p] */
 		bool paint;        /* Paint box behind plot with selected fill (+g) */
 		bool crop;         /* If true we must find the BB; turn off via -A+n */
-		bool fade;         /* If true we must fade out the plot to black*/
+		bool fade;         /* If true we must fade out the plot to black */
+		bool media;        /* If true we must crop to current media size in PS_MEDIA. Only issued indirectly by gmt end */
 		double scale;      /* Scale factor to go along with the 'rescale' option */
 		double fade_level;      /* Fade to black at this level of transparency */
 		double new_size[2];
@@ -344,6 +345,9 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 				break;
 			case 'n':	/* No crop */
 				Ctrl->A.crop = false;
+				break;
+			case 'M':	/* Crop to media */
+				Ctrl->A.media = true;
 				break;
 			case 'p':	/* Draw outline */
 				Ctrl->A.outline = true;
@@ -1814,7 +1818,13 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		/* Adjust to a tight BoundingBox if user requested so */
 
-		if (Ctrl->A.crop) {
+		if (Ctrl->A.media) {	/* Crop to set PS_MEDIA size */
+			x1 = GMT->current.setting.ps_def_page_size[0];
+			y1 = GMT->current.setting.ps_def_page_size[1];
+			got_BB = got_HRBB = got_end = true;
+			GMT_Report (API, GMT_MSG_INFORMATION, "Crop to media BoundingBox [%g %g %g %g].\n", x0, y0, x1, y1);
+		}
+		else if (Ctrl->A.crop) {
 			char *psfile_to_use = NULL;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Find HiResBoundingBox ...\n");
 			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place BB file in session dir */
