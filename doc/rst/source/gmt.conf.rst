@@ -1235,6 +1235,6 @@ Calendar/Time Parameters
 See Also
 --------
 
-:doc:`gmt` , :doc:`gmtdefaults` ,
-:doc:`gmtcolors` , :doc:`gmtget` ,
+:doc:`gmt`, :doc:`gmtdefaults`,
+:doc:`gmtcolors`, :doc:`gmtget`,
 :doc:`gmtset`

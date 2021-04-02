@@ -468,10 +468,10 @@ description tags, respectively, for the current feature.
 See Also
 --------
 
-:doc:`gmt` ,
+:doc:`gmt`,
 :doc:`gmt.conf`,
 :doc:`gmt_shell_functions.sh`,
 :doc:`grd2kml`,
 :doc:`img2google <supplements/img/img2google>`,
-:doc:`kml2gmt` ,
+:doc:`kml2gmt`,
 :doc:`psconvert`

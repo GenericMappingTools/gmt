@@ -226,6 +226,6 @@ and not shorten the track, and add the distances to the file, use
 See Also
 --------
 
-:doc:`gmt` ,
-:doc:`sample1d` ,
+:doc:`gmt`,
+:doc:`sample1d`,
 :doc:`gmtsplit`
