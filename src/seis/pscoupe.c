@@ -530,6 +530,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 GMT_LOCAL unsigned int pscoupe_parse_old_A (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, char *arg) {
 	int n;
 	char *p = NULL;
+	gmt_M_unused (GMT);
 	if ((p = strstr (arg, "+f"))) {	/* Get the frame from the cross-section parameters */
 		Ctrl->A.frame = true;
 		p[0] = '\0';	/* Chop off modifier */
