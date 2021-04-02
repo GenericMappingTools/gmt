@@ -56,6 +56,7 @@ New Core Module Features in GMT 6.2:
 #. :doc:`movie`: New modifiers to **-L** and **-P** to enable drop-shadow and rounded rectangular boxes.
 #. :doc:`plot`, :doc:`plot3d`: New **-H** option to scale the symbol size as well as the symbol pen outline attributes;
    Support sequential auto-colors for polygon fills or line pens.
+#. :doc:`rose`: New **-N** option to draw the equivalent circular normal distribution.
 #. :doc:`subplot`: New **-D** option to accept previous default plot settings.
 #. :doc:`ternary`: Add support for drawing lines and polygons.
 #. :doc:`text`: New **-S** option to cast shade beneath a text box.
