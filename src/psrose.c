@@ -161,7 +161,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<sector_angle>[+r]] [%s] [-C<cpt>] [-D] [-E[m|[+w]<modefile>]] [-F] [-G<fill>] [-I]\n", name, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N[<mode>][+p<pen>]] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-JX<diameter>] %s[-L[<wlab>,<elab>,<slab>,<nlab>]] [-M[<size>][<modifiers>]] [-N<mode>[+p<pen>]] %s%s[-Q<alpha>]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-R<r0>/<r1>/<theta0>/<theta1>] [-S[+a]] [-T] [%s]\n", GMT_U_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[v]<pen>] [%s] [%s]\n\t[-Zu|<scale>] [%s] %s[%s] [%s]\n\t[%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -196,6 +196,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Append <mode> to draw the equivalent von Mises distribution; append desired pen [0.25p,black].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <mode> selects which central location and scale to use:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     0 = mean and standard deviation [Default]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     (Other modes may be added later).\n");
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set confidence level for Rayleigh test for uniformity [0.05].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specifies the region (<r0> = 0, <r1> = max_radius).  For azimuth:\n");
