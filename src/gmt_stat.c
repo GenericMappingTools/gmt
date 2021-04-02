@@ -2839,7 +2839,7 @@ void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 double gmt_von_mises_mu_and_kappa (struct GMT_CTRL *GMT, double *data, double *w, uint64_t n, double *kappa) {
 	/* Return the mean and kappa for a von Mises fit to (possibly weighted) data.
 	 * It is assumed that data have been scaled to 0-360. Weights w is possibly NULL for no weights */
-	uint64_t k, m = 0;
+	uint64_t k;
 	double mean = 0.0, x_r = 0.0, y_r = 0.0, s_w = 0.0, ww = 1.0;
 	double lo, hi, midval, range2, delta_R, s, c, R_bar;
 

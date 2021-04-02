@@ -493,7 +493,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				Ctrl->Z.active = true;
 				if (opt->arg[0] && strstr (opt->arg, "-S")) {	/* Got the required -S option as part of the command */
 					if ((c = strchr (opt->arg, ' '))) {	/* First space in the command ends the module name */
-						char *q, was;
+						char *q;
 						c[0] = '\0';	/* Temporarily hide the rest of the command so we can isolate the module name */
 						Ctrl->Z.module = strdup (opt->arg);	/* Make a copy of the module name */
 						c[0] = ' ';	/* Restore space */
@@ -590,6 +590,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 	/* Return how many data columns are needed for the selected seismo/geodetic symbol */
 	unsigned int n = 0;
 	char *S = strstr (cmd, "-S");	/* Pointer to start of symbol option */
+	gmt_M_unused (GMT);
 	S += 2;	/* Now at format designation */
 
 	if (strstr (module, &coupe[2])) {	/* Using coupe/pscoupe */

@@ -6437,7 +6437,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
-	int i, error = 0;
+	int error = 0;
 #if NO_THEMES
 	return;		/* Ignore all the modern theme stuff */
 #endif

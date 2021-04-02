@@ -558,7 +558,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 	unsigned int n_errors = 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
-	double lon1, lat1, lon2, lat2;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 

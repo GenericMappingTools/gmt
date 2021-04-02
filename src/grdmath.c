@@ -2398,7 +2398,7 @@ GMT_LOCAL void grdmath_FISHER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 {
 	uint64_t node;
 	unsigned int prev1, prev2, row, col;
-	double F, lon, lat, kappa;
+	double lon, lat, kappa;
 
 	prev1 = last - 1;
 	prev2 = last - 2;
