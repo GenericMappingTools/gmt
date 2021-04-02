@@ -9885,7 +9885,7 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 	/* Determine suitable MAP_FRAME_AXES for plot */
 	if (GMT->current.proj.projection == GMT_POLAR) {	/* May need to switch what is south and north */
 		strcpy (axes, GMT->current.proj.flip ? "WrStZ" : "WrbNZ");
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Given polar projection flip = %d, set MAP_FRAME_AXES = %s\n", GMT->current.proj.flip, axes);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given polar projection flip = %d, set MAP_FRAME_AXES = %s\n", GMT->current.proj.flip, axes);
 	}
 	else if (GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_GENPER)	/* Need to relax to all since hard to guess what works */
 		strcpy (axes, "WESNZ");
@@ -9897,7 +9897,7 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 			case 3: strcpy (axes, "WrStZ"); break;
 			case 4: strcpy (axes, "WrbNZ"); break;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Given view angle = %g, set MAP_FRAME_AXES = %s\n", az, axes);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given view angle = %g, set MAP_FRAME_AXES = %s\n", az, axes);
 	}
 	else	/* Default modern mode setting */
 		strcpy (axes, "WrStZ");
