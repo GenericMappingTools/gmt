@@ -42,6 +42,7 @@ New Core Module Features in GMT 6.2:
    slanted annotations with **-S**.
 #. :doc:`events`: New **-Z** option to animate geodesy and seismology symbols; New **-H** option to enable text label
    boxes; Support plotting lines as series of closely spaced circles.
+#. :doc:`gmtmath`: New **VPDF** operator.
 #. :doc:`gmtsplit`: New name for previous module splitxyz.
 #. :doc:`grd2xyz`: New modifier for the **-W** option to set the length unit used.
 #. :doc:`grdcut`: New **-F** option to clip a grid based on a polygon.
