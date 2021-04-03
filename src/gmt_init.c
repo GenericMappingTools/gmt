@@ -11444,7 +11444,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			else
-					error++;
+				error = true;
 			break;
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
