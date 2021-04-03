@@ -379,6 +379,7 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
 if (GMT_BUILD_GMTMEX)
+	# Includes GMT_MexFunction in the GMT API
 	set (GMT_GMTMEX_SRCS gmtmex/gmtmex_api.c)
 endif (GMT_BUILD_GMTMEX)
 
