@@ -6079,7 +6079,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	 * Note, when x = y = 0 it means current point has already been selected so we must store that and keep
 	 * moving up for each line in the multi-line title.
 	 */
-	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), many_lines = false, head_latex = false;
+	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), head_latex = false;
 	double sign = (pos_set) ? -1.0 : +1.0, y_next = 0.0, line_spacing;
 	unsigned int n_breaks_T = 0, n_breaks_S, k, form;
 	char *word = NULL, title[GMT_LEN256] = {""}, subtitle[GMT_LEN256] = {""}, sep[2] = {""};
@@ -6104,9 +6104,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	n_breaks_T = gmt_char_count (title, GMT_ASCII_GS);		/* Is there a title spilling over several lines */
 	n_breaks_S = gmt_char_count (subtitle, GMT_ASCII_GS);	/* Is there a subtitle spilling over several lines */
 
-	if (n_breaks_T || n_breaks_S || subtitle[0])
-		many_lines = true;
-	else {	/* Just a single title string on one line */
+	if (!(n_breaks_T || n_breaks_S || subtitle[0])){	/* Just a single title string on one line */
 		if (gmt_text_is_latex (GMT, title)) {
 			/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
 			(void)gmtplot_place_latex_eps (GMT, x, y, &GMT->current.setting.font_title, title);

@@ -8608,14 +8608,12 @@ int GMT_Open_VirtualFile (void *V_API, unsigned int family, unsigned int geometr
 	 * name is the name given to the virtual file and is returned. */
 	int object_ID = GMT_NOTSET, item_s = 0;
 	unsigned int item, orig_family, actual_family = 0, via_type = 0, messenger = 0, module_input, the_mode = GMT_IS_DUPLICATE;
-	bool readonly = false;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	module_input = (family & GMT_VIA_MODULE_INPUT);	/* Are we registering a resource that is a module input? */
 	family -= module_input;
 	if (direction & GMT_IS_REFERENCE) {	/* Treat this memory as read-only */
-		readonly = true;
 		direction -= GMT_IS_REFERENCE;
 		the_mode = GMT_IS_REFERENCE;
 	}
@@ -14935,7 +14933,7 @@ int GMT_Set_AllocMode (void *V_API, unsigned int family, void *object) {
 			break;
 		case GMT_IS_CUBE:	/* GMT cube */
 			UH = gmt_get_U_hidden (gmtapi_get_cube_data (object));
-			CH->alloc_mode = GMT_ALLOC_EXTERNALLY;
+			UH->alloc_mode = GMT_ALLOC_EXTERNALLY;
 			break;
 		case GMT_IS_POSTSCRIPT:		/* GMT PS */
 			PH = gmt_get_P_hidden (gmtapi_get_postscript_data (object));

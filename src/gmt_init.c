@@ -2977,7 +2977,7 @@ void gmt_hierarchy_tag (struct GMTAPI_CTRL *API, const char *kind, unsigned int 
 		if (!access (path, R_OK)) return;	/* Yes, found it */
 	}
 	/* Fall back is session level */
-	sprintf (tag, "");
+	tag[0] = '\0';
 	snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
 }
 
@@ -11444,7 +11444,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			else
-					error++;
+				error = true;
 			break;
 
 		case GMTCASE_GMT_CUSTOM_LIBS:

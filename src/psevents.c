@@ -635,7 +635,7 @@ EXTERN_MSC int gmtlib_clock_C_format (struct GMT_CTRL *GMT, char *form, struct G
 
 EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""}, *c = NULL;
-	char string[GMT_LEN128] = {""}, header[GMT_BUFSIZ] = {""}, X[GMT_LEN32] = {""}, Y[GMT_LEN32] = {""},find;
+	char string[GMT_LEN128] = {""}, header[GMT_BUFSIZ] = {""}, X[GMT_LEN32] = {""}, Y[GMT_LEN32] = {""};
 
 	bool do_coda, finite_duration, out_segment = false;
 
@@ -884,7 +884,6 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	finite_duration = (Ctrl->L.mode != PSEVENTS_INFINITE);
 	time_type = gmt_M_type (GMT, GMT_IN, t_in);
 	end_type = (Ctrl->L.mode == PSEVENTS_VAR_ENDTIME) ? time_type : GMT_IS_FLOAT;
-	find = (time_type == GMT_IS_ABSTIME) ? ',' : '/';
 	x_type = gmt_M_type (GMT, GMT_IN, GMT_X);
 	y_type = gmt_M_type (GMT, GMT_IN, GMT_Y);
 	if (x_type == GMT_IS_ABSTIME || y_type == GMT_IS_ABSTIME) {	/* Force precision of msec */

@@ -956,10 +956,10 @@ GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) gray, 3) no intensity */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	gmt_M_unused (Ctrl);
 	uint64_t byte, kk_s, node_s;
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (GMT);
+	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,scol,node_s) shared(GMT,Conf,Ctrl,H_s,image)
@@ -1151,7 +1151,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *Grid_orig = NULL, *Grid_proj = NULL;
 	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL, *IH = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
@@ -1649,7 +1649,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* From here, use Grid_proj or Img_proj plus optionally Intens_proj in making the (now) Cartesian rectangular image */
 
-	if (use_intensity_grid) IH = gmt_get_H_hidden (Intens_proj->header);
 	if (got_z_grid) { /* Dealing with a projected grid, so we only have one band [z]*/
 		Grid_proj->header->n_bands = 1;
 		header_work = Grid_proj->header;	/* Later when need to refer to the header, use this copy */
