@@ -871,7 +871,7 @@ if (BUILD_SUPPLEMENTS)
 			DESTINATION ${GMT_DOCDIR}/${GMT_SUPPL_LIB_NAME}/${_suppl_name}
 			COMPONENT Documentation)
 
-		# install example scriptss
+		# install example scripts
 		install (PROGRAMS ${_suppl_example_progs}
 			DESTINATION ${GMT_DOCDIR}/${GMT_SUPPL_LIB_NAME}/${_suppl_name}
 			COMPONENT Documentation)
