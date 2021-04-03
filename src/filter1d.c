@@ -620,7 +620,10 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 				k++;
 				continue;	/* Outside filter width array */
 			}
-			result = gmt_intpol (GMT, F->ft, F->fw, NULL, F->nw, 1, &(F->T.array[k]), &(F->filter_width), 0.0, GMT->current.setting.interpolant);
+			if ((result = gmt_intpol (GMT, F->ft, F->fw, NULL, F->nw, 1, &(F->T.array[k]), &(F->filter_width), 0.0, GMT->current.setting.interpolant))) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Interpolation failure in gmt_intpol (error %d) - skipping segment", result);
+				continue;
+			}
 			filter1d_set_up_filter (GMT, F);
 			if (F->T.array[k] < F->t_start || F->T.array[k] > F->t_stop) {
 				k++;
