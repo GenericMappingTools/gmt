@@ -379,7 +379,7 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
 if (GMT_BUILD_GMTMEX)
-	set (GMT_GMTMEX_SRCS gmtmex/gmtmex_parser.c gmtmex/gmtmex.c gmtmex/gmtmex.h)
+	set (GMT_GMTMEX_SRCS gmtmex/gmtmex_api.c)
 endif (GMT_BUILD_GMTMEX)
 
 # libgmt
@@ -574,12 +574,12 @@ set_target_properties (gmt PROPERTIES OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
 
 if (GMT_BUILD_GMTMEX)
 	# Just need to add a symbolic link with the right name to libgmt
-	set( gmtmex_link   ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmtmex.${MEX_EXT})
-	set( gmtmex_target ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/${LIB_PREFIX}gmt.${GMT_LIB_SOVERSION}.${CMAKE_SHARED_LIBRARY_SUFFIX})
-	add_custom_command ( OUTPUT ${gmtmex_link} POST_BUILD
-		COMMAND ln -s ${gmtmex_target} ${gmtmex_link}
-		DEPENDS install ${gmtmex_target} 
-		COMMENT "Generating gmtmex symbolic link")
+	#set( gmtmex_link   ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmtmex.${MEX_EXT})
+	#set( gmtmex_target ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/${LIB_PREFIX}gmt.${GMT_LIB_SOVERSION}.${CMAKE_SHARED_LIBRARY_SUFFIX})
+	#add_custom_command ( OUTPUT ${gmtmex_link} POST_BUILD
+	#	COMMAND ln -s ${gmtmex_target} ${gmtmex_link}
+	#	DEPENDS install ${gmtmex_target} 
+	#	COMMENT "Generating gmtmex symbolic link")
 	# Install the driver script
 	install (PROGRAMS gmtmex/gmt.m
 		DESTINATION ${GMT_BINDIR}

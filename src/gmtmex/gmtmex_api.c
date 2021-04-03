@@ -13,13 +13,44 @@
  *
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
-/* This layer of code handles the interface between GMT objects and how
- * we represent them in Matlab/Octave.
+/*
+ * This is the MATLAB/Octave(mex) GMT application, which can do the following:
+ * 1) Create a new session and optionally return the API pointer. We provide for
+ *    storing the pointer as a global variable (persistent) between calls.
+ * 2) Destroy a GMT session, either given the API pointer or by fetching it from
+ *    the global (persistent) variable.
+ * 3) Call any of the GMT modules while passing data in and out of GMT.
+ *
+ * First argument to the gmt function is the API pointer, but it is optional once created.
+ * Next argument is the module name
+ * Third argument is the option string
+ * Finally, there are optional comma-separated MATLAB array entities required by the command.
+ * Information about the options of each program is provided via GMT_Encode_Options.
+ *
+ * GMT Version:	6.x
+ * Created:	20-OCT-2017
+ * Updated:	1-APR-2021 requires GMT 6.2.x
+ *
+ *
+ * GMT convenience functions used by MATLAB/OCTAVE mex/oct API
+ * We also define the MEX structures used to pass data in/out of GMT.
  */
+
+#define GMTMEX_MAJOR_VERSION 2
+#define GMTMEX_MINOR_VERSION 0
+#define GMTMEX_PATCH_VERSION 0
+
+/* Define the minimum GMT version suitable for this GMTMEX version */
+
+#define GMTMEX_GMT_MAJOR_VERSION	6
+#define GMTMEX_GMT_MINOR_VERSION	1
+#define GMTMEX_GMT_PATCH_VERSION	1
 
 #define STDC_FORMAT_MACROS
 #define GMTMEX_LIB
-#include "gmtmex.h"
+
+#include "gmt.h"
+#include "gmt_version.h"
 #include <math.h>
 #include <inttypes.h>
 #include <stdarg.h>
@@ -30,6 +61,143 @@
 #include <float.h>
 #include <math.h>
 #include <limits.h>
+#include <ctype.h>
+
+#ifdef GMT_OCTOCT
+#	include <oct.h>
+#else
+#	include <mex.h>
+#	define mxIsScalar_(mx) \
+		( (2 == mxGetNumberOfDimensions(mx)) \
+		&&  (1 == mxGetM(mx))&&  (1 == mxGetN(mx)) )
+#endif	/* Matlab and Octave(mex) */
+
+/* Matlab and Octave (in -mex mode) are identical, oct files are different and not yet tested */
+
+/* Older Ml versions don't have mwSize */
+#ifndef GMT_OCTMEX
+#if !defined(MATLAB_VERSION)
+#if !defined(MWSIZE_MAX)
+#    define MATLAB_VERSION 0x2006a /* R2006a or earlier */
+#elif MX_API_VER < 0x07040000
+#    define MATLAB_VERSION 0x2006b /* R2006b */
+#elif !defined(FMT_PTRDIFF_T)
+#    define MATLAB_VERSION 0x2007a /* R2007a */
+#elif !defined(CUINT64_T)
+#    define MATLAB_VERSION 0x2007b /* R2007b */
+#elif defined(mxSetLogical)
+#    define MATLAB_VERSION 0x2008a /* R2008a */
+#else
+#    if !defined(blas_h)
+#        include "blas.h"
+#    endif
+#    if !defined(lapack_h)
+#        include "lapack.h"
+#    endif
+#    if !defined(MATHWORKS_MATRIX_MATRIX_PUB_FWD_H)
+#        if defined(CHAR16_T)
+#            if !defined(COMPLEX_TYPES)
+#                define MATLAB_VERSION 0x2008b /* R2008b */
+#            elif !defined(cgeqr2p)
+#                define MATLAB_VERSION 0x2010b /* R2010b */
+#            else
+#                define MATLAB_VERSION 0x2011a /* R2011a */
+#            endif
+#        else
+#            include "emlrt.h"
+#            define MATLAB_VERSION EMLRT_VERSION_INFO /* R2011b or later */
+#        endif
+#    else
+#        if !defined(COMPLEX_TYPES)
+#            define MATLAB_VERSION 0x2009a /* R2009a */
+#        elif !defined(cgbequb)
+#            define MATLAB_VERSION 0x2009b /* R2009b */
+#        else
+#            define MATLAB_VERSION 0x2010a /* R2010a */
+#        endif
+#    endif
+#endif
+#endif /* if !defined(MATLAB_VERSION) */
+
+#if MATLAB_VERSION < 0x2006b
+typedef int mwSize;
+#endif
+#endif
+
+#ifdef GMT_OCTOCT	/* Octave oct files only */
+#	define MEX_PROG "Octave(oct)"
+#	define MEX_COL_ORDER GMT_IS_ROW_FORMAT
+	/* Macros for getting the Octave(oct) ij that correspond to (row,col) [no pad involved] */
+	/* This one operates on GMT_MATRIX */
+#	define MEXM_IJ(M,row,col) ((row)*M->n_columns + (col))
+	/* And this on GMT_GRID */
+#	define MEXG_IJ(M,row,col) ((row)*M->header->n_columns + (col))
+#else	/* Here we go for Matlab or Octave(mex) */
+#	ifdef GMT_MATLAB
+#		define MEX_PROG "Matlab"
+#	else
+#		define MEX_PROG "Octave(mex)"
+#	endif
+#	define MEX_COL_ORDER GMT_IS_COL_FORMAT
+	/* Macros for getting the Matlab/Octave(mex) ij that correspond to (row,col) [no pad involved] */
+	/* This one operates on GMT_MATRIX */
+#	define MEXM_IJ(M,row,col) ((col)*M->n_rows + (row))
+	/* And this on GMT_GRID */
+#	define MEXG_IJ(M,row,col) ((col)*M->header->n_rows + M->header->n_rows - (row) - 1)
+#endif
+
+/* Definitions of MEX structures used to hold GMT objects.
+ * DO NOT MODIFY THE ORDER OF THE FIELDNAMES */
+
+/* GMT_IS_DATASET:
+ * Returned by GMT via the parser as a MEX structure with the
+ * fields listed below.  Pure datasets will only set the data
+ * matrix and leave the text cell array empty, while textsets
+ * will fill out both.  Only the first segment will have any
+ * information in the info and projection_ref_* items.  */
+
+#define N_MEX_FIELDNAMES_DATASET	6
+static const char *gmtmex_fieldname_dataset[N_MEX_FIELDNAMES_DATASET] =
+	{"data", "text", "header", "comment", "proj4", "wkt"};
+
+/* GMT_IS_GRID:
+ * Returned by GMT via the parser as a MEX structure with the
+ * fields listed below. */
+
+#define N_MEX_FIELDNAMES_GRID	17
+static const char *gmtmex_fieldname_grid[N_MEX_FIELDNAMES_GRID] =
+	{"z", "x", "y", "range", "inc", "registration", "nodata", "title", "comment",
+	 "command", "datatype", "x_unit", "y_unit", "z_unit", "layout", "proj4", "wkt"};
+
+/* GMT_IS_IMAGE:
+ * Returned by GMT via the parser as a MEX structure with the
+ * fields listed below.  */
+
+#define N_MEX_FIELDNAMES_IMAGE	19
+static const char *gmtmex_fieldname_image[N_MEX_FIELDNAMES_IMAGE] =
+	{"image", "x", "y", "range", "inc", "registration", "nodata", "title", "comment", "command",
+	 "datatype", "x_unit", "y_unit", "z_unit", "colormap", "alpha", "layout", "proj4", "wkt"};
+
+/* GMT_IS_PALETTE:
+ * Returned by GMT via the parser as a MEX structure with the
+ * fields listed below.  */
+
+#define N_MEX_FIELDNAMES_CPT	11
+static const char *gmtmex_fieldname_cpt[N_MEX_FIELDNAMES_CPT] =
+	{"colormap", "alpha", "range", "minmax", "bfn", "depth", "hinge", "cpt", "model", "mode", "comment"};
+	
+/* GMT_IS_POSTSCRIPT:
+ * Returned by GMT via the parser as a MEX structure with the
+ * fields listed below.  */
+
+#define N_MEX_FIELDNAMES_PS	4
+static const char *gmtmex_fieldname_ps[N_MEX_FIELDNAMES_PS] =
+	{"postscript", "length", "mode", "comment"};
+
+/* Macro for indexing into a GMT grid [with pad] */
+#define GMT_IJP(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[GMT_YHI])*((int64_t)h->mx)+(int64_t)(col)+(int64_t)h->pad[GMT_XLO]))
+
+#define MODULE_LEN 	32	/* Max length of a GMT module name */
 
 #ifndef rint
 	#define rint(x) (floor((x)+0.5f)) //does not work reliable.
@@ -87,7 +255,7 @@ enum MEX_dim {
  *		  + comment holds any PostScript comments
  */
 
-int GMTMEX_print_func (FILE *fp, const char *message) {
+static int gmtmex_print_func (FILE *fp, const char *message) {
 	/* Replacement for GMT's gmt_print_func.  It is being used indirectly via
 	 * API->print_func.  Purpose of this is to allow MATLAB (which cannot use
 	 * printf) to reset API->print_func to this function via GMT_Create_Session.
@@ -146,7 +314,7 @@ static void *gmtmex_get_grid (void *API, struct GMT_GRID *G) {
 		mexErrMsgTxt ("gmtmex_get_grid: programming error, output matrix G is empty\n");
 
 	/* Create a MATLAB struct to hold this grid [matrix will be a float (mxSINGLE_CLASS)]. */
-	G_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_GRID, GMTMEX_fieldname_grid);
+	G_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_GRID, gmtmex_fieldname_grid);
 
 	/* Get pointers and populate structure from the information in G */
 	mxptr[0]  = mxCreateNumericMatrix (G->header->n_rows, G->header->n_columns, mxSINGLE_CLASS, mxREAL);
@@ -197,7 +365,7 @@ static void *gmtmex_get_grid (void *API, struct GMT_GRID *G) {
 	if (GMT_Destroy_Data (API, &G_y))
 		mexPrintf("Warning: Failure to delete G_y (y coordinate vector)\n");
 	for (k = 0; k < N_MEX_FIELDNAMES_GRID; k++)
-		mxSetField (G_struct, 0, GMTMEX_fieldname_grid[k], mxptr[k]);
+		mxSetField (G_struct, 0, gmtmex_fieldname_grid[k], mxptr[k]);
 	return (G_struct);
 }
 
@@ -219,7 +387,7 @@ static void *gmtmex_get_dataset (void *API, struct GMT_DATASET *D) {
 	mxArray *D_struct = NULL, *mxheader = NULL, *mxdata = NULL, *mxtext = NULL, *mxstring = NULL;
 
 	if (D == NULL) {	/* No output produced (?) - return a null data set */
-		D_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, GMTMEX_fieldname_dataset);
+		D_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, gmtmex_fieldname_dataset);
 		return (D_struct);
 	}
 
@@ -228,7 +396,7 @@ static void *gmtmex_get_dataset (void *API, struct GMT_DATASET *D) {
 			if (D->table[tbl]->segment[seg]->n_rows)
 				seg_out++;
 	if (seg_out == 0) n_items = 0;
-	D_struct = mxCreateStructMatrix ((mwSize)seg_out, (mwSize)n_items, N_MEX_FIELDNAMES_DATASET, GMTMEX_fieldname_dataset);
+	D_struct = mxCreateStructMatrix ((mwSize)seg_out, (mwSize)n_items, N_MEX_FIELDNAMES_DATASET, gmtmex_fieldname_dataset);
 
 	n_headers = (D->n_tables) ? D->table[0]->n_headers : 0;	/* Number of header records in first table */
 	for (tbl = seg_out = 0; tbl < D->n_tables; tbl++) {
@@ -286,12 +454,12 @@ static void *gmtmex_get_postscript (void *API, struct GMT_POSTSCRIPT *P) {
 
 	if (!P->data) {
 		/* Return empty PS struct */
-		P_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_PS, GMTMEX_fieldname_ps);
+		P_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_PS, gmtmex_fieldname_ps);
 		return P_struct;
 	}
 
 	/* Return PS with postscript and length in a struct */
-	P_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_PS, GMTMEX_fieldname_ps);
+	P_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_PS, gmtmex_fieldname_ps);
 
 	mxptr[0] = mxCreateString (P->data);
 	mxptr[1] = mxCreateNumericMatrix (1, 1, mxUINT64_CLASS, mxREAL);
@@ -309,7 +477,7 @@ static void *gmtmex_get_postscript (void *API, struct GMT_POSTSCRIPT *P) {
 	}
 
 	for (k = 0; k < N_MEX_FIELDNAMES_PS; k++)
-		mxSetField (P_struct, 0, GMTMEX_fieldname_ps[k], mxptr[k]);
+		mxSetField (P_struct, 0, gmtmex_fieldname_ps[k], mxptr[k]);
 
 	return P_struct;
 }
@@ -341,13 +509,13 @@ static void *gmtmex_get_palette (void *API, struct GMT_PALETTE *C) {
 		mexErrMsgTxt ("gmtmex_get_palette: programming error, output CPT C is empty\n");
 
 	if (!C->data) {	/* Return empty struct */
-		C_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CPT, GMTMEX_fieldname_cpt);
+		C_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CPT, gmtmex_fieldname_cpt);
 		return (C_struct);
 	}
 
 	/* Return CPT via colormap, range, and alpha arrays in a struct */
 	/* Create a MATLAB struct for this CPT */
-	C_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_CPT, GMTMEX_fieldname_cpt);
+	C_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_CPT, gmtmex_fieldname_cpt);
 
 	n_colors = (C->is_continuous) ? C->n_colors + 1 : C->n_colors;
 	mxptr[0] = mxCreateNumericMatrix (n_colors, 3, mxDOUBLE_CLASS, mxREAL);
@@ -405,7 +573,7 @@ static void *gmtmex_get_palette (void *API, struct GMT_PALETTE *C) {
 		mxptr[8] = mxCreateString ("rgb");
 
 	for (k = 0; k < N_MEX_FIELDNAMES_CPT; k++)	/* Update all fields */
-		mxSetField (C_struct, 0, GMTMEX_fieldname_cpt[k], mxptr[k]);
+		mxSetField (C_struct, 0, gmtmex_fieldname_cpt[k], mxptr[k]);
 	return (C_struct);
 }
 
@@ -421,7 +589,7 @@ static void *gmtmex_get_image (void *API, struct GMT_IMAGE *I) {
 
 	/* Return image via a uint8_t (mxUINT8_CLASS) matrix in a struct */
 	/* Create a MATLAB struct for this image */
-	I_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_IMAGE, GMTMEX_fieldname_image);
+	I_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_IMAGE, gmtmex_fieldname_image);
 	/* Create the various fields with information from I */
 	mxptr[0]  = NULL;	/* Set below */
 	mxptr[1]  = mxCreateNumericMatrix (1, I->header->n_columns, mxDOUBLE_CLASS, mxREAL);
@@ -514,7 +682,7 @@ static void *gmtmex_get_image (void *API, struct GMT_IMAGE *I) {
 	if (GMT_Destroy_Data (API, &I_y))
 		mexPrintf("Warning: Failure to delete I_y (y coordinate vector)\n");
 	for (k = 0; k < N_MEX_FIELDNAMES_IMAGE; k++) {	/* Update fields */
-		if (mxptr[k]) mxSetField (I_struct, 0, GMTMEX_fieldname_image[k], mxptr[k]);
+		if (mxptr[k]) mxSetField (I_struct, 0, gmtmex_fieldname_image[k], mxptr[k]);
 	}
 	return (I_struct);
 }
@@ -1110,8 +1278,8 @@ static struct GMT_PALETTE *gmtmex_palette_init (void *API, unsigned int directio
 		if (!mxIsStruct (ptr))
 			mexErrMsgTxt ("gmtmex_palette_init: Expected a CPT structure for input\n");
 		for (k = 0; k < N_MEX_FIELDNAMES_CPT; k++) {
-			if ((mx_ptr[k] = mxGetField (ptr, 0, GMTMEX_fieldname_cpt[k])) == NULL)
-				gmtmex_quit_if_missing ("gmtmex_palette_init", GMTMEX_fieldname_cpt[k]);
+			if ((mx_ptr[k] = mxGetField (ptr, 0, gmtmex_fieldname_cpt[k])) == NULL)
+				gmtmex_quit_if_missing ("gmtmex_palette_init", gmtmex_fieldname_cpt[k]);
 		}
 
 		dim[0] = mxGetM (mx_ptr[0]);	/* Number of rows in colormap */
@@ -1211,8 +1379,8 @@ static struct GMT_POSTSCRIPT *gmtmex_ps_init (void *API, unsigned int direction,
 		if (!mxIsStruct (ptr))
 			mexErrMsgTxt ("gmtmex_ps_init: Expected a MATLAB PostScript structure for input\n");
 		for (k = 0; k < N_MEX_FIELDNAMES_PS; k++) {
-			if ((mx_ptr[k] = mxGetField (ptr, 0, GMTMEX_fieldname_ps[k])) == NULL)
-				gmtmex_quit_if_missing ("gmtmex_ps_init", GMTMEX_fieldname_ps[k]);
+			if ((mx_ptr[k] = mxGetField (ptr, 0, gmtmex_fieldname_ps[k])) == NULL)
+				gmtmex_quit_if_missing ("gmtmex_ps_init", gmtmex_fieldname_ps[k]);
 		}
 
 		length = mxGetData (mx_ptr[1]);
@@ -1249,11 +1417,11 @@ static struct GMT_POSTSCRIPT *gmtmex_ps_init (void *API, unsigned int direction,
 	return (P);
 }
 
-char GMTMEX_objecttype (const mxArray *ptr) {
+static char gmtmex_objecttype (const mxArray *ptr) {
 	/* Determine what we are returning so gmt write can pass the correct -T? flag */
 	mxArray *mx_ptr = NULL;
 	if (mxIsEmpty (ptr))
-		mexErrMsgTxt ("GMTMEX_objecttype: Pointer is empty\n");
+		mexErrMsgTxt ("gmtmex_objecttype: Pointer is empty\n");
 	if (mxIsStruct (ptr)) {	/* This means either a dataset, grid, image, cpt, or PS, so must check for fields */
 		mx_ptr = mxGetField (ptr, 0, "data");
 		if (mx_ptr) return 'd';
@@ -1265,7 +1433,7 @@ char GMTMEX_objecttype (const mxArray *ptr) {
 		if (mx_ptr) return 'i';
 		mx_ptr = mxGetField (ptr, 0, "z");
 		if (mx_ptr) return 'g';
-		mexErrMsgTxt ("GMTMEX_objecttype: Could not recognize the structure\n");
+		mexErrMsgTxt ("gmtmex_objecttype: Could not recognize the structure\n");
 	}
 	else if (mxIsCell (ptr))	/* This is a dataset with text only */
 		return 'd';
@@ -1274,18 +1442,18 @@ char GMTMEX_objecttype (const mxArray *ptr) {
 	return '-';	/* Can never get here you would think */
 }
 
-void GMTMEX_Set_Object (void *API, struct GMT_RESOURCE *X, const mxArray *ptr) {
+static void gmtmex_Set_Object (void *API, struct GMT_RESOURCE *X, const mxArray *ptr) {
 	/* Create the GMT container and hook onto resource array as X->object */
 	unsigned int module_input = (X->option->option == GMT_OPT_INFILE), actual_family = X->family;
 
 	switch (X->family) {
 		case GMT_IS_GRID:	/* Get a grid from Matlab or a dummy one to hold GMT output */
 			X->object = gmtmex_grid_init (API, X->direction, module_input, ptr);
-			GMT_Report (API, GMT_MSG_DEBUG, "GMTMEX_Set_Object: Got Grid\n");
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtmex_Set_Object: Got Grid\n");
 			break;
 		case GMT_IS_IMAGE:	/* Get an image from Matlab or a dummy one to hold GMT output */
 			X->object = gmtmex_image_init (API, X->direction, module_input, ptr);
-			GMT_Report (API, GMT_MSG_DEBUG, "GMTMEX_Set_Object: Got Image\n");
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtmex_Set_Object: Got Image\n");
 			break;
 		case GMT_IS_DATASET:	/* Get a dataset from Matlab or a dummy one to hold GMT output */
 			/* Because a GMT_DATASET may appears as a GMT_MATRIX or GMT_VECTOR we need the actual_family to open the virtual file later */
@@ -1293,14 +1461,14 @@ void GMTMEX_Set_Object (void *API, struct GMT_RESOURCE *X, const mxArray *ptr) {
 			break;
 		case GMT_IS_PALETTE:	/* Get a palette from Matlab or a dummy one to hold GMT output */
 			X->object = gmtmex_palette_init (API, X->direction, module_input, ptr);
-			GMT_Report (API, GMT_MSG_DEBUG, "GMTMEX_Set_Object: Got CPT\n");
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtmex_Set_Object: Got CPT\n");
 			break;
 		case GMT_IS_POSTSCRIPT:	/* Get a PostScript struct from Matlab or a dummy one to hold GMT output */
 			X->object = gmtmex_ps_init (API, X->direction, module_input, ptr);
-			GMT_Report (API, GMT_MSG_DEBUG, "GMTMEX_Set_Object: Got POSTSCRIPT\n");
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtmex_Set_Object: Got POSTSCRIPT\n");
 			break;
 		default:
-			GMT_Report (API, GMT_MSG_NORMAL, "GMTMEX_Set_Object: Bad data type (%d)\n", X->family);
+			GMT_Report (API, GMT_MSG_NORMAL, "gmtmex_Set_Object: Bad data type (%d)\n", X->family);
 			break;
 	}
 	if (X->object == NULL)
@@ -1311,7 +1479,7 @@ void GMTMEX_Set_Object (void *API, struct GMT_RESOURCE *X, const mxArray *ptr) {
 		mexErrMsgTxt ("GMT: Failure to expand filename marker (?)\n");
 }
 
-void *GMTMEX_Get_Object (void *API, struct GMT_RESOURCE *X) {
+static void *gmtmex_Get_Object (void *API, struct GMT_RESOURCE *X) {
 	mxArray *ptr = NULL;
 	/* In line-by-line modules it is possible no output is produced, hence we make an exception for DATASET: */
 	if ((X->object = GMT_Read_VirtualFile (API, X->name)) == NULL && X->family != GMT_IS_DATASET)
@@ -1344,4 +1512,387 @@ void *GMTMEX_Get_Object (void *API, struct GMT_RESOURCE *X) {
 			break;
 	}
 	return ptr;
+}
+
+#if GMT_MAJOR_VERSION == 6 && GMT_MINOR_VERSION > 1
+extern int gmt_get_V (char arg);	/* Temporary here to allow full debug messaging */
+#else
+extern int GMT_get_V (char arg);	/* Temporary here to allow full debug messaging */
+#define gmt_get_V GMT_get_V	/* Old name */
+#endif
+
+#ifndef SINGLE_SESSION
+/* Being declared external we can access it between MEX calls */
+static uintptr_t *pPersistent;    /* To store API address back and forth within a single MATLAB session */
+
+/* Here is the exit function, which gets run when the MEX-file is
+   cleared and when the user exits MATLAB. The mexAtExit function
+   should always be declared as static. */
+static void force_Destroy_Session (void) {
+	void *API = (void *)pPersistent[0];	/* Get the GMT API pointer */
+	if (API != NULL) {		/* Otherwise just silently ignore this call */
+		if (GMT_Destroy_Session (API)) mexErrMsgTxt ("Failure to destroy GMT session\n");
+		*pPersistent = 0;	/* Wipe the persistent memory */
+	}
+}
+#endif
+
+static void usage (int nlhs, int nrhs) {
+	/* Basic usage message */
+	if (nrhs == 0) {	/* No arguments at all results in the GMT banner message */
+		mexPrintf("\nGMT - The Generic Mapping Tools, %s API, Version %d.%d.%d\n",
+		          MEX_PROG, GMTMEX_MAJOR_VERSION, GMTMEX_MINOR_VERSION, GMTMEX_PATCH_VERSION);
+		mexPrintf("Copyright 1991-2018 Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n");
+		mexPrintf("This program comes with NO WARRANTY, to the extent permitted by law.\n");
+		mexPrintf("You may redistribute copies of this program under the terms of the\n");
+		mexPrintf("GNU Lesser General Public License.\n");
+		mexPrintf("For more information about these matters, see the file named LICENSE.TXT.\n");
+		mexPrintf("For a brief description of GMT modules, type gmt ('help')\n\n");
+	}
+	else {
+		mexPrintf("Usage is:\n\tgmt ('module_name', 'options'[, <matlab arrays>]); %% Run a GMT module\n");
+		if (nlhs != 0)
+			mexErrMsgTxt ("But meanwhile you already made an error by asking help and an output.\n");
+	}
+}
+
+static void *Initiate_Session (unsigned int verbose) {
+	/* Initialize the GMT Session and store the API pointer in a persistent variable */
+	void *API = NULL;
+	/* Initializing new GMT session with a MATLAB-acceptable replacement for the printf function */
+	/* For debugging with verbose we pass the specified verbose shifted by 10 bits - this is decoded in API */
+	if ((API = GMT_Create_Session (MEX_PROG, 2U, (verbose << 10) + GMT_SESSION_NOEXIT + GMT_SESSION_EXTERNAL +
+	                               GMT_SESSION_COLMAJOR, gmtmex_print_func)) == NULL)
+		mexErrMsgTxt ("GMT: Failure to create new GMT session\n");
+
+#ifndef SINGLE_SESSION
+	if (!pPersistent) pPersistent = mxMalloc(sizeof(uintptr_t));
+	pPersistent[0] = (uintptr_t)(API);
+	mexMakeMemoryPersistent (pPersistent);
+#endif
+	return (API);
+}
+
+static void *alloc_default_plhs (void *API, struct GMT_RESOURCE *X) {
+	/* Allocate a default plhs when it was not stated in command line. That is, mimic the Matlab behavior
+	   when we do for example (i.e. no lhs):  sqrt([4 9])
+	*/
+	void *ptr = NULL;
+	switch (X->family) {
+		case GMT_IS_GRID:
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_GRID, gmtmex_fieldname_grid);
+			break;
+		case GMT_IS_IMAGE:
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_IMAGE, gmtmex_fieldname_image);
+			break;
+		case GMT_IS_DATASET:
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, gmtmex_fieldname_dataset);
+			break;
+		case GMT_IS_PALETTE:
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CPT, gmtmex_fieldname_cpt);
+			break;
+		case GMT_IS_POSTSCRIPT:
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_PS, gmtmex_fieldname_ps);
+			break;
+		default:
+			break;
+	}
+	return ptr;
+}
+
+/* This is the function that is called when we type gmt in MATLAB/Octave.
+ * It is the only function experted by the GMT API library.
+ */
+
+void GMT_mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
+	int status = 0;                 /* Status code from GMT API */
+	int n_in_objects = 0;           /* Number of input objects passed to module */
+	unsigned int first = 0;         /* Array ID of first command argument (not 0 when API-ID is first) */
+	unsigned int verbose = 0;       /* Default verbose setting */
+	unsigned int n_items = 0, pos = 0; /* Number of MATLAB arguments (left and right) */
+	size_t str_length = 0, k = 0;   /* Misc. counters */
+	void *API = NULL;               /* GMT API control structure */
+	struct GMT_OPTION *options = NULL; /* Linked list of module options */
+	struct GMT_RESOURCE *X = NULL;  /* Array of information about MATLAB args */
+	char *cmd = NULL;               /* Pointer used to get the user's MATLAB command */
+	char *gtxt = NULL;              /* For debug printing of revised command */
+	char *opt_args = NULL;          /* Pointer to the user's module options */
+	char module[MODULE_LEN] = {""}; /* Name of GMT module to call */
+	char opt_buffer[BUFSIZ] = {""}; /* Local copy of command line options */
+	void *ptr = NULL;
+#ifndef SINGLE_SESSION
+	uintptr_t *pti = NULL;          /* To locally store the API address */
+#endif
+
+	/* -1. Check that the GMT library is of a suitable version for this GMTMEX version */
+
+	if (GMT_MAJOR_VERSION > GMTMEX_GMT_MAJOR_VERSION) {	/* This may not work if, for instance, we want >= 6.1.x but is using GMT 7.0.0 */
+		char message[128] = {""};
+		sprintf (message, "Warning: Your GMT version (%d.%d.%d) may be too new to work with GMTMEX %d.%d.%d.\n",
+			GMT_MAJOR_VERSION, GMT_MINOR_VERSION, GMT_RELEASE_VERSION, GMTMEX_GMT_MAJOR_VERSION, GMTMEX_GMT_MINOR_VERSION, GMTMEX_GMT_PATCH_VERSION);
+		mexPrintf (message);
+	}
+	else if (GMT_MAJOR_VERSION < GMTMEX_GMT_MAJOR_VERSION || GMT_MINOR_VERSION < GMTMEX_GMT_MINOR_VERSION || (GMT_MINOR_VERSION == GMTMEX_GMT_MINOR_VERSION && GMT_RELEASE_VERSION < GMTMEX_GMT_PATCH_VERSION)) {
+		char message[128] = {""};
+		sprintf (message, "Error: The GMT shared library must be at least version %d.%d.%d but you have %d.%d.%d.\n",
+			GMTMEX_GMT_MAJOR_VERSION, GMTMEX_GMT_MINOR_VERSION, GMTMEX_GMT_PATCH_VERSION,
+			GMT_MAJOR_VERSION, GMT_MINOR_VERSION, GMT_RELEASE_VERSION);
+		mexErrMsgTxt (message);
+	}
+
+	/* 0. No arguments at all results in the GMT banner message */
+	if (nrhs == 0) {
+		usage (nlhs, nrhs);
+		return;
+	}
+
+	/* 1. Check for the special commands create and help */
+
+	if (nrhs == 1) {	/* This may be create or help */
+		cmd = mxArrayToString (prhs[0]);
+		if (!cmd) mexErrMsgTxt("GMT: First input argument must be a string. Maybe a composition of a string and a cell array?\n");
+		if (!strncmp (cmd, "help", 4U) || !strncmp (cmd, "--help", 6U)) {
+			usage (nlhs, 1);
+			return;
+		}
+#ifndef SINGLE_SESSION
+		if (!strncmp (cmd, "create", 6U)) {	/* Asked to create a new GMT session */
+			if (nlhs > 1)	/* Asked for too much output, only 1 or 0 is allowed */
+				mexErrMsgTxt ("GMT: Usage: gmt ('create') or API = gmt ('create');\n");
+			if (pPersistent)                        /* See if have a GMT API pointer */
+				API = (void *)pPersistent[0];
+			if (API != NULL) {                      /* If another session still exists */
+				GMT_Report (API, GMT_MSG_VERBOSE,
+				            "GMT: A previous GMT session is still active. Ignoring your 'create' request.\n");
+				if (nlhs) /* Return nothing */
+					plhs[0] = mxCreateNumericMatrix (1, 0, mxUINT64_CLASS, mxREAL);
+				return;
+			}
+			if ((gtxt = strstr (cmd, "-V")) != NULL) verbose = gmt_get_V (gtxt[2]);
+			API = Initiate_Session (verbose);	/* Initializing a new GMT session */
+
+			if (nlhs) {	/* Return the API address as an integer (nlhs == 1 here) )*/
+				plhs[0] = mxCreateNumericMatrix (1, 1, mxUINT64_CLASS, mxREAL);
+				pti = mxGetData(plhs[0]);
+				*pti = *pPersistent;
+			}
+
+			mexAtExit(force_Destroy_Session);	/* Register an exit function. */
+			return;
+		}
+
+		/* OK, neither create nor help, must be a single command with no arguments nor the API. So get it: */
+		if (!pPersistent || (API = (void *)pPersistent[0]) == NULL) {	/* No session yet, create one under the hood */
+			API = Initiate_Session(verbose);    /* Initializing a new GMT session */
+			mexAtExit(force_Destroy_Session);   /* Register an exit function. */
+		}
+		else
+			API = (void *)pPersistent[0];       /* Get the GMT API pointer */
+		if (API == NULL) mexErrMsgTxt ("GMT: This GMT5 session has is corrupted. Better to start from scratch.\n");
+	}
+	else if (mxIsScalar_(prhs[0]) && mxIsUint64(prhs[0])) {
+		/* Here, nrhs > 1 . If first arg is a scalar int, we assume it is the API memory address */
+		pti = (uintptr_t *)mxGetData(prhs[0]);
+		API = (void *)pti[0];	/* Get the GMT API pointer */
+		first = 1;		/* Commandline args start at prhs[1] since prhs[0] had the API id argument */
+	}
+	else {		/* We still don't have the API, so we must get it from the past or initiate a new session */
+		if (!pPersistent || (API = (void *)pPersistent[0]) == NULL) {
+			API = Initiate_Session (verbose);	/* Initializing new GMT session */
+			mexAtExit(force_Destroy_Session);	/* Register an exit function. */
+		}
+#endif
+	}
+
+#ifdef SINGLE_SESSION
+	/* Initiate a new session */
+	API = Initiate_Session (verbose);	/* Initializing new GMT session */
+#endif
+
+	if (!cmd) {	/* First argument is the command string, e.g., 'blockmean -R0/5/0/5 -I1' or just 'destroy' */
+		cmd = mxArrayToString(prhs[first]);
+		if (!cmd) mexErrMsgTxt("GMT: First input argument must be a string but is probably a cell array of strings.\n");
+	}
+
+	if (!strncmp (cmd, "destroy", 7U)) {	/* Destroy the session */
+#ifndef SINGLE_SESSION
+		if (nlhs != 0)
+			mexErrMsgTxt ("GMT: Usage is gmt ('destroy');\n");
+
+		if (GMT_Destroy_Options (API, &options)) mexErrMsgTxt ("GMT: Failure to destroy GMT5 options\n");
+		if (GMT_Destroy_Session (API)) mexErrMsgTxt ("GMT: Failure to destroy GMT5 session\n");
+		*pPersistent = 0;	/* Wipe the persistent memory */
+#endif
+		return;
+	}
+
+	/* 2. Get module name and separate out args */
+
+	/* Here we have a GMT module call. The documented use is to give the module name separately from
+	 * the module options, but users may forget and combine the two.  So we check both cases. */
+
+	n_in_objects = nrhs - 1;
+	str_length = strlen (cmd);				/* Length of module (or command) argument */
+	for (k = 0; k < str_length && cmd[k] != ' '; k++);	/* Determine first space in command */
+
+	if (k == str_length) {	/* Case 2a): No spaces found: User gave 'module' separately from 'options' */
+		strcpy (module, cmd);				/* Isolate the module name in this string */
+		if (nrhs > 1 && mxIsChar (prhs[first+1])) {	/* Got option string */
+			first++;	/* Since we have a 2nd string to skip now */
+			opt_args = mxArrayToString (prhs[first]);
+			n_in_objects--;
+		}
+		/* Else we got no options, just input objects */
+	}
+	else {	/* Case b2. Get mex arguments, if any, and extract the GMT module name */
+		if (k >= MODULE_LEN)
+			mexErrMsgTxt ("GMT: Module name in command is too long\n");
+		strncpy (module, cmd, k);	/* Isolate the module name in this string */
+
+		while (cmd[k] == ' ') k++;	/* Skip any spaces between module name and start of options */
+		if (cmd[k]) opt_args = &cmd[k];
+	}
+
+	/* See if info about installation is required */
+	if (!strcmp(module, "gmt")) {
+		char t[256] = {""};
+		if (!opt_args) {
+			mexPrintf("Warning: calling the 'gmt' program by itself does nothing here.\n");
+			return;
+		}
+		if (!strcmp(opt_args, "--show-bindir")) 	/* Show the directory that contains the 'gmt' executable */
+			GMT_Get_Default (API, "BINDIR", t);
+		else if (!strcmp(opt_args, "--show-sharedir"))	/* Show share directory */
+			GMT_Get_Default (API, "SHAREDIR", t);
+		else if (!strcmp(opt_args, "--show-datadir"))	/* Show the data directory */
+			GMT_Get_Default (API, "DATADIR", t);
+		else if (!strcmp(opt_args, "--show-plugindir"))	/* Show the plugin directory */
+			GMT_Get_Default (API, "PLUGINDIR", t);
+		else if (!strcmp(opt_args, "--show-cores"))	/* Show number of cores */
+			GMT_Get_Default (API, "CORES", t);
+
+		if (t[0] != '\0') {
+			if (nlhs)
+				plhs[0] = mxCreateString (t);
+			else
+				mexPrintf ("%s\n", t);
+		}
+		else
+			mexPrintf ("Warning: called the 'gmt' program with unknown option.\n");
+		return;
+	}
+
+	/* Make sure this is a valid module */
+	if ((status = GMT_Call_Module (API, module, GMT_MODULE_EXIST, NULL)) != GMT_NOERROR) 	/* No, not found */
+		mexErrMsgTxt ("GMT: No module by that name was found.\n");
+
+	/* Below here we may actually wish to add options to the opt_args, but it is a pointer.  So we duplicate to
+	 * another string with enough space. */
+
+	if (opt_args) strcpy (opt_buffer, opt_args);	/* opt_buffer has lots of space for additions */
+	/* 2+ Add -F to psconvert if user requested a return image but did not explicitly give -F */
+	if (!strncmp (module, "psconvert", 9U) && nlhs == 1 && (!opt_args || !strstr ("-F", opt_args))) {	/* OK, add -F */
+		if (opt_args)
+			strcat (opt_buffer, " -F");
+		else
+			strcpy (opt_buffer, "-F");
+	}
+
+	/* 2++ If gmtwrite then add -T? with correct object type */
+	if (strstr(module, "write") && opt_args && !strstr(opt_args, "-T") && n_in_objects == 1) {	/* Add type for writing to disk */
+		char targ[5] = {" -T?"};
+		targ[3] = gmtmex_objecttype (prhs[nrhs-1]);
+		strcat (opt_buffer, targ);
+	}
+	/* 2+++ If gmtread -Ti then temporarily set pad to 0 since we don't want padding in image arrays */
+	else if (strstr(module, "read") && opt_args && strstr(opt_args, "-Ti"))
+		GMT_Set_Default(API, "API_PAD", "0");
+
+	/* 3. Convert mex command line arguments to a linked GMT option list */
+	if (opt_buffer[0] && (options = GMT_Create_Options (API, 0, opt_buffer)) == NULL)
+		mexErrMsgTxt ("GMT: Failure to parse GMT5 command options\n");
+
+	if (!options && nlhs == 0 && nrhs == 1 && strcmp (module, "end")) 	/* Just requesting usage message, so add -? to options */
+		options = GMT_Create_Options (API, 0, "-?");
+
+	/* 4. Preprocess to update GMT option lists and return info array X */
+	if ((X = GMT_Encode_Options (API, module, n_in_objects, &options, &n_items)) == NULL) {
+		if (n_items == UINT_MAX)	/* Just got usage/synopsis option */
+			n_items = 0;
+		else
+			mexErrMsgTxt ("GMT: Failure to encode mex command options\n");
+	}
+
+	if (options) {	/* Only for debugging - remove this section when stable */
+		gtxt = GMT_Create_Cmd (API, options);
+		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Revised command after memory-substitution: %s\n", gtxt);
+		GMT_Destroy_Cmd (API, &gtxt);	/* Only needed it for the above verbose */
+	}
+
+	/* 5. Assign input sources (from MATLAB to GMT) and output destinations (from GMT to MATLAB) */
+
+	for (k = 0; k < n_items; k++) {	/* Number of GMT containers involved in this module call */
+		if (X[k].direction == GMT_IN) {
+			if ((X[k].pos+first+1) < (unsigned int)nrhs)
+				ptr = (void *)prhs[X[k].pos+first+1];
+			else
+				mexErrMsgTxt ("GMT: Attempting to address a prhs entry that does not exist\n");
+		}
+		else {
+			if ((X[k].pos) < nlhs)
+				ptr = (void *)plhs[X[k].pos];
+			else {
+				//mexErrMsgTxt ("GMT: Attempting to address a plhs entry that does not exist\n");
+				ptr = alloc_default_plhs (API, &X[k]);
+			}
+		}
+		gmtmex_Set_Object (API, &X[k], ptr);	/* Set object pointer */
+	}
+
+	/* 6. Run GMT module; give usage message if errors arise during parsing */
+	status = GMT_Call_Module (API, module, GMT_MODULE_OPT, options);
+	if (status != GMT_NOERROR) {
+		if (status <= GMT_MODULE_PURPOSE)
+			return;
+		else {
+			mexPrintf("GMT: Module return with failure while executing the command\n%s\n", cmd);
+			mexErrMsgTxt("GMT: exiting\n");
+		}
+	}
+
+	/* 7. Hook up any GMT outputs to MATLAB plhs array */
+
+	for (k = 0; k < n_items; k++) {	/* Get results from GMT into MATLAB arrays */
+		if (X[k].direction == GMT_IN) continue;	/* Only looking for stuff coming OUT of GMT here */
+		pos = X[k].pos;		/* Short-hand for index into the plhs[] array being returned to MATLAB */
+		plhs[pos] = gmtmex_Get_Object (API, &X[k]);	/* Hook mex object onto rhs list */
+	}
+
+	/* 2++- If gmtread -Ti then reset the sessions pad value that was temporarily changed above (2+++) */
+	if (strstr(module, "read") && opt_args && strstr(opt_args, "-Ti"))
+		GMT_Set_Default (API, "API_PAD", "2");
+
+	/* 8. Free all GMT containers involved in this module call */
+
+	for (k = 0; k < n_items; k++) {
+		void *ppp = X[k].object;
+		if (GMT_Close_VirtualFile (API, X[k].name) != GMT_NOERROR)
+			mexErrMsgTxt ("GMT: Failed to close virtual file\n");
+		if (GMT_Destroy_Data (API, &X[k].object) != GMT_NOERROR)
+			mexErrMsgTxt ("GMT: Failed to destroy object used in the interface between GMT and MATLAB\n");
+		else {	/* Success, now make sure we don't destroy the same pointer more than once */
+			for (size_t kk = k+1; kk < n_items; kk++)
+				if (X[kk].object == ppp) X[kk].object = NULL;
+		}
+	}
+
+	/* 9. Destroy linked option list */
+
+	if (GMT_Destroy_Options (API, &options) != GMT_NOERROR)
+		mexErrMsgTxt ("GMT: Failure to destroy GMT5 options\n");
+#ifdef SINGLE_SESSION
+	if (GMT_Destroy_Session (API))
+		mexErrMsgTxt ("GMT: Failure to destroy GMT5 session\n");
+#endif
+	return;
 }
