@@ -574,17 +574,8 @@ endforeach (_gmt_prog)
 set_target_properties (gmt PROPERTIES OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
 
 if (GMT_BUILD_GMTMEX)
-	# Just need to add a symbolic link with the right name to libgmt
-	#set( gmtmex_link   ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/gmtmex.${MEX_EXT})
-	#set( gmtmex_target ${CMAKE_INSTALL_PREFIX}/${GMT_LIBDIR}/${LIB_PREFIX}gmt.${GMT_LIB_SOVERSION}.${CMAKE_SHARED_LIBRARY_SUFFIX})
-	#add_custom_command ( OUTPUT ${gmtmex_link} POST_BUILD
-	#	COMMAND ln -s ${gmtmex_target} ${gmtmex_link}
-	#	DEPENDS install ${gmtmex_target} 
-	#	COMMENT "Generating gmtmex symbolic link")
-	# Install the driver script
-	install (PROGRAMS gmtmex/gmt.m
-		DESTINATION ${GMT_BINDIR}
-		COMPONENT Runtime)
+	find_package (Matlab)
+	add_subdirectory (gmtmex)
 endif (GMT_BUILD_GMTMEX)
 
 # psldemo
@@ -885,7 +876,6 @@ if (BUILD_SUPPLEMENTS)
 		endif (BUILD_DEVELOPER)
 	endforeach (_dir)
 endif (BUILD_SUPPLEMENTS)
-
 
 ##
 ## Print out CFLAGS
