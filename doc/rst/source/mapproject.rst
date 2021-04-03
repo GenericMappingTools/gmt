@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt mapproject** [ *tables* ] |-J|\ *parameters*
+**gmt mapproject** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-R|
 [ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*][**+m**] ]
@@ -69,24 +69,23 @@ along lines can all be computed by using one or more of the options
 Required Arguments
 ------------------
 
-.. _-J:
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-R:
-
-.. |Add_-R| replace:: Special case for the UTM
-    projection: If **-C** is used and **-R** is not given then the
-    region is set to coincide with the given UTM zone so as to preserve
-    the full ellipsoidal solution (See RESTRICTIONS for more information).
+.. |Add_-R| replace:: Special case for the UTM projection: If **-C** is used and **-R** is not given then the
+    region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
+    (See :ref:`mapproject:Restrictions` for more information). |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
@@ -101,7 +100,9 @@ Optional Arguments
     is given then we compute the azimuth (or back-azimuth) from the
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
-    See `Output Order`_ for how **-A** affects the output record.
+    See `Output Order`_ for how **-A** affects the output record.  If **-R**
+    and **-J*** are given the we project the coordinates first and then
+    compute Cartesian angles instead.
 
 .. _-C:
 
@@ -150,7 +151,8 @@ Optional Arguments
     for available units and how distances are computed [great circle using authalic
     radius]), including **c** (Cartesian distance using input coordinates) or **C**
     (Cartesian distance using projected coordinates). The **C** unit
-    requires **-R** and **-J** to be set. If no fixed point is given
+    requires **-R** and **-J** to be set and all output coordinates will be
+    reported as projected. If no fixed point is given
     we calculate *accumulated* distances whereas if a fixed point is given
     we calculate *incremental* distances.  You can override these defaults
     by adding **+a** for accumulated or **+i** for incremental distances.
@@ -218,10 +220,10 @@ Optional Arguments
     after the inverse projection). Make sure that the
     :term:`PROJ_ELLIPSOID` setting is correct for your case.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

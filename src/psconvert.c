@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -113,7 +113,8 @@ struct PSCONVERT_CTRL {
 		bool outline;      /* Draw frame around plot with selected pen (+p) [0.25p] */
 		bool paint;        /* Paint box behind plot with selected fill (+g) */
 		bool crop;         /* If true we must find the BB; turn off via -A+n */
-		bool fade;         /* If true we must fade out the plot to black*/
+		bool fade;         /* If true we must fade out the plot to black */
+		bool media;        /* If true we must crop to current media size in PS_MEDIA. Only issued indirectly by gmt end */
 		double scale;      /* Scale factor to go along with the 'rescale' option */
 		double fade_level;      /* Fade to black at this level of transparency */
 		double new_size[2];
@@ -345,6 +346,9 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 			case 'n':	/* No crop */
 				Ctrl->A.crop = false;
 				break;
+			case 'M':	/* Crop to media */
+				Ctrl->A.media = true;
+				break;
 			case 'p':	/* Draw outline */
 				Ctrl->A.outline = true;
 				if (!p[1])
@@ -573,7 +577,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 #else
 	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -G/some/unusual/dir/bin/gs).\n");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpi by <factor>, rasterize, then downsample [no downsampling].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpi by integer <factor>, rasterize, then downsample [no downsampling].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to improve raster image quality, especially for lower raster resolutions.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
@@ -840,6 +844,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
 		}
+	}
+
+	if (Ctrl->H.active && Ctrl->H.factor <= 1) {	/* Allow -H1 (or zero or bad negative factors) to mean the same as giving no -H */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selecting -H1 or less turns off sub-pixeling\n");
+			Ctrl->H.active = false;
 	}
 
 	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
@@ -1432,10 +1441,10 @@ GMT_LOCAL int psconvert_make_dir_if_needed (struct GMTAPI_CTRL *API, char *dir) 
 
 EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	unsigned int i, j, k, pix_w = 0, pix_h = 0, got_BBatend;
-	int sys_retval = 0, r, pos_file, pos_ext, error = 0;
+	int sys_retval = 0, r, pos_file, pos_ext, error = 0, trans_line;
 	size_t len, line_size = 0U, half_baked_size = 0;
 	uint64_t pos = 0;
-	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false;
+	bool got_BB, got_HRBB, file_has_HRBB, got_end, landscape, landscape_orig, set_background = false, old_transparency_code_needed;
 	bool excessK, setup, found_proj = false, isGMT_PS = false, return_image = false, delete = false, file_processing = true;
 	bool transparency = false, look_for_transparency, BeginPageSetup_here = false, has_transparency, add_grestore = false;
 
@@ -1538,6 +1547,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	old_transparency_code_needed = (gsVersion.major == 9 && gsVersion.minor < 53);
+
 	if (Ctrl->T.device == GS_DEV_SVG && (gsVersion.major > 9 || (gsVersion.major == 9 && gsVersion.minor >= 16))) {
 		GMT_Report (API, GMT_MSG_ERROR, "Your Ghostscript version (%s) no longer supports the SVG device.\n", GSstring);
 		GMT_Report (API, GMT_MSG_ERROR, "We recommend converting to PDF and then installing the pdf2svg package.\n");
@@ -1575,7 +1586,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
    	   will be the default in a future release. Since it was introduced in 9.21 we start using it
    	   right now and remove this conditional once it becomes the default */
 
-	/* INitial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
+	/* Initial assignment of gs_params. Note: If we detect transparency then we must select the PDF settings since we must convert to PDF first */
 	if (Ctrl->T.device == GS_DEV_PDF)	/* For PDF (and PNG via PDF) we want a bunch of prepress and other settings to maximize quality */
 		gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 	else	/* For rasters */
@@ -1807,7 +1818,13 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		/* Adjust to a tight BoundingBox if user requested so */
 
-		if (Ctrl->A.crop) {
+		if (Ctrl->A.media) {	/* Crop to set PS_MEDIA size */
+			x1 = GMT->current.setting.ps_def_page_size[0];
+			y1 = GMT->current.setting.ps_def_page_size[1];
+			got_BB = got_HRBB = got_end = true;
+			GMT_Report (API, GMT_MSG_INFORMATION, "Crop to media BoundingBox [%g %g %g %g].\n", x0, y0, x1, y1);
+		}
+		else if (Ctrl->A.crop) {
 			char *psfile_to_use = NULL;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Find HiResBoundingBox ...\n");
 			if (GMT->current.setting.run_mode == GMT_MODERN)	/* Place BB file in session dir */
@@ -2019,6 +2036,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		has_transparency = transparency = add_grestore = false;
 		set_background = (Ctrl->A.paint || Ctrl->A.outline);
+		trans_line = 0;
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
 			if (line[0] != '%') {	/* Copy any non-comment line, except one containing setpagedevice in the Setup block */
@@ -2029,7 +2047,24 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				if (setup && strstr(line,"setpagedevice") != NULL)	/* This is a "setpagedevice" command that should be avoided */
 					continue;
-				fprintf (fpo, "%s\n", line);
+				if (old_transparency_code_needed && strstr (line, ".setfillconstantalpha")) {
+					/* Our gs is too old so we must switch the modern transparency command to the older .setopacityalpha command.
+					 * At some point in the future we will abandon support for 9.52 and older and remove this entire if-test */
+					if (trans_line == 0) {	/* First time we warn and deal with line number one in PSL_transp function */
+						GMT_Report (API, GMT_MSG_DEBUG, "Your gs is older than 9.53 so we must replace .setfillconstantalpha with .setopacityalpha.\n");
+						fprintf (fpo, "  /.setopacityalpha where\n");	/* Look for old .setopacityalpha instead */
+					}
+					else
+						fprintf (fpo, "  { pop PSL_BM_arg .setblendmode PSL_F_arg .setopacityalpha }\n");	/* Ignore the setstrokeconstantalpha value */
+					trans_line++;
+				}
+				else if (!old_transparency_code_needed && strstr (line, ".setopacityalpha")) {
+					/* Our PostScript file was made before 6.2 master was updated to deal with new gs settings */
+					GMT_Report (API, GMT_MSG_DEBUG, "Your gs is newer than 9.52 so we must replace .setopacityalpha in old PS files with .setfillconstantalpha.\n");
+					fprintf (fpo, "/.setfillconstantalpha where {pop .setblendmode dup .setstrokeconstantalpha .setfillconstantalpha }{\n");	/* Use the transparency for both fill and stroke */
+				}
+				else
+					fprintf (fpo, "%s\n", line);
 				continue;
 			}
 			else if (!found_proj && !strncmp (&line[2], "PROJ", 4)) {	/* Search for the PROJ tag in the ps file */
@@ -2060,9 +2095,10 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 								"image coordinates seem to be geographical, a linear transformation "
 								"will be used.\n");
 					}
-					else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
-						GMT_Report (API, GMT_MSG_ERROR, "Requested an automatic geotiff generation, but "
-								"no recognized psconvert option was used for the PS creation.\n");
+					else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {
+						proj4_cmd = strdup ("xy");
+						GMT_Report (API, GMT_MSG_DEBUG, "Requested an automatic geotiff generation, but "
+								"not sure a good psconvert option was used for the PS creation.\n");
 					}
 				}
 				else if (Ctrl->W.kml) {
@@ -2225,7 +2261,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
 				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->A.fill.rgb);
 				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->A.fill.rgb), irint (100.0*Ctrl->A.fade_level));
-				fprintf (fpo, "V clippath %s %g /Normal PSL_transp F N U\n", ptr, Ctrl->A.fade_level);
+				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->A.fade_level, Ctrl->A.fade_level);
 				transparency = true;
 			}
 #ifdef HAVE_GDAL
@@ -2306,7 +2342,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 
 		if (has_transparency && gsVersion.major == 9 && (gsVersion.minor == 51 || gsVersion.minor == 52))
-				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please downgrade to 9.50\n", GSstring);
+				GMT_Report (API, GMT_MSG_WARNING, "Input file has transparency but your gs version %s has a bug preventing it - please upgrade to 9.53\n", GSstring);
 		if (transparency && Ctrl->T.device != GS_DEV_PDF)	/* Must reset to PDF settings since we have transparency */
 				gs_params = (gsVersion.major >= 9 && gsVersion.minor >= 21) ? gs_params_pdfnew : gs_params_pdfold;
 
@@ -2424,7 +2460,9 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (GMT->current.setting.run_mode == GMT_MODERN) {
 			if (Ctrl->T.ps) {	/* Under modern mode we can also save the PS file by renaming it */
-				strncpy (out_file, Ctrl->F.file, PATH_MAX-1);
+			        out_file[0] = '\0'; /* truncate string to build new output file */
+				if (Ctrl->D.active) sprintf (out_file, "%s/", Ctrl->D.dir);	/* Use specified output directory */
+				strcat (out_file, Ctrl->F.file);
 				strcat (out_file, ".ps");
 				GMT_Report (API, GMT_MSG_DEBUG, "Rename %s -> %s\n", tmp_file, out_file);
 				if (gmt_rename_file (GMT, tmp_file, out_file, GMT_COPY_FILE))

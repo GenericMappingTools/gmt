@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -154,14 +154,17 @@
 /* Determine if we should skip this CPT slice */
 #define gmt_M_skip_cptslice(P,index) ((index >= 0 && P->data[index].skip) || (index < 0 && P->bfn[index+3].skip))
 
-/* See if CPT modifiers was given (+u|U modifier) */
-#define gmt_M_cpt_mod(arg) ((arg) && ((arg)[0] =='+' && strchr ("uU", (arg)[1])))
+/* See if CPT modifiers was given (+h|i|u|U) */
+#define gmt_M_cpt_mod(arg) ((arg) && ((arg)[0] =='+' && strchr (GMT_CPTFILE_MODIFIERS, (arg)[1])))
 
 /* See if no CPT name was given (+u|U modifier may be present but not filename) */
 #define gmt_M_no_cpt_given(arg) (arg == NULL || arg[0] == '\0' || gmt_M_cpt_mod(arg))
 
-/*! Copy two RGB[T] arrays (a = b) */
+/*! Copy two RGB[T] arrays (a = b) including transparency */
 #define gmt_M_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
+
+/*! Copy two RGB[T] arrays (a = b) excluding transparency */
+#define gmt_M_rgb_only_copy(a,b) memcpy (a, b, 3 * sizeof(double))
 
 /*! To compare is two colors are ~ the same */
 #define gmt_M_eq(a,b) (fabs((a)-(b)) < GMT_CONV4_LIMIT)

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -85,9 +85,12 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		double min, max;
 	} W;
-	struct PROJECT_Z {	/* -Z<major/minor/azimuth>[+e] */
+	struct PROJECT_Z {	/* -Z<major/minor/azimuth>[+e][+n] */
 		bool active;
 		bool exact;
+		bool number;
+		char unit;
+		int mode;	/* Could be negative */
 		double major, minor, azimuth;
 	} Z;
 };
@@ -320,7 +323,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+c|h]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>/<minor>/<azimuth>[+e]]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>/<minor>/<azimuth>[+e|n]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -372,9 +375,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in <azimuth> direction.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in the <azimuth> direction.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes (in km if geographic) and azimuth\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of major axis. Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n instead if -G specifies the number of unique perimeter points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a degenerate ellipse, i.e., circle, just append the single argument the <diameter> instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), d (arc degree),\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m (arc minute), or s (arc second) [k]; we assume -G is in the same units (unless +n is used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian ellipses, add -N and provide <direction> (CCW from horizontal) instead of <azimuth>.\n");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -526,8 +534,41 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->Z.exact = true;
 					ce[0] = '\0';	/* Chop off +e */
 				}
-				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf/%lf/%lf", &Ctrl->Z.major, &Ctrl->Z.minor, &Ctrl->Z.azimuth) != 3, "Option -Z: Expected -Z<major/minor/azimuth>\n");
+				else if ((ce = strstr (opt->arg, "+n"))) {
+					Ctrl->Z.number = true;
+					ce[0] = '\0';	/* Chop off +n */
+				}
+				if (strchr (opt->arg, '/')) {	/* Ellipse setting */
+					k = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Z.major, &Ctrl->Z.minor, &Ctrl->Z.azimuth);
+					if (k == 3) {	/* Ellipse, check that major >= minor */
+						if (Ctrl->Z.major < Ctrl->Z.minor) {
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Major axis must be equal to or larger than the minor axis\n");
+							n_errors++;
+						}
+					}
+					else {	/* Bad number of arguments */
+						if (Ctrl->N.active)
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e|n] or -Z<diameter>[+e|n]\n");
+						else
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/azimuth>[+e|n] or -Z<diameter>[+e|n]\n");
+						n_errors++;
+					}
+				}
+				else {	/* Circle as degenerated ellipse */
+					if (Ctrl->N.active)
+						Ctrl->Z.minor = Ctrl->Z.major = atof (opt->arg);
+					else {
+						Ctrl->Z.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Z.minor), &(Ctrl->Z.unit));
+						Ctrl->Z.major = Ctrl->Z.minor;
+					}
+				}
+
 				if (ce) ce[0] = '+';	/* Restore the plus-sign */
+				if (Ctrl->N.active) {	/* Convert to semi-axis or radius and azimuth since that is now the Cartesian code operates */
+					Ctrl->Z.minor /= 2.0;
+					Ctrl->Z.major /= 2.0;
+					if (k == 3) Ctrl->Z.azimuth = 90.0 - Ctrl->Z.azimuth;
+				}
 				break;
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
@@ -682,6 +723,20 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 	else {	/* Make sure we set -fg */
 		gmt_set_geographic (GMT, GMT_IN);
 		gmt_set_geographic (GMT, GMT_OUT);
+		if (Ctrl->Z.mode && Ctrl->Z.unit != 'k') {	/* Degenerate ellipse with diameter given in units */
+			if (gmt_init_distaz (GMT, Ctrl->Z.unit, Ctrl->Z.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
+			if (GMT->current.map.dist[GMT_MAP_DIST].arc) {	/* Got angular measures, convert to km */
+				Ctrl->Z.minor *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
+				Ctrl->Z.major *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
+				if (!Ctrl->Z.number) Ctrl->G.inc *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
+			}
+			else {
+				Ctrl->Z.minor /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
+				Ctrl->Z.major /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
+				if (!Ctrl->Z.number) Ctrl->G.inc /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
+			}
+		}
 	}
 
 	/* Convert user's -F choices to internal parameters */
@@ -727,16 +782,16 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
 		P.n_outputs = 3;
-		gmt_set_column (GMT, GMT_OUT, GMT_X, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LON);
-		gmt_set_column (GMT, GMT_OUT, GMT_Y, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT);
-		gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_X, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LON);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_Y, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
 	}
 	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
 		for (col = 0; col < P.n_outputs; col++) {
 			switch (P.output_choice[col]) {
-				case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);		break;
-				case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);		break;
-				default: 	    gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
+				case 0: case 4: gmt_set_column_type (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);		break;
+				case 1: case 5: gmt_set_column_type (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);		break;
+				default: 	    gmt_set_column_type (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
 			}
 		}
 	}
@@ -850,7 +905,9 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			double h = pow (Ctrl->Z.major - Ctrl->Z.minor, 2.0) / pow (Ctrl->Z.major + Ctrl->Z.minor, 2.0);
 			Ctrl->L.min = 0.0;
 			Ctrl->L.max = M_PI * (Ctrl->Z.major + Ctrl->Z.minor) * (1.0 + (3.0 * h)/(10.0 + sqrt (4.0 - 3.0 * h)));	/* Ramanujan approximation of ellipse circumference */
-			if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellipse perimeter exactly */
+			if (Ctrl->Z.number)	/* Want a specific number of points */
+				Ctrl->G.inc = Ctrl->L.max / rint (Ctrl->G.inc);
+			else if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellipse perimeter exactly */
 				double f = rint (Ctrl->L.max / Ctrl->G.inc);
 				Ctrl->G.inc = Ctrl->L.max / f;
 			}
@@ -943,6 +1000,9 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		/* Now output generated track */
 
 		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)P.n_outputs, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (error);
 		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers data output failed */
@@ -950,17 +1010,23 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				gmt_M_str_free (p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Failed to enable data output and set access mode */
 			if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_LINE) != GMT_NOERROR) {	/* Sets output geometry */
 				gmt_M_free (GMT, p_data);
+				gmt_M_free (GMT, Out);
+				if (Ctrl->Z.active) gmt_M_str_free (z_header);
 				Return (API->error);
 			}
 			for (rec = 0; rec < P.n_used; rec++) {
 				gmt_M_str_free (p_data[rec].t);	gmt_M_free (GMT, p_data[rec].z);
 			}
 			gmt_M_free (GMT, p_data);
+			gmt_M_free (GMT, Out);
+			if (Ctrl->Z.active) gmt_M_str_free (z_header);
 			Return (API->error);
 		}
 
@@ -974,7 +1040,10 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				sprintf (GMT->current.io.segment_header, "%s-circle Pole at %g %g", type[kind], P.plon, P.plat);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, NULL);	/* Write segment header */
 		}
-		if (Ctrl->Z.active) gmt_M_str_free (z_header);
+		if (Ctrl->Z.active) {
+			gmt_M_str_free (z_header);
+			if (Ctrl->Z.number) P.n_used--;	/* To avoid repeated point if +n is used */
+		}
 		for (rec = 0; rec < P.n_used; rec++) {
 			for (col = 0; col < P.n_outputs; col++) out[col] = p_data[rec].a[P.output_choice[col]];
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
@@ -1045,9 +1114,9 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 						if (!Ctrl->N.active) {
 							for (col = 0; col < P.n_outputs; col++) {
 								switch (P.output_choice[col]) {
-									case 0: case 4: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);	break;
-									case 1: case 5: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);	break;
-									default: gmt_set_column (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
+									case 0: case 4: gmt_set_column_type (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LON);	break;
+									case 1: case 5: gmt_set_column_type (GMT, GMT_OUT, (unsigned int)col, GMT_IS_LAT);	break;
+									default: gmt_set_column_type (GMT, GMT_OUT, (unsigned int)col, GMT_IS_FLOAT);	break;
 								}
 							}
 						}
@@ -1068,12 +1137,12 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 					for (col = kk = 0; col < P.n_outputs; col++, kk++) {
 						switch (P.output_choice[col]) {
 							case -1: /* Need to set float type for all the nz columns based on what the input z column types are */
-								for (k = 0; k < P.n_z; k++, kk++) gmt_set_column (GMT, GMT_OUT, kk, GMT->current.io.col_type[GMT_IN][k+GMT_Z]);
+								for (k = 0; k < P.n_z; k++, kk++) gmt_set_column_type (GMT, GMT_OUT, kk, GMT->current.io.col_type[GMT_IN][k+GMT_Z]);
 								kk--;	/* Since we also do this at end of loop */
 								break;
-							case 0: case 4: gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_LON);		break;
-							case 1: case 5: gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_LAT);		break;
-							default: 	gmt_set_column (GMT, GMT_OUT, kk, GMT_IS_FLOAT);	break;
+							case 0: case 4: gmt_set_column_type (GMT, GMT_OUT, kk, GMT_IS_LON);		break;
+							case 1: case 5: gmt_set_column_type (GMT, GMT_OUT, kk, GMT_IS_LAT);		break;
+							default: 	gmt_set_column_type (GMT, GMT_OUT, kk, GMT_IS_FLOAT);	break;
 						}
 					}
 				}
@@ -1133,16 +1202,17 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 	}
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-		Return (API->error);
-	}
-
-	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	for (rec = 0; rec < P.n_used; rec++) {
 		gmt_M_str_free (p_data[rec].t);
 		gmt_M_free (GMT, p_data[rec].z);
 	}
+
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+		Return (API->error);
+	}
+
+	GMT_Report (API, GMT_MSG_INFORMATION, "%" PRIu64 " read, %" PRIu64 " used\n", n_total_read, n_total_used);
 
 	gmt_M_free (GMT, p_data);
 

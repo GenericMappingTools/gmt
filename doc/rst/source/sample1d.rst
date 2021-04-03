@@ -16,7 +16,7 @@ Synopsis
 [ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+d**][**+l**] ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *col* ]
 [ |SYN_OPT-b| ]
@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -51,17 +52,15 @@ is not supported.
 Required Arguments
 ------------------
 
-None.
-
-Optional Arguments
-------------------
-
 *table*
     This is one or more ASCII [of binary, see
     **-bi**] files with one column containing the
     independent *time* variable (which must be monotonically in/de-creasing)
     and the remaining columns holding other data values. If no file is
     provided, **sample1d** reads from standard input.
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -81,7 +80,7 @@ Optional Arguments
 
 .. _-F:
 
-**-Fl**\|\ **a**\|\ **c**\|\ **n**\ **s**\ *p*\ [**+d1**\|\ **2**]
+**-Fl**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**]
     Choose from **l** (Linear), **a** (Akima spline), **c** (natural
     cubic spline), **n** (no interpolation: nearest point), or **s**
     (smoothing cubic spline; append fit parameter *p*) [Default
@@ -98,14 +97,14 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+a**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -136,11 +135,13 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. include:: explain_-q.rst_
-
 .. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. include:: explain_-q.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_help.rst_
 

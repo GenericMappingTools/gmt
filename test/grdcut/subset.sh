@@ -13,6 +13,4 @@ gmt grd2xyz tmp.nc | gmt psxy -R$Rp -JX6i -Sc0.25c -Ct.cpt -P -K -B10f5 -BWSne -
 gmt psscale -Dx3i/-0.4i+w6i/0.15i+h+e+jTC -O -K -Ct.cpt >> $ps
 # Extract portion of grid with values less than 5
 gmt grdcut tmp.nc -Z0/5 -Gout.nc
-gmt grd2xyz out.nc | gmt psxy -R -J -Sc0.25c -W0.5p -O -K -B10f5 -BWSne+t"Rectangular subset with z <= 5" >> $ps
-gmt psxy -R$Rp -J -O -T >> $ps
-
+gmt grd2xyz out.nc | gmt psxy -R -J -Sc0.25c -W0.5p -O -B10f5 -BWSne+t"Rectangular subset with z <= 5" >> $ps

@@ -19,10 +19,10 @@
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
-/space		/Aogonek	/Emacron	/Gcommaaccent	/Imacron	/Itilde		/Kcommaaccent	/section\n\
-/Lcommaaccent	/Dcroat		/Scaron		/Tbar		/Zcaron		/hyphen		/Umacron	/Eng\n\
+/uni00A0	/Aogonek	/Emacron	/Gcommaaccent	/Imacron	/Itilde		/Kcommaaccent	/section\n\
+/Lcommaaccent	/Dcroat		/Scaron		/Tbar		/Zcaron		/uni00AD	/Umacron	/Eng\n\
 /degree		/aogonek	/emacron	/gcommaaccent	/imacron	/itilde		/kcommaaccent	/periodcentered\n\
-/lcommaaccent	/dcroat		/scaron		/tbar		/zcaron		/emdash		/umacron	/eng\n\
+/lcommaaccent	/dcroat		/scaron		/tbar		/zcaron		/afii00208	/umacron	/eng\n\
 /Amacron	/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Iogonek\n\
 /Ccaron		/Eacute		/Eogonek	/Edieresis	/Edotaccent	/Iacute		/Icircumflex	/Idieresis\n\
 /Eth		/Ncommaaccent	/Omacron	/Oacute		/Ocircumflex	/Otilde		/Odieresis	/Utilde\n\

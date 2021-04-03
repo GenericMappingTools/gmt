@@ -18,10 +18,11 @@ Synopsis
 [ |-E|\ [**+e**][**+s**] ]
 [ |-F|\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w** ]
 [ |-G|\ [*color*]\ [**+f**\|\ **n**] ]
-[ |-I|\ *icon* ] [ **-K**]
+[ |-I|\ *icon* ]
+[ |-K| ]
 [ |-L|\ *col1:name1*,\ *col2:name2*,... ]
 [ |-N|\ [**t**\|\ *col*\|\ *name\_template*\|\ *name*] ]
-[ **-O**]
+[ |-O| ]
 [ |-Q|\ **a**\|\ **i**\ *az* ]
 [ |-Q|\ **s**\ *scale* ]
 [ |-R|\ **e**\|\ *w/e/s/n* ]
@@ -70,13 +71,11 @@ scaled to yield distances from the line in degrees.
 Required Arguments
 ------------------
 
-None.
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
@@ -149,8 +148,7 @@ Optional Arguments
 **-I**\ *icon*
     Specify the URL to an alternative icon that should be used for the
     symbol [Default is a Google Earth circle]. If the URL starts with +
-    then we will prepend
-    `http://maps.google.com/mapfiles/kml/ <http://maps.google.com/mapfiles/kml/>`_
+    then we will prepend ``http://maps.google.com/mapfiles/kml/``
     to the name. To turn off icons entirely (e.g., when just wanting a
     text label), use **-I**-. [Default is a local icon with no directory path].
 
@@ -158,6 +156,8 @@ Optional Arguments
 
 **-K**
     Allow more KML code to be appended to the output later [finalize the KML file].
+
+.. _-L:
 
 **-L**\ *name1*,\ *name2*,...
     Extended data given. Append one or more column names separated by
@@ -238,10 +238,10 @@ Optional Arguments
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
     Line, Polygon or Wiggle].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -388,6 +388,13 @@ switching between folders and documents.  The gmt_shell_scripts.sh
 contains function gmt_build_kmz that can assist in building a KMZ file
 from any number of KML files (and optionally images they may refer to).
 
+If you have made a series of KML files (which may depend on other items
+like local PNG images), you can consolidate these into a single KMZ file
+for saving space and for grouping related files together.  The bash function
+**gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
+do this.  You need to source gmt_shell_functions.sh first before you can
+use it.
+
 Kml Hierarchy
 -------------
 
@@ -458,23 +465,13 @@ Segment Information
 text description*\ ". If present, these are parsed to supply name and
 description tags, respectively, for the current feature.
 
-Making KMZ files
-----------------
-
-If you have made a series of KML files (which may depend on other items
-like local PNG images), you can consolidate these into a single KMZ file
-for saving space and for grouping related files together.  The bash function
-**gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
-do this.  You need to source gmt_shell_functions.sh first before you can
-use it.
-
 See Also
 --------
 
-:doc:`gmt` ,
+:doc:`gmt`,
 :doc:`gmt.conf`,
 :doc:`gmt_shell_functions.sh`,
 :doc:`grd2kml`,
 :doc:`img2google <supplements/img/img2google>`,
-:doc:`kml2gmt` ,
+:doc:`kml2gmt`,
 :doc:`psconvert`

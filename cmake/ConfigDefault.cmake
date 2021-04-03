@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@ set (GMT_PACKAGE_NAME "GMT")
 set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 
 # Year of the current GMT release.
-set (GMT_VERSION_YEAR "2020")
+set (GMT_VERSION_YEAR "2021")
 
 # The GMT release DOI
 set (GMT_VERSION_DOI "https://doi.org/10.5281/zenodo.3924517")
@@ -141,7 +141,7 @@ endif (NOT DEFINED GMT_RELEASE_PREFIX)
 
 # Default location of remote data server
 if (NOT DEFINED GMT_DATA_SERVER)
-	set (GMT_DATA_SERVER "https://oceania.generic-mapping-tools.org")
+	set (GMT_DATA_SERVER "oceania")
 endif (NOT DEFINED GMT_DATA_SERVER)
 
 # You can set the build configuration type as a command-line argument to 'cmake' using -DCMAKE_BUILD_TYPE:STRING=Debug for example.

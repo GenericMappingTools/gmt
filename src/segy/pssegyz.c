@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *    Copyright (c) 1999-2020 by T. Henstock
+ *    Copyright (c) 1999-2021 by T. Henstock
  *    See README file for copying and redistribution conditions.
  *--------------------------------------------------------------------*/
 /* pssegyzz program to plot segy files in 3d in postscript with variable trace spacing option
@@ -626,7 +626,7 @@ EXTERN_MSC int GMT_pssegyz (void *V_API, int mode, void *args) {
 	}
 
 	/* set up map projection and PS plotting */
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {
 		if (fpi != stdin) fclose (fpi);
 		Return (GMT_PROJECTION_ERROR);
 	}

@@ -1,0 +1,34 @@
+"/ISO-8859-16_Encoding [\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quotesingle\n\
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash\n\
+/zero		/one		/two		/three		/four		/five		/six		/seven\n\
+/eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question\n\
+/at		/A		/B		/C		/D		/E		/F		/G\n\
+/H		/I		/J		/K		/L		/M		/N		/O\n\
+/P		/Q		/R		/S		/T		/U		/V		/W\n\
+/X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore\n\
+/grave		/a		/b		/c		/d		/e		/f		/g\n\
+/h		/i		/j		/k		/l		/m		/n		/o\n\
+/p		/q		/r		/s		/t		/u		/v		/w\n\
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
+/uni00A0	/Aogonek	/aogonek	/Lslash		/Euro		/quotedblbase	/Scaron		/section\n\
+/scaron		/copyright	/Scommaaccent	/guillemotleft	/Zacute		/uni00AD	/zacute		/Zdotaccent\n\
+/degree		/plusminus	/Ccaron		/lslash		/Zcaron		/quotedblright	/paragraph	/periodcentered\n\
+/zcaron		/ccaron		/scommaaccent	/guillemotright	/OE		/oe		/Ydieresis	/zdotaccent\n\
+/Agrave		/Aacute		/Acircumflex	/Abreve		/Adieresis	/Cacute		/AE		/Ccedilla\n\
+/Egrave		/Eacute		/Ecircumflex	/Edieresis	/Igrave		/Iacute		/Icircumflex	/Idieresis\n\
+/Dcroat		/Nacute		/Ograve		/Oacute		/Ocircumflex	/Ohungarumlaut	/Odieresis	/Sacute\n\
+/Uhungarumlaut	/Ugrave		/Uacute		/Ucircumflex	/Udieresis	/Eogonek	/uni021A	/germandbls\n\
+/agrave		/aacute		/acircumflex	/abreve		/adieresis	/cacute		/ae		/ccedilla\n\
+/egrave		/eacute		/ecircumflex	/edieresis	/igrave		/iacute		/icircumflex	/idieresis\n\
+/dcroat		/nacute		/ograve		/oacute		/ocircumflex	/ohungarumlaut	/odieresis	/sacute\n\
+/uhungarumlaut	/ugrave		/uacute		/ucircumflex	/udieresis	/eogonek	/uni021B	/ydieresis\n\
+] def\n",

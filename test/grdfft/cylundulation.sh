@@ -42,5 +42,4 @@ gmt pstext -R -J -O -K -F+f12p << EOF >> $ps
 0.65 -0.35 60@.
 0.52 0.08 18@.
 EOF
-gmt psscale -DJRM+w4.5i/0.1i -Ct.cpt -R -J -O -K >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psscale -DJRM+w4.5i/0.1i -Ct.cpt -R -J -O >> $ps

@@ -29,5 +29,4 @@ echo 0	0	90	111.13 >> t.txt
 gmt psxy t.txt -JM6i -R-4/4/-2/2 -S=0.3i+e -W2p,green -Ggreen -O -K -Y-3.3i --PROJ_LENGTH_UNIT=inch >> $ps
 echo 0	60	0	111.13 > t.txt
 echo 0	60	90	111.13 >> t.txt
-gmt psxy t.txt -J -R-4/4/58/62 -S=0.3i+e -W2p,green -Ggreen -O -K -Y3.3i --PROJ_LENGTH_UNIT=inch >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psxy t.txt -J -R-4/4/58/62 -S=0.3i+e -W2p,green -Ggreen -O -Y3.3i --PROJ_LENGTH_UNIT=inch >> $ps

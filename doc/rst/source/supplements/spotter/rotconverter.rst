@@ -106,10 +106,10 @@ Optional Arguments
 **-W**
     Ensure all output rotations have negative opening angles [Default reports positive rotation angles].
 
-.. _-V:
-
-.. |Add_-V| replace:: Report statistics of extracted rotations.
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: ../../explain_help.rst_
 

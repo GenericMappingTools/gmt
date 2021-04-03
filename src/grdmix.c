@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -106,7 +106,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *C) {	/* Dealloc
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-	static char *type[2] = {"grid or image", "image"};
+	static char *type[2] = {"grid(s) or image(s)", "image(s)"};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <raster1> [<raster2> [<raster3>]] -G<outraster> [-A<transp>] [-C] [-D]\n", name);
@@ -124,7 +124,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Construct an image from 1 (gray) or 3 (r, g, b) input component grids.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   You may optionally supply transparency (-A) and/or intensity (-I).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Deconstruct an image into 1 or 3 output component grids, plus any transparency.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We write the layers as is (0-255); use -N to normalize the layers.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   We write the raw layers values (0-255); use -N to normalize the layers (0-1).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify an intensity grid file, or set a constant intensity value [no intensity].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The grid or constant must be in the -1 to +1 range).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Force a monochrome final image [same number of bands as the input].\n");
@@ -311,6 +311,7 @@ GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, i
 			}
 			if (GMT_Destroy_Data (GMT->parent, G) != GMT_NOERROR) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to free %s grid!\n", name);
+				gmt_M_free (GMT, array);
 				return NULL;
 			}
 		}
@@ -319,6 +320,7 @@ GMT_LOCAL float *grdmix_get_array (struct GMT_CTRL *GMT, struct GRDMIX_AIW *X, i
 				array[node] = gmt_M_is255 ((*I)->data[node]);
 			if (GMT_Destroy_Data (GMT->parent, I) != GMT_NOERROR) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to free %s image!\n", name);
+				gmt_M_free (GMT, array);
 				return NULL;
 			}
 		}
@@ -499,6 +501,9 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 		for (band = 0; band < H->n_bands; band++) {	/* March across the RGB values in both images and increment counters */
 			if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, H->wesn, H->inc, H->registration, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a grid for output!\n");
+				if (alpha) gmt_M_free (GMT, alpha);
+				if (intens) gmt_M_free (GMT, intens);
+				gmt_M_free (GMT, weights);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			off = band * H->size;
@@ -520,16 +525,27 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			sprintf (file, Ctrl->G.file, code[band]);
 			/* Write out grid */
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, G)) {
+				if (alpha) gmt_M_free (GMT, alpha);
+				if (intens) gmt_M_free (GMT, intens);
+				gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, G) != GMT_NOERROR) {
+				if (alpha) gmt_M_free (GMT, alpha);
+				if (intens) gmt_M_free (GMT, intens);
+				gmt_M_free (GMT, weights);
 				Return (API->error);
 			}
 			if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to free grid!\n");
+				if (alpha) gmt_M_free (GMT, alpha);
+				if (intens) gmt_M_free (GMT, intens);
+				gmt_M_free (GMT, weights);
 				Return (GMT_RUNTIME_ERROR);
 			}
 		}
+		if (alpha) gmt_M_free (GMT, alpha);
+		if (intens) gmt_M_free (GMT, intens);
 		Return (GMT_NOERROR);
 	}
 
@@ -667,7 +683,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 #ifdef _OPENMP
 #pragma omp parallel for private(node) shared(H,I,alpha)
 #endif
-		for (node = 0; node < H->size; node++)	/* Scale to 0-255 range */
+		for (node = 0; node < (int64_t)H->size; node++)	/* Scale to 0-255 range */
 			I->alpha[node] = gmt_M_u255 (alpha[node]);
 		gmt_M_free (GMT, alpha);
 	}

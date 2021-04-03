@@ -1,6 +1,6 @@
 /*---------------------------------------------------------------------------
  *
- *  Copyright (c) 2005-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *  Copyright (c) 2005-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *  See README file for copying and redistribution conditions.
  *
  *  File:       mgd77.c
@@ -28,6 +28,9 @@
 
 #define MGD77_CDF_CONVENTION	"CF-1.0"	/* MGD77+ files are CF-1.0 and hence COARDS-compliant */
 #define MGD77_COL_ORDER "#rec\tTZ\tyear\tmonth\tday\thour\tmin\tlat\t\tlon\t\tptc\ttwt\tdepth\tbcc\tbtc\tmtf1\tmtf2\tmag\tmsens\tdiur\tmsd\tgobs\teot\tfaa\tnqc\tid\tsln\tsspn\n"
+
+#define MGD77_NUM_VALID_COLNAMES 51
+char *valid_colnames[] = {"atime", "rtime", "ytime", "year", "month", "day", "hour", "min", "sec", "dmin", "hhmm", "date", "tz", "lon", "lat", "id", "ngdcid", "recno", "dist", "azim", "cc", "vel", "twt", "depth", "mtf1", "mtf2", "mag", "gobs", "faa", "drt", "ptc", "bcc", "btc", "msens", "msd", "diur", "eot", "sln", "sspn", "nqc", "carter", "igrf", "ceot", "ngrav", "weight", "mgd77", "mgd77t", "geo", "all", "allt", "dat"};
 
 struct MGD77_MAG_RF {
 	char *model;        /* Reference field model name */
@@ -1739,7 +1742,7 @@ static int mgd77_write_header_record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	 * written as scalars.  The read routine will replicate these to columns.
 	 * This function simply defines the file and header attributes and is called by
 	 * mgd77_write_file_cdf which also writes the data.  Note that no optional factors
-	 * such as 2ndary correction scale and offset are defined since they do not exist
+	 * such as secondary correction scale and offset are defined since they do not exist
 	 * for MGD77 standard files.  Such terms can be added by mgd77manage.
 	 */
 
@@ -1751,7 +1754,7 @@ static int mgd77_write_header_record_cdf (struct GMT_CTRL *GMT, char *file, stru
 
 	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_WRITE_MODE)) return (-1);	/* Basically creates the full path */
 
-	MGD77_nc_status (GMT, nc_create (F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
+	MGD77_nc_status (GMT, gmt_nc_create (GMT, F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
 
 	/* Put attributes header, author, title and history */
 
@@ -1939,7 +1942,7 @@ static int mgd77_write_file_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_
 	err = mgd77_write_data_cdf (GMT, file, F, S);
 	if (err) return (err);
 
-	MGD77_nc_status (GMT, nc_close (F->nc_id));
+	MGD77_nc_status (GMT, gmt_nc_close (GMT, F->nc_id));
 
 	return (MGD77_NO_ERROR);
 }
@@ -2243,7 +2246,7 @@ static int mgd77_read_file_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	err = mgd77_read_data_cdf (GMT, file, F, S);
 	if (err) return (err);
 
-	MGD77_nc_status (GMT, nc_close (F->nc_id));
+	MGD77_nc_status (GMT, gmt_nc_close (GMT, F->nc_id));
 
 	return (MGD77_NO_ERROR);
 }
@@ -2305,7 +2308,7 @@ static int mgd77_read_header_record_cdf (struct GMT_CTRL *GMT, char *file, struc
 
 	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
 
-	MGD77_nc_status (GMT, nc_open (F->path, NC_NOWRITE, &F->nc_id));	/* Open the file */
+	MGD77_nc_status (GMT, gmt_nc_open (GMT, F->path, NC_NOWRITE, &F->nc_id));	/* Open the file */
 
 	gmt_M_memset (H, 1, struct MGD77_HEADER);	/* Initialize header */
 
@@ -2863,7 +2866,7 @@ int MGD77_Close_File (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 			error = fclose (F->fp);
 			break;
 		case MGD77_FORMAT_CDF:	/* netCDF file is accessed by ID*/
-			MGD77_nc_status (GMT, nc_close (F->nc_id));
+			MGD77_nc_status (GMT, gmt_nc_close (GMT, F->nc_id));
 			error = 0;
 			break;
 		default:
@@ -3084,7 +3087,7 @@ GMT_LOCAL int mgd77_read_file_cdf_nohdr (struct GMT_CTRL *GMT, char *file, struc
 	err = mgd77_read_data_cdf (GMT, file, F, S);
 	if (err) return (err);
 
-	MGD77_nc_status (GMT, nc_close (F->nc_id));
+	MGD77_nc_status (GMT, gmt_nc_close (GMT, F->nc_id));
 
 	return (MGD77_NO_ERROR);
 }
@@ -4049,6 +4052,49 @@ void MGD77_Reset (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 	gmt_M_memset (F->Constraint, MGD77_MAX_COLS, struct MGD77_CONSTRAINT);
 	gmt_M_memset (F->Exact, MGD77_MAX_COLS, struct MGD77_PAIR);
 	gmt_M_memset (F->Bit_test, MGD77_MAX_COLS, struct MGD77_PAIR);
+}
+
+int MGD77_Verify_Columns (struct GMT_CTRL *GMT, char *arg) {
+	/* Scan the -Fstring to check if all the requested fields exist.
+ 	 */
+  
+	char p[GMT_BUFSIZ] = {""}, cstring[GMT_BUFSIZ] = {""};
+	unsigned int i, k, found, pos = 0, n = 0;
+  
+	if (!arg || !arg[0]) return 0;	/* Return when nothing is passed to us */
+    
+	strncpy (cstring, arg, GMT_BUFSIZ-1);
+	if (strchr (cstring, ':')) { /* We just want the fields list */
+		for (i = 0; i < strlen(cstring); i++) {
+			if (cstring[i] == ':') {
+				cstring[i] = '\0';
+				break;
+ 			}
+		}
+	}
+  
+	while ((gmt_strtok (cstring, ",", &pos, p))) {	/* Until we run out of abbreviations */
+		for (k = 0; k < strlen(p); k++) {
+			if ((p[k] == '>') || (p[k] == '<') || (p[k] == '=') || (p[k] == '|') || (p[k] == '!')) {
+				p[k] = '\0';
+				break;
+			}
+		}
+		found = 0;
+		for (k = 0; k < MGD77_NUM_VALID_COLNAMES; k++) {
+			if (!strcasecmp(p, valid_colnames[k])) {
+				found = 1;
+				break;
+			}
+		}
+		if (!found) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "\"%s\" is not a valid column name.\n", p);      
+			n++;
+		}
+	}
+  
+	return n;
+  
 }
 
 int MGD77_Select_Columns (struct GMT_CTRL *GMT, char *arg, struct MGD77_CONTROL *F, unsigned int option) {

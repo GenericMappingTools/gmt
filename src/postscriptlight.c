@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2009-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -219,9 +219,11 @@ static char *PSL_ISO_name[] = {
 	"PSL_ISO-8859-8",
 	"PSL_ISO-8859-9",
 	"PSL_ISO-8859-10",
+	"PSL_ISO-8859-11",
 	"PSL_ISO-8859-13",
 	"PSL_ISO-8859-14",
 	"PSL_ISO-8859-15",
+	"PSL_ISO-8859-16",
 	NULL
 };
 
@@ -240,9 +242,11 @@ static char *PSL_ISO_encoding[] = {
 #include "PSL_ISO-8859-8.h"
 #include "PSL_ISO-8859-9.h"
 #include "PSL_ISO-8859-10.h"
+#include "PSL_ISO-8859-11.h"
 #include "PSL_ISO-8859-13.h"
 #include "PSL_ISO-8859-14.h"
 #include "PSL_ISO-8859-15.h"
+#include "PSL_ISO-8859-16.h"
 NULL
 };
 
@@ -417,7 +421,15 @@ typedef struct {
 	unsigned char *buffer;
 } *psl_byte_stream_t;
 
-/* These are used when the PDF pdfmark extension for transparency is used. */
+/* These are used when the PDF pdfmark or Ghostscript extensions for transparency is used:
+ * Adobe:       https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/pdfmarkReference_v9.pdf
+ * Ghostscript: https://www.ghostscript.com/doc/current/Language.htm#Transparency
+ *
+ * From gs 9.53 their transparency model takes two transparencies (stroke and fill) while before
+ * it only took one.  The pdfmark took two but we simply duplicated it since GMT itself only dealt
+ * with one transparency for both.  From GMT 6.2.0 we will allow these two transparencies to be set
+ * individually if the user so selects.  Note: We do not support any of the soft masks/shapes stuff.
+ */
 
 #define N_PDF_TRANSPARENCY_MODES	16
 static const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
@@ -719,6 +731,16 @@ static int psl_iy (struct PSL_CTRL *PSL, double y) {
 	return (PSL->internal.y0 + (int)lrint (y * PSL->internal.y2iy));
 }
 
+static double psl_ix10 (struct PSL_CTRL *PSL, double x) {
+	/* Convert user x to PS dots with 1 decimal point */
+	return (PSL->internal.x0 + 0.1 *lrint (10.0 * x * PSL->internal.x2ix));
+}
+
+static double psl_iy10 (struct PSL_CTRL *PSL, double y) {
+	/* Convert user y to PS dots with 1 decimal point */
+	return (PSL->internal.y0 + 0.1 * lrint (10.0 * y * PSL->internal.y2iy));
+}
+
 static int psl_iz (struct PSL_CTRL *PSL, double z) {
 	/* Convert user distances to PS dots */
 	return ((int)lrint (z * PSL->internal.dpu));
@@ -853,7 +875,9 @@ static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int
 	return (k);
 }
 
-#define N_LENGTH_THRESHOLD 100000000
+/* Addressing issue https://github.com/GenericMappingTools/gmt/issues/439 for long DCW polygons.
+   #define N_LENGTH_THRESHOLD 100000000 meant we only did new path but now we try 50000 as cutoff */
+#define N_LENGTH_THRESHOLD 50000
 static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	if (n > N_LENGTH_THRESHOLD)
 		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
@@ -941,11 +965,13 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 
 	}
 
+	/* For curved lines for text placement we use 10 times the precision in the coordinates since we will
+	 * be taking derivatives to compute angles and thus need higher precision than integer PS coordinates */
 	PSL_comment (PSL, "Set concatenated coordinate arrays for line segments:\n");
 	PSL_command (PSL, "/PSL_path_x [ ");
 	for (i = k = 0; i < ntot; i++) {
 		if (!use[i]) continue;
-		PSL_command (PSL, "%d ", psl_ix (PSL, x[i]));
+		PSL_command (PSL, "%g ", psl_ix10 (PSL, x[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
 	}
@@ -953,7 +979,7 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 	PSL_command (PSL, "/PSL_path_y [ ");
 	for (i = k = 0; i < ntot; i++) {
 		if (!use[i]) continue;
-		PSL_command (PSL, "%d ", psl_iy (PSL, y[i]));
+		PSL_command (PSL, "%g ", psl_iy10 (PSL, y[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
 	}
@@ -1037,6 +1063,7 @@ static void psl_rgb_to_hsv (double rgb[], double hsv[]) {
 	hsv[0] = 120.0 * imax + 60.0 * (rgb[(imax + 1) % 3] - rgb[(imax + 2) % 3]) / diff;
 	if (hsv[0] < 0.0) hsv[0] += 360.0;
 	if (hsv[0] > 360.0) hsv[0] -= 360.0;
+	hsv[0] /= 360.0;	/* All h,s,v values in PostScript are 0-1 range */
 }
 
 #if 0 /* Not used */
@@ -3242,11 +3269,11 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Trouble decoding custom font info [%s].  Skipping this font\n", buf);
 				continue;
 			}
-			if (strlen (fullname) >= PSL_NAME_LEN) {
-				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
-				fullname[PSL_NAME_LEN-1] = '\0';
+			if (strlen (fullname) >= PSL_FONTNAME_LEN) {
+				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_FONTNAME_LEN);
+				fullname[PSL_FONTNAME_LEN-1] = '\0';
 			}
-			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN-1);
+			strncpy (PSL->internal.font[i].name, fullname, PSL_FONTNAME_LEN);
 			i++;
 			if (i == n_alloc) {
 				n_alloc <<= 1;
@@ -3449,7 +3476,7 @@ static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]) {
 	}
 	if (!PSL_eq (rgb[3], 0.0)) {
 		/* Transparency */
-		sprintf (&text[strlen(text)], " %.12g /%s PSL_transp", 1.0 - rgb[3], PSL->current.transparency_mode);
+		sprintf (&text[strlen(text)], " %.12g %.12g /%s PSL_transp", 1.0 - rgb[3], 1.0 - rgb[3], PSL->current.transparency_mode);
 	}
 	return (text);
 }
@@ -3960,15 +3987,33 @@ int PSL_setcurrentpoint (struct PSL_CTRL *PSL, double x, double y) {
 }
 
 int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
-	/* Updates the current PDF transparency only */
+	/* Updates the current PDF transparency only (for both fill and stroke transparency) */
 	if (transparency < 0.0 || transparency > 1.0) {
 		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad transparency value [%g] - ignored\n", transparency);
 		return (PSL_BAD_RANGE);
 	}
 	if (transparency == PSL->current.transparency) return (PSL_NO_ERROR);	/* Quietly return if same as before */
 
-	PSL_command (PSL, "%.12g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
+	PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transparency, 1.0 - transparency, PSL->current.transparency_mode);
 	PSL->current.transparency = transparency;	/* Remember current setting */
+	return (PSL_NO_ERROR);
+}
+
+int PSL_settransparencies (struct PSL_CTRL *PSL, double *transparencies) {
+	/* Updates the current PDF transparencies only (fill and stroke separately) */
+	if (transparencies[0] < 0.0 || transparencies[0] > 1.0) {
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad fill transparency value [%g] - ignored\n", transparencies[0]);
+		return (PSL_BAD_RANGE);
+	}
+	if (transparencies[1] < 0.0 || transparencies[1] > 1.0) {
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad stroke transparency value [%g] - ignored\n", transparencies[1]);
+		return (PSL_BAD_RANGE);
+	}
+	if (transparencies[0] == PSL->current.transparencies[0] && transparencies[1] == PSL->current.transparencies[1]) return (PSL_NO_ERROR);	/* Quietly return if same as before */
+
+	PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transparencies[0], 1.0 - transparencies[1], PSL->current.transparency_mode);
+	PSL->current.transparencies[0] = transparencies[0];	/* Remember current settings */
+	PSL->current.transparencies[1] = transparencies[1];	/* Remember current settings */
 	return (PSL_NO_ERROR);
 }
 
@@ -4005,7 +4050,7 @@ int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline) {
 	}
 	else if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) {
 		/* If stroke color is transparent and fill is not, explicitly set transparency for fill */
-		PSL_command (PSL, "{%s 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb));
+		PSL_command (PSL, "{%s 1 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 	else {	/* Set new r/g/b fill, after possibly changing fill transparency */
@@ -4330,7 +4375,7 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 		memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
 	}
 	PSL_setdash (PSL, NULL, 0.0);
-	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp\n");
+	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 1 /Normal PSL_transp\n");
 
 	if (lastpage) {
 		PSL_command (PSL, "\ngrestore\n");	/* End encapsulation of main body for this plot */
@@ -4763,7 +4808,7 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	if (PSL_same_rgb (rgb, PSL->current.rgb[mode])) return (PSL_NO_ERROR);	/* Same color as already set */
 
 	/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
-	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp ");
+	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 1 /Normal PSL_transp ");
 
 	/* Then, finally, set the color using psl_putcolor */
 	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb));
@@ -5566,6 +5611,8 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 	 * 			= 64: Typeset text along path [straight text].
 	 * 			= 128: Fill box
 	 * 			= 256: Draw box
+	 * 			= 512: Fill & outline font, fill first, then outline
+	 * 			= 1024: Fill & outline font, outline first, then fill
 	 */
 
 	bool curved = ((mode & PSL_TXT_CURVED) == PSL_TXT_CURVED);	/* True if baseline must follow line path */
@@ -5599,7 +5646,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_command (PSL, "PSL_set_label_heights\n");	/* Estimate text heights */
 	}
 
-	extras = mode & (PSL_TXT_ROUND | PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX);	/* This just gets these bit settings, if present */
+	extras = mode & (PSL_TXT_ROUND | PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX | PSL_TXT_DRAWBOX | PSL_TXT_FILLPEN | PSL_TXT_PENFILL);	/* This just gets these bit settings, if present */
 	if (mode & PSL_TXT_SHOW) {	/* Lay down visible text */
 		PSL_comment (PSL, "Display the texts:\n");
 		PSL_command (PSL, "%d PSL_%s_path_labels\n", PSL_TXT_SHOW|extras, name[kind]);

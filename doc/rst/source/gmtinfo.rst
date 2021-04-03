@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt info** [ *table* ] [ |-A|\ **a**\|\ **f**\|\ **s** ]
+**gmt info** [ *table* ]
+[ |-A|\ **a**\|\ **t**\|\ **s** ]
 [ |-C| ]
 [ |-D|\ [*dx*\ [/*dy*]] ]
 [ |-E|\ **L**\|\ **l**\|\ **H**\|\ **h**\ [*col*] ]
@@ -34,6 +35,7 @@ Synopsis
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -58,21 +60,19 @@ will provide a **-T**\ *zmin/zmax/dz* string for makecpt.
 Required Arguments
 ------------------
 
-None.
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
-
 .. _-A:
 
-**-A**\ **a**\|\ **f**\|\ **s**
+**-A**\ **a**\|\ **t**\|\ **s**
     Specify how the range should be reported. Choose **-Aa** for the
-    range of all files combined, **-Af** to report the range for each
-    file separately, and **-As** to report the range for each segment
-    (in multisegment files) separately. [Default is **-Aa**].
+    range of all tables combined, **-At** to report the range for each
+    table separately, and **-As** to report the range for each segment
+    (in multisegment tables) separately. [Default is **-Aa**].
 
 .. _-C:
 
@@ -111,10 +111,11 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**]
-    Report the min/max of the first *n* columns to the nearest multiple
-    of the provided increments (separate the *n* increments by slashes),
-    and output results in the form **-R**\ *w/e/s/n* (unless **-C** is
-    set). If only one increment is given we also use it for the second
+    Compute the *min*\ /*max* values of the first *n* columns to the nearest multiple
+    of the provided increments (separate the *n* increments by slashes) [default is 2 columns].
+    By default, output results in the form **-R**\ *w/e/s/n*, unless **-C** is
+    set in which case we output each *min* and *max* value in separate output columns.
+    If only one increment is given we also use it for the second
     column (for backwards compatibility). To override this behavior, use
     **-Ip**\ *dx*. If the input *x*- and *y*-coordinates all have the
     same phase shift relative to the *dx* and *dy* increments then we
@@ -138,7 +139,7 @@ Optional Arguments
 .. _-L:
 
 **-L**
-    Determines common limits across tables (**-Af**) or segments (**-As**).
+    Determines common limits across tables (**-At**) or segments (**-As**).
     If used with **-I** it will round inwards so that the resulting bounds
     lie within the actual data domain.
 
@@ -159,10 +160,10 @@ Optional Arguments
     Report the min/max of the first (0'th) column to the nearest multiple of *dz* and output this as the
     string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with **-I**.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-aspatial.rst_
 
@@ -195,6 +196,8 @@ Optional Arguments
 
 .. include:: explain_-s.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
@@ -208,7 +211,7 @@ Examples
 
 To find the extreme values in the remote file @ship_15.txt::
 
-    gmt info @ship_15.tx
+    gmt info @ship_15.txt
 
 Output should look like::
 
@@ -260,4 +263,3 @@ See Also
 :doc:`gmt`,
 :doc:`gmtconvert`,
 :doc:`plot`
-

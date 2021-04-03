@@ -34,6 +34,4 @@ gmt psscale -J -R -Cseis -DjBC+w3c/0.5c+m -Ba -K -O >> $ps
 
 gmt psscale -J -R -Cseis -DjTR+w3c/0.5c+m -Ba -K -O >> $ps
 gmt psscale -J -R -Cseis -DjMR+w3c/0.5c+m -Ba -K -O >> $ps
-gmt psscale -J -R -Cseis -DjBR+w3c/0.5c+m -Ba -K -O >> $ps
-
-gmt psxy -J -R -T -O >> $ps
+gmt psscale -J -R -Cseis -DjBR+w3c/0.5c+m -Ba -O >> $ps

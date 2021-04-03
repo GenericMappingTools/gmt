@@ -12,9 +12,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphtriangulate** [ *table* ] [ |-A| ] [ |-C| ] [ |-D| ]
-[ |-L|\ *unit* ] [ |-N|\ *file* ] [ |-Q|\ **d**\|\ **v** ]
-[ |-T| ] [ |SYN_OPT-V| ]
+**gmt sphtriangulate**
+[ *table* ]
+[ |-A| ]
+[ |-C| ]
+[ |-D| ]
+[ |-L|\ *unit* ]
+[ |-N|\ *file* ]
+[ |-Q|\ **d**\|\ **v** ]
+[ |-T| ]
+[ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -43,13 +50,11 @@ is STRIPACK.
 Required Arguments
 ------------------
 
-None.
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
@@ -107,10 +112,10 @@ Optional Arguments
     triangles or polygons]. When used with **-A** we store arc length in
     the segment header in chosen unit (see **-L**).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -127,9 +132,9 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
-.. include:: explain_-qi.rst_
-
 .. include:: explain_distcalc.rst_
+
+.. include:: explain_-qi.rst_
 
 .. include:: explain_colon.rst_
 
@@ -166,6 +171,16 @@ in the header record, try
    ::
 
     gmt sphtriangulate globalnodes.txt -Qd -A > global_tri.txt
+
+Notes
+-----
+
+The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as :doc:`blockmean` and others, to combine close points into single entries.
+Also, **sphtriangulate** has a **-D** option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparison that is very slow for large data sets.
+Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also
 --------

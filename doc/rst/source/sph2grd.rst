@@ -39,28 +39,29 @@ L, M, C[L,M], S[L,M] and evaluates the spherical harmonic model on the specified
 Required Arguments
 ------------------
 
-.. _-G:
-
-**-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See GRID FILE FORMAT below.)
-
-.. _-I:
-
-.. include:: explain_-I.rst_
-
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-R.rst_
-
-Optional Arguments
-------------------
-
 *table*
     One or more ASCII [or binary, see **-bi**]
     files holding the spherical harmonic coefficients. We expect the
     first four columns to hold the degree L, the order M, followed by
     the cosine and sine coefficients.
+
+.. _-G:
+
+**-G**\ *grdfile*
+    *grdfile* is the name of the binary output grid file. (See
+    :ref:`Grid File Formats <grd_inout_full>`).
+
+.. _-I:
+
+.. include:: explain_-I.rst_
+
+.. |Add_-R| replace:: |Add_-R_links|
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+Optional Arguments
+------------------
 
 .. _-D:
 
@@ -95,10 +96,10 @@ Optional Arguments
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 4 input columns].
 .. include:: explain_-bi.rst_
@@ -116,8 +117,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_float.rst_
-
-.. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
 

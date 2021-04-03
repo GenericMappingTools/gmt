@@ -35,6 +35,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -56,13 +57,11 @@ information is used then you must supply **-fg** to tell **select** that your da
 Required Arguments
 ------------------
 
-None
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-A:
 
@@ -140,10 +139,10 @@ Optional Arguments
 
     **z** select records NOT within the range specified by **-Z**.
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
@@ -175,15 +174,15 @@ Optional Arguments
 
     [Default is s/k/s/k/s (i.e., s/k), which passes all points on dry land].
 
-.. _-R:
-
-.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1.
+.. |Add_-R| replace:: If no map projection is supplied we implicitly set **-Jx**\ 1. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -231,6 +230,8 @@ Optional Arguments
 .. include:: explain_-q.rst_
 
 .. include:: explain_-s.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

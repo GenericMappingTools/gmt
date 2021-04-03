@@ -15,22 +15,25 @@ contouring to create polygons that will clip out regions of no interest.
 When clipping is initiated, it will stay in effect until turned off by a
 second call to the module using the **-C** option.
 
-Required
---------
+Required Arguments
+------------------
+
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 .. _-I:
 
 .. include:: explain_-I.rst_
 
-.. _-J:
-
-.. |Add_-J| replace:: [Not mandatory when -D].
+.. |Add_-J| replace:: [Not mandatory with |-D|]. |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-Rz.rst_
@@ -38,12 +41,10 @@ Required
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
-
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -75,6 +76,10 @@ Optional Arguments
 
 **-G**\ *fill*
     Paint the clip polygons (or tiles) with a selected fill [Default is no fill].
+
+.. _-Jz:
+
+.. include:: explain_-Jz.rst_
 
 .. _-L:
 
@@ -108,18 +113,20 @@ Optional Arguments
     Plot tiles instead of clip polygons. Use **-G** to set tile color or
     pattern. Cannot be used with **-D**.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -144,6 +151,8 @@ Optional Arguments
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_-t.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

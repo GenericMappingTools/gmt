@@ -16,4 +16,3 @@ gmt psxy -R0/6/0/6 -JX3i -P -B0 -Sc0.2i -Ctt.cpt -W0.25p -X1i -Y2i tt.d -Ex+p2p,
 gmt psxy -R -J -O -B0 -Sc0.2i -Ctt.cpt -W0.25p -X3.25i tt.d -Ey+cl+p1p -K >> $ps
 gmt psxy -R -J -O -B0 -Sc0.2i -Ctt.cpt -W5p+c -X-3.25i -Y3.5i tt.d -Ey+cf+p1p -K >> $ps
 gmt psxy -R -J -O -B0 -Sc0.2i -Ctt.cpt -W0.25p,red -X3.25i tt.d -Ex+cl+p1p >> $ps
-

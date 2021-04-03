@@ -39,10 +39,9 @@ EOF
 gmt sample1d t.txt -T0/6/0.01 -Fc+2 | gmt psxy -R-0.1/6.1/-31/31 -J -Bafg  -By+l"u''(x)" -BWsne -W1p -O -K -Y3.15i >> $ps
 gmt sample1d t.txt -T0/6/0.01 -Fl+2 | gmt psxy -R -J -W1p,blue -O -K >> $ps
 gmt sample1d t.txt -T0/6/0.01 -Fa+2 | gmt psxy -R -J -W1p,red -O -K >> $ps
-gmt pslegend -R -J -O -K -DjTL+w1.9i+o0.1i -F+p1p+gwhite+s << EOF >> $ps
+gmt pslegend -R -J -O -DjTL+w1.9i+o0.1i -F+p1p+gwhite+s << EOF >> $ps
 S 0.2i - 0.3i - 1p 	0.5i Cubic spline
 S 0.2i - 0.3i - 1p,red	0.5i Akima spline
 S 0.2i - 0.3i - 1p,blue	0.5i Linear spline
 S 0.2i - 0.3i - 1p,darkgreen 0.5i Nearest neighbor
 EOF
-gmt psxy -R -J -O -T >> $ps

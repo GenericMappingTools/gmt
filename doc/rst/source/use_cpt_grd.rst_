@@ -1,5 +1,5 @@
 **-C**\ [*cpt*\|\ *master*\ [**+h**\ [*hinge*]][**+i**\ *zinc*][**+u**\|\ **U**\ *unit*] \|\ *color1,color2*\ [,\ *color3*\ ,...]]
-    Name of the CPT. Alternatively, supply the name of a GMT color master
+    Name of a CPT file. Alternatively, supply the name of a GMT color master
     dynamic CPT [*turbo*, but we use *geo* for @earth_relief and *srtm* for @srtm_relief data] to
     automatically determine a continuous CPT from the grid's *z*-range; you may round the range
     to the nearest multiple of *zinc* by adding **+i**\ *zinc*. If given a GMT Master soft-hinge CPT

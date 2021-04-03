@@ -11,6 +11,9 @@ range parameters it will plot the histogram. A cumulative histogram may also be 
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-J:
 
 **-Jx**
@@ -27,9 +30,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
-
 .. _-A:
 
 **-A**
@@ -37,16 +37,20 @@ Optional Arguments
     from y = 0].  The plot dimensions remain the same, but the two
     axes are flipped.
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
-**-C**\ *cpt*
-    Give a CPT. The mid x-value for each bar is used to
-    look-up the bar color.  If modern mode and no argument is given
-    then we select the current CPT.
+**-C**\ *cpt*\ [**+b**]
+    Give a CPT. The mid-coordinate for each bar is used to look up
+    the bar color.  Alternatively, append **+b** to use the *bin* value
+    as the look-up value, unless **-Z** involves percentages,
+    in which case the look-up value is the *percentage* computed. If
+    we are in modern mode and no *cpt* is given then we select the
+    current CPT.
 
 .. _-D:
 
@@ -56,6 +60,17 @@ Optional Arguments
     instead of above; use **+f** to change to another font than the default
     annotation font; use **+o** to change the offset between bar and label [6p];
     use **+r** to rotate the labels from horizontal to vertical.
+
+.. _-E:
+
+**-E**\ *width*\ [**+o**\ *offset*]
+    Use an alternative histogram bar width than the default set via **-T**,
+    and optionally shift all bars by an *offset*.  Here *width* is either
+    an alternative width in data units, or the user may append a valid plot
+    dimension unit (**c**\|\ **i**\|\ **p**) for a fixed dimension instead.
+    Optionally, all bins may be shifted along the axis by *offset*. As for
+    *width*, it may be given in data units of plot dimension units by appending
+    the relevant unit.
 
 .. _-F:
 
@@ -75,6 +90,10 @@ Optional Arguments
     ASCII table of the resulting x,y data instead. Upper case **O** will
     output all x,y bin data even when y == 0.
 
+.. _-Jz:
+
+.. include:: explain_-Jz.rst_
+
 .. _-L:
 
 **-Ll**\|\ **h**\|\ **b**
@@ -88,7 +107,7 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [*mode*][**+p**\ *pen*]
-    Draw the equivalent normal distribution; append desired pen [0.5p,black].
+    Draw the equivalent normal distribution; append desired pen [0.25p,black].
     The *mode* selects which central location and scale to use:
 
     * 0 = mean and standard deviation [Default];
@@ -96,17 +115,19 @@ Optional Arguments
     * 2 = LMS (least median of squares) mode and scale.
 
     The **-N** option may be repeated to draw several of these curves.
+    **Note**: If **-w** is used then only *mode* = 0 is available and we will
+    determine the parameters of the circular von Mises distribution instead.
 
 .. _-Q:
 
 **-Q**\ **r**
     Draw a cumulative histogram. Append **r** to instead compute the
-    reverse cumulative histogram.
+    reverse cumulative histogram.  Cannot be used with **-w**.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-Rz| replace:: If not given, we will automatically find reasonable values for the region.
 .. include:: explain_-Rz.rst_
@@ -117,23 +138,25 @@ Optional Arguments
     Draws a stairs-step diagram which does not include the internal bars
     of the default histogram.
 
-.. _-U:
-
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
 **-W**\ *pen*
     Draw bar outline (or stair-case curve) using the specified pen thickness. [Default is no outline].
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -176,6 +199,8 @@ Optional Arguments
 .. include:: explain_-qi.rst_
 
 .. include:: explain_-t.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_help.rst_
 

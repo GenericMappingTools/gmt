@@ -16,6 +16,5 @@ gmt psxy ellipse.d -O -K -JR0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i >> $ps
 gmt psxy ellipse.d -O -K -JKf0/3i -Rg -Bg180 -Wthin -SE -Gred -X-3.5i -Y2i >> $ps
 gmt psxy ellipse.d -O -K -JKs0/3i -Rg -Bg180 -Wthin -SE -Gred -X3.5i >> $ps
 gmt psxy ellipse.d -O -K -JV0/2i -Rg -Bg180 -Wthin -SE -Gred -X-3i -Y1.8i >> $ps
-gmt psxy ellipse.d -O -K -JY0/45/3i -Rg -Bg180 -Wthin -SE -Gred -X3i >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psxy ellipse.d -O -JY0/45/3i -Rg -Bg180 -Wthin -SE -Gred -X3i >> $ps
 

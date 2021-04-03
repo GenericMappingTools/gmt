@@ -12,7 +12,7 @@ set (DCW_ROOT "$ENV{COASTLINEDIR}/dcw")
 set (GMT_ENABLE_OPENMP TRUE)
 EOF
 
-if [[ "$TEST" == "true" ]]; then
+if [[ "$RUN_TESTS" == "true" ]]; then
     cat >> cmake/ConfigUser.cmake << 'EOF'
 enable_testing()
 set (DO_EXAMPLES TRUE)

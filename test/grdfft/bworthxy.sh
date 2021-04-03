@@ -32,5 +32,4 @@ gmt psxy -R -J -O -K bworth_y.txt -Sc0.1c -Gblue -Ey >> $ps
 gmt psxy -R -J -O -K bworth_y.txt -Wfaint,blue >> $ps
 gmt psxy -R -J -O -K bworth_by.txt -Sc0.1c -Ggreen -Ey >> $ps
 gmt psxy -R -J -O -K bworth_by.txt -W0.25p >> $ps
-gmt psxy -R -J -O -K curve.txt -W0.5p,red >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psxy -R -J -O curve.txt -W0.5p,red >> $ps

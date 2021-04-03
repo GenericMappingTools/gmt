@@ -27,5 +27,4 @@ gmt psxy -R -J -O -K -W1p,green tmp >> $ps
 gmt spatial -Aa75k -fg $DATA > results.txt
 gmt psxy -R -J -O -K -Bag1 -BWsne $DATA -Sc0.1i -Glightgray -Y4.75i $DATA >> $ps
 awk '{print $1, $2, 0, 150, 150}' results.txt | gmt psxy -R -J -O -K -SE -W0.5p,blue >> $ps
-gmt psxy -R -J -O -K results.txt -Sc0.1i -Gred >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psxy -R -J -O results.txt -Sc0.1i -Gred >> $ps

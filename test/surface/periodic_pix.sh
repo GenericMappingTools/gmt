@@ -28,5 +28,4 @@ gmt psxy -R -J -O -K data.txt -Ss0.05i -Gred >> $ps
 gmt grdcontour t.nc -C10 -A50 -JQ0/5.5i -O -Baf -BWsne -K -Y2.85i >> $ps
 # Plot crossection along Equator
 gmt grdtrack path.txt -Gdatad.nc -o0,2 | gmt psxy -R-45/45/-70/70 -JX5.5i/1i -Y3i -Bafg90 -BWsne -W2p,green -O -K >> $ps
-gmt grdtrack path.txt -Rd -Gdatag.nc -o0,2 | gmt psxy -R-45/45/-70/70 -J -W0.5p,blue -O -K >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt grdtrack path.txt -Rd -Gdatag.nc -o0,2 | gmt psxy -R-45/45/-70/70 -J -W0.5p,blue -O >> $ps

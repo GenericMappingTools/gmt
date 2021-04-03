@@ -41,5 +41,4 @@ gmt psxy -R-25/25/0/6000 -JX6i/-2.5i -O -K -Y-2.75i -Se -Gblack -Bxafg1000+u" km
 EOF
 echo 0 1500 @~Dr = 1670@~ | gmt pstext -R -J -O -K -F+f18p,Helvetica+jCM -Gwhite >> $ps
 echo -3 4000 R = $R m | gmt pstext -R -J -O -K -F+f14p,Times-Italic+jRB -Dj0.1i/0.1i >> $ps
-echo 3 4000 z@-0@- = $z0 m | gmt pstext -R -J -O -K -F+f14p,Times-Italic+jLB -Dj0.1i/0.1i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo 3 4000 z@-0@- = $z0 m | gmt pstext -R -J -O -F+f14p,Times-Italic+jLB -Dj0.1i/0.1i >> $ps

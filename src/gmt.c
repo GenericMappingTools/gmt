@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -193,7 +193,7 @@ int main (int argc, char *argv[]) {
 
 			/* Show URL of the remote GMT data server */
 			else if (!strncmp (argv[arg_n], "--show-dataserver", 17U)) {
-				fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATASERVER);
+				fprintf(stdout, "%s\n", gmt_dataserver_url (api_ctrl));
 				status = GMT_NOERROR;
 			}
 

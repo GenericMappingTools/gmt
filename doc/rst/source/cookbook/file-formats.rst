@@ -18,7 +18,7 @@ Optional file header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first data record may be preceded by one or more header records. Any
-records that begins with '#' is considered a header or comment line and
+records that has '#' as the *first* character is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
 **-h** option and set the parameter :term:`IO_N_HEADER_RECS` in the :doc:`/gmt.conf` file
@@ -88,7 +88,7 @@ columns as are needed by the program, starting with the first
 variables are to be read, append the suffix
 **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the netCDF file name or
 add the option **-bic**\ *var1*\ **/**\ *var2*\ **/**\ *...*, where
-*var1*, *var2*, etc.are the names of the variables to be processed. The
+*var1*, *var2*, etc. are the names of the variables to be processed. The
 latter option is particularly practical when more than one file is read:
 the **-bic** option will apply to all files. Currently, GMT only
 reads, but does not write, netCDF tabular data.

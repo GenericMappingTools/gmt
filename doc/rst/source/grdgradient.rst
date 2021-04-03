@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdgradient** *in_grdfile* |-G|\ *out_grdfile*
+**gmt grdgradient** *ingrid* |-G|\ *outgrid*
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
 [ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
 [ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
@@ -37,14 +37,15 @@ boundary conditions (see **-n**).
 Required Arguments
 ------------------
 
-*in_grdfile*
-    2-D grid file from which to compute directional derivative. (See GRID FILE FORMATS below).
+*ingrid*
+    2-D grid file from which to compute directional derivative. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-G:
 
-**-G**\ *out_grdfile*
-    Name of the output grid file for the directional derivative. (See
-    GRID FILE FORMATS below).
+**-G**\ *outgrid*
+    Name of the output grid file for the directional derivative. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -66,7 +67,7 @@ Optional Arguments
     retained; this is useful for illuminating data with two directions
     of lineated structures, e.g., **-A**\ *0*/*270* illuminates from the
     north (top) and west (left).  Finally, if *azim* is a file it must
-    be a grid of the same domain, spacing and registration as *in_grdfile*
+    be a grid of the same domain, spacing and registration as *ingrid*
     and we will update the azimuth at each output node when computing the
     directional derivatives.
 
@@ -132,12 +133,11 @@ Optional Arguments
     **-Qr** to read these values.  Using **-QR** will read then delete the
     statistics file. See TILES for more information.
 
-.. _-R:
-
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of *in\_grdfile* grid. If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+    exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -145,10 +145,10 @@ Optional Arguments
     Name of output grid file with scalar magnitudes of gradient vectors.
     Requires **-D** but makes **-G** optional.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
@@ -172,7 +172,7 @@ for :doc:`grdimage` or :doc:`grdview`, a good first try is **-Ne**\ 0.6.
 
 Usually 255 shades are more than enough for visualization purposes. You
 can save 75% disk space by appending =nb/a to the output filename
-*out_grdfile*.
+*outgrid*.
 
 If you want to make several illuminated maps of subregions of a large
 data set, and you need the illumination effects to be consistent across
@@ -182,8 +182,6 @@ and *offset* to **grdgradient** for each map. A good guess is *offset* =
 unnormalized gradient grd.
 
 If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
-
-.. include:: explain_grd_inout_short.rst_
 
 Tiles
 -----
@@ -210,6 +208,14 @@ The *ambient* light offset is used to darken or brighten all intensities.  This
 modifier is typically used to darken an entire image by subtracting a constant from
 all the intensities.  E.g., if you use **+a**\ -0.5 then you subtract 0.5 from all
 intensities, making them more negative and hence darken the image.
+
+Special Effects
+---------------
+
+Users who wishes to highlight just an area of a grid are encouraged to consider creative uses
+of the vast number of operators in :doc:`grdmath` and the grid clipping schemes in :doc:`grdmask`
+and :doc:`grdclip`.  Many separate intensity grids can be combined into one via grid algebra
+and boolean operators in :doc:`grdmath`.  The sky is the limit.
 
 Examples
 --------

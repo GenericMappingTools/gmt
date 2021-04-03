@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -243,28 +243,32 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 		registration = Gin->header->registration;
 
 	if (GMT->common.R.active[RSET]) {		/* Gave -R */
-		bool geo = gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]);
+		bool wrap_360_i = (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]));
+		bool wrap_360_o = (gmt_M_x_is_lon (GMT, GMT_OUT) && gmt_M_360_range (wesn_o[XLO], wesn_o[XHI]));
 		unsigned int k;
-		/* Adjust wesn used to READ subset */
-		k = 0;
-		while (wesn_i[YLO] < wesn_o[YLO]) wesn_i[YLO] += Gin->header->inc[GMT_Y], k++;	/* Now on or inside grid boundary */
-		if (wesn_i[YLO] > Gin->header->wesn[YLO] && k) wesn_i[YLO] -= Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
-		k = 0;
-		while (wesn_i[YHI] > wesn_o[YHI]) wesn_i[YHI] -= Gin->header->inc[GMT_Y], k++;	/* Now on or inside boundary */
-		if (wesn_i[YHI] < Gin->header->wesn[YHI] && k) wesn_i[YHI] += Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid north boundary */
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between grid and -R */
+
+		/* Adjust wesn used to READ subset unless 360 geographic */
+		if (!wrap_360_i) {
+			k = 0;
+			while (wesn_i[YLO] < wesn_o[YLO]) wesn_i[YLO] += Gin->header->inc[GMT_Y], k++;	/* Now on or inside grid boundary */
+			if (wesn_i[YLO] > Gin->header->wesn[YLO] && k) wesn_i[YLO] -= Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
+			k = 0;
+			while (wesn_i[YHI] > wesn_o[YHI]) wesn_i[YHI] -= Gin->header->inc[GMT_Y], k++;	/* Now on or inside boundary */
+			if (wesn_i[YHI] < Gin->header->wesn[YHI] && k) wesn_i[YHI] += Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid north boundary */
+		}
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between grid and -R */
 			int shift = 0;
 			if (Gin->header->wesn[XHI] < wesn_i[XLO]) shift += 360;
 			else if (Gin->header->wesn[XLO] > wesn_i[XHI]) shift -= 360;
-			else if (geo && wesn_i[XHI] > Gin->header->wesn[XHI]) shift += 360;
-			else if (geo && wesn_i[XLO] < Gin->header->wesn[XLO]) shift -= 360;
+			else if (wrap_360_i && wesn_i[XHI] > Gin->header->wesn[XHI]) shift += 360;
+			else if (wrap_360_i && wesn_i[XLO] < Gin->header->wesn[XLO]) shift -= 360;
 			if (shift) {	/* Must modify header to match -R */
 				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
 				wesn_o[XLO] += shift, wesn_o[XHI] += shift;
 				GMT_Report (API, GMT_MSG_INFORMATION, "File %s region needed a %d longitude adjustment to fit final grid region\n", Ctrl->In.file, shift);
 			}
 		}
-		if (!gmt_M_360_range (wesn_o[XLO], wesn_o[XHI])) {
+		if (!wrap_360_o && !wrap_360_i) {	/* Can only shrink wesn_i if there is no 360-wrapping going on */
 			k = 0;
 			while (wesn_i[XLO] < wesn_o[XLO]) wesn_i[XLO] += Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
 			if (wesn_i[XLO] > Gin->header->wesn[XLO] && k) wesn_i[XLO] -= Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
@@ -276,18 +280,18 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 		/* Adjust wesn_o used to CREATE the output grid: It cannot exceed the input grid bounds */
 		while (wesn_o[YLO] < Gin->header->wesn[YLO]) wesn_o[YLO] += inc[GMT_Y];	/* Now on or inside boundary */
 		while (wesn_o[YHI] > Gin->header->wesn[YHI]) wesn_o[YHI] -= inc[GMT_Y];	/* Now on or inside boundary */
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 			int shift = 0;
 			if (Gin->header->wesn[XHI] < wesn_o[XLO]) shift += 360;
 			else if (Gin->header->wesn[XLO] > wesn_o[XHI]) shift -= 360;
-			else if (geo && wesn_o[XHI] > Gin->header->wesn[XHI]) shift += 360;
-			else if (geo && wesn_o[XLO] < Gin->header->wesn[XLO]) shift -= 360;
+			else if (wrap_360_i && wesn_o[XHI] > Gin->header->wesn[XHI]) shift += 360;
+			else if (wrap_360_i && wesn_o[XLO] < Gin->header->wesn[XLO]) shift -= 360;
 			if (shift) {	/* Must modify header */
 				Gin->header->wesn[XLO] += shift, Gin->header->wesn[XHI] += shift;
 				GMT_Report (API, GMT_MSG_INFORMATION, "File %s region needed a %d longitude adjustment to fit final grid region\n", Ctrl->In.file, shift);
 			}
 		}
-		if (!gmt_M_360_range (wesn_o[XLO], wesn_o[XHI])) {
+		if (!wrap_360_o && !wrap_360_i) {	/* Can only shrink wesn_o if there is no 360-wrapping going on */
 			while (wesn_o[XLO] < Gin->header->wesn[XLO]) wesn_o[XLO] += inc[GMT_X];	/* Now on or inside boundary */
 			while (wesn_o[XHI] > Gin->header->wesn[XHI]) wesn_o[XHI] -= inc[GMT_X];	/* Now on or inside boundary */
 		}

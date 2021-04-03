@@ -56,5 +56,4 @@ gmt psxy -R-70/130/-15/+15 -Jm${scl}i -Gred badpol.txt -Baf -BWSne -A -O -K -X${
 gmt psxy -R-60/140/-15/+15 -Jm${scl}i -Gred badpol.txt -Baf -BWSne -A -O -K -X${x}i -Y0.95i >> $ps
 gmt psxy -R-50/150/-15/+15 -Jm${scl}i -Gred badpol.txt -Baf -BWSne -A -O -K -X${x}i -Y0.95i >> $ps
 gmt psxy -R-40/160/-15/+15 -Jm${scl}i -Gred badpol.txt -Baf -BWSne -A -O -K -X${x}i -Y0.95i >> $ps
-gmt psxy -R-30/170/-15/+15 -Jm${scl}i -Gred badpol.txt -Baf -BWSne -A -O -K -X${x}i -Y0.95i >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psxy -R-30/170/-15/+15 -Jm${scl}i -Gred badpol.txt -Baf -BWSne -A -O -X${x}i -Y0.95i >> $ps

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
 #define THIS_MODULE_KEYS	"<D{,DD(=,LG(,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefhiqrs" GMT_ADD_x_OPT GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:RVabdefhiqrsw" GMT_ADD_x_OPT GMT_OPT("FH")
 
 struct SURFACE_CTRL {
 	struct SURFACE_A {	/* -A<aspect_ratio> */
@@ -1312,7 +1312,7 @@ GMT_LOCAL void surface_suggest_sizes (struct GMT_CTRL *GMT, struct GMT_GRID *G, 
 			m = sug[k].n_rows - (G->header->n_rows - 1);	/* Additional nodes needed in y to give more factors */
 			s = G->header->wesn[YLO] - (m/2)*G->header->inc[GMT_Y];	/* Potential revised s/n extent */
 			n = G->header->wesn[YHI] + (m/2)*G->header->inc[GMT_Y];
-			if (!lat_bad && gmt_M_is_geographic (GMT, GMT_IN) && (s < -90.0 || n > 90.0))
+			if (!lat_bad && gmt_M_y_is_lat (GMT, GMT_IN) && (s < -90.0 || n > 90.0))
 				lat_bad = true;
 			if (m%2) n += G->header->inc[GMT_Y];
 			if (pixel) {	/* Since we already added 1/2 pixel we need to undo that here so the report matches original phase */
@@ -1632,8 +1632,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>|m] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll<limit>] [-Lu<limit>] [-M<radius>] [-N<n_iterations>] [-Q]\n", GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S<search_radius>[m|s]] [-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s\n\t[%s] [%s] [%s]%s[%s] [%s]\n\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-S<search_radius>[m|s]] [-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s\n\t[%s] [%s] [%s] [%s]\n\t%s[%s] [%s]\n\n",
+		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);	/* Default convergence criteria */
@@ -1685,7 +1685,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set <over_relaxation parameter>.  Default = %g.  Use a value\n", SURFACE_OVERRELAXATION);
 	GMT_Message (API, GMT_TIME_NONE, "\t   between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n");
-	GMT_Option (API, "a,bi3,di,e,f,h,i,qi,r,s,x,:,.");
+	GMT_Option (API, "a,bi3,di,e,f,h,i,qi,r,s,w,x,:,.");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Note: Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
 
@@ -1902,7 +1902,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (C.wesn_orig, GMT->common.R.wesn, 4, double);	/* Save original region in case user specified -r */
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);		/* Save specified region */
-	C.periodic = (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (wesn[XLO], wesn[XHI]));
+	C.periodic = (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (wesn[XLO], wesn[XHI]));
 	if (C.periodic && gmt_M_180_range (wesn[YLO], wesn[YHI])) {
 		/* Trying to grid global geographic data - this is not something surface can do */
 		GMT_Report (API, GMT_MSG_ERROR, "You are attempting to grid a global geographic data set, but surface cannot handle poles.\n");
@@ -2107,6 +2107,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, mask) == GMT_NOTSET) {
 			Return (API->error);
 		}
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading input file in grdmask */
 		sprintf (cmd, "%s -G%s -R%g/%g/%g/%g -I%g/%g -NNaN/1/1 -S%s -V%c --GMT_HISTORY=readonly",
 		         input, mask, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.R.inc[GMT_X],
 				 GMT->common.R.inc[GMT_Y], Ctrl->M.arg, V_level[GMT->current.setting.verbose]);
@@ -2131,6 +2132,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &Gmask) != GMT_NOERROR) {	/* Done with the mask */
 			Return (API->error);
 		}
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	}
 	else
 		gmt_M_free (GMT, C.data);

@@ -34,8 +34,8 @@ EXELINKS=
 #     Use full path if you need something not in your path
 EXEONLY=
 # 1d. Shared directories to be added
-#     Use full path if you need someting not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj6/share/proj"
+#     Use full path if you need something not in your path
+EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj7/share/proj"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f ${TMPDIR}/raw.lis

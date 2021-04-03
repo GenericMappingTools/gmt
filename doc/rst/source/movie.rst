@@ -28,11 +28,11 @@ Synopsis
 [ |-M|\ [*frame*],[*format*] ]
 [ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *background* ]
-[ **-Sf**\ *foreground* ]
+[ |-Sb|\ *background* ]
+[ |-Sf|\ *foreground* ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [**s**] ]
 [ |-W|\ [*workdir*] ]
+[ |-Z|\ [**s**] ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -87,6 +87,7 @@ Required Arguments
     Determines the name of the final movie file and a sub-directory with frame images (but see **-W**).
     **Note**: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
     old directory by that name first.  This is done to prevent the accidental loss of valuable data.
+    You can prevent this issue by using **-Z** to delete the directory after a successful run.
 
 .. _-T:
 
@@ -188,7 +189,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *labelinfo*
+**-L**\ *labelinfo*\ [*modifiers*]
     Automatic labeling of individual frames.  Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
@@ -204,33 +205,37 @@ Optional Arguments
     used if **+g** or **+p** are set.  Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
     Append **+f** to use a specific *font* [:term:`FONT_TAG`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
+    Append **+h**\ [*dx*/*dy*/][*shade*] to place drop-down shade behind the label bounding box. You can
+    adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]; requires **+g** [no shade].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
     **c**\|\ **i**\|\ **p** or % of the font size [20% of font size].
     Append **+p** to draw the outline of the bounding box using selected *pen* [no outline].
+    Append **+r** in conjunction with **+g** or **+p** to select a rounded rectangular label box [straight].
     Append **+t** to provide a *format* statement to be used with the label item selected [no special formatting].
     If **-Lt** is used then the format statement must contain a %s-like format, else it may have an integer (%d)
     or floating point  (%e, %f, %g) format specification.
 
 .. _-M:
 
-**-M**\ [*frame*],[*format*]
+**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*]
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can one of the
-    graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
+    graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].  Instead of a frame number
+    we also recognize the codes **f**\ irst, **m**\ iddle, and **l**\ ast frame.
 
 .. _-P:
 
-**-P**\ *progress*
+**-P**\ *progress*\ [*modifiers*]
     Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
     Select from six indicators called a-f [a].  Indicators a-c are different types of circular indicators while d-f are
     linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
     circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
-    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see **-L**
     for more information on what these are); append **+f** to use a specific *font* [:term:`FONT_ANNOT_SECONDARY` scaled as needed].
     Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
-    Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
+    Use **+p**\ *pen* to set moving item *pen*.  For setting the corresponding static fill and pen, use **+G** and **+P** instead.
 
 .. _-Q:
 
@@ -258,10 +263,10 @@ Optional Arguments
     positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
     *foreground* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
 
-.. _movie-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -321,6 +326,15 @@ as well as any new files produced by *mainscript* or the optional scripts set vi
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
 
+Custom gmt.conf files
+---------------------
+
+If you have a gmt.conf file in the top directory with your main script prior to running **movie** then it will be
+used and shared across all the scripts created and executed *unless* your scripts use **-C** when starting a new
+modern mode session. The preferred ways of changing GMT defaults is via :doc:`gmtset` calls in your input scripts.
+**Note**: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the *preflight*
+script to be used by other scripts is futile.
+
 Plotting Temporal Changes
 -------------------------
 
@@ -342,6 +356,14 @@ accomplish these effects:
 
 Your Canvas
 -----------
+
+.. figure:: /_images/GMT_movie_canvas.*
+   :width: 400 px
+   :align: center
+
+   The **MOVIE_WIDTH** and **MOVIE_HEIGHT** parameters reflect your canvas dimension.  You can use the
+   regular **-X** and **-Y** options to set a logical origin for your intended plot [72p, 72p] and use your
+   projection parameters (**-J**) to indicate the area selected for plotting (green).
 
 As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just

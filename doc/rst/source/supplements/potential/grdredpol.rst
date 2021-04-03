@@ -104,6 +104,11 @@ Optional Arguments
     Decimal year used by the IGRF routine to compute the declination and
     inclination at each point [default: 2000]
 
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. _-W:
 
 **-W**\ *width*
@@ -114,10 +119,6 @@ Optional Arguments
 **-Z**\ *filter_grd*
     Write the filter file to disk.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
 .. include:: ../../explain_-n.rst_
 .. include:: ../../explain_grdresample2.rst_
 

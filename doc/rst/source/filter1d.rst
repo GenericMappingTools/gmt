@@ -16,7 +16,7 @@ Synopsis
 [ |-D|\ *increment* ] [ |-E| ]
 [ |-L|\ *lack\_width* ] [ |-N|\ *t\_col* ] [ |-Q|\ *q\_factor* ]
 [ |-S|\ *symmetry\_factor* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+e**\|\ **a**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+e**\|\ **i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -47,6 +47,9 @@ and use that as the independent variable for filtering.
 
 Required Arguments
 ------------------
+
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
 
 .. _-F:
 
@@ -102,9 +105,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
-
 .. _-D:
 
 **-D**\ *increment*
@@ -147,14 +147,14 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+e**\|\ **a**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ [*min/max*\ /]\ *inc*\ [**+a**][**+e**\|\ **i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
@@ -226,6 +226,6 @@ and not shorten the track, and add the distances to the file, use
 See Also
 --------
 
-:doc:`gmt` ,
-:doc:`sample1d` ,
-:doc:`splitxyz`
+:doc:`gmt`,
+:doc:`sample1d`,
+:doc:`gmtsplit`

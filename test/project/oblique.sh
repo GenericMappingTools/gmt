@@ -15,6 +15,4 @@ centr=`$AWK '{if (NR == 2) printf "%s/%s\n", $1, $2}' p.txt`
 gmt pscoast -Rg -JG30/50/7i -P -K -Glightgray -Dc -Bg > $ps
 echo 30 50 | gmt psxy -R -J -O -K -Sa0.2i -Gred -W0.25p >> $ps
 echo 0 0 | gmt psxy -R -J -O -K -Sc0.1i -Gblack >> $ps
-gmt project t.txt -T$ppole -C$centr -Fpq | gmt psxy -R -J -O -K -W3p >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+gmt project t.txt -T$ppole -C$centr -Fpq | gmt psxy -R -J -O -W3p >> $ps

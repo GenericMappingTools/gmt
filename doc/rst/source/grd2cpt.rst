@@ -12,10 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2cpt** *grid* [ |-A|\ *transparency*\ [**+a**] ]
-[ |-C|\ *cpt* ] [ |-D|\ [**i**] ]
+**gmt grd2cpt** *grid*
+[ |-A|\ *transparency*\ [**+a**] ]
+[ |-C|\ *cpt* ]
+[ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*][**+c**][**+f**\ *file*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**] ]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -79,7 +81,7 @@ Required Arguments
 *grid*
     Names of one or more grid files used to derive the color palette
     table. All grids need to have the same size and dimensions. (See
-    GRID FILE FORMATS below).
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -97,10 +99,10 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**i**]
+**-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default uses
-    the colors specified in the master file, or those defined by the
+    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
@@ -118,11 +120,17 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]]
     Force output CPT to written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
+    If *label* is appended then we create labels for each category to be used
+    when the CPT is plotted. The *label* may be a comma-separated list of
+    category names (you can skip a category by not giving a name), or give
+    *start*[-], where we automatically build monotonically increasing labels
+    from *start* (a single letter or an integer). Append - to build ranges
+    *start*-*start+1* instead.
 
 .. _-G:
 
@@ -136,8 +144,8 @@ Optional Arguments
 
 **-H**\
     Modern mode only: Write the CPT to standard output as well [Default saves
-    the CPT as the session current CPT].  Required for scripts used to make
-    animations via :doc:`movie` where we must pass named CPT files.
+    the CPT as the session current CPT]. Required for scripts used to make
+    animations via :doc:`movie` and :doc:`batch` where we must pass named CPT files.
 
 .. _-I:
 
@@ -148,7 +156,7 @@ Optional Arguments
     :term:`COLOR_FOREGROUND`.
     Append **z** to reverse the sign of z-values in the color table.  Note that
     this change of *z*-direction happens before **-G** and **-S** values are used
-    so the latter much be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
+    so the latter must be compatible with the changed *z*-range. See also :ref:`manipulating_CPTs`
 
 .. _-L:
 
@@ -180,10 +188,10 @@ Optional Arguments
     writes out z [Default]. **-Qo** takes log10(z) first, assigns
     colors, and writes out z.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -230,8 +238,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_-ocols.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_transparency.rst_
 

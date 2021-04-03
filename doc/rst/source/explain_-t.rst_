@@ -1,2 +1,2 @@
-**-t**\ [*transp*] :ref:`(more ...) <-t_full>`
-    Set transparency level in percent.
+**-t**\ *transp*\ [/*transp2*] :ref:`(more ...) <-t_full>`
+    Set transparency level(s) in percent.

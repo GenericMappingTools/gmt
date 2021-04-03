@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 595 842
 %%HiResBoundingBox: 0 0 595.0000 842.0000
-%%Title: GMT v6.1.0_9ee9cff_2020.02.16 [64-bit] Document from grdimage
+%%Title: GMT v6.2.0_2cec3a0_2021.03.18 [64-bit] Document from grdimage
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Feb 16 18:07:19 2020
+%%CreationDate: Thu Mar 18 17:55:52 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -637,6 +662,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -666,7 +705,7 @@ O0
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7087 0 D
@@ -22957,13 +22996,54 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt pscoast -R145/170/-50.0163575733/-24.9698584055 -Jm0.6c -B -BWSne -Gblack --PROJ_ELLIPSOID=Sphere -Cwhite -Dh+ --FORMAT_GEO_MAP=dddF
+%@GMT: gmt coast -R145/170/-50.0163575733/-24.9698584055 -Jm0.6c -B -BWSne -Gblack --PROJ_ELLIPSOID=Sphere -Cwhite -Dh+ --FORMAT_GEO_MAP=dddF
 %@PROJ: merc 145.00000000 170.00000000 -50.01635757 -24.96985841 -1389938.497 1389938.497 -6441901.619 -2868833.057 +proj=merc +lon_0=157.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6371008.771 +b=6371008.771 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+8 W
+0 A
+N 0 0 M 0 -83 D S
+N 0 9109 M 0 82 D S
+N 1417 0 M 0 -83 D S
+N 1417 9109 M 0 82 D S
+N 2835 0 M 0 -83 D S
+N 2835 9109 M 0 82 D S
+N 4252 0 M 0 -83 D S
+N 4252 9109 M 0 82 D S
+N 5669 0 M 0 -83 D S
+N 5669 9109 M 0 82 D S
+N 7087 0 M 0 -83 D S
+N 7087 9109 M 0 82 D S
+N 0 7 M -83 0 D S
+N 7087 7 M 82 0 D S
+N 0 2107 M -83 0 D S
+N 7087 2107 M 82 0 D S
+N 0 4031 M -83 0 D S
+N 7087 4031 M 82 0 D S
+N 0 5819 M -83 0 D S
+N 7087 5819 M 82 0 D S
+N 0 7501 M -83 0 D S
+N 7087 7501 M 82 0 D S
+N 0 9099 M -83 0 D S
+N 7087 9099 M 82 0 D S
+0 -132 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+166 F0
+(145°E) tc Z
+1417 -132 M (150°E) tc Z
+2835 -132 M (155°E) tc Z
+4252 -132 M (160°E) tc Z
+5669 -132 M (165°E) tc Z
+7087 -132 M (170°E) tc Z
+-132 7 M (50°S) mr Z
+-132 2107 M (45°S) mr Z
+-132 4031 M (40°S) mr Z
+-132 5819 M (35°S) mr Z
+-132 7501 M (30°S) mr Z
+-132 9099 M (25°S) mr Z
 {0 A} FS
+O0
 -283 0 0 324 283 0 3 0 8785 SP
 -567 0 0 324 567 0 3 283 8785 SP
 -567 0 0 324 567 0 3 850 8785 SP
@@ -36927,228 +37007,190 @@ FO
 0 1 -2 0 0 2 -1 2 1 4 2 -1 0 -3 0 1 3 0 2 1 4 -1 -5 -1 -2 -4 0 -1 14 6112 872 SP
 -1 1 2 0 2 6116 861 SP
 25 W
-8 W
-N 0 0 M 0 -83 D S
-N 0 9109 M 0 83 D S
-N 1417 0 M 0 -83 D S
-N 1417 9109 M 0 83 D S
-N 2835 0 M 0 -83 D S
-N 2835 9109 M 0 83 D S
-N 4252 0 M 0 -83 D S
-N 4252 9109 M 0 83 D S
-N 5669 0 M 0 -83 D S
-N 5669 9109 M 0 83 D S
-N 7087 0 M 0 -83 D S
-N 7087 9109 M 0 83 D S
-N 0 7 M -83 0 D S
-N 7087 7 M 83 0 D S
-N 0 2107 M -83 0 D S
-N 7087 2107 M 83 0 D S
-N 0 4031 M -83 0 D S
-N 7087 4031 M 83 0 D S
-N 0 5819 M -83 0 D S
-N 7087 5819 M 83 0 D S
-N 0 7501 M -83 0 D S
-N 7087 7501 M 83 0 D S
-N 0 9099 M -83 0 D S
-N 7087 9099 M 83 0 D S
-83 W
-1 A
-N -42 0 M 0 7 D S
-N 7128 0 M 0 7 D S
 0 A
-N -42 7 M 0 437 D S
-N 7128 7 M 0 437 D S
+50 W
 1 A
-N -42 444 M 0 428 D S
-N 7128 444 M 0 428 D S
+N -25 0 M 0 7 D S
+N 7111 0 M 0 7 D S
 0 A
-N -42 872 M 0 419 D S
-N 7128 872 M 0 419 D S
+N -25 7 M 0 437 D S
+N 7111 7 M 0 437 D S
 1 A
-N -42 1291 M 0 412 D S
-N 7128 1291 M 0 412 D S
+N -25 444 M 0 428 D S
+N 7111 444 M 0 428 D S
 0 A
-N -42 1703 M 0 404 D S
-N 7128 1703 M 0 404 D S
+N -25 872 M 0 419 D S
+N 7111 872 M 0 419 D S
 1 A
-N -42 2107 M 0 398 D S
-N 7128 2107 M 0 398 D S
+N -25 1291 M 0 412 D S
+N 7111 1291 M 0 412 D S
 0 A
-N -42 2505 M 0 391 D S
-N 7128 2505 M 0 391 D S
+N -25 1703 M 0 404 D S
+N 7111 1703 M 0 404 D S
 1 A
-N -42 2896 M 0 384 D S
-N 7128 2896 M 0 384 D S
+N -25 2107 M 0 398 D S
+N 7111 2107 M 0 398 D S
 0 A
-N -42 3280 M 0 379 D S
-N 7128 3280 M 0 379 D S
+N -25 2505 M 0 391 D S
+N 7111 2505 M 0 391 D S
 1 A
-N -42 3659 M 0 372 D S
-N 7128 3659 M 0 372 D S
+N -25 2896 M 0 384 D S
+N 7111 2896 M 0 384 D S
 0 A
-N -42 4031 M 0 368 D S
-N 7128 4031 M 0 368 D S
+N -25 3280 M 0 379 D S
+N 7111 3280 M 0 379 D S
 1 A
-N -42 4399 M 0 362 D S
-N 7128 4399 M 0 362 D S
+N -25 3659 M 0 372 D S
+N 7111 3659 M 0 372 D S
 0 A
-N -42 4761 M 0 357 D S
-N 7128 4761 M 0 357 D S
+N -25 4031 M 0 368 D S
+N 7111 4031 M 0 368 D S
 1 A
-N -42 5118 M 0 353 D S
-N 7128 5118 M 0 353 D S
+N -25 4399 M 0 362 D S
+N 7111 4399 M 0 362 D S
 0 A
-N -42 5471 M 0 348 D S
-N 7128 5471 M 0 348 D S
+N -25 4761 M 0 357 D S
+N 7111 4761 M 0 357 D S
 1 A
-N -42 5819 M 0 344 D S
-N 7128 5819 M 0 344 D S
+N -25 5118 M 0 353 D S
+N 7111 5118 M 0 353 D S
 0 A
-N -42 6163 M 0 340 D S
-N 7128 6163 M 0 340 D S
+N -25 5471 M 0 348 D S
+N 7111 5471 M 0 348 D S
 1 A
-N -42 6503 M 0 336 D S
-N 7128 6503 M 0 336 D S
+N -25 5819 M 0 344 D S
+N 7111 5819 M 0 344 D S
 0 A
-N -42 6839 M 0 333 D S
-N 7128 6839 M 0 333 D S
+N -25 6163 M 0 340 D S
+N 7111 6163 M 0 340 D S
 1 A
-N -42 7172 M 0 329 D S
-N 7128 7172 M 0 329 D S
+N -25 6503 M 0 336 D S
+N 7111 6503 M 0 336 D S
 0 A
-N -42 7501 M 0 325 D S
-N 7128 7501 M 0 325 D S
+N -25 6839 M 0 333 D S
+N 7111 6839 M 0 333 D S
 1 A
-N -42 7826 M 0 323 D S
-N 7128 7826 M 0 323 D S
+N -25 7172 M 0 329 D S
+N 7111 7172 M 0 329 D S
 0 A
-N -42 8149 M 0 319 D S
-N 7128 8149 M 0 319 D S
+N -25 7501 M 0 325 D S
+N 7111 7501 M 0 325 D S
 1 A
-N -42 8468 M 0 317 D S
-N 7128 8468 M 0 317 D S
+N -25 7826 M 0 323 D S
+N 7111 7826 M 0 323 D S
 0 A
-N -42 8785 M 0 314 D S
-N 7128 8785 M 0 314 D S
+N -25 8149 M 0 319 D S
+N 7111 8149 M 0 319 D S
 1 A
-N -42 9099 M 0 10 D S
-N 7128 9099 M 0 10 D S
-N 0 -42 M 283 0 D S
-N 0 9150 M 283 0 D S
+N -25 8468 M 0 317 D S
+N 7111 8468 M 0 317 D S
 0 A
-N 283 -42 M 284 0 D S
-N 283 9150 M 284 0 D S
+N -25 8785 M 0 314 D S
+N 7111 8785 M 0 314 D S
 1 A
-N 567 -42 M 283 0 D S
-N 567 9150 M 283 0 D S
+N -25 9099 M 0 10 D S
+N 7111 9099 M 0 10 D S
+N 0 -25 M 283 0 D S
+N 0 9133 M 283 0 D S
 0 A
-N 850 -42 M 284 0 D S
-N 850 9150 M 284 0 D S
+N 283 -25 M 284 0 D S
+N 283 9133 M 284 0 D S
 1 A
-N 1134 -42 M 283 0 D S
-N 1134 9150 M 283 0 D S
+N 567 -25 M 283 0 D S
+N 567 9133 M 283 0 D S
 0 A
-N 1417 -42 M 284 0 D S
-N 1417 9150 M 284 0 D S
+N 850 -25 M 284 0 D S
+N 850 9133 M 284 0 D S
 1 A
-N 1701 -42 M 283 0 D S
-N 1701 9150 M 283 0 D S
+N 1134 -25 M 283 0 D S
+N 1134 9133 M 283 0 D S
 0 A
-N 1984 -42 M 284 0 D S
-N 1984 9150 M 284 0 D S
+N 1417 -25 M 284 0 D S
+N 1417 9133 M 284 0 D S
 1 A
-N 2268 -42 M 283 0 D S
-N 2268 9150 M 283 0 D S
+N 1701 -25 M 283 0 D S
+N 1701 9133 M 283 0 D S
 0 A
-N 2551 -42 M 284 0 D S
-N 2551 9150 M 284 0 D S
+N 1984 -25 M 284 0 D S
+N 1984 9133 M 284 0 D S
 1 A
-N 2835 -42 M 283 0 D S
-N 2835 9150 M 283 0 D S
+N 2268 -25 M 283 0 D S
+N 2268 9133 M 283 0 D S
 0 A
-N 3118 -42 M 284 0 D S
-N 3118 9150 M 284 0 D S
+N 2551 -25 M 284 0 D S
+N 2551 9133 M 284 0 D S
 1 A
-N 3402 -42 M 283 0 D S
-N 3402 9150 M 283 0 D S
+N 2835 -25 M 283 0 D S
+N 2835 9133 M 283 0 D S
 0 A
-N 3685 -42 M 284 0 D S
-N 3685 9150 M 284 0 D S
+N 3118 -25 M 284 0 D S
+N 3118 9133 M 284 0 D S
 1 A
-N 3969 -42 M 283 0 D S
-N 3969 9150 M 283 0 D S
+N 3402 -25 M 283 0 D S
+N 3402 9133 M 283 0 D S
 0 A
-N 4252 -42 M 283 0 D S
-N 4252 9150 M 283 0 D S
+N 3685 -25 M 284 0 D S
+N 3685 9133 M 284 0 D S
 1 A
-N 4535 -42 M 284 0 D S
-N 4535 9150 M 284 0 D S
+N 3969 -25 M 283 0 D S
+N 3969 9133 M 283 0 D S
 0 A
-N 4819 -42 M 283 0 D S
-N 4819 9150 M 283 0 D S
+N 4252 -25 M 283 0 D S
+N 4252 9133 M 283 0 D S
 1 A
-N 5102 -42 M 284 0 D S
-N 5102 9150 M 284 0 D S
+N 4535 -25 M 284 0 D S
+N 4535 9133 M 284 0 D S
 0 A
-N 5386 -42 M 283 0 D S
-N 5386 9150 M 283 0 D S
+N 4819 -25 M 283 0 D S
+N 4819 9133 M 283 0 D S
 1 A
-N 5669 -42 M 284 0 D S
-N 5669 9150 M 284 0 D S
+N 5102 -25 M 284 0 D S
+N 5102 9133 M 284 0 D S
 0 A
-N 5953 -42 M 283 0 D S
-N 5953 9150 M 283 0 D S
+N 5386 -25 M 283 0 D S
+N 5386 9133 M 283 0 D S
 1 A
-N 6236 -42 M 284 0 D S
-N 6236 9150 M 284 0 D S
+N 5669 -25 M 284 0 D S
+N 5669 9133 M 284 0 D S
 0 A
-N 6520 -42 M 283 0 D S
-N 6520 9150 M 283 0 D S
+N 5953 -25 M 283 0 D S
+N 5953 9133 M 283 0 D S
 1 A
-N 6803 -42 M 284 0 D S
-N 6803 9150 M 284 0 D S
+N 6236 -25 M 284 0 D S
+N 6236 9133 M 284 0 D S
 0 A
-8 W
-N -83 0 M 7253 0 D S
-N -83 -83 M 7253 0 D S
-N 7087 -83 M 0 9275 D S
-N 7170 -83 M 0 9275 D S
-N 7170 9109 M -7253 0 D S
-N 7170 9192 M -7253 0 D S
-N 0 9192 M 0 -9275 D S
-N -83 9192 M 0 -9275 D S
-0 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(145°E) tc Z
-1417 -167 M (150°E) tc Z
-2835 -167 M (155°E) tc Z
-4252 -167 M (160°E) tc Z
-5669 -167 M (165°E) tc Z
-7087 -167 M (170°E) tc Z
--167 7 M (50°S) mr Z
--167 2107 M (45°S) mr Z
--167 4031 M (40°S) mr Z
--167 5819 M (35°S) mr Z
--167 7501 M (30°S) mr Z
--167 9099 M (25°S) mr Z
+N 6520 -25 M 283 0 D S
+N 6520 9133 M 283 0 D S
+1 A
+N 6803 -25 M 284 0 D S
+N 6803 9133 M 284 0 D S
+0 A
+5 W
+N -50 0 M 7186 0 D S
+N -50 -50 M 7186 0 D S
+N 7087 -50 M 0 9208 D S
+N 7136 -50 M 0 9208 D S
+N 7136 9109 M -7186 0 D S
+N 7136 9158 M -7186 0 D S
+N 0 9158 M 0 -9208 D S
+N -50 9158 M 0 -9208 D S
 %%EndObject
 0 A
 FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt psscale -DjTL+o1c+w5c/0.4c -Bx -By+lmGal -I -F+gwhite+p1p
+%@GMT: gmt colorbar -DjTL+o1c+w5c/0.4c -Bx -By+lmGal -I -F+gwhite+p1p -R145/170/-50.0163575733/-24.9698584055 -Jm0.6c
 %@PROJ: merc 145.00000000 170.00000000 -50.01635757 -24.96985841 -1391493.635 1391493.635 -6416350.055 -2854011.234 +proj=merc +lon_0=157.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 472 6237 T
 17 W
 {1 A} FS
 O1
-2797 1120 294 1259 Sr
+2728 966 266 1236 Sr
 25 W
 189 0 T
 90 R
@@ -38271,17 +38313,17 @@ N 0 689 M 83 0 D S
 N 0 1181 M 83 0 D S
 N 0 1673 M 83 0 D S
 N 0 2165 M 83 0 D S
-/PSL_AH0 0
 /MM {exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
+167 F0
 (-100) sw mx
 (-50) sw mx
 (0) sw mx
 (50) sw mx
 (100) sw mx
 def
-/PSL_A0_y PSL_A0_y 83 add PSL_AH0 add def
+/PSL_A0_y PSL_A0_y 50 add PSL_AH0 add def
 197 PSL_A0_y MM
 (-100) mr Z
 689 PSL_A0_y MM
@@ -38292,29 +38334,29 @@ def
 (50) mr Z
 2165 PSL_A0_y MM
 (100) mr Z
-N 0 0 M 42 0 D S
-N 0 98 M 42 0 D S
-N 0 295 M 42 0 D S
-N 0 394 M 42 0 D S
-N 0 492 M 42 0 D S
-N 0 591 M 42 0 D S
-N 0 787 M 42 0 D S
-N 0 886 M 42 0 D S
-N 0 984 M 42 0 D S
-N 0 1083 M 42 0 D S
-N 0 1280 M 42 0 D S
-N 0 1378 M 42 0 D S
-N 0 1476 M 42 0 D S
-N 0 1575 M 42 0 D S
-N 0 1772 M 42 0 D S
-N 0 1870 M 42 0 D S
-N 0 1969 M 42 0 D S
-N 0 2067 M 42 0 D S
-N 0 2264 M 42 0 D S
-N 0 2362 M 42 0 D S
+N 0 0 M 67 0 D S
+N 0 98 M 67 0 D S
+N 0 295 M 67 0 D S
+N 0 394 M 67 0 D S
+N 0 492 M 67 0 D S
+N 0 591 M 67 0 D S
+N 0 787 M 67 0 D S
+N 0 886 M 67 0 D S
+N 0 984 M 67 0 D S
+N 0 1083 M 67 0 D S
+N 0 1280 M 67 0 D S
+N 0 1378 M 67 0 D S
+N 0 1476 M 67 0 D S
+N 0 1575 M 67 0 D S
+N 0 1772 M 67 0 D S
+N 0 1870 M 67 0 D S
+N 0 1969 M 67 0 D S
+N 0 2067 M 67 0 D S
+N 0 2264 M 67 0 D S
+N 0 2362 M 67 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 90 R
-2446 94 M V -90 R (mGal) bc Z U
+2412 94 M V -90 R (mGal) bc Z U
 -90 R
 -189 0 T
 0 setlinecap

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -297,7 +297,7 @@ GMT_LOCAL int pssolar_params (struct PSSOLAR_CTRL *Ctrl, struct SUN_PARAMS *Sun)
 	double EEO, HA_Sunrise, TrueSolarTime, SolarDec, radius;
 
 	radius = Ctrl->T.radius[Ctrl->T.which];
-	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->I.TZ : 0);
+	TZ = (Ctrl->I.TZ != 0) ? Ctrl->I.TZ : ((Ctrl->T.TZ != 0) ? Ctrl->T.TZ : 0);
 
 	/*  Date info may be in either of I or T options. If not, use current time. */
 	if (Ctrl->I.calendar.year != 0) {
@@ -552,13 +552,15 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 		double *lon = NULL, *lat = NULL, x0, y0;
 		unsigned int first = (Ctrl->N.active) ? 0 : 1;
 
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) {
+		if (gmt_map_setup (GMT, GMT->common.R.wesn)) {
 			gmt_M_free (GMT, Sun);
 			Return (GMT_PROJECTION_ERROR);
 		}
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+		gmt_set_basemap_orders (GMT, Ctrl->N.active ? GMT_BASEMAP_FRAME_BEFORE : GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, Ctrl->N.active ? GMT_BASEMAP_ANNOT_BEFORE : GMT_BASEMAP_ANNOT_AFTER);
 		gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+		gmt_map_basemap (GMT);
 		if (Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 1);	/* Must clip map */
 
 		for (n = 0; n < 4; n++) {	/* Loop over the number of requested terminators */

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdhisteq** *in_grdfile* [ |-G|\ *out_grdfile* ]
+**gmt grdhisteq** *ingrid* [ |-G|\ *outgrid* ]
 [ |-C|\ *n_cells* ] [ |-D|\ [*file*] ] [ |-N|\ [*norm*] ]
 [ |-Q| ]
 |SYN_OPT-R|
@@ -59,8 +59,8 @@ location of the most negative input value, and so on.
 Required Arguments
 ------------------
 
-*in_grdfile*
-    2-D grid file to be equalized. (See GRID FILE FORMATS below).
+*ingrid*
+    2-D grid file to be equalized. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -77,8 +77,9 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *out_grdfile*
-    Name of output 2-D grid file. Used with **-N** only. (See GRID FILE FORMATS below).
+**-G**\ *outgrid*
+    Name of output 2-D grid file. Used with **-N** only. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-N:
 
@@ -92,21 +93,18 @@ Optional Arguments
 **-Q**
     Quadratic output. Selects quadratic histogram equalization. [Default is linear].
 
-.. _-R:
-
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of *in_grdfile* grid. If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+    exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

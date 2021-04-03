@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt gmtbinstats** [ *table* ] |-G|\ *out_grdfile*
+**gmt gmtbinstats** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |-C|\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
 |SYN_OPT-R|
@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -52,6 +53,12 @@ hexagonal tiling instead or a rectangular grid layout.
 Required Arguments
 ------------------
 
+*table*
+    A 2-4 column ASCII file(s) [or binary, see
+    **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
+    to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
+    If no file is specified, **gmtbinstats** will read from standard input.
+
 .. _-C:
 
 **-C**\ **a**\|\ **d**\|\ **g**\|\ **i**\|\ **l**\|\ **L**\|\ **m**\|\ **n**\|\ **o**\|\ **p**\|\ **q**\ [*quant*]\|\ **r**\|\ **s**\|\ **u**\|\ **U**\|\ **z**
@@ -68,26 +75,20 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *out_grdfile*
+**-G**\ *outgrid*
     Give the name of the output grid file.
 
 .. _-I:
 
 .. include:: explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
-
-*table*
-    A 2-4 column ASCII file(s) [or binary, see
-    **-bi**] holding (x,y[,z][,w]) data values. You must use **-W**
-    to indicate that you have weights.  Only **-Cn** will accept 2 columns only.
-    If no file is specified, **gmtbinstats** will read from standard input.
 
 .. _-E:
 
@@ -118,10 +119,10 @@ Optional Arguments
     *x* and *y* have a ratio of :math:`\sqrt{3}`, we will automatically adjust *xmax* in **-R** to
     fit a whole number of hexagons. **Note**: Hexagonal tiling requires Cartesian data.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -163,6 +164,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

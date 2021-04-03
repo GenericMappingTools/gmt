@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *   Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -488,7 +488,9 @@ int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, unsigned i
 	if (flowline) total_out = true;	/* Override so we get finite poles for conversion to forward stage poles at the end */
 
 	while (gmt_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) { /* Expects lon lat t0 t1 ccw-angle */
-		if (buffer[0] == '#' || buffer[0] == '\n') continue;
+		if (buffer[0] == '#') continue;
+		gmt_chop (buffer);
+		if (gmt_is_a_blank_line (buffer)) continue;
 
 		if (GPlates) {
 			if ((nf = sscanf (buffer, "%d %lf %lf %lf %lf %d %[^\n]", &p1, &t, &lat, &lon, &rot, &p2, comment)) != 7) continue;
@@ -517,6 +519,7 @@ int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, unsigned i
 			if (nf == 4 || nf == 13) {	/* total reconstruction format: Got lon lat t0 omega [covars], must shift the K's by one */
 				if (i && !total_in) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Rotation file mixes total reconstruction and stage rotation format\n");
+					gmt_M_free(GMT, e);
 					return -GMT_PARSE_ERROR;
 				}
 				total_in = true;
@@ -630,7 +633,9 @@ int spotter_hotspot_init (struct GMT_CTRL *GMT, char *file, bool geocentric, str
 	e = gmt_M_memory (GMT, NULL, n_alloc, struct HOTSPOT);
 
 	while (gmt_fgets (GMT, buffer, GMT_BUFSIZ, fp) != NULL) {
-		if (buffer[0] == '#' || buffer[0] == '\n') continue;
+		if (buffer[0] == '#') continue;
+		gmt_chop (buffer);
+		if (gmt_is_a_blank_line (buffer)) continue;
 		n = sscanf (buffer, "%lf %lf %s %d %lf %lf %lf %c %c %c %s",
 		            &e[i].lon, &e[i].lat, e[i].abbrev, &ival, &e[i].radius, &e[i].t_off, &e[i].t_on, &create, &fit, &plot, e[i].name);
 		if (n == 3) ival = i + 1;	/* Minimal lon, lat, abbrev */

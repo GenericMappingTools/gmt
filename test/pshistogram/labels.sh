@@ -22,6 +22,4 @@ gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -D+f12p+r+b -K -X2.5i >> 
 gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p -K -X-2.5i -Y-2.5i >> $ps
 gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+r -K -X2.5i >> $ps
 gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+b -K -X-2.5i -Y-2.25i >> $ps
-gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+r+b -K -X2.5i >> $ps
-
-gmt psxy -R -J -O -T >> $ps
+gmt pshistogram -R t.txt -L0.5p -Gred -B0 -O -J -W5 -F -A -D+f12p+r+b -X2.5i >> $ps

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -34,7 +34,7 @@
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYptxyf" GMT_OPT("c")
 
-EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, struct GMT_PLOT_AXIS_ITEM *T);
+EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T);
 EXTERN_MSC void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n, unsigned int item);
 
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
@@ -56,6 +56,11 @@ enum psscale_shift {
 	PSSCALE_FLIP_LABEL = 2,
 	PSSCALE_FLIP_UNIT  = 4,
 	PSSCALE_FLIP_VERT  = 8};
+
+enum psscale_noB {
+	PSSCALE_ANNOT_NUMERICAL = 0,
+	PSSCALE_ANNOT_CUSTOM    = 1,
+	PSSCALE_ANNOT_ANGLED    = 2};
 
 /* Control structure for psscale */
 
@@ -107,10 +112,12 @@ struct PSSCALE_CTRL {
 	struct PSSCALE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSSCALE_S {	/* -S[+c|n][+s] */
+	struct PSSCALE_S {	/* -S[+c|n][+s][+a<angle>][+x<label>][+y<unit>] */
 		bool active;
 		bool skip;
+		double angle;
 		unsigned int mode;
+		char unit[GMT_LEN256], label[GMT_LEN256];
 	} S;
 	struct PSSCALE_W {	/* -W<scale> */
 		bool active;
@@ -157,7 +164,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S[+c|n][+s]] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S[+a<angle>][+c|n][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<zfile>]\n\t%s[%s] [%s] [%s]\n\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -205,9 +212,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot colorbar using logarithmic scale and annotate powers of 10 [Default is linear].\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Controls annotation and gridlines when -B is not used:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +a<angle> to place annotations at an angle [no slanting].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to use any custom labels in the CPT for annotations, if available.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to use numerical values for annotations [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to skip drawing gridlines between different color sections [Default draws lines].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +x<label> to set a colorbar label [No label].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +y to set a colorbar unit [No unit].\n");
 	GMT_Option (API, "U,V,X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give file with colorbar-width (in %s) per color entry.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -344,6 +354,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				j = 0;
 				if (opt->arg[0] == 'i') Ctrl->L.interval = true, j = 1;
 				if (opt->arg[j]) Ctrl->L.spacing = gmt_M_to_inch (GMT, &opt->arg[j]);
+				if (c) c[0] = '+';	/* Restore option string */
 				break;
 			case 'M':
 				Ctrl->M.active = true;
@@ -363,13 +374,22 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'S':
 				Ctrl->S.active = true;
+				Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;	/* The default */
 				if (opt->arg[0]) {	/* Modern syntax with modifiers */
-					if (strstr (opt->arg, "+c"))
-						Ctrl->S.mode = 1;
-					if (strstr (opt->arg, "+n"))	/* Default, but just in case */
-						Ctrl->S.mode = 0;
-					if (strstr (opt->arg, "+s"))
-						Ctrl->S.skip = true;
+					if ((c = gmt_first_modifier (GMT, opt->arg, "acnsxy"))) {	/* Process any modifiers */
+						unsigned int pos = 0;	/* Reset to start of new word */
+						while (gmt_getmodopt (GMT, 'S', c, "acnsxy", &pos, txt_a, &n_errors) && n_errors == 0) {
+							switch (txt_a[0]) {
+								case 'a': Ctrl->S.angle = atof (&txt_a[1]); Ctrl->S.mode |= PSSCALE_ANNOT_ANGLED;	break;
+								case 'c': Ctrl->S.mode |= PSSCALE_ANNOT_CUSTOM;	break;
+								case 'n': Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;	break;
+								case 's': Ctrl->S.skip = true;	break;
+								case 'x': strncpy (Ctrl->S.label, &txt_a[1], GMT_LEN256); break;
+								case 'y': strncpy (Ctrl->S.unit,  &txt_a[1], GMT_LEN256); break;
+								default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+							}
+						}
+					}
 				}
 				else /* Backwards compatible -S means -S+s */
 					Ctrl->S.skip = true;
@@ -431,7 +451,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 	else if (Ctrl->D.refpoint->mode != GMT_REFPOINT_PLOT || strstr (Ctrl->D.refpoint->args, "+w")) {	/* New syntax: */
 		/* Args are +w<length>[/<width>][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]][+o<dx>[/<dy>]] */
 		double bar_offset[2];	/* Will be initialized in gmt_auto_offsets_for_colorbar */
-		gmt_auto_offsets_for_colorbar (GMT, bar_offset, Ctrl->D.refpoint->justify);
+		gmt_auto_offsets_for_colorbar (GMT, bar_offset, Ctrl->D.refpoint->justify, options);
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'j', string))
 			Ctrl->D.justify = gmt_just_decode (GMT, string, PSL_NO_DEF);
 		else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else BL */
@@ -570,7 +590,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, n_files > 0, "No input files are allowed\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set, "Option -L: Cannot be used if -B option sets increments.\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->current.map.frame.set[GMT_X], "Option -L: Cannot be used if -B option sets increments.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.dpi <= 0.0, "Option -N: The dpi must be > 0.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Z.file, "Option -Z: No file given\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->Z.file && gmt_access (GMT, Ctrl->Z.file, R_OK), "Option -Z: Cannot access file %s\n", Ctrl->Z.file);
@@ -661,9 +681,54 @@ GMT_LOCAL bool psscale_letter_hangs_down (char *text) {
 	return false;
 }
 
+GMT_LOCAL unsigned int psscale_shrink_triangle (double gap, double yt, double *yp, unsigned int *p_arg) {
+	*p_arg = PSL_MOVE|PSL_STROKE;
+	if (gmt_M_is_zero (gap)) return 3;
+	/* Must close triangle and shrink it a bit to align with width */
+	*p_arg |= PSL_CLOSE;
+	yp[0] -= yt;	yp[3] -= yt;	yp[2] += yt;
+	return (4);
+}
+
+GMT_LOCAL unsigned int psscale_set_custom_annot (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned int i, unsigned int justify, unsigned int l_justify, char *text) {
+	/* Determine which custom label to use for this slice i. Note: when i == P->n_colors we call it for the last slice for the second time */
+	char *c = NULL;
+	unsigned int this_just = justify;
+	if (i == P->n_colors && P->data[i-1].annot && P->data[i-1].label) {
+		i--;	/* Get the actual slice number (the last one) */
+		if (P->data[i].annot == GMT_CPT_B_ANNOT) {	/* Use the second label for upper */
+			if ((c = strchr (P->data[i].label, ';')))	/* Use the second label for upper */
+				strncpy (text, &c[1], GMT_LEN256-1);
+			else {	/* Cannot use the same label in both places */
+				text[0] = '\0';
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Last color slice has annotation flag B but only one label found [%s]\n", P->data[i].label);
+			}
+		}
+		else if ((P->data[i].annot & GMT_CPT_U_ANNOT))	/* Use the single label for upper */
+			strncpy (text, P->data[i].label, GMT_LEN256-1);
+		else	/* Else it is set to lower which we skip */
+			text[0] = '\0';
+		this_just = l_justify;
+	}
+	else if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
+		if ((c = strchr (P->data[i].label, ';')))
+			c[0] = '\0';	/* Temporary hide any second label */
+		strncpy (text, P->data[i].label, GMT_LEN256-1);
+		if (c) c[0] = ';';	/* Restore second label */
+		this_just = l_justify;
+	}
+	else if (i && (P->data[i-1].annot & GMT_CPT_U_ANNOT) && P->data[i-1].label) {
+		strncpy (text, P->data[i-1].label, GMT_LEN256-1);
+		this_just = l_justify;
+	}
+	else
+		text[0] = '\0';
+	return (this_just);
+}
+
 GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
-	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0;
-	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
+	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0, p_arg;
+	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nv, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
 	int this_just, p_val, center = 0;
 	bool reverse, all = true, use_image, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
 	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.skip, need_image;
@@ -671,9 +736,9 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
 	double hor_annot_width, annot_off, label_off = 0.0, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
-	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], prev_del_z, this_del_z = 0.0;
+	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], prev_del_z, this_del_z = 0.0, yt = 0.0;
 	double length = Ctrl->D.dim[GMT_X], width = Ctrl->D.dim[GMT_Y], gap = Ctrl->L.spacing, t_len, max_intens[2], xp[4], yp[4];
-	double *xpos = NULL, elength[2] = {0.0, 0.0};
+	double *xpos = NULL, elength[2] = {0.0, 0.0}, t_angle;
 	struct GMT_FILL *f = NULL;
 	struct GMT_PLOT_AXIS *A = NULL;
 	struct GMT_MAP_PANEL *panel = Ctrl->F.panel;	/* Shorthand */
@@ -689,7 +754,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	cap  = PSL->internal.line_cap;
 	join = PSL->internal.line_join;
 
-	if (Ctrl->L.active) no_B_mode = 1;
+	if (Ctrl->L.active) no_B_mode |= PSSCALE_ANNOT_CUSTOM;
 
 	/* Temporarily change to miter join so boxes and end triangles have near corners */
 	PSL_setlinejoin (PSL, PSL_MITER_JOIN);
@@ -757,7 +822,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 	if (Ctrl->L.active && n_use_labels == P->n_colors)
 		all = use_labels = true;	/* Only use optional text labels for equal length scales */
-	else if (n_use_labels && no_B_mode == 1)
+	else if (n_use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
 		use_labels = true;
 	else
 		use_labels = false;
@@ -969,7 +1034,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256-1);
 	strncpy (unit, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256-1);
 	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;
-
+	if (Ctrl->L.active) {
+		strncpy (label, Ctrl->S.label, GMT_LEN256-1);
+		strncpy (unit, Ctrl->S.unit, GMT_LEN256-1);
+	}
 	if (flip & PSSCALE_FLIP_ANNOT) {	/* Place annotations on the opposite side */
 		justify = l_justify = (Ctrl->D.horizontal) ? PSL_BC : PSL_MR;
 		y_base = width;
@@ -997,6 +1065,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		xd = 0.5 * w * (c - 1.0);
 		yd = 0.5 * w * (s - 1.0);
 		xt = yd * 2.0 * Ctrl->D.elength / width;	/* Shift of triangle peak x-pos to maintain original angle theta */
+		yt = 0.5 * w * (c - s + 1) / s;	/* Change in triangle base y-coordinates if there is gap and we must close the polygon */
 	}
 	/* Set up array with x-coordinates for the CPT z_lows + final z_high */
 	n_xpos = P->n_colors + 1;
@@ -1064,16 +1133,28 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 		label_off = annot_off + GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH] + GMT->current.setting.map_label_offset;
-		y_annot = y_base + dir * annot_off;
+		if (no_B_mode & PSSCALE_ANNOT_ANGLED) {
+			y_annot = y_base + dir * (((len > 0.0) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] * fabs (sind (Ctrl->S.angle)));
+			justify = l_justify = PSL_ML;
+			if (Ctrl->S.angle > 90.0) Ctrl->S.angle -= 180.0;
+			t_angle = Ctrl->S.angle;
+			if (Ctrl->S.angle < 0.0) {
+				justify = l_justify = PSL_MR;
+				t_angle += 180.0;
+			}
+		}
+		else
+			y_annot = y_base + dir * annot_off;
 		if ((flip & PSSCALE_FLIP_ANNOT) == (flip & PSSCALE_FLIP_LABEL) / 2) y_label = y_base + dir * label_off;
 
 		PSL_setlinecap (PSL, PSL_BUTT_CAP);	/* Butt cap required for outline of triangle */
 
 		if (Ctrl->D.emode & (reverse + 1)) {	/* Add color triangle on left side */
-			xp[0] = xp[2] = xleft - gap;	xp[1] = xleft - gap - Ctrl->D.elength;
-			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
-			for (i = 0; i < 3; i++) xp[i] += xd;
+			xp[0] = xp[2] = xp[3] = xleft - gap;	xp[1] = xleft - gap - Ctrl->D.elength;
+			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 4; i++) xp[i] += xd;
 			xp[1] += xt;
+			nv = psscale_shrink_triangle (gap, yt, yp, &p_arg);
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, 0);
@@ -1082,8 +1163,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
-			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
+			PSL_plotpolygon (PSL, xp, yp, nv);
+			PSL_plotline (PSL, xp, yp, nv, p_arg);
 			nan_off = Ctrl->D.elength - xd;	/* Must make space for the triangle */
 		}
 		if (Ctrl->D.emode & 4) {	/* Add NaN rectangle on left side */
@@ -1102,10 +1183,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, 0.0, PSL_MR, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle on right side */
-			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
-			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
-			for (i = 0; i < 3; i++) xp[i] -= xd;
+			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
+			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 4; i++) xp[i] -= xd;
 			xp[1] -= xt;
+			nv = psscale_shrink_triangle (gap, yt, yp, &p_arg);
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, 0);
@@ -1114,8 +1196,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
-			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
+			PSL_plotpolygon (PSL, xp, yp, nv);
+			PSL_plotline (PSL, xp, yp, nv, p_arg);
 		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
@@ -1130,7 +1212,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (B_set) {	/* Used -B */
 			gmt_xy_axis2 (GMT, xleft, y_base, length, start_val, stop_val, A, !(flip & PSSCALE_FLIP_ANNOT), GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE] & PSSCALE_FLIP_LABEL, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? N_SIDE : S_SIDE]);
 			if (A->item[GMT_GRID_UPPER].active) {
-				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
+				dx = gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				if (A->type == GMT_TIME)
 					plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
@@ -1155,10 +1237,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {	/* Finally do last slice z_high boundary */
+				//if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {	/* Finally do last slice z_high boundary */
 					t_len = (all || (P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
-				}
+				//}
 			}
 
 			/* Now we place annotations */
@@ -1173,17 +1255,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (all || P->data[i].annot) {	/* Annotate this */
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && no_B_mode) {
-						if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
-							strncpy (text, P->data[i].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else if (i && (P->data[i-1].annot & GMT_CPT_U_ANNOT) && P->data[i-1].label) {
-							strncpy (text, P->data[i-1].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else
-							text[0] = '\0';
+					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM)) {
+						this_just = psscale_set_custom_annot (GMT, P, i, justify, l_justify, text);
 					}
 					else if (center && Ctrl->L.interval)
 						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
@@ -1196,7 +1269,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					}
 					else
 						gmt_sprintf_float (GMT, text, format, P->data[i].z_low);
-					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
+					if (do_annot) {
+						if (no_B_mode & PSSCALE_ANNOT_ANGLED)	/* Adjust x-position due to the slanting */
+							xx += GMT->current.setting.map_annot_offset[GMT_PRIMARY] * cosd (t_angle);
+						PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, dir * Ctrl->S.angle, -this_just, form);
+					}
 				}
 				x1 += z_width[i];
 			}
@@ -1205,14 +1282,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (all || (P->data[i].annot & GMT_CPT_U_ANNOT)) {
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && no_B_mode) {
-						if (P->data[i].label) {
-							strncpy (text, P->data[i].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else
-							text[0] = '\0';
-					}
+					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
+						this_just = psscale_set_custom_annot (GMT, P, P->n_colors, justify, l_justify, text);
 					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_high);
 						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
@@ -1222,7 +1293,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					}
 					else
 						gmt_sprintf_float (GMT, text, format, P->data[i].z_high);
-					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, 0.0, -this_just, form);
+					if (do_annot) {
+						if (no_B_mode & PSSCALE_ANNOT_ANGLED)	/* Adjust x-position due to the slanting */
+							xx += GMT->current.setting.map_annot_offset[GMT_PRIMARY] * cosd (t_angle);
+						PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, dir * Ctrl->S.angle, -this_just, form);
+					}
 				}
 			}
 			PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
@@ -1242,7 +1317,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (P->is_wrapping) {	/* Add cyclic glyph */
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
 				x0 = xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + 0.45 * width;
-			else if ((Ctrl->D.emode & 4) == 0)	/* TNo nan so place on left */
+			else if ((Ctrl->D.emode & 4) == 0)	/* No nan so place on left */
 				x0 = xleft - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - 0.45 * width;
 			else	/* Give up and place in center */
 				x0 = 0.5 * (xleft + xright);
@@ -1331,16 +1406,22 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + hor_annot_width;
 		label_off = annot_off + GMT->current.setting.map_label_offset;
 		if (use_labels || (flip & PSSCALE_FLIP_ANNOT) || Ctrl->Q.active) annot_off -= hor_annot_width;
-		y_annot = y_base + dir * annot_off;
+		if (no_B_mode & PSSCALE_ANNOT_ANGLED) {
+			y_annot = y_base + dir * (((len > 0.0) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] * cosd (Ctrl->S.angle));
+			justify = l_justify = (dir == -1) ? PSL_ML : PSL_MR;
+		}
+		else
+			y_annot = y_base + dir * annot_off;
 		if ((flip & PSSCALE_FLIP_ANNOT) == (flip & PSSCALE_FLIP_LABEL) / 2) y_label = y_base + dir * label_off;
 
 		PSL_setlinecap (PSL, PSL_BUTT_CAP);	/* Butt cap required for outline of triangle */
 
 		if (Ctrl->D.emode & (reverse + 1)) {	/* Add color triangle at bottom */
-			xp[0] = xp[2] = xleft - gap;	xp[1] = xleft - gap - Ctrl->D.elength;
-			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
-			for (i = 0; i < 3; i++) xp[i] += xd;
+			xp[0] = xp[2] = xp[3] = xleft - gap;	xp[1] = xleft - gap - Ctrl->D.elength;
+			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 4; i++) xp[i] += xd;
 			xp[1] += xt;
+			nv = psscale_shrink_triangle (gap, yt, yp, &p_arg);
 			id = (reverse) ? GMT_FGD : GMT_BGD;
 			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, 0);
@@ -1349,8 +1430,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
-			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
+			PSL_plotpolygon (PSL, xp, yp, nv);
+			PSL_plotline (PSL, xp, yp, nv, p_arg);
 			nan_off = Ctrl->D.elength - xd;	/* Must make space for the triangle */
 		}
 		if (Ctrl->D.emode & 4) {	/* Add NaN rectangle on left side */
@@ -1369,10 +1450,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, -90.0, PSL_TC, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle at top */
-			xp[0] = xp[2] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
-			yp[0] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
-			for (i = 0; i < 3; i++) xp[i] -= xd;
+			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
+			yp[0] = yp[3] = width - yd;	yp[2] = yd;	yp[1] = 0.5 * width;
+			for (i = 0; i < 4; i++) xp[i] -= xd;
 			xp[1] -= xt;
+			nv = psscale_shrink_triangle (gap, yt, yp, &p_arg);
 			id = (reverse) ? GMT_BGD : GMT_FGD;
 			if ((f = P->bfn[id].fill) != NULL)
 				gmt_setfill (GMT, f, 0);
@@ -1381,8 +1463,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
-			PSL_plotpolygon (PSL, xp, yp, 3);
-			PSL_plotline (PSL, xp, yp, 3, PSL_MOVE|PSL_STROKE);
+			PSL_plotpolygon (PSL, xp, yp, nv);
+			PSL_plotline (PSL, xp, yp, nv, p_arg);
 		}
 
 		PSL_setlinecap (PSL, PSL_SQUARE_CAP);	/* Square cap required for box of scale bar */
@@ -1403,7 +1485,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (A->item[GMT_GRID_UPPER].generated)  A->item[GMT_GRID_UPPER].interval  = 0.0;	/* Reset grid  so we can redo via automagic */
 			gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 			if (A->item[GMT_GRID_UPPER].active) {	/* Gridlines work fine without kludging since no annotations involved */
-				dx = gmtlib_get_map_interval (GMT, &A->item[GMT_GRID_UPPER]);
+				dx = gmtlib_get_map_interval (GMT, A->type, &A->item[GMT_GRID_UPPER]);
 				gmt_setpen (GMT, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 				if (A->type == GMT_TIME)
 					plot_timex_grid (GMT, PSL, P->data[0].z_low, P->data[P->n_colors-1].z_high, 0.0, width, GMT_GRID_UPPER);
@@ -1441,10 +1523,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					t_len = (all || ((P->data[i].annot & GMT_CPT_L_ANNOT) || (i && P->data[i-1].annot & GMT_CPT_U_ANNOT))) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[i], y_base, xpos[i], y_base+t_len);
 				}
-				if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {
+				//if (!use_labels || P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT) {
 					t_len = (all || (P->data[P->n_colors-1].annot & GMT_CPT_U_ANNOT)) ? dir * len : dir * len2;	/* Annot or frame length */
 					PSL_plotsegment (PSL, xpos[P->n_colors], y_base, xpos[P->n_colors], y_base+t_len);
-				}
+				//}
 			}
 
 			/* Finally plot annotations */
@@ -1459,18 +1541,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (all || P->data[i].annot) {
 					this_just = justify;
 					do_annot = true;
-					if (use_labels && no_B_mode) {
-						if ((P->data[i].annot & GMT_CPT_L_ANNOT) && P->data[i].label) {
-							strncpy (text, P->data[i].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else if (i && P->data[i-1].annot & GMT_CPT_U_ANNOT && P->data[i-1].label) {
-							strncpy (text, P->data[i-1].label, GMT_LEN256-1);
-							this_just = l_justify;
-						}
-						else
-							text[0] = '\0';
-					}
+					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
+						this_just = psscale_set_custom_annot (GMT, P, i, justify, l_justify, text);
 					else if (center && Ctrl->L.interval)
 						sprintf (text, format, P->data[i].z_low, P->data[i].z_high);
 					else if (Ctrl->Q.active) {
@@ -1484,16 +1556,22 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					else
 						sprintf (text, format, P->data[i].z_low);
 					if (!cpt_auto_fmt) this_just = l_justify;
-					if (do_annot) PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
+					if (do_annot) {
+						if (no_B_mode & PSSCALE_ANNOT_ANGLED)	/* Adjust x-position due to the slanting */
+							xx += GMT->current.setting.map_annot_offset[GMT_PRIMARY] * sind (Ctrl->S.angle);
+						PSL_plottext (PSL, xx, y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0 - dir*Ctrl->S.angle, -this_just, form);
+					}
 				}
 				x1 += z_width[i];
 			}
-			if (!center && !use_labels) {
+			if (!center) {
 				i = P->n_colors-1;
 				if (all || (P->data[i].annot & GMT_CPT_U_ANNOT)) {
 					this_just = justify;
 					do_annot = true;
-					if (Ctrl->Q.active) {
+					if (use_labels && (no_B_mode & PSSCALE_ANNOT_CUSTOM))
+						this_just = psscale_set_custom_annot (GMT, P, P->n_colors, justify, l_justify, text);
+					else if (Ctrl->Q.active) {
 						p_val = irint (P->data[i].z_high);
 						if (doubleAlmostEqualZero (P->data[i].z_high, (double)p_val))
 							sprintf (text, "10@+%d@+", p_val);
@@ -1504,7 +1582,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					else
 						gmt_sprintf_float (GMT, text, format, P->data[i].z_high);
 					if (!cpt_auto_fmt) this_just = l_justify;
-					if (do_annot) PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0, -this_just, form);
+					if (do_annot) {
+						if (no_B_mode & PSSCALE_ANNOT_ANGLED)	/* Adjust x-position due to the slanting */
+							xx += GMT->current.setting.map_annot_offset[GMT_PRIMARY] * sind (Ctrl->S.angle);
+						PSL_plottext (PSL, xpos[P->n_colors], y_annot, GMT->current.setting.font_annot[GMT_PRIMARY].size, text, -90.0 - dir*Ctrl->S.angle, -this_just, form);
+					}
 				}
 			}
 			PSL_settextmode (PSL, PSL_TXTMODE_HYPHEN);	/* Back to leave as is */
@@ -1589,7 +1671,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	/* Overrule GMT settings of MAP_FRAME_AXES. Use WESN */
-	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_ALL;
+	strcpy (GMT->current.setting.map_frame_axes, "WESN");
 	GMT->current.map.frame.draw = false;	/* No -B parsed explicitly yet */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
@@ -1610,12 +1692,17 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	if (P->has_range)	/* Convert from normalized to default CPT z-range */
 		gmt_stretch_cpt (GMT, P, 0.0, 0.0);
 
+	if (P->categorical && (Ctrl->D.emode & 1 || Ctrl->D.emode & 2)) {
+			GMT_Report (API, GMT_MSG_WARNING, "Option -D: Cannot select back/fore-ground extender for categorical CPT\n");
+			if (Ctrl->D.emode & 1) Ctrl->D.emode -= 1;
+			if (Ctrl->D.emode & 2) Ctrl->D.emode -= 2;
+	}
+
 	if (Ctrl->G.active) {	/* Attempt truncation */
 		struct GMT_PALETTE *Ptrunc = gmt_truncate_cpt (GMT, P, Ctrl->G.z_low, Ctrl->G.z_high);	/* Possibly truncate the CPT */
 		if (Ptrunc == NULL)
 			Return (EXIT_FAILURE);
 		P = Ptrunc;
-		//GMT_Write_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_NORMAL, NULL, "chop.cpt", P);
 	}
 	if (Ctrl->W.active)	/* Scale all z values */
 		gmt_scale_cpt (GMT, P, Ctrl->W.scale);
@@ -1658,18 +1745,20 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 4, double);
 	if (!(GMT->common.R.active[RSET] && GMT->common.J.active)) {	/* When no projection specified, use fake linear projection */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Without -R -J we must select default font sizes and dimensions regardless of plot size\n");
+		gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values */
 		GMT->common.R.active[RSET] = true;
 		GMT->common.J.active = false;
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
+		if (gmt_map_setup (GMT, wesn))
 			Return (GMT_PROJECTION_ERROR);
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 			Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
 	}
 	else {	/* First use current projection, project, then use fake projection */
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), ""))
+		if (gmt_map_setup (GMT, GMT->common.R.wesn))
 			Return (GMT_PROJECTION_ERROR);
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
@@ -1691,7 +1780,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', text);
 		wesn[XLO] = start_val;	wesn[XHI] = stop_val;	wesn[YHI] = Ctrl->D.dim[GMT_Y];
 		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 1;	/* Do not rescale dimensions */
-		if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, wesn), ""))
+		if (gmt_map_setup (GMT, wesn))
 			Return (GMT_PROJECTION_ERROR);
 		if (GMT->current.plot.panel.active) GMT->current.plot.panel.no_scaling = 0;	/* Reset no_scaling flag */
 	}
@@ -1749,6 +1838,8 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	gmt_adjust_refpoint (GMT, Ctrl->D.refpoint, dim, Ctrl->D.off, Ctrl->D.justify, PSL_BL);	/* Adjust refpoint to BL corner */
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "After shifts, Bar reference x = %g y = %g\n", Ctrl->D.refpoint->x, Ctrl->D.refpoint->y);
 	PSL_setorigin (PSL, Ctrl->D.refpoint->x, Ctrl->D.refpoint->y, 0.0, PSL_FWD);
+
+	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_ALL;
 
 	psscale_draw_colorbar (GMT, Ctrl, P, z_width);
 

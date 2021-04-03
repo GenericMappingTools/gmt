@@ -17,9 +17,9 @@ gmt begin ex14
 	gmt grdtrack track -Gtrend.nc -o2,3 > trend.d
 	gmt plot -Ra -JX15c/3.5c data.d -Wthick -Bx1 -By50 -BWSne
 	gmt plot trend.d -Wthinner,-
-	gmt subplot begin 2x2 -M0.1c -Ff15c -BWSne -Yh+1c
+	gmt subplot begin 2x2 -M0.1c -Ff15c -BWSne -Yh+1c -R0/7/0/7
 		REM First draw network and label the nodes
-		gmt plot @Table_5_11.txt -R0/7/0/7 -Sc0.12c -Gblack -c0,0
+		gmt plot @Table_5_11.txt -Sc0.12c -Gblack -c0,0
 		gmt text @Table_5_11.txt -D3p/0 -F+f6p+jLM -N
 		REM Then draw gmt blockmean cells and label data values using one decimal
 		gmt plot mean.xyz -Ss0.12c -Gblack -c0,1

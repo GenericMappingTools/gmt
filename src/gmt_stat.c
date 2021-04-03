@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,7 @@
  *	gmt_weibull_crit      :
  *	gmt_binom_pdf         :
  *	gmt_binom_cdf         :
+ *	gmt_vonmises_pdf      :
  *	gmt_zdist             :
  *	gmt_zcrit             :
  *	gmt_tcrit             :
@@ -983,6 +984,10 @@ double gmt_plm (struct GMT_CTRL *GMT, int l, int m, double x) {
 	return (pll);
 }
 
+#ifndef M_SQRTPI
+#define M_SQRTPI	1.77245385090551602729	
+#endif
+
 double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	/* This function computes the normalized associated Legendre function of x for degree
 	 * l and order m. x must be in the range [-1;1] and 0 <= |m| <= l.
@@ -1056,9 +1061,9 @@ double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	   In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 	if (ortho)
-		pmm *= 1.0 / d_sqrt(M_PI);
+		pmm /= (M_SQRT2 * M_SQRTPI);
 	else if (m != 0)
-		pmm *= d_sqrt(2.0);
+		pmm *= M_SQRT2;
 
 	/* If C-S phase is requested, apply it now */
 
@@ -1167,9 +1172,9 @@ void gmt_plm_bar_all (struct GMT_CTRL *GMT, int lmax, double x, bool ortho, doub
 		In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 		if (ortho)
-			plm[mm] = pmm * 0.5 / d_sqrt(M_PI);
+			plm[mm] = pmm / (M_SQRT2 * M_SQRTPI);
 		else if (m != 0)
-			plm[mm] = pmm * d_sqrt(2.0);
+			plm[mm] = pmm * M_SQRT2;
 
 		/* If C-S phase is requested, apply it now */
 
@@ -1423,6 +1428,24 @@ double gmt_binom_cdf (struct GMT_CTRL *GMT, uint64_t x, uint64_t n, double p) {
 			c += gmt_binom_pdf (GMT, j, n, p);
 	}
 	return (c);
+}
+
+double gmt_vonmises_pdf (struct GMT_CTRL *GMT, double x, double mu, double kappa) {
+	/* Von Mises 1-D probability density function */
+	double p;
+	gmt_M_unused(GMT);
+	/* Von Mises distribution, expects x and mu in degrees */
+	p = exp (kappa * cosd (x - mu)) / (TWO_PI * gmt_i0 (GMT, kappa));
+	return (p);
+}
+
+double gmt_fisher_pdf (struct GMT_CTRL *GMT, double plon, double plat, double lon, double lat, double kappa) {
+	/* Fisher 3-D probability density function centered on (plon, plat) evaluated at
+	 * another point (lon, lat), given kappa */
+	double p, cos_psi;
+	cos_psi = gmtlib_great_circle_dist_cos (GMT, plon, plat, lon, lat);
+	p = kappa * exp (kappa * cos_psi) / (2.0 * TWO_PI * sinh (kappa));
+	return (p);
 }
 
 double gmt_zdist (struct GMT_CTRL *GMT, double x) {
@@ -2750,13 +2773,14 @@ GMT_LOCAL void gmtstat_get_geo_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *
 	 * P.Wessel, July 2016.
 	 */
 	uint64_t node;
-	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1;
+	unsigned int row, col, j, first_row = 0, last_row = G->header->n_rows - 1, last_col = G->header->n_columns - 1, ltype;
 	double lat, area, f, row_weight, col_weight = 1.0, R2 = pow (0.001 * GMT->current.proj.mean_radius, 2.0);	/* squared mean radius in km */
 	char *aux[6] = {"geodetic", "authalic", "conformal", "meridional", "geocentric", "parametric"};
 	char *rad[5] = {"mean (R_1)", "authalic (R_2)", "volumetric (R_3)", "meridional", "quadratic"};
 
+	ltype = (GMT->current.setting.proj_aux_latitude == GMT_LATSWAP_NONE) ? 0 : 1+GMT->current.setting.proj_aux_latitude/2;
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Compute spherical gridnode areas using %s radius [R = %.12g km] and %s latitudes\n",
-		rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, aux[1+GMT->current.setting.proj_aux_latitude/2]);
+		rad[GMT->current.setting.proj_mean_radius], GMT->current.proj.mean_radius, aux[ltype]);
 	/* May need special treatment of pole points */
 	f = (G->header->registration == GMT_GRID_NODE_REG) ? 0.5 : 1.0;	/* Half pizza-slice for gridline regs with node at pole, full slice for grids */
 	area = R2 * (G->header->inc[GMT_X] * D2R);
@@ -2805,9 +2829,56 @@ GMT_LOCAL void gmtstat_get_cart_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID 
 }
 
 void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
-	/* Calculate geographic spherical in km^2 or plain Cartesian area in suer_unit^2 and place in grid G. */
+	/* Calculate geographic spherical in km^2 or plain Cartesian area in user_unit^2 and place in grid G. */
 	if (gmt_M_is_geographic (GMT, GMT_IN))
 		gmtstat_get_geo_cellarea (GMT, G);
 	else
 		gmtstat_get_cart_cellarea (GMT, G);
 }
+
+double gmt_von_mises_mu_and_kappa (struct GMT_CTRL *GMT, double *data, double *w, uint64_t n, double *kappa) {
+	/* Return the mean and kappa for a von Mises fit to (possibly weighted) data.
+	 * It is assumed that data have been scaled to 0-360. Weights w is possibly NULL for no weights */
+	uint64_t k;
+	double mean = 0.0, x_r = 0.0, y_r = 0.0, s_w = 0.0, ww = 1.0;
+	double lo, hi, midval, range2, delta_R, s, c, R_bar;
+
+	for (k = 0; k < n; k++) {
+		if (gmt_M_is_dnan (data[k])) continue;
+		if (w) ww = w[k];	/* Otherwise it is a constant 1 */
+		sincosd (data[k], &s, &c);
+		x_r += c * ww;	y_r += s * ww;
+		s_w += ww;
+	}
+	if (s_w > 0.0) {	/* Can compute the statistics */
+		x_r /= s_w;	y_r /= s_w;
+		mean = atan2d (y_r, x_r);
+	}
+	else {	/* No data, basically */
+		*kappa = GMT->session.d_NaN;
+		return (GMT->session.d_NaN);
+	}
+	/* Here we have actual values */
+	R_bar = hypot (x_r, y_r);
+	if (R_bar >= 0.999) {	/* Just return a big kappa for R almost = 1 */
+		*kappa = 500.0;	/* kappa = 500 gives R_bar = 0.998999916722 so close enough */
+		return (mean);
+	}
+	/* Compute kappa by a dumb bisection search */
+	lo = 0.0;	hi = 500.0;
+	while (fabs (hi - lo) > GMT_CONV8_LIMIT) {
+		midval = 0.5 * (hi + lo);
+		range2 = 0.5 * (hi - lo);
+		delta_R = (gmt_i1 (GMT, midval) / gmt_i0 (GMT, midval)) - R_bar;
+		if (delta_R > GMT_CONV8_LIMIT)	/* Need a smaller R next time */
+			hi -= range2;
+		else if (delta_R < -GMT_CONV8_LIMIT)	/* Need a larger R next time */
+			lo += range2;
+		else 	/* Got it, set lo = hi to exit loop */
+			lo = hi;
+	}
+	*kappa = midval;
+
+	return (mean);
+}
+

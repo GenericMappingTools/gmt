@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -93,7 +93,8 @@
 
 /* Used in tools that sets grdheader information via a -D option */
 
-#define GMT_GRDEDIT	"-D[+x<xname>][+y<yname>][+z<zname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>]"
+#define GMT_GRDEDIT2D	"-D[+x<xname>][+y<yname>][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>][+v<name>]"
+#define GMT_GRDEDIT3D	"-D[+x<xname>][+y<yname>][+z<zname>][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>][+v<name>]"
 
 /*! Macros for the common GMT options used in a program's usage synopsis */
 
@@ -113,7 +114,7 @@
 #define GMT_f_OPT	"-f[i|o]<info>"
 #define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z<gap>[+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
-#define GMT_i_OPT	"-i<cols>[+l][+s<scale>][+o<offset>][,...][,t[<word>]]"
+#define GMT_i_OPT	"-i<cols>[+l][+d<divide>][+s<scale>][+o<offset>][,...][,t[<word>]]"
 #define GMT_j_OPT	"-je|f|g"
 #define GMT_l_OPT	"-l<label>[<mods>]"
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
@@ -122,8 +123,9 @@
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r[g|p]"
 #define GMT_s_OPT	"-s[<cols>][+a][+r]"
-#define GMT_t_OPT	"-t<transp>"
-#define GMT_tv_OPT	"-t[<transp>]"
+#define GMT_t_OPT	"-t<transp>[/<transp2>[+f|s]"
+#define GMT_tv_OPT	"-t[<transp>[/<transp2>[+f][+s]]"
+#define GMT_w_OPT	"-wa|y|w|d|p<period][/<phase>][+c<col>]"
 #define GMT_colon_OPT	"-:[i|o]"
 
 /*! Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */

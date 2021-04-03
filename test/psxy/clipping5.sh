@@ -57,5 +57,4 @@ cat << EOF > v.txt
 -0.9	-0.9	-3	160
 EOF
 gmt psxy -R-1/1/-1/1 -JM2.75i -O -K -Baf -BwSnE -S=0.5i+e -Gcyan -W5p,brown v.txt -X3.25i >> $ps
-echo "-0.8 0.8 B" | gmt pstext -R -J -O -K -F+jCM+f18p >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo "-0.8 0.8 B" | gmt pstext -R -J -O -F+jCM+f18p >> $ps

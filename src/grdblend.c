@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -190,6 +190,8 @@ GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INF
 	return false;
 }
 
+EXTERN_MSC void gmtlib_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
+
 GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, bool delayed, struct GMT_GRID *Grid) {
 	/* Returns how many blend files or a negative error value if something went wrong */
 	int type, status, not_supported = 0, t_data, k_data = GMT_NOTSET;
@@ -338,25 +340,27 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 	}
 	gmt_M_free (GMT, L);	/* Done with this now */
 
-	if (h == NULL) {	/* Must use the common region from the tiles */
+	if (h == NULL) {	/* Must use the common region from the tiles and require -I -r if not common increments or registration */
 		uint64_t pp;
-		if (!common_inc)
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Must specify -I if input grids have different increments\n");
-		if (!common_reg)
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Must specify -r if input grids have different registrations\n");
-		if (!common_inc || !common_reg)
+		double *inc = NULL;
+		if (!common_inc && !GMT->common.R.active[ISET])
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must specify -I if input grids have different increments\n");
+		if (!common_reg && !GMT->common.R.active[GSET])
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Must specify -r if input grids have different registrations\n");
+		if ((!common_inc && !GMT->common.R.active[ISET]) || (!common_reg && !GMT->common.R.active[GSET]))
 			return (-GMT_RUNTIME_ERROR);
 		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
 		 * will plow through and modify inc if it does not fit, we don't want that here. */
-		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/B[0].G->header->inc[GMT_X] - GMT_CONV6_LIMIT);
+		inc = (GMT->common.R.active[ISET]) ? GMT->common.R.inc : B[0].G->header->inc;	/* Either use -I if given else they all have the same increments */
+		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/inc[GMT_X] - GMT_CONV6_LIMIT);
 		wesn[XHI] = wesn[XLO] + pp * B[0].G->header->inc[GMT_X];
-		pp = (uint64_t)ceil ((wesn[YHI] - wesn[YLO])/B[0].G->header->inc[GMT_Y] - GMT_CONV6_LIMIT);
+		pp = (uint64_t)ceil ((wesn[YHI] - wesn[YLO])/inc[GMT_Y] - GMT_CONV6_LIMIT);
 		wesn[YHI] = wesn[YLO] + pp * B[0].G->header->inc[GMT_Y];
 		/* Create the h structure and initialize it */
 		h = gmt_get_header (GMT);
 		gmt_M_memcpy (h->wesn, wesn, 4, double);
 		gmt_M_memcpy (h->inc, B[0].G->header->inc, 2, double);
-		h->registration = B[0].G->header->registration;
+		h->registration = (GMT->common.R.active[GSET]) ? GMT->common.R.registration : B[0].G->header->registration;	/* Either use -r if given else they all have the same registration */
 		gmt_M_grd_setpad (GMT, h, GMT->current.io.pad); /* Assign default pad */
 		gmt_set_grddim (GMT, h);	/* Update dimensions */
 		*h_ptr = h;			/* Pass out the updated settings */
@@ -377,7 +381,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			B[n].ignore = true;
 			continue;
 		}
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* Check header for -+360 issues and overlap */
 			if (grdblend_overlap_check (GMT, &B[n], h, 1)) continue;	/* Check inner region for -+360 issues and overlap */
 		}
@@ -530,7 +534,10 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Blend file %s in %.12g/%.12g/%.12g/%.12g with %s weight %g [%d-%d]\n",
 			HHG->name, B[n].wesn[XLO], B[n].wesn[XHI], B[n].wesn[YLO], B[n].wesn[YHI], sense[B[n].invert], B[n].weight, B[n].out_j0, B[n].out_j1);
 
-		if (!B[n].memory && GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-GMT_RUNTIME_ERROR);	/* Free grid unless it is a memory grid */
+		if (!B[n].memory) {	/* Free grid unless it is a memory grid */
+			gmtlib_close_grd (GMT, B[n].G);	/* Close the grid file so we don't have lots of them open */
+			if (GMT_Destroy_Data (GMT->parent, &B[n].G)) return (-GMT_RUNTIME_ERROR);
+		}
 	}
 
 	if (fabs (sub) > 0.0) {	/* Must undo shift earlier */
@@ -764,7 +771,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0),
 	            "Option -I: Must specify positive increments\n");
-
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active,
+	            "Option -G: Must specify output file\n");
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -826,6 +834,18 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
 	if (Ctrl->In.n <= 1) {	/* Got a blend file (or stdin) */
+		if (Ctrl->In.n) {	/* Check if user mistakenly gave a single grid as input */
+			char test_file[PATH_MAX] = {""};
+			int ret_code;
+			struct GMT_GRID_HEADER *h_test = gmt_get_header (GMT);
+			strncpy (test_file, Ctrl->In.file[0], PATH_MAX);
+			if ((ret_code = gmt_grd_get_format (GMT, test_file, h_test, true)) == GMT_NOERROR) {
+				GMT_Report (API, GMT_MSG_ERROR, "Only a single grid found; no blending can take place\n");
+				gmt_free_header (API->GMT, &h_test);
+				Return (GMT_RUNTIME_ERROR);
+			}
+			gmt_free_header (API->GMT, &h_test);
+		}
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
 			Return (API->error);
 		}
@@ -939,7 +959,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 
 	Grid->header->z_min = DBL_MAX;	Grid->header->z_max = -DBL_MAX;	/* These will be updated in the loop below */
 	if (gmt_M_is_geographic (GMT, GMT_IN)) gmt_set_geographic (GMT, GMT_OUT);	/* Inherit the flavor of the input */
-	wrap_x = (gmt_M_is_geographic (GMT, GMT_OUT));	/* Periodic geographic grid */
+	wrap_x = (gmt_M_x_is_lon (GMT, GMT_OUT));	/* Periodic geographic grid */
 	if (wrap_x) nx_360 = urint (360.0 * HH->r_inc[GMT_X]);
 
 	for (row = 0; row < Grid->header->n_rows; row++) {	/* For every output row */
@@ -947,7 +967,10 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 		gmt_M_memset (z, Grid->header->n_columns, gmt_grdfloat);	/* Start from scratch */
 
 		status = grdblend_sync_input_rows (GMT, row, blend, n_blend, Grid->header->xy_off);	/* Wind each input file to current record and read each of the overlapping rows */
-		if (status) Return (status);
+		if (status) {
+			gmt_M_free (GMT, z);
+			Return (status);
+		}
 
 		for (col = 0; col < Grid->header->n_columns; col++) {	/* For each output node on the current row */
 

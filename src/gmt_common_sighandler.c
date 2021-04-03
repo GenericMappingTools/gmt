@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,8 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 # if __DARWIN_UNIX03
 #  ifdef __x86_64__
 #   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__rip)
+#  elif __arm64__	/* Apple Silicon, e.g. M1 */
+#   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__pc)
 #  else
 #   define UC_IP(uc) ((void *) (uc)->uc_mcontext->__ss.__eip)
 #  endif

@@ -4,11 +4,12 @@
 
 # Generic Mapping Tools
 
-[![Azure](https://dev.azure.com/GenericMappingTools/GMT/_apis/build/status/GenericMappingTools.gmt?branchName=master)](https://dev.azure.com/GenericMappingTools/GMT/_build/?definitionId=2)
+![Tests](https://github.com/GenericMappingTools/gmt/workflows/Tests/badge.svg)
 [![CodeCov](https://img.shields.io/codecov/c/github/GenericMappingTools/gmt.svg)](https://codecov.io/gh/GenericMappingTools/gmt/)
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md) 
 
 ## What is GMT?
 
@@ -38,7 +39,7 @@ hobbyists.
 
 ## Installation
 
-GMT has been installed successfully under UNIX/Linux/macOS on workstations.  It
+GMT has been installed successfully under UNIX/Linux/macOS/FreeBSD/OpenBSD on workstations. It
 also installs under Windows and in UNIX emulators such as Cygwin or on virtual
 machines.  We anticipate few problems if you are installing the package on
 other platforms.
@@ -83,7 +84,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2020 by [the GMT Team](AUTHORS.md).
+Copyright (c) 1991-2021 by [the GMT Team](AUTHORS.md).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
@@ -91,9 +92,10 @@ version 3 or any later version. See [LICENSE.TXT](LICENSE.TXT) for full details.
 
 ## Acknowledgment
 
-GMT relies on several other Open Source software libraries and programs for its
+GMT relies on several other Open Source software libraries, programs and data for its
 operation.  We gratefully acknowledge the importance to GMT of these products.
 GMT may be linked with these libraries (* means optional):
+
 [Network Common Data Form (netCDF)](https://www.unidata.ucar.edu/software/netcdf/),
 [Geospatial Data Abstraction Library (GDAL*)](https://gdal.org),
 [Perl Compatible Regular Expressions (PCRE*)](https://www.pcre.org),
@@ -106,3 +108,12 @@ GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 [FFmpeg](https://www.ffmpeg.org),
 [xdg-open](https://www.freedesktop.org/wiki/Software/xdg-utils/), and
 [GraphicsMagick](http://www.graphicsmagick.org).
+
+GMT uses (or can access) data derived from these sources:
+
+- [Scientific Color Maps (CPT)](http://www.fabiocrameri.ch/visualisation.php)
+- [Earth 15" DEM](http://dx.doi.org/10.1029/2019EA000658)
+- [Earth 1" SRTM DEM](https://lpdaac.usgs.gov/products/srtmgl3v003)
+- [Earth 1' crustal age](http://dx.doi.org/10.1029/2020GC009214)
+- [Earth 30" Blue Marble images](https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography)
+- [Earth 30" Black Marble images](https://earthobservatory.nasa.gov/features/NightLights/page3.php)

@@ -42,6 +42,9 @@ insight on how the algorithm works
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-T:
 
 **-T**\ *tolerance*
@@ -51,13 +54,10 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
-
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -137,9 +137,8 @@ number of points required to represent a digitized line of its
 caricature, *Can. Cartogr.*, **10**, 112-122, 1973.
 
 This implementation of the algorithm has been kindly provided by Dr.
-`Gary J. Robinson <http://www.met.reading.ac.uk/users/users/1327/>`_,
-Department of Meteorology, University of Reading, Reading, UK; his
-subroutine forms the basis for this program.
+Gary J. Robinson, Department of Meteorology, University of Reading, Reading, UK;
+his subroutine forms the basis for this program.
 
 See Also
 --------

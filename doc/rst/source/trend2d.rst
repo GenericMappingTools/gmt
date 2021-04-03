@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -55,6 +56,11 @@ a regional surface.
 Required Arguments
 ------------------
 
+*table*
+    One or more ASCII [or binary, see **-bi**]
+    files containing x,y,z [w] values in the first 3 [4] columns. If no
+    files are specified, **trend2d** will read from standard input.
+
 .. _-F:
 
 **-F**\ **xyzmrw**\|\ **p**
@@ -73,11 +79,6 @@ Required Arguments
 
 Optional Arguments
 ------------------
-
-*table*
-    One or more ASCII [or binary, see **-bi**]
-    files containing x,y,z [w] values in the first 3 [4] columns. If no
-    files are specified, **trend2d** will read from standard input.
 
 .. _-C:
 
@@ -98,10 +99,10 @@ Optional Arguments
     will be iterative with a default confidence level of 0.51. Or choose
     your own level between 0 and 1. See remarks section.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -132,6 +133,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

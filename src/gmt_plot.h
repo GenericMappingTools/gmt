@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,12 +47,13 @@
 #define GMT_SYMBOL_DRAW		((int)'D')
 #define GMT_SYMBOL_STROKE	((int)'S')
 #define GMT_SYMBOL_ARC		((int)'A')
-#define GMT_SYMBOL_ROTATE	((int)'R')
+#define GMT_SYMBOL_ROTATE	((int)'O')	/* Since R stands for rounded rectangle in plot */
 #define GMT_SYMBOL_VARROTATE	((int)'V')
 #define GMT_SYMBOL_AZIMROTATE	((int)'Z')
 #define GMT_SYMBOL_TEXTURE	((int)'T')
 #define GMT_SYMBOL_GEOVECTOR	((int)'=')
 #define GMT_SYMBOL_VARTEXT	((int)'L')
+#define GMT_SYMBOL_EPS	((int)'P')
 
 #define GMT_SYMBOL_LINE		0
 #define GMT_SYMBOL_NONE		((int)' ')
@@ -81,6 +82,13 @@ enum GMT_enum_wedgetype {GMT_WEDGE_NORMAL = 0,
 	GMT_WEDGE_ARCS = 1,
 	GMT_WEDGE_RADII = 2,
 	GMT_WEDGE_SPIDER = 3};
+
+/*! Type of symbol base value */
+
+enum GMT_enum_basetype {GMT_BASE_MIN = 0,	/* Bar starts at the minimum value in -R */
+	GMT_BASE_ARG = 1,		/* Base given via +b<base> */
+	GMT_BASE_READ = 2,		/* Base read from file due to +b */
+	GMT_BASE_ORIGIN = 4};		/* For +z|Z: All values relative to given base */
 
 /*! A sub-symbol for symbols along a front */
 struct GMT_FRONTLINE {
@@ -137,12 +145,14 @@ struct GMT_SYMBOL {
 	double size_y;		/* Current symbol size in y */
 	double given_size_x;	/* Symbol size read from file or command line */
 	double given_size_y;	/* Symbol size read from file or command line */
+	double gap;			/* Fractional spacing between side-by-side bars when -Sb|B+s[<gap>] is given */
 	bool read_size_cmd;	/* true when -S indicated we must read symbol sizes from file */
 	bool read_size;		/* true when we must read symbol size from file for the current record */
 	bool shade3D;		/* true when we should simulate shading of 3D symbols cube and column */
 	bool fq_parse;		/* true -Sf or -Sq were given with no args on command line and must be parsed via segment headers */
-	bool accumulate;	/* true if -So takes many band z and they are increments, not total z values */
+	bool accumulate;	/* true if -So|b|B takes many band z and they are increments, not total z values */
 	bool diagonal;		/* true if -Sr+s is given */
+	bool sidebyside;		/* true if -Sb|B+s[<gap>] is given */
 	struct GMT_FONT font;	/* Font to use for the -Sl symbol */
 	unsigned int convert_angles;	/* If 2, convert azimuth to angle on map, 1 special case for -JX, 0 plain case */
 	unsigned int n_nondim;	/* Number of columns that has angles or km (and not dimensions with units) */

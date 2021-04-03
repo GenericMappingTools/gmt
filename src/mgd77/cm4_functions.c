@@ -158,6 +158,7 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 	double *ecto = NULL;		/* was [16416] */
 	double *hyto = NULL;		/* was [49248] */
 	char line[GMT_BUFSIZ] = {""}, *c_unused = NULL;
+	void *ptr = NULL;
 
 	FILE *fp;
 	gmt_M_unused(GMT);
@@ -349,7 +350,11 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 				k = (jmjd - mjdl) * 24;
 				if (k >= n_Dst_rows) {
 					n_Dst_rows += (100 * 24);
-					dstx = realloc(dstx, (size_t)(n_Dst_rows * 24) * sizeof(double));
+					ptr = (void *)dstx;
+					if ((dstx = realloc(dstx, (size_t)(n_Dst_rows * 24) * sizeof(double))) == NULL) {
+						gmt_M_str_free (ptr);
+						return 1;
+					}
 				}
 				for (j = 0; j < 24; ++j)
 					dstx[k + j] = (double)jdst[j];
@@ -358,8 +363,13 @@ int MGD77_cm4field (struct GMT_CTRL *GMT, struct MGD77_CM4 *Ctrl, double *p_lon,
 			fclose(fp);
 			mjdh = jmjd;
 		}
-		if (Ctrl->CM4_DATA.n_times > 1)	/* Need to re-allocate memory for all n_times in dst array */
-			Ctrl->CM4_D.dst = realloc(Ctrl->CM4_D.dst, (size_t)(Ctrl->CM4_DATA.n_times) * sizeof(double));
+		if (Ctrl->CM4_DATA.n_times > 1)	{	/* Need to re-allocate memory for all n_times in dst array */
+			ptr = (void *)Ctrl->CM4_D.dst;
+			if ((Ctrl->CM4_D.dst = realloc(Ctrl->CM4_D.dst, (size_t)(Ctrl->CM4_DATA.n_times) * sizeof(double))) == NULL) {
+				gmt_M_str_free (ptr);
+				return 1;
+			}
+		}
 
 		/* Get only one dst first so that we can test (and abort if needed) if date is out of bounds */
 		if (dstx) Ctrl->CM4_D.dst[0] = intdst(mjdl, mjdh, mjdy[0], msec[0], dstx, &cerr);

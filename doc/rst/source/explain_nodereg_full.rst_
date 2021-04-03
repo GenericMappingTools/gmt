@@ -1,7 +1,20 @@
-.. _nodereg_full:
+The **-r** option (grid registration)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+**Syntax**
 
 **-r**\ [**g**\|\ **p**]
-    Force **g**\ridline or **p**\ ixel node registration [gridline]. Just **-r** sets pixel registration.
-    If no **-r** is given then gridline registration is selected.
-    (Node registrations are defined in Section :ref:`option_nodereg`
-    of the GMT Technical Reference and Cookbook.)
+    Select gridline or pixel node registration.
+
+**Description**
+
+All 2-D grids in GMT have their nodes organized in one of two ways, known as :ref:`gridline
+<cookbook/options:Gridline registration>` and :ref:`pixel <cookbook/options:Pixel registration>` registration. The
+GMT default is :ref:`gridline registration <cookbook/options:Gridline registration>` (**-rg**); programs that allow for
+the creation of grids can use the **-r** option (or **-rp**) to select pixel registration instead.
+
+Most observed data tend to be in gridline registration while processed data sometime may be distributed in pixel
+registration.  While you may convert between the two registrations this conversion looses the Nyquist frequency and
+dampens the other high frequencies. It is best to avoid any registration conversion if you can help it. Planning ahead
+may be important. (Node registrations are defined in Section :ref:`option_nodereg` of the GMT Technical Reference and
+Cookbook.)

@@ -19,16 +19,16 @@
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
-/space		/.notdef	/.notdef	/sterling	/Cdotaccent	/cdotaccent	/.notdef	/section\n\
-/Wgrave		/copyright	/Wacute		/.notdef	/Ygrave		/hyphen		/registered	/.notdef\n\
-/.notdef	/.notdef	/Gdotaccent	/gdotaccent	/.notdef	/.notdef	/paragraph	/.notdef\n\
-/wgrave		/.notdef	/wacute		/.notdef	/ygrave		/Wdieresis	/wdieresis	/Ydieresis\n\
+/uni00A0	/uni1E02	/uni1E03	/sterling	/Cdotaccent	/cdotaccent	/uni1E0A	/section\n\
+/Wgrave		/copyright	/Wacute		/uni1E0B	/Ygrave		/uni00AD	/registered	/Ydieresis\n\
+/uni1E1E	/uni1E1F	/Gdotaccent	/gdotaccent	/uni1E40	/uni1E41	/paragraph	/uni1E56\n\
+/wgrave		/uni1E57	/wacute		/uni1E60	/ygrave		/Wdieresis	/wdieresis	/uni1E61\n\
 /Agrave		/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Ccedilla\n\
 /Egrave		/Eacute		/Ecircumflex	/Edieresis	/Igrave		/Iacute		/Icircumflex	/Idieresis\n\
-/Wcircumflex	/Ntilde		/Ograve		/Oacute		/Ocircumflex	/Otilde		/Odieresis	/.notdef\n\
+/Wcircumflex	/Ntilde		/Ograve		/Oacute		/Ocircumflex	/Otilde		/Odieresis	/uni1E6A\n\
 /Oslash		/Ugrave		/Uacute		/Ucircumflex	/Udieresis	/Yacute		/Ycircumflex	/germandbls\n\
 /agrave		/aacute		/acircumflex	/atilde		/adieresis	/aring		/ae		/ccedilla\n\
 /egrave		/eacute		/ecircumflex	/edieresis	/igrave		/iacute		/icircumflex	/idieresis\n\
-/wcircumflex	/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/.notdef\n\
+/wcircumflex	/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/uni1E6B\n\
 /oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/ycircumflex	/ydieresis\n\
 ] def\n",

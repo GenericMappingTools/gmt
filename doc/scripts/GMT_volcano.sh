@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 gmt begin GMT_volcano
+gmt set GMT_THEME cookbook
 echo "0 0" | gmt plot -R-0.5/0.5/-0.5/0.5 -JX2i -Ba0.25g0.05 -BWSne -Wthick -Skvolcano/2i
 cat <<END > bullseye.def
 0	-0.7	M	-W0.5p,red

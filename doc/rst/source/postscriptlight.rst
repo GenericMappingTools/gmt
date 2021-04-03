@@ -456,7 +456,13 @@ affect the current state of parameters such as line and fill attributes.
 **long PSL_settransparency** (**struct PSL_CTRL** *\*P*, **double**
 *\*transparency*)
 
-    Changes the current PDF transparency value.
+    Changes the current PDF transparency value for both fill and stroke.
+
+**long PSL_settransparencies** (**struct PSL_CTRL** *\*P*, **double**
+*transparencies*)
+
+    Changes the current PDF transparency values for fill and stroke
+    separately.
 
 **long PSL_settransparencymode** (**struct PSL_CTRL** *\*P*, **char**
 *\*mode*)

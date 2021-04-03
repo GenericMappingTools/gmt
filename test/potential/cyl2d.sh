@@ -29,5 +29,4 @@ gmt psxy -R -J -O -K geoid.txt -W0.5p,blue >> $ps
 gmt pstext -R -J -O -K -F+f14p+cTR+jTR+tGEOID -Dj0.1i >> $ps
 gmt psxy -R-25/25/-10/50 -JX6i/2.25i -O -K -Y2.4i v_truth.txt -Sc0.1c -Gred -Bxaf -Byafg1000+l"Eotvos" -BWsne >> $ps
 gmt psxy -R -J -O -K vgg.txt -W0.5p,blue >> $ps
-gmt pstext -R -J -O -K -F+f14p+cTR+jTR+tVGG -Dj0.1i >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt pstext -R -J -O -F+f14p+cTR+jTR+tVGG -Dj0.1i >> $ps

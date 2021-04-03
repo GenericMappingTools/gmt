@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@ struct PSBASEMAP_CTRL {
 	} F;
 	struct PSBASEMAP_L {	/* -L[g|j|n|x]<refpoint>+c[<slon>/]<slat>+w<length>[e|f|M|n|k|u][+a<align>][+f][+l[<label>]][+u] */
 		bool active;
+		char *arg;
 		struct GMT_MAP_SCALE scale;
 	} L;
 	struct PSBASEMAP_T {	/* -Td|m<params> */
@@ -72,6 +73,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *C) {	/* Deal
 	gmt_M_str_free (C->A.file);
 	if (C->D.inset.refpoint) gmt_free_refpoint (GMT, &C->D.inset.refpoint);
 	gmt_M_free (GMT, C->D.inset.panel);
+	gmt_M_str_free (C->L.arg);
 	if (C->L.scale.refpoint) gmt_free_refpoint (GMT, &C->L.scale.refpoint);
 	gmt_M_free (GMT, C->L.scale.panel);
 	if (C->T.rose.refpoint) gmt_free_refpoint (GMT, &C->T.rose.refpoint);
@@ -203,7 +205,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 				break;
 			case 'L':	/* Draw map scale */
 				Ctrl->L.active = true;
-				n_errors += gmt_getscale (GMT, 'L', opt->arg, GMT_SCALE_MAP, &Ctrl->L.scale);
+				if (opt->arg[0])
+					Ctrl->L.arg = strdup (opt->arg);
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: No argument given!\n");
+					n_errors++;					
+				}
 				break;
 			case 'T':	/* Draw map rose */
 				Ctrl->T.active = true;
@@ -267,7 +274,9 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Constructing the basemap\n");
 
-	if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+
+	if (Ctrl->L.active && gmt_getscale (GMT, 'L', Ctrl->L.arg, &Ctrl->L.scale))  Return (GMT_PARSE_ERROR);
 
 	if (Ctrl->A.active) {	/* Just save outline in geographic coordinates */
 		/* Loop counter-clockwise around the rectangular projected domain, recovering the lon/lat points */
@@ -305,6 +314,7 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+	gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_BEFORE, GMT_BASEMAP_GRID_BEFORE, GMT_BASEMAP_ANNOT_BEFORE);
 
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 
@@ -320,6 +330,8 @@ EXTERN_MSC int GMT_psbasemap (void *V_API, int mode, void *args) {
 	}
 	if (Ctrl->T.active) gmt_draw_map_rose (GMT, &Ctrl->T.rose);
 	if (Ctrl->D.active) gmt_draw_map_inset (GMT, &Ctrl->D.inset, false);
+
+	gmt_map_basemap (GMT);	/* Plot base map */
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 

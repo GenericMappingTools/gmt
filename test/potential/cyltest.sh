@@ -44,5 +44,4 @@ echo 0 2500 @~Dr = 1670@~ | gmt pstext -R -J -O -K -F+f18p,Helvetica,white+jCM >
 echo 0 1000 d = 50 km | gmt pstext -R -J -O -K -F+f14p,Times-Italic+jCM -Gwhite >> $ps
 echo 30 3208.5 3751 m | gmt pstext -R -J -O -K -F+f14p,Times-Italic+jCM+a90 -Gwhite >> $ps
 echo 32 1333 z@-1@- = 1333 m | gmt pstext -R -J -O -K -F+f14p,Times-Italic+jLM -Dj0.1i/0.1i >> $ps
-echo 32 5084 z@-2@- = 5084 m | gmt pstext -R -J -O -K -F+f14p,Times-Italic+jLB -Dj0.1i/0.1i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo 32 5084 z@-2@- = 5084 m | gmt pstext -R -J -O -F+f14p,Times-Italic+jLB -Dj0.1i/0.1i >> $ps

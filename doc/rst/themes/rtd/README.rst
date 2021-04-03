@@ -1,5 +1,5 @@
 Copy of the original Sphinx Read The Docs theme from
-https://github.com/readthedocs/sphinx_rtd_theme version 0.5.0.
+https://github.com/readthedocs/sphinx_rtd_theme version 0.5.1.
 
 **************************
 Read the Docs Sphinx Theme
@@ -8,9 +8,9 @@ Read the Docs Sphinx Theme
 .. image:: https://img.shields.io/pypi/v/sphinx_rtd_theme.svg
    :target: https://pypi.python.org/pypi/sphinx_rtd_theme
    :alt: Pypi Version
-.. image:: https://travis-ci.org/readthedocs/sphinx_rtd_theme.svg?branch=master
-   :target: https://travis-ci.org/readthedocs/sphinx_rtd_theme
+.. image:: https://circleci.com/gh/readthedocs/sphinx_rtd_theme.svg?style=svg
    :alt: Build Status
+   :target: https://circleci.com/gh/readthedocs/sphinx_rtd_theme
 .. image:: https://img.shields.io/pypi/l/sphinx_rtd_theme.svg
    :target: https://pypi.python.org/pypi/sphinx_rtd_theme/
    :alt: License

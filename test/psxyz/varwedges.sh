@@ -12,5 +12,4 @@ echo 2.5 0.5  0 30 100 | gmt psxyz -R -J -O -K -p -Sw2i -Gred >> $ps
 echo 4.5 0.5  0 | gmt psxyz -R -J -O -K -p -Sw2i/30/100 -W1p >> $ps
 echo 0.5 1.75 0 30 100 | gmt psxyz -R -J -O -K -p -Sw2i+a+p2p >> $ps
 echo 2.5 1.75 0 | gmt psxyz -R -J -O -K -p -Sw2i/30/100+r+p2p >> $ps
-echo 4.5 1.75 0 | gmt psxyz -R -J -O -K -p -Sw2i/30/100+a+p2p -Gred >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo 4.5 1.75 0 | gmt psxyz -R -J -O -p -Sw2i/30/100+a+p2p -Gred >> $ps

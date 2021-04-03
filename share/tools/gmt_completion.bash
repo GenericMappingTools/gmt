@@ -1,5 +1,5 @@
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # If you source this file from your .bashrc, bash should be able to
@@ -126,6 +126,9 @@ _gmt()
             gmtspatial|spatial)
                 modopts=( -: -A -C -D -E -I -L -Q -R -S -T -V -a -b -f -g -h -i -o -s )
                 fileopts=( -D -N )
+                ;;
+            gmtsplit)
+                modopts=( -: -A -C -D -F -N -Q -S -V -Z -b -f -g -h -i -s )
                 ;;
             gmtvector|vector)
                 modopts=( -: -A -C -E -N -S -T -V -b -f -g -h -i -o -s )
@@ -422,9 +425,6 @@ _gmt()
             sphtriangulate)
                 modopts=( -: -A -C -D -L -N -Q -R -T -V -b -h -i -s )
                 fileopts=( -N )
-                ;;
-            splitxyz)
-                modopts=( -: -A -C -D -F -N -Q -S -V -Z -b -f -g -h -i -s )
                 ;;
             surface)
                 modopts=( -: -A -C -D -G -I -L -N -Q -R -S -T -V -Z -a -b -f -h -i -r -s )

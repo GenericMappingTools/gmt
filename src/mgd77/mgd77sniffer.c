@@ -1,7 +1,7 @@
 /* -------------------------------------------------------------------
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
- *    Copyright (c) 2004-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
+ *    Copyright (c) 2004-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html) and M. T. Chandler
  *	File:	mgd77sniffer.c
  *
  *	mgd77sniffer scans MGD77 files for errors in three ways: one, point-
@@ -923,6 +923,7 @@ EXTERN_MSC int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 
 	if (n_paths <= 0) {
 		GMT_Report (API, GMT_MSG_ERROR, "No cruises found\n");
+		MGD77_Path_Free (GMT, (uint64_t)n_paths, list);
 		Return (GMT_NO_INPUT);
 	}
 
@@ -970,7 +971,7 @@ EXTERN_MSC int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 	gmt_set_geographic (GMT, GMT_IN);
 
 	/* Use GMT time formatting */
-	gmt_set_column (GMT, GMT_OUT, MGD77_TIME, GMT_IS_ABSTIME);
+	gmt_set_column_type (GMT, GMT_OUT, MGD77_TIME, GMT_IS_ABSTIME);
 
 	/* Adjust data dump for number of grids */
 	if (!strcmp(display,"DIFFS"))
@@ -981,21 +982,21 @@ EXTERN_MSC int GMT_mgd77sniffer (void *V_API, int mode, void *args) {
 		for (i = MGD77_LATITUDE; i < (n_out_columns + MGD77_LATITUDE); i++) {
 			/* Special lat formatting */
 			if (i == MGD77_LATITUDE)
-				gmt_set_column (GMT, GMT_OUT, i-MGD77_LATITUDE, GMT_IS_LAT);
+				gmt_set_column_type (GMT, GMT_OUT, i-MGD77_LATITUDE, GMT_IS_LAT);
 
 			/* Special lon formatting */
 			else if (i == MGD77_LONGITUDE)
-				gmt_set_column (GMT, GMT_OUT, i-MGD77_LATITUDE, GMT_IS_LON);
+				gmt_set_column_type (GMT, GMT_OUT, i-MGD77_LATITUDE, GMT_IS_LON);
 
 			/* Everything else is float */
 			else
-				gmt_set_column (GMT, GMT_OUT, i-MGD77_LATITUDE, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, i-MGD77_LATITUDE, GMT_IS_FLOAT);
 		}
 	}
 	else if (display) {
 		for (i = 0; i < n_out_columns; i++) {
 			/* All columns are floats */
-			gmt_set_column (GMT, GMT_OUT, i, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_OUT, i, GMT_IS_FLOAT);
 		}
 	}
 

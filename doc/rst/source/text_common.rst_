@@ -23,25 +23,11 @@ Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and C
 :doc:`gmt.conf` file in order to use the accented characters. Using the
 **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (**-M**)).
+characters, except in paragraph mode (**-M**)).  Finally, you may typeset
+LaTeX expressions provided they are enclosed in @[ ... @[ or <math> ... </math>;
+see Chapter :doc:`/cookbook/gmt-latex` for more details.
 
 Required Arguments
-------------------
-
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-J.rst_
-
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-R.rst_
-
-.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rz.rst_
-
-Optional Arguments
 ------------------
 
 *textfiles*
@@ -61,15 +47,32 @@ Optional Arguments
     C, R (for left, center, or right) and T, M, B for top, middle, or
     bottom. e.g., BL for lower left.
 
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-R| replace:: |Add_-R_links|
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rz.rst_
+
+Optional Arguments
+------------------
+
 .. _-A:
 
 **-A**
     Angles are given as azimuths; convert them to directions using the
     current projection.
 
-.. _-B:
-
+.. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-C:
 
@@ -137,6 +140,7 @@ Optional Arguments
     text dimensions (and **-C**) to build clip paths and turn clipping on.
     This clipping can then be turned off later with :doc:`clip` **-C**.
     To **not** plot the text but activate clipping, use **-G+n** instead.
+    **Note**: cannot be used with LaTeX expressions.
 
 .. _-L:
 
@@ -148,7 +152,7 @@ Optional Arguments
 **-M**
     Paragraph mode. Files must be multiple segment files. Segments are
     separated by a special record whose first character must be *flag*
-    [Default is **>**]. Starting in the 3rd column, we expect to find
+    [Default is **>**]. Starting in the 3rd field, we expect to find
     information pertaining to the typesetting of a text paragraph (the
     remaining lines until next segment header). The information expected
     is (*x y* [*font angle justify*] *linespace parwidth parjust*),
@@ -159,9 +163,11 @@ Optional Arguments
     which may be **l**\ (eft), **c**\ (enter), **r**\ (ight), or
     **j**\ (ustified). The segment header is followed by one or more
     lines with paragraph text. Text may contain the escape sequences
-    discussed above. Separate paragraphs with a blank line.  Note that
-    here, the justification set via **-F+j** applies to the box alignment
-    since the text justification is set by *parjust*.
+    discussed above, although composite characters are not supported.
+    Separate paragraphs with a blank line.  Note that here,
+    the justification set via **-F+j** applies to the box alignment
+    since the text justification is set by *parjust*.  **Note**:
+    cannot be used with LaTeX expressions.
 
 .. _-N:
 
@@ -174,31 +180,41 @@ Optional Arguments
     Change all text to either **l**\ ower or **u**\ pper case [Default
     leaves all text as is].
 
-.. _-U:
+.. _-S:
 
+**-S**\ [*dx*/*dy*/][*shade*]
+    Plot an offset background shaded region beneath the text box. Here, *dx*/*dy*
+    indicates the shift relative to the text box [4\ **p**/-4\ **p**] and *shade*
+    sets the fill color to use for shading [gray50].
+
+.. |Add_-U| replace:: |Add_-U_links|
 .. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
-
+    :start-after: **Syntax**
+    :end-before: **Description**
 .. _-W:
 
 **-W**\ *pen*
     Sets the pen used to draw a rectangle around the text string (see
     **-C**) [Default is width = default, color = black, style = solid].
+    **Note**: cannot be used with LaTeX expressions.
 
-.. _-X:
-
+.. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
 **-Z**
     For 3-D projections: expect each item to have its own level given in
     the 3rd column, and **-N** is implicitly set. (Not implemented for
-    paragraph mode).
+    paragraph mode).  **Note**: If **-F+z** is used then the text level
+    is based on the 4th data column instead.
 
 .. include:: explain_-aspatial.rst_
 
@@ -225,9 +241,8 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
-.. include:: explain_-t.rst_
-..
+.. include:: explain_-tv_full.rst_
 
-   If no transparency is appended then we will read it from the last numerical column per data record instead.
+.. include:: explain_-w.rst_
 
 .. include:: explain_help.rst_

@@ -21,6 +21,7 @@ Synopsis
 [ |-F|\ [**r**\|\ **x**\|\ **y**]\ *params* ]
 [ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
+[ |-Q|\ ]
 [ |-S|\ *scale* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
@@ -44,12 +45,12 @@ Required Arguments
 ------------------
 
 *ingrid*
-    2-D binary grid file to be operated on. (See GRID FILE FORMATS
-    below). For cross-spectral operations, also give the second grid
-    file *ingrd2*.
+    2-D binary grid file to be operated on (see :ref:`Grid File Formats <grd_inout_full>`).
+    For cross-spectral operations, also give the second grid file *ingrid2*.
+
 **-G**\ *outfile*
-    Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See GRID FILE FORMATS below).
+    Specify the name of the output grid file (see :ref:`Grid File Formats
+    <grd_inout_full>`) or the 1-D spectrum table (see **-E**).
 
 Optional Arguments
 ------------------
@@ -150,7 +151,16 @@ Optional Arguments
     is gravity anomalies in mGal and output should be geoid heights in
     meters. [Default is no scale].
 
+.. _-N:
+
 .. include:: explain_fft.rst_
+
+.. _-Q:
+
+**-Q**
+    Selects no wavenumber operations. Useful in conjunction with **-N** modifiers
+    when you wish to write out the 2-D spectrum (or other intermediate grid products)
+    only.
 
 .. _-S:
 
@@ -158,18 +168,16 @@ Optional Arguments
     Multiply each element by *scale* in the space domain (after the
     frequency domain operations). [Default is 1.0].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Grid Distance Units
 -------------------
@@ -233,27 +241,20 @@ and finally scale radians to micro-radians:
     gmt grdfft faa.nc -Ig -A38 -S1e6 -V -Gdefl_38.nc
 
 Second vertical derivatives of gravity anomalies are related to the
-curvature of the field. We can compute these as mGal/m^2 by
-differentiating twice:
-
-   ::
+curvature of the field. We can compute these as mGal/m^2 by::
 
     gmt grdfft gravity.nc -D -D -V -Ggrav_2nd_derivative.nc
 
 To compute cross-spectral estimates for co-registered bathymetry and
-gravity grids, and report result as functions of wavelengths in km, try
-
-   ::
+gravity grids, and report result as functions of wavelengths in km, try::
 
     gmt grdfft bathymetry.nc gravity.grd -E+wk -fg -V > cross_spectra.txt
 
 To examine the pre-FFT grid after detrending, point-symmetry reflection,
 and tapering has been applied, as well as saving the real and imaginary
-components of the raw spectrum of the data in topo.nc, try
+components of the raw spectrum of the data in topo.nc, try::
 
-   ::
-
-    gmt grdfft topo.nc -N+w+z -fg -V
+    gmt grdfft topo.nc -N+w+z -fg -V -Q
 
 You can now make plots of the data in topo_taper.nc, topo_real.nc, and topo_imag.nc.
 

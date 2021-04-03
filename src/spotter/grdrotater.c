@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *   Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -396,7 +396,7 @@ GMT_LOCAL bool grdrotater_skip_if_outside (struct GMT_CTRL *GMT, struct GMT_DATA
 	unsigned int inside = 0;
 	for (seg = 0; seg < P->n_segments && !inside; seg++) {	/* Use degrees since function expects it */
 		if (gmt_polygon_is_hole (GMT, P->segment[seg])) continue;	/* Holes are handled within gmt_inonout */
-		inside = (gmt_inonout (GMT, lon, lat, P->segment[seg]) > 0);
+		inside = (gmt_inonout (GMT, lon, lat, P->segment[seg]) > GMT_OUTSIDE);
 	}
 	return ((inside) ? false : true);	/* true if outside */
 }

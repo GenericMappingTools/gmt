@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 #
 # Check if we can wrap global grids over longitude
+# Note: This recently changed due to https://github.com/GenericMappingTools/gmt/pull/4451
+# so the PS has been updated.
 #
 
 ps=globalgrid.ps
@@ -29,4 +31,3 @@ $plot $R1 -Y6i -X5i -O -K >> $ps
 $plot $R2 -Y-2i -O -K >> $ps
 $plot $R3 -Y-2i -O -K >> $ps
 $plot $R4 -Y-2i -O >> $ps
-

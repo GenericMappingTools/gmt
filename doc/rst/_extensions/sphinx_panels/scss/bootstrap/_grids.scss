@@ -1,0 +1,222 @@
+// Bootstrap v4.4.1 (https://getbootstrap.com/)
+// Copyright 2011-2019 The Bootstrap Authors
+// Copyright 2011-2019 Twitter, Inc.
+// Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
+
+.container {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: 100%;
+}
+
+$media-min-sm: 576px;
+$media-min-md: 768px;
+$media-min-lg: 992px;
+$media-min-xl: 1200px;
+
+$media-max-sm: 540px;
+$media-max-md: 720px;
+$media-max-lg: 960px;
+$media-max-xl: 1140px;
+
+$media-widths: (
+  'sm': $media-min-sm,
+  'md': $media-min-md,
+  'lg': $media-min-lg,
+  'xl': $media-min-xl,
+) !default;
+
+@media (min-width:$media-min-sm) {
+  .container {
+    max-width: $media-max-sm;
+  }
+}
+
+@media (min-width:$media-min-md) {
+  .container {
+    max-width: $media-max-md;
+  }
+}
+
+@media (min-width:$media-min-lg) {
+  .container {
+    max-width: $media-max-lg;
+  }
+}
+
+@media (min-width:$media-min-xl) {
+  .container {
+    max-width: $media-max-xl;
+  }
+}
+
+.container-fluid,
+.container-lg,
+.container-md,
+.container-sm,
+.container-xl {
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+  width: 100%;
+}
+
+@media (min-width:$media-min-sm) {
+
+  .container,
+  .container-sm {
+    max-width: $media-max-sm;
+  }
+}
+
+@media (min-width:$media-min-md) {
+
+  .container,
+  .container-md,
+  .container-sm {
+    max-width: $media-max-md;
+  }
+}
+
+@media (min-width:$media-min-lg) {
+
+  .container,
+  .container-lg,
+  .container-md,
+  .container-sm {
+    max-width: $media-max-lg;
+  }
+}
+
+@media (min-width:$media-min-xl) {
+
+  .container,
+  .container-lg,
+  .container-md,
+  .container-sm,
+  .container-xl {
+    max-width: $media-max-xl;
+  }
+}
+
+.row {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap;
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+.col-lg,
+.col-lg-1,
+.col-lg-10,
+.col-lg-11,
+.col-lg-12,
+.col-lg-2,
+.col-lg-3,
+.col-lg-4,
+.col-lg-5,
+.col-lg-6,
+.col-lg-7,
+.col-lg-8,
+.col-lg-9,
+.col-lg-auto,
+.col-md,
+.col-md-1,
+.col-md-10,
+.col-md-11,
+.col-md-12,
+.col-md-2,
+.col-md-3,
+.col-md-4,
+.col-md-5,
+.col-md-6,
+.col-md-7,
+.col-md-8,
+.col-md-9,
+.col-md-auto,
+.col-sm,
+.col-sm-1,
+.col-sm-10,
+.col-sm-11,
+.col-sm-12,
+.col-sm-2,
+.col-sm-3,
+.col-sm-4,
+.col-sm-5,
+.col-sm-6,
+.col-sm-7,
+.col-sm-8,
+.col-sm-9,
+.col-sm-auto,
+.col-xl,
+.col-xl-1,
+.col-xl-10,
+.col-xl-11,
+.col-xl-12,
+.col-xl-2,
+.col-xl-3,
+.col-xl-4,
+.col-xl-5,
+.col-xl-6,
+.col-xl-7,
+.col-xl-8,
+.col-xl-9,
+.col-xl-auto {
+  padding-left: 15px;
+  padding-right: 15px;
+  position: relative;
+  width: 100%;
+}
+
+$col-widths: (
+  "1": 8.333333%,
+  "2": 16.666667%,
+  "3":  25%,
+  "4": 33.333333%,
+  "5": 41.666667%,
+  "6": 50%,
+  "7": 58.333333%,
+  "8": 66.666667%,
+  "9": 75%,
+  "10": 83.333333%,
+  "11": 91.666667%,
+  "12": 100%,
+) !default;
+
+
+@each $cat, $width in $media-widths {
+  @media (min-width:$width) {
+    .col-#{$cat} {
+      flex-basis: 0;
+      flex-grow: 1;
+      -ms-flex-positive: 1;
+      -ms-flex-preferred-size: 0;
+      max-width: 100%;
+    }
+
+    .col-#{$cat}-auto {
+      -ms-flex: 0 0 auto;
+      flex: 0 0 auto;
+      max-width: 100%;
+      width: auto;
+    }
+
+    @each $twelth, $percent in $col-widths {
+      .col-#{$cat}-#{$twelth} {
+        -ms-flex: 0 0  $percent;
+        flex: 0 0 $percent;
+        max-width: $percent;
+      }
+    }
+  }
+}
+
+.d-flex {
+  display: -ms-flexbox !important;
+  display: flex !important;
+}

@@ -43,7 +43,8 @@ Required Arguments
 ------------------
 
 *ingrid*
-    The grid file of points to be filtered. (See GRID FILE FORMATS below).
+    The grid file of points to be filtered. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 .. _-D:
 
@@ -140,7 +141,8 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outgrid*
-    *outgrid* is the output grid file of the filter. (See GRID FILE FORMATS below).
+    *outgrid* is the output grid file of the filter. (See :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -174,10 +176,10 @@ Optional Arguments
     the input grid]. Alternatively, use **-r**\ [**g**\|\ **p**] to
     set the registration explicitly.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -186,8 +188,6 @@ Optional Arguments
 .. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grd_coord.rst_
 

@@ -1,6 +1,6 @@
 /*
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -360,8 +360,10 @@ EXTERN_MSC int GMT_gmtconnect (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)	/* Initialize distance-computing machinery with proper unit */
+	if (gmt_init_distaz (GMT, Ctrl->T.unit, Ctrl->T.mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {	/* Initialize distance-computing machinery with proper unit */
+		gmt_M_free (GMT, buffer);
 		Return (GMT_NOT_A_VALID_TYPE);
+	}
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input assuming lines */
 		gmt_M_free (GMT, buffer);

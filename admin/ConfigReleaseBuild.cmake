@@ -25,6 +25,6 @@ if (APPLE)
 	if ($ENV{USER} STREQUAL "pwessel")
 		set (CPACK_BUNDLE_APPLE_CERT_APP "Developer ID Application: University of Hawaii (B8Y298FMLQ)")
 		set (CPACK_BUNDLE_APPLE_CODESIGN_PARAMETER "--deep -f --options runtime")
-	endif
+	endif ()
 	set (EXTRA_INCLUDE_EXES "${CMAKE_BINARY_DIR}/add_macOS_cpack.txt")
 endif (APPLE)

@@ -15,7 +15,7 @@ Synopsis
 **gmt grdpmodeler** |-E|\ *rot_file* **-S**\ *flags*
 [ *agegrdfile* ]
 [ |-F|\ *polygonfile* ]
-[ |-G|\ *outgrdfile* ]
+[ |-G|\ *outgrid* ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
@@ -58,7 +58,7 @@ Required Arguments
 Optional Arguments
 ------------------
 
-*ingrdfile*
+*ingrid*
     Name of a grid file in geographical (lon, lat) coordinates with ages in Myr.
     If no grid is provided then you may define the domain via **-R**, **-I**, and optionally **-r**.
 
@@ -71,7 +71,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrdfile*
+**-G**\ *outgrid*
     Name of output grid. This is the grid with the model predictions
     given the specified rotations. **Note**: If you specified more than one
     model prediction in **-S** then the filename *must* be a template
@@ -87,10 +87,10 @@ Optional Arguments
     age grid). This lets you evaluate the model at a snapshot in time.
     Required if no age grid was provided.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: ../../explain_-bi.rst_

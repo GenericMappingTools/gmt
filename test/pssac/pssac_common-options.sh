@@ -12,5 +12,4 @@ gmt set PS_MEDIA 21cx35c
 gmt pssac seis.sac -J$J -R$R -B$Bx -B$By -B+t"Option -P for portrait mode" -K -P > $ps
 gmt pssac seis.sac -J$J -R$R -B$Bx -B$By -B+t"Option -X and -Y" -Y8c -Xa1c -K -O >> $ps
 gmt pssac seis.sac -J$J -R$R -B$Bx -B$By -B+t"Option -t" -Y8c -K -O -t100 >> $ps
-gmt pssac seis.sac -J$J -R$R -B$Bx -B$By -B+t"Option -p" -Y8c -K -O -p170/30 >> $ps
-gmt psxy -J -R -T -O >> $ps
+gmt pssac seis.sac -J$J -R$R -B$Bx -B$By -B+t"Option -p" -Y8c -O -p170/30 >> $ps

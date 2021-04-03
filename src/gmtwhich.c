@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -287,10 +287,11 @@ EXTERN_MSC int GMT_gmtwhich (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "File %s not found!\n", &file[first]);
 		}
 	}
+
+	gmt_M_free (GMT, Out);
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
 	}
 
-	gmt_M_free (GMT, Out);
 	Return (GMT_NOERROR);
 }

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -64,7 +64,7 @@
 #define THIS_MODULE_PURPOSE	"Manage modern mode figure subplot configuration and selection"
 #define THIS_MODULE_KEYS	""
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"JRVXY"
+#define THIS_MODULE_OPTIONS	"-JRVXY"
 
 /* Control structure for subplot */
 
@@ -83,6 +83,9 @@
 #define SUBPLOT_PLACE_AT_MIN	1
 #define SUBPLOT_PLACE_AT_MAX	2
 #define SUBPLOT_PLACE_AT_BOTH	3
+
+EXTERN_MSC unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, char *value, bool core);
+EXTERN_MSC void gmtlib_panel_B_file (struct GMTAPI_CTRL *API, int fig, int row, int col, char *file);
 
 struct SUBPLOT_CTRL {
 	struct SUBPLOT_In {	/* begin | end | set */
@@ -111,6 +114,9 @@ struct SUBPLOT_CTRL {
 		bool active;
 		double gap[4];	/* Internal margins (in inches) on the 4 sides [0/0/0/0] */
 	} C;
+	struct SUBPLOT_D {	/* -D determine correct dimensions but do not draw frames and annotations  */
+		bool active;
+	} D;
 	struct SUBPLOT_F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
 		bool active;
 		bool lines;
@@ -184,7 +190,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
+	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>] [-D] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
 	 	GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C[<side>]<clearance>] [%s]\n", name, GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n\n");
@@ -223,6 +229,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side. Use <side> = x or y to set w|e or s|n, respectively.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No specified <side> means set the same clearance on all sides [no clearances].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Use prevailing settings and chosen -B, -S options to determine panel sizes and spacings,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   but do not draw/annotate any panel frames [Draw and annotate frames as indicated].\n");
 	GMT_Option (API, "J-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Adds space around each subplot. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [%gp].\n", 0.5*API->GMT->current.setting.font_annot[GMT_PRIMARY].size);
@@ -253,9 +261,9 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k, j, n = 0;
+	unsigned int n_errors = 0, error, k, j, n = 0, pos;
 	bool B_args = false, noB = false;
-	char *c = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""};
+	char *c = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL, *Bframe = NULL, *Bx = NULL, *By = NULL, *Bxy = NULL;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
@@ -279,7 +287,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		Ctrl->In.mode = SUBPLOT_END;
 	else if (!strncmp (opt->arg, "set", 3U)) {	/* Explicitly called set row,col or set index */
 		opt = opt->next;	/* The row,col part */
-		if (opt) {	/* There is an argument */
+		if (opt && opt->option == GMT_OPT_INFILE) {	/* There is an argument without a leading -? option (thus flagged as input file) */
 			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col)) < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
@@ -293,6 +301,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		else {	/* Default to go to next subplot */
 			Ctrl->In.row = 0;
 			Ctrl->In.next = true;
+			if (opt) opt = opt->previous;	/* Since we will advance below */
 		}
 		Ctrl->In.mode = SUBPLOT_SET;
 	}
@@ -386,7 +395,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 
-			case 'B':	/* Get a handle on -B args if any */
+			case 'B':	/* Get a handle on -B args, if any */
 				B_args = true;
 				if (strstr (opt->arg, "+n")) noB = true;	/* Turn off all annotations */
 				if (opt->arg[0] == 'x') Bx = opt;		/* Got options for x-axis only */
@@ -409,6 +418,10 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				else {	/* Constant clearance on all side */
 					Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, opt->arg);
 				}
+				break;
+
+			case 'D':	/* Use -B, -C, -M -S, --MAP_*=value and gmt.conf for dimensions and spacing calculations but do not draw any frames or annotations */
+				Ctrl->D.active = true;
 				break;
 
 			case 'F':
@@ -616,8 +629,10 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && Ctrl->F.mode == SUBPLOT_FIGURE, "Option -J: Requires -Fs to determine subplot height!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.reset_h && !GMT->common.J.active && !GMT->common.R.active[RSET], "Option -Fs: Requires -R -J to determine subplot height if specified as zero!\n");
+		n_errors += gmt_M_check_condition (GMT, (!GMT->common.J.active || !GMT->common.R.active[RSET]) && Ctrl->F.mode == SUBPLOT_PANEL && Ctrl->F.reset_h, "Option -Fs: Requires -R -J to determine subplot height if specified as zero!\n");
+
 		if (GMT->common.J.active) {	/* Compute map height from -R -J */
-			if (gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) n_errors++;
+			if (gmt_map_setup (GMT, GMT->common.R.wesn)) n_errors++;
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
 		}
 		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -SR, -SC */
@@ -627,10 +642,48 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 			}
-			if (Bxy || Bx)	/* Did get x-axis annotation settings */
-				Ctrl->S[GMT_X].b = (Bx) ? strdup (Bx->arg) : strdup (Bxy->arg);
-			if (Bxy || By)	/* Did get y-axis annotation settings */
-				Ctrl->S[GMT_Y].b = (By) ? strdup (By->arg) : strdup (Bxy->arg);
+			if (Bx) {	/* Did get separate x-axis annotation settings */
+				if ((c = gmt_first_modifier (GMT, Bx->arg, "ls"))) {	/* Gave valid axes modifiers for custom labels */
+					pos = error = 0;
+					while (gmt_getmodopt (GMT, 'B', c, "ls", &pos, p, &error) && error == 0) {
+						switch (p[0]) {
+							case 'l':	/* Regular x-axis label */
+								Ctrl->S[GMT_X].label[GMT_PRIMARY] = strdup (&p[1]);	break;
+							case 's':	/* Secondary x-axis label */
+								Ctrl->S[GMT_X].label[GMT_SECONDARY] = strdup (&p[1]);	break;
+							default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+								break;
+						}
+					}
+					c[0] = '\0';	/* Chop off for now */
+					if (Ctrl->S[GMT_X].label[GMT_PRIMARY] || Ctrl->S[GMT_X].label[GMT_SECONDARY]) Ctrl->S[GMT_X].has_label = true;
+				}
+				Ctrl->S[GMT_X].b = strdup (&Bx->arg[1]);
+				if (c) c[0] = '+';
+			}
+			else if (Bxy)	/* Did common x and y-axes annotation settings */
+				Ctrl->S[GMT_X].b = strdup (Bxy->arg);
+			if (By) {	/* Did get y-axis annotation settings */
+				if ((c = gmt_first_modifier (GMT, By->arg, "ls"))) {	/* Gave valid axes modifiers for custom labels */
+					pos = 0;
+					while (gmt_getmodopt (GMT, 'B', c, "ls", &pos, p, &error) && error == 0) {
+						switch (p[0]) {
+							case 'l':	/* Regular y-axis label */
+								Ctrl->S[GMT_Y].label[GMT_PRIMARY] = strdup (&p[1]);	break;
+							case 's':	/* Secondary y-axis label */
+								Ctrl->S[GMT_Y].label[GMT_SECONDARY] = strdup (&p[1]);	break;
+							default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+								break;
+						}
+					}
+					if (Ctrl->S[GMT_Y].label[GMT_PRIMARY] || Ctrl->S[GMT_Y].label[GMT_SECONDARY]) Ctrl->S[GMT_Y].has_label = true;
+					c[0] = '\0';	/* Chop off for now */
+				}
+				Ctrl->S[GMT_Y].b = strdup (&By->arg[1]);
+				if (c) c[0] = '+';
+			}
+			else if (Bxy)	/* Did common x and y-axes annotation settings */
+				Ctrl->S[GMT_Y].b = strdup (Bxy->arg);
 			if (noB) { /* Make sure we turn off everything */
 				Ctrl->S[GMT_X].extra = strdup ("+n");
 				Ctrl->In.no_B = true;
@@ -651,18 +704,35 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 			}
 		}
 		if (!Bframe) {	/* No override, examine the default frame setting instead */
-			if (strchr (GMT->current.setting.map_frame_axes, 'S')) Ctrl->S[GMT_X].axes[px++] = 'S';
-			else if (strchr (GMT->current.setting.map_frame_axes, 's')) Ctrl->S[GMT_X].axes[px++] = 's';
-			else if (strchr (GMT->current.setting.map_frame_axes, 'b')) Ctrl->S[GMT_X].axes[px++] = 'b';
-			if (strchr (GMT->current.setting.map_frame_axes, 'N')) Ctrl->S[GMT_X].axes[px++] = 'N';
-			else if (strchr (GMT->current.setting.map_frame_axes, 'n')) Ctrl->S[GMT_X].axes[px++] = 'n';
-			else if (strchr (GMT->current.setting.map_frame_axes, 't')) Ctrl->S[GMT_X].axes[px++] = 't';
-			if (strchr (GMT->current.setting.map_frame_axes, 'W')) Ctrl->S[GMT_Y].axes[py++] = 'W';
-			else if (strchr (GMT->current.setting.map_frame_axes, 'w')) Ctrl->S[GMT_Y].axes[py++] = 'w';
-			else if (strchr (GMT->current.setting.map_frame_axes, 'l')) Ctrl->S[GMT_Y].axes[py++] = 'l';
-			if (strchr (GMT->current.setting.map_frame_axes, 'E')) Ctrl->S[GMT_Y].axes[py++] = 'E';
-			else if (strchr (GMT->current.setting.map_frame_axes, 'e')) Ctrl->S[GMT_Y].axes[py++] = 'e';
-			else if (strchr (GMT->current.setting.map_frame_axes, 'r')) Ctrl->S[GMT_Y].axes[py++] = 'r';
+			gmt_set_undefined_axes (GMT, true);	/* We cannot have MAP_FRAME_AXES=auto in subplot during -B parsing, so do the update now */
+			if (Ctrl->S[GMT_X].active)	/* Automatic selection of row sides via -SR, so set to SN */
+				strcpy (Ctrl->S[GMT_X].axes, "SN");
+			else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
+				if (strchr (GMT->current.setting.map_frame_axes, 'S')) Ctrl->S[GMT_X].axes[px++] = 'S';
+				else if (strchr (GMT->current.setting.map_frame_axes, 's')) Ctrl->S[GMT_X].axes[px++] = 's';
+				else if (strchr (GMT->current.setting.map_frame_axes, 'b')) Ctrl->S[GMT_X].axes[px++] = 'b';
+				if (strchr (GMT->current.setting.map_frame_axes, 'N')) Ctrl->S[GMT_X].axes[px++] = 'N';
+				else if (strchr (GMT->current.setting.map_frame_axes, 'n')) Ctrl->S[GMT_X].axes[px++] = 'n';
+				else if (strchr (GMT->current.setting.map_frame_axes, 't')) Ctrl->S[GMT_X].axes[px++] = 't';
+			}
+			if (Ctrl->S[GMT_Y].active)	/* Automatic selection of column sides via -SC, so set to WE */
+				strcpy (Ctrl->S[GMT_Y].axes, "WE");
+			else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
+				if (strchr (GMT->current.setting.map_frame_axes, 'W')) Ctrl->S[GMT_Y].axes[py++] = 'W';
+				else if (strchr (GMT->current.setting.map_frame_axes, 'w')) Ctrl->S[GMT_Y].axes[py++] = 'w';
+				else if (strchr (GMT->current.setting.map_frame_axes, 'l')) Ctrl->S[GMT_Y].axes[py++] = 'l';
+				if (strchr (GMT->current.setting.map_frame_axes, 'E')) Ctrl->S[GMT_Y].axes[py++] = 'E';
+				else if (strchr (GMT->current.setting.map_frame_axes, 'e')) Ctrl->S[GMT_Y].axes[py++] = 'e';
+				else if (strchr (GMT->current.setting.map_frame_axes, 'r')) Ctrl->S[GMT_Y].axes[py++] = 'r';
+			}
+			/* Update MAP_FRAME_AXES for this subplot settings */
+			if (!strcmp (GMT->current.setting.map_frame_axes, "auto")) {
+				char axes[GMT_LEN32] = {""};
+				strcpy (axes, Ctrl->S[GMT_X].axes);
+				strcat (axes, Ctrl->S[GMT_Y].axes);
+				strcat (axes, "Z");
+				gmtlib_setparameter (GMT, "MAP_FRAME_AXES", axes, true);
+			}
 		}
 		if (Ctrl->S[GMT_X].b == NULL) Ctrl->S[GMT_X].b = strdup ("af");	/* Default is -Baf if not set */
 		if (Ctrl->S[GMT_Y].b == NULL) Ctrl->S[GMT_Y].b = strdup ("af");
@@ -671,6 +741,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->F.active, "Option -F: Must specify figure and subplot dimensions!\n");
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* Move focus to a particular subplot, so flag other options */
+		n_errors += gmt_M_check_condition (GMT, Ctrl->D.active, "Option -D: Only available for gmt subset begin!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->F.active, "Option -F: Only available for gmt subset begin!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S[GMT_X].active || Ctrl->S[GMT_Y].active, "Option -S: Only available for gmt subset begin!\n");
 		n_errors += gmt_M_check_condition (GMT, Ctrl->T.active, "Option -T: Only available for gmt subset begin!\n");
@@ -687,17 +758,16 @@ void subplot_wipe_history_and_settings (struct GMTAPI_CTRL *API) {
 	 * as well as any subplot history file.  Same for settings.
 	 */
 
-	int fig, subplot, inset;
-	unsigned int row, col;
+	int fig, subplot, inset, row, col;
 	char file[PATH_MAX] = {""}, panel[GMT_LEN32] = {""};
 	struct GMT_SUBPLOT *P = NULL;
 
 	gmtlib_get_graphics_item (API, &fig, &subplot, panel, &inset);	/* Determine the natural history level */
 	if (subplot && (P = gmt_subplot_info (API, fig))) {
 		for (row = 0; row < P->nrows; row++) for (col = 0; col < P->ncolumns; col++) {
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%d-%d", API->gwf_dir, GMT_HISTORY_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
-			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%u-%u", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
+			snprintf (file, PATH_MAX, "%s/%s.%d.panel.%d-%d", API->gwf_dir, GMT_SETTINGS_FILE, fig, row, col);
 			gmt_remove_file (API->GMT, file);
 		}
 	}
@@ -746,7 +816,6 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 
-
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
@@ -758,12 +827,43 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		int RP_id, RG_id;
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
-		double x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
+		double gmean_dim, x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
 		double *cx = NULL, *cy = NULL, *px = NULL, *py = NULL, y_heading, fluff[2] = {0.0, 0.0}, off[2] = {0.0, 0.0}, GMT_LETTER_HEIGHT = 0.736;
+		double master_scale = (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 0.0 : 1.0;	/* THe 0 helps wipe any dimensions outside the panel to zero */
 		char **Bx = NULL, **By = NULL, *cmd = NULL, axes[3] = {""}, Bopt[GMT_LEN256] = {""};
 		char vfile[GMT_VF_LEN] = {""}, xymode = 'r';
 		bool add_annot, no_frame = false;
 		FILE *fp = NULL;
+
+		/* Need geometric mean dimension of subplot to calculate the undefined quantities */
+
+		if (Ctrl->F.mode == SUBPLOT_FIGURE)	/* Got figure dimensions */
+			gmean_dim = sqrt (Ctrl->F.dim[GMT_X] * Ctrl->F.dim[GMT_Y]);
+		else {	/* Got panel dimension(s), compute total figure dimensions */
+			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
+				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
+			}
+			/* Sum up individual widths or heights and add the fluff space */
+			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) width  += Ctrl->F.w[col];
+			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) height += Ctrl->F.h[row];
+			gmean_dim = sqrt (width * height);
+			width = height = 0.0;	/* Reset */
+		}
+		GMT_Report (API, GMT_MSG_DEBUG, "Subplot max panel dimension estimated: %g inch\n", gmean_dim);
+
+		/* We must change any undefined defaults given this representative dimension now so that font sizes and dimensions
+		 * can be written to this subplot's gmt.conf file and thus give the same settings for all panels. The gmt.conf is
+		 * automatically deleted when the subplot ends. */
+		gmt_set_undefined_defaults (GMT, gmean_dim, true);
+
+		/* Update defaults settings that depend on fonts etc */
+		if (gmt_M_is_dnan (Ctrl->A.off[GMT_X]))
+			Ctrl->A.off[GMT_X] = Ctrl->A.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
+		if (gmt_M_is_dnan (Ctrl->A.clearance[GMT_X]))
+			Ctrl->A.clearance[GMT_X] = Ctrl->A.clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% */
+		if (gmt_M_is_dnan (Ctrl->M.margin[XLO])) {
+			for (unsigned int k = 0; k < 4; k++) Ctrl->M.margin[k] = 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Split annot font across two sides */
+		}
 
 		/* Determine if the subplot itself is an overlay of an existing plot */
 		sprintf (file, "%s/gmt_%d.ps-", API->gwf_dir, fig);
@@ -786,10 +886,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Subplot information file exists from incomplete command and will be deleted: %s\n", file);
 			gmt_remove_file (API->GMT, file);
 		}
-		/* Compute dimensions such as ticks and distance from tick to top of annotation etc */
-		tick_height   = MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */
-		annot_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
-		label_height  = (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
+		/* Compute dimensions such as ticks and distance from tick to top of annotation etc for outside annotticks.  If map_frame_type is inside then 0 */
+		tick_height   = master_scale * MAX(0,GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Allow for axis ticks */
+		annot_height  = master_scale * (GMT_LETTER_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]);	/* Allow for space between axis and annotations */
+		label_height  = master_scale * (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
 		title_height = (GMT_LETTER_HEIGHT * GMT->current.setting.font_title.size / PSL_POINTS_PER_INCH) + GMT->current.setting.map_title_offset;
 		y_header_off = GMT->current.setting.map_heading_offset;
 		if (Ctrl->In.no_B) tick_height = annot_height = 0.0;	/* No tick or annotations on subplot frames */
@@ -887,9 +987,6 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] *= (Ctrl->F.dim[GMT_Y] - fluff[GMT_Y]);
 		}
 		else {	/* Already got subplot dimension, compute total figure dimension */
-			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
-				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
-			}
 			/* Sum up individual widths or heights and add the fluff space */
 			for (col = 0, Ctrl->F.dim[GMT_X] = fluff[GMT_X]; col < Ctrl->N.dim[GMT_X]; col++) Ctrl->F.dim[GMT_X] += Ctrl->F.w[col];
 			for (row = 0, Ctrl->F.dim[GMT_Y] = fluff[GMT_Y]; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.dim[GMT_Y] += Ctrl->F.h[row];
@@ -997,7 +1094,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					Ly[row] |= SUBPLOT_PLACE_AT_MAX;
 				}
 			}
-			else if (strchr (Ctrl->S[GMT_X].axes, 'n')) {
+			else if (strchr (Ctrl->S[GMT_X].axes, 'N') || strchr (Ctrl->S[GMT_X].axes, 'n')) {
 				axes[k++] = 'n';	/* Only need ticks at north */
 				if (row) y -= tick_height;
 			}
@@ -1016,11 +1113,11 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					if (row < last_row) y -= label_height;	/* Also has label at S */
 				Ly[row] |= SUBPLOT_PLACE_AT_MIN;
 			}
-			else if (strchr (Ctrl->S[GMT_X].axes, 's')) {
+			else if (strchr (Ctrl->S[GMT_X].axes, 'S') || strchr (Ctrl->S[GMT_X].axes, 's')) {
 				axes[k++] = 's';	/* Just needs ticks on south frame */
 				if (row < last_row) y -= tick_height;
 			}
-			else if (strchr (Ctrl->S[GMT_X].axes, 'b'))
+			else if (strchr (Ctrl->S[GMT_X].axes, 'b') || strchr (Ctrl->S[GMT_X].axes, 'S'))	/* If we have S and get here it means b */
 				axes[k++] = 'b';	/* Just draw line frame at south end */
 			By[row] = strdup (axes);	/* Those are all the y-frame settings */
 			if (Ctrl->F.debug) {	/* All rows share this lower y-coordinate */
@@ -1055,11 +1152,11 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					Lx[col] |= SUBPLOT_PLACE_AT_MIN;
 				}
 			}
-			else if (strchr (Ctrl->S[GMT_Y].axes, 'w')) {
+			else if (strchr (Ctrl->S[GMT_Y].axes, 'W') || strchr (Ctrl->S[GMT_Y].axes, 'w')) {
 				if (col) x += tick_height;
 				axes[k++] = 'w';	/* Only ticks at west frame */
 			}
-			else if (strchr (Ctrl->S[GMT_Y].axes, 'l'))
+			else if (strchr (Ctrl->S[GMT_Y].axes, 'l') || strchr (Ctrl->S[GMT_Y].axes, 'W'))	/* If we get here with W it means l */
 				axes[k++] = 'l';	/* Just draw west frame simple line */
 			px[col] = x;	/* Now at correct x for left side or this subplot */
 			x += Ctrl->F.w[col];	/* Position x at the right side of subplot */
@@ -1075,7 +1172,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					Lx[col] |= SUBPLOT_PLACE_AT_MAX;
 				}
 			}
-			else if (strchr (Ctrl->S[GMT_Y].axes, 'e')) {
+			else if (strchr (Ctrl->S[GMT_Y].axes, 'E') || strchr (Ctrl->S[GMT_Y].axes, 'e')) {
 				if (col < last_col) x += tick_height;
 				axes[k++] = 'e';	/* Only add ticks at east frame */
 			}
@@ -1109,6 +1206,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		fprintf (fp, "# ORIGIN: %g %g\n", off[GMT_X], off[GMT_Y]);
 		fprintf (fp, "# DIMENSION: %g %g\n", width, height);
 		fprintf (fp, "# PARALLEL: %d\n", Ctrl->S[GMT_Y].parallel);
+		fprintf (fp, "# INSIDE: %d\n", (GMT->current.setting.map_frame_type == GMT_IS_INSIDE) ? 1 : 0);
 		if (Ctrl->C.active) {	/* Got common gaps setting */
 			gmt_M_memcpy (GMT->current.plot.panel.gap, Ctrl->C.gap, 4, double);
 			fprintf (fp, "# GAPS: %g %g %g %g\n", Ctrl->C.gap[XLO], Ctrl->C.gap[XHI], Ctrl->C.gap[YLO], Ctrl->C.gap[YHI]);
@@ -1139,7 +1237,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 				else	/* No subplot tags, write default fillers */
 					fprintf (fp, "-\t0\t0\t0\t0\tBL\tBL\t-\t-");
 				/* Now the four -B settings items placed between GMT_ASCII_GS characters since there may be spaces in them */
-				if (no_frame)	/* Default filler since we don't want any frames */
+				if (no_frame || Ctrl->D.active)	/* Default filler since we don't want any frames */
 					fprintf (fp, "\t%c+n%c%c%c%c%c\n", GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS);	/* Pass -B+n only */
 				else {
 					if ((Bx[col] && Bx[col][0]) || (By[row] && By[row][0]))
@@ -1168,6 +1266,16 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		fprintf (fp, "%d %d %d\n", Ctrl->N.dim[GMT_Y], Ctrl->N.dim[GMT_X], Ctrl->A.way);
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Wrote subplot order to information file %s\n", file);
+
+		if (Ctrl->A.active) {	/* Place an empty file to signal we set up -A */
+			sprintf (file, "%s/gmt.tags.%d", API->gwf_dir, fig);
+			if ((fp = fopen (file, "w")) == NULL) {	/* Not good */
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot create file %s\n", file);
+				Return (GMT_ERROR_ON_FOPEN);
+			}
+			fclose (fp);
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot: Wrote tag file %s\n", file);
+		}
 
 		if (Ctrl->F.Lpen[0]) {	/* Must draw divider lines between subplots so we need to allocate a dataset */
 			uint64_t dim[4] = {1, last_row + last_col, 2, 2};	/* One segment line per interior row/col */
@@ -1280,11 +1388,20 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			GMT->init.history[RG_id] = strdup (GMT->init.history[RP_id]);
 		else if (GMT->init.history[RG_id] && !GMT->init.history[RP_id])	/* History for -RP but not -RG, duplicate*/
 			GMT->init.history[RP_id] = strdup (GMT->init.history[RG_id]);
+
+		gmt_putdefaults (GMT, NULL);	/* Finalize the gmt.conf file with settings that will apply to all panels in the subplot */
 	}
 	else if (Ctrl->In.mode == SUBPLOT_SET) {	/* SUBPLOT_SET */
 		char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
 		double gap[4], legend_width = 0.0, legend_scale = 1.0;
 
+		if (Ctrl->A.active) {	/* Can only override tag settings if subplot begin -A was used */
+			sprintf (file, "%s/gmt.tags.%d", API->gwf_dir, fig);
+			if (access (file, F_OK)) {	/* No such file */
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot override tags with -A if it was not set during gmt subplot begin. -A ignored\n");
+				Ctrl->A.format[0] = '\0';
+			}
+		}
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
 			char cmd[GMT_LEN128] = {""};
 			if ((P = gmt_subplot_info (API, fig)) == NULL) {
@@ -1311,7 +1428,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_reload_settings (GMT);	/* Start fresh in this panel */
 	}
 	else {	/* SUBPLOT_END */
-		int k, id;
+		int k, id, row, col;
 		char *wmode[2] = {"w","a"}, vfile[GMT_VF_LEN] = {""}, Rtxt[GMT_LEN64] = {""}, off[GMT_LEN32] = {""};
 		char legend_justification[4] = {""}, Jstr[3] = {"J"}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""};
 		double legend_width = 0.0, legend_scale = 1.0;
@@ -1359,6 +1476,14 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		gmt_remove_file (GMT, file);
 		sprintf (file, "%s/gmt.panel.%d", API->gwf_dir, fig);
 		gmt_remove_file (GMT, file);
+		sprintf (file, "%s/gmt.tags.%d", API->gwf_dir, fig);
+		gmt_remove_file (GMT, file);
+		for (row = 0; row < P->nrows; row++) {
+			for (col = 0; col < P->ncolumns; col++) {
+				gmtlib_panel_B_file (API, fig, row, col, file);
+				if (!access (file, F_OK)) gmt_remove_file (GMT, file);
+			}
+		}
 		/* Check if we should draw debug lines */
 		sprintf (file, "%s/gmt.subplotdebug.%d", API->gwf_dir, fig);
 		if (!access (file, R_OK)) {	/* Yes, must draw debug lines on top */

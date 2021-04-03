@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 248
+#define GMT_N_API_ENUMS 253
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -74,8 +74,9 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_CPT_REQUIRED", 0},
 	{"GMT_CPT_SOFT_HINGE", 8},
 	{"GMT_CPT_TIME", 16},
+	{"GMT_CUBE_IS_STACK", 64},
 	{"GMT_DATA_ONLY", 2},
-	{"GMT_DATETIME", 11},
+	{"GMT_DATETIME", 32},
 	{"GMT_DOUBLE", 9},
 	{"GMT_DUPLICATE_ALLOC", 1},
 	{"GMT_DUPLICATE_DATA", 2},
@@ -136,7 +137,8 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IO_TABLE_HEADER", 1},
 	{"GMT_IO_UNREG", 16384},
 	{"GMT_IS_COL_FORMAT", 2},
-	{"GMT_IS_COORD", 7},
+	{"GMT_IS_COORD", 8},
+	{"GMT_IS_CUBE", 7},
 	{"GMT_IS_DATASET", 0},
 	{"GMT_IS_DUPLICATE", 16},
 	{"GMT_IS_FDESC", 2},
@@ -150,6 +152,8 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_NONE", 16},
 	{"GMT_IS_OUTPUT", 1024},
 	{"GMT_IS_PALETTE", 3},
+	{"GMT_IS_PALETTE_KEY", 1024},
+	{"GMT_IS_PALETTE_LABEL", 2048},
 	{"GMT_IS_PERIMETER", 0},
 	{"GMT_IS_PLP", 7},
 	{"GMT_IS_POINT", 1},
@@ -161,6 +165,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_SURFACE", 8},
 	{"GMT_IS_TEXT", 32},
 	{"GMT_IS_VECTOR", 6},
+	{"GMT_IS_VOLUME", 9},
 	{"GMT_LAX_CONVERSION", 2048},
 	{"GMT_LOG_OFF", 0},
 	{"GMT_LOG_ONCE", 1},
@@ -197,7 +202,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_NOTSET", -1},
 	{"GMT_NO_COLORNAMES", 8},
 	{"GMT_NO_STRINGS", 0},
-	{"GMT_N_FAMILIES", 8},
+	{"GMT_N_FAMILIES", 9},
 	{"GMT_N_TYPES", 12},
 	{"GMT_OPT_INFILE", 60},
 	{"GMT_OPT_OUTFILE", 62},
@@ -229,7 +234,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_STRICT_CONVERSION", 1024},
 	{"GMT_SYNOPSIS", 1},
 	{"GMT_TBL", 0},
-	{"GMT_TEXT", 10},
+	{"GMT_TEXT", 16},
 	{"GMT_TIME_CLOCK", 1},
 	{"GMT_TIME_ELAPSED", 2},
 	{"GMT_TIME_NONE", 0},

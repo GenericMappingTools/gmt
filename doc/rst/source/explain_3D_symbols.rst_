@@ -7,22 +7,24 @@
 
         Both the cube and column symbols are 3-D, and can have their colors
         modulated based on the view point (lower case **u** and **o**) or be
-        of uniform color (upper case **U** and **O**).
+        of uniform color (upper case **U** and **O**). The column may also
+        be a multiband symbol using the **+v**\|\ **i** modifiers.
 
-    **-So**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**][**+b**\ \|\ **B**\ [*base*]]
+    **-So**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**][**+b**\ \|\ **B**\ [*base*]][**+v**\|\ **i**\ *nz*]
         c\ **o**\ lumn (3-D) extending from *base* to *z*.  The *size* sets base width
-        (Use *xsize/ysize* if not the same).  Append **u** if *size* is in the users' x-units
+        (Use *xsize/ysize* if they are not the same).  Append **u** if *size* is in the users' x-units
         [Default is plot-distance units].  If no *size* is given we expect both *xsize*
         and *ysize* as two extra data columns.  By default, *base* = 0.  Append
         **+b**\ *base* to change this value.  If *base* is not appended then we read it
         from the last input data column.  Use **+B**\ [*base*] if the column height
         is measured relative to *base* [Relative to origin].
         The facet colors will be modified to simulate shading.  Use **-SO** to disable 3-D illumination.
-        Normally a single *z* value is considered.  For multi-band columns, append
-        **+z**\ *nbands* (and provide *nbands* *z*-columns via the input; these must be monotonically
-        increasing up the column) or append **+Z**\ *nbands* (and expect *nbands* of *dz* increments
-        in data columns that must be summed to yield actual *z* values).  The multi-band column symbol
-        requires **-C** and will use the band number (0, 1, *nbands*\ -1) to assign the band color.
+        Normally a single *z* value is considered.  For multi-band columns, append either
+        **+v**\ *nz* (and provide *nz* complete *z*-values relative to *base* via the input)
+        or append **+i**\ *nz* (and expect *nz* increments *dz* that must be summed
+        to yield actual *z* values).  The multi-band column modifiers requires **-C** whose
+        *z* values must equal the band number (0, 1, ..., *nz*\ -1) to assign the band color.
+        Thus, input records are either (*x y z1 z2 ... zn*) or (*x y dz1 dz2 ... dzn*).
 
     **-Su**\ *size*\ [**c**\|\ **i**\|\ **p**\|\ **u**]
         c\ **u**\ be (3-D).  The *size* sets length of all sides. Append

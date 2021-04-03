@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Sample grids at specified (x,y) locations"
 #define THIS_MODULE_KEYS	"<D{,DD),E-<,GG(,>D},SD)=s"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>RVabdefghijnoqs" GMT_OPT("HMmQ")
+#define THIS_MODULE_OPTIONS "-:>RVabdefghijnoqsw" GMT_OPT("HMmQ")
 
 #define MAX_GRIDS GMT_BUFSIZ	/* Change and recompile if we need to sample more than GMT_BUFSIZ grids */
 
@@ -165,8 +165,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]]\n\t[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[<method>][<modifiers>]] [-T<radius>>[+e|p]]\n\t[%s] [-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] %s]\n\t[%s] [%s] [%s]\n\n",
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -235,7 +235,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to instead replace input lon, lat with that of nearest node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Can only be used with a single non-IMG grid and incompatible with -A, -C, -D, -E, -S.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Only output z-values [Default gives all columns].\n");
-	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,j,n,o,q,s,:,.");
+	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,j,n,o,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -816,13 +816,16 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		}
 		if (!Ctrl->E.active) {
 			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
+				gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 				Return (API->error);
 			}
 			if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
+				gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 				Return (API->error);
 			}
 			if (Din->n_columns < 2) {
 				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
+				gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 				Return (GMT_DIM_TOO_SMALL);
 			}
 			if (Ctrl->C.dist_mode == GMT_GEODESIC) {
@@ -830,13 +833,16 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Ctrl->C.dist_mode = GMT_GREATCIRCLE;
 			}
 			if (Ctrl->A.loxo) GMT->current.map.loxodrome = true, Ctrl->C.dist_mode = 1 + GMT_LOXODROME;
-			if (gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+			if (gmt_init_distaz (GMT, Ctrl->C.unit, Ctrl->C.dist_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
+				gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 				Return (GMT_NOT_A_VALID_TYPE);
+			}
 		}
 
 		/* Expand with dist,az columns (mode = 2) (and possibly make space for more) and optionally resample */
 		if ((Dtmp = gmt_resample_data (GMT, Din, Ctrl->C.spacing, 2, (Ctrl->D.active) ? Ctrl->G.n_grids : 0, Ctrl->A.mode)) == NULL) Return (API->error);
 		if (GMT_Destroy_Data (API, &Din) != GMT_NOERROR) {
+			gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 			Return (API->error);
 		}
 		if (Ctrl->D.active) {	/* Also want to sample grids along the original resampled trace */
@@ -854,6 +860,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (some_outside) GMT_Report (API, GMT_MSG_WARNING, "Some points along your lines were outside the grid domain(s).\n");
 
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_WRITE_SET, NULL, Ctrl->D.file, Dtmp) != GMT_NOERROR) {
+				gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 				Return (API->error);
 			}
 		}
@@ -1017,13 +1024,13 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Ensure proper formatting of geographic coordinates */
-				gmt_set_column (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
-				gmt_set_column (GMT, GMT_OUT, 1, GMT_IS_LON);
-				gmt_set_column (GMT, GMT_OUT, 2, GMT_IS_LAT);
-				gmt_set_column (GMT, GMT_OUT, 6, GMT_IS_LON);
-				gmt_set_column (GMT, GMT_OUT, 7, GMT_IS_LAT);
-				gmt_set_column (GMT, GMT_OUT, 9, GMT_IS_LON);
-				gmt_set_column (GMT, GMT_OUT, 10, GMT_IS_LAT);
+				gmt_set_column_type (GMT, GMT_OUT, 0, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, 1, GMT_IS_LON);
+				gmt_set_column_type (GMT, GMT_OUT, 2, GMT_IS_LAT);
+				gmt_set_column_type (GMT, GMT_OUT, 6, GMT_IS_LON);
+				gmt_set_column_type (GMT, GMT_OUT, 7, GMT_IS_LAT);
+				gmt_set_column_type (GMT, GMT_OUT, 9, GMT_IS_LON);
+				gmt_set_column_type (GMT, GMT_OUT, 10, GMT_IS_LAT);
 			}
 			Out = gmt_new_record (GMT, out, NULL);
 			for (tbl = prof = 0; tbl < Dout->n_tables; tbl++) {
@@ -1156,19 +1163,24 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		double *in = NULL, *out = NULL;
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data input */
+			gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN,  GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */
+			gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 			Return (API->error);
 		}
 
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Establishes data output */
+			gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 			Return (API->error);
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 			Return (API->error);
 		}
 		if (GMT_Set_Geometry (API, GMT_OUT, GMT_IS_POINT) != GMT_NOERROR) {	/* Sets output geometry */
+			gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 			Return (API->error);
 		}
 
@@ -1178,8 +1190,10 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
 			n_out = Ctrl->G.n_grids;
 			n_lead = 0;	/* None of the input columns will be used */
-			if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+			if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+				gmt_M_free (GMT, GC);	gmt_M_free (GMT, value);
 				Return (error);
+			}
 			out = gmt_M_memory (GMT, NULL, n_out, double);
 			Out = gmt_new_record (GMT, out, NULL);
 		}

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 #define THIS_MODULE_PURPOSE	"Clip or mask map areas with no data table coverage"
 #define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG)"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqrstxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqrstwxy" GMT_OPT("Ec")
 
 enum Mask_Modes {
 	PSMASK_INSIDE  = -1,	/* Set inside nodes to NaN */
@@ -436,7 +436,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-F[l|r]] [-G<fill>]\n\t%s[-L<grid>[+i|o]] [-N] %s%s[-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s] [%s]\n\t[%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -468,7 +468,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Paint tiles [Default will trace data outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If set you must also specify a color/fill with -G.\n");
-	GMT_Option (API, "U,V,X,bi2,bo,c,d,e,h,i,p,qi,r,s,t,:,.");
+	GMT_Option (API, "U,V,X,bi2,bo,c,d,e,h,i,p,qi,r,s,t,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -657,7 +657,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 		gmt_parse_common_options (GMT, "J", 'J', "x1d");	/* Fake linear projection */
 	}
 
-	if (!Ctrl->C.active && make_plot && gmt_M_err_pass (GMT, gmt_map_setup (GMT, GMT->common.R.wesn), "")) Return (GMT_PROJECTION_ERROR);
+	if (!Ctrl->C.active && make_plot && gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
 	if (Ctrl->D.active) {	/* Want to dump the x-y contour lines of the mask */
 		uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 2};
@@ -688,6 +688,8 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {	/* Just undo previous polygon clip-path */
 		PSL_endclipping (PSL, 1);
+		gmt_set_basemap_orders (GMT, GMT_BASEMAP_FRAME_AFTER, GMT_BASEMAP_GRID_AFTER, GMT_BASEMAP_ANNOT_AFTER);
+		GMT->current.map.frame.order = GMT_BASEMAP_AFTER;	/* Move to last order */
 		gmt_map_basemap (GMT);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Clipping off!\n");
 	}
@@ -704,7 +706,9 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 
 		if (make_plot) {
 			gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
+			gmt_set_basemap_orders (GMT, Ctrl->T.active ? GMT_BASEMAP_FRAME_AFTER : GMT_BASEMAP_FRAME_BEFORE, Ctrl->T.active ? GMT_BASEMAP_GRID_AFTER : GMT_BASEMAP_GRID_BEFORE, Ctrl->T.active ? GMT_BASEMAP_ANNOT_AFTER : GMT_BASEMAP_ANNOT_BEFORE);
 			gmt_plotcanvas (GMT);	/* Fill canvas if requested */
+			gmt_map_basemap (GMT);
 		}
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory, read and process data file\n");
@@ -869,10 +873,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 			x = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 			y = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 
-			n_edges = Grid->header->n_rows * (urint (ceil (Grid->header->n_columns / 16.0)));
-			edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
-
-			if (make_plot) gmt_map_basemap (GMT);
+			edge = gmt_contour_edge_init (GMT, Grid->header, &n_edges);
 
 			GMT_Report (API, GMT_MSG_INFORMATION, "Tracing the clip path\n");
 
@@ -959,10 +960,12 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 					gmt_M_free (GMT, yp);
 				}
 			}
-			gmt_map_basemap (GMT);
 		}
 
-		if (make_plot) gmt_plane_perspective (GMT, -1, 0.0);
+		if (make_plot) {
+			gmt_map_basemap (GMT);
+			gmt_plane_perspective (GMT, -1, 0.0);
+		}
 
 		gmt_M_free (GMT, grd);
 		if (GMT_Destroy_Data (API, &Grid) != GMT_NOERROR) {

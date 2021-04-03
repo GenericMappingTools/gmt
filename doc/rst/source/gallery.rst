@@ -10,7 +10,7 @@ diagram or map view. The resulting plots will have in common that they
 are all made up of simpler plots that have been overlaid to create a
 complex illustration.
 
-.. cssclass:: gmtgallary
+.. cssclass:: gmtgallery
 
 .. jinja:: jinja_ctx
 

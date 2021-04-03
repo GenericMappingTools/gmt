@@ -1,6 +1,6 @@
  /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -259,6 +259,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	EXTREMA    1  1    Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere\n"
 		"	FCRIT      3  1    F distribution critical value for alpha = A, nu1 = B, and nu2 = C\n"
 		"	FCDF       3  1    F cumulative distribution function for F = A, nu1 = B, and nu2 = C\n"
+		"	FISHER     3  1    Fisher probability density function at grid nodes given stack lon,lat (A, B) and kappa (C)\n"
 		"	FLIPLR     1  1    Reverse order of values in each row\n"
 		"	FLIPUD     1  1    Reverse order of values in each column\n"
 		"	FLOOR      1  1    floor (A) (greatest integer <= A)\n"
@@ -391,6 +392,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	UPPER      1  1    The highest (maximum) value of A\n"
 		"	VAR        1  1    Variance of A\n"
 		"	VARW       2  1    Weighted variance of A for weights in B\n"
+		"	VPDF       3  1    Von Mises probability density function for angles = A, mu = B and kappa = C\n"
 		"	WCDF       3  1    Weibull cumulative distribution function for x = A, scale = B, and shape = C\n"
 		"	WCRIT      3  1    Weibull distribution critical value for alpha = A, scale = B, and shape = C\n"
 		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
@@ -773,7 +775,7 @@ GMT_LOCAL void grdmath_ACOS (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOS!\n");
 	if (stack[last]->constant) a = (float)d_acos (stack[last]->factor);
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : d_acosf (stack[last]->G->data[node]);
@@ -798,7 +800,7 @@ GMT_LOCAL void grdmath_ACOT (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACOT!\n");
 	if (stack[last]->constant) a = (float)atan (1.0 / stack[last]->factor);
@@ -823,7 +825,7 @@ GMT_LOCAL void grdmath_ACSC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0)
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ACSC!\n");
 	if (stack[last]->constant) a = (float)d_asin (1.0 / stack[last]->factor);
@@ -887,7 +889,7 @@ GMT_LOCAL void grdmath_ARC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	double a, b;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	for (node = 0; node < info->size; node++) {
 
 		a = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
@@ -912,7 +914,7 @@ GMT_LOCAL void grdmath_ASEC (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASEC!\n");
 	if (stack[last]->constant) a = (float)d_acos (1.0 / stack[last]->factor);
 	for (node = 0; node < info->size; node++)
@@ -937,7 +939,7 @@ GMT_LOCAL void grdmath_ASIN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	uint64_t node;
 	float a = 0.0f;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant && fabs (stack[last]->factor) > 1.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "|Operand| > 1 for ASIN!\n");
 	if (stack[last]->constant) a = (float)d_asin (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
@@ -962,7 +964,7 @@ GMT_LOCAL void grdmath_ATAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	float a = 0.0f;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant) a = (float)atan (stack[last]->factor);
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (stack[last]->constant) ? a : atanf (stack[last]->G->data[node]);
@@ -975,7 +977,7 @@ GMT_LOCAL void grdmath_ATAN2 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, s
 	unsigned int prev = last - 1;
 	double a, b;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[prev]->constant && stack[prev]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand one == 0 for ATAN2!\n");
 	if (stack[last]->constant && stack[last]->factor == 0.0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand two == 0 for ATAN2!\n");
 	for (node = 0; node < info->size; node++) {
@@ -1336,7 +1338,7 @@ GMT_LOCAL void grdmath_CAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	double x, y, az;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	grdmath_grd_padloop (GMT, info->G, row, col, node) {
 		x = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		y = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
@@ -1355,7 +1357,7 @@ GMT_LOCAL void grdmath_CBAZ (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	double x, y, az;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	grdmath_grd_padloop (GMT, info->G, row, col, node) {
 		x = (stack[prev]->constant) ? stack[prev]->factor : stack[prev]->G->data[node];
 		y = (stack[last]->constant) ? stack[last]->factor : stack[last]->G->data[node];
@@ -1824,7 +1826,7 @@ GMT_LOCAL void grdmath_D2R (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	double a = 0.0;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant) a = stack[last]->factor * D2R;
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : (stack[last]->G->data[node] * D2R));
 }
@@ -2391,6 +2393,26 @@ GMT_LOCAL void grdmath_FCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	}
 }
 
+GMT_LOCAL void grdmath_FISHER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: FISHER 3 1 Fisher probability density function for lon = A, lat = B and kappa = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col;
+	double lon, lat, kappa;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev2]->constant) lon = stack[prev2]->factor;
+	if (stack[prev1]->constant) lat = stack[prev1]->factor;
+	if (stack[last]->constant) kappa = stack[last]->factor;
+	grdmath_grd_padloop (GMT, info->G, row, col, node) {
+		if (!stack[prev2]->constant) lon = stack[prev2]->G->data[node];
+		if (!stack[prev1]->constant) lat = stack[prev1]->G->data[node];
+		if (!stack[last]->constant) kappa = stack[last]->G->data[node];
+		stack[prev2]->G->data[node] = (float)gmt_fisher_pdf (GMT, lon, lat, info->d_grd_x[col], info->d_grd_y[row], kappa);
+	}
+}
+
 GMT_LOCAL void grdmath_FLIPLR (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: FLIPLR 1 1 Reverse order of values in each row.  */
 {
@@ -2817,7 +2839,7 @@ GMT_LOCAL void grdmath_INSIDE (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 				if (gmt_polygon_is_hole (GMT, S)) continue;	/* Holes are handled within gmt_inonout */
 				inside = gmt_inonout (GMT, info->d_grd_x[col], info->d_grd_y[row], S);
 			}
-			stack[last]->G->data[node] = (inside) ? 1.0f : 0.0f;
+			stack[last]->G->data[node] = (inside > GMT_OUTSIDE) ? 1.0f : 0.0f;
 		}
 	}
 
@@ -4272,7 +4294,7 @@ GMT_LOCAL void grdmath_R2D (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	double a = 0.0;
 	gmt_M_unused(GMT);
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (stack[last]->constant) a = R2D * stack[last]->factor;
 	for (node = 0; node < info->size; node++)
 		stack[last]->G->data[node] = (float)((stack[last]->constant) ? a : R2D * stack[last]->G->data[node]);
@@ -4690,7 +4712,7 @@ GMT_LOCAL void grdmath_AZ_sub (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 	unsigned int prev = last - 1;
 	double x0 = 0.0, y0 = 0.0, az;
 
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ANGLE);
 	if (gmt_init_distaz (GMT, 'd', gmt_M_sph_mode (GMT), GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) return;
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,x0,y0,az) shared(info,stack,prev,last,GMT,reverse)
@@ -5314,6 +5336,25 @@ GMT_LOCAL void grdmath_VARW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 	for (node = 0; node < info->size; node++) stack[prev]->G->data[node] = var;
 }
 
+GMT_LOCAL void grdmath_VPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: VPDF 3 1 Von Mises probability density function for angles = A, mu = B and kappa = C.  */
+{
+	uint64_t node;
+	unsigned int prev1, prev2, row, col;
+	double x, mu, kappa;
+
+	prev1 = last - 1;
+	prev2 = last - 2;
+	if (stack[prev1]->constant) mu = stack[prev1]->factor;
+	if (stack[last]->constant) kappa = stack[prev1]->factor;
+	gmt_M_grd_loop (GMT, info->G, row, col, node) {
+		x = (stack[prev2]->constant) ? stack[prev2]->factor : stack[prev2]->G->data[node];
+		if (!stack[prev1]->constant) mu = (double)stack[prev1]->G->data[node];
+		if (!stack[last]->constant) kappa = (double)stack[last]->G->data[node];
+		stack[prev2]->G->data[node] = (float)gmt_vonmises_pdf (GMT, x, mu, kappa);
+	}
+}
+
 GMT_LOCAL void grdmath_WCDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: WCDF 3 1 Weibull cumulative distribution function for x = A, scale = B, and shape = C.  */
 {
@@ -5706,7 +5747,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 224
+#define GRDMATH_N_OPERATORS 226
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5936,6 +5977,8 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[221] = grdmath_DOT;	n_args[221] = 2;	n_out[221] = 1;
 	ops[222] = grdmath_BLEND;	n_args[222] = 3;	n_out[222] = 1;
 	ops[223] = grdmath_DAYNIGHT;	n_args[223] = 3;	n_out[223] = 1;
+	ops[224] = grdmath_VPDF;	n_args[224] = 3;	n_out[224] = 1;
+	ops[225] = grdmath_FISHER;	n_args[225] = 3;	n_out[225] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6352,6 +6395,8 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"DOT",	/* id = 221 */
 		"BLEND",	/* id = 222 */
 		"DAYNIGHT",	/* id = 223 */
+		"VPDF",	/* id = 224 */
+		"FISHER",	/* id = 225 */
 		"" /* last element is intentionally left blank */
 	};
 
@@ -6800,7 +6845,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 				stack[k]->G = grdmath_alloc_stack_grid (GMT, info.G);
 		}
 
-		gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
 
 		pos = (consumed_operands[op]) ? nstack - 1 : nstack;
 		(*call_operator[op]) (GMT, &info, stack, pos);	/* Do it */
