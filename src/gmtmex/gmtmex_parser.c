@@ -1,6 +1,4 @@
 /*
- *	$Id$
- *
  *	Copyright (c) 2015-2020 by P. Wessel and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
@@ -13,7 +11,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/gmt
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* This layer of code handles the interface between GMT objects and how
  * we represent them in Matlab/Octave.
@@ -224,7 +222,7 @@ static void *gmtmex_get_dataset (void *API, struct GMT_DATASET *D) {
 		D_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, GMTMEX_fieldname_dataset);
 		return (D_struct);
 	}
-	
+
 	for (tbl = seg_out = 0; tbl < D->n_tables; tbl++)	/* Count non-zero segments */
 		for (seg = 0; seg < D->table[tbl]->n_segments; seg++)
 			if (D->table[tbl]->segment[seg]->n_rows)
@@ -282,7 +280,7 @@ static void *gmtmex_get_postscript (void *API, struct GMT_POSTSCRIPT *P) {
 	uint64_t k, *length = NULL;
 	unsigned int *mode = NULL;
 	mxArray *P_struct = NULL, *mxptr[N_MEX_FIELDNAMES_PS], *mxstring = NULL;
-	
+
 	if (P == NULL)	/* Safety valve */
 		mexErrMsgTxt ("gmtmex_get_postscript: programming error, input POSTSCRIPT struct P is NULL or data string is empty\n");
 
@@ -291,7 +289,7 @@ static void *gmtmex_get_postscript (void *API, struct GMT_POSTSCRIPT *P) {
 		P_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_PS, GMTMEX_fieldname_ps);
 		return P_struct;
 	}
-	
+
 	/* Return PS with postscript and length in a struct */
 	P_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_PS, GMTMEX_fieldname_ps);
 
@@ -301,15 +299,15 @@ static void *gmtmex_get_postscript (void *API, struct GMT_POSTSCRIPT *P) {
 	mxptr[3] = mxCreateCellMatrix (P->n_headers, P->n_headers ? 1 : 0);
 	length   = (uint64_t *)mxGetData(mxptr[1]);
 	mode     = (uint32_t *)mxGetData(mxptr[2]);
-	
+
 	length[0] = (uint64_t)P->n_bytes;	/* Set length of the PS string */
 	mode[0]   = (uint32_t)P->mode;		/* Set mode of the PS string */
-	
+
 	for (k = 0; k < P->n_headers; k++) {
 		mxstring = mxCreateString (P->header[k]);
 		mxSetCell (mxptr[3], (int)k, mxstring);
 	}
-	
+
 	for (k = 0; k < N_MEX_FIELDNAMES_PS; k++)
 		mxSetField (P_struct, 0, GMTMEX_fieldname_ps[k], mxptr[k]);
 
@@ -346,7 +344,7 @@ static void *gmtmex_get_palette (void *API, struct GMT_PALETTE *C) {
 		C_struct = mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CPT, GMTMEX_fieldname_cpt);
 		return (C_struct);
 	}
-	
+
 	/* Return CPT via colormap, range, and alpha arrays in a struct */
 	/* Create a MATLAB struct for this CPT */
 	C_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_CPT, GMTMEX_fieldname_cpt);
@@ -363,7 +361,7 @@ static void *gmtmex_get_palette (void *API, struct GMT_PALETTE *C) {
 	mxptr[8] = NULL;	/* Set below */
 	mxptr[9] = mxCreateNumericMatrix (1, 1, mxDOUBLE_CLASS, mxREAL);
 	mxptr[10] = mxCreateCellMatrix (C->n_headers, C->n_headers ? 1 : 0);
-	
+
 	color    = mxGetPr (mxptr[0]);
 	alpha    = mxGetPr (mxptr[1]);
 	range    = mxGetPr (mxptr[2]);
@@ -431,7 +429,7 @@ static void *gmtmex_get_image (void *API, struct GMT_IMAGE *I) {
 	mxptr[3]  = mxCreateNumericMatrix (1, 6, mxDOUBLE_CLASS, mxREAL);
 	mxptr[4]  = mxCreateNumericMatrix (1, 2, mxDOUBLE_CLASS, mxREAL);
 	mxptr[5]  = mxCreateDoubleScalar ((double)I->header->registration);
-	mxptr[6]  = mxCreateDoubleScalar ((double)I->header->nan_value);	
+	mxptr[6]  = mxCreateDoubleScalar ((double)I->header->nan_value);
 	mxptr[7]  = mxCreateString (I->header->title);
 	mxptr[8]  = mxCreateString (I->header->remark);
 	mxptr[9]  = mxCreateString (I->header->command);
@@ -461,7 +459,7 @@ static void *gmtmex_get_image (void *API, struct GMT_IMAGE *I) {
 			color[k] = (uint8_t)I->colormap[k];
 		k /= 4;
 		memcpy (u, I->data, I->header->nm * sizeof (uint8_t));
-	}	
+	}
 	else if (I->header->n_bands == 1) {	/* gray image */
 		mxptr[0] = mxCreateNumericMatrix (I->header->n_rows, I->header->n_columns, mxUINT8_CLASS, mxREAL);
 		u = mxGetData (mxptr[0]);
@@ -483,7 +481,7 @@ static void *gmtmex_get_image (void *API, struct GMT_IMAGE *I) {
 		if (I->alpha) {
 			mxptr[15] = mxCreateNumericMatrix (I->header->n_rows, I->header->n_columns, mxUINT8_CLASS, mxREAL);
 			alpha = mxGetData (mxptr[15]);
-			memcpy (alpha, I->alpha, I->header->nm * sizeof (uint8_t)); 
+			memcpy (alpha, I->alpha, I->header->nm * sizeof (uint8_t));
 		}
 	}
 	else if (I->header->n_bands == 4) {	/* RGBA image, with a color map */
@@ -492,8 +490,8 @@ static void *gmtmex_get_image (void *API, struct GMT_IMAGE *I) {
 		u = mxGetData (mxptr[0]);
 		mxptr[15] = mxCreateNumericMatrix (I->header->n_rows, I->header->n_columns, mxUINT8_CLASS, mxREAL);
 		alpha = mxGetData (mxptr[15]);
-		memcpy (u, I->data, 3 * I->header->nm * sizeof (uint8_t)); 
-		memcpy (alpha, &(I->data)[3 * I->header->nm], I->header->nm * sizeof (uint8_t)); 
+		memcpy (u, I->data, 3 * I->header->nm * sizeof (uint8_t));
+		memcpy (alpha, &(I->data)[3 * I->header->nm], I->header->nm * sizeof (uint8_t));
 		/*
 		for (k = 0; k < I->header->nm; k++) {
 			for (m = 0; m < 3; m++)
@@ -611,7 +609,7 @@ static struct GMT_GRID *gmtmex_grid_init (void *API, unsigned int direction, uns
 				free (str);
 			}
 			mx_ptr = mxGetField (ptr, 0, "wkt");
-			if (mx_ptr != NULL && mxGetN(mx_ptr) > 20) {	/* A true WTT string will have more thna this lenght */ 
+			if (mx_ptr != NULL && mxGetN(mx_ptr) > 20) {	/* A true WTT string will have more thna this lenght */
 				char *str = malloc(mxGetN(mx_ptr) + 1);
 				mxGetString(mx_ptr, str, (mwSize)mxGetN(mx_ptr) + 1);
 				G->header->ProjRefWKT = GMT_Duplicate_String (API, str);
@@ -798,14 +796,14 @@ static struct GMT_IMAGE *gmtmex_image_init (void *API, unsigned int direction, u
 			I->header->nan_value = *(float *)mxGetData (mx_ptr);
 
 		mx_ptr = mxGetField (ptr, 0, "proj4");
-		if (mx_ptr != NULL && mxGetN(mx_ptr) > 6) {		/* A true proj4 string will have at least this lenght */
+		if (mx_ptr != NULL && mxGetN(mx_ptr) > 6) {		/* A true proj4 string will have at least this length */
 			char *str = malloc(mxGetN(mx_ptr) + 1);
 			mxGetString(mx_ptr, str, (mwSize)mxGetN(mx_ptr) + 1);
 			I->header->ProjRefPROJ4 = GMT_Duplicate_String (API, str);
 			free (str);
 		}
 		mx_ptr = mxGetField (ptr, 0, "wkt");
-		if (mx_ptr != NULL && mxGetN(mx_ptr) > 20) {	/* A true WTT string will have more thna this lenght */ 
+		if (mx_ptr != NULL && mxGetN(mx_ptr) > 20) {	/* A true WTT string will have more than this length */
 			char *str = malloc(mxGetN(mx_ptr) + 1);
 			mxGetString(mx_ptr, str, (mwSize)mxGetN(mx_ptr) + 1);
 			I->header->ProjRefWKT = GMT_Duplicate_String (API, str);
@@ -939,7 +937,7 @@ static void *gmtmex_dataset_init (void *API, unsigned int direction, unsigned in
 		/* 1. A dataset MATLAB structure or array of structures.
 		 * 2. A Cell array of plain text strings for a text-only file.
 		 * 3. A single text string instead of a one-item cell array of strings. */
-		
+
 		if (mxIsStruct (ptr)) {	/* Got the dataset structure */
 			dim[GMT_SEG] = mxGetM (ptr);	/* Number of segments */
 			if (dim[GMT_SEG] == 0) mexErrMsgTxt ("gmtmex_dataset_init: Input has zero segments where it can't be.\n");
@@ -1060,7 +1058,7 @@ static void *gmtmex_dataset_init (void *API, unsigned int direction, unsigned in
 				/* Now we have the length of this segment */
 				S = GMT_Alloc_Segment (API, GMT_WITH_STRINGS, dim[GMT_ROW], 0, buffer, D->table[0]->segment[seg]);
 				for (row = 0; row < S->n_rows; row++) {	/* Hook up the string records */
-					mx_ptr = mxGetCell (ptr, (mwSize)(k+row));	/* k is the offset to 1st record of current segment in inpu cell array */
+					mx_ptr = mxGetCell (ptr, (mwSize)(k+row));	/* k is the offset to 1st record of current segment in input cell array */
 					txt = mxArrayToString (mx_ptr);
 					S->text[row] = GMT_Duplicate_String (API, txt);
 				}
@@ -1115,7 +1113,7 @@ static struct GMT_PALETTE *gmtmex_palette_init (void *API, unsigned int directio
 			if ((mx_ptr[k] = mxGetField (ptr, 0, GMTMEX_fieldname_cpt[k])) == NULL)
 				gmtmex_quit_if_missing ("gmtmex_palette_init", GMTMEX_fieldname_cpt[k]);
 		}
-		
+
 		dim[0] = mxGetM (mx_ptr[0]);	/* Number of rows in colormap */
 		if (dim[0] < 1)
 			mexErrMsgTxt ("gmtmex_palette_init: Colormap array has no CPT values\n");
@@ -1128,6 +1126,10 @@ static struct GMT_PALETTE *gmtmex_palette_init (void *API, unsigned int directio
 		hinge    = mxGetData (mx_ptr[6]);
 		cpt      = mxGetData (mx_ptr[7]);
 		cyclic   = mxGetData (mx_ptr[9]);
+
+		/* Disable unused-but-set-variable warnings */
+		(void)(minmax);
+		(void)(colormap);
 
 		dim[1] = mxGetM (mx_ptr[2]);	/* Length of range array */
 		if (dim[0] > dim[1]) {	/* This only happens when we have a continuous color table */
@@ -1154,7 +1156,7 @@ static struct GMT_PALETTE *gmtmex_palette_init (void *API, unsigned int directio
 			for (k = 0; k < 3; k++)
 				P->bfn[j].rgb[k] = bfn[j+k*3];
 		}
-		for (j = 0; j < P->n_colors; j++) {	/* OK to access j+1'th elemenent since length of colormap is P->n_colors+1 */
+		for (j = 0; j < P->n_colors; j++) {	/* OK to access j+1'th element since length of colormap is P->n_colors+1 */
 			for (k = 0; k < 3; k++) {
 				P->data[j].rgb_low[k]  = cpt[j+k*dim[0]];
 				P->data[j].rgb_high[k] = cpt[j+(k+3)*dim[0]];
@@ -1212,7 +1214,7 @@ static struct GMT_POSTSCRIPT *gmtmex_ps_init (void *API, unsigned int direction,
 			if ((mx_ptr[k] = mxGetField (ptr, 0, GMTMEX_fieldname_ps[k])) == NULL)
 				gmtmex_quit_if_missing ("gmtmex_ps_init", GMTMEX_fieldname_ps[k]);
 		}
-			
+
 		length = mxGetData (mx_ptr[1]);
 		if (length[0] == 0)
 			mexErrMsgTxt ("gmtmex_ps_init: Dimension of PostScript given as zero\n");

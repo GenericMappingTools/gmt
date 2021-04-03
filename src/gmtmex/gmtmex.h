@@ -1,6 +1,4 @@
 /*
- *	$Id$
- *
  *	Copyright (c) 2015-2020 by P. Wessel and J. Luis
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
@@ -13,7 +11,7 @@
  *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *      GNU Lesser General Public License for more details.
  *
- *      Contact info: www.soest.hawaii.edu/pwessel
+ *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* GMT convenience functions used by MATLAB/OCTAVE mex/oct API
  * We also define the MEX structures used to pass data in/out of GMT.
@@ -30,10 +28,10 @@
 
 #define GMTMEX_GMT_MAJOR_VERSION	6
 #define GMTMEX_GMT_MINOR_VERSION	1
-#define GMTMEX_GMT_PATCH_VERSION	0
+#define GMTMEX_GMT_PATCH_VERSION	1
 
-#include "../gmt.h"
-#include "../gmt_version.h"
+#include "gmt.h"
+#include "gmt_version.h"
 #include <string.h>
 #include <ctype.h>
 #include <limits.h>
