@@ -19,18 +19,20 @@
 # Note: Only activated if GMT_BUILD_GMTMEX is set in ConfigUserAdvanced.cmake
 
 if (GMT_BUILD_GMTMEX)
+	# Add the flag to select Matlab vs Octave
+	add_definitions(-DGMT_MATLAB)
 	# Add the mexfunction as a shared library
 	add_library (GMTmexfunction SHARED gmtmex.c)
 	# Set the Matlab include file directory
-	target_include_directories (GMTmexfunction PUBLIC ${Matlab_INCLUDE_DIRS})
+	target_include_directories (GMTmexfunction PUBLIC ${GMT_SOURCE_DIR}/src /Users/pwessel/GMTdev/gmt-dev/rbuild/src ${Matlab_INCLUDE_DIRS})
 	# Link with the Matlab and mex libraries and gmt library
-	target_link_libraries (GMTmexfunction gmtlib ${Matlab_MEX_LIBRARY} ${Matlab_MX_LIBRARY})
+	target_link_libraries (GMTmexfunction gmtlib ${Matlab_MX_LIBRARY} ${Matlab_MEX_LIBRARY})
 	# Set output properties of shared library
 	set_target_properties (GMTmexfunction
 		PROPERTIES
 		OUTPUT_NAME gmtmex
 		RUNTIME_OUTPUT_NAME gmtmex
-		SUFFIX ".mexmaci64"
+		SUFFIX ".${Matlab_MEX_EXTENSION}"
 		PREFIX "")
 	# Add the install target
 	install (PROGRAMS gmt.m

@@ -97,10 +97,6 @@
 #include "gmt_internals.h"
 #include "gmt_common_runpath.h"
 
-#ifdef GMT_MATLAB
-#	include <mex.h>
-#endif
-
 #define USER_MEDIA_OFFSET 1000
 
 
