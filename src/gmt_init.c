@@ -14808,6 +14808,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
 		if (gmt_remote_dataset_id (API, opt->arg) != GMT_NOTSET)
 			gmt_set_geographic (GMT, GMT_IN);	/* Help parsing of -R in case geographic coordinates are given to tools like grdcut */
+		else if (gmtlib_grid_is_geographic (API, opt->arg))
+			gmt_set_geographic (GMT, GMT_IN);	/* Help parsing of -R in case geographic coordinates are given to tools like grdcut */
 	}
 
 	if (options && GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */
