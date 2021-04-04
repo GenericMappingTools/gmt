@@ -24,7 +24,7 @@ if (GMT_BUILD_GMTMEX)
 	# Add the mexfunction as a shared library
 	add_library (GMTmexfunction SHARED gmtmex.c)
 	# Set the Matlab include file directory
-	target_include_directories (GMTmexfunction PUBLIC ${GMT_SOURCE_DIR}/src /Users/pwessel/GMTdev/gmt-dev/rbuild/src ${Matlab_INCLUDE_DIRS})
+	target_include_directories (GMTmexfunction PUBLIC ${GMT_SOURCE_DIR}/src ${GMT_BINARY_DIR}/src ${Matlab_INCLUDE_DIRS})
 	# Link with the Matlab and mex libraries and gmt library
 	target_link_libraries (GMTmexfunction gmtlib ${Matlab_MX_LIBRARY} ${Matlab_MEX_LIBRARY})
 	# Set output properties of shared library
@@ -34,11 +34,12 @@ if (GMT_BUILD_GMTMEX)
 		RUNTIME_OUTPUT_NAME gmtmex
 		SUFFIX ".${Matlab_MEX_EXTENSION}"
 		PREFIX "")
-	# Add the install target
+	# Install gmt.m in the bin dir
 	install (PROGRAMS gmt.m
 		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
-	install (TARGETS GMTmexfunction
-		RUNTIME DESTINATION ${GMT_BINDIR}
+	# Install the gmtmex function in the bin dir instead of lib dir
+	install (PROGRAMS "${GMT_BINARY_DIR}/src/gmtmex/gmtmex.${Matlab_MEX_EXTENSION}"
+		DESTINATION ${GMT_BINDIR}
 		COMPONENT Runtime)
 endif (GMT_BUILD_GMTMEX)

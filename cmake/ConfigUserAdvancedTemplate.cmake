@@ -252,27 +252,6 @@
 #endif (HAVE_OPENMP)
 
 #
-# Building the GMT/MEX Toolbox
-#
-# Please export an environmental variable MATLAB that points to your Matlab application
-
-if (GMT_BUILD_GMTMEX)
-	if (APPLE)
-		set (MATLAB "$ENV{MATLAB}")
-		set (MEX_EXT "mexmaci64")
-		set (MATLAB_MEX "maci64")
-		set (MATLAB_FLAGS="-g")
-		add_definitions(-DGMT_MATLAB)
-		set (MEX_INC "${MATLAB}/extern/include")
-		set (MEX_LIB "${MATLAB}/bin/${MATLAB_MEX}/libmex.dylib")
-		set (MX_LIB "${MATLAB}/bin/${MATLAB_MEX}/libmx.dylib")
-		include_directories (${MEX_INC})
-		list (APPEND GMT_OPTIONAL_LIBRARIES ${MEX_LIB})
-		list (APPEND GMT_OPTIONAL_LIBRARIES ${MX_LIB})
-	endif (APPLE)
-endif (GMT_BUILD_GMTMEX)
-
-#
 # System specific tweaks
 #
 

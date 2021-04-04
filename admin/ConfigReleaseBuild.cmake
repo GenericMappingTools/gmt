@@ -13,10 +13,7 @@ set (DCW_ROOT "$ENV{GMT_DCW_SOURCE}")
 set (GMT_ENABLE_OPENMP TRUE)
 set (GMT_PUBLIC_RELEASE TRUE)
 
-# Include special gmtmex supplement for the GMT/MEX toolbox [which requires MATLAB]
-set (GMT_BUILD_GMTMEX TRUE)
-
-# recommended even for release build
+# Recommended even for release build
 set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}")
 # extra warnings
 set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")
