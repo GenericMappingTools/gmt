@@ -111,11 +111,12 @@ Optional Arguments
 
 **-E**\ [*nlevels*][**+c**][**+f**\ *file*]
     Create a linear color table by using the grid z-range as the new
-    limits in the CPT.  Alternatively, append *nlevels* and we will
+    limits in the CPT, so the number of levels in the CPT remain unchanged.
+    Alternatively, append *nlevels* and we will instead
     resample the color table into *nlevels* equidistant slices. As an
     option, append **+c** to estimate the cumulative density function
-    of the data and assign color levels accordingly.  if **+c** is used
-    the you may optionally append **+f** to save the CDF to *file*;
+    of the data and assign color levels accordingly. If **+c** is used
+    then you may optionally append **+f** to save the CDF to *file*;
     see **-bo** and **-o** for output formatting.
 
 .. _-F:
