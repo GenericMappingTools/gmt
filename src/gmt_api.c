@@ -2110,6 +2110,8 @@ GMT_LOCAL int gmtapi_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 	 */
 	int error;
 	uint64_t col;
+	struct GMT_VECTOR_HIDDEN *HV = gmt_get_V_hidden (V);
+
 	GMT_Report (API, GMT_MSG_DEBUG, "Initializing a vector for handing external %s\n", GMT_direction[direction]);
 	if (direction == GMT_OUT) {	/* OK for creating blank container for output, but sometimes there are dimensions */
 		if (dim && dim[GMTAPI_DIM_ROW] && V->n_columns)
@@ -2149,7 +2151,7 @@ GMT_LOCAL int gmtapi_init_vector (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 			}
 		}
 	}
-
+	if (gmt_M_is_geographic (API->GMT, direction)) HV->geographic = 1;
 	return (GMT_NOERROR);
 }
 
@@ -2742,36 +2744,56 @@ GMT_LOCAL int gmtapi_decode_id (const char *filename) {
 }
 
 /*! . */
-bool gmtlib_grid_is_geographic (struct GMTAPI_CTRL *API, const char *file) {
-	/* Here file is a memory file. If grid or matrix, determine if geographic */
+bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file) {
+	/* Here file is a memory file. If grid, matrix, or dataset determine if geographic */
 	bool geo = false;
 	int object_ID, item;
+	struct GMT_DATASET *D;
 	struct GMT_GRID *G;
+	struct GMT_IMAGE *I;
 	struct GMT_MATRIX *M;
+	struct GMT_VECTOR *V;
+	struct GMT_DATASET_HIDDEN *HD;
 	struct GMT_GRID_HIDDEN *GH;
 	struct GMT_GRID_HEADER_HIDDEN *HH;
-	struct GMT_MATRIX_HIDDEN *MH;
+	struct GMT_MATRIX_HIDDEN *HM;
+	struct GMT_VECTOR_HIDDEN *HV;
 
 	if (!gmt_M_file_is_memory (file)) return false;	/* Not a memory file */
 
-	if (strchr ("GM", file[GMTAPI_OBJECT_FAMILY_START]) == NULL) return false;	/* Not geographic since not grid or matrix */
+	if (strchr ("DGIMV", file[GMTAPI_OBJECT_FAMILY_START]) == NULL) return false;	/* Not geographic since not dataset, grid, image, vector or matrix */
 
-	/* Must get pointer to the grid-header or matrix hidden structure */
+	/* Must get pointer to the hidden structure */
 	if ((object_ID = gmtapi_decode_id (file)) == GMT_NOTSET)
 		return false;	/* Should not happen but return not geographic */
 	if ((item = gmtlib_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
 		return false;	/* Should not happen but return not geographic */
 
 	switch (file[GMTAPI_OBJECT_FAMILY_START]) {
+		case 'D':	/* Memory dataset */
+			D = gmtapi_get_dataset_data (API->object[item]->resource);
+			HD = gmt_get_DD_hidden (D);
+			if (HD->geographic) geo = true;
+			break;
 		case 'G':	/* Memory grid */
 			G = gmtapi_get_grid_data (API->object[item]->resource);
 			HH = gmt_get_H_hidden (G->header);
 			if (HH->grdtype > GMT_GRID_CARTESIAN) geo = true;
 			break;
+		case 'I':	/* Memory image */
+			I = gmtapi_get_image_data (API->object[item]->resource);
+			HH = gmt_get_H_hidden (I->header);
+			if (HH->grdtype > GMT_GRID_CARTESIAN) geo = true;
+			break;
 		case 'M':	/* Memory matrix */
 			M = gmtapi_get_matrix_data (API->object[item]->resource);
-			MH = gmt_get_M_hidden (M);
-			if (MH->grdtype > GMT_GRID_CARTESIAN) geo = true;
+			HM = gmt_get_M_hidden (M);
+			if (HM->grdtype > GMT_GRID_CARTESIAN) geo = true;
+			break;
+		case 'V':	/* Memory vector */
+			V = gmtapi_get_vector_data (API->object[item]->resource);
+			HV = gmt_get_V_hidden (V);
+			if (HV->geographic) geo = true;
 			break;
 		default: /* For Coverity mostly */
 			break;
@@ -10825,8 +10847,14 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 			if (this_dim[GMT_TBL] > UINT_MAX || this_dim[GMT_ROW] > UINT_MAX)
 				return_null (API, GMT_DIM_TOO_LARGE);
 			/* We basically create a blank slate(s), with n_tables, n_segments, and n_columns set [unless 0], but all n_rows == 0 (even if known; S->n_alloc has the lengths) */
-			if ((new_obj = gmtlib_create_dataset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], this_dim[GMT_COL], geometry, mode & GMT_WITH_STRINGS, false)) == NULL)
+			if ((new_obj = gmtlib_create_dataset (API->GMT, this_dim[GMT_TBL], this_dim[GMT_SEG], this_dim[GMT_ROW], this_dim[GMT_COL], geometry, mode & GMT_WITH_STRINGS, false)) == NULL) {
 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+			}
+			else if (gmt_M_is_geographic (API->GMT, def_direction)) {	/* Got a geographic data set, set hidden flag */
+				struct GMT_DATASET *D = gmtapi_get_dataset_data (new_obj);
+				struct GMT_DATASET_HIDDEN *DH = gmt_get_DD_hidden (D);
+				DH->geographic = 1;
+			}
 			break;
 		case GMT_IS_PALETTE:	/* GMT CPT, allocate one with space for dim[0] color entries */
 			if (mode & GMT_WITH_STRINGS) return_null (API, GMT_NO_STRINGS_ALLOWED);	/* Error if given unsuitable mode */
