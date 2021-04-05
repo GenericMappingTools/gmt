@@ -4375,6 +4375,7 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Path already had a detour to the pole, skip adding another detour\n");
 			add_pole = false;
 			n = gmt_geo_polarcap_segment (GMT, S, &plon, &plat);
+			free_memory = true;
 		}
 	}
 	if (add_pole) {	/* If we get here then a detour will be needed */
@@ -4395,8 +4396,9 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT
 				gmt_M_free (GMT, plat);
 				return 0;
 			}
-			free_memory = true;
 		}
+		else
+			free_memory = true;
 	}
 	k = gmtplot_geo_polygon (GMT, plon, plat, n, first, comment);	/* Plot filled polygon [no outline] */
 	if (free_memory) {	/* Delete what we allocated */
