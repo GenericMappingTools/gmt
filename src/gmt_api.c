@@ -8261,7 +8261,7 @@ int GMT_Register_IO (void *V_API, unsigned int family, unsigned int method, unsi
 		gmt_M_memcpy (S_obj->wesn, wesn, 6, double);
 		S_obj->region = true;
 	}
-	else if (family == GMT_IS_DATASET && S_obj->actual_family == GMT_IS_DATASET) 	/* All datasets are double */
+	else if (family == GMT_IS_DATASET && S_obj->actual_family == GMT_IS_DATASET) 	/* All datasets are double (this is informational only) */
 		S_obj->type = GMT_DOUBLE;
 	S_obj->alloc_level = GMT->hidden.func_level;	/* Object was allocated at this module nesting level */
 	if (module_input) S_obj->module_input = true;
