@@ -2745,8 +2745,8 @@ GMT_LOCAL int gmtapi_decode_id (const char *filename) {
 
 /*! . */
 bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file) {
-	/* Here file is a memory file. If grid, matrix, or dataset determine if geographic */
-	bool geo = false;
+	/* Here file is a memory file. If dataset, grid, image, matrix, or vector we determine if geographic */
+	bool geo = false;	/* Default is Cartesian */
 	int object_ID, item;
 	struct GMT_DATASET *D;
 	struct GMT_GRID *G;
@@ -2754,7 +2754,6 @@ bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file) {
 	struct GMT_MATRIX *M;
 	struct GMT_VECTOR *V;
 	struct GMT_DATASET_HIDDEN *HD;
-	struct GMT_GRID_HIDDEN *GH;
 	struct GMT_GRID_HEADER_HIDDEN *HH;
 	struct GMT_MATRIX_HIDDEN *HM;
 	struct GMT_VECTOR_HIDDEN *HV;
@@ -2765,9 +2764,9 @@ bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file) {
 
 	/* Must get pointer to the hidden structure */
 	if ((object_ID = gmtapi_decode_id (file)) == GMT_NOTSET)
-		return false;	/* Should not happen but return not geographic */
+		return false;	/* Should not happen but return as not geographic */
 	if ((item = gmtlib_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET)
-		return false;	/* Should not happen but return not geographic */
+		return false;	/* Should not happen but return as not geographic */
 
 	switch (file[GMTAPI_OBJECT_FAMILY_START]) {
 		case 'D':	/* Memory dataset */
@@ -10789,7 +10788,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		if (this_dim == NULL) this_dim = zero_dim;	/* Provide dimensions set to zero */
 	}
 
-	if (mode & GMT_DATA_IS_GEO) gmt_set_geographic (API->GMT, def_direction);	/* From API to tell a grid is geographic */
+	if (mode & GMT_DATA_IS_GEO) gmt_set_geographic (API->GMT, def_direction);	/* From API to tell the data are geographic */
 
 	/* Below, data can only be non-NULL for Grids or Images passing back G or I to allocate the data array */
 
