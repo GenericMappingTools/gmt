@@ -538,7 +538,7 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			sprintf (record, "%s terminator", terms[n]);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
-			for (j = 0; j < n_pts; j++) {
+			for (j = 0; j < S->n_rows; j++) {
 				out[GMT_X] = S->data[GMT_X][j];	out[GMT_Y] = S->data[GMT_Y][j];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
