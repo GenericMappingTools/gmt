@@ -166,8 +166,8 @@ The Common GMT Options
 .. include:: common_SYN_OPTs.rst_
 
 |SYN_OPT-B|
-**-J**\ *parameters*
-**-Jz**\|\ **Z**\ *parameters*
+|-J|\ *parameters*
+|-Jz|\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
 |SYN_OPT-U|
 |SYN_OPT-V|
@@ -205,14 +205,14 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-B.rst_
 
 .. _-J_full:
-.. _-J:
-
-.. include:: explain_-J_full.rst_
+.. |Add_-J| replace:: :ref:`(See cookbook summary)
+    <cookbook/options:Coordinate transformations and map projections: The **-J** option>`
+    :ref:`(See projections table) <proj-codes>`.
+.. include:: explain_-J.rst_
 
 .. _-Jz_full:
 .. _-Jz:
-
-.. include:: explain_-Jz_full.rst_
+.. include:: explain_-Jz.rst_
 
 .. _-Jproj_full:
 
@@ -258,19 +258,10 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_-c_full.rst_
 
 .. _-d_full:
-
-.. |Add_-d| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-d_full.rst_
-
 .. _-di_full:
-
-.. |Add_-di| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-di_full.rst_
-
 .. _-do_full:
 
-.. |Add_-do| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-do_full.rst_
+.. include:: explain_-d_full.rst_
 
 .. _-e_full:
 
@@ -318,19 +309,10 @@ modules. No space between the option flag and the associated arguments.
 .. include:: explain_perspective_full.rst_
 
 .. _-q_full:
-
-.. |Add_-q| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-q_full.rst_
-
 .. _-qi_full:
-
-.. |Add_-qi| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-qi_full.rst_
-
 .. _-qo_full:
 
-.. |Add_-qo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-qo_full.rst_
+.. include:: explain_-q_full.rst_
 
 .. _nodereg_full:
 

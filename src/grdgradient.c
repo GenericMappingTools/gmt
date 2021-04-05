@@ -252,6 +252,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 						}
 						else if (j == 1)
 							Ctrl->E.elevation = 45;
+
+						Ctrl->E.azimuth = -Ctrl->E.azimuth + 90;	/* The alghorithm use mat angles but we want azimuths */
 						break;
 					default:
 						Ctrl->E.mode = 3;	/* "full" Lambertian case */

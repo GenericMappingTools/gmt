@@ -163,6 +163,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 
 	C->A.PREF.dip = 90.0;	/* Vertical is the default dip */
+	C->A.p_width = 20000;	/* Infinity, basically */
 	C->L.pen = C->T.pen = C->P2.pen = C->T2.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->L.pen.width = C->T.pen.width = C->P2.pen.width = C->T2.pen.width = -1.0;
@@ -459,7 +460,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ab<lon1>/<lat1>/<strike>/<length>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ac<x1>/<y1>/<x2>/<y2>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad<x1>/<y1>/<strike>/<length>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For -Aa|b, <width>, <p_length>, <dmin> and <dmax> must be given in km.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For -Aa|b, the default <dip> is 90 and default <width> = infinity.  Also,\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     <width>, <p_length>, <dmin> and <dmax> must be given in km.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to determine the plot domain (-R) from the cross-section parameters.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on depth-value in 3rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Select format type and symbol size.\n");
@@ -528,6 +530,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 GMT_LOCAL unsigned int pscoupe_parse_old_A (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, char *arg) {
 	int n;
 	char *p = NULL;
+	gmt_M_unused (GMT);
 	if ((p = strstr (arg, "+f"))) {	/* Get the frame from the cross-section parameters */
 		Ctrl->A.frame = true;
 		p[0] = '\0';	/* Chop off modifier */
@@ -556,7 +559,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 	unsigned int n_errors = 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
-	double lon1, lat1, lon2, lat2;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -602,6 +604,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
 							Ctrl->A.PREF.str = atof (txt_c);
 							Ctrl->A.p_length = atof (txt_d);
+							break;
 						case 'c':
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_a, GMT_IS_FLOAT, &Ctrl->A.lon1), txt_a);
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_b, GMT_IS_FLOAT, &Ctrl->A.lat1), txt_b);
@@ -613,6 +616,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
 							Ctrl->A.PREF.str = atof (txt_c);
 							Ctrl->A.p_length = atof (txt_d);
+							break;
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Unrecognized mode %c.\n", Ctrl->A.proj_type);
 							n_errors++;

@@ -79,6 +79,10 @@
 .. |Add_-B_links| replace:: :ref:`(See full description) <-B_full>` :ref:`(See cookbook information)
     <cookbook/options:Map frame and axes annotations: The **-B** option>`.
 
+.. |Add_-J_links| replace:: :ref:`(See full description) <-J_full>` :ref:`(See cookbook summary)
+    <cookbook/options:Coordinate transformations and map projections: The **-J** option>`
+    :ref:`(See projections table) <proj-codes>`.
+
 .. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
     <cookbook/options:Data domain or map region: The **-R** option>`.
 

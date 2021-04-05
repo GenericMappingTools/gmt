@@ -1885,7 +1885,7 @@ nc_err:
 bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file) {
 	/* Return true if the file is a 3-D netCDF cube */
 	bool is_cube = false;
-	int i, ID = GMT_NOTSET, ncid, z_id = GMT_NOTSET, dim = 0, nvars, ndims = 0;
+	int i, ID = GMT_NOTSET, ncid, z_id = GMT_NOTSET, nvars, ndims = 0;
 	char varname[GMT_GRID_NAME_LEN256] = {""}, *c = NULL;
 	gmt_M_unused (API);
 
@@ -1916,10 +1916,8 @@ bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file) {
 			if (nc_inq_varndims (ncid, i, &ndims)) goto nc_cube_return;	/* Not good */
 			if (ndims == 3)	/* Found the first 3-D grid */
 				z_id = i;
-			else if (ID == GMT_NOTSET && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
+			else if (ID == GMT_NOTSET && ndims > 3 && ndims < 5)	/* Also look for higher-dim grid in case no 3-D */
 				ID = i;
-				dim = ndims;
-			}
 			i++;
 		}
 	}

@@ -615,6 +615,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		if (D->n_records == 0) {
+			GMT_Report (API, GMT_MSG_ERROR, "No data records found - exiting\n");
+			Return (GMT_RUNTIME_ERROR);			
+		}
 		gmt_M_memcpy (wesn_new, G->header->wesn, 4U, double);
 		if (GMT->common.R.active[RSET])	/* Let -R override what the grid says */
 			gmt_M_memcpy (wesn_new, GMT->common.R.wesn, 4U, double);

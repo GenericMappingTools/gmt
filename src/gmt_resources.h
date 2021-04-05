@@ -272,6 +272,10 @@ enum GMT_enum_header {
 	GMT_HEADER_ON = 1	/* Enable header blocks out as default */
 };
 
+enum GMT_enum_data {
+	GMT_DATA_IS_GEO = 256	/*  Data are geographic, not Cartesian */
+};
+
 enum GMT_enum_alloc {
 	GMT_ALLOC_EXTERNALLY = 0,	/* Allocated outside of GMT: We cannot reallocate or free this memory */
 	GMT_ALLOC_INTERNALLY = 1,	/* Allocated by GMT: We may reallocate as needed and free when no longer needed */
@@ -362,7 +366,7 @@ enum GMT_enum_gridio {
 	GMT_GRID_ROW_BY_ROW	   = 32U,   /* Read|write the grid array one row at the time sequentially */
 	GMT_GRID_ROW_BY_ROW_MANUAL = 64U,   /* Read|write the grid array one row at the time in any order */
 	GMT_GRID_XY		   = 128U,  /* Allocate and initialize x,y vectors */
-	GMT_GRID_IS_GEO		   = 256U,  /* Grid is a geographic grid, not Cartesian */
+	GMT_GRID_IS_GEO		   = 256U,  /* Grid is a geographic grid, not Cartesian [Deprecated, use GMT_DATA_IS_GEO instead] */
 	GMT_GRID_IS_IMAGE	   = 512U,   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
 	GMT_IMAGE_NO_INDEX	   = 4096,	/* If reading an indexed grid, convert to rgb so we can interpolate */
 	GMT_IMAGE_ALPHA_LAYER  = 8192	/* Place any alpha layer in the image band, not alpha array */

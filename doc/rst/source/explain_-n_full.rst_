@@ -1,18 +1,29 @@
-**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+c**][**+t**\ *threshold*]
-    Select grid interpolation mode by adding **b** for B-spline
-    smoothing, **c** for bicubic interpolation, **l** for bilinear
-    interpolation, or **n** for nearest-neighbor value (for example to
-    plot categorical data). Optionally, append **+a** to switch off
-    antialiasing (where supported). Append **+b**\ *BC* to override the
-    boundary conditions used, adding **g** for geographic, **p** for
-    periodic, or **n** for natural boundary conditions. For the latter
-    two you may append **x** or **y** to specify just one direction,
-    otherwise both are assumed. Append **+c** to clip the interpolated
-    grid to input z-min/max [Default may exceed limits]. Append **+t**\ *threshold* to
-    control how close to nodes with NaNs the interpolation will go. A
-    *threshold* of 1.0 requires all (4 or 16) nodes involved in
-    interpolation to be non-NaN. 0.5 will interpolate about half way
-    from a non-NaN value; 0.1 will go about 90% of the way, etc.
-    [Default is bicubic interpolation with antialiasing and a threshold
-    of 0.5, using geographic (if grid is known to be geographic) or
-    natural boundary conditions].
+The **-n** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
+
+**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *g*\|\ *p*\|\ *n*\ ][**+c**][**+t**\ *threshold*]
+    Select grid interpolation mode.
+    
+**Description**
+
+The **-n** option controls parameters used for 2-D grids resampling [default is bicubic interpolation with
+antialiasing and a *threshold* of 0.5, using geographic (if grid is known to be geographic) or natural boundary 
+conditions]. Append one of the following to select the type of spline used:
+
+- **b** to use B-spline smoothing.
+- **c** to use bicubic interpolation.
+- **l** to use bilinear interpolation.
+- **n** to use nearest-neighbor value (for example to plot categorical data).
+
+The following modifiers are supported:
+
+- **+a** to switch off antialiasing (where supported) [default uses antialiasing].
+- **+b** to override boundary conditions used, by appending *g* for geographic, *p* for periodic, or *n* for
+  natural boundary conditions. For the latter two you may append **x** or **y** to specify just one direction, otherwise
+  both are assumed.
+- **+c** to clip the interpolated grid to input z-min/z-max [default may exceed limits].
+- **+t** to control how close to nodes with NaNs the interpolation will go based on *threshold*. A *threshold* of 1.0
+  requires all (4 or 16) nodes involved in interpolation to be non-NaN. For example, 0.5 will interpolate about half
+  way from a non-NaN value and 0.1 will go about 90% of the way [default is 0.5].

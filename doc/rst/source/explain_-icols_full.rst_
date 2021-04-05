@@ -1,15 +1,25 @@
-**-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
-    Select specific data columns for primary input, in arbitrary order. Columns
-    not listed will be skipped. Give individual columns (or column ranges
-    in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
-    not specified) separated by commas [Default reads all columns in order,
-    starting with the first column (0)]. Columns may be repeated.  To each
-    column, optionally add any of  the following: **+l** takes **log10** of
-    the input values first; **+d**\ *divide*, subsequently divides by a
-    given factor [1]; alternatively, **+s**\ *scale* instead multiplies by the
-    given factor [1]; **+o**\ *offset*, finally adds a given offset [0].
-    To read from a given column until the end of the record, leave off *stop*.
-    Normally, any trailing text is read but when **-i** is used you must explicitly add
-    the column **t** to retain the text. To only ingest a single word from the
-    trailing text, append the word number (first word is 0).  Finally, **-in**
-    will simply read the numerical input and skip any trailing text.
+The **-i** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
+
+**-i**\ *cols*\ [**+l**][**+d**\ *divisor*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+    Select specific data columns for primary input, in arbitrary order.
+
+**Description**
+
+The **-i** option allows you to specify which input file physical data columns to use and in what order. Specify
+individual columns or column ranges in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if not specified,
+separated by commas [Default reads all columns in order, starting with the first column (i.e., column 0)]. Columns can
+be repeated. The chosen data columns will be used as given and columns not listed will be skipped. Optionally, append
+one of the following modifiers to any column or column range to transform the input columns:
+
+- **+l** to take the **log10** of the input values.
+- **+d** to divide the input values by the factor *divisor* [default is 1].
+- **+s** to multiply the input values by the factor *scale* [default is 1].
+- **+o** to add the given *offset* to the input values [default is 0].
+
+To read from a given column until the end of the record, leave off *stop* when specifying the column range. Normally,
+any trailing text is read but when **-i** is used you must explicitly add the column **t** to retain the text. To only
+ingest a single word from the trailing text, append the word number (first word is 0).  Finally, **-in** will simply
+read the numerical input and skip any trailing text.

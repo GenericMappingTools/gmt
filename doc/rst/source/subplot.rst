@@ -131,10 +131,10 @@ Optional Arguments (begin mode)
     the frames.  With different **-B**, **-C**, **-M** and **-S** choices the two subplots may not align, but with
     **-D** they will.  **Note**: It is assumed that **-F** stays the same [Draw and annotate frames as indicated].
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 

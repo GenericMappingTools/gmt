@@ -2977,7 +2977,7 @@ void gmt_hierarchy_tag (struct GMTAPI_CTRL *API, const char *kind, unsigned int 
 		if (!access (path, R_OK)) return;	/* Yes, found it */
 	}
 	/* Fall back is session level */
-	sprintf (tag, "");
+	tag[0] = '\0';
 	snprintf (path, PATH_MAX, "%s/%s%s", API->gwf_dir, kind, tag);
 }
 
@@ -4767,7 +4767,7 @@ GMT_LOCAL int gmtinit_autoscale (char *arg) {
 }
 
 /*! . */
-GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
+GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	/* gmtinit_parse_J_option scans the arguments given and extracts the parameters needed
 	 * for the specified map projection. These parameters are passed through the
 	 * GMT->current.proj structure.  The function returns true if an error is encountered.
@@ -4779,13 +4779,15 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args) {
 	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *d = NULL;
-	char txt_arr[11][GMT_LEN256];
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *d = NULL, *args;
+	char txt_arr[11][GMT_LEN256], args_buf[GMT_LEN128] = {""};
 
-	if (args == NULL) {
+	if (args_in == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -J: No argument for parsing\n");
 		return (true);
 	}
+	strncpy (args_buf, args_in, GMT_LEN128);	/* Must duplicate since args_in may be a static string */
+	args = args_buf;	/* Start of arguments */
 	gmt_M_memset (l_pos, 3, int);	gmt_M_memset (p_pos, 3, int);
 	gmt_M_memset (t_pos, 3, int);	gmt_M_memset (d_pos, 3, int);
 	if (!GMT->common.J.active)	/* Down want to clobber this during -Jz/Z after the horizontal part has been set */
@@ -6435,7 +6437,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 
 /*! . */
 GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
-	int i, error = 0;
+	int error = 0;
 #if NO_THEMES
 	return;		/* Ignore all the modern theme stuff */
 #endif
@@ -9883,7 +9885,7 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 	/* Determine suitable MAP_FRAME_AXES for plot */
 	if (GMT->current.proj.projection == GMT_POLAR) {	/* May need to switch what is south and north */
 		strcpy (axes, GMT->current.proj.flip ? "WrStZ" : "WrbNZ");
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Given polar projection flip = %d, set MAP_FRAME_AXES = %s\n", GMT->current.proj.flip, axes);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given polar projection flip = %d, set MAP_FRAME_AXES = %s\n", GMT->current.proj.flip, axes);
 	}
 	else if (GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_GENPER)	/* Need to relax to all since hard to guess what works */
 		strcpy (axes, "WESNZ");
@@ -9895,7 +9897,7 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 			case 3: strcpy (axes, "WrStZ"); break;
 			case 4: strcpy (axes, "WrbNZ"); break;
 		}
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "Given view angle = %g, set MAP_FRAME_AXES = %s\n", az, axes);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given view angle = %g, set MAP_FRAME_AXES = %s\n", az, axes);
 	}
 	else	/* Default modern mode setting */
 		strcpy (axes, "WrStZ");
@@ -11442,7 +11444,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;
 			}
 			else
-					error++;
+				error = true;
 			break;
 
 		case GMTCASE_GMT_CUSTOM_LIBS:
@@ -13587,7 +13589,7 @@ GMT_LOCAL int gmtinit_get_current_panel (struct GMTAPI_CTRL *API, int fig, int *
 	}
 	fclose (fp);
 	if (*row < 0 || *col < 0) {
-		GMT_Report (API, GMT_MSG_ERROR, "Current panel has row or column outsiden range!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Current panel has row or column outside range!\n");
 		API->error = GMT_RUNTIME_ERROR;
 		return GMT_RUNTIME_ERROR;
 	}
@@ -14759,7 +14761,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		if ((opt = GMT_Find_Option (API, 'J', *options)) == NULL) {
 			/* Running psrose with old -S[n]<radius syntax and no -J.  Need to replace with new -J [-S] syntax */
 			struct GMT_OPTION *S = GMT_Find_Option (API, 'S', *options);
-			if (S && S->arg[0]) {	/* Gave -S option with some arguments */
+			if (S && S->arg[0] && strstr (S->arg, "+a") == NULL) {	/* Gave -S option with some arguments but not the new -S+a */
 				char j_code[GMT_LEN256] = {""};
 				unsigned int k, norm = (S->arg[0] == 'n') ? 1 : 0;
 				double radius;
@@ -14803,9 +14805,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	GMT->current.ps.active = is_PS;		/* true if module will produce PS */
 
+	/* Check if there is an input remote grid or memory file so we may set geographic to be true now before we must decide on auto-J */
 	if (options && (opt = GMT_Find_Option (API, GMT_OPT_INFILE, *options))) {
-		if (gmt_remote_dataset_id (API, opt->arg) != GMT_NOTSET)
-			gmt_set_geographic (GMT, GMT_IN);	/* Help parsing of -R in case geographic coordinates are given to tools like grdcut */
+		if (gmt_remote_dataset_id (API, opt->arg) != GMT_NOTSET)	/* All remote data grids/images are geographic */
+			gmt_set_geographic (GMT, GMT_IN);
+		else if (gmtlib_data_is_geographic (API, opt->arg))	/* This dataset, grid, image, matrix, or vector is geographic */
+			gmt_set_geographic (GMT, GMT_IN);
 	}
 
 	if (options && GMT->current.setting.run_mode == GMT_MODERN) {	/* Make sure options conform to this mode's harsh rules: */

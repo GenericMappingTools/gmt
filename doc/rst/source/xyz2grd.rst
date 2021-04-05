@@ -94,12 +94,12 @@ Optional Arguments
 
 .. include:: explain_-D_cap.rst_
 
-.. _-J:
-
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant metadata in
     netCDF grids. Remember also that PROJ syntax can be used directly in **-J**. This referencing will be
     recognized by GDAL and increasingly also by GMT.
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 

@@ -1603,6 +1603,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
+			if (strchr (Ctrl->T.file, 'T'))	/* Check here since gmtmath does not pass that info back */
+				gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);	/* Set first input column type as absolute time */
+
 		}
 		else	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
 			n_frames = n_data_frames = atoi (Ctrl->T.file);
@@ -2007,7 +2010,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 							L_col = D->table[0]->segment[0]->data[I->col][use_frame];
 							if ((type = gmt_M_type (GMT, GMT_IN, I->col)) == GMT_IS_ABSTIME) {	/* Time formatting */
 								char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
-								gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
+								if (I->kind == 'F')	/* Must give a proper ISO region */
+									gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, L_col);
+								else
+									gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
 								if (GMT->current.plot.calclock.clock.skip)
 									sprintf (string, "%s", date);
 								else if (GMT->current.plot.calclock.date.skip)

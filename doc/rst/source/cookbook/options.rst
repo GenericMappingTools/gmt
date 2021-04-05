@@ -638,324 +638,87 @@ Plot positioning and layout: The **-X** **-Y** options
 OGR/GMT GIS i/o: The **-a** option
 ----------------------------------
 
-**Syntax**
-
-**-a**\ [[*col*\ =]\ *name*\ ][,\ *...*]
-
-**Description**
-
-GMT relies on external tools to translate geospatial files such as
-shapefiles into a format we can read. The tool **ogr2ogr** in the GDAL
-package can do such translations and preserve the aspatial metadata via
-a new OGR/GMT format specification (See Chapter :doc:`ogrgmt-format`).
-For this to be useful we need a mechanism to associate certain metadata values with
-required input and output columns expected by GMT programs. The **-a**
-option allows you to supply one or more comma-separated associations
-*col=name*, where *name* is the name of an aspatial attribute field in a
-OGR/GMT file and whose value we wish to as data input for column *col*.
-The given aspatial field thus replaces any other value already set. Note
-that *col = 0* is the first data columns. Note that if no aspatial
-attributes are needed then the **-a** option is not needed – GMT will
-still process and read such data files.
-
-OGR/GMT input with **-a** option
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If you need to populate GMT data columns with (constant) values
-specified by aspatial attributes, use **-a** and append any number of
-comma-separated *col=name* associations. E.g., *2=depth* will read the
-spatial *x,y* columns from the file and add a third (*z*) column based
-on the value of the aspatial field called *depth*. You can also
-associate aspatial fields with other settings such as labels, fill
-colors, pens, and values used to look-up colors. Do so by letting the
-*col* value be one of **D**, **G**, **L**, **T**, **W**, or **Z**. This
-works analogously to how standard multi-segment files can pass such
-options via its segment headers (See Chapter :doc:`file-formats`).
-
-OGR/GMT output with **-a** option
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-You can also make GMT table-writing tools output the OGR/GMT format
-directly. Again, specify if certain GMT data columns with constant
-values should be stored as aspatial metadata using the
-*col=name*\ [:*type*], where you can optionally specify what data type
-it should be (double, integer, string, logical, byte, or datetime)
-[double is default]. As for input, you can also use the special *col*
-entries of **D**, **G**, **L**, **T**, **W**, or **Z** to have values
-stored as options in segment headers be used as the source for the name
-aspatial field. Finally, for output you must append
-+\ **g**\ *geometry*, where *geometry* can be any of
-[**M**]\ **POINT**\|\ **LINE**\|\ **POLY**; the
-**M** represent the multi-versions of these three geometries. Use
-upper-case +\ **G** to signal that you want to split any line or polygon
-features that straddle the Dateline.
+.. include:: ../explain_-aspatial_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-binary:
 
 Binary table i/o: The **-b** option
 -----------------------------------
 
-**Syntax**
+Binary input with **-bi** option
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**-bi**\|\ **o**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
+.. include:: ../explain_-bi_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^
 
-**Description**
+Binary output with **-bo** option
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-All GMT programs that accept table data as *primary* input may read ASCII, native
-binary, shapefiles, or netCDF tables (Any *secondary* input files provided via command line
-options are always expected to be in ASCII format). Native binary files may have a header section
-and the **-h**\ *n* option (see Section `Header data records: The -h option`_) can be used to
-skip the first *n* bytes. The data record can be in any format, you may mix
-different data types and even byte-swap individual columns or the entire record. When using
-native binary data the user must be aware of the fact that GMT has no
-way of determining the actual number of columns in the file. You must
-therefore pass that information to GMT via the binary
-**-bi** *n*\ **t** option, where *n* is the number of data
-columns of given type **t**, where **t** must be one of **c** (signed 1-byte character,
-int8_t), **u** (unsigned 1-byte character, uint8_t), **h** (signed
-2-byte int, int16_t), **H** (unsigned 2-byte int, uint16_t), **i**
-(signed 4-byte int, int32_t), **I** (unsigned 4-byte int, uint32_t),
-**l** (signed 8-byte int, int64_t), **L** (unsigned 8-byte int,
-uint64_t), **f** (4-byte single-precision float), and **d** (8-byte
-double-precision float). In addition, use **x** to skip *n* bytes
-anywhere in the record. For a mixed-type data record you can concatenate
-several [*n*]\ **t** combinations, separated by commas. You may append
-**w** to any of the items to force byte-swapping. Alternatively, append
-**+l**\|\ **b** to indicate that the entire data file should be
-read or written as little- or big-endian, respectively. Here, *n* is the
-number of each item in your binary file. Note that *n* may be larger
-than *m*, the number of columns that the GMT program requires to do
-its task. If *n* is not given then it defaults to *m* and all columns
-are assumed to be of the single specified type **t** [**d** (double), if
-not set]. If *n* < *m* an error is generated. Multiple segment
-files are allowed and the segment headers are assumed to be records
-where all the fields equal NaN.
-
-For native binary output, use the **-bo** option; see **-bi** for further details.
-
-Because of its meta data, reading netCDF tables (i.e., netCDF files
-containing 1-dimensional arrays) is quite a bit less complex than
-reading native binary files. When feeding netCDF tables to programs like
-:doc:`/plot`, the program will automatically
-recognize the format and read whatever amount of columns are needed for
-that program. To steer which columns are to be read, the user can append
-the suffix **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the netCDF file
-name, where *var1*, *var2*, etc. are the names of the variables to be
-processed. No **-bi** option is needed in this case.
-
-Currently, netCDF tables can only be input, not output. For more
-information, see Chapter :doc:`file-formats`.
+.. include:: ../explain_-bo_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^
 
 .. _option_-c:
 
 Selecting subplot panels: The **-c** option
 -------------------------------------------
 
-**Syntax**
-
-**-c**\ [*row*\ ,\ *col*\|\ *index*]
-
-**Description**
-
-When using :doc:`/subplot` to assemble multiple individual panels in a
-matrix layout, we use **-c** to either advance the focus of plotting to
-the next panel in the sequence (either by row or by column as set by
-subplot's **-A** option) or to specify directly the *row*,\ *col* or
-1-D *index* of the desired panel.  The **-c** option is only allowed
-when in subplot mode.  If no **-c** option is given for the first plot
-then we default to *row* = *col* = *index* = 0, i.e., the upper left
-panel.  **Note**: *row*, *col*, and *index* all start at 0.
+.. include:: ../explain_-c_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-d:
 
 Missing data conversion: The **-d** option
 ------------------------------------------
 
-**Syntax**
-
-**-di**\|\ **o**\ *nodata*
-
-**Description**
-
-Within GMT, any missing values are represented by the IEEE NaN value.
-However, there are occasionally the need to handle user data where
-missing data are represented by some unlikely data value such as -99999.
-Since GMT cannot guess that in your data set -99999 is a special value,
-you can use the **-d** option to have such values replaced with NaNs.
-Similarly, should your GMT output need to conform to such a requirement
-you can replace all NaNs with the chosen nodata value.  If only input
-or output should be affected, use **-di** or **-do**, respectably.
+.. include:: ../explain_-d_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-e:
 
 Data record pattern matching: The **-e** option
 -----------------------------------------------
 
-**Syntax**
-
-**-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
-
-**Description**
-
-Modules that read ASCII tables will normally process all the data records
-that are read.  The **-e** option offers a built-in pattern scanner that
-will only pass records that match the given *pattern* or regular expressions.
-The test can also be inverted to only pass data records that *do not* match
-the pattern.  The test is *not* applied to header or segment headers.
-To reverse the search, i.e., to only accept data records that do *not*
-contain the specified pattern, use **-e~**. Should your pattern happen
-to start with ~ you will need to escape this character with a backslash
-[Default accepts all data records]. For matching data records
-against extended `Regular Expressions <https://en.wikipedia.org/wiki/Regular_expression>`_,
-please enclose the expression in slashes. Append **i** for case-insensitive matching.
-To supply a list of such patterns, give **+f**\ *file* with one pattern per line.
-To give a single pattern starting with **+f**, escape it with a backslash.
+.. include:: ../explain_-e_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-f:
 
 Data type selection: The **-f** option
 --------------------------------------
 
-**Syntax**
-
-**-f**\ [**i**\|\ **o**]\ *colinfo*
-
-**Description**
-
-When map projections are not required we must explicitly state what kind
-of data each input or output column contains. This is accomplished with
-the **-f** option. Following an optional **i** (for input only) or **o**
-(for output only), we append a text string with information about each
-column (or range of columns) separated by commas. Each string starts
-with the column number (0 is first column) followed by either **x**
-(longitude), **y** (latitude), **T** (absolute calendar time) or **t**
-(relative time). If several consecutive columns have the same format you
-may specify a range of columns rather than a single column. Column ranges
-must be given in the format *start*\ [:*inc*]:*stop*, where *inc* defaults
-to 1 if not specified).  For example, if our input file has geographic
-coordinates (latitude, longitude) with absolute calendar coordinates in
-the columns 3 and 4, we would specify **fi**\ 0\ **y**,1\ **x**,3:4\ **T**.
-All other columns are assumed to
-have the default, floating point format and need not be set
-individually. The shorthand **-f**\ [**i**\|\ **o**]\ **g**
-means **-f**\ [**i**\|\ **o**]0x,1y (i.e., geographic
-coordinates). A special use of **-f** is to select **-fp**\ [*unit*],
-which *requires* **-J** and lets you use *projected* map coordinates
-(e.g., UTM meters) as data input. Such coordinates are automatically
-inverted to longitude, latitude during the data import. Optionally,
-append a length *unit* (see Table :ref:`distunits <tbl-distunits>`) [meter]. For more
-information, see Sections :ref:`input-data-formats` and :ref:`output-data-formats`.
+.. include:: ../explain_-f_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-g:
 
 Data gap detection: The **-g** option
 -------------------------------------
 
-**Syntax**
-
-**-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\
-**z**\ *gap*\ [**+n**\|\ **p**]
-
-**Description**
-
-GMT has several mechanisms that can determine line
-segmentation. Typically, data segments are separated by multiple segment
-header records (see Chapter :doc:`file-formats`). However, if key data columns contain a
-NaN we may also use that information to break lines into multiple
-segments. This behavior is modified by the parameter
-:term:`IO_NAN_RECORDS` which by default is set to *skip*, meaning such
-records are considered bad and simply skipped. If you wish such records
-to indicate a segment boundary then set this parameter to *pass*.
-Finally, you may wish to indicate gaps based on the data values
-themselves. The **-g** option is used to detect gaps based on one or
-more criteria (use **-ga** if *all* the criteria must be met; otherwise
-only one of the specified criteria needs to be met to signify a data
-gap). Gaps can be based on excessive jumps in the *x*- or
-*y*-coordinates (**-gx** or **-gy**), or on the distance between points
-(**-gd**). Append the *gap* distance and optionally a unit for actual
-distances. For geographic data the optional unit may be arc
-**d**\ egree, **m**\ inute, and **s**\ econd, or m\ **e**\ ter
-[Default], **f**\ eet, **k**\ ilometer, **M**\ iles, or **n**\ autical
-miles. For programs that map data to map coordinates you can optionally
-specify these criteria to apply to the projected coordinates (by using
-upper-case **-gX**, **-gY** or **-gD**). In that case, choose from
-**c**\ entimeter, **i**\ nch or **p**\ oint [Default unit is controlled
-by :term:`PROJ_LENGTH_UNIT`]. **Note**: For **-gx** or **-gy** with time data
-the unit is instead controlled by :term:`TIME_UNIT`.
-Normally, a gap is computed as the absolute value of the
-specified distance measure (see above).  Append **+n** to compute the gap
-as previous minus current column value and **+p** for current minus previous
-column value.
+.. include:: ../explain_-g_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-h:
 
 Header data records: The **-h** option
 --------------------------------------
 
-**Syntax**
-
-**-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*]\
-[**+r**\ *remark*][**+t**\ *title*]
-
-**Description**
-
-The **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*] option
-lets GMT know that input file(s) have *n_recs* header records [0]. If
-there are more than one header record you must specify the number after
-the **-h** option, e.g., **-h**\ 4. Note that blank lines and records
-that start with the character # are *automatically* considered header
-records and skipped, hence **-h** is not needed to skip such records.
-Thus, *n_recs* refers to general text lines that
-do *not* start with # and thus must specifically be skipped in order for
-the programs to function properly. The default number of such header
-records if **-h** is used is one of the many parameters in the :doc:`/gmt.conf` file
-(:term:`IO_N_HEADER_RECS`, by default 0), but can be overridden by
-**-h**\ *n_header_recs*. Normally, programs that both read and write
-tables will output the header records that are found on input. Use
-**-hi** to suppress the writing of header records. You can use the
-**-h** options modifiers to tell programs to output extra header
-records for titles (**+t**), remarks (**+r**), or column names (**+c**)
-identifying each data column, or delete (**+d**) the original headers.
-You can even add a single segment header (**+m**) after the initial header
-section.
-
-When **-b** is used to indicate binary data the **-h** takes on a
-slightly different meaning. Now, the *n_recs* argument is taken to mean
-how many *bytes* should be skipped (on input) or padded with the space
-character (on output).
+.. include:: ../explain_-h_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-i:
 
 Input columns selection: The **-i** option
 ------------------------------------------
 
-**Syntax**
+.. include:: ../explain_-icols_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*]\
-[**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+**Examples**
 
-**Description**
-
-The **-i**\ *columns* option allows you to specify which
-input file physical data columns to use and in what order. By default, GMT will
-read all the data columns in the file, starting with the first column
-(0). Using **-i** modifies that process and reads in a logical record based
-on columns from the physical record. For instance, to use the 4th,
-7th, and 3rd data column as the required *x,y,z* to
-:doc:`/blockmean` you would specify
-**-i**\ 3,6,2 (since 0 is the first column). The chosen data columns
-will be used as given. Optionally, you can specify that input columns
-should be transformed according to a linear or logarithmic conversion.
-Do so by appending [**+l**][**+d**\ *factor*][**+s**\ *factor*][**+o**\ *offset*] to
-each column (or range of columns). All items are optional: The **+l**
-implies we should first take :math:`\log_{10}` of the data [leave as
-is]. Next, we may multiply or divide the result by the given *factor* [1]. Finally, we
-add in the specified *offset* [0].  If you want the trailing text to remain
-part of your subset logical record then you must also select the special column
-by requesting column **t**, otherwise we ignore trailing text.  If you only
-want to select one word from the trailing text, then append the word number
-(0 is the first word).  Finally, to use the entire numerical record and
-ignore all trailing text, use **-in**.
+For example, to use the 4th, 7th, and 3rd data column as the required *x,y,z*
+to :doc:`/blockmean` you would specify **-i**\ 3,6,2 (since 0 is the first
+column). The chosen data columns will be used as given.
 
 .. _gmt_record:
 
@@ -985,55 +748,26 @@ ignore all trailing text, use **-in**.
 Spherical distance calculations: The **-j** option
 --------------------------------------------------
 
-**Syntax**
-
-**-je**\|\ **f**\|\ **g**
-
-**Description**
-
-GMT has different ways to compute distances on planetary bodies.
-By default (**-jg**) we perform great circle distance calculations, and parameters such
-as distance increments or radii will be compared against calculated great
-circle distances. To simplify and speed up calculations you can select Flat
-Earth mode (**-jf**) instead, which gives an approximate but faster result.  Alternatively,
-you can select ellipsoidal (**-je**; i.e., geodesic) mode for the highest precision
-(and slowest calculation time).  All spherical distance calculations depend on
-the current ellipsoid (:term:`PROJ_ELLIPSOID`), the definition of
-the mean radius (:term:`PROJ_MEAN_RADIUS`), and the specification
-of latitude type (:term:`PROJ_AUX_LATITUDE`).  Geodesic distance
-calculations is also controlled by method (:term:`PROJ_GEODESIC`).
+.. include:: ../explain_distcalc_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _option_-l:
 
 Setting automatic legend entries: The **-l** option
 ---------------------------------------------------
 
-**Syntax**
+.. include:: ../explain_-l_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-l**\ [*label*]\ [**+D**\ *pen*][**+G**\ *gap*][**+H**\ *header*]\
-[**+L**\ [*code*/]\ *txt*][**+N**\ *cols*][**+S**\ *size*\ [/*height*]]\
-[**+V**\ [*pen*]][**+f**\ *font*][**+g**\ *fill*][**+j**\ *just*]\
-[**+o**\ *off*][**+p**\ *pen*][**+s**\ *scale*][**+w**\ *width*]
+**Examples**
 
-**Description**
-
-Map or plot legends are created by :doc:`/legend` and normally this module
-will read a *specfile* that outlines how the legend should look.  You can
-make very detailed and complicated legends by mixing a variety of items,
-such as symbol, free text, colorbars, scales, images, and more.  Yet, for
-the vast majority of plots displaying symbols or lines a simple legend will suffice.
-The **-l** option is used to automatically build the *specfile* as we plot
-the various layers that will make up our illustration.  Apart from setting
-the label string that goes with the current symbol or line, you can select
-from a series of modifiers that mirror the effect of control codes normally
-added to the *specfile* by hand.  For instance, a simple plot with two
-symbols can obtain a legend by using this option and modifiers and is shown
-in Figure :ref:`Auto Legend <auto_legend>`:
+A simple plot with two symbols can obtain a legend by using this option and modifiers and is shown in Figure
+:ref:`Auto Legend <auto_legend>`:
 
 .. literalinclude:: /_verbatim/GMT_autolegend.txt
 
-As the script shows, when no *specfile* is given to :doc:`/legend` then we
-look for the automatically generated on in the session directory.
+As the script shows, when no *specfile* is given to :doc:`/legend` then we look for the automatically generated one in
+the session directory.
 
 .. _auto_legend:
 
@@ -1049,130 +783,50 @@ look for the automatically generated on in the session directory.
 Grid interpolation parameters: The **-n** option
 ------------------------------------------------
 
-**Syntax**
-
-**-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*]\
-[**+c**][**+t**\ *threshold*]
-
-**Description**
-The **-n**\ *type* option controls parameters used for
-2-D grids resampling. You can select the type of spline used (**-nb**
-for B-spline smoothing, **-nc** for bicubic [Default], **-nl** for
-bilinear, or **-nn** for nearest-node value). For programs that support
-it, antialiasing is by default on; optionally, append **+a** to switch
-off antialiasing. By default, boundary conditions are set according to
-the grid type and extent. Change boundary conditions by appending
-**+b**\ *BC*, where *BC* is either **g** for geographic boundary
-conditions or one (or both) of **n** and **p** for natural or periodic
-boundary conditions, respectively. Append **x** or **y** to only apply
-the condition in one dimension. E.g., **-nb+nxpy** would imply natural
-boundary conditions in the *x* direction and periodic conditions in the
-*y* direction. Finally, append **+t**\ *threshold* to control how close
-to nodes with NaN the interpolation should go. A *threshold* of 1.0
-requires all (4 or 16) nodes involved in the interpolation to be
-non-NaN. 0.5 will interpolate about half way from a non-NaN value; 0.1
-will go about 90% of the way, etc.
+.. include:: ../explain_-n_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-o:
 
 Output columns selection: The **-o** option
 -------------------------------------------
 
-**Syntax**
+.. include:: ../explain_-ocols_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
+**Examples**
 
-**Description**
-
-The **-o**\ *columns* option allows you to specify which
-columns to write on output and in what order. By default, GMT will
-write all the data columns produced by the program. Using **-o**
-modifies that process. For instance, to write just the 4th and 2nd data
-column to the output you would use **-o**\ 3,1 (since 0 is the first column).
-You can also use a column more than once, e.g., **-o**\ 3,1,3, to
-duplicate a column on output.  Finally, if your logical record in memory
-contains trailing text then you can include that by including the special
-column **t** to your selections.  The text is always written after any
-numerical columns.  If you only want to output one word from the trailing
-text, then append the word number (0 is the first word).  Note that if you
-wanted to scale or shift the output values you need to do so during reading,
-using the **-i** option. To output all numerical columns and ignoring
-trailing text, use **-on**.
+To write out just the 4th and 2nd data column to the output, use **-o**\ 3,1 (since 0 is the first column).
+To write the 4th, 2nd, and 4th again use **-o**\ 3,1,3.
 
 .. _option_-p:
 
 Perspective view: The **-p** option
 -----------------------------------
 
-**Syntax**
-
-**-p**\ [**x**\|\ **y**\|\ **z**]\ *azim*\ [/*elev*\ [/*zlevel*]]\
-[**+w**\ *lon0*/*lat0*\ [/*z0*]][**+v**\ *x0*/*y0*]
-
-**Description**
-
-All plotting programs that normally produce a flat, two-dimensional
-illustration can be told to view this flat illustration from a
-particular vantage point, resulting in a perspective view. You can
-select perspective view with the **-p** option by setting the azimuth
-and elevation of the viewpoint [Default is 180/90]. When **-p** is used
-in consort with **-Jz** or **-JZ**, a third value can be appended which
-indicates at which *z*-level all 2-D material, like the plot frame, is
-plotted (in perspective) [Default is at the bottom of the z-axis].
-For frames used for animation, we fix the center of your data domain.
-Specify another center using a particular world coordinate point with **+w**\ *lon0*/\ *lat0*\ [/*z0*],
-which will project to the center of your page size, or specify the coordinates of
-the projected 2-D view point with **+v**\ *x0/y0*. When **-p** is used without any further
-arguments, the values from the last use of **-p** in a previous
-GMT command will be used.  Alternatively, you can perform a simple rotation
-about the z-axis by just giving the rotation angle.  Optionally, use **+v**
-or **+w** to select another axis location than the plot origin.
+.. include:: ../explain_perspective_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-q:
 
 Data row selection: The **-q** option
 -------------------------------------
 
-**Syntax**
+.. include:: ../explain_-q_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
-**-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+**Examples**
 
-**Description**
-
-Similar to how **-i** and **-o** control which data *columns* to read and write, the **-qi** (or just **-q**)
-and **-qo** options control which data *rows* to read and write [Default is all]. As for columns, you
-can specify specific rows, a range of rows, or several sets of row ranges. You can also
-invert your selections with a leading ~ and then we select all the rows *not* specified by
-your ranges.  Normally, the row counter starts at 0 and increases until the end of the
-data set (**+a**).  However, you can append **+f** to reset the counter at the start of each
-table (file) or **+s** to reset the counter at the start of each data segment. Thus, **-q**\ 1\ **+s**
-will only read the 2nd data record from each of the segments found.  Note that header records do not
-increase the row counters; only data records do.  Instead of rows you may specify data
-*limits* for a specified column by appending **+c**\ *col*.  Now, we will only select rows whose
-data for the given column *col* lie within the range(s) given by your *min*/*max* limits.  Also
-note that when **+c** is used the **+a**\|\ **f**\|\ **s** have no effect.
+Use **-q**\ 1\ **+s** to only read the 2nd data record from each of the segments found.
 
 .. _option_nodereg:
 
 Grid registration: The **-r** option
 ------------------------------------
 
-**Syntax**
-
-**-r**\ [**g**\|\ **p**]
-
-**Description**
-
-All 2-D grids in GMT have their nodes
-organized in one of two ways, known as *gridline*- and *pixel*-
-registration. The GMT default is gridline registration; programs that
-allow for the creation of grids can use the **-r** option (or **-rp**) to select
-pixel registration instead.  Most observed data tend to be in gridline
-registration while processed data sometime may be distributed in
-pixel registration.  While you may convert between the two registrations
-this conversion looses the Nyquist frequency and dampens the other
-high frequencies.  It is best to avoid any registration conversion if you
-can help it.  Planning ahead may be important.
+.. include:: ../explain_nodereg_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    :end-before: (Node registrations
 
 Gridline registration
 ^^^^^^^^^^^^^^^^^^^^^
@@ -1191,7 +845,7 @@ to region and grid spacing by
    ny & =  &       (y_{max} - y_{min}) / y_{inc} + 1
    \end{array}
 
-which for the example in left side of Figure :ref:`Gridline registration
+which for the example in left side of Figure :ref:`Grid registration
 <Grid_registration>` yields nx = ny = 4.
 
 Pixel registration
@@ -1269,106 +923,26 @@ of the higher data frequencies, as shown in Figure :ref:`Registration resampling
 NaN-record treatment: The **-s** option
 ---------------------------------------
 
-**Syntax**
-
-**-s**\ [*cols*][**+a**][**+r**]
-
-**Description**
-
-We can use this option to suppress output for records whose *z*-value
-equals NaN (by default we output all records). Alternatively, append
-**+r** to reverse the suppression, i.e., only output the records whose
-*z*-value equals NaN. Use **-s+a** to suppress output records where one
-or more fields (and not necessarily *z*) equal NaN. Finally, you can
-supply a comma-separated list of all columns or column ranges to
-consider (before the optional modifiers) for this NaN test.
+.. include:: ../explain_-s_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_-t:
 
 Layer transparency: The **-t** option
 -------------------------------------
 
-**Syntax**
-
-**-t**\ *transp*\ [/*transp2*][**+f**\ \|\ **s**]
-
-**Description**
-
-While the PostScript language does not support transparency, PDF does,
-and via PostScript extensions one can manipulate the transparency
-levels of objects. The **-t** option allows you to change the
-transparency level for the current overlay by appending a percentage in
-the 0-100 range; the default is 0, or opaque. Transparency may also be
-controlled on a feature by feature basis when setting color or fill (see
-section :ref:`-Gfill_attrib`).  For separate transparency for fill and stroke,
-append /*transp2* as well. **Note**: The modules
-:doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change transparency
-on a record-by-record basis if **-t** is given without argument and the
-input file supplies variable transparencies as the last numerical column value(s).
-Use the **+f** and **+s** modifiers to indicate which transparency is provided
-or if we expect one or two transparencies.
-
+.. include:: ../explain_-t_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 .. _option_-w:
 
 Examining data cycles: The **-w** option
 ----------------------------------------
 
-**Syntax**
+.. include:: ../explain_-w_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
+    :end-before: See the cookbook section
 
-**-wy**\|\ **a**\|\ **w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**\|\ **c**\
-*period*\ [/*phase*][**+c**\ *col*]
-
-**Description**
-
-Temporal data (i.e., regular time series) can be analyzed for periods
-via standard spectral analysis, such as offered by :doc:`/spectrum1d`
-and :doc:`/grdfft`.  However, it is often of interest to examine aspects of
-such periodicities in the time domain.  To enable such analyses we need to
-convert our monotonically increasing time coordinates to periodic or *cyclic*
-coordinates so that data from many cycles can be stacked, binned, displayed in
-histograms, etc.  Here, **-w** is a powerful option that can simplify
-such analyses.  The conversion from input *x*, *y*, or *z* coordinates to
-wrapped, periodic coordinates follows the simple equation
-
-
-.. math::
-
-    t' = (t - \tau) \;\mathrm{mod}\; T,
-
-where *t* is the input coordinate, :math:`\tau` is a phase-shift (typically zero), and *T* is the
-desired period for the modulus operator, yielding cyclic coordinates :math:`t'`.
-GMT offers many standard time cycles in prescribed units plus a custom cycle for other
-types of Cartesian coordinates. Table :ref:`cycles <tbl-cycletype>` shows the values for
-units, phase and period that are prescribed and only requires the user to specify the
-corresponding wrapping code:
-
-.. _tbl-cycletype:
-
-+------------+---------------------------+------------+--------------+-----------+
-| **Code**   | **Purpose** (**unit**)    | **Period** |  **Phase**   | **Range** |
-+============+===========================+============+==============+===========+
-| **y**      | Yearly cycle (normalized) |  1 year    | 0            |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-| **a**      | Annual cycle (month)      |  1 year    | 0            |   0–12    |
-+------------+---------------------------+------------+--------------+-----------+
-| **w**      | Weekly cycle (day)        |  1 week    | 0            |   0–7     |
-+------------+---------------------------+------------+--------------+-----------+
-| **d**      | Daily cycle (hour)        |  1 day     | 0            |   0–24    |
-+------------+---------------------------+------------+--------------+-----------+
-| **h**      | Hourly cycle (minute)     |  1 hour    | 0            |   0–60    |
-+------------+---------------------------+------------+--------------+-----------+
-| **m**      | Minute cycle (second)     |  1 minute  | 0            |   0–60    |
-+------------+---------------------------+------------+--------------+-----------+
-| **s**      | Second cycle (second)     |  1 second  | 0            |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-| **c**      | Custom cycle (normalized) |  :math:`T` | :math:`\tau` |   0–1     |
-+------------+---------------------------+------------+--------------+-----------+
-
-You can append the input column with the coordinate to be wrapped to the **-w** option
-[we default to the first column, i.e., 0 if no column is specified].  Then, append one
-of the available codes from Table :ref:`cycles <tbl-cycletype>`. If the custom cycle
-**c** is chosen then you must also supply the *period* and optionally any *phase* [0]
-in the same units of your data (i.e., no units should be appended to **-w**).
+**Examples**
 
 To demonstrate the use of **-w** we will make a few plots of the daily discharge rate of
 the Mississippi river during the 1930-1940 period.  A simple time series plot is created by
@@ -1494,38 +1068,16 @@ discusses the four panels resulting from running the script below:
 Selecting number of CPU cores: The **-x** option
 ------------------------------------------------
 
-**Syntax**
-
-**-x**\ [[-]\ *n*]
-
-**Description**
-
-Specify the number of active cores to be used in any OpenMP-enabled
-multi-threaded algorithms. By default, we try to use all available cores.
-You may append *n* to only use *n* cores (if *n* is too large it will be truncated
-to the maximum number of cores available).  Finally, give a negative *n* to select
-all - *n*) cores (but at least one if *n* equals or exceeds all).  The **-x**
-option is only available to GMT modules compiled with OpenMP support, with
-the exception of :doc:`/movie` and :doc:`/batch` which handle their own parallel execution.
+.. include:: ../explain_core_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 .. _option_colon:
 
 Latitude/Longitude or Longitude/Latitude?: The **-:** option
 ------------------------------------------------------------
 
-**Syntax**
-
-**-:**\ [**i**\|\ **o**]
-
-**Description**
-
-For geographical data, the first column is expected to contain
-longitudes and the second to contain latitudes. To reverse this
-expectation you must apply the **-:** option. Optionally, append **i**
-or **o** to restrict the effect to input or output only. Note that
-command line arguments that may take geographic coordinates (e.g.,
-**-R**) *always* expect longitude before latitude. Also, geographical
-grids are expected to have the longitude as first (minor) dimension.
+.. include:: ../explain_colon_full.rst_
+    :start-after: ^^^^^^^^^^^^^^^^^
 
 Footnotes
 ---------

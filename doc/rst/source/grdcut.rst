@@ -63,10 +63,10 @@ Optional Arguments
     nodes inside the polygon to NaN instead. Optionally, append **+c** to
     crop the grid region to reflect the bounding box of the polygon.
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-N:
 
