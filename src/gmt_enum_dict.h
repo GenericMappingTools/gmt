@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 253
+#define GMT_N_API_ENUMS 254
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -75,6 +75,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_CPT_SOFT_HINGE", 8},
 	{"GMT_CPT_TIME", 16},
 	{"GMT_CUBE_IS_STACK", 64},
+	{"GMT_DATA_IS_GEO", 256},
 	{"GMT_DATA_ONLY", 2},
 	{"GMT_DATETIME", 32},
 	{"GMT_DOUBLE", 9},
