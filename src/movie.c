@@ -2010,7 +2010,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 							L_col = D->table[0]->segment[0]->data[I->col][use_frame];
 							if ((type = gmt_M_type (GMT, GMT_IN, I->col)) == GMT_IS_ABSTIME) {	/* Time formatting */
 								char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
-								gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
+								if (I->kind == 'F')	/* Must give a proper ISO region */
+									gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, L_col);
+								else
+									gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
 								if (GMT->current.plot.calclock.clock.skip)
 									sprintf (string, "%s", date);
 								else if (GMT->current.plot.calclock.date.skip)
