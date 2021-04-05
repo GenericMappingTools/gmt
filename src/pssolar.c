@@ -568,6 +568,7 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 			Ctrl->T.which = n;
 			pssolar_params (Ctrl, Sun);
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Plot small circle with pole at %g/%g and radius %g degrees\n",  -Sun->HourAngle, Sun->SolarDec, Sun->radius);
 			if (Ctrl->G.clip) {	/* Set up a clip path */
 				bool must_free = true;
 				if ((n_pts = (int)gmt_geo_polarcap_segment (GMT, S, &lon, &lat)) == 0) {	/* No resampling took place */
