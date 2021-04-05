@@ -5324,7 +5324,7 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 	if (S_obj->region) {	/* See if this is really a subset or just the same region as the grid */
 		if (G_obj->header->wesn[XLO] == S_obj->wesn[XLO] && G_obj->header->wesn[XHI] == S_obj->wesn[XHI] && G_obj->header->wesn[YLO] == S_obj->wesn[YLO] && G_obj->header->wesn[YHI] == S_obj->wesn[YHI]) S_obj->region = false;
 	}
-	if (mode & GMT_GRID_IS_GEO) gmt_set_geographic (GMT, GMT_OUT);	/* From API to tell grid is geographic */
+	if (mode & GMT_DATA_IS_GEO) gmt_set_geographic (GMT, GMT_OUT);	/* From API to tell grid is geographic */
 	gmtlib_grd_set_units (GMT, G_obj->header);	/* Ensure unit strings are set, regardless of destination */
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
 	switch (method) {
@@ -6054,7 +6054,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			U_obj->z_range[0] == S_obj->wesn[ZLO] && U_obj->z_range[1] == S_obj->wesn[ZHI])
 				S_obj->region = false;
 	}
-	if (mode & GMT_GRID_IS_GEO) gmt_set_geographic (GMT, GMT_OUT);	/* From API to tell cube is geographic */
+	if (mode & GMT_DATA_IS_GEO) gmt_set_geographic (GMT, GMT_OUT);	/* From API to tell cube is geographic */
 	gmtapi_cube_set_units (GMT, U_obj);	/* Ensure unit strings are set, regardless of destination */
 
 	method = gmtapi_set_method (S_obj);	/* Get the actual method to use since may be MATRIX or VECTOR masquerading as GRID */
@@ -10789,7 +10789,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 		if (this_dim == NULL) this_dim = zero_dim;	/* Provide dimensions set to zero */
 	}
 
-	if (mode & GMT_GRID_IS_GEO) gmt_set_geographic (API->GMT, def_direction);	/* From API to tell a grid is geographic */
+	if (mode & GMT_DATA_IS_GEO) gmt_set_geographic (API->GMT, def_direction);	/* From API to tell a grid is geographic */
 
 	/* Below, data can only be non-NULL for Grids or Images passing back G or I to allocate the data array */
 
