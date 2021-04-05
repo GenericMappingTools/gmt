@@ -55,6 +55,7 @@ foreach (p
 		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
 		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
 		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
+		CMP0115 # CMake 3.20: Source file extensions must be explicit.
 		)
 	if (POLICY ${p})
 		cmake_policy (SET ${p} NEW)
