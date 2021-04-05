@@ -15152,7 +15152,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		opt_J = GMT_Find_Option (API, 'J', *options);
 
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-			if (opt->arg[0] != '@') continue;	/* No remote file argument given */
+			if (gmt_M_file_is_memory (opt->arg) || opt->arg[0] != '@') continue;	/* No remote file argument given */
 			if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET) {	/* Remote file without file extension */
 				char *file = malloc (strlen(opt->arg)+1+strlen (API->remote_info[k_data].ext));
 				sprintf (file, "%s", opt->arg);
