@@ -3,8 +3,8 @@
 Description
 -----------
 
-**solar** calculates the day-night terminator and the civil, nautical and astronomical twilights
-and either writes them to standard output or uses them for clipping of filling on maps.
+**solar** calculates closed polygons for the day-night terminator and the civil, nautical and astronomical twilights
+and either writes them to standard output or uses them for clipping or filling on maps.
 
 
 Required Arguments
