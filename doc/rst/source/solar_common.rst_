@@ -4,7 +4,7 @@ Description
 -----------
 
 **solar** calculates the day-night terminator and the civil, nautical and astronomical twilights
-and either writes them to standard output or uses then for clipping of filling on maps.
+and either writes them to standard output or uses them for clipping of filling on maps.
 
 
 Required Arguments
