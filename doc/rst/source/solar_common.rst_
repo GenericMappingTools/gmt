@@ -3,7 +3,8 @@
 Description
 -----------
 
-**solar** Calculate and plot the day-night terminator and the civil, nautical and astronomical twilights.
+**solar** calculates closed polygons for the day-night terminator and the civil, nautical and astronomical twilights
+and either writes them to standard output or uses them for clipping or filling on maps.
 
 
 Required Arguments
@@ -50,7 +51,7 @@ Optional Arguments
 .. _-M:
 
 **-M**
-    Write terminator(s) as a multisegment ASCII (or binary, see **-b**\ *o*) file to standard output. No plotting occurs.
+    Write terminator(s) as a multisegment ASCII (or binary, see **-b**\ *o*) polygons to standard output. No plotting occurs.
 
 .. _-N:
 

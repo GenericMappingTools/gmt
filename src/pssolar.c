@@ -135,7 +135,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute sun parameters\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "J,K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) file to standard output. No plotting occurs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) polygons to standard output. No plotting occurs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
 	GMT_Option (API, "O,P,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <dcna> Plot (or dump; see -M) one or more terminators defined via these flags:\n");
@@ -507,7 +507,7 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 			}
 		}
 	}
-	else if (Ctrl->M.active) {						/* Dump terminator(s) to stdout, no plotting takes place */
+	else if (Ctrl->M.active) {						/* Dump terminator(s) polygons to stdout; no plotting takes place */
 		int n_items;
 		char  *terms[4] = {"Day/night", "Civil", "Nautical", "Astronomical"};
 		double out[2];
@@ -538,7 +538,7 @@ EXTERN_MSC int GMT_pssolar (void *V_API, int mode, void *args) {
 			S = gmt_get_smallcircle (GMT, -Sun->HourAngle, Sun->SolarDec, Sun->radius, n_pts);
 			sprintf (record, "%s terminator", terms[n]);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
-			for (j = 0; j < n_pts; j++) {
+			for (j = 0; j < S->n_rows; j++) {
 				out[GMT_X] = S->data[GMT_X][j];	out[GMT_Y] = S->data[GMT_Y][j];
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			}
