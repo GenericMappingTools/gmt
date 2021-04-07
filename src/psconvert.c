@@ -2095,9 +2095,10 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 								"image coordinates seem to be geographical, a linear transformation "
 								"will be used.\n");
 					}
-					else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
-						GMT_Report (API, GMT_MSG_ERROR, "Requested an automatic geotiff generation, but "
-								"no recognized psconvert option was used for the PS creation.\n");
+					else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {
+						proj4_cmd = strdup ("xy");
+						GMT_Report (API, GMT_MSG_DEBUG, "Requested an automatic geotiff generation, but "
+								"not sure a good psconvert option was used for the PS creation.\n");
 					}
 				}
 				else if (Ctrl->W.kml) {

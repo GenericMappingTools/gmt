@@ -604,6 +604,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
 							Ctrl->A.PREF.str = atof (txt_c);
 							Ctrl->A.p_length = atof (txt_d);
+							break;
 						case 'c':
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_a, GMT_IS_FLOAT, &Ctrl->A.lon1), txt_a);
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_b, GMT_IS_FLOAT, &Ctrl->A.lat1), txt_b);
@@ -615,6 +616,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
 							Ctrl->A.PREF.str = atof (txt_c);
 							Ctrl->A.p_length = atof (txt_d);
+							break;
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Unrecognized mode %c.\n", Ctrl->A.proj_type);
 							n_errors++;

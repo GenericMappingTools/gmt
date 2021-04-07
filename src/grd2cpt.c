@@ -257,29 +257,31 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'E':	/* Use n levels */
 				Ctrl->E.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'E', "cf", GMT_MSG_ERROR)) n_errors++;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "cf")) ) {
-					while (gmt_getmodopt (GMT, 'E', c, "cf", &pos, txt_a, &n_errors) && n_errors == 0) {
-						switch (txt_a[0]) {
-							case 'c': Ctrl->E.cdf = true;	break;	/* Determine Cumulative Density Function */
-							case 'f':
-								if (txt_a[1])
-									Ctrl->E.file = strdup (&txt_a[1]);
-								else {
-									GMT_Report (API, GMT_MSG_ERROR, "Option -E: No filename given via +f\n");
-									n_errors++;
-								}
-								break;	/* Incremental distance */
-							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+				if (opt->arg[0]) {	/* Got an argument */
+					if (gmt_validate_modifiers (GMT, opt->arg, 'E', "cf", GMT_MSG_ERROR)) n_errors++;
+					if ((c = gmt_first_modifier (GMT, opt->arg, "cf")) ) {
+						while (gmt_getmodopt (GMT, 'E', c, "cf", &pos, txt_a, &n_errors) && n_errors == 0) {
+							switch (txt_a[0]) {
+								case 'c': Ctrl->E.cdf = true;	break;	/* Determine Cumulative Density Function */
+								case 'f':
+									if (txt_a[1])
+										Ctrl->E.file = strdup (&txt_a[1]);
+									else {
+										GMT_Report (API, GMT_MSG_ERROR, "Option -E: No filename given via +f\n");
+										n_errors++;
+									}
+									break;	/* Incremental distance */
+								default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+							}
 						}
+						c[0] = '\0';	/* Chop off the modifiers */
 					}
-					c[0] = '\0';	/* Chop off the modifiers */
+					if (sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Cannot decode value given\n");
+						n_errors++;
+					}
+					if (c) c[0] = '+';	/* Restore modifiers */
 				}
-				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
-					n_errors++;
-				}
-				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 			case 'F':	/* Set color model for output */
 				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "c", GMT_MSG_ERROR)) n_errors++;

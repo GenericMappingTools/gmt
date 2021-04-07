@@ -4375,14 +4375,17 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Path already had a detour to the pole, skip adding another detour\n");
 			add_pole = false;
 			n = gmt_geo_polarcap_segment (GMT, S, &plon, &plat);
+			if (plon != S->data[GMT_X])	/* Pointer changed so we allocated, must delete below */
+				free_memory = true;
 		}
 	}
 	if (add_pole) {	/* If we get here then a detour will be needed */
 		if ((n = gmt_geo_polarcap_segment (GMT, S, &plon, &plat)) == 0) {	/* Not a global map */
 			/* Here we must detour to the N or S pole, then resample the path */
 			n = S->n_rows + 2;	/* Add new first and last point to connect to the pole */
-			plon = gmt_M_memory (GMT, NULL, n, double);
+			plon = gmt_M_memory (GMT, NULL, n, double);	/* This memory must be freed below */
 			plat = gmt_M_memory (GMT, NULL, n, double);
+			free_memory = true;
 			t_lat = SH->pole * 90.0;	/* This is presumably the correct pole, but could fail if just touching the pole */
 			if (S->data[GMT_Y][0] * t_lat < 0.0) t_lat = -t_lat;	/* Well, I'll be damned... */
 			plat[0] = plat[n-1] = t_lat;
@@ -4395,8 +4398,9 @@ GMT_LOCAL uint64_t gmtplot_geo_polygon_segment (struct GMT_CTRL *GMT, struct GMT
 				gmt_M_free (GMT, plat);
 				return 0;
 			}
-			free_memory = true;
 		}
+		else if (plon != S->data[GMT_X])	/* Pointer changed so we allocated, must delete below */
+			free_memory = true;
 	}
 	k = gmtplot_geo_polygon (GMT, plon, plat, n, first, comment);	/* Plot filled polygon [no outline] */
 	if (free_memory) {	/* Delete what we allocated */
@@ -6079,7 +6083,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	 * Note, when x = y = 0 it means current point has already been selected so we must store that and keep
 	 * moving up for each line in the multi-line title.
 	 */
-	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), many_lines = false, head_latex = false;
+	bool pos_set = (gmt_M_is_zero (x) && gmt_M_is_zero (y)), head_latex = false;
 	double sign = (pos_set) ? -1.0 : +1.0, y_next = 0.0, line_spacing;
 	unsigned int n_breaks_T = 0, n_breaks_S, k, form;
 	char *word = NULL, title[GMT_LEN256] = {""}, subtitle[GMT_LEN256] = {""}, sep[2] = {""};
@@ -6104,9 +6108,7 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 	n_breaks_T = gmt_char_count (title, GMT_ASCII_GS);		/* Is there a title spilling over several lines */
 	n_breaks_S = gmt_char_count (subtitle, GMT_ASCII_GS);	/* Is there a subtitle spilling over several lines */
 
-	if (n_breaks_T || n_breaks_S || subtitle[0])
-		many_lines = true;
-	else {	/* Just a single title string on one line */
+	if (!(n_breaks_T || n_breaks_S || subtitle[0])){	/* Just a single title string on one line */
 		if (gmt_text_is_latex (GMT, title)) {
 			/* Detected LaTeX commands, i.e., "....@[LaTeX...@[ ..." or  "....<math>LaTeX...</math> ..." */
 			(void)gmtplot_place_latex_eps (GMT, x, y, &GMT->current.setting.font_title, title);

@@ -105,6 +105,19 @@ Optional Arguments
     using **-M** will add vector heads to all individual directions
     using the supplied attributes.
 
+.. _-N:
+
+**-N**\ *mode*\ [**+p**\ *pen*]
+    Draw the equivalent circular normal distribution, i.e., the *von Mises*
+    distribution; append desired pen [0.25p,black].
+    The *mode* selects which central location and scale to use:
+
+    * 0 = mean and standard deviation;
+    * 1 = median and L1 scale (1.4826 \* median absolute deviation; MAD);
+    * 2 = LMS (least median of squares) mode and scale.
+
+    **Note**: At the present time, only *mode* == 0 is supported.
+
 .. _-Q:
 
 **-Q**\ [*alpha*]

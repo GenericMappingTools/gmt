@@ -12861,7 +12861,7 @@ cube_clean_up:
 	G->data = NULL;
 	gmt_free_grid (GMT, &G, true);
 
-	return (GMT_NOERROR);
+	return (error);
 }
 
 /*! . */

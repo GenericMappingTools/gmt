@@ -30,11 +30,11 @@ The frame setting is optional but can be invoked once to override the defaults. 
 to **-B** to control the Frame settings:
 
 - *axes* to set which of the axes should be drawn and possibly annotated using a combination of the codes listed
-  below [default is **WESN**]. Borders omitted from the set of codes will not be drawn. For example, **WSn**
-  denotes that the "western" (left) and "southern" (bottom) axes should be drawn with tick-marks and annotations by
-  using **W** and **S**; that the "northern" (top) edge of the plot should be drawn with tick-marks and without
-  annotations by using **n**; and that the "eastern" (right) axes should not be drawn by not including one of **E**\ \|\
-  **e**\ \|\ **r**.
+  below [default is :doc:`theme dependent </theme-settings>`]. Borders omitted from the set of codes will not be drawn.
+  For example, **WSn** denotes that the "western" (left) and "southern" (bottom) axes should be drawn with tick-marks
+  and annotations by using **W** and **S**; that the "northern" (top) edge of the plot should be drawn with tick-marks
+  and without annotations by using **n**; and that the "eastern" (right) axes should not be drawn by not including one
+  of **E**\ \|\ **e**\ \|\ **r**.
 
    - **W**\ est, **E**\ ast, **S**\ outh, **N**\ orth, and/or (for 3-D plots) **Z** indicate axes that should be
      drawn with both tick-marks and annotations.
