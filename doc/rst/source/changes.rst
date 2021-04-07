@@ -20,7 +20,7 @@ bug fixes! Here are the general updates included in 6.2:
 #. New GMT configuration parameters :term:`MAP_FRAME_PERCENT`, :term:`COLOR_SET`, and :term:`COLOR_CPT`.
 #. Add support for reading variable in NetCDF-4 groups.
 #. Allow specifying the reciprocal increment for generating 1d arrays.
-#. Allow Latex expressions in single-line titles and Cartesian axes labels, add support for multi-line plot titles, and
+#. Allow LaTeX expressions in single-line titles and Cartesian axes labels, add support for multi-line plot titles, and
    add support for subtitles.
 #. Many general documentation improvements.
 #. Various improvements to the API in support of developments taking place in the external wrappers (Python, Julia, Matlab).
