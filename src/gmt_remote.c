@@ -374,6 +374,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	char newfile[GMT_LEN256] = {""}, reg[2] = {'p', 'g'}, *file = NULL, *infile = NULL, *ext = NULL, *c = NULL;
 	int k_data, k;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
+	if (gmt_M_file_is_memory (file)) return;	/* Not a remote file for sure */
 	if (file[0] != '@') return;
 	infile = strdup (file);
 	if ((c = strchr (infile, '+')))	/* Got modifiers, probably from grdimage or similar, chop off for now */
