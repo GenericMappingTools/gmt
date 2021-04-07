@@ -338,6 +338,9 @@ modules. No space between the option flag and the associated arguments.
 
 .. include:: explain_colon_full.rst_
 
+Module help and configuration
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 .. include:: explain_help.rst_
 
 .. include:: explain_color.rst_
