@@ -30,9 +30,8 @@ assignees: ''
     - [ ] `GMT_VERSION_YEAR` is current year
     - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
     - [ ] `GMT_LIB_SOVERSION` is correctly set
-    - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
     - [ ] set `GMT_PACKAGE_VERSION_SUFFIX` to rcx
-    - [ ] update `GMT_VERSION_DOI`
+    - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
 - [ ] freeze codes and commit all changes to GitHub
 
 **Release**:
