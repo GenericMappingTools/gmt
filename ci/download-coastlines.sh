@@ -4,7 +4,7 @@
 # General settings:
 EXT="tar.gz"
 GSHHG="gshhg-gmt-2.3.7"
-DCW="dcw-gmt-1.1.4"
+DCW="dcw-gmt-2.0.0"
 MD5_GSHHG=8ee2653f9daf84d49fefbf990bbfa1e7
 MD5_DCW=4f30857a8b12af0f910222fceb591538
 
