@@ -1885,6 +1885,7 @@ void GMT_mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
 				if (X[kk].object == ppp) X[kk].object = NULL;
 		}
 	}
+	free (X);
 
 	/* 9. Destroy linked option list */
 
