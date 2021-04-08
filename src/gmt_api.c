@@ -12350,14 +12350,14 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 			c[0] = 0;
 			strcpy (argument, optarg);
 			c[0] = '+';
-			*takes_mod = 2;	/* Flag that option had what KEY was looking for */
+			if (!argument[0]) *takes_mod = 2;	/* Flag that option is missing the arg and needs it later */
 		}
 		else if (key[k][K_MODIFIER]) {	/* Look for a specific +<mod> in the option */
 			char code[3] = {"+?"};
 			code[1] = key[k][K_MODIFIER];
 			if ((c = strstr (optarg, code))) {	/* Found +<modifier> */
 				strcpy (argument, optarg);
-				*takes_mod = 2;	/* Flag that option had what KEY was looking for */
+				if (!c[2]) *takes_mod = 2;	/* Flag that option had what KEY was looking for */
 				pos = (unsigned int) (c - optarg + 2);	/* Position of this modifier's argument. E.g., -E+f<file> will have pos = 2 as start of <file> */
 			}
 			else	/* No modifier involved */
