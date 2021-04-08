@@ -6,7 +6,7 @@ EXT="tar.gz"
 GSHHG="gshhg-gmt-2.3.7"
 DCW="dcw-gmt-2.0.0"
 MD5_GSHHG=8ee2653f9daf84d49fefbf990bbfa1e7
-MD5_DCW=4f30857a8b12af0f910222fceb591538
+MD5_DCW=1c817d29313be265e895be4534eccb01
 
 # Used for checking the downloaded files:
 check_md5 ()
