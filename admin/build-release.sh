@@ -10,6 +10,8 @@
 #	4) sphinx-build 
 #	5) grealpath (package coreutils)
 #	6) GNU tar (package gnutar)
+#	7) gcc-mp-9 must be installed and in path
+#	8) g++-mp-9 must be installed and in path
 
 reset_config() {
 	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
@@ -46,6 +48,36 @@ fi
 # pngquant is need to optimize images
 if ! [ -x "$(command -v gmt)" ]; then
 	echo 'build-release.sh: Error: pngquant is not found in your search PATH.' >&2
+	exit 1
+fi
+
+# sphinx-build is need to build the docs
+if ! [ -x "$(command -v sphinx-build)" ]; then
+	echo 'build-release.sh: Error: sphinx-build is not found in your search PATH.' >&2
+	exit 1
+fi
+
+# grealpath is need to build the dependency list of libs
+if ! [ -x "$(command -v grealpath)" ]; then
+	echo 'build-release.sh: Error: grealpath is not found in your search PATH.' >&2
+	exit 1
+fi
+
+# gnutar is need to build the tarballs
+if ! [ -x "$(command -v gnutar)" ]; then
+	echo 'build-release.sh: Error: gnutar is not found in your search PATH.' >&2
+	exit 1
+fi
+
+# gcc-mp-9 is need to build with OpenMP
+if ! [ -x "$(command -v gcc-mp-9)" ]; then
+	echo 'build-release.sh: Error: gcc-mp-9 is not found in your search PATH.' >&2
+	exit 1
+fi
+
+# gcc-mp-9 is need to build with OpenMP
+if ! [ -x "$(command -v g++-mp-9)" ]; then
+	echo 'build-release.sh: Error: g++-mp-9 is not found in your search PATH.' >&2
 	exit 1
 fi
 
@@ -87,12 +119,14 @@ mkdir build
 admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
 cd build
 # 2c. Set CMake cache for MP build:
+COMPC=$(which gcc-mp-9)
+COMPG=$(which g++-mp-9)
 cat << EOF > cache-mp-gcc.cmake
 # Cache settings for building the macOS release with GCC and OpenMP
 # This cache file is set for the binary paths of macports
 #
-SET ( CMAKE_C_COMPILER "/opt/local/bin/gcc-mp-9" CACHE STRING "GNU MP C compiler" )
-SET ( CMAKE_CXX_COMPILER "/opt/local/bin/g++-mp-9" CACHE STRING "GNU MP C++ compiler" )
+SET ( CMAKE_C_COMPILER "${COMP}" CACHE STRING "GNU MP C compiler" )
+SET ( CMAKE_CXX_COMPILER "${COMPG}" CACHE STRING "GNU MP C++ compiler" )
 SET ( CMAKE_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS")
 SET ( CMAKE_C_FLAGS_DEBUG -flax-vector-conversions CACHE STRING "C FLAGS DEBUG")
 SET ( CMAKE_C_FLAGS_RELEASE -flax-vector-conversions CACHE STRING "C FLAGS RELEASE")
@@ -120,12 +154,18 @@ echo "build-release.sh: Report sha256sum per file" >&2
 shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
 reset_config
-# 10. Put the candidate products on my ftp site
-echo "build-release.sh: Place gmt-${Version}-src.tar.* on the ftp site" >&2
-if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
-	echo "build-release.sh: Place gmt-${Version}-darwin-x86_64.dmg on the ftp site" >&2
-fi
-if [ "${USER}" = "pwessel" ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
+# 10. Paul or Meghan may palce the candidate products on the pwessel/release ftp site
+if [ "${USER}" = "pwessel" ] || [ "${USER}" = "meghanj" ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
+	echo "build-release.sh: Placing gmt-${Version}-src.tar.* on the ftp site" >&2
 	scp gmt-${Version}-darwin-x86_64.dmg gmt-${Version}-src.tar.* ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
-	ssh pwessel@ftp.soest.hawaii.edu 'chmod og+r /export/ftp1/ftp/pub/pwessel/release/gmt-*'
+	if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
+		echo "build-release.sh: Placing gmt-${Version}-darwin-x86_64.dmg on the ftp site" >&2
+		scp gmt-${Version}-darwin-x86_64.dmg ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
+	fi
+	ssh ${USER}@ftp.soest.hawaii.edu 'chmod og+r /export/ftp1/ftp/pub/pwessel/release/gmt-*'
+else
+	echo "build-release.sh: Place gmt-${Version}-src.tar.* on the ftp site" >&2
+	if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
+		echo "build-release.sh: Place gmt-${Version}-darwin-x86_64.dmg on the ftp site" >&2
+	fi
 fi
