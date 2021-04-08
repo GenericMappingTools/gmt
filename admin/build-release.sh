@@ -12,6 +12,8 @@
 #	6) GNU tar (package gnutar)
 #	7) gcc-mp-9 must be installed and in path
 #	8) g++-mp-9 must be installed and in path
+#
+#  Note: CMAKE_INSTALL_PATH, EXEPLUSLIBS, and EXESHARED may need to be changed for different users.
 
 reset_config() {
 	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
