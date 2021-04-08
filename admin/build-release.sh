@@ -28,15 +28,23 @@ abort_build() {	# Called when we abort this script via Crtl-C
 }
 
 TOPDIR=$(pwd)
+if [ "${USER}" = "pwessel" ] || [ "${USER}" = "meghanj" ]; then	# Set ftp default action
+	do_ftp=1
+else
+	do_ftp=0
+fi
 
-if [ $# -gt 0 ]; then
+if [ "X${1}" = "X-n" ]; then
+	do_ftp=0
+elif [ $# -gt 0 ]; then
 	cat <<- EOF  >&2
-	Usage: build-release.sh
+	Usage: build-release.sh [-n]
 	
 	build-release.sh must be run from top-level gmt directory.
 	Will create the release compressed tarballs and (under macOS) the bundle.
 	Requires you have set GMT_PACKAGE_VERSION_* and GMT_PUBLIC_RELEASE in cmake/ConfigDefaults.cmake.
 	Requires GMT_GSHHG_SOURCE and GMT_DCW_SOURCE to be set in the environment.
+	Passing -n means we do not copy the files to the SOEST ftp directory
 	EOF
 	exit 1
 fi
@@ -154,8 +162,9 @@ echo "build-release.sh: Report sha256sum per file" >&2
 shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
 reset_config
+
 # 10. Paul or Meghan may palce the candidate products on the pwessel/release ftp site
-if [ "${USER}" = "pwessel" ] || [ "${USER}" = "meghanj" ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
+if [ $do_ftp -eq 1 ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
 	echo "build-release.sh: Placing gmt-${Version}-src.tar.* on the ftp site" >&2
 	scp gmt-${Version}-darwin-x86_64.dmg gmt-${Version}-src.tar.* ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
 	if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
