@@ -1,13 +1,13 @@
 ---
-name: GMT release checklist
-about: Checklist for a new GMT release.
-title: Release GMT x.x.x
+name: GMT release candidate checklist
+about: Checklist for a new GMT release candidate.
+title: Release GMT x.x.xrcx
 labels: ''
 assignees: ''
 
 ---
 
-**Version**:  x.x.x
+**Version**:  x.x.xrc1
 
 **Scheduled date**: XXX XX, 20XX
 
@@ -20,11 +20,10 @@ assignees: ''
 	- [ ] GMT.jl (@joa-quim)
 	- [ ] PyGMT (@leouieda, @seisman, @weiji14)
 	- [ ] gmtmex (@PaulWessel, @joa-quim)
-- [ ] reserve a DOI on [zenodo](https://zenodo.org) (@PaulWessel)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update [changelog](/doc/rst/source/changes.rst)
-- [ ] update [INSTALL.md](/INSTALL.md) (only needed for major releases)
+- [ ] update [INSTALL.md](/INSTALL.md) (only needed for major release candidates)
 - [ ] check if there are any warnings when building the documentation
 - [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
 - [ ] check/set values in `cmake/ConfigDefault.cmake`
@@ -32,6 +31,7 @@ assignees: ''
     - [ ] `GMT_PACKAGE_VERSION_*` is correctly set
     - [ ] `GMT_LIB_SOVERSION` is correctly set
     - [ ] set `GMT_PUBLIC_RELEASE` to `TRUE`
+    - [ ] set `GMT_PACKAGE_VERSION_SUFFIX` to rc1
     - [ ] update `GMT_VERSION_DOI`
 - [ ] freeze codes and commit all changes to GitHub
 
@@ -39,7 +39,7 @@ assignees: ''
 
 - [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
 - [ ] create macOS bundle (@PaulWessel)
-- [ ] create Windows installers (win32 and win64) (@joa-quim)
+- [ ] create Windows installers (win64) (@joa-quim)
 - [ ] check if the source tarballs, macOS bundle and Windows installers work well
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
 - [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
@@ -58,7 +58,6 @@ assignees: ''
   - [ ] 6 files are attached as release assets (2 source tarballs, 3 installers and 1 checksum file).
   - [ ] download the checksum file and check if the checksums are correct
   - [ ] edit the draft release, set the target to the correct tag, and publish the release
-- [ ] upload the tarball to zenodo (@PaulWessel)
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)
 - [ ] update links on the main site (News, Download & Documentation)
 
@@ -78,13 +77,7 @@ assignees: ''
 
 **Volunteers needed!** Please let us know if you volunteer to help to maintain GMT in these 3rd-party tools.
 
-- [ ] update [conda-forge feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman)
-- [ ] update [homebrew formula](https://github.com/Homebrew/homebrew-core/blob/master/Formula/gmt.rb) (@claudiodsf, @seisman)
-- [ ] update [macports ports](https://github.com/macports/macports-ports/blob/master/science/gmt5/Portfile) (@remkos, @seisman)
-- [ ] update [the RPM repository](https://copr.fedorainfracloud.org/coprs/genericmappingtools/gmt/) (@seisman)
-- [ ] update the [try-gmt](https://github.com/GenericMappingTools/try-gmt) Jupyter lab (@seisman)
-- [ ] update [the AUR repository](https://aur.archlinux.org/packages/gmt6/) (@holishing)
-- [ ] update [winget manifest file](https://github.com/microsoft/winget-pkgs/tree/master/manifests/GenericMappingTools/gmt) (@seisman)
+- [ ] update [conda-forge feedstock](https://github.com/conda-forge/gmt-feedstock) (@leouieda, @seisman, @weiji14)
 
 ---
 
