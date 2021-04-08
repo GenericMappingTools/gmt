@@ -172,9 +172,4 @@ if [ $do_ftp -eq 1 ]; then	# Place file in pwessel SOEST ftp release directory a
 		scp gmt-${Version}-darwin-x86_64.dmg ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
 	fi
 	ssh ${USER}@ftp.soest.hawaii.edu 'chmod og+r /export/ftp1/ftp/pub/pwessel/release/gmt-*'
-else
-	echo "build-release.sh: Place gmt-${Version}-src.tar.* on the ftp site" >&2
-	if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
-		echo "build-release.sh: Place gmt-${Version}-darwin-x86_64.dmg on the ftp site" >&2
-	fi
 fi
