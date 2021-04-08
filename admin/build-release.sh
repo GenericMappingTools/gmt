@@ -166,7 +166,7 @@ reset_config
 # 10. Paul or Meghan may palce the candidate products on the pwessel/release ftp site
 if [ $do_ftp -eq 1 ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
 	echo "build-release.sh: Placing gmt-${Version}-src.tar.* on the ftp site" >&2
-	scp gmt-${Version}-darwin-x86_64.dmg gmt-${Version}-src.tar.* ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
+	scp gmt-${Version}-src.tar.* ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
 	if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
 		echo "build-release.sh: Placing gmt-${Version}-darwin-x86_64.dmg on the ftp site" >&2
 		scp gmt-${Version}-darwin-x86_64.dmg ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
