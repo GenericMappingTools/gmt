@@ -24,7 +24,7 @@ assignees: ''
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
 - [ ] update [changelog](/doc/rst/source/changes.rst)
-- [ ] update [INSTALL.md](/INSTALL.md) (only needed for major releases)
+- [ ] check installation instructions in [INSTALL.md](/INSTALL.md)
 - [ ] check if there are any warnings when building the documentation
 - [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
 - [ ] check/set values in `cmake/ConfigDefault.cmake`
