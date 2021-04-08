@@ -12328,7 +12328,7 @@ GMT_LOCAL const char *gmtapi_retrieve_module_keys (void *V_API, char *module) {
 	return_null (V_API, GMT_NOT_A_VALID_MODULE);
 }
 
-GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key, int k, bool colon, int *n_pre) {
+GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key, int k, bool colon, int *n_pre, bool *takes_mod) {
 	/* Two separate actions:
 	 * 1) If key ends with "=" then we pull out the option argument after stripping off +<stuff>.
 	 * 2) If key ends with "=q" then we see if +q is given and return pos to this modifiers argument.
@@ -12342,7 +12342,9 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 	char *c = NULL;
 	unsigned int pos = 0;
 	*n_pre = 0;
+	*takes_mod = false;
 	if (k >= 0 && key[k][K_EQUAL] == '=') {	/* Special handling */
+		*takes_mod = true;
 		*n_pre = (key[k][K_MODIFIER] && isdigit (key[k][K_MODIFIER])) ? (int)(key[k][K_MODIFIER]-'0') : 0;
 		if ((*n_pre || key[k][K_MODIFIER] == 0) && (c = strchr (optarg, '+'))) {	/* Strip off trailing +<modifiers> */
 			c[0] = 0;
@@ -12525,7 +12527,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	int family = GMT_NOTSET;	/* -1, or one of GMT_IS_DATASET, GMT_IS_GRID, GMT_IS_PALETTE, GMT_IS_IMAGE */
 	int geometry = GMT_NOTSET;	/* -1, or one of GMT_IS_NONE, GMT_IS_TEXT, GMT_IS_POINT, GMT_IS_LINE, GMT_IS_POLY, GMT_IS_SURFACE */
 	int sdir, k = 0, n_in_added = 0, n_to_add, e, n_pre_arg, n_per_family[GMT_N_FAMILIES];
-	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false, is_grdmath = false;
+	bool deactivate_output = false, deactivate_input = false, strip_colon = false, strip = false, is_grdmath = false, takes_mod;
 	size_t n_alloc, len;
 	const char *keys = NULL;	/* This module's option keys */
 	char **key = NULL;		/* Array of items in keys */
@@ -12806,7 +12808,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			}
 			direction = (unsigned int) sdir;
 		}
-		mod_pos = gmtapi_extract_argument (opt->arg, argument, key, k, strip, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
+		mod_pos = gmtapi_extract_argument (opt->arg, argument, key, k, strip, &n_pre_arg, &takes_mod);	/* Pull out the option argument, possibly modified by the key */
 		if (gmtapi_B_custom_annotations (opt)) {	/* Special processing for -B[p|s][x|y|z]c<nofilegiven>] */
 			/* Add this item to our list */
 			direction = GMT_IN;
@@ -12847,7 +12849,9 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		}
 		else if (k >= 0 && key[k][K_OPT] != GMT_OPT_INFILE && family != GMT_NOTSET && key[k][K_DIR] != '-') {	/* Got some option like -G or -Lu with further args */
 			bool implicit = true;
-			if ((len = strlen (argument)) == (size_t)n_pre_arg)	/* Got some option like -G or -Lu with no further args */
+			if ((len = strlen (argument)) == 0 && takes_mod)	/* Got some option like -E[+f] but no +f was given so no implicit file needed */
+				implicit = false;
+			else if (len == (size_t)n_pre_arg)	/* Got some option like -G or -Lu with no further args */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c needs implicit arg [offset = %d]\n", opt->option, n_pre_arg);
 			else if (mod_pos && (argument[mod_pos] == '\0' || argument[mod_pos] == '+'))	/* Found an embedded +q<noarg> */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMT_Encode_Options: Option -%c needs implicit arg via argument-less +%c modifier\n", opt->option, key[k][K_MODIFIER]);
