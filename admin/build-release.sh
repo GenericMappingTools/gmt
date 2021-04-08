@@ -48,7 +48,7 @@ elif [ $# -gt 0 ]; then
 	EOF
 	exit 1
 fi
-if [ ! -d cmake ]; then
+if [ ! -d admin ]; then
 	echo "build-release.sh: Must be run from top-level gmt directory" >&2
 	exit 1
 fi
