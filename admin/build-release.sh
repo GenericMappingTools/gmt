@@ -133,7 +133,7 @@ cat << EOF > cache-mp-gcc.cmake
 # Cache settings for building the macOS release with GCC and OpenMP
 # This cache file is set for the binary paths of macports
 #
-SET ( CMAKE_C_COMPILER "${COMP}" CACHE STRING "GNU MP C compiler" )
+SET ( CMAKE_C_COMPILER "${COMPC}" CACHE STRING "GNU MP C compiler" )
 SET ( CMAKE_CXX_COMPILER "${COMPG}" CACHE STRING "GNU MP C++ compiler" )
 SET ( CMAKE_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS")
 SET ( CMAKE_C_FLAGS_DEBUG -flax-vector-conversions CACHE STRING "C FLAGS DEBUG")
