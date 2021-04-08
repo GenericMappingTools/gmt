@@ -63,7 +63,7 @@ assignees: ''
 
 **After release**:
 
-- [ ] update `GMT_PACKAGE_VERSION_*` in `cmake/ConfigDefault.cmake`
+- [ ] comment the `GMT_PACKAGE_VERSION_SUFFIX` line in `cmake/ConfigDefault.cmake`
 - [ ] comment the `set (GMT_PUBLIC_RELEASE TRUE)` line
 - [ ] commit changes to GitHub
 
