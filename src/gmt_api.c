@@ -12778,7 +12778,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		return_null (NULL, GMT_ONLY_ONE_ALLOWED);	/* Too many output objects */
 	}
 	n_alloc = n_keys;	/* Initial number of allocations */
-	if ((info = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_RESOURCE)) == NULL) {
+	if ((info = calloc (n_alloc, sizeof (struct GMT_RESOURCE))) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Unable to allocate GMT_RESOURCE array\n");
 		return_null (NULL, GMT_MEMORY_ERROR);
 	}
@@ -12965,13 +12965,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	/* Reallocate the information structure array or remove entirely if nothing given. */
 	if (n_items && n_items < n_alloc) {
-		if ((info = gmt_M_memory (API->GMT, info, n_items, struct GMT_RESOURCE)) == NULL) {
+		if ((info = realloc (info, n_items * sizeof (struct GMT_RESOURCE))) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Unable to finalize size of GMT_RESOURCE array\n");
 			return_null (NULL, GMT_MEMORY_ERROR);
 		}
 	}
 	else if (n_items == 0)
-		gmt_M_free (API->GMT, info);	/* No containers used */
+		free (info);	/* No containers used */
 
 	gmt_M_memset (nn, 4, unsigned int);
 	for (ku = 0; ku < n_items; ku++)	/* Count how many primary and secondary objects each for input and output */
