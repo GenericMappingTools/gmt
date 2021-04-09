@@ -510,8 +510,6 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the psrose main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
-	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 
 	max_radius = GMT->common.R.wesn[XHI];
@@ -1098,6 +1096,9 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	if (GMT_End_IO (API, GMT_IN, 0) != GMT_NOERROR) {	/* Disables further data input */
 		Return (API->error);
 	}
+
+	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 
 	if (Ctrl->L.active) {	/* Deactivate those with - */
 		if (Ctrl->L.w[0] == '-' && Ctrl->L.w[1] == '\0') Ctrl->L.w[0] = '\0';

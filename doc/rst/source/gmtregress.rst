@@ -40,14 +40,14 @@ Description
 -----------
 
 **regress** reads one or more data tables [or *stdin*]
-and determines the best linear [weighted] regression model *y* = *a* + *b*\ \* *x* for each segment using the chosen parameters.
+and determines the best linear [weighted] regression model :math:`y(x) = a + b x` for each segment using the chosen parameters.
 The user may specify which data and model components should be reported.  By default, the model will be evaluated at the
 input points, but alternatively you can specify an equidistant range over which to evaluate
 the model, or turn off evaluation completely.  Instead of determining the best fit we can
 perform a scan of all possible regression lines
 (for a range of slope angles) and examine how the chosen misfit measure varies with slope.
 This is particularly useful when analyzing data with many outliers.  **Note**: If you
-actually need to work with log10 of *x* or *y* you can accomplish that transformation during
+actually need to work with :math:`\log_{10}` of *x* or *y* you can accomplish that transformation during
 the read phase by using the **-i** option.
 
 
@@ -80,7 +80,7 @@ Optional Arguments
    :width: 500 px
    :align: center
 
-   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (-Nr) criterion
+   Scanning slopes (**-A**) to see how the misfit for an fully orthogonal regression using the LMS (**-Nr**) criterion
    varies with the line angle.  Here we see the best solution gives a line angle of -78.3 degrees
    but there is another local minimum for an angle of 78.6 degrees that is almost as good.
 
@@ -120,13 +120,13 @@ Optional Arguments
 .. _-N:
 
 **-N1**\|\ **2**\|\ **r**\|\ **w**
-    Selects the norm to use for the misfit calculation.  Choose among **1** (L-1 measure; the mean of the
+    Selects the norm to use for the misfit calculation.  Choose among **1** (:math:`L_1` measure; the mean of the
     absolute residuals), **2** (Least-squares; the mean of the squared residuals),
     **r** (LMS; The least median of the squared residuals), or **w** (RLS; Reweighted Least Squares: the
     mean of the squared residuals after outliers identified via LMS have been removed) [Default is **2**].
-    Traditional regression uses L-2 while L-1 and in particular LMS are more robust in how they handle outliers.
+    Traditional regression uses :math:`L_2` while :math:`L_1` and in particular LMS are more robust in how they handle outliers.
     As alluded to, RLS implies an initial LMS regression which is then used to identify outliers in the data,
-    assign these a zero weight, and then redo the regression using a L-2 norm.
+    assign these a zero weight, and then redo the regression using a :math:`L_2` norm.
 
 .. _-S:
 
@@ -152,12 +152,12 @@ Optional Arguments
 
 **-W**\ [**w**]\ [**x**]\ [**y**]\ [**r**]
     Specifies weighted regression and which weights will be provided.
-    Append **x** if giving 1-sigma uncertainties in the *x*-observations, **y** if giving 1-sigma uncertainties in *y*, and
+    Append **x** if giving one-:math:`\sigma` uncertainties in the *x*-observations, **y** if giving one-:math:`\sigma` uncertainties in *y*, and
     **r** if giving correlations between *x* and *y* observations, in the order these columns appear in the input (after the
     two required and leading *x*, *y* columns).
     Giving both **x** and **y** (and optionally **r**) implies an orthogonal regression, otherwise giving
     **x** requires **-Ex** and **y** requires **-Ey**.
-    We convert uncertainties in *x* and *y* to regression weights via the relationship weight = 1/sigma.
+    We convert uncertainties in *x* and *y* to regression weights *w* via the relationship :math:`w = 1/\sigma`.
     Use **-Ww** if the we should interpret the input columns to have precomputed weights instead.  **Note**: Residuals
     with respect to the regression line will be scaled by the given weights.  Most norms will then square this weighted
     residual (**-N1** is the only exception).

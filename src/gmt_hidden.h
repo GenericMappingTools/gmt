@@ -97,6 +97,7 @@ struct GMT_DATASET_HIDDEN {	/* Supporting information hidden from the API */
 	size_t n_alloc;			/* The current allocation length of tables */
 	uint64_t dim[4];		/* Only used by GMT_Duplicate_Data to override dimensions */
 	unsigned int alloc_level;	/* The level it was allocated at */
+	unsigned int geographic;	/* 0 for Cartesian, 1 for geographic, mostly used for memory files */
 	enum GMT_enum_write io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
 					 * 1 means use table->file[GMT_OUT] to write separate table,
@@ -130,6 +131,7 @@ struct GMT_POSTSCRIPT_HIDDEN {	/* Supporting information hidden from the API */
 struct GMT_VECTOR_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;			/* The internal number of the data set */
 	unsigned int alloc_level;	/* The level it was allocated at */
+	unsigned int geographic;	/* 0 for Cartesian, 1 for geographic, mostly used for memory files */
 	enum GMT_enum_alloc *alloc_mode;	/* Allocation mode per column [GMT_ALLOC_INTERNALLY] */
 	enum GMT_enum_alloc alloc_mode_text;	/* Allocation mode per text [GMT_ALLOC_INTERNALLY] */
 };
@@ -137,6 +139,7 @@ struct GMT_VECTOR_HIDDEN {	/* Supporting information hidden from the API */
 struct GMT_MATRIX_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;			/* The internal number of the data set */
 	int pad;			/* The internal number of the data set */
+	unsigned int grdtype;		/* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype in gmt_grd.h] */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	enum GMT_enum_alloc alloc_mode_text;	/* Allocation mode per text [GMT_ALLOC_INTERNALLY] */
@@ -144,7 +147,7 @@ struct GMT_MATRIX_HIDDEN {	/* Supporting information hidden from the API */
 
 struct GMT_GRID_HEADER_HIDDEN {
 	/* ---- Variables "hidden" from the API ----
-	 * This section is flexible.  It is not copied to any grid header
+	 * This section is flexible.  It is not copied to any grid or image header
 	 * or stored in any file.  It is considered private */
 	unsigned int trendmode;          /* Holds status for detrending of grids.  0 if not detrended, 1 if mean, 2 if mid-value, and 3 if LS plane removed */
 	unsigned int arrangement;        /* Holds status for complex grid as how the read/imag is placed in the grid (interleaved, R only, etc.) */

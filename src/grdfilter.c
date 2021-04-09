@@ -1414,7 +1414,7 @@ GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 #ifdef DEBUG
 	unsigned int n_conv = 0;
 #endif
-	uint64_t ij_in, ij_out, ij_wt;
+	uint64_t ij_in, ij_out, ij_wt, ij_area;
 	double y, y_out, wt_sum, value, this_estimate = 0.0;
 	double y_shift = 0.0, lat_out, w;
 	double *work_array = NULL, *weight = NULL;
@@ -1534,23 +1534,23 @@ GMT_LOCAL void grdfilter_threaded_function (struct THREAD_STRUCT *t) {
 					}
 
 					/* Get here when point is inside and usable  */
-
+					ij_area = gmt_M_ijp (A->header, row_in, col_in);	/* Finally, the current input data point inside the filter */
 					if (slow) {	/* Add it to the relevant temporary work array */
 						if (slower) {	/* Need to store both value and weight */
 							work_data[n_in_median].value = Gin->data[ij_in];
-							work_data[n_in_median++].weight = (gmt_grdfloat)(weight[ij_wt] * A->data[ij_in]);
+							work_data[n_in_median++].weight = (gmt_grdfloat)(weight[ij_wt] * A->data[ij_area]);
 						}
 						else	/* Only need to store values */
 							work_array[n_in_median++] = Gin->data[ij_in];
 					}
 					else {	/* Update weighted sum for our convolution */
-						w = weight[ij_wt] * A->data[ij_in];
+						w = weight[ij_wt] * A->data[ij_area];
 						value += Gin->data[ij_in] * w;
 						if (get_weight_sum) wt_sum += w;
 #ifdef DEBUG
 						n_conv++;	/* Points used inside filter circle */
 						if (Ctrl->A.active) {	/* Store selected debug info in Gin data */
-							if (Ctrl->A.mode == 'a') Gin->data[ij_in] = A->data[ij_in];
+							if (Ctrl->A.mode == 'a') Gin->data[ij_in] = A->data[ij_area];
 							else if (Ctrl->A.mode == 'w') Gin->data[ij_in] = (gmt_grdfloat)weight[ij_wt];
 							else if (Ctrl->A.mode == 'r') Gin->data[ij_in] = (gmt_grdfloat)weight[ij_wt];	/* holds r */
 							else if (Ctrl->A.mode == 'c') Gin->data[ij_in] = (gmt_grdfloat)w;
