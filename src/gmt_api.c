@@ -12976,8 +12976,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			return_null (NULL, GMT_MEMORY_ERROR);
 		}
 	}
-	else if (n_items == 0)
+	else if (n_items == 0) {
 		free (info);	/* No containers used */
+		info = NULL;
+	}
 
 	gmt_M_memset (nn, 4, unsigned int);
 	for (ku = 0; ku < n_items; ku++)	/* Count how many primary and secondary objects each for input and output */
