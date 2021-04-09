@@ -12357,7 +12357,7 @@ GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key,
 			code[1] = key[k][K_MODIFIER];
 			if ((c = strstr (optarg, code))) {	/* Found +<modifier> */
 				strcpy (argument, optarg);
-				if (!c[2]) *takes_mod = 2;	/* Flag that option had what KEY was looking for */
+				if (!c[2] || c[2] == '+') *takes_mod = 2;	/* Flag that option had no argument that KEY was looking for */
 				pos = (unsigned int) (c - optarg + 2);	/* Position of this modifier's argument. E.g., -E+f<file> will have pos = 2 as start of <file> */
 			}
 			else	/* No modifier involved */
