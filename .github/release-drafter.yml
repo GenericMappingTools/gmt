@@ -21,7 +21,7 @@ exclude-labels:
 category-template: '### $TITLE'
 change-template: '* $TITLE ([#$NUMBER]($URL))'
 template: |
-  ## Release of GMT $RESOLVED_VERSION (20YY/MM/DD)
+  ## Release of GMT $RESOLVED_VERSION
 
   ### Highlights
 
