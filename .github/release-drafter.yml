@@ -1,0 +1,34 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+version-resolver:
+  minor:
+    labels:
+      - 'feature'
+  default: patch
+categories:
+  - title: 'New Features'
+    label: 'new feature'
+  - title: 'Enhancements'
+    label: 'enhancement'
+  - title: 'Bug Fixes'
+    label: 'bug'
+  - title: 'Documentation'
+    label: 'documentation'
+  - title: 'Maintenance'
+    label: 'maintenance'
+exclude-labels:
+  - 'skip-changelog'
+category-template: '### $TITLE'
+change-template: '* $TITLE ([#$NUMBER]($URL))'
+template: |
+  ## Release of GMT $RESOLVED_VERSION (20YY/MM/DD)
+
+  ### Highlights
+
+  *
+
+  $CHANGES
+
+  ### Contributors
+
+  $CONTRIBUTORS
