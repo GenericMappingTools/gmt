@@ -48,7 +48,7 @@ Note there are three GMT tar archives available (#3 is optional):
 
 1. gmt-6.x.x.tar.gz:          The GMT 6 distribution
 2. gshhg-gmt-2.x.x.tar.gz:    All five resolutions of GSHHG coastline data
-3. dcw-gmt-1.x.x.tar.gz:      Digital Chart of the World polygon data
+3. dcw-gmt-2.x.x.tar.gz:      Digital Chart of the World polygon data
 
 For macOS and Windows users there are separate installers available.
 You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
