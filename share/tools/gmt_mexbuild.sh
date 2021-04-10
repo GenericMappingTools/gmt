@@ -7,7 +7,7 @@ if [ "X${MATLAB}" = "X" ]; then
 	exit -1
 fi
 
-printf "\ngmt_mexbuild.sh found most recent MATLAB applicationL %s\n" ${MATLAB} >&2
+printf "\ngmt_mexbuild.sh found most recent MATLAB application: %s\n" ${MATLAB} >&2
 printf "\ngmt_mexbuild.sh will build and place the GMT/MEX toolbox in %s.\n" ${BUNDLE_RESOURCES}/bin >&2
 printf "You must have sudo privileges on this computer.\n\nContinue? (y/n) [y]:" >&2
 read answer
