@@ -2594,7 +2594,7 @@ bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
 }
 
 GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
-	unsigned int i, k, nx = 0, ny = 0, last, form, remove[2] = {0,0}, trim, add;
+	unsigned int i, k, nx = 0, ny = 0, last, form, remove[2] = {0,0}, trim, add, x_kind = 0;
 	bool do_minutes, do_seconds, done_Greenwich, done_Dateline, check_edges;
 	bool full_lat_range, proj_A, proj_B, annot_0_and_360 = false, dual[2], is_dual, annot, is_world_save, lon_wrap_save;
 	char label[GMT_LEN256] = {""};
@@ -2605,6 +2605,12 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 
 	is_world_save = GMT->current.map.is_world;
 	lon_wrap_save = GMT->current.map.lon_wrap;
+
+	if (GMT->current.proj.projection_GMT == GMT_POLAR) {	/* r-theta requires more info to know what theta is */
+		if (GMT->current.proj.angle_kind == GMT_IS_LON) x_kind = 0;
+		else if (GMT->current.proj.angle_kind == GMT_IS_LAT) x_kind = 3;
+		else x_kind = 4;
+	}
 
 	if (GMT->current.map.frame.header[0] && !GMT->current.map.frame.plotted_header) {	/* Make plot header for geographic maps */
 		if (gmt_M_is_geographic (GMT, GMT_IN) || GMT->current.map.frame.side[N_SIDE] & GMT_AXIS_ANNOT) {
@@ -2715,7 +2721,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (label, label_c[i], GMT_LEN256-1);
 				else
-					gmtlib_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, !trim, 0, is_world_save);
+					gmtlib_get_annot_label (GMT, val[i], label, do_minutes, do_seconds, !trim, x_kind, is_world_save);
 				gmtplot_label_trim (label, trim);
 				shift = gmtplot_shift_gridline (GMT, val[i], GMT_X);
 				gmtplot_map_symbol_ns (GMT, PSL, val[i]+shift, label, s, n, annot, k, form);
