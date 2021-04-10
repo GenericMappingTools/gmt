@@ -120,10 +120,4 @@ install (FILES
 	../../src/gmtmex/gmtmex.c ../../src/gmtmex/gmt.m
 	DESTINATION \${GMT_LIBDIR}/../share/tools
 	COMPONENT Runtime)
-
-# Place the script that builds the GMT/MEX toolbox in bin
-install (FILES
-	../../share/tools/gmt_mexbuild.sh
-	DESTINATION \${GMT_BINDIR}
-	COMPONENT Runtime)
 EOF

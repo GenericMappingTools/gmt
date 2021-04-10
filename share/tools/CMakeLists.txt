@@ -32,6 +32,11 @@ install (PROGRAMS
 	DESTINATION ${GMT_DATADIR}/tools
 	COMPONENT Runtime)
 
+install (PROGRAMS
+	gmt_mexbuild.sh
+	DESTINATION ${GMT_BINDIR}
+	COMPONENT Runtime)
+
 if (NOT DEFINED BASH_COMPLETION_DIR)
 	set (BASH_COMPLETION_DIR etc/bash_completion.d)
 endif (NOT DEFINED BASH_COMPLETION_DIR)
