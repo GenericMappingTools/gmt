@@ -13,7 +13,9 @@
 #	7) gcc-mp-9 must be installed and in path
 #	8) g++-mp-9 must be installed and in path
 #
-#  Note: CMAKE_INSTALL_PATH, EXEPLUSLIBS, and EXESHARED may need to be changed for different users.
+#  Notes:
+#	1. CMAKE_INSTALL_PATH, EXEPLUSLIBS, and EXESHARED in build-macos-external-list.sh may need to be changed for different users.
+#	2. Settings for GS_LIB, PROJ_LIB etc in cmake/dist/startup_macosx.sh.in may need to be updated as new gs,proj.gm releases are issued
 
 reset_config() {
 	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
