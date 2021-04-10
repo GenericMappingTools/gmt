@@ -17,6 +17,10 @@
 #	1. CMAKE_INSTALL_PATH, EXEPLUSLIBS, and EXESHARED in build-macos-external-list.sh may need to be changed for different users.
 #	2. Settings for GS_LIB, PROJ_LIB etc in cmake/dist/startup_macosx.sh.in may need to be updated as new gs,proj.gm releases are issued
 
+# Temporary ftp site for pre-release files:
+GMT_FTP_URL=ftp.soest.hawaii.edu
+GMT_FTP_DIR=/export/ftp1/ftp/pub/pwessel/release
+
 reset_config() {
 	rm -f ${TOPDIR}/cmake/ConfigUser.cmake
 	if [ -f ${TOPDIR}/cmake/ConfigUser.cmake.orig ]; then # Restore what we had
@@ -174,18 +178,18 @@ reset_config
 if [ $do_ftp -eq 1 ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
 	type=$(uname -m)
 	echo "build-release.sh: Placing gmt-${Version}-src.tar.* on the ftp site" >&2
-	scp gmt-${Version}-src.tar.* ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
+	scp gmt-${Version}-src.tar.* ${GMT_FTP_URL}:${GMT_FTP_DIR}
 	if [ -f gmt-${Version}-darwin-${type}.dmg ]; then
 		echo "build-release.sh: Placing gmt-${Version}-darwin-${type}.dmg on the ftp site" >&2
-		scp gmt-${Version}-darwin-${type}.dmg ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
+		scp gmt-${Version}-darwin-${type}.dmg ${GMT_FTP_URL}:${GMT_FTP_DIR}
 	fi
-	ssh ${USER}@ftp.soest.hawaii.edu 'chmod og+r /export/ftp1/ftp/pub/pwessel/release/gmt-*'
+	ssh ${USER}@${GMT_FTP_URL} 'chmod og+r ${GMT_FTP_DIR}/gmt-*'
 fi
 if [ $do_ftp -eq 2 ]; then	# Place M1 bundle file on ftp
 	type=$(uname -m)
 	if [ -f gmt-${Version}-darwin-${type}.dmg ]; then
 		echo "build-release.sh: Placing gmt-${Version}-darwin-${type}.dmg on the ftp site" >&2
-		scp gmt-${Version}-darwin-${type}.dmg ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
+		scp gmt-${Version}-darwin-${type}.dmg ${GMT_FTP_URL}:${GMT_FTP_DIR}
 	fi
-	ssh ${USER}@ftp.soest.hawaii.edu 'chmod og+r /export/ftp1/ftp/pub/pwessel/release/gmt-*'
+	ssh ${USER}@${GMT_FTP_URL} 'chmod og+r ${GMT_FTP_DIR}/gmt-*'
 fi
