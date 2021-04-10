@@ -12328,7 +12328,7 @@ GMT_LOCAL const char *gmtapi_retrieve_module_keys (void *V_API, char *module) {
 	return_null (V_API, GMT_NOT_A_VALID_MODULE);
 }
 
-GMT_LOCAL int gmtapi_extract_argument (char *optarg, char *argument, char **key, int k, bool colon, int *n_pre, unsigned int *takes_mod) {
+GMT_LOCAL int gmtapi_extract_argument (struct GMTAPI_CTRL *API, char option, char *optarg, char *argument, char **key, int k, bool colon, int *n_pre, unsigned int *takes_mod) {
 	/* Two separate actions:
 	 * 1) If key ends with "=" then we pull out the option argument after stripping off +<stuff>.
 	 * 2) If key ends with "=q" then we see if +q is given and return pos to this modifiers argument.
@@ -12812,7 +12812,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 			}
 			direction = (unsigned int) sdir;
 		}
-		mod_pos = gmtapi_extract_argument (API, opt->option, opt->arg, argument, key, k, strip, &n_pre_arg);	/* Pull out the option argument, possibly modified by the key */
+		mod_pos = gmtapi_extract_argument (API, opt->option, opt->arg, argument, key, k, strip, &n_pre_arg, &takes_mod);	/* Pull out the option argument, possibly modified by the key */
 		if (gmtapi_B_custom_annotations (opt)) {	/* Special processing for -B[p|s][x|y|z]c<nofilegiven>] */
 			/* Add this item to our list */
 			direction = GMT_IN;

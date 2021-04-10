@@ -114,4 +114,10 @@ install (FILES
 	/opt/local/share/GraphicsMagick-\${GMT_CONFIG_GM_VERSION}/config/log.mgk
 	DESTINATION \${GMT_LIBDIR}/GraphicsMagick/config
 	COMPONENT Runtime)
+
+# Place the GMT/MEX Toolbox files
+install (FILES
+	../../src/gmtmex/gmtmex.c ../../src/gmtmex/gmt.m
+	DESTINATION \${GMT_LIBDIR}/../share/tools
+	COMPONENT Runtime)
 EOF
