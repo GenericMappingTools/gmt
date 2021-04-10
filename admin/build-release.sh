@@ -40,6 +40,8 @@ fi
 
 if [ "X${1}" = "X-n" ]; then
 	do_ftp=0
+elif [ "X${1}" = "X-m" ]; then
+	do_ftp=2
 elif [ $# -gt 0 ]; then
 	cat <<- EOF  >&2
 	Usage: build-release.sh [-n]
@@ -49,6 +51,7 @@ elif [ $# -gt 0 ]; then
 	Requires you have set GMT_PACKAGE_VERSION_* and GMT_PUBLIC_RELEASE in cmake/ConfigDefaults.cmake.
 	Requires GMT_GSHHG_SOURCE and GMT_DCW_SOURCE to be set in the environment.
 	Passing -n means we do not copy the files to the SOEST ftp directory
+	Passing -m means only copy the macOS bundle to the SOEST ftp directory
 	EOF
 	exit 1
 fi
@@ -167,13 +170,22 @@ shasum -a 256 gmt-${Version}-*
 # 9. Replace temporary ConfigReleaseBuild.cmake file with the original file
 reset_config
 
-# 10. Paul or Meghan may palce the candidate products on the pwessel/release ftp site
+# 10. Paul or Meghan may place the candidate products on the pwessel/release ftp site
 if [ $do_ftp -eq 1 ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
+	type=$(uname -m)
 	echo "build-release.sh: Placing gmt-${Version}-src.tar.* on the ftp site" >&2
 	scp gmt-${Version}-src.tar.* ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
-	if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
-		echo "build-release.sh: Placing gmt-${Version}-darwin-x86_64.dmg on the ftp site" >&2
-		scp gmt-${Version}-darwin-x86_64.dmg ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
+	if [ -f gmt-${Version}-darwin-${type}.dmg ]; then
+		echo "build-release.sh: Placing gmt-${Version}-darwin-${type}.dmg on the ftp site" >&2
+		scp gmt-${Version}-darwin-${type}.dmg ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
+	fi
+	ssh ${USER}@ftp.soest.hawaii.edu 'chmod og+r /export/ftp1/ftp/pub/pwessel/release/gmt-*'
+fi
+if [ $do_ftp -eq 2 ]; then	# Place M1 bundle file on ftp
+	type=$(uname -m)
+	if [ -f gmt-${Version}-darwin-${type}.dmg ]; then
+		echo "build-release.sh: Placing gmt-${Version}-darwin-${type}.dmg on the ftp site" >&2
+		scp gmt-${Version}-darwin-${type}.dmg ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
 	fi
 	ssh ${USER}@ftp.soest.hawaii.edu 'chmod og+r /export/ftp1/ftp/pub/pwessel/release/gmt-*'
 fi
