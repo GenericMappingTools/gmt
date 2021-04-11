@@ -2865,9 +2865,9 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 		struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[GMT_Y];
 		double x0, x1, y0, y1, xm, ym, label_angle, line_angle, t_angle;
 		double off = GMT->current.setting.map_label_offset + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + MAX (0.0, GMT->current.setting.map_tick_length[GMT_PRIMARY]);
-		unsigned int just;
-
-		if (GMT->current.map.frame.side[W_SIDE] & GMT_AXIS_ANNOT) {
+		unsigned int just, we_side[2] = {W_SIDE, E_SIDE};
+		if (GMT->current.proj.z_down != GMT_ZDOWN_R) gmt_M_uint_swap (we_side[0], we_side[1]);
+		if (GMT->current.map.frame.side[we_side[0]] & GMT_AXIS_ANNOT) {
 			/* Compute x, y, angles etc */
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &x0, &y0);
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &x1, &y1);
@@ -2883,14 +2883,13 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 				just = PSL_BC;
 			}
 			fprintf (stderr, "Do W, line-angle = %g label-angle = %g t-angle = %g, just = %d\n", line_angle, label_angle, t_angle, just);
-			PSL_command (PSL, "V\n");
 			PSL_setorigin (PSL, xm, ym, line_angle, PSL_FWD);
 			PSL_setcurrentpoint (PSL, 0.0, 0.0);
 			PSL_command (PSL, "0 PSL_AH1 %d add G\n", PSL_IZ (PSL, off));
 			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, true);
-			PSL_command (PSL, "U\n");
+			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);
 		}
-		if (GMT->current.map.frame.side[E_SIDE] & GMT_AXIS_ANNOT) {
+		if (GMT->current.map.frame.side[we_side[1]] & GMT_AXIS_ANNOT) {
 			/* Compute x, y, angles etc */
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &x0, &y0);
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &x1, &y1);
@@ -2906,12 +2905,11 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 				just = PSL_TC;
 			}
 			fprintf (stderr, "Do E, line-angle = %g label-angle = %g t-angle = %g, just = %d\n", line_angle, label_angle, t_angle, just);
-			PSL_command (PSL, "V\n");
 			PSL_setorigin (PSL, xm, ym, line_angle, PSL_FWD);
 			PSL_setcurrentpoint (PSL, 0.0, 0.0);
 			PSL_command (PSL, "0 PSL_AH1 %d add neg G\n", PSL_IZ (PSL, off));
 			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, false);
-			PSL_command (PSL, "U\n");
+			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);
 		}
 	}
 
