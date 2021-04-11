@@ -282,10 +282,11 @@ To make a minimalistic 2x2 basemap layout called panels.pdf, try::
     gmt end show
 
 
-Restriction
------------
+Restrictions
+------------
 
-Currently, nesting of subplots is not implemented.
+(1) Currently, nesting of subplots is not implemented. (2) If auto-legend option **-l**
+is used then you must complete plotting in one panel before moving to another.
 
 See Also
 --------
