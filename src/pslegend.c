@@ -581,7 +581,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							/* B cptname offset height[+modifiers] [ Optional psscale args -B -I -L -M -N -S -Z -p ] */
 							sscanf (&line[2], "%*s %*s %s", bar_height);
 							if ((c = strchr (bar_height, '+')) != NULL) c[0] = 0;	/* Chop off any modifiers so we can compute the height */
-							height += gmt_M_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+							height += gmt_M_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 							column_number = 0;
 							if (strstr (&line[2], "-B")) b_cpt = true;	/* Passed -B options with the bar presecription */
 							in_PS_ok = false;
@@ -689,7 +689,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							if (gmt_get_modifier (txt_c, 'u', string))	/* Specified alternate alignment */
 								gave_label = false;	/* Not sure why I do this, will find out */
 							if (gave_label && (just == 't' || just == 'b')) height += d_off;
-							height += GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
+							height += GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 							column_number = 0;
 							in_PS_ok = false;
 							break;
@@ -995,7 +995,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							sscanf (&line[2], "%s %s %s %[^\n]", bar_cpt, bar_gap, bar_height, module_options);
 							strcpy (bar_modifiers, bar_height);	/* Save the entire modifier string */
 							if ((c = strchr (bar_height, '+')) != NULL) c[0] = 0;	/* Chop off any modifiers so we can compute the height */
-							row_height = gmt_M_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[0] + GMT->current.setting.map_annot_offset[0] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+							row_height = gmt_M_to_inch (GMT, bar_height) + GMT->current.setting.map_tick_length[GMT_PRIMARY] + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 							pslegend_fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, 1, fill);
 							x_off = gmt_M_to_inch (GMT, bar_gap);
 							sprintf (buffer, "-C%s -O -K -Dx%gi/%gi+w%gi/%s+h+jTC %s --GMT_HISTORY=readonly", bar_cpt, Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X], row_base_y, Ctrl->D.dim[GMT_X] - 2 * x_off, bar_modifiers, module_options);
@@ -1269,7 +1269,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							/* Default assumes label is added on top */
 							just = 't';
 							gave_label = true;
-							row_height = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[0];
+							row_height = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
 							if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 								just = string[0];
