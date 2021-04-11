@@ -2863,10 +2863,14 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.map.frame.axis[GMT_Y].label[0] && !gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {
 		/* May need to label radial axis */
 		struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[GMT_Y];
-		double x0, x1, y0, y1, xm, ym, label_angle, line_angle, t_angle;
+		double x0, x1, y0, y1, xm, ym, label_angle, line_angle, t_angle, sign = 1.0;
 		double off = GMT->current.setting.map_label_offset + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + MAX (0.0, GMT->current.setting.map_tick_length[GMT_PRIMARY]);
-		unsigned int just, we_side[2] = {W_SIDE, E_SIDE};
+		unsigned int just, we_side[2] = {E_SIDE, W_SIDE}, def_just[2] = {PSL_TC, PSL_BC};
 		if (GMT->current.proj.z_down != GMT_ZDOWN_R) gmt_M_uint_swap (we_side[0], we_side[1]);
+		if (GMT->current.proj.z_down != GMT_ZDOWN_R) {
+			gmt_M_uint_swap (def_just[0], def_just[1]);
+			sign = -1.0;
+		}
 		if (GMT->current.map.frame.side[we_side[0]] & GMT_AXIS_ANNOT) {
 			/* Compute x, y, angles etc */
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &x0, &y0);
@@ -2876,16 +2880,16 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			if (GMT->current.proj.z_down != GMT_ZDOWN_R) line_angle += 180.0;
 			if (label_angle < -90.00 || label_angle > 90.0) {
 				t_angle = 180.0;
-				just = PSL_TC;
+				just = def_just[0];
 			}
 			else {
 				t_angle = 0.0;
-				just = PSL_BC;
+				just = def_just[1];
 			}
 			fprintf (stderr, "Do W, line-angle = %g label-angle = %g t-angle = %g, just = %d\n", line_angle, label_angle, t_angle, just);
 			PSL_setorigin (PSL, xm, ym, line_angle, PSL_FWD);
 			PSL_setcurrentpoint (PSL, 0.0, 0.0);
-			PSL_command (PSL, "0 PSL_AH1 %d add G\n", PSL_IZ (PSL, off));
+			PSL_command (PSL, "0 PSL_AH1 %d add G\n", PSL_IZ (PSL, sign * off));
 			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, true);
 			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);
 		}
@@ -2898,16 +2902,16 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 			if (GMT->current.proj.z_down != GMT_ZDOWN_R) line_angle += 180.0;
 			if (label_angle < -90.00 || label_angle > 90.0) {
 				t_angle = 180.0;
-				just = PSL_BC;
+				just = def_just[1];
 			}
 			else {
 				t_angle = 0.0;
-				just = PSL_TC;
+				just = def_just[0];
 			}
 			fprintf (stderr, "Do E, line-angle = %g label-angle = %g t-angle = %g, just = %d\n", line_angle, label_angle, t_angle, just);
 			PSL_setorigin (PSL, xm, ym, line_angle, PSL_FWD);
 			PSL_setcurrentpoint (PSL, 0.0, 0.0);
-			PSL_command (PSL, "0 PSL_AH1 %d add neg G\n", PSL_IZ (PSL, off));
+			PSL_command (PSL, "0 PSL_AH1 %d add neg G\n", PSL_IZ (PSL, sign * off));
 			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, false);
 			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);
 		}
