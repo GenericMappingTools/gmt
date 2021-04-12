@@ -16,8 +16,8 @@ categories:
     label: 'documentation'
   - title: 'Maintenance'
     label: 'maintenance'
-exclude-labels:
-  - 'skip-changelog'
+include-labels:
+  - 'add-changelog'
 category-template: '### $TITLE'
 change-template: '* $TITLE ([#$NUMBER]($URL))'
 template: |
