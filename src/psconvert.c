@@ -481,9 +481,9 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 #ifdef WIN32
 	if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
-		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
+		C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
 #else
-	C->G.file = strdup ("gs");
+	C->G.file = strdup (GMT_GS_EXECUTABLE);
 #endif
 	C->D.dir = strdup (".");
 

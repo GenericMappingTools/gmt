@@ -144,6 +144,15 @@ if (NOT DEFINED GMT_DATA_SERVER)
 	set (GMT_DATA_SERVER "oceania")
 endif (NOT DEFINED GMT_DATA_SERVER)
 
+# Default name of ghostscript executable
+if (NOT DEFINED GMT_GS_EXECUTABLE)
+	if (WIN32)
+		set (GMT_GS_EXECUTABLE "gswin64c")
+	else (WIN32)
+		set (GMT_GS_EXECUTABLE "gs")
+	endif (WIN32)
+endif (NOT DEFINED GMT_GS_EXECUTABLE)
+
 # You can set the build configuration type as a command-line argument to 'cmake' using -DCMAKE_BUILD_TYPE:STRING=Debug for example.
 # If no build configuration type was given as a command-line option to 'cmake' then a default cache entry is set here.
 # A cache entry is what appears in the 'CMakeCache.txt' file that CMake generates - you can edit that file directly or use the CMake GUI to edit it.
