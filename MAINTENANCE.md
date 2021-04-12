@@ -299,8 +299,8 @@ The Release Drafter GitHub Action will automatically keep a draft changelog at
 https://github.com/GenericMappingTools/gmt/releases, adding a new entry every time a Pull Request (with a proper label)
 is merged into the master branch. This release drafter tool has two configuration files, one for the GitHub Action
 at .github/workflows/release-drafter.yml, and one for the changelog template at .github/release-drafter.yml.
-Configuration settings can be found at https://github.com/release-drafter/release-drafter. The documentation for the
-workflow is based on the [PyGMT Maintenance Documentation](https://www.pygmt.org/dev/maintenance.html).
+Configuration settings can be found at https://github.com/release-drafter/release-drafter. The maintenance documentation
+for this workflow is based on the [PyGMT Maintenance Documentation](https://www.pygmt.org/dev/maintenance.html).
 
 The drafted release notes are not perfect, so we will need to tidy it prior to publishing the actual release notes at
 https://docs.generic-mapping-tools.org/latest/changes.html.
