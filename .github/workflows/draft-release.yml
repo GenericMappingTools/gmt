@@ -36,16 +36,22 @@ jobs:
           curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
           curl -O ftp://ftp.soest.hawaii.edu/gmt/gmt-${{ env.GMT_VERSION }}-src.tar.gz
           curl -O ftp://ftp.soest.hawaii.edu/gmt/gmt-${{ env.GMT_VERSION }}-src.tar.xz
-          curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win32.exe
+          # curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win32.exe
           curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win64.exe
 
       - name: Checksum
         run: |
+          # shasum -a 256 \
+          #       gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg \
+          #       gmt-${{ env.GMT_VERSION }}-src.tar.gz \
+          #       gmt-${{ env.GMT_VERSION }}-src.tar.xz \
+          #       gmt-${{ env.GMT_VERSION }}-win32.exe \
+          #       gmt-${{ env.GMT_VERSION }}-win64.exe \
+          #       > gmt-${{ env.GMT_VERSION }}-checksums.txt
           shasum -a 256 \
                 gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg \
                 gmt-${{ env.GMT_VERSION }}-src.tar.gz \
                 gmt-${{ env.GMT_VERSION }}-src.tar.xz \
-                gmt-${{ env.GMT_VERSION }}-win32.exe \
                 gmt-${{ env.GMT_VERSION }}-win64.exe \
                 > gmt-${{ env.GMT_VERSION }}-checksums.txt
           # Display the checksums
@@ -59,6 +65,15 @@ jobs:
         with:
           tag_name: ${{ env.GMT_VERSION }}
           release_name: ${{ env.GMT_VERSION }}
+          # body: |
+          #   | **File**                       | **Description**                         |
+          #   |--------------------------------|-----------------------------------------|
+          #   | gmt-${{ env.GMT_VERSION }}-checksums.txt     | sha256sum of source and binary packages |
+          #   | gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg | macOS bundle                            |
+          #   | gmt-${{ env.GMT_VERSION }}-src.tar.gz        | Source code                             |
+          #   | gmt-${{ env.GMT_VERSION }}-src.tar.xz        | Source code                             |
+          #   | gmt-${{ env.GMT_VERSION }}-win32.exe         | Windows installer (32bit)               |
+          #   | gmt-${{ env.GMT_VERSION }}-win64.exe         | Windows installer (64bit)               |
           body: |
             | **File**                       | **Description**                         |
             |--------------------------------|-----------------------------------------|
@@ -66,7 +81,6 @@ jobs:
             | gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg | macOS bundle                            |
             | gmt-${{ env.GMT_VERSION }}-src.tar.gz        | Source code                             |
             | gmt-${{ env.GMT_VERSION }}-src.tar.xz        | Source code                             |
-            | gmt-${{ env.GMT_VERSION }}-win32.exe         | Windows installer (32bit)               |
             | gmt-${{ env.GMT_VERSION }}-win64.exe         | Windows installer (64bit)               |
           draft: true
           prerelease: false
@@ -111,15 +125,15 @@ jobs:
           asset_name: gmt-${{ env.GMT_VERSION }}-src.tar.xz
           asset_content_type: application/x-tar
 
-      - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-win32.exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: gmt-${{ env.GMT_VERSION }}-win32.exe
-          asset_name: gmt-${{ env.GMT_VERSION }}-win32.exe
-          asset_content_type: application/x-msdownload
+      # - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-win32.exe
+      #   uses: actions/upload-release-asset@v1
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   with:
+      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
+      #     asset_path: gmt-${{ env.GMT_VERSION }}-win32.exe
+      #     asset_name: gmt-${{ env.GMT_VERSION }}-win32.exe
+      #     asset_content_type: application/x-msdownload
 
       - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-win64.exe
         uses: actions/upload-release-asset@v1
