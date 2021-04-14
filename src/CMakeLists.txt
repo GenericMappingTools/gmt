@@ -404,7 +404,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
-	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS})
+	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS} ${EXTRA_SOURCES})
 
 # source codes for testing API
 if (DO_API_TESTS)
