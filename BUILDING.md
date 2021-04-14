@@ -43,6 +43,7 @@ Optionally install these for more capabilities within GMT:
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed under macOS])
 - [Ninja](https://ninja-build.org/) (Small build system focused on speed)
+- [pngquant](https://pngquant.org/) (Ability to optimize PNG images)
 
 For movie-making capabilities these executables are needed:
 
