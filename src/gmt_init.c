@@ -5123,6 +5123,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				else
 					error++;
 			}
+			if (GMT->current.proj.got_azimuths && GMT->current.proj.angle_kind) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: Cannot select both +a and +k\n");
+				error++;
+			}
 			if (GMT->current.proj.got_azimuths) GMT->current.proj.pars[1] = -GMT->current.proj.pars[1];	/* Because azimuths go clockwise */
 			break;
 
