@@ -5,7 +5,11 @@
 #
 #-------------------------------------------------------------
 set (CMAKE_BUILD_TYPE Release)
-set (CMAKE_INSTALL_PREFIX "gmt-${GMT_PACKAGE_VERSION}")
+if ($ENV{USER} STREQUAL "meghanj") 
+	set (CMAKE_INSTALL_PREFIX "$ENV{GMT_REPO_DIR}/build/gmt-${GMT_PACKAGE_VERSION}")
+else ()
+	set (CMAKE_INSTALL_PREFIX "gmt-${GMT_PACKAGE_VERSION}")
+endif()
 set (GSHHG_ROOT "$ENV{GMT_GSHHG_SOURCE}")
 set (DCW_ROOT "$ENV{GMT_DCW_SOURCE}")
 
