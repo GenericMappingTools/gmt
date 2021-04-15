@@ -41,7 +41,6 @@ assignees: ''
 - [ ] create Windows installers (win64) (@joa-quim)
 - [ ] check if the source tarballs, macOS bundle and Windows installers work well
 - [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
-- [ ] update README and VERSION files on the GMT FTP (@PaulWessel)
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
     ```bash
     # checkout master (for minor releases) or 6.x branch (for patch releases)
