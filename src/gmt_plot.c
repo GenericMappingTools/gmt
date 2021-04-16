@@ -1702,18 +1702,18 @@ GMT_LOCAL double gmtplot_get_annot_offset (struct GMT_CTRL *GMT, bool *flip, uns
 	double a = GMT->current.setting.map_annot_offset[level];
 	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE) {	/* Inside annotation */
 		a = -fabs (a);
-		a -= fabs (GMT->current.setting.map_tick_length[0]);
+		a -= fabs (GMT->current.setting.map_tick_length[GMT_PRIMARY]);
 		*flip = true;
 	}
 	else if (a >= 0.0) {	/* Outside annotation */
-		double dist = GMT->current.setting.map_tick_length[0];	/* Length of tickmark (could be negative) */
+		double dist = GMT->current.setting.map_tick_length[GMT_PRIMARY];	/* Length of tickmark (could be negative) */
 		/* For fancy frame we must consider that the frame width might exceed the ticklength */
 		if (GMT->current.setting.map_frame_type & GMT_IS_FANCY && GMT->current.setting.map_frame_width > dist) dist = GMT->current.setting.map_frame_width;
 		if (dist > 0.0) a += dist;
 		*flip = false;
 	}
 	else {		/* Inside annotation via negative tick length */
-		if (GMT->current.setting.map_tick_length[0] < 0.0) a += GMT->current.setting.map_tick_length[0];
+		if (GMT->current.setting.map_tick_length[GMT_PRIMARY] < 0.0) a += GMT->current.setting.map_tick_length[GMT_PRIMARY];
 		*flip = true;
 	}
 
@@ -6864,7 +6864,7 @@ void gmt_draw_vertical_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 		scale = GMT->current.proj.scale[GMT_Y];
 	half_scale_length = 0.5 * ms->length * scale;
 
-	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[0] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[GMT_PRIMARY] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 	dim[GMT_X] = strlen (txt) * GMT_DEC_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + off;
 	dim[GMT_Y] = 2.0 * half_scale_length;
 
@@ -6917,7 +6917,7 @@ void gmt_draw_vertical_scale_old (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 	gmt_xyz_to_xy (GMT, x0, y0 + dy, 0.0, &xx[2], &yy[2]);
 	gmt_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 + dy, 0.0, &xx[3], &yy[3]);
 	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
-	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[0] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[GMT_PRIMARY] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 	PSL_plottext (PSL, x0 + off, y0, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, PSL_ML, form);
 }
