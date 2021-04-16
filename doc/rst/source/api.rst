@@ -782,6 +782,8 @@ The C/C++ API is deliberately kept small to make it easy to use.
     +--------------------------+-------------------------------------------------------+
     | GMT_Find_Option_         | Find an option in the linked list                     |
     +--------------------------+-------------------------------------------------------+
+    | GMT_Free_                | Free GMT-allocated non-container memory               |
+    +--------------------------+-------------------------------------------------------+
     | GMT_Get_Common_          | Determine if a GMT common option was set              |
     +--------------------------+-------------------------------------------------------+
     | GMT_Get_Coord_           | Create a coordinate array                             |
@@ -2610,6 +2612,23 @@ whose prototype is
 where ``data`` is the address of the array with data containers, i.e., not
 the array to the containers but the *address* of that array (e.g. &array),
 and ``n`` is the number of containers.
+
+Free other allocated memory
+---------------------------
+
+Some GMT functions may allocate memory that is not part of the containers
+and thus cannot be freed with GMT_Destroy_Data_.  For these cases there is
+the GMT_Free_ function, whose prototype is
+
+.. _GMT_Free:
+
+  ::
+
+    int GMT_Free (void *API, void *ptr);
+
+where ``ptr`` is the address of the pointer to arbitrary data allocated
+by the GMT API.  The most common use of this function is to free the
+resources returned by GMT_Encode_Options_.
 
 Terminate a GMT session
 -----------------------
