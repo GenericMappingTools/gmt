@@ -62,7 +62,7 @@ extern "C" {
  *=====================================================================================
  */
 
-/* 33 Primary API functions */
+/* 34 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session   (const char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
 EXTERN_MSC void * GMT_Create_Data      (void *API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[],
                                            double *wesn, double *inc, unsigned int registration, int pad, void *data);
@@ -86,6 +86,7 @@ EXTERN_MSC int GMT_Get_Row             (void *API, int rec_no, struct GMT_GRID *
 EXTERN_MSC int GMT_Put_Row             (void *API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row);
 EXTERN_MSC int GMT_Set_Comment         (void *API, unsigned int family, unsigned int mode, void *arg, void *data);
 EXTERN_MSC int GMT_Set_Geometry	       (void *API, unsigned int direction, unsigned int geometry);
+EXTERN_MSC int GMT_Free                (void *API, void *ptr);
 
 EXTERN_MSC int GMT_Open_VirtualFile    (void *API, unsigned int family, unsigned int geometry, unsigned int direction, void *data, char *string);
 EXTERN_MSC int GMT_Close_VirtualFile   (void *API, const char *string);
