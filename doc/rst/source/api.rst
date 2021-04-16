@@ -3205,7 +3205,8 @@ error number.  The GMT_RESOURCE structure is defined below:
 API developers will need to provide specific code to handle the registration of native
 structures in their language or application and to translate between the GMT resources
 and the corresponding native items.  Developers should look at an existing and working
-interface such as the GMT/MATLAB toolbox to see the required steps.
+interface such as the GMT/MATLAB toolbox to see the required steps. **Note**: The array
+of structures returned by GMT_Encode_Options_ should be freed by GMT_Free_.
 
 Expand an option with explicit memory references
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
