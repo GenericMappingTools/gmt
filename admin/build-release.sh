@@ -183,7 +183,7 @@ if [ $do_ftp -eq 1 ]; then	# Place file in pwessel SOEST ftp release directory a
 		echo "build-release.sh: Placing gmt-${Version}-darwin-${type}.dmg on the ftp site" >&2
 		scp gmt-${Version}-darwin-${type}.dmg ${GMT_FTP_URL}:${GMT_FTP_DIR}
 	fi
-	ssh ${USER}@${GMT_FTP_URL} "chmod og+r ${GMT_FTP_DIR}/gmt-*"
+	ssh ${USER}@${GMT_FTP_URL} "chmod o+r,g+rw ${GMT_FTP_DIR}/gmt-*"
 fi
 if [ $do_ftp -eq 2 ]; then	# Place M1 bundle file on ftp
 	type=$(uname -m)
@@ -191,5 +191,5 @@ if [ $do_ftp -eq 2 ]; then	# Place M1 bundle file on ftp
 		echo "build-release.sh: Placing gmt-${Version}-darwin-${type}.dmg on the ftp site" >&2
 		scp gmt-${Version}-darwin-${type}.dmg ${GMT_FTP_URL}:${GMT_FTP_DIR}
 	fi
-	ssh ${USER}@${GMT_FTP_URL} "chmod og+r ${GMT_FTP_DIR}/gmt-*"
+	ssh ${USER}@${GMT_FTP_URL} "chmod o+r,g+rw ${GMT_FTP_DIR}/gmt-*"
 fi
