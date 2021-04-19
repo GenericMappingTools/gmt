@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>x2sys_solve &mdash; GMT 6.2.0 documentation</title>
+  <title>x2sys_solve &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="../../index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +126,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +142,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +216,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/x2sys/x2sys_solve.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -224,10 +237,10 @@
 <p>Determine least-squares systematic correction from crossovers</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt x2sys_solve</strong> <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>column</em> <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>TAG</em> <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><strong>c</strong>|<strong>d</strong>|<strong>g</strong>|<strong>h</strong>|<strong>s</strong>|<strong>y</strong>|<strong>z</strong>
+<p><strong>gmt x2sys_solve</strong> <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>column</em> <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>TAG</em> <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><strong>c</strong>|<strong>d</strong>|<strong>g</strong>|<strong>h</strong>|<strong>s</strong>|<strong>y</strong>|<strong>z</strong>
 [ <em>COE_list.txt</em> ]
-[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>+u</strong>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>+u</strong>] ]
 [ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-di</strong><a class="reference internal" href="../../gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-x</strong>[[-]<em>n</em>] ]
@@ -289,8 +302,8 @@ correction); <em>z</em> is the data value at the crossover; records must contain
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="v"></span><dl class="simple">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -326,7 +339,7 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </div>
 <div class="section" id="notes">
 <h2>Notes<a class="headerlink" href="#notes" title="Permalink to this headline">¶</a></h2>
-<p>Most of the model corrections in <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong> involve a constant offset.
+<p>Most of the model corrections in <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> involve a constant offset.
 Because crossovers are differences between values, any absolute level
 will cancel out and hence the constant offsets we obtain are relative
 to an undetermined absolute level.  To obtain a solvable solution we
@@ -397,25 +410,18 @@ gmt x2sys_solve depth_coe.txt -V -TMGD77 -Cdepth -Es &gt; coe_table.txt
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="../../cookbook.html" class="btn btn-neutral float-right" title="Cookbook" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="x2sys_report.html" class="btn btn-neutral float-left" title="x2sys_report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="../../cookbook.html" class="btn btn-neutral float-right" title="Cookbook" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="x2sys_report.html" class="btn btn-neutral float-left" title="x2sys_report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -423,9 +429,9 @@ gmt x2sys_solve depth_coe.txt -V -TMGD77 -Cdepth -Es &gt; coe_table.txt
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

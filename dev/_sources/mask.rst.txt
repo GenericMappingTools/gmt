@@ -20,7 +20,8 @@ Synopsis
 [ |-C| ]
 [ |-D|\ *dumpfile* ]
 [ |-F|\ [**l**\|\ **r**] ]
-[ |-G|\ *fill* ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
+[ |-G|\ *fill* ]
+[ |-Jz|\ \|\ **Z**\ *parameters* ]
 [ |-L|\ *nodegrid*\ [**+i**\|\ **o**] ]
 [ |-N| ]
 [ |-Q|\ *cut* ]
@@ -39,6 +40,7 @@ Synopsis
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 

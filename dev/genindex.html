@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Index &mdash; GMT 6.2.0 documentation</title>
+  <title>Index &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/togglebutton.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -60,7 +70,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="index.html" class="icon icon-home"> GMT
           
 
           
@@ -114,8 +124,8 @@
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -130,6 +140,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -188,6 +199,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -199,7 +212,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/genindex" class="fa fa-github"> Edit on GitHub</a>
             
@@ -289,10 +302,10 @@
 </li>
       <li><a href="gmt.conf.html#term-COLOR_HSV_MAX_S"><strong>COLOR_HSV_MAX_S</strong></a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gmt.conf.html#term-COLOR_HSV_MAX_V"><strong>COLOR_HSV_MAX_V</strong></a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="gmt.conf.html#term-COLOR_HSV_MIN_S"><strong>COLOR_HSV_MIN_S</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-COLOR_HSV_MIN_V"><strong>COLOR_HSV_MIN_V</strong></a>
@@ -300,6 +313,8 @@
       <li><a href="gmt.conf.html#term-COLOR_MODEL"><strong>COLOR_MODEL</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-COLOR_NAN"><strong>COLOR_NAN</strong></a>
+</li>
+      <li><a href="gmt.conf.html#term-COLOR_SET"><strong>COLOR_SET</strong></a>
 </li>
       <li><a href="colorbar.html#index-0"><strong>colorbar</strong></a>
 </li>
@@ -369,14 +384,16 @@
 </li>
       <li><a href="gmt.conf.html#term-FONT_LOGO"><strong>FONT_LOGO</strong></a>
 </li>
+      <li><a href="gmt.conf.html#term-FONT_SUBTITLE"><strong>FONT_SUBTITLE</strong></a>
+</li>
       <li><a href="gmt.conf.html#term-FONT_TAG"><strong>FONT_TAG</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-FONT_TITLE"><strong>FONT_TITLE</strong></a>
 </li>
-      <li><a href="gmt.conf.html#term-FORMAT_CLOCK_IN"><strong>FORMAT_CLOCK_IN</strong></a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gmt.conf.html#term-FORMAT_CLOCK_IN"><strong>FORMAT_CLOCK_IN</strong></a>
+</li>
       <li><a href="gmt.conf.html#term-FORMAT_CLOCK_MAP"><strong>FORMAT_CLOCK_MAP</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-FORMAT_CLOCK_OUT"><strong>FORMAT_CLOCK_OUT</strong></a>
@@ -447,6 +464,8 @@
 </li>
       <li><a href="gmt_shell_functions.sh.html#index-0"><strong>gmt_shell_functions.sh</strong></a>
 </li>
+      <li><a href="gmt.conf.html#term-GMT_THEME"><strong>GMT_THEME</strong></a>
+</li>
       <li><a href="gmt.conf.html#term-GMT_TRIANGULATE"><strong>GMT_TRIANGULATE</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-GMT_VERBOSE"><strong>GMT_VERBOSE</strong></a>
@@ -485,14 +504,16 @@
 </li>
       <li><a href="gmtspatial.html#index-0"><strong>gmtspatial</strong></a>
 </li>
+      <li><a href="gmtsplit.html#index-0"><strong>gmtsplit</strong></a>
+</li>
       <li><a href="gmtswitch.html#index-0"><strong>gmtswitch</strong></a>
 </li>
       <li><a href="gmtvector.html#index-0"><strong>gmtvector</strong></a>
 </li>
-      <li><a href="gmtwhich.html#index-0"><strong>gmtwhich</strong></a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gmtwhich.html#index-0"><strong>gmtwhich</strong></a>
+</li>
       <li><a href="supplements/geodesy/gpsgridder.html#index-0"><strong>gpsgridder</strong></a>
 </li>
       <li><a href="supplements/potential/gravfft.html#index-0"><strong>gravfft</strong></a>
@@ -677,6 +698,8 @@
 </li>
       <li><a href="gmt.conf.html#term-MAP_FRAME_PEN"><strong>MAP_FRAME_PEN</strong></a>
 </li>
+      <li><a href="gmt.conf.html#term-MAP_FRAME_PERCENT"><strong>MAP_FRAME_PERCENT</strong></a>
+</li>
       <li><a href="gmt.conf.html#term-MAP_FRAME_TYPE"><strong>MAP_FRAME_TYPE</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-MAP_FRAME_WIDTH"><strong>MAP_FRAME_WIDTH</strong></a>
@@ -701,10 +724,10 @@
 </li>
       <li><a href="gmt.conf.html#term-MAP_LOGO"><strong>MAP_LOGO</strong></a>
 </li>
-      <li><a href="gmt.conf.html#term-MAP_LOGO_POS"><strong>MAP_LOGO_POS</strong></a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="gmt.conf.html#term-MAP_LOGO_POS"><strong>MAP_LOGO_POS</strong></a>
+</li>
       <li><a href="gmt.conf.html#term-MAP_ORIGIN_X"><strong>MAP_ORIGIN_X</strong></a>
 </li>
       <li><a href="gmt.conf.html#term-MAP_ORIGIN_Y"><strong>MAP_ORIGIN_Y</strong></a>
@@ -913,10 +936,10 @@
 </li>
       <li><a href="solar.html#index-0"><strong>solar</strong></a>
 </li>
-      <li><a href="spectrum1d.html#index-0"><strong>spectrum1d</strong></a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="spectrum1d.html#index-0"><strong>spectrum1d</strong></a>
+</li>
       <li><a href="sph2grd.html#index-0"><strong>sph2grd</strong></a>
 </li>
       <li><a href="sphdistance.html#index-0"><strong>sphdistance</strong></a>
@@ -924,8 +947,6 @@
       <li><a href="sphinterpolate.html#index-0"><strong>sphinterpolate</strong></a>
 </li>
       <li><a href="sphtriangulate.html#index-0"><strong>sphtriangulate</strong></a>
-</li>
-      <li><a href="splitxyz.html#index-0"><strong>splitxyz</strong></a>
 </li>
       <li><a href="subplot.html#index-0"><strong>subplot</strong></a>
 </li>
@@ -1024,16 +1045,14 @@
            
           </div>
           <footer>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -1041,9 +1060,9 @@
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

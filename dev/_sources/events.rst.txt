@@ -24,6 +24,7 @@ Synopsis
 [ |-E|\ **s**\|\ **t**\ [**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*] ]
 [ |-F|\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+r**\ [*first*]\|\ **z**\ [*format*]] ]
 [ |-G|\ *color* ]
+[ |-H|\ *labelbox* ]
 [ |-L|\ [*length*\|\ **t**] ]
 [ |-M|\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*] ]
 [ |-N|\ [**c**\|\ **r**] ]
@@ -34,6 +35,7 @@ Synopsis
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
+[ |-Z|\ *command* ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -42,6 +44,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 

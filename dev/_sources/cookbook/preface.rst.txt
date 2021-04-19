@@ -56,7 +56,7 @@ It is recommended that *bash-completion* is installed together with
 `Fink <http://finkproject.org/>`_, or `Homebrew <http://brew.sh/>`_.
 You then need to change the shell used by your terminal application.
 The `bash-completion HOWTO from MacPorts
-<http://trac.macports.org/wiki/howto/bash-completion>`_
+<https://trac.macports.org/wiki/howto/bash-completion>`_
 explains how to change the preferences of Terminal.app and iTerm.app.
 Another way is to change the default shell by editing of the user
 database:

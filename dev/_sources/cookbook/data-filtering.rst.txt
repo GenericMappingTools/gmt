@@ -38,6 +38,11 @@ diametrical cross-section through the filter weights
 
    Impulse responses for GMT filters.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_J_1.txt
 
 Although the impulse responses look the same in 1-D and 2-D, this is not
 true of the transfer functions; in 1-D the transfer function is the
@@ -64,6 +69,11 @@ they require more work (doubling the width to achieve the same cut-off wavelengt
 
    Transfer functions for 1-D GMT filters.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_J_2.txt
 
 One of the nice things about the gaussian filter is that its transfer
 functions are the same in 1-D and 2-D. Another nice property is that it
@@ -82,6 +92,12 @@ the wavelength at which the transfer function equals 0.5 is about 5.34
    :align: center
 
    Transfer functions for 2-D (radial) GMT filters.
+
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_J_3.txt
 
 Footnote
 --------

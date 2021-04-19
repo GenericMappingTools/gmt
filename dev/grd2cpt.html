@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>grd2cpt &mdash; GMT 6.2.0 documentation</title>
+  <title>grd2cpt &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/togglebutton.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +126,8 @@
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +142,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +216,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grd2cpt.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -225,24 +238,24 @@
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt grd2cpt</strong> <em>grid</em>
-[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>transparency</em>[<strong>+a</strong>] ]
-[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>cpt</em> ]
-[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
-[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong>[<em>nlevels</em>][<strong>+c</strong>][<strong>+f</strong><em>file</em>] ]
-[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>[<em>label</em>]] ]
-[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>zlo</em>/<em>zhi</em> ]
-[ <a class="reference internal" href="#h"><span> <strong>-H</strong></span></a></strong> ]
-[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong>[<strong>c</strong>][<strong>z</strong>] ]
-[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>minlimit/maxlimit</em> ]
-[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
-[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
-[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
-[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
-[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>h</strong>|<strong>l</strong>|<strong>m</strong>|<strong>u</strong> ]
-[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>start/stop/inc</em> ]
-[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>w</strong>] ]
-[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>transparency</em>[<strong>+a</strong>] ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<em>nlevels</em>][<strong>+c</strong>][<strong>+f</strong><em>file</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>R</strong>|<strong>r</strong>|<strong>h</strong>|<strong>c</strong>][<strong>+c</strong>[<em>label</em>]] ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>zlo</em>/<em>zhi</em> ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<strong>c</strong>][<strong>z</strong>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>minlimit/maxlimit</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><strong>h</strong>|<strong>l</strong>|<strong>m</strong>|<strong>u</strong> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>start/stop/inc</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>w</strong>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong> ]
 [ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
 [ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
@@ -287,7 +300,7 @@ line will be used.</p>
 <dl class="simple">
 <dt><em>grid</em></dt><dd><p>Names of one or more grid files used to derive the color palette
 table. All grids need to have the same size and dimensions. (See
-GRID FILE FORMATS below).</p>
+<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
 </dd>
 </dl>
 </div>
@@ -323,11 +336,12 @@ highest values in the input (instead of the output) CPT.</p>
 </dl>
 <dl class="simple" id="e">
 <dt><strong>-E</strong>[<em>nlevels</em>][<strong>+c</strong>][<strong>+f</strong><em>file</em>]</dt><dd><p>Create a linear color table by using the grid z-range as the new
-limits in the CPT.  Alternatively, append <em>nlevels</em> and we will
+limits in the CPT, so the number of levels in the CPT remain unchanged.
+Alternatively, append <em>nlevels</em> and we will instead
 resample the color table into <em>nlevels</em> equidistant slices. As an
 option, append <strong>+c</strong> to estimate the cumulative density function
-of the data and assign color levels accordingly.  if <strong>+c</strong> is used
-the you may optionally append <strong>+f</strong> to save the CDF to <em>file</em>;
+of the data and assign color levels accordingly. If <strong>+c</strong> is used
+then you may optionally append <strong>+f</strong> to save the CDF to <em>file</em>;
 see <strong>-bo</strong> and <strong>-o</strong> for output formatting.</p>
 </dd>
 </dl>
@@ -353,8 +367,8 @@ before any resampling. See also <a class="reference internal" href="cookbook/fea
 </dl>
 <dl class="simple" id="h">
 <dt><strong>-H</strong></dt><dd><p>Modern mode only: Write the CPT to standard output as well [Default saves
-the CPT as the session current CPT].  Required for scripts used to make
-animations via <a class="reference internal" href="movie.html"><span class="doc">movie</span></a> where we must pass named CPT files.</p>
+the CPT as the session current CPT]. Required for scripts used to make
+animations via <a class="reference internal" href="movie.html"><span class="doc">movie</span></a> and <a class="reference internal" href="batch.html"><span class="doc">batch</span></a> where we must pass named CPT files.</p>
 </dd>
 </dl>
 <dl class="simple" id="i">
@@ -364,7 +378,7 @@ specified by the parameters <a class="reference internal" href="gmt.conf.html#te
 <a class="reference internal" href="gmt.conf.html#term-COLOR_FOREGROUND"><span class="xref std std-term">COLOR_FOREGROUND</span></a>.
 Append <strong>z</strong> to reverse the sign of z-values in the color table.  Note that
 this change of <em>z</em>-direction happens before <strong>-G</strong> and <strong>-S</strong> values are used
-so the latter much be compatible with the changed <em>z</em>-range. See also <a class="reference internal" href="cookbook/features.html#manipulating-cpts"><span class="std std-ref">Manipulating CPTs</span></a></p>
+so the latter must be compatible with the changed <em>z</em>-range. See also <a class="reference internal" href="cookbook/features.html#manipulating-cpts"><span class="std std-ref">Manipulating CPTs</span></a></p>
 </dd>
 </dl>
 <dl class="simple" id="l">
@@ -393,8 +407,8 @@ writes out z [Default]. <strong>-Qo</strong> takes log10(z) first, assigns
 colors, and writes out z.</p>
 </dd>
 </dl>
-<span class="target" id="r"></span><dl class="simple">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -451,14 +465,6 @@ any module-specific option (but not the GMT common options), then exit.</p>
 <dt><strong>-o</strong><em>cols</em>[,…][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select output columns (0 is first column; <strong>t</strong> is trailing text, append <em>word</em> to write one word only).</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="grid-file-formats">
-<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
-<p>By default GMT writes out grid as single precision floats in a
-COARDS-complaint netCDF file format. However, GMT is able to produce
-grid files in many other commonly used grid file formats and also
-facilitates so called “packing” of grids, writing out floating point
-data as 1- or 2-byte integers. <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">(more …)</span></a></p>
 </div>
 <div class="section" id="notes-on-transparency">
 <h2>Notes on Transparency<a class="headerlink" href="#notes-on-transparency" title="Permalink to this headline">¶</a></h2>
@@ -576,25 +582,18 @@ CPTs.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="grd2kml.html" class="btn btn-neutral float-right" title="grd2kml" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="gmtwhich.html" class="btn btn-neutral float-left" title="gmtwhich" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="grd2kml.html" class="btn btn-neutral float-right" title="grd2kml" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="gmtwhich.html" class="btn btn-neutral float-left" title="gmtwhich" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -602,9 +601,9 @@ CPTs.</p>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

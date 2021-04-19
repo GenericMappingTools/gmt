@@ -47,12 +47,12 @@ Required Arguments
 
 .. include:: explain_tag.rst_
 
-Optional Arguments
-------------------
-
 *coedbase.txt*
     The name of the input ASCII crossover error data base as produced by
     :doc:`x2sys_cross`. If not given we read standard input instead.
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -147,10 +147,10 @@ Optional Arguments
     involving any track pair].  Append **+b** to print info relative
     to both tracks in the pair.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

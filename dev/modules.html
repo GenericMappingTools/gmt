@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Modules &mdash; GMT 6.2.0 documentation</title>
+  <title>Modules &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/togglebutton.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="index.html" class="icon icon-home"> GMT
           
 
           
@@ -143,8 +153,8 @@
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -159,6 +169,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -217,6 +228,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -228,7 +241,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/modules.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -306,6 +319,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
+<li><p><a class="reference internal" href="gmtsplit.html"><span class="doc">gmtsplit</span></a></p></li>
 <li><p><a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a></p></li>
 <li><p><a class="reference internal" href="gmtwhich.html"><span class="doc">gmtwhich</span></a></p></li>
 <li><p><a class="reference internal" href="grd2cpt.html"><span class="doc">grd2cpt</span></a></p></li>
@@ -321,9 +335,9 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="grdfill.html"><span class="doc">grdfill</span></a></p></li>
 <li><p><a class="reference internal" href="grdfilter.html"><span class="doc">grdfilter</span></a></p></li>
 <li><p><a class="reference internal" href="grdgradient.html"><span class="doc">grdgradient</span></a></p></li>
-<li><p><a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
+<li><p><a class="reference internal" href="grdhisteq.html"><span class="doc">grdhisteq</span></a></p></li>
 <li><p><a class="reference internal" href="grdimage.html"><span class="doc">grdimage</span></a></p></li>
 <li><p><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a></p></li>
 <li><p><a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a></p></li>
@@ -339,9 +353,9 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="grdvector.html"><span class="doc">grdvector</span></a></p></li>
 <li><p><a class="reference internal" href="grdview.html"><span class="doc">grdview</span></a></p></li>
 <li><p><a class="reference internal" href="grdvolume.html"><span class="doc">grdvolume</span></a></p></li>
-<li><p><a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
+<li><p><a class="reference internal" href="greenspline.html"><span class="doc">greenspline</span></a></p></li>
 <li><p><a class="reference internal" href="histogram.html"><span class="doc">histogram</span></a></p></li>
 <li><p><a class="reference internal" href="image.html"><span class="doc">image</span></a></p></li>
 <li><p><a class="reference internal" href="inset.html"><span class="doc">inset</span></a></p></li>
@@ -357,16 +371,15 @@ All modules are requested via a call to the <a class="reference internal" href="
 <li><p><a class="reference internal" href="project.html"><span class="doc">project</span></a></p></li>
 <li><p><a class="reference internal" href="psconvert.html"><span class="doc">psconvert</span></a></p></li>
 <li><p><a class="reference internal" href="rose.html"><span class="doc">rose</span></a></p></li>
-<li><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a></p></li>
 </ul>
 </td><td><ul class="simple">
+<li><p><a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a></p></li>
 <li><p><a class="reference internal" href="solar.html"><span class="doc">solar</span></a></p></li>
 <li><p><a class="reference internal" href="spectrum1d.html"><span class="doc">spectrum1d</span></a></p></li>
 <li><p><a class="reference internal" href="sph2grd.html"><span class="doc">sph2grd</span></a></p></li>
 <li><p><a class="reference internal" href="sphdistance.html"><span class="doc">sphdistance</span></a></p></li>
 <li><p><a class="reference internal" href="sphinterpolate.html"><span class="doc">sphinterpolate</span></a></p></li>
 <li><p><a class="reference internal" href="sphtriangulate.html"><span class="doc">sphtriangulate</span></a></p></li>
-<li><p><a class="reference internal" href="splitxyz.html"><span class="doc">splitxyz</span></a></p></li>
 <li><p><a class="reference internal" href="subplot.html"><span class="doc">subplot</span></a></p></li>
 <li><p><a class="reference internal" href="surface.html"><span class="doc">surface</span></a></p></li>
 <li><p><a class="reference internal" href="ternary.html"><span class="doc">ternary</span></a></p></li>
@@ -522,7 +535,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <td><p>Contour table data by direct triangulation</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="events.html"><span class="doc">events</span></a></p></td>
-<td><p>Plot event symbols and labels for a moment in time</p></td>
+<td><p>Plot event symbols, lines, polygons and labels for a moment in time</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="gmtlogo.html"><span class="doc">gmtlogo</span></a></p></td>
 <td><p>Plot the GMT logo</p></td>
@@ -628,7 +641,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <td><p>Delaunay triangulation or Voronoi partitioning and gridding of Cartesian data</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="grdinterpolate.html"><span class="doc">grdinterpolate</span></a></p></td>
-<td><p>Interpolate 2-D grids or 1-D series from a 3-D data cube</p></td>
+<td><p>Interpolate a 3-D cube, 2-D grids or 1-D series from a 3-D data cube or stack of 2-D grids</p></td>
 </tr>
 </tbody>
 </table>
@@ -697,7 +710,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <td><p>Change individual GMT default settings</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="grdinfo.html"><span class="doc">grdinfo</span></a></p></td>
-<td><p>Extract information from grids</p></td>
+<td><p>Extract information from 2-D grids or 3-D cubes</p></td>
 </tr>
 </tbody>
 </table>
@@ -754,29 +767,29 @@ All modules are requested via a call to the <a class="reference internal" href="
 <tr class="row-odd"><td><p><a class="reference internal" href="gmtspatial.html"><span class="doc">gmtspatial</span></a></p></td>
 <td><p>Geospatial operations on points, lines and polygons</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="gmtsplit.html"><span class="doc">gmtsplit</span></a></p></td>
+<td><p>Split xyz[dh] data tables into individual segments</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="gmtvector.html"><span class="doc">gmtvector</span></a></p></td>
 <td><p>Operations on Cartesian vectors in 2-D and 3-D</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="grd2kml.html"><span class="doc">grd2kml</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="grd2kml.html"><span class="doc">grd2kml</span></a></p></td>
 <td><p>Create KML image quadtree from single grid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="grd2xyz.html"><span class="doc">grd2xyz</span></a></p></td>
 <td><p>Convert grid to data table</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="grdblend.html"><span class="doc">grdblend</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="grdblend.html"><span class="doc">grdblend</span></a></p></td>
 <td><p>Blend several partially overlapping grids into one larger grid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a></p></td>
 <td><p>Convert between different grid formats</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a></p></td>
 <td><p>Extract subregion from a grid</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="grdpaste.html"><span class="doc">grdpaste</span></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="grdpaste.html"><span class="doc">grdpaste</span></a></p></td>
 <td><p>Join two grids along their common edge</p></td>
-</tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="splitxyz.html"><span class="doc">splitxyz</span></a></p></td>
-<td><p>Split xyz[dh] data tables into individual segments</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="xyz2grd.html"><span class="doc">xyz2grd</span></a></p></td>
 <td><p>Convert data table to a grid</p></td>
@@ -904,7 +917,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <td><p>Interpolate GPS strains using Green’s functions for elastic deformation</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="supplements/geodesy/velo.html"><span class="doc">velo</span></a></p></td>
-<td><p>Plot velocity vectors, crosses, and wedges</p></td>
+<td><p>Plot velocity vectors, crosses, anisotropy bars and wedges</p></td>
 </tr>
 </tbody>
 </table>
@@ -1002,7 +1015,7 @@ All modules are requested via a call to the <a class="reference internal" href="
 <td><p>Compute the Continuous Reduction To the Pole, AKA differential RTP</p></td>
 </tr>
 <tr class="row-odd"><td><p><a class="reference internal" href="supplements/potential/grdseamount.html"><span class="doc">grdseamount</span></a></p></td>
-<td><p>Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)</p></td>
+<td><p>Create synthetic seamounts (Gaussian, parabolic, polynomial, cone or disc; circular or elliptical)</p></td>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="supplements/potential/talwani2d.html"><span class="doc">talwani2d</span></a></p></td>
 <td><p>Compute geopotential anomalies over 2-D bodies by the method of Talwani</p></td>
@@ -1145,25 +1158,18 @@ All modules are requested via a call to the <a class="reference internal" href="
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="gmt.html" class="btn btn-neutral float-right" title="gmt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="tutorial/session-4.html" class="btn btn-neutral float-left" title="Session Four" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="gmt.html" class="btn btn-neutral float-right" title="gmt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="tutorial/session-4.html" class="btn btn-neutral float-left" title="Session Four" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -1171,9 +1177,9 @@ All modules are requested via a call to the <a class="reference internal" href="
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

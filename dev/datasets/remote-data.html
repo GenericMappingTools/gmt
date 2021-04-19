@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Remote Data Sets &mdash; GMT 6.2.0 documentation</title>
+  <title>Remote Data Sets &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="../_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="../_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="../index.html" class="icon icon-home"> GMT
           
 
           
@@ -117,26 +127,26 @@
 <li class="toctree-l3"><a class="reference internal" href="#cache-file-updates">Cache File Updates</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#getting-a-single-grid">Getting a single grid</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#global-earth-relief-grids">Global Earth Relief Grids</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id1">Usage</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#technical-information">Technical Information</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#data-references">Data References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usage-global-earth-relief-grids">Usage - Global Earth Relief Grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#technical-information-global-earth-relief-grids">Technical Information - Global Earth Relief Grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-references-global-earth-relief-grids">Data References - Global Earth Relief Grids</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#global-earth-seafloor-crustal-age-grids">Global Earth Seafloor Crustal Age Grids</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id2">Usage</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">Technical Information</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id4">Data References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usage-global-earth-seafloor-crustal-age-grids">Usage - Global Earth Seafloor Crustal Age Grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#technical-information-global-earth-seafloor-crustal-age-grids">Technical Information - Global Earth Seafloor Crustal Age Grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-references-global-earth-seafloor-crustal-age-grids">Data References - Global Earth Seafloor Crustal Age Grids</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#global-earth-day-night-images">Global Earth Day/Night Images</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id5">Usage</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id6">Technical Information</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id7">Data References</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usage-global-earth-day-night-images">Usage - Global Earth Day/Night Images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#technical-information-global-earth-day-night-images">Technical Information - Global Earth Day/Night Images</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#data-references-global-earth-day-night-images">Data References - Global Earth Day/Night Images</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#global-earth-mask-grids">Global Earth Mask Grids</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#id8">Usage</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id9">Technical Information</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#usage-global-earth-mask-grids">Usage - Global Earth Mask Grids</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#technical-information-global-earth-mask-grids">Technical Information - Global Earth Mask Grids</a></li>
 </ul>
 </li>
 </ul>
@@ -152,8 +162,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -168,6 +178,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -226,6 +237,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -239,7 +252,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/datasets/remote-data.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -351,12 +364,12 @@ speed, the dataset tiles are all stored as JPEG2000 images on the GMT server due
 but once downloaded to your server directory they are converted to the same short int compressed netCDF4
 format for easier access. This step uses our GDAL bridge and thus requires that you have built GMT with
 GDAL support <em>and</em> that your GDAL distribution was built with <em>openjpeg</em> support.</p>
-<div class="figure align-center" id="id10">
+<div class="figure align-center" id="id1">
 <span id="jp2-compression"></span><a class="reference internal image-reference" href="../_images/srtm1.png"><img alt="../_images/srtm1.png" src="../_images/srtm1.png" style="width: 500px;" /></a>
 <p class="caption"><span class="caption-text">Histogram of compression rates for the SRTM 1x1 arc second tiles.  100% reflects the full short integer
 size of an uncompressed tile (~25 Mb).  As can be seen, on average a JPEG2000 tile is only half the
 size of the corresponding fully compressed (level 9) netCDF short int grid.  This is why we
-have chosen the JP2 format for tiles on the server.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+have chosen the JP2 format for tiles on the server.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="cache-file-updates">
@@ -371,7 +384,7 @@ If any of these files is precious to you we suggest you make a copy somewhere.</
 <p>Should you need a single grid from any of our tiled dataset, e.g., to feed into other programs that do
 not depend on GMT, you can create that via <a class="reference internal" href="../grdcut.html"><span class="doc">grdcut</span></a>.  For instance, to make a global grid from the
 eight tiles that make up the 2m x 2m gridline-registered data, try:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd -Rg
 </pre></div>
 </div>
 </div>
@@ -384,8 +397,8 @@ eight tiles that make up the 2m x 2m gridline-registered data, try:</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/dem.jpg"><img alt="../_images/dem.jpg" src="../_images/dem.jpg" style="width: 709.6px; height: 355.20000000000005px;" /></a>
 </div>
-<div class="section" id="id1">
-<h3>Usage<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="usage-global-earth-relief-grids">
+<h3>Usage - Global Earth Relief Grids<a class="headerlink" href="#usage-global-earth-relief-grids" title="Permalink to this headline">¶</a></h3>
 <p>You access a global relief grid by specifying the special name</p>
 <blockquote>
 <div><p>&#64;earth_relief_<em>rr</em><em>u</em>[_<em>reg</em>]</p>
@@ -505,8 +518,8 @@ for pixel-registered grids; gridline-registered grids increment dimensions by on
 the earth_relief files being placed in an <code class="docutils literal notranslate"><span class="pre">earth/earth_relief</span></code> sub-directory.  If you
 do not specify a CPT then this dataset default to the GMT master <em>geo</em>.</p>
 </div>
-<div class="section" id="technical-information">
-<h3>Technical Information<a class="headerlink" href="#technical-information" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="technical-information-global-earth-relief-grids">
+<h3>Technical Information - Global Earth Relief Grids<a class="headerlink" href="#technical-information-global-earth-relief-grids" title="Permalink to this headline">¶</a></h3>
 <p>As you see, the 30s and lower resolutions are all derivatives of Scripps’ SRTM15+V2.1 grid
 (Tozer et al., 2019).  We have downsampled it via Cartesian Gaussian filtering to prevent
 aliasing while preserving the latitude-dependent resolution in the original 15 arc sec grid.
@@ -519,8 +532,8 @@ you may use the special names &#64;srtm_relief_03s or &#64;srtm_relief_01s inste
 are available in both gridline- and pixel-registered formats except the original pixel-registered
 SRTM15+V2.1 (here called &#64;earth_relief_15s) and the gridline-registered SRTM tiles.</p>
 </div>
-<div class="section" id="data-references">
-<h3>Data References<a class="headerlink" href="#data-references" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="data-references-global-earth-relief-grids">
+<h3>Data References - Global Earth Relief Grids<a class="headerlink" href="#data-references-global-earth-relief-grids" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
 <li><p>SRTM15+V2.1 [<a class="reference external" href="http://dx.doi.org/10.1029/2019EA000658">http://dx.doi.org/10.1029/2019EA000658</a>].</p></li>
 <li><p>SRTMGL3 tiles: [<a class="reference external" href="https://lpdaac.usgs.gov/products/srtmgl3v003">https://lpdaac.usgs.gov/products/srtmgl3v003</a>].</p></li>
@@ -541,8 +554,8 @@ SRTM15+V2.1 (here called &#64;earth_relief_15s) and the gridline-registered SRTM
 the seafloor crustal age. <a class="reference external" href="https://www.earthbyte.org/">EarthByte</a> has pioneered
 the creation of crustal age grids since 1997 and we offer their latest version for
 remote use in GMT.</p>
-<div class="section" id="id2">
-<h3>Usage<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="usage-global-earth-seafloor-crustal-age-grids">
+<h3>Usage - Global Earth Seafloor Crustal Age Grids<a class="headerlink" href="#usage-global-earth-seafloor-crustal-age-grids" title="Permalink to this headline">¶</a></h3>
 <p>You access a global crustal age grid by specifying the special name</p>
 <blockquote>
 <div><p>&#64;earth_age_<em>rr</em><em>u</em>[_<em>reg</em>]</p>
@@ -638,8 +651,8 @@ for pixel-registered grids; gridline-registered grids increment dimensions by on
 the earth_age files being placed in an <code class="docutils literal notranslate"><span class="pre">earth/earth_age</span></code> sub-directory. If you do not
 specify a CPT, the default CPT for this data set will be used (<em>&#64;age_chrons_GTS2012_2020.cpt</em>)</p>
 </div>
-<div class="section" id="id3">
-<h3>Technical Information<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="technical-information-global-earth-seafloor-crustal-age-grids">
+<h3>Technical Information - Global Earth Seafloor Crustal Age Grids<a class="headerlink" href="#technical-information-global-earth-seafloor-crustal-age-grids" title="Permalink to this headline">¶</a></h3>
 <p>We scale and reformat the original data to take up very little space so that downloads
 from the servers are as fast as possible.  For the seafloor crustal age grid this means
 we chose 0.01 My as the smallest data unit, which is well below the uncertainties in the
@@ -647,8 +660,8 @@ model.  Data are scaled and shifted to fit in a short integer grid that is highl
 by netCDF lossless compression and chunking.  The data are reported in Myr relative
 to the 2012 Geological Time Scale.</p>
 </div>
-<div class="section" id="id4">
-<h3>Data References<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="data-references-global-earth-seafloor-crustal-age-grids">
+<h3>Data References - Global Earth Seafloor Crustal Age Grids<a class="headerlink" href="#data-references-global-earth-seafloor-crustal-age-grids" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
 <li><p>Seton et al., 2020: <a class="reference external" href="http://dx.doi.org/10.1029/2020GC009214">http://dx.doi.org/10.1029/2020GC009214</a>].</p></li>
 </ol>
@@ -669,8 +682,8 @@ available for the Earth DEMs.  However, all images are pixel-registered only.
 These images may be plotted with <a class="reference internal" href="../grdimage.html"><span class="doc">grdimage</span></a> or <a class="reference internal" href="../grdview.html"><span class="doc">grdview</span></a> and manipulated
 by <a class="reference internal" href="../grdmix.html"><span class="doc">grdmix</span></a>.  The above example mixes both images according to a day-night
 mask and adds illumination from a corresponding Earth DEM.</p>
-<div class="section" id="id5">
-<h3>Usage<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="usage-global-earth-day-night-images">
+<h3>Usage - Global Earth Day/Night Images<a class="headerlink" href="#usage-global-earth-day-night-images" title="Permalink to this headline">¶</a></h3>
 <p>You access a global daytime image by specifying the special names</p>
 <blockquote>
 <div><p>&#64;earth_day_<em>rr</em><em>u</em></p>
@@ -761,8 +774,8 @@ for pixel-registered grids; gridline-registered grids increment dimensions by on
 <p>All of these images will, when downloaded, be placed in your ~/.gmt/server director under
 the <code class="docutils literal notranslate"><span class="pre">earth/earth_day</span></code> and <code class="docutils literal notranslate"><span class="pre">earth/earth_night</span></code> sub-directories.</p>
 </div>
-<div class="section" id="id6">
-<h3>Technical Information<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="technical-information-global-earth-day-night-images">
+<h3>Technical Information - Global Earth Day/Night Images<a class="headerlink" href="#technical-information-global-earth-day-night-images" title="Permalink to this headline">¶</a></h3>
 <p>The 01m and lower resolution images are derivatives of NASA’s Blue and Black marble image mosaics.
 We have downsampled them via Cartesian Gaussian filtering to prevent aliasing while preserving
 the latitude-dependent resolution in the original images. The full (6 sigma) filter-widths are
@@ -772,8 +785,8 @@ to the geotiff files on the remote server. <strong>Note</strong>: This data set 
 format and delivery is likely to change in the future (e.g., via image tiles).  To make the
 files as small as possible we have also downgraded them from 24-bit to 8-bit indexed images.</p>
 </div>
-<div class="section" id="id7">
-<h3>Data References<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="data-references-global-earth-day-night-images">
+<h3>Data References - Global Earth Day/Night Images<a class="headerlink" href="#data-references-global-earth-day-night-images" title="Permalink to this headline">¶</a></h3>
 <ol class="arabic simple">
 <li><p>Blue Marble [<a class="reference external" href="https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography">https://visibleearth.nasa.gov/images/57752/blue-marble-land-surface-shallow-water-and-shaded-topography</a>].</p></li>
 <li><p>Black Marble: [<a class="reference external" href="https://earthobservatory.nasa.gov/features/NightLights/page3.php">https://earthobservatory.nasa.gov/features/NightLights/page3.php</a>].</p></li>
@@ -793,8 +806,8 @@ gridded data and apply masks via <a class="reference internal" href="../grdmath.
 via <a class="reference internal" href="../grdlandmask.html"><span class="doc">grdlandmask</span></a> but they can take a long time to compute for large regions,
 the full GSHHG resolution, and small grid spacings. For these reasons we offer
 precalculated mask grids via the remote server mechanism.</p>
-<div class="section" id="id8">
-<h3>Usage<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="usage-global-earth-mask-grids">
+<h3>Usage - Global Earth Mask Grids<a class="headerlink" href="#usage-global-earth-mask-grids" title="Permalink to this headline">¶</a></h3>
 <p>You access a global mask grid by specifying the special name</p>
 <blockquote>
 <div><p>&#64;earth_mask_<em>rr</em><em>u</em>[_<em>reg</em>]</p>
@@ -901,8 +914,8 @@ for pixel-registered grids; gridline-registered grids increment dimensions by on
 <p>All of these data will, when downloaded, be placed in your ~/.gmt/server directory, with
 the Earth mask files being placed in an <code class="docutils literal notranslate"><span class="pre">earth/earth_mask</span></code> sub-directory.</p>
 </div>
-<div class="section" id="id9">
-<h3>Technical Information<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="technical-information-global-earth-mask-grids">
+<h3>Technical Information - Global Earth Mask Grids<a class="headerlink" href="#technical-information-global-earth-mask-grids" title="Permalink to this headline">¶</a></h3>
 <p>Given that GSHHG contains 5 levels (ocean, land, lake, island-in-lake, pond-in-island-in-lake)
 corresponding to levels 0-4, the mask grids were computed to reflect those 5 levels.  This
 means that if you only want a mask for the ocean or one for wet versus dry, you will need to
@@ -929,25 +942,18 @@ else (even in lakes, etc.), try:</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="gshhg.html" class="btn btn-neutral float-right" title="The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="../datasets.html" class="btn btn-neutral float-left" title="Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="gshhg.html" class="btn btn-neutral float-right" title="The Global Self-consistent, Hierarchical, High-resolution Geography Database (GSHHG)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../datasets.html" class="btn btn-neutral float-left" title="Datasets" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -955,9 +961,9 @@ else (even in lakes, etc.), try:</p>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

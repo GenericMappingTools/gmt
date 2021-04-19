@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>10. Predefined Bit and Hachure Patterns in GMT &mdash; GMT 6.2.0 documentation</title>
+  <title>10. Predefined Bit and Hachure Patterns in GMT &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="../_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="../_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="../index.html" class="icon icon-home"> GMT
           
 
           
@@ -120,14 +130,15 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">10. Predefined Bit and Hachure Patterns in GMT</a></li>
 <li class="toctree-l2"><a class="reference internal" href="octal-codes.html">11. Chart of Octal Codes for Characters</a></li>
 <li class="toctree-l2"><a class="reference internal" href="postscript-fonts.html">12. PostScript Fonts Used by GMT</a></li>
-<li class="toctree-l2"><a class="reference internal" href="colorspace.html">13. Color Space: The Final Frontier</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data-filtering.html">14. Filtering of Data in GMT</a></li>
-<li class="toctree-l2"><a class="reference internal" href="non-unix-platforms.html">15. GMT on non-UNIX Platforms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cpts.html">16. Of Colors and Color Legends</a></li>
-<li class="toctree-l2"><a class="reference internal" href="custom-symbols.html">17. Custom Plot Symbols</a></li>
-<li class="toctree-l2"><a class="reference internal" href="contour-annotations.html">18. Annotation of Contours and “Quoted Lines”</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ogrgmt-format.html">19. The GMT Vector Data Format for OGR Compatibility</a></li>
-<li class="toctree-l2"><a class="reference internal" href="one-liner.html">20. GMT Modern Mode One-line Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="gmt-latex.html">13. Using LaTeX Expressions in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="colorspace.html">14. Color Systems and Artificial Illumination</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data-filtering.html">15. Filtering of Data in GMT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="non-unix-platforms.html">16. GMT on non-UNIX Platforms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cpts.html">17. Of Colors and Color Legends</a></li>
+<li class="toctree-l2"><a class="reference internal" href="custom-symbols.html">18. Custom Plot Symbols</a></li>
+<li class="toctree-l2"><a class="reference internal" href="contour-annotations.html">19. Annotation of Contours and “Quoted Lines”</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ogrgmt-format.html">20. The GMT Vector Data Format for OGR Compatibility</a></li>
+<li class="toctree-l2"><a class="reference internal" href="one-liner.html">21. GMT Modern Mode One-line Commands</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
@@ -138,8 +149,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -154,6 +165,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -212,6 +224,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -225,7 +239,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/cookbook/predefined-patterns.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -251,6 +265,47 @@ below at 300 dpi using the default black and white shades.</p>
 <div class="figure align-center">
 <a class="reference internal image-reference" href="../_images/GMT_App_E.png"><img alt="../_images/GMT_App_E.png" src="../_images/GMT_App_E.png" style="width: 500px;" /></a>
 </div>
+<div class="toggle docutils container">
+<p>Here is the source script for the figure above:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">xwidth</span><span class="o">=</span><span class="m">0</span>.45	<span class="c1"># Width of each box (all units are in inches)</span>
+<span class="nv">ywidth</span><span class="o">=</span><span class="m">0</span>.45	<span class="c1"># Height of each box</span>
+<span class="nv">w</span><span class="o">=</span><span class="m">0</span>.9		<span class="c1"># Width of two adjacent boxes</span>
+<span class="nv">dx</span><span class="o">=</span><span class="m">0</span>.50		<span class="c1"># Amont to translate to the right</span>
+<span class="nv">dy</span><span class="o">=</span><span class="m">0</span>.50		<span class="c1"># Amount to translate up</span>
+<span class="nv">y</span><span class="o">=</span><span class="m">0</span>.05		<span class="c1"># Initial offset in x</span>
+<span class="nv">x</span><span class="o">=</span><span class="m">0</span>.05		<span class="c1"># Initial offset in y</span>
+<span class="nv">back</span><span class="o">=</span>-5.20	<span class="c1"># Amount to translate to left after 1 row</span>
+
+cat <span class="s">&lt;&lt; END &gt; tt.App_E.d</span>
+<span class="s">0	0</span>
+<span class="s">$xwidth	0</span>
+<span class="s">$xwidth	$ywidth</span>
+<span class="s">0	$ywidth</span>
+<span class="s">END</span>
+
+gmt begin GMT_App_E
+gmt <span class="nb">set</span> GMT_THEME cookbook
+gmt basemap -R0/5.75/0/7.55 -Jx1i -B0
+gmt <span class="nb">set</span> MAP_FRAME_PEN thinner
+<span class="k">for</span> iy in <span class="m">14</span> <span class="m">13</span> <span class="m">12</span> <span class="m">11</span> <span class="m">10</span> <span class="m">9</span> <span class="m">8</span> <span class="m">7</span> <span class="m">6</span> <span class="m">5</span> <span class="m">4</span> <span class="m">3</span> <span class="m">2</span> <span class="m">1</span> <span class="m">0</span>
+<span class="k">do</span>
+	<span class="k">for</span> ix in <span class="m">1</span> <span class="m">2</span> <span class="m">3</span> <span class="m">4</span> <span class="m">5</span> <span class="m">6</span>
+	<span class="k">do</span>
+		<span class="nb">let</span> <span class="nv">p</span><span class="o">=</span>iy*6+ix
+		gmt plot -R0/<span class="nv">$xwidth</span>/0/<span class="nv">$ywidth</span> -Jx1i -Gp<span class="nv">$p</span>+r300 tt.App_E.d -X<span class="si">${</span><span class="nv">x</span><span class="si">}</span>i -Y<span class="si">${</span><span class="nv">y</span><span class="si">}</span>i -B0
+		gmt plot -GP<span class="nv">$p</span>+r300 tt.App_E.d -X<span class="si">${</span><span class="nv">xwidth</span><span class="si">}</span>i -B0
+		<span class="nb">echo</span> <span class="s2">&quot;0 0.225&quot;</span> <span class="p">|</span> gmt plot -R0/<span class="nv">$w</span>/0/<span class="nv">$ywidth</span> -N -Sc0.17i -Wthinnest -Gwhite
+		<span class="nb">echo</span> <span class="s2">&quot;0 0.225 </span><span class="nv">$p</span><span class="s2">&quot;</span> <span class="p">|</span> gmt text -R0/<span class="nv">$w</span>/0/<span class="nv">$ywidth</span> -N -F+f9p,Helvetica-Bold
+		<span class="nv">y</span><span class="o">=</span><span class="m">0</span>.0
+		<span class="nv">x</span><span class="o">=</span><span class="nv">$dx</span>
+	<span class="k">done</span>
+	<span class="nv">y</span><span class="o">=</span><span class="nv">$dy</span>
+	<span class="nv">x</span><span class="o">=</span><span class="nv">$back</span>
+<span class="k">done</span>
+gmt end show
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -258,25 +313,18 @@ below at 300 dpi using the default black and white shades.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="octal-codes.html" class="btn btn-neutral float-right" title="11. Chart of Octal Codes for Characters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="include-figures.html" class="btn btn-neutral float-left" title="9. Including GMT Graphics into your Documents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="octal-codes.html" class="btn btn-neutral float-right" title="11. Chart of Octal Codes for Characters" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="include-figures.html" class="btn btn-neutral float-left" title="9. Including GMT Graphics into your Documents" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -284,9 +332,9 @@ below at 300 dpi using the default black and white shades.</p>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

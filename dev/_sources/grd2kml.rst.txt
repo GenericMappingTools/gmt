@@ -51,7 +51,7 @@ Required Arguments
 ------------------
 
 *grid*
-    A 2-D gridded data set (See GRID FILE FORMATS below.)
+    A 2-D gridded data set (see :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -138,10 +138,10 @@ Optional Arguments
 **-T**\ *title*
     Sets the title of the top-level document (i.e., its description).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

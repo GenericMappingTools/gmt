@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>(6) Plotting of histograms &mdash; GMT 6.2.0 documentation</title>
+  <title>(6) Plotting of histograms &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="../_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="../_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-        <script src="../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../_static/togglebutton.js"></script>
+        <script src="../_static/clipboard.min.js"></script>
+        <script src="../_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="../_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="../index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +126,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +142,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +216,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/gallery/ex06.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -227,7 +240,7 @@ regular histograms whereas the latter deals with polar histograms (rose
 diagrams, sector diagrams, and wind rose diagrams). We will show an
 example that involves both programs. The remote file <code class="docutils literal notranslate"><span class="pre">fractures_06.txt</span></code> contains a compilation of
 fracture lengths and directions as digitized from geological maps. The remote
-file <code class="docutils literal notranslate"><span class="pre">v3206_o6.txt</span></code> contains all the bathymetry measurements from <em>Vema</em> cruise 3206.
+file <code class="docutils literal notranslate"><span class="pre">v3206_06.txt</span></code> contains all the bathymetry measurements from <em>Vema</em> cruise 3206.
 Our complete figure was made as a 2 by 1 <a class="reference internal" href="../subplot.html"><span class="doc">subplot</span></a> figure by running
 this script:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/usr/bin/env bash</span>
@@ -240,7 +253,7 @@ gmt begin ex06
 	gmt subplot begin 2x1 -A+JTL+o0.8c -Fs15c/9c -M1c
 		gmt histogram -Bx+l<span class="s2">&quot;Topography (m)&quot;</span> -By+l<span class="s2">&quot;Frequency&quot;</span>+u<span class="s2">&quot; %&quot;</span> -BWSne+t<span class="s2">&quot;Histograms&quot;</span>+glightblue @v3206_06.txt <span class="se">\</span>
 			-R-6000/0/0/30 -Gorange -W1p -Z1 -T250 -c0
-		gmt rose @fractures_06.txt -: -A10r -S -Gorange -R0/1/0/360 -Bg -B+glightblue -W1p -c1
+		gmt rose @fractures_06.txt -: -A10+r -S -Gorange -R0/1/0/360 -Bg -B+glightblue -W1p -c1
 	gmt subplot end
 gmt end show
 </pre></div>
@@ -256,25 +269,18 @@ gmt end show
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="ex07.html" class="btn btn-neutral float-right" title="(7) A simple location map" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="ex05.html" class="btn btn-neutral float-left" title="(5) A 3-D illuminated surface (in bw)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="ex07.html" class="btn btn-neutral float-right" title="(7) A simple location map" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="ex05.html" class="btn btn-neutral float-left" title="(5) A 3-D illuminated surface (in bw)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -282,9 +288,9 @@ gmt end show
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

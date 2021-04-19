@@ -43,8 +43,8 @@ Required Arguments
 ------------------
 
 *grid*
-    Names of 2-D binary grid files to be converted. (See GRID FILE
-    FORMATS below.)
+    Names of 2-D binary grid files to be converted (see :ref:`Grid File Formats
+    <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -58,17 +58,16 @@ Optional Arguments
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
 
-.. _-R:
-
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of the grid. If this subsection exceeds the
-    boundaries of the grid, only the common region will be output.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
+    boundaries of the grid, only the common region will be output. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -139,8 +138,6 @@ Optional Arguments
 .. include:: explain_distunits.rst_
 
 .. include:: explain_precision.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Non-equidistant x/y Coordinates
 -------------------------------

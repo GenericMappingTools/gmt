@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>mgd77sniffer &mdash; GMT 6.2.0 documentation</title>
+  <title>mgd77sniffer &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="../../index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +126,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +142,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +216,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/mgd77/mgd77sniffer.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -224,22 +237,22 @@
 <p>Along-track quality control of MGD77 cruises</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt mgd77sniffer</strong> <em>GEODAS-ids</em> [ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>fieldabbrev</em>,<em>scale</em>,<em>offset</em> ]
-[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>maxspd</em> ]
-[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><strong>d</strong>|<strong>e</strong>|<strong>E</strong>|<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>s</strong>|<strong>v</strong>[<em>r</em>] ]
-[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong> ]
-[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>fieldabbrev</em>,<em>imggrid</em>,<em>scale</em>,<em>mode</em> or <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>fieldabbrev</em>,<em>grid</em> ]
-[ <a class="reference internal" href="#h"><span> <strong>-H</strong></span></a></strong> ]
-[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>fieldabbrev</em>,<em>rec1</em>,<em>recN</em> ]
-[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>custom-limits-file</em> ]
-[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
-[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
-[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
-[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><strong>d</strong>|<strong>s</strong>|<strong>t</strong> ]
-[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>gap</em> ]
-[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong><strong>c</strong>|<strong>g</strong>|<strong>o</strong>|<strong>s</strong>|<strong>t</strong>|<strong>v</strong>|<strong>x</strong> ]
-[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>level</em> ]
+<p><strong>gmt mgd77sniffer</strong> <em>GEODAS-ids</em> [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>fieldabbrev</em>,<em>scale</em>,<em>offset</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>maxspd</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><strong>d</strong>|<strong>e</strong>|<strong>E</strong>|<strong>f</strong>|<strong>l</strong>|<strong>m</strong>|<strong>s</strong>|<strong>v</strong>[<em>r</em>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fieldabbrev</em>,<em>imggrid</em>,<em>scale</em>,<em>mode</em> or <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fieldabbrev</em>,<em>grid</em> ]
+[ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>fieldabbrev</em>,<em>rec1</em>,<em>recN</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>custom-limits-file</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><strong>d</strong>|<strong>s</strong>|<strong>t</strong> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>gap</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><strong>c</strong>|<strong>g</strong>|<strong>o</strong>|<strong>s</strong>|<strong>t</strong>|<strong>v</strong>|<strong>x</strong> ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>level</em> ]
 [ <strong>-bo</strong><a class="reference internal" href="../../gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-do</strong><a class="reference internal" href="../../gmt.html#do-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-n</strong><a class="reference internal" href="../../gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
@@ -531,13 +544,13 @@ warning summaries. By default ALL warning messages are printed.Not
 compatible with any <strong>-D</strong> options.</p>
 </dd>
 </dl>
-<span id="v"></span><dl class="simple" id="z">
-<dt><strong>-Z</strong></dt><dd><p>Flag regression statistics that are outside the specified confidence
-level. (i.e., <strong>-Z</strong>5 flags coefficients m, b, rms, and r that fall outside 95%.)</p>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dl class="simple" id="z">
+<dt><strong>-Z</strong></dt><dd><p>Flag regression statistics that are outside the specified confidence
+level. (i.e., <strong>-Z</strong>5 flags coefficients m, b, rms, and r that fall outside 95%.)</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -632,7 +645,7 @@ your <strong>-n</strong> option.</p>
 </div>
 <div class="section" id="grid-file-info">
 <h2>Grid File Info<a class="headerlink" href="#grid-file-info" title="Permalink to this headline">¶</a></h2>
-<p>For <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong> the grids must either be in the img format used by Sandwell &amp; Smith,
+<p>For <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> the grids must either be in the img format used by Sandwell &amp; Smith,
 which is a spherical Mercator 2-byte grid with no header, or any regular grid type
 supported by GMT.</p>
 </div>
@@ -741,7 +754,7 @@ in MGD77 format order.</p>
 <p>To compare cruise depth with ETOPO5 bathymetry and gravity with
 Sandwell/Smith 2 min gravity version 11, try</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>mgd77sniffer <span class="m">08010001</span> -Gdepth,/data/GRIDS/etopo5_hdr.i2 <span class="se">\</span>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mgd77sniffer <span class="m">08010001</span> -Gdepth,/data/GRIDS/etopo5_hdr.i2 <span class="se">\</span>
              -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 </pre></div>
 </div>
@@ -765,25 +778,18 @@ Sandwell/Smith 2 min gravity version 11, try</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="mgd77track.html" class="btn btn-neutral float-right" title="mgd77track" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="mgd77path.html" class="btn btn-neutral float-left" title="mgd77path" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="mgd77track.html" class="btn btn-neutral float-right" title="mgd77track" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="mgd77path.html" class="btn btn-neutral float-left" title="mgd77path" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -791,9 +797,9 @@ Sandwell/Smith 2 min gravity version 11, try</p>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

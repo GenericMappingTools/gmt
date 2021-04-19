@@ -20,7 +20,7 @@ Synopsis
 [ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *w\_min*/*w\_max* ]
-[ |-Z|\ *major*/*minor*/*azimuth*\ [**+e**] ]
+[ |-Z|\ *major*/*minor*/*azimuth*\ [**+e**\|\ **n**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -192,10 +192,10 @@ Optional Arguments
     *px/py* sets the position of the rotation pole of the projection.
     (Definition 3).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -203,14 +203,21 @@ Optional Arguments
     Width controls. Project only those points whose *q* coordinate is
     within *w\_min* < *q* < *w\_max*.
 
-**-Z**\ *major*/*minor*/*azimuth*\ [**+e**]
+.. _-Z:
+
+**-Z**\ *major*/*minor*/*azimuth*\ [**+e**\|\ **n**]
     Used in conjunction with **-C** (sets its center) and **-G** (sets the
     distance increment) to create the coordinates of an ellipse
-    with *major* and *minor* axes given in km (unless **-N** is given) and the *azimuth* of the
-    major axis in degrees.  Append **+e** to adjust the increment set via
-    **-G** so that the the ellipse has equal distance increments [Default
-    uses the given increment and closes the ellipse].
-
+    with *major* and *minor* axes given in km (unless **-N** is given for a
+    Cartesian ellipse) and the *azimuth* of the major axis in degrees.
+    Append **+e** to adjust the increment set via **-G** so that the the ellipse
+    has equal distance increments [Default uses the given increment and closes
+    the ellipse].  Instead, append **+n** to set a specific number of unique equidistant
+    points via **-G**. For degenerate ellipses you can just supply a single *diameter*
+    instead.  A geographic diameter may be specified in any desired unit other than km [Default]
+    by appending the unit (e.g., 3d for degrees); if so we assume the increment is also given in
+    the same unit (see `Units`_).  **Note**: For the Cartesian ellipse (which requires **-N**), we
+    expect *direction* counter-clockwise from the horizontal instead of an *azimuth*.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -242,6 +249,8 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
+
+.. include:: explain_distunits.rst_
 
 .. include:: explain_help.rst_
 
@@ -287,7 +296,7 @@ defined by the great circle from the pole to a point 15E,15N, try
 
     gmt project -C15/15 -T40/85 -G1/80 -L-45/45 > some_circle.xyp
 
-To generate points approximately every 10km along an ellipse centered on (30W,70N) with
+To generate points approximately every 10 km along an ellipse centered on (30W,70N) with
 major axis of 1500 km with azimuth of 30 degree and a minor axis of 600 km, try
 
    ::

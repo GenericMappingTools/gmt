@@ -27,8 +27,8 @@ Description
 to these data by [optionally weighted] least-squares. The trend surface
 is defined by:
 
-   m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
-   m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
+.. math::
+    m_1 + m_2x + m_3y + m_4xy + m_5x^2 + m_6y^2 + m_7x^3 + m_8x^2y + m_9xy^2 + m_{10}y^3.
 
 The user must specify **-N**\ *n\_model*, the number of model parameters
 to use; thus, **-N**\ *3* fits a bilinear trend, **-N**\ *6* a quadratic
@@ -47,7 +47,7 @@ Required Arguments
 ------------------
 
 *grdfile*
-    The name of a 2-D binary grid file.
+    The name of a 2-D binary grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 .. _-N:
 
@@ -58,23 +58,26 @@ Required Arguments
 Optional Arguments
 ------------------
 
+.. _-D:
+
 **-D**\ *diff.nc*
     Write the difference (input data - trend) to the file *diff.nc*.
 
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of the input grid. If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of the input grid. If this subsection
+    exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-T:
 
 **-T**\ *trend.nc*
     Write the fitted trend to the file *trend.nc*.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -99,8 +102,6 @@ equivalent to the m#s in the equation described above. The description
 above is to allow the user to match **-N** with the order of the
 polynomial surface. See :doc:`grdmath` if you need to evaluate the trend
 using the reported coefficients.
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

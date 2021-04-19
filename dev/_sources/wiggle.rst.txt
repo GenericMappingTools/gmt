@@ -36,6 +36,7 @@ Synopsis
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -99,4 +100,4 @@ See Also
 :doc:`gmt`, :doc:`gmtcolors`,
 :doc:`filter1d`,
 :doc:`basemap`,
-:doc:`splitxyz`
+:doc:`gmtsplit`

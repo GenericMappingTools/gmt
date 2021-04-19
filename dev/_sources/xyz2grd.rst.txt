@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -58,17 +59,18 @@ Required Arguments
 .. _-G:
 
 **-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See GRID FILE
-    FORMAT below.)
+    *grdfile* is the name of the binary output grid file. (See
+    :ref:`Grid File Formats <grd_inout_full>`).
+
 
 .. _-I:
 
 .. include:: explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -92,12 +94,12 @@ Optional Arguments
 
 .. include:: explain_-D_cap.rst_
 
-.. _-J:
-
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant metadata in
     netCDF grids. Remember also that PROJ syntax can be used directly in **-J**. This referencing will be
     recognized by GDAL and increasingly also by GMT.
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -106,10 +108,10 @@ Optional Arguments
     must also supply the **-Z** option. The output is written to *zfile*
     (or stdout if not supplied).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -187,13 +189,13 @@ Optional Arguments
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
 
 .. include:: explain_float.rst_
-
-.. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
 

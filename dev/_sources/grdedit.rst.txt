@@ -28,6 +28,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -49,7 +50,7 @@ Required Arguments
 ------------------
 
 *grid*
-    Name of the 2-D grid file to modify. (See GRID FILE FORMATS below).
+    Name of the 2-D grid file to modify. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -92,11 +93,11 @@ Optional Arguments
     Normally, **grdedit** will overwrite the existing grid with the modified grid.
     Use **-G** to write the modified grid to the file *outgrid* instead.
 
-.. _-J:
-
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be recognized by GDAL.
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
@@ -113,12 +114,11 @@ Optional Arguments
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values.
 
-.. _-R:
-
-.. |Add_-R| replace:: The new w/e/s/n values will
-    replace those in the grid, and the *x_inc*, *y_inc* values are
-    adjusted, if necessary.
+.. |Add_-R| replace:: The new w/e/s/n values will replace those in the grid, and the *x_inc*, *y_inc* values are
+    adjusted, if necessary. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -136,10 +136,10 @@ Optional Arguments
     have their domain shrunk by the same amount.
     This is a *non-destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
@@ -158,9 +158,9 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. include:: explain_help.rst_
+.. include:: explain_-w.rst_
 
-.. include:: explain_grd_inout_short.rst_
+.. include:: explain_help.rst_
 
 .. include:: explain_grd_coord.rst_
 

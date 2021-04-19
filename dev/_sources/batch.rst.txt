@@ -18,8 +18,8 @@ Synopsis
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *preflight* ]
-[ **-Sf**\ *postflight* ]
+[ |-Sb|\ *preflight* ]
+[ |-Sf|\ *postflight* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*workdir*] ]
 [ |-Z| ]
@@ -117,10 +117,10 @@ Optional Arguments
     using the products or stacked data after the main processing is completed. It does not have to be a GMT
     script.
 
-.. _batch-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -176,6 +176,15 @@ The batch scripts will be able to find any files present in the starting directo
 as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
+
+Custom gmt.conf files
+---------------------
+
+If you have a gmt.conf file in the top directory with your main script prior to running **batch** then it will be
+used and shared across all the scripts created and executed *unless* your scripts use **-C** when starting a new
+modern mode session. The preferred ways of changing GMT defaults is via :doc:`gmtset` calls in your input scripts.
+**Note**: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the *preflight*
+script to be used by other scripts is futile.
 
 Constructing the Main Script
 ----------------------------
@@ -266,13 +275,13 @@ build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to esca
 start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids
 (e.g., such as filter_07.grd), as well as the filter_std.grd file obtained by stacking all the individual
 scripts and computing a standard deviation. The information needed to do all of this is hidden from the user;
-the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch***
+the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch**
 supplies the extra machinery. The **batch** module automatically manages the parallel execution loop over all
 jobs using all available cores and launches new jobs as old ones complete.
 
 As another example, we get a list of all European countries and make a simple coast plot of each of them,
 placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
-we combine all the individual PDFs into a single file and delete them::
+we combine all the individual PDFs into a single PDF file and delete the individual files::
 
     cat << EOF > pre.sh
     gmt begin
@@ -291,7 +300,7 @@ we combine all the individual PDFs into a single file and delete them::
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
-Here, the postflight script is not even a GMT script; it simply runs gs and deletes what we don't want.
+Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
 
 See Also
 --------

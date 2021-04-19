@@ -151,10 +151,10 @@ Optional Arguments
     Make evenly spaced time-steps from *min* to *max* by *inc* [Default uses input times].
     For details on array creation, see `Generate 1D Array`_.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bi.rst_
@@ -226,6 +226,6 @@ and not shorten the track, and add the distances to the file, use
 See Also
 --------
 
-:doc:`gmt` ,
-:doc:`sample1d` ,
-:doc:`splitxyz`
+:doc:`gmt`,
+:doc:`sample1d`,
+:doc:`gmtsplit`

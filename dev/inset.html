@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>inset &mdash; GMT 6.2.0 documentation</title>
+  <title>inset &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/togglebutton.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +126,8 @@
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +142,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +216,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/inset.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -230,11 +243,11 @@ canvas and restores the plot region and map projection that was in effect prior 
 <div class="section" id="synopsis-begin-mode">
 <h2>Synopsis (begin mode)<a class="headerlink" href="#synopsis-begin-mode" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt inset begin</strong>
-<a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>inset-box</em>
-[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>box</em> ]
-[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><em>margins</em> ]
-[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong> ]
-[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>inset-box</em>
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>box</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>margins</em> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </div>
@@ -243,19 +256,24 @@ canvas and restores the plot region and map projection that was in effect prior 
 <p>The <strong>begin</strong> directive of <strong>inset</strong> defines the dimension and placement of the inset canvas.  It
 records the current region and projection so that we may return to the initial
 plot environment when  the inset is completed.  The user may select any plot region
-and projection once plotting in the inset, but if the first command uses
-? as scale or width then we adjust the scale or width to fill the inset as best
+and projection once plotting in the inset, but if the first command uses a projection
+that leaves off the scale or width then we supply a scale or width to fill the inset as best
 as possible, given the inset size and margins (if selected).</p>
 </div>
-<div class="section" id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="required-arguments-begin-mode">
+<h2>Required Arguments (begin mode)<a class="headerlink" href="#required-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
 <dl id="d">
 <dt><strong>-D</strong><em>xmin/xmax/ymin/ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]] | <strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[/<em>height</em>][<strong>+j</strong><em>justify</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Define the map inset rectangle on the map.  Specify the rectangle in one of three ways:</p>
-<p>(1) Append <strong>g</strong><em>lon</em>/<em>lat</em> for map (user) coordinates, (2)  <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting
-the <em>refpoint</em> via a 2-char justification code that refers to the (invisible) projected map bounding box,
-(3) <strong>n</strong><em>xn</em>/<em>yn</em> for normalized (0-1) bounding box coordinates, or (4) <strong>x</strong><em>x</em>/<em>y</em> for plot coordinates
-(inches, cm, points, append unit).  All but <strong>x</strong> requires both <strong>-R</strong> and <strong>-J</strong> to be specified.
-You can offset the reference point via <strong>+o</strong><em>dx</em>/<em>dy</em> in the direction implied by <em>code</em> or <strong>+j</strong><em>justify</em>.</p>
+<ol class="arabic simple">
+<li><p>Append <strong>g</strong><em>lon</em>/<em>lat</em> for <a class="reference internal" href="cookbook/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char
+<a class="reference internal" href="cookbook/features.html#reference-points-j"><span class="std std-ref">justification code</span></a> that refers to the (invisible) projected map bounding box. Requires
+both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>n</strong><em>xn</em>/<em>yn</em> for <a class="reference internal" href="cookbook/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
+<strong>p</strong>point).</p></li>
+</ol>
 <p>Alternatively, Give <em>west/east/south/north</em> of geographic rectangle bounded by parallels
 and meridians; append <strong>+r</strong> if the coordinates instead are the lower left and
 upper right corners of the desired rectangle. (Or, give <em>xmin/xmax/ymin/ymax</em>
@@ -269,25 +287,29 @@ Specify inset box attributes via the <strong>-F</strong> option [outline only].<
 </dd>
 </dl>
 </div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple" id="f">
-<dt><strong>-F</strong>[<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</dt><dd><p>Without further options, draws a rectangular border around the map inset using
-<a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>; specify a different pen with <strong>+p</strong><em>pen</em>.
-Add <strong>+g</strong><em>fill</em> to fill the logo box [no fill].
-Append <strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>,
-or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> where these items are uniform, separate in
-x- and y-direction, or individual side spacings between logo and border.
-Append <strong>+i</strong> to draw a secondary, inner border as well. We use a uniform
-<em>gap</em> between borders of 2<strong>p</strong> and the <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>
-unless other values are specified. Append <strong>+r</strong> to draw rounded
-rectangular borders instead, with a 6<strong>p</strong> corner radius. You can
-override this radius by appending another value. Finally, append
-<strong>+s</strong> to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em>
-indicates the shift relative to the foreground frame
-[4<strong>p</strong>/-4<strong>p</strong>] and <em>shade</em> sets the fill style to use for shading [gray50].</p>
-</dd>
-</dl>
+<div class="section" id="optional-arguments-begin-mode">
+<h2>Optional Arguments (begin mode)<a class="headerlink" href="#optional-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
+<p id="f"><strong>-F</strong>[<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</p>
+<blockquote>
+<div><p>Without further options, draws a rectangular border around the map inset using <a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>. The following
+modifiers can be appended to <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, with additional explanation and examples provided in the <a class="reference internal" href="cookbook/features.html#background-panel"><span class="std std-ref">The background panel</span></a>
+cookbook section:</p>
+<ul class="simple">
+<li><p><strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>, or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> and <em>gap</em> gives a uniform <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearance</span></a>, <em>xgap</em>/<em>ygap</em> gives separate
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the x- and y- directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> gives
+individual <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearances</span></a> between the map embellishment and the border for each side.</p></li>
+<li><p><strong>+g</strong><em>fill</em> to fill the box with a color specified by <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> [default is no fill].</p></li>
+<li><p><strong>+i</strong>[[<em>gap</em>/]<em>pen</em>] to draw a secondary, inner border as well. Optionally, specify the
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">gap</span></a> between the inner and outer border and the <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> for the inner border
+[default is a uniform <em>gap</em> between borders of <strong>2p</strong> and the <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>].</p></li>
+<li><p><strong>+p</strong><em>pen</em> to specify different <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> attributes.</p></li>
+<li><p><strong>+r</strong>[<em>radius</em>] to draw rounded rectangular borders instead with a corner radius set by <em>radius</em> (append
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">units</span></a>) [defaults is <strong>6p</strong>].</p></li>
+<li><p><strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]] to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em> indicates the
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">shift</span></a> relative to the foreground frame [default is <strong>4p</strong>/<strong>-4p</strong>] and <em>shade</em> sets the
+<a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> style to use for shading [default is <strong>gray50</strong>].</p></li>
+</ul>
+</div></blockquote>
 <dl class="simple" id="m">
 <dt><strong>-M</strong><em>margins</em></dt><dd><p>This is clearance that is added around the inside of the inset.  Plotting will take place
 within the inner region only. The margins can be a single value, a pair of values separated by slashes
@@ -299,8 +321,8 @@ separate left, right, bottom, and top margins) [no margins].</p>
 <dt><strong>-N</strong></dt><dd><p>Do NOT clip features extruding outside map inset boundaries [Default will clip].</p>
 </dd>
 </dl>
-<span class="target" id="v"></span><dl class="simple">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -315,15 +337,15 @@ any module-specific option (but not the GMT common options), then exits.</p>
 </div>
 <div class="section" id="synopsis-end-mode">
 <h2>Synopsis (end mode)<a class="headerlink" href="#synopsis-end-mode" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt inset end</strong> [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p><strong>gmt inset end</strong> [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
 <p>The <strong>end</strong> directive finalizes the current inset, which returns the plotting environment to
 the state prior to the start of the inset.  The previous region and map projection will be
 in effect going forward.</p>
 </div>
-<div class="section" id="id1">
-<h2>Optional Arguments<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="optional-arguments-end-mode">
+<h2>Optional Arguments (end mode)<a class="headerlink" href="#optional-arguments-end-mode" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="inset-end-v">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -343,7 +365,7 @@ any module-specific option (but not the GMT common options), then exits.</p>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin inset pdf
   gmt basemap -R0/40/20/60 -JM6.5i -Bafg -B+glightgreen
   gmt inset begin -DjTR+w2.5i+o0.2i -F+gpink+p0.5p -M0.25i
-    gmt basemap -Rg -JA20/20/2i -Bafg
+    gmt basemap -Rg -JA20/20/ -Bafg
     gmt text -F+f18p+cTR+tINSET -Dj-0.15i -N
   gmt inset end
   gmt text -F+f18p+cBL+tMAP -Dj0.2i
@@ -369,25 +391,18 @@ gmt end
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="kml2gmt.html" class="btn btn-neutral float-right" title="kml2gmt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="image.html" class="btn btn-neutral float-left" title="image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="kml2gmt.html" class="btn btn-neutral float-right" title="kml2gmt" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="image.html" class="btn btn-neutral float-left" title="image" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -395,9 +410,9 @@ gmt end
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

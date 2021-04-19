@@ -48,6 +48,7 @@ Cookbook
    cookbook/predefined-patterns
    cookbook/octal-codes
    cookbook/postscript-fonts
+   cookbook/gmt-latex
    cookbook/colorspace
    cookbook/data-filtering
    cookbook/non-unix-platforms

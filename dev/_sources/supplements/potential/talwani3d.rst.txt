@@ -62,10 +62,10 @@ Required Arguments
 
 .. include:: ../../explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: ../../explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -90,9 +90,9 @@ Optional Arguments
 .. _-G:
 
 **-G**\ *outfile*
-    Specify the name of the output data (for grids, see GRID FILE FORMATS below).
-    Required when an equidistant grid is implied for output.  If **-N** is used
-    then output is written to stdout unless **-G** specifies an output file.
+    Specify the name of the output data (for grids, see :ref:`Grid File Formats
+    <grd_inout_full>`). Required when an equidistant grid is implied for output.
+    If **-N** is used then output is written to stdout unless **-G** specifies an output file.
 
 .. _-M:
 
@@ -107,10 +107,10 @@ Optional Arguments
     is used there are no grids and the output data records are written to stdout.  If *trackfile*
     has 3 columns we take the *z* value as our observation level; this level may be overridden via **-Z**.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-..  include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 

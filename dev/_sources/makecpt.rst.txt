@@ -140,7 +140,7 @@ Optional Arguments
 **-H**\
     Modern mode only: Write the CPT to standard output as well [Default saves
     the CPT as the session current CPT]. Required for scripts used to make
-    animations via :doc:`movie` where we must pass named CPT files.
+    animations via :doc:`movie` and :doc:`batch` where we must pass named CPT files.
 
 .. _-I:
 
@@ -202,10 +202,10 @@ Optional Arguments
     up categorical CPTs with string keys you can also give a comma-separated
     list of your keys.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

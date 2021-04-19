@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>coast &mdash; GMT 6.2.0 documentation</title>
+  <title>coast &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/togglebutton.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +126,8 @@
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +142,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +216,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/coast.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -224,28 +237,28 @@
 <p>Plot continents, countries, shorelines, rivers, and borders</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt coast</strong> <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em>
-<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
-[ <strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+l</strong>|<strong>r</strong>][<strong>+p</strong><em>percent</em>] ]
-[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
-[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><em>fill</em>[<strong>+l</strong>|<strong>r</strong>] ]
-[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>resolution</em>[<strong>+f</strong>] ]
-[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong><em>dcw</em> ]
-[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong><em>box</em> ]
-[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong>[<em>fill</em>] ]
-[ <a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>river</em>[/<em>pen</em>] ]
-[ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><strong>z</strong>|<strong>Z</strong><em>parameters</em> ]
-[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong><em>scalebar</em> ]
-[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong> ]
-[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>border</em>[/<em>pen</em>] ]
-[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ]
-[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong>[<em>fill</em>] ]
-[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>rose</em> ]
-[ <a class="reference internal" href="#u"><span> <strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
-[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<em>level</em>/]<em>pen</em> ]
-[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
-[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
+<p><strong>gmt coast</strong> <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+l</strong>|<strong>r</strong>][<strong>+p</strong><em>percent</em>] ]
+[ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>fill</em>[<strong>+l</strong>|<strong>r</strong>] ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>resolution</em>[<strong>+f</strong>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>dcw</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>box</em> ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<em>fill</em>] ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>river</em>[/<em>pen</em>] ]
+[ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><strong>z</strong>|<strong>Z</strong><em>parameters</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>scalebar</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>border</em>[/<em>pen</em>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<em>fill</em>] ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>rose</em> ]
+[ <a class="reference internal" href="#u"><span><strong>-U</strong></span></a></strong>[<em>stamp</em>] ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<em>level</em>/]<em>pen</em> ]
+[ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
+[ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
 [ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-p</strong><a class="reference internal" href="gmt.html#perspective-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-t</strong><a class="reference internal" href="gmt.html#t-full"><span class="std std-ref">transp</span></a> ]
@@ -271,8 +284,9 @@ the land-areas will be transparent. A map projection must be supplied.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<span class="target" id="j"></span><dl class="simple">
-<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
 <span class="target" id="r"></span><dl class="simple">
@@ -314,12 +328,14 @@ done only when using the <strong>-Jz</strong> option, not when using only the
 plotted, with no third dimension.  </p>
 </dd>
 </dl>
-<p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+<blockquote>
+<div><p>For perspective view <strong>-p</strong>, optionally append /<em>zmin</em>/<em>zmax</em>. <a class="reference internal" href="gmt.html#rz-full"><span class="std std-ref">(more …)</span></a>  </p>
+</div></blockquote>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <span class="target" id="a"></span><dl class="simple">
-<dt><strong>-A</strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+l</strong>|<strong>r</strong>][<strong>+p</strong><em>percent</em>]</dt><dd><p>Features with an area smaller than <em>min_area</em> in km^2 or of
+<dt><a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>min_area</em>[/<em>min_level</em>/<em>max_level</em>][<strong>+a</strong>[<strong>g</strong>|<strong>i</strong>][<strong>s</strong>|<strong>S</strong>]][<strong>+l</strong>|<strong>r</strong>][<strong>+p</strong><em>percent</em>]</dt><dd><p>Features with an area smaller than <em>min_area</em> in km^2 or of
 hierarchical level that is lower than <em>min_level</em> or higher than
 <em>max_level</em> will not be plotted [Default is 0/0/4 (all features)].
 Level 2 (lakes) contains regular lakes and wide river bodies which
@@ -337,7 +353,7 @@ GSHHG INFORMATION below for more details.  </p>
 </dd>
 </dl>
 <dl class="simple" id="b">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set map boundary frame and axes attributes.</p>
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
@@ -380,27 +396,29 @@ Otherwise, you may repeat <strong>-E</strong> to give different groups of items 
 If neither <strong>-J</strong> nor <strong>-M</strong> are set then we just print the <strong>-R</strong><em>wesn</em> string.</p>
 </dd>
 </dl>
-<dl class="simple" id="f">
-<dt><strong>-F</strong>[<strong>l</strong>|<strong>t</strong>][<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</dt><dd><p>Without further options, draws a rectangular border around the map scale or rose using
-<a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>; specify a different pen with <strong>+p</strong><em>pen</em>.
-Add <strong>+g</strong><em>fill</em> to fill the box [no fill].
-Append <strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>,
-or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> where these items are uniform, separate in
-x- and y-direction, or individual side spacings between map scale/rose and border.
-Append <strong>+i</strong> to draw a secondary, inner border as well. We use a uniform
-<em>gap</em> between borders of 2<strong>p</strong> and the <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>
-unless other values are specified. Append <strong>+r</strong> to draw rounded
-rectangular borders instead, with a 6<strong>p</strong> corner radius. You can
-override this radius by appending another value. Finally, append
-<strong>+s</strong> to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em>
-indicates the shift relative to the foreground frame
-[4<strong>p</strong>/-4<strong>p</strong>] and <em>shade</em> sets the fill style to use for shading [gray50].
-Requires <strong>-L</strong> or <strong>-T</strong>.  To specify separate parameters if both <strong>-L</strong> are <strong>-T</strong>
-are selected, append  <strong>l</strong>|<strong>t</strong> to <strong>-F</strong>
-to specify panel parameters for just that panel [Default uses the same panel
-parameters for all selected map features].</p>
-</dd>
-</dl>
+<p id="f"><strong>-F</strong>[<strong>l</strong>|<strong>t</strong>][<strong>+c</strong><em>clearances</em>][<strong>+g</strong><em>fill</em>][<strong>+i</strong>[[<em>gap</em>/]<em>pen</em>]][<strong>+p</strong>[<em>pen</em>]][<strong>+r</strong>[<em>radius</em>]][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]]]</p>
+<blockquote>
+<div><p>Without further options, draws a rectangular border around any map scale (<a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>) or map rose (<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>) using
+<a class="reference internal" href="gmt.conf.html#term-MAP_FRAME_PEN"><span class="xref std std-term">MAP_FRAME_PEN</span></a>. Used in combination with <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> or <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.  Append <strong>l</strong> for map scale or <strong>t</strong> for map rose to
+specify which plot embellisment the <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> parameters should be applied to [default uses the same panel parameters for
+all selected map embellishments]. The following modifiers can be appended to <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>, with additional explanation and
+examples provided in the <a class="reference internal" href="cookbook/features.html#background-panel"><span class="std std-ref">The background panel</span></a> cookbook section:</p>
+<ul class="simple">
+<li><p><strong>+c</strong><em>clearance</em> where <em>clearance</em> is either <em>gap</em>, <em>xgap</em>/<em>ygap</em>, or <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> and <em>gap</em> gives a uniform <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearance</span></a>, <em>xgap</em>/<em>ygap</em> gives separate
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearances</span></a> in the x- and y- directions, and <em>lgap</em>/<em>rgap</em>/<em>bgap</em>/<em>tgap</em> gives
+individual <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">clearances</span></a> between the map embellishment and the border for each side.</p></li>
+<li><p><strong>+g</strong><em>fill</em> to fill the box with a color specified by <a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> [default is no fill].</p></li>
+<li><p><strong>+i</strong>[[<em>gap</em>/]<em>pen</em>] to draw a secondary, inner border as well. Optionally, specify the
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">gap</span></a> between the inner and outer border and the <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> for the inner border
+[default is a uniform <em>gap</em> between borders of <strong>2p</strong> and the <a class="reference internal" href="gmt.conf.html#term-MAP_DEFAULT_PEN"><span class="xref std std-term">MAP_DEFAULT_PEN</span></a>].</p></li>
+<li><p><strong>+p</strong><em>pen</em> to specify different <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a> attributes.</p></li>
+<li><p><strong>+r</strong>[<em>radius</em>] to draw rounded rectangular borders instead with a corner radius set by <em>radius</em> (append
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">units</span></a>) [defaults is <strong>6p</strong>].</p></li>
+<li><p><strong>+s</strong>[[<em>dx</em>/<em>dy</em>/][<em>shade</em>]] to draw an offset background shaded region. Here, <em>dx</em>/<em>dy</em> indicates the
+<a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">shift</span></a> relative to the foreground frame [default is <strong>4p</strong>/<strong>-4p</strong>] and <em>shade</em> sets the
+<a class="reference internal" href="gmtcolors.html"><span class="doc">fill</span></a> style to use for shading [default is <strong>gray50</strong>].</p></li>
+</ul>
+</div></blockquote>
 <dl class="simple" id="g">
 <dt><strong>-G</strong>[<em>fill</em>] <a class="reference internal" href="cookbook/features.html#gfill-attrib"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select filling or clipping of “dry” areas. Append the shade, color,
 or pattern; or give no argument for clipping [Default is no fill].</p>
@@ -432,46 +450,51 @@ often as necessary.</p>
 <p>c = All canals (8-10)</p>
 </dd>
 </dl>
-<dl id="l">
-<dt><strong>-L</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+a</strong><em>align</em>][<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+f</strong>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>label</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+u</strong>][<strong>+v</strong>]</dt><dd><p>Draw a simple map scale centered on the reference point specified
-using one of four coordinate systems:</p>
-<p>(1) Append <strong>g</strong><em>lon</em>/<em>lat</em> for map (user) coordinates, (2)  <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting
-the <em>refpoint</em> via a 2-char justification code that refers to the (invisible) projected map bounding box,
-(3) <strong>n</strong><em>xn</em>/<em>yn</em> for normalized (0-1) bounding box coordinates, or (4) <strong>x</strong><em>x</em>/<em>y</em> for plot coordinates
-(inches, cm, points, append unit).  All but <strong>x</strong> requires both <strong>-R</strong> and <strong>-J</strong> to be specified.
-You can offset the reference point via <strong>+o</strong><em>dx</em>/<em>dy</em> in the direction implied by <em>code</em> or <strong>+j</strong><em>justify</em>.</p>
-<p>Use <strong>+w</strong> to set scale <em>length</em> in km, or append unit from
-<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>.
-The <strong>+c</strong> modifier is use to control where on a geographic map the scale applies.
-Map scale is calculated for latitude <em>slat</em> (optionally supply longitude
-<em>slon</em> for oblique projections [Default is central meridian]).
-If <strong>+c</strong> is not given we default to the location of the <em>refpoint</em>.
-If <strong>+c</strong> is given with no arguments then we select the scale origin
-to be the middle of the map.
-Change the label alignment with <strong>+a</strong><em>align</em> (choose among
-<strong>l</strong>(eft), <strong>r</strong>(ight), <strong>t</strong>(op), and <strong>b</strong>(ottom)).
-Append <strong>+f</strong> to get a “fancy” scale [Default is plain].
-By default, the anchor point on the map scale is assumed to be the center of the scale (MC), but this
-can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em>
-(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> for list and explanation of codes).
-Append <strong>+l</strong> to select the default label, which equals the distance
-unit (meter, foot, km, mile, nautical mile, US survey foot) and is
-justified on top of the scale [t]. Change this by giving your own
-label (append <strong>+l</strong><em>label</em>).
-Select <strong>+u</strong> to append the unit to all distance annotations along the
-scale (for the plain scale, <strong>+u</strong> will instead select the unit to be
-appended to the distance length). Cartesian projections: Modifiers <strong>+c</strong> and
-<strong>+f</strong> are not allowed, and no units should be appended in <strong>+w</strong>.
-You ca indicate any Cartesian data units via the label in <strong>+l</strong>.
-For a vertical rather than horizontal Cartesian scale, append <strong>+v</strong>.
-<strong>Note</strong>: Use <a class="reference internal" href="gmt.conf.html#term-FONT_LABEL"><span class="xref std std-term">FONT_LABEL</span></a> to change the label font and
-<a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a>
-to change the annotation font.  The height of the map scale is controlled
-by <a class="reference internal" href="gmt.conf.html#term-MAP_SCALE_HEIGHT"><span class="xref std std-term">MAP_SCALE_HEIGHT</span></a>, and the pen thickness is
-set by <a class="reference internal" href="gmt.conf.html#term-MAP_TICK_PEN_PRIMARY"><span class="xref std std-term">MAP_TICK_PEN_PRIMARY</span></a>.
-See <strong>-F</strong> on how to place a panel behind the scale.</p>
-</dd>
-</dl>
+<p id="l"><strong>-L</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>length</em>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>][<strong>+a</strong><em>align</em>][<strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]][<strong>+f</strong>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>label</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+u</strong>][<strong>+v</strong>]</p>
+<blockquote>
+<div><p>Draw a simple map scale at the location defined by the reference (<em>refpoint</em>) and anchor point (set by
+<strong>+o</strong><em>dx</em>[/<em>dy</em>] and/or <strong>+j</strong><em>justify</em>). Give the reference point on the map for the rose using one of four
+coordinate systems:</p>
+<ol class="arabic simple">
+<li><p>Append <strong>g</strong><em>lon</em>/<em>lat</em> for <a class="reference internal" href="cookbook/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char
+<a class="reference internal" href="cookbook/features.html#reference-points-j"><span class="std std-ref">justification code</span></a> that refers to the (invisible) projected map bounding box. Requires
+both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>n</strong><em>xn</em>/<em>yn</em> for <a class="reference internal" href="cookbook/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
+<strong>p</strong>point).</p></li>
+</ol>
+<p>The following modifiers can be appended to <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> (<strong>+w</strong> is required), with additional explanation and
+examples provided in the <a class="reference internal" href="cookbook/features.html#placing-map-scales"><span class="std std-ref">Placing map scales</span></a> cookbook section. For Cartesian projectsion, the modifiers
+<strong>+c</strong> and <strong>+f</strong> are not allowed and no units should be appended in <strong>+w</strong>.</p>
+<ul class="simple">
+<li><p><strong>+w</strong><em>length</em> to set scale <em>length</em> in km, or append <a class="reference internal" href="cookbook/features.html#tbl-distunits"><span class="std std-ref">unit</span></a> from
+<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>.</p></li>
+<li><p><strong>+a</strong><em>align</em> to change the label alignment (choose among <strong>l</strong>(eft), <strong>r</strong>(ight), <strong>t</strong>(op), and
+<strong>b</strong>(ottom)) [default is <strong>t</strong>(op)].</p></li>
+<li><p><strong>+c</strong>[[<em>slon</em>/]<em>slat</em>]] to control where on a geographic map the scale applies. Map scale is calculated for
+latitude <em>slat</em> (optionally supply longitude <em>slon</em> for oblique projections [default is central meridian]). If
+<strong>+c</strong> is not given we default to the location of the <em>refpoint</em>. If <strong>+c</strong> is given with no arguments then we
+select the scale origin to be the middle of the map.</p></li>
+<li><p><strong>+f</strong> to get a “fancy” scale [default is <strong>plain</strong>].</p></li>
+<li><p><strong>+j</strong><em>justify</em> to set the justification <a class="reference internal" href="cookbook/features.html#anchor-point-j"><span class="std std-ref">anchor point</span></a>, where <em>justify</em> is a 2-character
+<a class="reference internal" href="cookbook/features.html#reference-points"><span class="std std-ref">justification code</span></a> that is a combination of a horizontal (<strong>L</strong>, <strong>C</strong>, or <strong>R</strong>) and a
+vertical (<strong>T</strong>, <strong>M</strong>, or <strong>B</strong>) code. <strong>Note</strong>: If <strong>j</strong> is used to set the reference point
+then <em>justify</em> defaults to the same as <em>refpoint</em>; if <strong>J</strong> is used then <em>justify</em> defaults to the mirror opposite
+of <em>refpoint</em>; if <strong>g</strong>, <strong>n</strong>, or <strong>x</strong> is used to set the reference point then <em>justify</em> defaults to <strong>MC</strong>.</p></li>
+<li><p><strong>+l</strong>[<em>label</em>] to add a scale label. If <em>label</em> is not provided, we use the distance unit provided in <strong>+w</strong>
+[default is <strong>k</strong>(m)]. The label alignment is set by <strong>+a</strong> [default is <strong>t</strong>(op)]. Requires <strong>+f</strong>.</p></li>
+<li><p><strong>+o</strong><em>dx</em>[/<em>dy</em>] to offset the <a class="reference internal" href="cookbook/features.html#anchor-point-o"><span class="std std-ref">anchor point</span></a> by <em>dx</em> and optionally <em>dy</em> (if different
+than <em>dx</em>).</p></li>
+<li><p><strong>+u</strong> to append the <a class="reference internal" href="cookbook/features.html#tbl-distunits"><span class="std std-ref">unit</span></a> set by <strong>+w</strong> to all distance annotations along the scale (for
+the plain scale, <strong>+u</strong> will instead select the unit to be appended to the distance length).</p></li>
+<li><p><strong>+v</strong> to get a vertical rather than a horizontal Cartesian scale.</p></li>
+</ul>
+<p><strong>Note</strong>: Use <a class="reference internal" href="gmt.conf.html#term-FONT_LABEL"><span class="xref std std-term">FONT_LABEL</span></a> to change the label font and <a class="reference internal" href="gmt.conf.html#term-FONT_ANNOT_PRIMARY"><span class="xref std std-term">FONT_ANNOT_PRIMARY</span></a> to change the annotation
+font. The height of the map scale is controlled by <a class="reference internal" href="gmt.conf.html#term-MAP_SCALE_HEIGHT"><span class="xref std std-term">MAP_SCALE_HEIGHT</span></a>, and the pen thickness is set by
+<a class="reference internal" href="gmt.conf.html#term-MAP_TICK_PEN_PRIMARY"><span class="xref std std-term">MAP_TICK_PEN_PRIMARY</span></a>. Optionally, use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to place a panel behind the scale.</p>
+</div></blockquote>
 <dl class="simple" id="m">
 <dt><strong>-M</strong></dt><dd><p>Dump a single multisegment ASCII (or binary, see
 <strong>-bo</strong>) file to standard output. No plotting
@@ -505,65 +528,86 @@ Also supply <strong>-X</strong> and <strong>-Y</strong> settings if you have mov
 or pattern; or give no argument for clipping [Default is no fill].</p>
 </dd>
 </dl>
-<dl id="t">
-<dt><strong>-Td</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[<strong>+f</strong>[<em>level</em>]][<strong>+j</strong><em>justify</em>][<strong>+l</strong><em>w,e,s,n</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw a map directional rose on the map at the location defined by
-the reference and anchor points:
-Give the reference point on the map for the rose using one of four coordinate systems:</p>
-<p>(1) Append <strong>g</strong><em>lon</em>/<em>lat</em> for map (user) coordinates, (2)  <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting
-the <em>refpoint</em> via a 2-char justification code that refers to the (invisible) projected map bounding box,
-(3) <strong>n</strong><em>xn</em>/<em>yn</em> for normalized (0-1) bounding box coordinates, or (4) <strong>x</strong><em>x</em>/<em>y</em> for plot coordinates
-(inches, cm, points, append unit).  All but <strong>x</strong> requires both <strong>-R</strong> and <strong>-J</strong> to be specified.
-You can offset the reference point via <strong>+o</strong><em>dx</em>/<em>dy</em> in the direction implied by <em>code</em> or <strong>+j</strong><em>justify</em>.</p>
-<p>By default, the anchor point on the directional rose is assumed to be the center of the rose (MC), but this
-can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em>
-(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> for list and explanation of codes).
-<strong>Note</strong>: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
-if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
-Append <strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (in inches, cm, or points).
-Add <strong>+f</strong> to get a “fancy” rose, and specify in <em>level</em> what
-you want drawn. The default [1] draws the two principal E-W,
-N-S orientations, 2 adds the two intermediate NW-SE and NE-SW
-orientations, while 3 adds the eight minor orientations WNW-ESE,
-NNW-SSE, NNE-SSW, and ENE-WSW.
-Label the cardinal points W,E,S,N by adding <strong>+l</strong> and append your own four
-comma-separated strings to override the default.  Skip a specific label by leaving it blank.
-See <a class="reference internal" href="cookbook/features.html#placing-dir-map-roses"><span class="std std-ref">Placing directional map roses</span></a> and <strong>-F</strong> on how to place a panel behind the directional rose.</p>
-</dd>
-<dt><strong>-Tm</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[<strong>+d</strong><em>dec</em>[/<em>dlabel</em>]]][<strong>+i</strong><em>pen</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong><em>w,e,s,n</em>][<strong>+p</strong><em>pen</em>][<strong>+t</strong><em>ints</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Draw a map magnetic rose on the map at the location defined by
-the reference and anchor points:
-Give the reference point on the map for the rose using one of four coordinate systems:</p>
-<p>(1) Append <strong>g</strong><em>lon</em>/<em>lat</em> for map (user) coordinates, (2)  <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting
-the <em>refpoint</em> via a 2-char justification code that refers to the (invisible) projected map bounding box,
-(3) <strong>n</strong><em>xn</em>/<em>yn</em> for normalized (0-1) bounding box coordinates, or (4) <strong>x</strong><em>x</em>/<em>y</em> for plot coordinates
-(inches, cm, points, append unit).  All but <strong>x</strong> requires both <strong>-R</strong> and <strong>-J</strong> to be specified.
-You can offset the reference point via <strong>+o</strong><em>dx</em>/<em>dy</em> in the direction implied by <em>code</em> or <strong>+j</strong><em>justify</em>.</p>
-<p>By default, the anchor point on the magnetic rose is assumed to be the center of the rose (MC), but this
-can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em>
-(see <a class="reference internal" href="text.html"><span class="doc">text</span></a> for list and explanation of codes).
-<strong>Note</strong>: If <strong>-Dj</strong> is used then <em>justify</em> defaults to the same as <em>refpoint</em>,
-if <strong>-DJ</strong> is used then <em>justify</em> defaults to the mirror opposite of <em>refpoint</em>.
-Append <strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (in inches, cm, or points).
-Use <strong>+d</strong> to assign the magnetic declination and set <em>dlabel</em>, which is a label for
-the magnetic compass needle (Leave empty to format a label from
-<em>dec</em>, or give - to bypass labeling). With <strong>+d</strong>, both directions to geographic and magnetic north are
-plotted [Default is geographic only]. If the north label is <strong>*</strong>
-then a north star is plotted instead of the north label. Annotation
-and two levels of tick intervals for both geographic and magnetic
-directions default to 30/5/1 degrees; override these settings by appending
-<strong>+t</strong><em>ints</em>, and append six slash-separated intervals to set both the
-geographic (first three) and magnetic (last three) intervals.
-Label the cardinal points W,E,S,N by adding <strong>+l</strong> and append your own four comma-separated
-strings to override the default.  Skip a specific label by leaving it blank.
-Number GMT default parameters control pens, fonts, and color.
-See <a class="reference internal" href="cookbook/features.html#placing-mag-map-roses"><span class="std std-ref">Placing magnetic map roses</span></a> and <strong>-F</strong> on how to place a panel behind the magnetic rose.</p>
-</dd>
-</dl>
+<p id="t"><strong>-Td</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[<strong>+f</strong>[<em>level</em>]][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</p>
+<blockquote>
+<div><p>Draw a map directional rose on the map at the location defined by the reference (<em>refpoint</em>) and anchor point
+(set by <strong>+o</strong><em>dx</em>[/<em>dy</em>] and/or <strong>+j</strong><em>justify</em>). Give the reference point on the map for the rose using one
+of four coordinate systems:</p>
+<ol class="arabic simple">
+<li><p>Append <strong>g</strong><em>lon</em>/<em>lat</em> for <a class="reference internal" href="cookbook/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char
+<a class="reference internal" href="cookbook/features.html#reference-points-j"><span class="std std-ref">justification code</span></a> that refers to the (invisible) projected map bounding box. Requires
+both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>n</strong><em>xn</em>/<em>yn</em> for <a class="reference internal" href="cookbook/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
+<strong>p</strong>point).</p></li>
+</ol>
+<p>The following modifiers can be appended to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>d</strong> (<strong>+w</strong> is required), with additional explanation and
+examples provided in the <a class="reference internal" href="cookbook/features.html#placing-dir-map-roses"><span class="std std-ref">Placing directional map roses</span></a> cookbook section. Optionally, use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to place a panel
+behind the directional rose.</p>
+<ul class="simple">
+<li><p><strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (append <strong>i</strong>nch, <strong>c</strong>m, or <strong>p</strong>oints).</p></li>
+<li><p><strong>+f</strong>[<em>level</em>] to get a “fancy” rose, and optionally specify the <em>level</em> of fanciness. Level <strong>1</strong> draws
+the two principal E-W, N-S orientations, <strong>2</strong> adds the two intermediate NW-SE and NE-SW orientations, while <strong>3</strong>
+adds the eight minor orientations WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW [default is <strong>1</strong>].</p></li>
+<li><p><strong>+j</strong><em>justify</em> to set the justification <a class="reference internal" href="cookbook/features.html#anchor-point-j"><span class="std std-ref">anchor point</span></a>, where <em>justify</em> is a 2-character
+<a class="reference internal" href="cookbook/features.html#reference-points"><span class="std std-ref">justification code</span></a> that is a combination of a horizontal (<strong>L</strong>, <strong>C</strong>, or <strong>R</strong>) and a
+vertical (<strong>T</strong>, <strong>M</strong>, or <strong>B</strong>) code. <strong>Note</strong>: If <strong>j</strong> is used to set the reference point
+then <em>justify</em> defaults to the same as <em>refpoint</em>; if <strong>J</strong> is used then <em>justify</em> defaults to the mirror opposite
+of <em>refpoint</em>; if <strong>g</strong>, <strong>n</strong>, or <strong>x</strong> is used to set the reference point then <em>justify</em> defaults to <strong>MC</strong>.</p></li>
+<li><p><strong>+l</strong>[<em>w,e,s,n</em>] to label the cardinal points W,E,S,N. Optionally, append your own four comma-separated strings
+to override the default. Skip a specific label by leaving it blank.</p></li>
+<li><p><strong>+o</strong><em>dx</em>[/<em>dy</em>] to offset the <a class="reference internal" href="cookbook/features.html#anchor-point-o"><span class="std std-ref">anchor point</span></a> by <em>dx</em> and optionally <em>dy</em> (if different
+than <em>dx</em>).</p></li>
+</ul>
+</div></blockquote>
+<p><strong>-Tm</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em><strong>+w</strong><em>width</em>[<strong>+d</strong><em>dec</em>[/<em>dlabel</em>]]][<strong>+i</strong><em>pen</em>][<strong>+j</strong><em>justify</em>][<strong>+l</strong>[<em>w,e,s,n</em>]][<strong>+p</strong><em>pen</em>][<strong>+t</strong><em>ints</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</p>
+<blockquote>
+<div><p>Draw a map magnetic rose on the map at the location defined by the reference (<em>refpoint</em>) and anchor point
+(set by <strong>+o</strong><em>dx</em>[/<em>dy</em>] and/or <strong>+j</strong><em>justify</em>). Give the reference point on the map for the rose using one
+of four coordinate systems:</p>
+<ol class="arabic simple">
+<li><p>Append <strong>g</strong><em>lon</em>/<em>lat</em> for <a class="reference internal" href="cookbook/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char
+<a class="reference internal" href="cookbook/features.html#reference-points-j"><span class="std std-ref">justification code</span></a> that refers to the (invisible) projected map bounding box. Requires
+both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>n</strong><em>xn</em>/<em>yn</em> for <a class="reference internal" href="cookbook/features.html#reference-points-n"><span class="std std-ref">normalized bounding box coordinates</span></a> (0-1). Requires both
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
+<li><p>Append <strong>x</strong><em>x</em>/<em>y</em> for <a class="reference internal" href="cookbook/features.html#reference-points-x"><span class="std std-ref">plot coordinates</span></a> (append <strong>c</strong>m, <strong>i</strong>nch, or
+<strong>p</strong>point).</p></li>
+</ol>
+<p>The following modifiers can be appended to <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>m</strong> (<strong>+w</strong> is required), with additional explanation and
+examples provided in the <a class="reference internal" href="cookbook/features.html#placing-mag-map-roses"><span class="std std-ref">Placing magnetic map roses</span></a> cookbook section. Optionally, use <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> to place a panel
+behind the magnetic rose.</p>
+<ul class="simple">
+<li><p><strong>+w</strong><em>width</em> to set the width of the rose in plot coordinates (append <strong>i</strong>nch, <strong>c</strong>m, or <strong>p</strong>oints).</p></li>
+<li><p><strong>+d</strong><em>dec</em>[/<em>dlabel</em>] to assign the magnetic declination and set <em>dlabel</em>, which is a label for the
+magnetic compass needle (omit <em>dlabel</em> to format a label from <em>dec</em>, or give <em>-</em> to bypass labeling). With <strong>+d</strong>,
+both directions to geographic and magnetic north are plotted [default is geographic only].</p></li>
+<li><p><strong>+i</strong><em>pen</em> to draw the outline of the inner circle in the specified <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a>.</p></li>
+<li><p><strong>+j</strong><em>justify</em> to set the justification <a class="reference internal" href="cookbook/features.html#anchor-point-j"><span class="std std-ref">anchor point</span></a>, where <em>justify</em> is a 2-character
+<a class="reference internal" href="cookbook/features.html#reference-points"><span class="std std-ref">justification code</span></a> that is a combination of a horizontal (<strong>L</strong>, <strong>C</strong>, or <strong>R</strong>) and a
+vertical (<strong>T</strong>, <strong>M</strong>, or <strong>B</strong>) code. <strong>Note</strong>: If <strong>j</strong> is used to set the reference point
+then <em>justify</em> defaults to the same as <em>refpoint</em>; if <strong>J</strong> is used then <em>justify</em> defaults to the mirror opposite
+of <em>refpoint</em>; if <strong>g</strong>, <strong>n</strong>, or <strong>x</strong> is used to set the reference point then <em>justify</em> defaults to <strong>MC</strong>.</p></li>
+<li><p><strong>+l</strong>[<em>w,e,s,n</em>] to label the cardinal points W,E,S,N and append your own four comma-separated strings to
+override the default. Skip a specific label by leaving it blank. If the north label is * then a north star is
+plotted instead of the north label.</p></li>
+<li><p><strong>+p</strong><em>pen</em> to draw the outline of the outer circle in the specified <a class="reference internal" href="cookbook/features.html#wpen-attrib"><span class="std std-ref">pen</span></a>.</p></li>
+<li><p><strong>+t</strong><em>ints</em> to specify the annotation and two tick interval levels for the geographic and magnetic directions
+by providing three slash-separated intervals. Specify separate intervals by appending three slash-separated
+geographic intervals followed by three slash-separated magnetic intervals [default is <strong>30</strong>/<strong>5</strong>/<strong>1</strong>]</p></li>
+<li><p><strong>+o</strong><em>dx</em>[/<em>dy</em>] to offset the <a class="reference internal" href="cookbook/features.html#anchor-point-o"><span class="std std-ref">anchor point</span></a> by <em>dx</em> and optionally <em>dy</em> (if different
+than <em>dx</em>).</p></li>
+</ul>
+</div></blockquote>
 <dl class="simple" id="u">
-<dt><strong>-U</strong>[<em>label</em>][<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>] <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Draw GMT time stamp logo on plot.</p>
+<dt><strong>-U</strong>[<em>label</em>|<strong>+c</strong>][<strong>+j</strong><em>just</em>][<strong>+o</strong><em>dx</em>/<em>dy</em>]</dt><dd><p>Draw GMT time stamp logo on plot. <a class="reference internal" href="gmt.html#u-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#timestamps-on-plots-the-u-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
-<span class="target" id="v"></span><dl class="simple">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -576,9 +620,12 @@ Repeat <strong>-W</strong> as needed. When specific level pens are set, those no
 listed will not be drawn [Default draws all levels; but see <strong>-A</strong>].</p>
 </dd>
 </dl>
-<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</p>
-<dl class="simple">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Shift plot origin.</p>
+<dl class="simple" id="x">
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="y">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -722,25 +769,18 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="colorbar.html" class="btn btn-neutral float-right" title="colorbar" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="clip.html" class="btn btn-neutral float-left" title="clip" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="colorbar.html" class="btn btn-neutral float-right" title="colorbar" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="clip.html" class="btn btn-neutral float-left" title="clip" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -748,9 +788,9 @@ Institute, Lensfield Road, Cambridge CB2 1ER, United Kingdom.</p>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

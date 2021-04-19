@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>grdblend &mdash; GMT 6.2.0 documentation</title>
+  <title>grdblend &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/togglebutton.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -62,7 +72,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +126,8 @@
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +142,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +216,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdblend.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -224,14 +237,14 @@
 <p>Blend several partially overlapping grids into one larger grid</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt grdblend</strong> [ <em>blendfile</em> | <em>grid1</em> <em>grid2</em> … ] <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>outgrid</em>
-<a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em>
-<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
-[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong><strong>f</strong>|<strong>l</strong>|<strong>o</strong>|<strong>u</strong>[<strong>+n</strong>|<strong>p</strong>] ]
-[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>nodata</em> ]
-[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong> ] [ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>scale</em> ]
-[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#w"><span> <strong>-W</strong></span></a></strong>[<strong>z</strong>] ]
+<p><strong>gmt grdblend</strong> [ <em>blendfile</em> | <em>grid1</em> <em>grid2</em> … ] <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
+<a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em>
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><strong>f</strong>|<strong>l</strong>|<strong>o</strong>|<strong>u</strong>[<strong>+n</strong>|<strong>p</strong>] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>nodata</em> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ] [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>scale</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<strong>z</strong>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-r</strong><a class="reference internal" href="gmt.html#nodereg-full"><span class="std std-ref">reg</span></a> ]
@@ -253,43 +266,6 @@ netCDF and native binary grid formats for both input and output.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
-<dl class="simple" id="g">
-<dt><strong>-G</strong><em>outgrid</em></dt><dd><p><em>outgrid</em> is the name of the binary output grid file. (See GRID FILE
-FORMATS below). Only netCDF and native binary grid formats are can
-be written directly. Other output format choices will be handled by
-reformatting the output once blending is complete.</p>
-</dd>
-</dl>
-<dl class="simple" id="i">
-<dt><strong>-I</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
-append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
-<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
-of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
-instead, the increment is assumed to be given in meter, foot, km, Mile,
-nautical mile or US survey foot, respectively, and will be converted to
-the equivalent degrees longitude at the middle latitude of the region
-(the conversion depends on <a class="reference internal" href="gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
-but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
-converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
-then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
-adjusted to fit exactly the given increment [by default the increment
-may be adjusted slightly to fit the given domain]. Finally, instead of
-giving an increment you may specify the <em>number of nodes</em> desired by
-appending <strong>+n</strong> to the supplied integer argument; the increment is then
-recalculated from the number of nodes and the domain. The resulting
-increment value depends on whether you have selected a
-gridline-registered or pixel-registered grid; see <a class="reference internal" href="cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
-details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing (and registration) have
-already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to override the values.</p>
-</dd>
-</dl>
-<span class="target" id="r"></span><dl class="simple">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
-</dd>
-</dl>
-</div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>blendfile</em></dt><dd><p>ASCII file with one record per grid file to include in the blend.
 Each record may contain up to three items, separated by spaces or tabs:
@@ -315,6 +291,44 @@ first be resampled via <a class="reference internal" href="grdsample.html"><span
 netCDF or native binary format will first be reformatted via <a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a>.</p>
 </dd>
 </dl>
+<dl class="simple" id="g">
+<dt><strong>-G</strong><em>outgrid</em></dt><dd><p><em>outgrid</em> is the name of the binary output grid file. (See
+<a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>). Only netCDF and native binary
+grid formats are can be written directly. Other output format choices will
+be handled by reformatting the output once blending is complete.</p>
+</dd>
+</dl>
+<dl class="simple" id="i">
+<dt><strong>-I</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. <strong>Geographical
+(degrees) coordinates</strong>: Optionally, append a increment unit. Choose among
+<strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
+of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
+instead, the increment is assumed to be given in meter, foot, km, Mile,
+nautical mile or US survey foot, respectively, and will be converted to
+the equivalent degrees longitude at the middle latitude of the region
+(the conversion depends on <a class="reference internal" href="gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>). If <em>y_inc</em> is given
+but set to 0 it will be reset equal to <em>x_inc</em>; otherwise it will be
+converted to degrees latitude. <strong>All coordinates</strong>: If <strong>+e</strong> is appended
+then the corresponding max <em>x</em> (<em>east</em>) or <em>y</em> (<em>north</em>) may be slightly
+adjusted to fit exactly the given increment [by default the increment
+may be adjusted slightly to fit the given domain]. Finally, instead of
+giving an increment you may specify the <em>number of nodes</em> desired by
+appending <strong>+n</strong> to the supplied integer argument; the increment is then
+recalculated from the number of nodes, the <em>registration</em>, and the domain.
+The resulting increment value depends on whether you have selected a
+gridline-registered or pixel-registered grid; see <a class="reference internal" href="cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
+details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing and
+the registration have already been initialized; use <strong>-I</strong> and <strong>-r</strong>
+to override these values.</p>
+</dd>
+</dl>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="c">
 <dt><strong>-C</strong><strong>f</strong>|<strong>l</strong>|<strong>o</strong>|<strong>u</strong>[<strong>+n</strong>|<strong>p</strong>]</dt><dd><p>Clobber mode: Instead of blending, simply pick the value of one of
 the grids that covers a node. Select from the following modes: <strong>f</strong>
@@ -338,8 +352,8 @@ values are &gt;= 0 or &lt;= 0, respectively.</p>
 Requires that the output grid file is a native format (i.e., not netCDF).</p>
 </dd>
 </dl>
-<span class="target" id="v"></span><dl class="simple">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
@@ -374,28 +388,6 @@ any module-specific option (but not the GMT common options), then exit.</p>
 <dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="grid-file-formats">
-<h2>Grid File Formats<a class="headerlink" href="#grid-file-formats" title="Permalink to this headline">¶</a></h2>
-<p>By default GMT writes out grid as single precision floats in a
-COARDS-complaint netCDF file format. However, GMT is able to produce
-grid files in many other commonly used grid file formats and also
-facilitates so called “packing” of grids, writing out floating point
-data as 1- or 2-byte integers. To specify the precision, scale and
-offset, the user should add the suffix
-=<em>ID</em>[<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>], where
-<em>ID</em> is a two-letter identifier of the grid type and precision, and
-<em>scale</em> and <em>offset</em> are optional scale factor and offset to be applied
-to all grid values, and <em>invalid</em> is the value used to indicate missing
-data. See <a class="reference internal" href="grdconvert.html"><span class="doc">grdconvert</span></a> and Section
-<a class="reference internal" href="cookbook/features.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a>
-of the GMT Technical Reference and Cookbook for more information.</p>
-<p>When writing a netCDF file, the grid is stored by default with the
-variable name “z”. To specify another variable name <em>varname</em>, append
-<strong>?</strong><em>varname</em> to the file name. Note that you may need to escape the
-special meaning of <strong>?</strong> in your shell program by putting a backslash in
-front of it, or by placing the filename and suffix between quotes or
-double quotes.</p>
 </div>
 <div class="section" id="geographical-and-time-coordinates">
 <h2>Geographical And Time Coordinates<a class="headerlink" href="#geographical-and-time-coordinates" title="Permalink to this headline">¶</a></h2>
@@ -472,25 +464,18 @@ documentation for how to change system limits.</p>
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="grdclip.html" class="btn btn-neutral float-right" title="grdclip" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="grd2xyz.html" class="btn btn-neutral float-left" title="grd2xyz" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="grdclip.html" class="btn btn-neutral float-right" title="grdclip" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="grd2xyz.html" class="btn btn-neutral float-left" title="grd2xyz" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -498,9 +483,9 @@ documentation for how to change system limits.</p>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

@@ -43,7 +43,7 @@ Required Arguments
     Specify the hole-filling algorithm to use.  Choose from **c** for constant
     fill and append the constant value, **n** for nearest neighbor (and optionally
     append a search radius in pixels [default radius is :math:`r^2 = \sqrt{X^2 + Y^2}`,
-    where (*X,Y*) are the node dimensions of the grid], or
+    where (*X,Y*) are the node dimensions of the grid]), or
     *s** for bicubic spline [NOT IMPLEMENTED YET].
 
 .. _-G:
@@ -59,10 +59,10 @@ Optional Arguments
 **-N**\ [*nodata*]
     Sets the node value that identifies a point as a member of a hole [Default is NaN].
 
-.. _-R:
-
-.. |Add_-R| replace:: This defines the subregion to be cut out.
+.. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
@@ -71,10 +71,10 @@ Optional Arguments
     No grid fill takes place and **-G** is ignored. Optionally, append **p**
     to instead write closed polygons for all subregions.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_

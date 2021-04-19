@@ -130,7 +130,7 @@ Should you need a single grid from any of our tiled dataset, e.g., to feed into 
 not depend on GMT, you can create that via :doc:`/grdcut`.  For instance, to make a global grid from the
 eight tiles that make up the 2m x 2m gridline-registered data, try::
 
-    gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd
+    gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd -Rg
 
 ----
 

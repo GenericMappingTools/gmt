@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>subplot &mdash; GMT 6.2.0 documentation</title>
+  <title>subplot &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,8 +41,10 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script src="_static/togglebutton.js"></script>
+        <script src="_static/clipboard.min.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -42,7 +52,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="surface" href="surface.html" />
-    <link rel="prev" title="splitxyz" href="splitxyz.html" />
+    <link rel="prev" title="sphtriangulate" href="sphtriangulate.html" />
 
 
   <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
@@ -62,7 +72,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +126,8 @@
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +142,7 @@
 <li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +201,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +216,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/subplot.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -229,18 +242,19 @@ plotting is done via the <strong>set</strong> directive.  The subplot process is
 <div class="section" id="synopsis-begin-mode">
 <h2>Synopsis (begin mode)<a class="headerlink" href="#synopsis-begin-mode" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt subplot begin</strong> <em>nrows</em><strong>x</strong><em>ncols</em>
-<a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<strong>f</strong>|<strong>s</strong>]<em>width</em>/<em>height</em>[<strong>+f</strong><em>wfracs</em>/<em>hfracs</em>][<strong>+c</strong><em>dx/dy</em>][<strong>+g</strong><em>fill</em>][<strong>+p</strong><em>pen</em>][<strong>+w</strong><em>pen</em>]
-[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong><em>autolabel</em> ]
-[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<em>side</em>]<em>clearance</em> ]
-[ <a class="reference internal" href="#b"><span> <strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
-[ <a class="reference internal" href="#j"><span> <strong>-J</strong></span></a></strong><em>parameters</em> ]
-[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong><em>margins</em> ]
-[ <a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em> ]
-[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>layout</em> ]
-[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>title</em> ]
-[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#x"><span> <strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
-[ <a class="reference internal" href="#y"><span> <strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
+<a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>f</strong>|<strong>s</strong>]<em>width</em>/<em>height</em>[<strong>+f</strong><em>wfracs</em>/<em>hfracs</em>][<strong>+c</strong><em>dx/dy</em>][<strong>+g</strong><em>fill</em>][<strong>+p</strong><em>pen</em>][<strong>+w</strong><em>pen</em>]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>autolabel</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>side</em>]<em>clearance</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
+[ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
+[ <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em> ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><em>margins</em> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>layout</em> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>title</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
+[ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
+[ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </div>
@@ -249,8 +263,8 @@ plotting is done via the <strong>set</strong> directive.  The subplot process is
 <p>The <strong>begin</strong> directive of subplot defines the layout of the entire multi-panel illustration.  Several
 options are available to specify the systematic layout, labeling, dimensions, and more for the subplots.</p>
 </div>
-<div class="section" id="required-arguments">
-<h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="required-arguments-begin-mode">
+<h2>Required Arguments (begin mode)<a class="headerlink" href="#required-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>nrows</em><strong>x</strong><em>ncols</em></dt><dd><p>Specifies the number of rows and columns of subplots.  Each row will have
 the same number of subplots.
@@ -287,8 +301,8 @@ useful if you supply <strong>-B+n</strong> to <strong>subplot begin</strong>, me
 </dd>
 </dl>
 </div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="optional-arguments-begin-mode">
+<h2>Optional Arguments (begin mode)<a class="headerlink" href="#optional-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
 <dt><strong>-A</strong>[<em>autolabel</em>][<strong>+c</strong><em>dx</em>[/<em>dy</em>]][<strong>+g</strong><em>fill</em>][<strong>+j</strong>|<strong>J</strong><em>refpoint</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+p</strong><em>pen</em>][<strong>+r</strong>|<strong>R</strong>][<strong>+v</strong>]</dt><dd><p>Specify automatic tagging of each subplot.  Append either a number or letter [a].
 This sets the tag of the first, top-left subplot and others follow sequentially.
@@ -308,8 +322,8 @@ use <strong>+R</strong> for uppercase Roman numerals [Arabic numerals].
 Append <strong>+v</strong> to increase tag numbers vertically down columns [horizontally across rows].</p>
 </dd>
 </dl>
-<dl class="simple">
-<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set map boundary frame and axes attributes.</p>
+<dl class="simple" id="b">
+<dt><strong>-B</strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em></dt><dd><p>Set map boundary frame and axes attributes. <a class="reference internal" href="gmt.html#b-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#map-frame-and-axes-annotations-the-b-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="c">
@@ -322,8 +336,18 @@ to all subplots, while settings under <strong>set</strong> only apply to the sel
 and <strong>-Y</strong> are not available during subplots; use <strong>-C</strong> instead.</p>
 </dd>
 </dl>
-<span class="target" id="j"></span><dl class="simple">
-<dt><strong>-J</strong><em>parameters</em> <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select map projection.  </p>
+<dl class="simple" id="d">
+<dt><strong>-D</strong></dt><dd><p>Use the prevailing defaults settings (via gmt.conf or <strong>--PAR</strong>=<em>value</em>) and the selections made
+via <strong>-B</strong>, <strong>-C</strong>, <strong>-M</strong> and <strong>-S</strong> to determine the panel sizes (if using <strong>-Ff</strong>) and panel spacings only, but
+do <em>not</em> draw and annotate any frames.  This option is useful if you wish to lay down a partial subplot
+with annotations and frames, but then want to plot data inside it separately later without redrawing
+the frames.  With different <strong>-B</strong>, <strong>-C</strong>, <strong>-M</strong> and <strong>-S</strong> choices the two subplots may not align, but with
+<strong>-D</strong> they will.  <strong>Note</strong>: It is assumed that <strong>-F</strong> stays the same [Draw and annotate frames as indicated].</p>
+</dd>
+</dl>
+<dl class="simple" id="j">
+<dt><strong>-J</strong><em>parameters</em></dt><dd><p>Specify the projection. <a class="reference internal" href="gmt.html#j-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#coordinate-transformations-and-map-projections-the-j-option"><span class="std std-ref">(See cookbook summary)</span></a>
+<a class="reference internal" href="cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="m">
@@ -336,8 +360,9 @@ the margins for the two opposing sides (e.g., east plus west or south plus north
 half the primary annotation font size, giving the full annotation font size as the default gap].</p>
 </dd>
 </dl>
-<span class="target" id="r"></span><dl class="simple">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest. This is useful when all subplots share a common plot domain. In this module, the chosen region will also become the default for any data region needed by computational modules.</p>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. This is useful when all subplots share a common plot domain. In this module, the chosen region
+will also become the default for any data region needed by computational modules. <a class="reference internal" href="gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -354,7 +379,8 @@ Append <strong>+l</strong> if annotated <em>y</em>-axes will have a label [none]
 for the entire subplot.
 Append <strong>+p</strong> to make all annotations axis-parallel [horizontal]; if not used you may have to set <strong>-C</strong> to secure
 extra space for long horizontal annotations.
-Append <strong>+w</strong> to draw horizontal and vertical lines between interior panels using selected pen [no lines].</p>
+Append <strong>+w</strong> to the <strong>-F</strong> argument to draw horizontal and vertical lines
+between interior panels using selected pen [no lines].</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
@@ -362,13 +388,16 @@ Append <strong>+w</strong> to draw horizontal and vertical lines between interio
 overarching <em>heading</em> [no heading]. Font is determined by setting <a class="reference internal" href="gmt.conf.html#term-FONT_HEADING"><span class="xref std std-term">FONT_HEADING</span></a>.</p>
 </dd>
 </dl>
-<span class="target" id="v"></span><dl class="simple">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
-<p id="x"><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</p>
-<dl class="simple">
-<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Shift plot origin.</p>
+<dl class="simple" id="x">
+<dt><strong>-X</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple" id="y">
+<dt><strong>-Y</strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>]</dt><dd><p>Shift plot origin. <a class="reference internal" href="gmt.html#xy-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#plot-positioning-and-layout-the-x-y-options"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -385,15 +414,15 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </div>
 <div class="section" id="synopsis-set-mode">
 <h2>Synopsis (set mode)<a class="headerlink" href="#synopsis-set-mode" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt subplot set</strong> [ <em>row,col</em>|<em>index</em> ] [ <strong>-A</strong><em>fixedlabel</em>] [ <strong>-C</strong><em>side</em><em>clearance</em> ] [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p><strong>gmt subplot set</strong> [ <em>row,col</em>|<em>index</em> ] [ <strong>-A</strong><em>fixedlabel</em>] [ <strong>-C</strong><em>side</em><em>clearance</em> ] [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
 <p>Before you start plotting you must first select the active subplot.
-<strong>Note</strong>: If any <strong>-J</strong> option is passed with <strong>?</strong> as scale or width when plotting subplots,
-then the dimensions of the map are automatically determined by the subplot size and your region.
+<strong>Note</strong>: If any <strong>-J</strong> option is passed <em>without</em> the scale or width when you first are plotting
+inside the subplot, then the scale of the map is automatically determined by the subplot size and your region.
 For Cartesian plots: If you want the scale to apply <em>equally</em> to both dimensions
-then you must specify <strong>-Jx</strong> [The default <strong>-JX</strong> will fill the subplot by using unequal scales].</p>
+then you must specify <strong>-Jx</strong> [The default projection of <strong>-JX</strong> will fill the subplot by using unequal scales].</p>
 </div>
-<div class="section" id="id1">
-<h2>Optional Arguments<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="optional-arguments-set-mode">
+<h2>Optional Arguments (set mode)<a class="headerlink" href="#optional-arguments-set-mode" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>row,col</em></dt><dd><p>Sets the current subplot until further notice.  <strong>Note</strong>: First <em>row</em> or <em>col</em> is 0, not 1. If not given we go to the next subplot by order
 specified via <strong>-A</strong>.  As an alternative, you may bypass the <strong>set</strong> mode and
@@ -405,7 +434,8 @@ GMT maintains information about the current figure and subplot. Also, you may gi
 <dl class="simple" id="subplot-set-a">
 <dt><strong>-A</strong><em>fixedlabel</em></dt><dd><p>Overrides the automatic labeling with the given string.  No modifiers are allowed.
 Placement, justification, etc. are all inherited from how <strong>-A</strong> was specified by the
-initial <strong>subplot begin</strong> command.</p>
+initial <strong>subplot begin</strong> command.  <strong>Note</strong>: Overriding means you initiate the tag
+machinery with <strong>-A</strong> when <strong>subplot begin</strong> was called, otherwise the option is ignored.</p>
 </dd>
 </dl>
 <dl class="simple" id="subplot-set-c2">
@@ -417,7 +447,7 @@ clearances set by <strong>-C</strong> during <strong>subplot begin</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="subplot-set-v">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 <p>Any number of plotting command can now take place and all output will be directed to the
@@ -431,17 +461,17 @@ the hood so these options are not available while a subplot is active.</p>
 </div>
 <div class="section" id="synopsis-end-mode">
 <h2>Synopsis (end mode)<a class="headerlink" href="#synopsis-end-mode" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt subplot end</strong> [ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
+<p><strong>gmt subplot end</strong> [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]</p>
 <p>This command finalizes the current subplot, including any placement of tags, and updates the
 gmt.history to reflect the dimensions and linear projection required to draw the entire figure
 outline. This allows subsequent commands, such as colorbar, to use <strong>-DJ</strong> to place bars with
 reference to the complete figure dimensions. We also reset
 the current plot location to where it was prior to the subplot.</p>
 </div>
-<div class="section" id="id2">
-<h2>Optional Arguments<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="optional-arguments-end-mode">
+<h2>Optional Arguments (end mode)<a class="headerlink" href="#optional-arguments-end-mode" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="subplot-end-v">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 </div>
@@ -449,7 +479,7 @@ the current plot location to where it was prior to the subplot.</p>
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>To make a minimalistic 2x2 basemap layout called panels.pdf, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin panels pdf
-  gmt subplot begin 2x2 -Fs8c -M5p -A -SCb -SRl -Bwstr -R0/80/0/10
+  gmt subplot begin 2x2 -Fs8c -M5p -A -SCb -SRl -R0/80/0/10
     gmt subplot <span class="nb">set</span>
     gmt basemap
     gmt subplot <span class="nb">set</span>
@@ -463,9 +493,10 @@ gmt end show
 </pre></div>
 </div>
 </div>
-<div class="section" id="restriction">
-<h2>Restriction<a class="headerlink" href="#restriction" title="Permalink to this headline">¶</a></h2>
-<p>Currently, nesting of subplots is not implemented.</p>
+<div class="section" id="restrictions">
+<h2>Restrictions<a class="headerlink" href="#restrictions" title="Permalink to this headline">¶</a></h2>
+<p>(1) Currently, nesting of subplots is not implemented. (2) If auto-legend option <strong>-l</strong>
+is used then you must complete plotting in one panel before moving to another.</p>
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
@@ -484,25 +515,18 @@ gmt end show
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="surface.html" class="btn btn-neutral float-right" title="surface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="splitxyz.html" class="btn btn-neutral float-left" title="splitxyz" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="surface.html" class="btn btn-neutral float-right" title="surface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="sphtriangulate.html" class="btn btn-neutral float-left" title="sphtriangulate" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -510,9 +534,9 @@ gmt end show
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

@@ -201,10 +201,10 @@ Optional Arguments
     Limits the wavelengths of the lithosphere field contribution to the
     band indicated by the low and high spherical harmonic order [14/65].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 4 input columns unless **-A** is used].
 .. include:: ../../explain_-bi.rst_
@@ -259,7 +259,7 @@ References
 ----------
 
 Comprehensive Modeling of the Geomagnetic Field, see
-`http://denali.gsfc.nasa.gov/cm/ <http://denali.gsfc.nasa.gov/cm/>`_
+`<https://onlinelibrary.wiley.com/doi/10.1111/j.1365-246X.2004.02421.x>`_
 
 The International Geomagnetic Reference Field (IGRF), see
-`http://www.iugg.org/IAGA/iaga\_pages/pubs\_prods/igrf.htm <http://www.iugg.org/IAGA/iaga_pages/pubs_prods/igrf.htm>`_
+`<https://www.ngdc.noaa.gov/IAGA/vmod/igrf.html>`_

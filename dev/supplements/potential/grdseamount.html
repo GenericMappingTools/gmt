@@ -4,23 +4,31 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>grdseamount &mdash; GMT 6.2.0 documentation</title>
+  <title>grdseamount &mdash; GMT 6.2.0rc1 documentation</title>
   
 
   
   <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/togglebutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="../../_static/style.css" type="text/css" />
 
   
   
     <link rel="shortcut icon" href="../../_static/favicon.png"/>
   
+
   
+  
+
   
 
   
@@ -33,7 +41,10 @@
         <script src="../../_static/jquery.js"></script>
         <script src="../../_static/underscore.js"></script>
         <script src="../../_static/doctools.js"></script>
-        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/togglebutton.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
         <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="../../_static/js/theme.js"></script>
@@ -62,7 +73,7 @@
           
 
           
-            <a href="../../index.html" class="icon icon-home" alt="Documentation Home"> GMT
+            <a href="../../index.html" class="icon icon-home"> GMT
           
 
           
@@ -116,8 +127,8 @@
 <li class="toctree-l1"><a class="reference internal" href="../../users-contrib-symbols.html">Users Symbol Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between different versions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an earlier version</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../switching.html">Switching between Different Versions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
 <p class="caption"><span class="caption-text">Classic Mode</span></p>
 <ul>
@@ -132,6 +143,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../debug.html">Debugging GMT</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">GMT C API</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devdocs.html">Developer Documentation</a></li>
 </ul>
 
             
@@ -190,6 +202,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -203,7 +217,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/supplements/potential/grdseamount.rst" class="fa fa-github"> Edit on GitHub</a>
             
@@ -221,26 +235,26 @@
             
   <span class="target" id="index-0"></span><div class="section" id="grdseamount">
 <h1>grdseamount<a class="headerlink" href="#grdseamount" title="Permalink to this headline">¶</a></h1>
-<p>Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)</p>
+<p>Create synthetic seamounts (Gaussian, parabolic, polynomial, cone or disc; circular or elliptical)</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt grdseamount</strong> [ <em>table</em> ]
-<a class="reference internal" href="#i"><span> <strong>-I</strong></span></a></strong><em>increment</em>
-<a class="reference internal" href="#r"><span> <strong>-R</strong></span></a></strong><em>region</em>
-[ <a class="reference internal" href="#a"><span> <strong>-A</strong></span></a></strong>[<em>out</em>/<em>in</em>] ]
-[ <a class="reference internal" href="#c"><span> <strong>-C</strong></span></a></strong>[<strong>c</strong>|<strong>d</strong>|<strong>g</strong>|<strong>p</strong>] ]
-[ <a class="reference internal" href="#d"><span> <strong>-D</strong></span></a></strong><em>unit</em> ]
-[ <a class="reference internal" href="#e"><span> <strong>-E</strong></span></a></strong> ]
-[ <a class="reference internal" href="#f"><span> <strong>-F</strong></span></a></strong>[<em>flattening</em>] ]
-[ <a class="reference internal" href="#g"><span> <strong>-G</strong></span></a></strong><em>grdfile</em> ]
-[ <a class="reference internal" href="#l"><span> <strong>-L</strong></span></a></strong>[<em>cut</em>] ]
-[ <a class="reference internal" href="#m"><span> <strong>-M</strong></span></a></strong>[<em>list</em>] ]
-[ <a class="reference internal" href="#n"><span> <strong>-N</strong></span></a></strong><em>norm</em> ]
-[ <a class="reference internal" href="#q"><span> <strong>-Q</strong></span></a></strong><em>bmode</em>/<em>fmode</em>[<strong>+d</strong>] ]
-[ <a class="reference internal" href="#s"><span> <strong>-S</strong></span></a></strong><em>scale</em> ]
-[ <a class="reference internal" href="#t"><span> <strong>-T</strong></span></a></strong><em>t0</em>[/<em>t1</em>/<em>dt</em>][<strong>+l</strong>] ]
-[ <a class="reference internal" href="#z"><span> <strong>-Z</strong></span></a></strong><em>level</em> ]
-[ <a class="reference internal" href="#v"><span> <strong>-V</strong></span></a></strong>[<em>level</em>] ]
+<a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em>
+<a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<em>out</em>/<em>in</em>] ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<strong>c</strong>|<strong>d</strong>|<strong>g</strong>|<strong>o</strong>|<strong>p</strong>] ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>unit</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<em>flattening</em>] ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>grdfile</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<em>cut</em>] ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>list</em>] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>norm</em> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>bmode</em>/<em>fmode</em>[<strong>+d</strong>] ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>scale</em> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>t0</em>[/<em>t1</em>/<em>dt</em>][<strong>+l</strong>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>level</em> ]
+[ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-bi</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
@@ -253,17 +267,18 @@
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><strong>grdseamount</strong> will compute the combined shape of multiple synthetic seamounts given their individual shape
 parameters.  We read from <em>table</em> (or stdin) a list of seamount locations and sizes and can evaluate either
-Gaussian, parabolic, conical, or disc shapes, which may be circular or elliptical, and optionally truncated.
-Various scaling options are available to modify the result, including an option to add in
+Gaussian, parabolic, conical, polynomial or disc shapes, which may be circular or elliptical, and optionally
+truncated. Various scaling options are available to modify the result, including an option to add in
 a background depth (more complicated backgrounds may be added via <a class="reference internal" href="../../grdmath.html"><span class="doc">grdmath</span></a>).
-The input must contain <em>lon</em>, <em>lat</em>, <em>radius</em>, <em>height</em> for each seamount.
+The input data must contain <em>lon</em>, <em>lat</em>, <em>radius</em>, <em>height</em> for each seamount.
 For elliptical features (<strong>-E</strong>) we expect <em>lon</em>, <em>lat</em>, <em>azimuth</em>, <em>semi-major</em>, <em>semi-minor</em>,
-<em>height</em> instead. If flattening is specified (<strong>-F</strong>) with no value appended
+<em>height</em> instead. If flattening is specified (via <strong>-F</strong>) with no value appended
 then a final column with <em>flattening</em> is expected (cannot be used for plateaus).
 For temporal evolution of topography the <strong>-T</strong> option may be used, in which case the
 data file must have two final columns with the start and stop time of seamount construction.
 In this case you may choose to write out a cumulative shape or just the increments produced
-by each time step (see <strong>-Q</strong>).</p>
+by each time step (see <strong>-Q</strong>).  Finally, for mixing shapes you can use the trailing text to set
+the shape by using <strong>-C</strong> without an argument.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
@@ -274,8 +289,8 @@ then we read from standard input.  </p>
 </dd>
 </dl>
 <dl class="simple" id="i">
-<dt><strong>-I</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. Optionally,
-append a suffix modifier. <strong>Geographical (degrees) coordinates</strong>: Append
+<dt><strong>-I</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. <strong>Geographical
+(degrees) coordinates</strong>: Optionally, append a increment unit. Choose among
 <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
 of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
 instead, the increment is assumed to be given in meter, foot, km, Mile,
@@ -289,15 +304,16 @@ adjusted to fit exactly the given increment [by default the increment
 may be adjusted slightly to fit the given domain]. Finally, instead of
 giving an increment you may specify the <em>number of nodes</em> desired by
 appending <strong>+n</strong> to the supplied integer argument; the increment is then
-recalculated from the number of nodes and the domain. The resulting
-increment value depends on whether you have selected a
+recalculated from the number of nodes, the <em>registration</em>, and the domain.
+The resulting increment value depends on whether you have selected a
 gridline-registered or pixel-registered grid; see <a class="reference internal" href="../../cookbook/file-formats.html#gmt-file-formats"><span class="std std-ref">GMT File Formats</span></a> for
-details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing (and registration) have
-already been initialized; use <strong>-I</strong> (and <strong>-r</strong>) to override the values.</p>
+details. <strong>Note</strong>: If <strong>-R</strong><em>grdfile</em> is used then the grid spacing and
+the registration have already been initialized; use <strong>-I</strong> and <strong>-r</strong>
+to override these values.</p>
 </dd>
 </dl>
-<span class="target" id="r"></span><dl class="simple">
-<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>] <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify the region of interest.  </p>
+<dl class="simple" id="r">
+<dt><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>[<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p>Specify the region of interest. <a class="reference internal" href="../../gmt.html#r-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#data-domain-or-map-region-the-r-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
 </dd>
 </dl>
 </div>
@@ -309,16 +325,19 @@ Here, height and flattening are ignored and <strong>-L</strong>, <strong>-N</str
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong>[<strong>c</strong>|<strong>d</strong>|<strong>g</strong>|<strong>p</strong>]</dt><dd><p>Select seamount shape function: choose among <strong>c</strong> (cone), <strong>d</strong> (disc), <strong>g</strong> (Gaussian)
-and <strong>p</strong> (parabolic) shape [Default is Gaussian].  All but the disc can furthermore
-be truncated via a flattening parameter <em>f</em> set by <strong>-F</strong>.  If <strong>-C</strong> is not given any
+<dt><strong>-C</strong>[<strong>c</strong>|<strong>d</strong>|<strong>g</strong>|<strong>o</strong>|<strong>p</strong>]</dt><dd><p>Select seamount shape function: choose among <strong>c</strong> (cone), <strong>d</strong> (disc), <strong>g</strong> (Gaussian)
+<strong>o</strong> (polynomial) and <strong>p</strong> (parabolic) shape [Default is Gaussian].  All but the disc can
+furthermore be truncated via a flattening parameter <em>f</em> set by <strong>-F</strong>.  If <strong>-C</strong> is not given any
 argument then we will read the shape code from the last input column.  If <strong>-C</strong> is not given
-at all then we default to Gaussian shapes [<strong>g</strong>].</p>
+at all then we default to Gaussian shapes [<strong>g</strong>].  <strong>Note</strong>: The polynomial model has an amplitude
+for a normalized radius <em>r</em> that is given by <span class="math notranslate nohighlight">\(h(r) = \frac{(1+r)^3(1-r)^3)}{1+r^3}\)</span>.  It is
+very similar to the Gaussian model (volume is just ~2.4% larger) but <em>h</em> goes exactly to zero at
+the basal radius.</p>
 </dd>
 </dl>
 <div class="figure align-center" id="id1">
 <a class="reference internal image-reference" href="../../_images/GMT_seamount_types.png"><img alt="../../_images/GMT_seamount_types.png" src="../../_images/GMT_seamount_types.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">The four types of seamounts selectable via option <strong>-C</strong>.  In all cases, <span class="math notranslate nohighlight">\(h_0\)</span> is the maximum
+<p class="caption"><span class="caption-text">The five types of seamounts selectable via option <strong>-C</strong>.  In all cases, <span class="math notranslate nohighlight">\(h_0\)</span> is the maximum
 <em>height</em>, <span class="math notranslate nohighlight">\(r_0\)</span> is the basal <em>radius</em>, <span class="math notranslate nohighlight">\(h_c\)</span> is the noise floor set via <strong>-L</strong> [0], and
 <em>f</em> is the <em>flattening</em> set via <strong>-F</strong> [0]. The top radius <span class="math notranslate nohighlight">\(r_t\)</span> is only nonzero if there is
 flattening and hence does not apply to the disc model.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
@@ -347,7 +366,7 @@ to find it in last input column [no truncation].  Ignored if used with <strong>-
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>grdfile</em></dt><dd><p>Specify the name of the output grid file; see GRID FILE FORMATS below).
+<dt><strong>-G</strong><em>grdfile</em></dt><dd><p>Specify the name of the output grid file (see <a class="reference internal" href="../../gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).
 If <strong>-T</strong> is set then <em>grdfile</em> must be a filename template that contains
 a floating point format (C syntax).  If the filename template also contains
 either %s (for unit name) or %c (for unit letter) then we use the corresponding time
@@ -405,6 +424,10 @@ may have individual units appended, otherwise we assume year).  Note that a grid
 will be written for all time-steps even if there are no loads or no changes.</p>
 </dd>
 </dl>
+<dl class="simple" id="v">
+<dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
 <dl class="simple" id="z">
 <dt><strong>-Z</strong><em>level</em></dt><dd><p>Set the background depth [0].</p>
 </dd>
@@ -425,11 +448,7 @@ km via a “Flat Earth” approximation using the current ellipsoid parameters.<
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
-</dd>
-</dl>
-<dl class="simple">
-<dt><strong>-V</strong>[<em>level</em>] <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select verbosity level [<strong>w</strong>].  </p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -492,25 +511,18 @@ gmt grdseamount -Rk-1024/1022/-1122/924 -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="talwani2d.html" class="btn btn-neutral float-right" title="talwani2d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="grdredpol.html" class="btn btn-neutral float-left" title="grdredpol" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="talwani2d.html" class="btn btn-neutral float-right" title="talwani2d" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="grdredpol.html" class="btn btn-neutral float-left" title="grdredpol" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, The GMT Team.
+        &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Dec 02, 2020.
+        Last updated on Apr 19, 2021.
       </span>
 
     </p>
@@ -518,9 +530,9 @@ gmt grdseamount -Rk-1024/1022/-1122/924 -I2000 -Gsmt_%3.1f_%s.nc t.txt -T3M/1.9M
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 

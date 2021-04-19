@@ -42,7 +42,7 @@ Required Arguments
 .. _-G:
 
 **-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See GRID FILE FORMATS below).
+    Name of resulting output mask grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
 
 .. _-I:
 
@@ -103,10 +103,10 @@ Optional Arguments
 
     [Default is 0/1/0/1/0 (i.e., 0/1)].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
@@ -114,8 +114,6 @@ Optional Arguments
 .. include:: explain_core.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_output.rst_
 
 Notes
 -----
