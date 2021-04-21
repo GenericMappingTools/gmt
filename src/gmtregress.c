@@ -1241,7 +1241,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 	}
 	else {	/* Work up best regression solution per input segment */
 		if (Ctrl->F.param)
-			n_columns = 12;
+			n_columns = GMTREGRESS_NPAR;
 		else {
 			if (!Ctrl->F.active) {	/* Default output includes all possible columns */
 				char *s = GMTREGRESS_FARGS;
