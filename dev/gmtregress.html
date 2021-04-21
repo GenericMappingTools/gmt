@@ -330,8 +330,9 @@ For <strong>-Er</strong> the sum of the green areas is minimized instead.</span>
 <strong>c</strong> (symmetrical confidence interval on the regression; see <strong>-C</strong>
 for specifying the level), <strong>z</strong> (standardized residuals or so-called <em>z-scores</em>) and <strong>w</strong> (outlier weights 0 or 1; for
 <strong>-Nw</strong> these are the Reweighted Least Squares weights) [<strong>xymrczw</strong>].
-As an alternative to evaluating the model, just give <strong>-Fp</strong> and we instead write a single record with the model
-parameters <em>npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept</em>.</p>
+As an alternative to evaluating the model, just give <strong>-Fp</strong> and we instead write a single record with the 12 model
+parameters <em>npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept r R n_effective</em>. <strong>Note</strong>:
+<em>R</em> is only set when <strong>-Ey</strong> is selected.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">

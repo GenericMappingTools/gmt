@@ -114,8 +114,9 @@ Optional Arguments
     **c** (symmetrical confidence interval on the regression; see **-C**
     for specifying the level), **z** (standardized residuals or so-called *z-scores*) and **w** (outlier weights 0 or 1; for
     **-Nw** these are the Reweighted Least Squares weights) [**xymrczw**].
-    As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the model
-    parameters *npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept*.
+    As an alternative to evaluating the model, just give **-Fp** and we instead write a single record with the 12 model
+    parameters *npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept r R n_effective*. **Note**:
+    *R* is only set when **-Ey** is selected.
 
 .. _-N:
 
