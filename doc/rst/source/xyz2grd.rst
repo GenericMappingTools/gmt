@@ -46,7 +46,8 @@ mean value. As an option (using **-Z**), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
 of formats, see **-Z** below.)  **Note**: **xyz2grd** does not grid the data,
 it simply reformats existing data to a grid structure.  For gridding,
-see **surface**, **greenspline**, **nearneighbor**, or **triangulate**.
+see :doc:`surface`, :doc:`greenspline`, :doc:`nearneighbor`, or
+:doc:`triangulate`.
 
 Required Arguments
 ------------------

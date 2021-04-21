@@ -14,10 +14,10 @@ Synopsis
 
 **gmt nearneighbor** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
-|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**
 |SYN_OPT-R|
 |-S|\ *search_radius*
 [ |-E|\ *empty* ]
+[|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**]
 [ |SYN_OPT-V| ]
 [ |-W| ]
 [ |SYN_OPT-bi| ]
@@ -83,20 +83,6 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-N:
-
-**-N**\ *sectors*\ [**+m**\ *min_sectors*]\|\ **n**
-    The circular search area centered on each node is divided into *sectors*
-    sectors. Average values will only be computed if there is *at least*
-    one value inside each of at least *min_sectors* of the sectors for a given
-    node. Nodes that fail this test are assigned the value NaN (but see
-    **-E**). If **+m** is omitted then *min_sectors* is set to be at least 50%
-    of *sectors* (i.e., rounded up to next integer) [Default is a quadrant
-    search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
-    that only the nearest value per sector enters into the averaging; the
-    more distant points are ignored.  Alternatively, use **-Nn** to call
-    GDALʻs nearest neighbor algorithm instead.
-
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -120,6 +106,20 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. _-N:
+
+**-N**\ *sectors*\ [**+m**\ *min_sectors*]\|\ **n**
+    The circular search area centered on each node is divided into *sectors*
+    sectors. Average values will only be computed if there is *at least*
+    one value inside each of at least *min_sectors* of the sectors for a given
+    node. Nodes that fail this test are assigned the value NaN (but see
+    **-E**). If **+m** is omitted then *min_sectors* is set to be at least 50%
+    of *sectors* (i.e., rounded up to next integer) [Default is a quadrant
+    search with 100% coverage, i.e., *sectors* = *min_sectors* = 4]. Note
+    that only the nearest value per sector enters into the averaging; the
+    more distant points are ignored.  Alternatively, use **-Nn** to call
+    GDALʻs nearest neighbor algorithm instead.
 
 .. _-W:
 
