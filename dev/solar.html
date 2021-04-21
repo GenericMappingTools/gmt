@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>solar &mdash; GMT 6.2.0rc1 documentation</title>
+  <title>solar &mdash; GMT 6.2.0 documentation</title>
   
 
   
@@ -290,8 +290,9 @@ Deactivate clipping by appending the output of gmt <a class="reference internal"
 <dl class="simple" id="i">
 <dt><strong>-I</strong>[<em>lon/lat</em>][<strong>+d</strong><em>date</em>][<strong>+z</strong><em>TZ</em>]</dt><dd><p>Print current sun position as well as Azimuth and Elevation. Append lon/lat to print also the times of
 Sunrise, Sunset, Noon and length of the day.
-Add <strong>+d</strong><em>date</em> in ISO format, e.g, <strong>+d</strong><em>2000-04-25</em>, to compute sun parameters
-for this date. If necessary, append time zone via <strong>+z</strong><em>TZ</em>.</p>
+Add <strong>+d</strong><em>date</em> in ISO 8601 format, e.g, <strong>+d</strong><em>2000-04-25T04:52</em>, to compute sun parameters
+for this date and time. If necessary, append time zone via <strong>+z</strong><em>TZ</em>. The time zone is given as an offset from UTC.
+Negative UTC offsets look like <em>−03:00</em> or <em>−03</em>. Positive UTC offsets look like <em>02:00</em> or <em>02</em>.</p>
 </dd>
 </dl>
 <dl class="simple" id="j">
@@ -376,8 +377,8 @@ The examples that use remote files (file names starting with <code class="docuti
 can be cut and pasted into your terminal for testing.
 Other commands requiring input files are just dummy examples of the types
 of uses that are common but cannot be run verbatim as written.</p>
-<p>Print current Sun position and Sunrise, Sunset times at:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt solar -I-7.93/37.079+d2016-02-04T10:01:00
+<p>Print current Sun position and Sunrise, Sunset times at given date, time and time zone:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt solar -I-7.93/37.079+d2016-02-04T10:01:00+z02:00
 </pre></div>
 </div>
 <p>Plot the day-night and civil twilight:</p>
@@ -424,7 +425,7 @@ gmt end show
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Apr 20, 2021.
+        Last updated on Apr 21, 2021.
       </span>
 
     </p>

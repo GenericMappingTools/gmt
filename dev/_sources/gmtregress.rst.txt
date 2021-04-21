@@ -103,7 +103,7 @@ Optional Arguments
    :width: 600 px
    :align: center
 
-   The four types of misfit.  The sum of the squared lengths of :math:`e_k` is minimized, for k = e, y, or o.
+   The four types of misfit.  The sum of the squared lengths of :math:`e_k` is minimized, for k = x, y, or o.
    For **-Er** the sum of the green areas is minimized instead.
 
 .. _-F:
