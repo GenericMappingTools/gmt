@@ -6,7 +6,8 @@
 
   var doc_url = "docs.generic-mapping-tools.org";
   // var doc_url = "0.0.0.0:8000"; // for local testing only
-  var url_re = new RegExp(doc_url + "\\/(dev|latest|(\\d+\\.\\d+)|(\\d+\\.\\d+\\.\\d+\\w+\\d+))\\/");  // List all versions.
+  var url_re = new RegExp(doc_url + "\\/(dev|latest|(\\d+\\.\\d+)|(\\d+\\.\\d+\\.\\d+\\w+\\d+))\\/");
+  // List all versions.
   // Add one entry "version: title" for any minor releases
   var all_versions = {
     'latest': 'latest',
