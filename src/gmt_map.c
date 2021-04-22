@@ -2795,7 +2795,7 @@ GMT_LOCAL int gmtmap_init_polar (struct GMT_CTRL *GMT, bool *search) {
 	*search = false;
 	gmtproj_vpolar (GMT, GMT->current.proj.pars[1]);
 	if (GMT->current.proj.angle_kind == GMT_IS_LAT && (GMT->common.R.wesn[XLO] < -90.0 || GMT->common.R.wesn[XHI] > 90.0)) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -R:  Your +ky modifier for -Jp|P implies angles in the -90/+90 range (latitudes)\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -R:  Your +ky modifier for -Jp|P implies angles must be contained in the -90/+90 range (latitudes)\n");
 		return GMT_PROJECTION_ERROR;
 	}
 	if (GMT->current.proj.flip) {	/* Check restrictions */

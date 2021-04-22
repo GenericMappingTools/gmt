@@ -5050,7 +5050,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 									break;
 							}
 							break;
-						case 'k':	/* Gave optional +k to indicate angles are longitude (x) or latitude (y) [Just angles] */
+						case 'k':	/* Gave optional +k to indicate angles are longitude (x) or latitude (y) [Just great circle angles] */
 							switch (word[1]) {
 								case 'x':	GMT->current.proj.angle_kind = GMT_IS_LON;	break;
 								case 'y':	GMT->current.proj.angle_kind = GMT_IS_LAT;	break;
@@ -5093,10 +5093,6 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				if (uerr) return (GMT_PARSE_ERROR);
 				GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, args);
 				if (d) d[0] = '+';	/* Restore modifiers */
-//				if (GMT->current.proj.z_down && GMT->current.proj.flip) {
-//					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: Cannot select both +f and +z modifiers\n");
-//					error++;
-//				}
 			}
 			else {	/* No modifiers, so look for deprecated syntax such as -Jp|p[a|A], slash-separated scale|width and angular offset, and trailing r or z codes */
 				if (args[0] == 'a' || args[0] == 'A') {	/* Using azimuths instead of directions */
