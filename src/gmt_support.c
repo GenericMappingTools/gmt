@@ -15067,12 +15067,12 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 /* do_minutes:	true if degree and minutes are desired, false for just integer degrees */
 /* do_seconds:	true if degree, minutes, and seconds are desired */
 /* do_hemi:	true if compass headings (W, E, S, N) are desired */
-/* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
+/* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed, 3 = latitudes in longitude positions, 4 = great-circle degrees */
 /* worldmap:	T/F, whatever GMT->current.map.is_world is */
 
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, level, type;
-	bool zero_fix = false;
+	bool zero_fix = false, lat_special = (lonlat == 3), deg_special = (lonlat == 4);
 	char hemi[GMT_LEN16] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
@@ -15081,6 +15081,8 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	if (GMT->current.plot.calclock.geo.order[2] == -1) do_seconds = false;
 	for (k = n_items = 0; k < 3; k++) if (GMT->current.plot.calclock.geo.order[k] >= 0) n_items++;	/* How many of d, m, and s are requested as integers */
 
+	if (lat_special) lonlat = 1;	/* Remove the special flag */
+	if (deg_special) lonlat = 0;	/* Remove the special flag */
 	if (lonlat == 0) {	/* Fix longitudes range first */
 		gmt_lon_range_adjust (GMT->current.plot.calclock.geo.range, &val);
 	}
@@ -15114,16 +15116,21 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 		else
 			strcat (hemi, (val < 0.0) ? GMT->current.language.cardinal_name[2][2] : GMT->current.language.cardinal_name[2][3]);
 
-		val = fabs (val);
-		if (hemi[0] == ' ' && hemi[1] == 0) hemi[0] = 0;	/* No space if no hemisphere indication */
+		if (!deg_special) {
+			val = fabs (val);
+			if (hemi[0] == ' ' && hemi[1] == 0) hemi[0] = 0;	/* No space if no hemisphere indication */
+		}
 	}
-	if (GMT->current.plot.calclock.geo.no_sign) val = fabs (val);
+	if (deg_special)
+		hemi[0] = 0;
+	else if (GMT->current.plot.calclock.geo.no_sign)
+		val = fabs (val);
 	sign = (val < 0.0) ? -1 : 1;
 
 	level = do_minutes + do_seconds;		/* 0, 1, or 2 */
 	type = (GMT->current.plot.calclock.geo.n_sec_decimals > 0) ? 1 : 0;
 
-	if (GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta (set in )*/
+	if (!(lat_special || deg_special) && GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta [set via -Jp|P +fe modifier] */
 		gmt_sprintf_float (GMT, label, GMT->current.setting.format_float_map, val);
 	else if (GMT->current.plot.calclock.geo.decimal)
 		sprintf (label, GMT->current.plot.calclock.geo.x_format, val, hemi);
