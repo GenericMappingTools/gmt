@@ -2638,6 +2638,25 @@ bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
 	return false;
 }
 
+static char *gmtplot_revise_angles_just (struct GMT_CTRL *GMT, double line_angle, unsigned side, unsigned int def_just[], double *t_angle, unsigned int *just) {
+	/* Given the side (W or E) and angle of the boundary, determine the justification of the text and possibly flip it 180 */
+	static char *flip[2] = {"", "neg "}, *name = "WE";
+	unsigned int k = GMT->current.proj.got_azimuths ? 1 : 0, pside;
+	if (side == W_SIDE) side = 0; else side = 1;	/* Turn W_SIDE to 0 and E_SIDE to 1 for use with flip and def_just arrays */
+	pside = GMT->current.proj.got_azimuths ? 1-side : side;	/* Since azimuths go the other way */
+	if ((line_angle < -90.00 || line_angle > 90.0)) {	/* Must flip the text angle 180 degrees and also flip the justification */
+		*t_angle = 180.0;
+		*just = def_just[pside];
+	}
+	else {	/* Normally the annotation is just plotted along the radial which is the x-axis after the rotation */
+		*t_angle = 0.0;
+		*just = def_just[1-pside];
+	}
+	if (side == 1) k = (k + 1) % 2;	/* We want positive direction to be outwards */
+	// fprintf (stderr, "Side %c Input: line-angle = %g, just = %d  Output: t-angle = %g, just = %d neg = %s\n", name[side], line_angle, def_just[0], *t_angle, *just, flip[k]);
+	return flip[k];
+}
+
 GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	unsigned int i, k, nx = 0, ny = 0, last, form, remove[2] = {0,0}, trim, add, x_kind = 0;
 	bool do_minutes, do_seconds, done_Greenwich, done_Dateline, check_edges;
@@ -2863,57 +2882,35 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 	if (GMT->current.proj.projection_GMT == GMT_POLAR && GMT->current.map.frame.axis[GMT_Y].label[0] && !gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {
 		/* May need to label radial axis */
 		struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[GMT_Y];
-		double x0, x1, y0, y1, xm, ym, label_angle, line_angle, t_angle, sign = 1.0;
+		double x0, x1, y0, y1, xm, ym, line_angle, t_angle;
 		double off = GMT->current.setting.map_label_offset + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + MAX (0.0, GMT->current.setting.map_tick_length[GMT_PRIMARY]);
-		unsigned int just, we_side[2] = {E_SIDE, W_SIDE}, def_just[2] = {PSL_TC, PSL_BC};
-		if (GMT->current.proj.z_down != GMT_ZDOWN_R) gmt_M_uint_swap (we_side[0], we_side[1]);
-		if (GMT->current.proj.z_down != GMT_ZDOWN_R) {
-			gmt_M_uint_swap (def_just[0], def_just[1]);
-			sign = -1.0;
-		}
+		unsigned int just, we_side[2] = {W_SIDE, E_SIDE}, def_just[2] = {PSL_TC, PSL_BC};
+		char *neg;
 		if (GMT->current.map.frame.side[we_side[0]] & GMT_AXIS_ANNOT) {
 			/* Compute x, y, angles etc */
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], &x0, &y0);
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &x1, &y1);
-			xm = 0.5 * (x0 + x1);	ym = 0.5 * (y0 + y1);
-			label_angle = line_angle = d_atan2d (y1 - y0, x1 - x0);
-			if (GMT->current.proj.z_down != GMT_ZDOWN_R) line_angle += 180.0;
-			if (label_angle < -90.00 || label_angle > 90.0) {
-				t_angle = 180.0;
-				just = def_just[0];
-			}
-			else {
-				t_angle = 0.0;
-				just = def_just[1];
-			}
-			fprintf (stderr, "Do W, line-angle = %g label-angle = %g t-angle = %g, just = %d\n", line_angle, label_angle, t_angle, just);
+			xm = 0.5 * (x0 + x1);	ym = 0.5 * (y0 + y1);	line_angle = d_atan2d (y1 - y0, x1 - x0);
+			neg = gmtplot_revise_angles_just (GMT, line_angle, we_side[0], def_just, &t_angle, &just);
+			/* Center origin on mid-axis and rotate plot x-axis to coincide with line_angle direction */
 			PSL_setorigin (PSL, xm, ym, line_angle, PSL_FWD);
-			PSL_setcurrentpoint (PSL, 0.0, 0.0);
-			PSL_command (PSL, "0 PSL_AH1 %d add G\n", PSL_IZ (PSL, sign * off));
-			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, true);
-			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);
+			PSL_setcurrentpoint (PSL, 0.0, 0.0);	/* Make the center point of axis the current point */
+			PSL_command (PSL, "0 PSL_AH1 %d add %sG\n", PSL_IZ (PSL, off), neg);	/* Move outwards in the x-direction by the annotation width and offset */
+			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, true);	/* Place the label */
+			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);	/* Undo the coordinate system change */
 		}
 		if (GMT->current.map.frame.side[we_side[1]] & GMT_AXIS_ANNOT) {
 			/* Compute x, y, angles etc */
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &x0, &y0);
 			gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &x1, &y1);
-			xm = 0.5 * (x0 + x1);	ym = 0.5 * (y0 + y1);
-			label_angle = line_angle = d_atan2d (y1 - y0, x1 - x0);
-			if (GMT->current.proj.z_down != GMT_ZDOWN_R) line_angle += 180.0;
-			if (label_angle < -90.00 || label_angle > 90.0) {
-				t_angle = 180.0;
-				just = def_just[1];
-			}
-			else {
-				t_angle = 0.0;
-				just = def_just[0];
-			}
-			fprintf (stderr, "Do E, line-angle = %g label-angle = %g t-angle = %g, just = %d\n", line_angle, label_angle, t_angle, just);
+			xm = 0.5 * (x0 + x1);	ym = 0.5 * (y0 + y1);	line_angle = d_atan2d (y1 - y0, x1 - x0);
+			neg = gmtplot_revise_angles_just (GMT, line_angle, we_side[1], def_just,  &t_angle, &just);
+			/* Center origin on mid-axis and rotate plot x-axis to coincide with line_angle direction */
 			PSL_setorigin (PSL, xm, ym, line_angle, PSL_FWD);
-			PSL_setcurrentpoint (PSL, 0.0, 0.0);
-			PSL_command (PSL, "0 PSL_AH1 %d add neg G\n", PSL_IZ (PSL, sign * off));
+			PSL_setcurrentpoint (PSL, 0.0, 0.0);	/* Make the center point of axis the current point */
+			PSL_command (PSL, "0 PSL_AH1 %d add %sG\n", PSL_IZ (PSL, off), neg);	/* Move outwards in the x-direction by the annotation width and offset */
 			gmtplot_map_label (GMT, 0.0, 0.0, A->label, t_angle, just, GMT_Y, false);
-			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);
+			PSL_setorigin (PSL, -xm, -ym, -line_angle, PSL_INV);	/* Undo the coordinate system change */
 		}
 	}
 
