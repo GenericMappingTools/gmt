@@ -16,8 +16,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
   <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
   <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
   <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
@@ -330,8 +330,9 @@ For <strong>-Er</strong> the sum of the green areas is minimized instead.</span>
 <strong>c</strong> (symmetrical confidence interval on the regression; see <strong>-C</strong>
 for specifying the level), <strong>z</strong> (standardized residuals or so-called <em>z-scores</em>) and <strong>w</strong> (outlier weights 0 or 1; for
 <strong>-Nw</strong> these are the Reweighted Least Squares weights) [<strong>xymrczw</strong>].
-As an alternative to evaluating the model, just give <strong>-Fp</strong> and we instead write a single record with the model
-parameters <em>npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept</em>.</p>
+As an alternative to evaluating the model, just give <strong>-Fp</strong> and we instead write a single record with the 12 model
+parameters <em>npoints xmean ymean angle misfit slope intercept sigma_slope sigma_intercept r R n_effective</em>. <strong>Note</strong>:
+<em>R</em> is only set when <strong>-Ey</strong> is selected.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
@@ -654,7 +655,7 @@ equations for the slope, intercept, and standard errors of the best straight lin
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Apr 21, 2021.
+        Last updated on Apr 22, 2021.
       </span>
 
     </p>

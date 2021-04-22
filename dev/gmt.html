@@ -16,8 +16,8 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
   <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
   <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
   <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
   <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
   <link rel="stylesheet" href="_static/style.css" type="text/css" />
 
@@ -976,7 +976,7 @@ the <em>lat</em> as +-90 to avoid ambiguity.) or width (with <strong>-JS</strong
 <p><strong>NON-GEOGRAPHICAL PROJECTIONS:</strong></p>
 </div></blockquote>
 <blockquote id="jp-full">
-<div><p><strong>-Jp</strong>|<strong>P</strong><em>scale</em>|<em>width</em>[<strong>+a</strong>][<strong>+f</strong>[<strong>e</strong>|<strong>p</strong>|<em>radius</em>]][<strong>+r</strong><em>offset</em>][<strong>+t</strong><em>origin</em>][<strong>+z</strong>[<strong>p</strong>|<em>radius</em>]]] (Polar coordinates (<em>theta</em>, <em>r</em>))</p>
+<div><p><strong>-Jp</strong>|<strong>P</strong><em>scale</em>|<em>width</em>[<strong>+a</strong>][<strong>+f</strong>[<strong>e</strong>|<strong>p</strong>|<em>radius</em>]][<strong>+k</strong><em>kind</em>][<strong>+r</strong><em>offset</em>][<strong>+t</strong><em>origin</em>][<strong>+z</strong>[<strong>p</strong>|<em>radius</em>]]] (Polar coordinates (<em>theta</em>, <em>r</em>))</p>
 <p>Give <em>scale</em> (with <strong>-Jp</strong>; in <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">plot-units</span></a>/r-unit) or <em>width</em> (with <strong>-JP</strong>; in
 <a class="reference internal" href="cookbook/features.html#plt-units"><span class="std std-ref">plot-units</span></a>). The following modifiers are supported by <strong>-Jp</strong>|<strong>P</strong>:</p>
 <ul class="simple">
@@ -985,6 +985,7 @@ CCW from East].</p></li>
 <li><p><strong>+f</strong> to flip the radial direction to point inwards, and append <strong>e</strong> to indicate that <em>r</em> represents
 <em>elevations</em> in degrees (requires <em>south</em> &gt;= 0 and <em>north</em> &lt;= 90), <strong>p</strong> to select current planetary radius
 (determined by <a class="reference internal" href="gmt.conf.html#term-PROJ_ELLIPSOID"><span class="xref std std-term">PROJ_ELLIPSOID</span></a>) as maximum radius [<em>north</em>], or <em>radius</em> to specify a custom radius.</p></li>
+<li><p><strong>+k</strong> sets the annotation <em>kind</em> to be longitudes (<em>x</em>) or latitudes (<em>y</em>) [Default is unspecified angles].</p></li>
 <li><p><strong>+r</strong><em>offset</em> to include a radial offset in measurement units [default is <strong>0</strong>].</p></li>
 <li><p><strong>+t</strong><em>origin</em> in degrees so that this angular value is aligned with the positive <em>x</em>-axis (or the azimuth to
 be aligned with the positive <em>y</em>-axis if <strong>+a</strong>) [default is <strong>0</strong>].</p></li>
@@ -2025,7 +2026,7 @@ GMT documentation site <a class="reference external" href="https://docs.generic-
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Apr 21, 2021.
+        Last updated on Apr 22, 2021.
       </span>
 
     </p>
