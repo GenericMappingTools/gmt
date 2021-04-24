@@ -1,93 +1,95 @@
 #!/usr/bin/env bash
-
-#	WIP: Explain
-	
-#	Titulo del mapa
-	title=anim14
-	echo $title
-	
-#	Proyeccion del mapa y ancho del mapa
-	W=23.64c
-	W=22.3c
-
-#	Dimensiones del Grafico (en cm): Ancho (L), Altura inferior (H1) y arriba (H2)
-	H=3.5
-	H1=3.8
-	PROJ=M$W
-	
-	DEM="/home/federico/E:/Facultad/Datos_Geofisicos/Batimetria/SRTM15+v21/SRTM15+V2.1.nc"	
-#	DEM=@earth_relief_15s
-	
-#	Region geografica del mapa (W/E/S/N)
-	REGION=-75/-61/-33.2/-28.7 # v0
-
-#	Coordendas iniciales (1) y finales del perfil (2)
-	Long1=-74
-	Long2=-64
-	Lat1=-29
-	Lat2=-33
-	KM=1052.32
-
-#	Distancia perpendicular al pefil (en km) y rango de profundidades del perfil (en km)
-	Dist_Perfil=100
-	DepthMin=0
-	DepthMax=200
-
-#	Offset en X/Y
-	X=0.32
-	Y=0.91
-	
+#
+# Movie of focal mechanism from 09-1981 to 01-2018 in the flat subduction area in western Argentina and central Chile.
+# Shows an map with a profile.
+# Global CMT web page: https://www.globalcmt.org/
+#
+# DEM: @earth_relief_03s
+# Data: jan76_dec17.ndk
+#
+# The data file can be donwload and rearrenged to a gmt format with the followings commands:
+# URL="https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/jan76_dec17.ndk"
+# gmt which $URL -G 
+# gawk '/^PDE/ {Date=$2; Time=$3; Lat=$4; Long=$5; Depth=$6; getline; Name=$1; getline; getline; Exp=$1; getline; strike1=$12; dip1=$13; rake1=$14; strike2=$15; dip2=$16; rake2=$17; print Long, Lat, Depth, strike1, dip1, rake1, strike2, dip2, rake2, Exp, Date "T" Time, Name}' jan76_dec17.ndk | sed 's/\//-/g' > meca.gmt
+#
+# The finished movie is available in our YouTube channel as well:
+# https://youtu.be/...
+# The x-sec, x frame movie took ~x minutes to render on a ... (24-core MacPro 2013).
+#
+# Author: ESTEBAN, Federico D.
+# Profile coordinates and perpendicular distance (in km) to filter the data and to show in the cross.section. 
+Long1=-75.02
+Long2=-63.65
+Lat1=-33.5
+Lat2=-31
+Dist=100k
+# Angles (min/max/inc) for the profile inset
+Angles=15/60/15 
+DEM=@earth_relief_03s
+# Other Variables
+W=22.73   			# Width Profile
+H=2.7                   	# Profile Heigth
+W1=23.78			# Map Width
+REGION=-75.1/-63/-34.44/-30.35	# Map Region
+PROJ=M$W1			# Map projection
+# Offset en X/Y
+X=0.115
+Y=0.91
+# Create Profile
+cat << EOF > tmp_profile
+$Long1 $Lat1
+$Long2 $Lat2
+EOF
+# Filter Focal Mechanism
+gmt select "meca.gmt" -L"tmp_profile"+d$Dist+p -fg > "coupe_I.gmt"
+gmt select "meca.gmt" -L"tmp_profile"+d$Dist+p -fg > "coupe_O.gmt" -Il
+# Calculate variables (profile lenght, maximum depth of events (+10 to avoid clipping in the profile), vertical exaggeration, table of angles).
+KM=$(echo $Long1 $Lat1 | gmt mapproject -G$Long2/$Lat2+uk -o2)
+DepthMax=$(gmt info coupe_I.gmt -C2 -o5 | gmt math -Q STDIN 10 ADD =)
+VE=$(gmt math -Q $KM $H MUL $W DIV $DepthMax DIV = --FORMAT_FLOAT_OUT=%.2g)
+gmt math -T$Angles T SIND -o0,1,0 = | gmt math STDIN -T -C0 COSD = | gawk '$0=$0"@."' > angles.txt
+Y1=$(gmt math -Q $H 0.3 ADD =)  # Offset for the map
+Ha=$(gmt math -Q $H 0.7 SUB =)  # Heigth of inset with angles
+Wa=$(gmt math -Q $Ha $VE DIV =) # Width of inset with angles (calculated from vertical exaggeration to have same deformation as the profile)
 #       -----------------------------------------------------------------------------------------------------------
 cat << EOF > pre.sh
-
-	gmt set COLOR_HSV_MIN_V 0
-	gmt set FONT_LABEL 10p
-	gmt set FONT_ANNOT_PRIMARY 7p
-	gmt set MAP_FRAME_PEN thin,black
-	
+	gmt set FONT_LABEL 10p FONT_ANNOT_PRIMARY 7p MAP_FRAME_PEN thin,black MAP_GRID_PEN faint,gray
 gmt begin
-
-#	Crear lista de fechas para la animacion: Inicio/Fin/Intervalo. o: meses. y: años
-	gmt math -o0 -T2005-01-01T/2020-12-1T/10y T = times.txt
-	gmt math -o0 -T2005-01-01T/2020-12-1T/1o T = times.txt
-#	gmt math -o0 -T2005-01-01T/2020-12-1T/7d T = times.txt
-
-	gmt makecpt -T0/$DepthMax -Cbatlow -I -H > q.cpt
-
-#       -----------------------------------------------------------------------------------------------------------
-#	Eje X (Sn) e Y
-	gmt basemap -R0/$KM/$DepthMin/$DepthMax -JX$W/-$H -Bxaf+l"Distance (km)" -Byaf+l"Depth (km)" -Y$Y -X$X  --MAP_FRAME_AXES=wESn 
-
-	gmt grdimage $DEM -Coleron -I+nt1.2 -R$REGION -J$PROJ -Y$H1  # Map
-
-#	Dibujar Bordes Administrativos. N1: paises. N2: Provincias, Estados, etc. N3: limites marítimos (Nborder[/pen])
-	gmt coast -Df -N1/0.30 -N2/0.2,-
-
-#	gmt basemap -Bxf1 -Byf1
-	gmt basemap -Baf --MAP_FRAME_AXES=wEsN
-	gmt basemap -Ln0.87/0.1+w100k+f+u -F+p+gwhite+s+r
-
-	gmt plot -W1p,red <<- END
-	$Long1 $Lat1
-	$Long2 $Lat2
-	END
-		
+	# 1a. Create list of dates for the animation
+	gmt math -o0 -T1981-09-01T/2018-01-02T/7d T = times.txt
+	# 1b. Create cpt to paint the focal mechanism
+	gmt makecpt -T0/$DepthMax -Chot -I -H > q.cpt
+	# 1c. Draw profile
+	gmt basemap -R0/$KM/0/$DepthMax -JX$W/-$H -Bg25 -BwESn -Bxaf+l"Distance (km)" -Byaf+l"Depth (km)" -X$X -Y$Y
+	echo Vert. Ex. = $VE | gmt text -F+cBR+f9p -Gwhite -W1
+	echo SW | gmt text -F+cTL+f12p -Gwhite -W1
+	echo NE | gmt text -F+cTR+f12p -Gwhite -W1
+	gmt inset begin -DjLB+w$Wa/$Ha+o0.1/0.2 -F+p+gwhite+s+r -M0.15
+		gmt plot angles.txt -Wthinnest,red -Bnw -Bg -R0/1/0/1 -JX?/-? --MAP_FRAME_TYPE=graph -Fr0/0 -i0-1+s0.9
+		gmt text angles.txt -F+f6 -N
+	gmt inset end
+	# 1d. Draw map
+	gmt grdimage $DEM -Coleron -I+nt1.2 -R$REGION -J$PROJ -Y$Y1
+	gmt coast -Df -N1/0.5 -Bf #-N2/0.2,- 
+	gmt plot tmp_profile -W2p,red
+	gmt plot tmp_profile -Sc0.25c -Gred
+	gmt colorbar -Cq.cpt -DjBR+o1.75/0.6+w-6/0.5 -Baf+l"Focal Depth (km)" -F+p+gwhite+s+r
+	gmt inset begin -DjTL+w3.5c+o-0.08
+		gmt coast -Rg -JG-68.025/32.01S/? -Da -Gwhite -A5000 -Bg -W1/faint -Sdodgerblue2 -C- -N1
+		gmt basemap -R$REGION -J$PROJ -A | gmt plot -Wthin,darkred 
+	gmt inset end
 gmt end
 EOF
-
-#	----------------------------------------------------------------------------------------------------------
-# 	2. Set up main script
+# 2. Set up main script
 cat << EOF > main.sh
 gmt begin
-	gmt set COLOR_HSV_MIN_V 0
-	gmt set FONT_LABEL 6p
-	gmt set FONT_ANNOT_PRIMARY 6p
-
-	gmt events -R0/$KM/$DepthMin/$DepthMax -JX$W/-$H -Y$Y -X$X "Datos_Mec.txt" -Z"coupe -Aa$Long1/$Lat1/$Long2/$Lat2/90/100/$DepthMin/$DepthMax -Q -Sd0.3c+f0" -Wfaint -T\${MOVIE_COL0} -Es+r2+p1+d6+f1 -Mi1+c-0.5 -Ms1.5+c0.8 -Mt+c10 --TIME_UNIT=o  -Cq.cpt 
-	gmt events -R$REGION -J$PROJ "Datos_Mec.txt" -Z"meca -Sd0.3c+f0" -Wfaint -T\${MOVIE_COL0} -Es+r2+p1+d6+f1 -Mi1+c-0.5 -Ms1.5+c0.8 -Mt+c10 --TIME_UNIT=o -Y$H1 -Cq.cpt 
+	gmt set TIME_UNIT d
+	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R0/$KM/0/$DepthMax -JX$W/-$H -Y$Y -X$X -Z"coupe -Aa$Long1/$Lat1/$Long2/$Lat2+w$Dist -Q -Sd0.3c+f0" -Cq.cpt 
+	gmt events coupe_O.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sd0.3c+f0" -Y$Y1
+	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sd0.3c+f0" -Cq.cpt
 gmt end
 EOF
-
-#	----------------------------------------------------------------------------------------------------------
-# 	3. Run the movie
-gmt movie main.sh -Sbpre.sh -Chd -Ttimes.txt -N$title -H2 -Lc0+jTR+o1.7/0.6+gwhite+h+r --FONT_TAG=13p,Helvetica,black --FORMAT_CLOCK_MAP=- --FORMAT_DATE_MAP=o-yyyy -Fmp4 -D14 -Ml,png -Ve -Zs -Pd+ap+jRM+w6.2c+o1.8/1.8c
+# 3. Run the movie
+gmt movie main.sh -Sbpre.sh -Chd -Ttimes.txt -Nanim14 -H2 -Fnone -D24 -Ml,png -Ve -Pd+ac0+jRM+w5.9c+o2.7/0.8c+P3,white+p1,red+a1+f11p,2,white \
+--FORMAT_CLOCK_MAP=- --FORMAT_DATE_MAP=dd-mm-yyyy --TIME_EPOCH=0000-01-01 -Zs
+rm coupe_*.gmt tmp_profile angles.txt
