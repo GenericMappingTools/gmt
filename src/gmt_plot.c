@@ -6251,7 +6251,10 @@ void gmt_map_title (struct GMT_CTRL *GMT, double x, double y) {
 			}
 		}
 	}
-
+	/* Since we are calling gmt_setfont inside a gsave/grestore block we must reset the font and stroke color to "not set" so it will be
+	 * correctly executed by the next gmt_setfont or gmt_setcolor calls elsewhere */
+	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+	gmt_M_memcpy (PSL->current.rgb[PSL_IS_STROKE], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
 	PSL_command (PSL, "U\n");
 
 	GMT->current.map.frame.plotted_header = true;
