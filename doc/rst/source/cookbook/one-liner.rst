@@ -23,6 +23,7 @@ The syntax for this special mechanism involves a few simple rules:
    allowable graphics formats :ref:`formats <tbl-formats>`, and *prefix* is the prefix of
    the illustration (the extension is automatically set by the chosen format). Note the
    leading hyphen for the format option.
+#. The one-liner command cannot itself be part of a longer modern mode session.
 
 Examples
 --------
