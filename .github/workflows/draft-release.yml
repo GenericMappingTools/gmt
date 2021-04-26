@@ -27,9 +27,9 @@ jobs:
       - name: Set GMT version from tag name
         # ${GITHUB_REF} is "refs/tags/6.0.0" for tags
         # after this step, the GMT version can be used as ${{ env.GMT_VERSION }}
-        run: echo "::set-env name=GMT_VERSION::${GITHUB_REF##*/}"
+        run: echo "GMT_VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
         # Uncomment the following line for debugging only
-        # run: echo "::set-env name=GMT_VERSION::${DEBUG_GITHUB_REF##*/}"
+        # run: echo "GMT_VERSION=${DEBUG_GITHUB_REF##*/}" >> $GITHUB_ENV
 
       - name: Download GMT tarballs and installers
         run: |
