@@ -17,30 +17,28 @@
 # The x-sec, x frame movie took ~x minutes to render on a ... (24-core MacPro 2013).
 #
 # Author: ESTEBAN, Federico D.
-# Profile coordinates and perpendicular distance (in km) to filter the data and to show in the cross.section. 
+# Profile coordinates (in degrees) and perpendicular distance to filter the data and to show in the cross section.
 Long1=-75.02
 Long2=-63.65
 Lat1=-33.5
 Lat2=-31
 Dist=100k
+REGION=-75.1/-63/-34.44/-30.35	# Map Region
 # Angles (min/max/inc) for the profile inset
 Angles=15/60/15 
 DEM=@earth_relief_03s
 # Other Variables
 W=22.73   			# Width Profile
-H=2.7                   	# Profile Heigth
-W1=23.78			# Map Width
-REGION=-75.1/-63/-34.44/-30.35	# Map Region
-PROJ=M$W1			# Map projection
-# Offset en X/Y
-X=0.115
-Y=0.91
+H=2.7c                   	# Profile Heigth
+PROJ=M23.78c			# Map projection and width
+X=0.115c			# Offset in X
+Y=0.91c				# Offset in Y
 # Create Profile
 cat << EOF > tmp_profile
 $Long1 $Lat1
 $Long2 $Lat2
 EOF
-# Filter Focal Mechanism
+# Filter Focal Mechanism. Create file with data Inside/Outside.
 gmt select "meca.gmt" -L"tmp_profile"+d$Dist+p -fg > "coupe_I.gmt"
 gmt select "meca.gmt" -L"tmp_profile"+d$Dist+p -fg > "coupe_O.gmt" -Il
 # Calculate variables (profile lenght, maximum depth of events (+10 to avoid clipping in the profile), vertical exaggeration, table of angles).
@@ -48,8 +46,7 @@ KM=$(echo $Long1 $Lat1 | gmt mapproject -G$Long2/$Lat2+uk -o2)
 DepthMax=$(gmt info coupe_I.gmt -C2 -o5 | gmt math -Q STDIN 10 ADD =)
 VE=$(gmt math -Q $KM $H MUL $W DIV $DepthMax DIV = --FORMAT_FLOAT_OUT=%.2g)
 gmt math -T$Angles T SIND -o0,1,0 = | gmt math STDIN -T -C0 COSD = | gawk '$0=$0"@."' > angles.txt
-Y1=$(gmt math -Q $H 0.3 ADD =)  # Offset for the map
-Ha=$(gmt math -Q $H 0.7 SUB =)  # Heigth of inset with angles
+Ha=$(gmt math -Q $H 0.7c SUB =) # Heigth of inset with angles
 Wa=$(gmt math -Q $Ha $VE DIV =) # Width of inset with angles (calculated from vertical exaggeration to have same deformation as the profile)
 #       -----------------------------------------------------------------------------------------------------------
 cat << EOF > pre.sh
@@ -61,21 +58,21 @@ gmt begin
 	gmt makecpt -T0/$DepthMax -Chot -I -H > q.cpt
 	# 1c. Draw profile
 	gmt basemap -R0/$KM/0/$DepthMax -JX$W/-$H -Bg25 -BwESn -Bxaf+l"Distance (km)" -Byaf+l"Depth (km)" -X$X -Y$Y
-	echo Vert. Ex. = $VE | gmt text -F+cBR+f9p -Gwhite -W1
-	echo SW | gmt text -F+cTL+f12p -Gwhite -W1
-	echo NE | gmt text -F+cTR+f12p -Gwhite -W1
-	gmt inset begin -DjLB+w$Wa/$Ha+o0.1/0.2 -F+p+gwhite+s+r -M0.15
+	gmt inset begin -DjLB+w$Wa/$Ha+o0.1c/0.2c -F+p+gwhite+s+r -M0.15c
 		gmt plot angles.txt -Wthinnest,red -Bnw -Bg -R0/1/0/1 -JX?/-? --MAP_FRAME_TYPE=graph -Fr0/0 -i0-1+s0.9
 		gmt text angles.txt -F+f6 -N
 	gmt inset end
+	echo Vert. Ex. = $VE | gmt text -F+cBR+f9p -Gwhite -W1p
+	echo SW | gmt text -F+cTL+f12p -Gwhite -W1p
+	echo NE | gmt text -F+cTR+f12p -Gwhite -W1p
 	# 1d. Draw map
-	gmt grdimage $DEM -Coleron -I+nt1.2 -R$REGION -J$PROJ -Y$Y1
-	gmt coast -Df -N1/0.5 -Bf #-N2/0.2,- 
+	gmt grdimage $DEM -Coleron -I+nt1.2 -R$REGION -J$PROJ -Yh+0.3c
+	gmt coast -Df -N1/0.5p -Bf
 	gmt plot tmp_profile -W2p,red
 	gmt plot tmp_profile -Sc0.25c -Gred
-	gmt colorbar -Cq.cpt -DjBR+o1.75/0.6+w-6/0.5 -Baf+l"Focal Depth (km)" -F+p+gwhite+s+r
-	gmt inset begin -DjTL+w3.5c+o-0.08
-		gmt coast -Rg -JG-68.025/32.01S/? -Da -Gwhite -A5000 -Bg -W1/faint -Sdodgerblue2 -C- -N1
+	gmt colorbar -Cq.cpt -DjBR+o1.75c/0.6c+w-6c/0.5c -Baf+l"Focal Depth (km)" -F+p+gwhite+s+r
+	gmt inset begin -DjTL+w3.5c+o-0.08c
+		gmt coast -Rg -JG-68.025/-32.01/? -Da -Gwhite -A5000 -Bg -W1/faint -Sdodgerblue2 -C- -N1
 		gmt basemap -R$REGION -J$PROJ -A | gmt plot -Wthin,darkred 
 	gmt inset end
 gmt end
@@ -85,7 +82,7 @@ cat << EOF > main.sh
 gmt begin
 	gmt set TIME_UNIT d
 	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R0/$KM/0/$DepthMax -JX$W/-$H -Y$Y -X$X -Z"coupe -Aa$Long1/$Lat1/$Long2/$Lat2+w$Dist -Q -Sd0.3c+f0" -Cq.cpt 
-	gmt events coupe_O.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sd0.3c+f0" -Y$Y1
+	gmt events coupe_O.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sd0.3c+f0" -Yh+0.3c
 	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sd0.3c+f0" -Cq.cpt
 gmt end
 EOF
