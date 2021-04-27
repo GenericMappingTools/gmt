@@ -145,7 +145,7 @@ direction of increasing coordinates (i.e., to make the y-axis positive down).
 
 .. _option_-B_int:
 
-| **Intevals specification**
+| **Intervals specification**
 | The *intervals* specification is a concatenated string made up of substrings of the form
 
    [**a**\|\ **f**\|\ **g**]\ [*stride*][*phase*][*unit*].
