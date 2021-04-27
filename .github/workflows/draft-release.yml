@@ -20,34 +20,36 @@ jobs:
     name: Create a Draft Release
     runs-on: macos-latest # Have to use macos because linux sometimes timeouts
     steps:
-      # for debugging only
-      #- name: Set DEBUG_GITHUB_REF for debugging
-      #  run: echo "::set-env name=DEBUG_GITHUB_REF::refs/tags/6.0.0"
 
       - name: Set GMT version from tag name
         # ${GITHUB_REF} is "refs/tags/6.0.0" for tags
         # after this step, the GMT version can be used as ${{ env.GMT_VERSION }}
-        run: echo "::set-env name=GMT_VERSION::${GITHUB_REF##*/}"
+        run: echo "GMT_VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV
         # Uncomment the following line for debugging only
-        # run: echo "::set-env name=GMT_VERSION::${DEBUG_GITHUB_REF##*/}"
+        # run: echo "GMT_VERSION=${DEBUG_GITHUB_REF##*/}" >> $GITHUB_ENV
+
+      - name: Set release or release candidate from GMT version
+        run: |
+          if [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+ ]];
+            echo "GMT_RELEASE=true" >> $GITHUB_ENV
+          elif [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+rc[0-9]+ ]];
+            echo "GMT_RELEASE=false" >> $GITHUB_ENV
+          fi
 
       - name: Download GMT tarballs and installers
         run: |
           curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
           curl -O ftp://ftp.soest.hawaii.edu/gmt/gmt-${{ env.GMT_VERSION }}-src.tar.gz
           curl -O ftp://ftp.soest.hawaii.edu/gmt/gmt-${{ env.GMT_VERSION }}-src.tar.xz
-          # curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win32.exe
           curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win64.exe
+
+      - name: Download win32 GMT installer
+        if: ${{ env.GMT_RELEASE }} == 'true'
+        run: |
+          curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win32.exe
 
       - name: Checksum
         run: |
-          # shasum -a 256 \
-          #       gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg \
-          #       gmt-${{ env.GMT_VERSION }}-src.tar.gz \
-          #       gmt-${{ env.GMT_VERSION }}-src.tar.xz \
-          #       gmt-${{ env.GMT_VERSION }}-win32.exe \
-          #       gmt-${{ env.GMT_VERSION }}-win64.exe \
-          #       > gmt-${{ env.GMT_VERSION }}-checksums.txt
           shasum -a 256 \
                 gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg \
                 gmt-${{ env.GMT_VERSION }}-src.tar.gz \
@@ -57,23 +59,50 @@ jobs:
           # Display the checksums
           cat gmt-${{ env.GMT_VERSION }}-checksums.txt
 
+      - name: Win32 Checksum
+        if: ${{ env.GMT_RELEASE }} == 'true'
+        run: |
+          shasum -a 256 \
+                gmt-${{ env.GMT_VERSION }}-win32.exe \
+                >> gmt-${{ env.GMT_VERSION }}-checksums.txt
+          # Display the checksums
+          cat gmt-${{ env.GMT_VERSION }}-checksums.txt
+
       - name: Create a Draft Release
+        if: ${{ env.GMT_RELEASE }} == 'true'
         id: create_release
-        uses: actions/create-release@v1
+        uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ env.GMT_VERSION }}
-          release_name: ${{ env.GMT_VERSION }}
-          # body: |
-          #   | **File**                       | **Description**                         |
-          #   |--------------------------------|-----------------------------------------|
-          #   | gmt-${{ env.GMT_VERSION }}-checksums.txt     | sha256sum of source and binary packages |
-          #   | gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg | macOS bundle                            |
-          #   | gmt-${{ env.GMT_VERSION }}-src.tar.gz        | Source code                             |
-          #   | gmt-${{ env.GMT_VERSION }}-src.tar.xz        | Source code                             |
-          #   | gmt-${{ env.GMT_VERSION }}-win32.exe         | Windows installer (32bit)               |
-          #   | gmt-${{ env.GMT_VERSION }}-win64.exe         | Windows installer (64bit)               |
+          name: ${{ env.GMT_VERSION }}
+          body: |
+            | **File**                       | **Description**                         |
+            |--------------------------------|-----------------------------------------|
+            | gmt-${{ env.GMT_VERSION }}-checksums.txt     | sha256sum of source and binary packages |
+            | gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg | macOS bundle                            |
+            | gmt-${{ env.GMT_VERSION }}-src.tar.gz        | Source code                             |
+            | gmt-${{ env.GMT_VERSION }}-src.tar.xz        | Source code                             |
+            | gmt-${{ env.GMT_VERSION }}-win32.exe         | Windows installer (32bit)               |
+            | gmt-${{ env.GMT_VERSION }}-win64.exe         | Windows installer (64bit)               |
+          draft: true
+          prerelease: false
+          files: |
+            gmt-${{ env.GMT_VERSION }}-checksums.txt
+            gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
+            gmt-${{ env.GMT_VERSION }}-src.tar.gz
+            gmt-${{ env.GMT_VERSION }}-src.tar.xz
+            gmt-${{ env.GMT_VERSION }}-win32.exe
+            gmt-${{ env.GMT_VERSION }}-win64.exe
+
+      - name: Create a Draft Release Candidate
+        if: ${{ env.GMT_RELEASE }} == 'false'
+        id: create_release_candidate
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          name: ${{ env.GMT_VERSION }}
           body: |
             | **File**                       | **Description**                         |
             |--------------------------------|-----------------------------------------|
@@ -83,64 +112,11 @@ jobs:
             | gmt-${{ env.GMT_VERSION }}-src.tar.xz        | Source code                             |
             | gmt-${{ env.GMT_VERSION }}-win64.exe         | Windows installer (64bit)               |
           draft: true
-          prerelease: false
+          prerelease: true
+          files: |
+            gmt-${{ env.GMT_VERSION }}-checksums.txt
+            gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
+            gmt-${{ env.GMT_VERSION }}-src.tar.gz
+            gmt-${{ env.GMT_VERSION }}-src.tar.xz
+            gmt-${{ env.GMT_VERSION }}-win64.exe
 
-      - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-checksums.txt
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: gmt-${{ env.GMT_VERSION }}-checksums.txt
-          asset_name: gmt-${{ env.GMT_VERSION }}-checksums.txt
-          asset_content_type: text/plain
-
-      - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
-          asset_name: gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
-          asset_content_type: application/x-apple-diskimage
-
-      - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-src.tar.gz
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: gmt-${{ env.GMT_VERSION }}-src.tar.gz
-          asset_name: gmt-${{ env.GMT_VERSION }}-src.tar.gz
-          asset_content_type: application/x-tar
-
-      - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-src.tar.xz
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: gmt-${{ env.GMT_VERSION }}-src.tar.xz
-          asset_name: gmt-${{ env.GMT_VERSION }}-src.tar.xz
-          asset_content_type: application/x-tar
-
-      # - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-win32.exe
-      #   uses: actions/upload-release-asset@v1
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      #   with:
-      #     upload_url: ${{ steps.create_release.outputs.upload_url }}
-      #     asset_path: gmt-${{ env.GMT_VERSION }}-win32.exe
-      #     asset_name: gmt-${{ env.GMT_VERSION }}-win32.exe
-      #     asset_content_type: application/x-msdownload
-
-      - name: Upload Release Asset - gmt-${{ env.GMT_VERSION }}-win64.exe
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: gmt-${{ env.GMT_VERSION }}-win64.exe
-          asset_name: gmt-${{ env.GMT_VERSION }}-win64.exe
-          asset_content_type: application/x-msdownload
