@@ -17616,6 +17616,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	int  local_count = 0;
 #endif
 
+	gmt_M_memset (GMT_keyword_updated, GMT_N_KEYS, bool); /* Need to start with all set as false */
+
 #ifdef __FreeBSD__
 #ifdef _i386_
 	/* allow divide by zero -- Inf */
