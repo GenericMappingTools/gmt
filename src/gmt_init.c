@@ -277,7 +277,7 @@ static char *GMT_keyword[GMT_N_KEYS] = {		/* Names of all parameters in gmt.conf
 #include "gmt_keywords.h"
 };
 
-bool GMT_keyword_updated[GMT_N_KEYS] = {false};	/* Will be set to 'true' when individual keywords are set via gmtset */
+bool GMT_keyword_updated[GMT_N_KEYS];	/* Initialized to false in gmt_begin. Will be set to 'true' when individual keywords are set via gmtset */
 
 static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
 #include "gmt_unique.h"
