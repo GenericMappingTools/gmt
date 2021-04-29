@@ -844,6 +844,7 @@ GMT_LOCAL int gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const c
 	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
 
 	bool usage = false, modern;
+	int error = GMT_NOERROR;
 	struct GMT_OPTION *opt, *head = NULL;
 
 	head = GMT_Create_Options (API, mode, args);	/* Get option list */
@@ -851,26 +852,22 @@ GMT_LOCAL int gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const c
 	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to check if a classic name was given or if user tried a one-liner in modern mode */
 		if (modern) {	/* Yikes, someone is using one-liner within a GMT modern mode session */
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot run a one-liner modern command within an existing modern mode session\n");
-			if (GMT_Destroy_Options (API, &head))	/* Done with these here */
-				GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
-			return GMT_RUNTIME_ERROR;
+			error = GMT_Report;
+			goto free_and_return;
 		}
 		if (!strncmp (module, "ps", 2U) && strncmp (module, "psconvert", 9U)) {	/* Gave classic ps* name in modern mode but not psconvert */
 			char not_used[GMT_LEN32] = {""};
 			const char *mod_name = gmt_current_name (module, not_used);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", module, mod_name);
 		}
-		return GMT_NOERROR;	/* Done, since we know it is a modern mode session */
+		goto free_and_return;
 	}
 
 	if ((opt = GMT_Find_Option (API, 'V', head)))	/* Remove -V here so that we can run gmt plot -? -Vd and still get modern mode usage plus debug info */
 		GMT_Delete_Option (API, opt, &head);
 
-	if (!strcmp (module, "grdcontour") && GMT_Find_Option (API, 'N', head)) {	/* Special case of two module calls cannot be oneliner here */
-		if (GMT_Destroy_Options (API, &head))	/* Done with these here */
-			GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
-		return GMT_NOERROR;
-	}
+	if (!strcmp (module, "grdcontour") && GMT_Find_Option (API, 'N', head))	/* Special case of two module calls cannot be oneliner here */
+		goto free_and_return;
 
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, module);
 
@@ -895,9 +892,11 @@ GMT_LOCAL int gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const c
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 
+free_and_return:
+
 	if (GMT_Destroy_Options (API, &head))	/* Done with these here */
 		GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
-	return GMT_NOERROR;
+	return error;
 }
 
 /* Function to get PPID under Windows is a bit different */
