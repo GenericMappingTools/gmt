@@ -808,36 +808,66 @@ GMT_LOCAL void gmtapi_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 }
 #endif
 
-GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, int mode, void *args) {
+GMT_LOCAL bool gmtapi_modern_onliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
+	/* Must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
+	bool modern = false;
+	unsigned pos;
+	size_t len;
+	char format[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
+	struct GMT_OPTION *opt;
+
+	for (opt = head; opt; opt = opt->next) {
+		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
+		if (strchr ("bejpPt", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
+		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
+		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
+		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
+		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
+			modern = true;	/* Seems like it is, but check the rest of the formats, if there are more */
+			if (c == NULL) continue;	/* Nothing else to check, go to next option */
+			/* Make sure any other formats are valid, too */
+			if (c) c[0] = ',';	/* Restore any comma we found */
+			pos = 0;
+			while (modern && gmt_strtok (format, ",", &pos, p)) {	/* Check each format to make sure each is OK */
+				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)	/* Oh, something wrong was given, cannot be modern */
+					modern = false;
+			}
+		}
+	}
+	return modern;
+}
+
+GMT_LOCAL int gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, int mode, void *args) {
 	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN.
 	 * This is needed since there is not gmt begin | end sequence in this case.
 	 * Also, if a user wants to get the usage message for a modern mode module then it is also a type
 	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
 
-	unsigned modern = 0, pos;
-	char format[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
-	bool usage = false;
-	size_t len;
-	struct GMT_OPTION *opt = NULL, *head = NULL;
+	bool usage = false, modern;
+	int error = GMT_NOERROR;
+	struct GMT_OPTION *opt, *head = NULL;
 
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Just need to check if a classic name was given... */
+	head = GMT_Create_Options (API, mode, args);	/* Get option list */
+	modern = gmtapi_modern_onliner (API, head);		/* Return true if one-liner syntax was detected */
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to check if a classic name was given or if user tried a one-liner in modern mode */
+		if (modern) {	/* Yikes, someone is using one-liner within a GMT modern mode session */
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot run a one-liner modern command within an existing modern mode session\n");
+			error = GMT_RUNTIME_ERROR;
+			goto free_and_return;
+		}
 		if (!strncmp (module, "ps", 2U) && strncmp (module, "psconvert", 9U)) {	/* Gave classic ps* name in modern mode but not psconvert */
 			char not_used[GMT_LEN32] = {""};
 			const char *mod_name = gmt_current_name (module, not_used);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", module, mod_name);
 		}
-		return;	/* Done, since we know it is a modern mode session */
+		goto free_and_return;
 	}
 
-	head = GMT_Create_Options (API, mode, args);	/* Get option list */
 	if ((opt = GMT_Find_Option (API, 'V', head)))	/* Remove -V here so that we can run gmt plot -? -Vd and still get modern mode usage plus debug info */
 		GMT_Delete_Option (API, opt, &head);
 
-	if (!strcmp (module, "grdcontour") && GMT_Find_Option (API, 'N', head)) {	/* Special case of two module calls cannot be oneliner here */
-		if (GMT_Destroy_Options (API, &head))	/* Done with these here */
-			GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
-		return;
-	}
+	if (!strcmp (module, "grdcontour") && GMT_Find_Option (API, 'N', head))	/* Special case of two module calls cannot be oneliner here */
+		goto free_and_return;
 
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, module);
 
@@ -847,7 +877,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
 				API->GMT->current.setting.run_mode = GMT_MODERN;	/* Safe here to flag it as modern since no session will be started */
 			}
-			return;
+			return GMT_NOERROR;
 		}
 		if (head->next == NULL) {	/* Gave a single argument */
 			if (head->option == GMT_OPT_USAGE || head->option == GMT_OPT_SYNOPSIS || (head->option == '+' && !head->arg[0])) modern = 1;
@@ -855,25 +885,6 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 		}
 	}
 
-	/* Finally, must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
-	for (opt = head; opt; opt = opt->next) {
-		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
-		if (strchr ("bejpPt", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
-		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
-		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
-		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
-		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
-			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
-			if (c == NULL) continue;	/* Nothing else to check, go to next option */
-			/* Make sure any other formats are valid, too */
-			if (c) c[0] = ',';	/* Restore any comma we found */
-			pos = 0;
-			while (modern && gmt_strtok (format, ",", &pos, p)) {	/* Check each format to make sure each is OK */
-				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)	/* Oh, something wrong was given, cannot be modern */
-					modern = 0;
-			}
-		}
-	}
 	if (modern) {	/* This is indeed a modern mode one-liner command */
 		API->GMT->current.setting.run_mode = GMT_MODERN;
 		API->usage = usage;
@@ -881,8 +892,11 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 
+free_and_return:
+
 	if (GMT_Destroy_Options (API, &head))	/* Done with these here */
 		GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
+	return error;
 }
 
 /* Function to get PPID under Windows is a bit different */
@@ -12223,7 +12237,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 		return (GMT_NOERROR);
 	else {	/* Call the function and pass back its return value */
 		gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL);		/* First detect and set modern mode if modern mode session dir is found */
-		gmtapi_check_for_modern_oneliner (API, module, mode, args);	/* If a modern mode one-liner we must switch run--mode here */
+		if ((status = gmtapi_check_for_modern_oneliner (API, module, mode, args))) return status;	/* If a modern mode one-liner we must switch run--mode here, or fail if an error */
 		if (API->external && gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 			/* For externals only, print the equivalent command-line string under -Vd */
 			char *text = (mode == GMT_MODULE_OPT) ? GMT_Create_Cmd (API, args) : args;
@@ -15108,7 +15122,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 	 * https://<address>/grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
 	 */
 
-	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was, *file = NULL, *c = NULL, *f = NULL;
+	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was = '\0', *file = NULL, *c = NULL, *f = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);

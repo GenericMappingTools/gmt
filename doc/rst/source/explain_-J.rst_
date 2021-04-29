@@ -275,7 +275,7 @@ respectively):
 
 .. _-Jp_full:
 
-    **-Jp**\|\ **P**\ *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\
+    **-Jp**\|\ **P**\ *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\ [**+k**\ *kind*]\
     [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]] (Polar coordinates (*theta*, *r*))
 
     Give *scale* (with **-Jp**; in :ref:`plot-units <plt-units>`/r-unit) or *width* (with **-JP**; in
@@ -286,6 +286,7 @@ respectively):
     - **+f** to flip the radial direction to point inwards, and append **e** to indicate that *r* represents
       *elevations* in degrees (requires *south* >= 0 and *north* <= 90), **p** to select current planetary radius
       (determined by :term:`PROJ_ELLIPSOID`) as maximum radius [*north*], or *radius* to specify a custom radius.
+    - **+k** sets the annotation *kind* to be longitudes (*x*) or latitudes (*y*) [Default is unspecified angles].
     - **+r**\ *offset* to include a radial offset in measurement units [default is **0**].
     - **+t**\ *origin* in degrees so that this angular value is aligned with the positive *x*-axis (or the azimuth to
       be aligned with the positive *y*-axis if **+a**) [default is **0**].

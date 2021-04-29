@@ -172,7 +172,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t     Note: Cannot use y|r|z|w with -T. With -T, x means locations implied by -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is %s].\n", GMTREGRESS_FARGS);
 	GMT_Message (API, GMT_TIME_NONE, "\t     Alternatively, choose -Fp to output only the model parameters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     N meanX meanY angle misfit slope icept sigma_slope sigma_icept\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     N meanX meanY angle misfit slope icept sigma_slope sigma_icept r R N_effective\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Append desired misfit norm; choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     1 : L-1 measure (mean absolute residuals).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     2 : L-2 measure (mean squared residuals) [Default].\n");
@@ -1197,7 +1197,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 	unsigned geometry = GMT_IS_NONE;
 
 	double *x = NULL, *U = NULL, *V = NULL, *W = NULL, *e = NULL, *w[3] = {NULL, NULL, NULL};
-	double t_scale = 0.0, range[2], par[GMTREGRESS_NPAR], out[9];
+	double t_scale = 0.0, range[2], par[GMTREGRESS_NPAR], out[GMTREGRESS_NPAR];
 
 	char buffer[GMT_LEN256];
 
@@ -1241,7 +1241,7 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 	}
 	else {	/* Work up best regression solution per input segment */
 		if (Ctrl->F.param)
-			n_columns = 9;
+			n_columns = GMTREGRESS_NPAR;
 		else {
 			if (!Ctrl->F.active) {	/* Default output includes all possible columns */
 				char *s = GMTREGRESS_FARGS;
@@ -1369,6 +1369,9 @@ EXTERN_MSC int GMT_gmtregress (void *V_API, int mode, void *args) {
 					out[6] = par[GMTREGRESS_ICEPT];
 					out[7] = par[GMTREGRESS_SIGSL];
 					out[8] = par[GMTREGRESS_SIGIC];
+					out[9] = par[GMTREGRESS_CORR];
+					out[10] = par[GMTREGRESS_R];	/* Only defined if we are doing regression on y */
+					out[11] = par[GMTREGRESS_N_EFF];
 					GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this record to output */
 				}
 				else {
