@@ -606,7 +606,7 @@ GMT_LOCAL void grdimage_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_H
 		if (all_lats) {	/* Full -90/+90, use min/max for y */
 			r->wesn[YLO] = GMT->current.proj.rect[YLO];	r->wesn[YHI] = GMT->current.proj.rect[YHI];
 		}
-		if (GMT->current.map.is_world && gmt_M_is_periodic (GMT)) {	/* Worry about periodic grids crossing the boundary and hence the search above may fail */
+		if (GMT->current.map.is_world && gmt_M_is_periodic (GMT)) {	/* Worry about grids crossing a periodic boundary as the search above may fail */
 			if (g->wesn[XLO] < (GMT->current.proj.central_meridian+180) && g->wesn[XHI] > (GMT->current.proj.central_meridian+180))
 				r->wesn[XLO] = GMT->current.proj.rect[XLO],	r->wesn[XHI] = GMT->current.proj.rect[XHI];
 			else if (g->wesn[XLO] < (GMT->current.proj.central_meridian-180) && g->wesn[XHI] > (GMT->current.proj.central_meridian-180))
