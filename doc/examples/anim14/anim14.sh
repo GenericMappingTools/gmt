@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Movie of focal mechanisms from 09-1981 to 01-2018 in the flat subduction area
-# in western Argentina and central Chile. Shows an map with a profile.
+# in western Argentina and central Chile. Shows a map with a profile.
 # Global CMT web page: https://www.globalcmt.org/
 #
 # DEM:  @earth_relief_03s
