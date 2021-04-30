@@ -221,7 +221,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 				Ctrl->W.active = true;
 				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
 				sigma = (gmt_get_modifier (opt->arg, 's', arg)) ? true : false;
-				switch (arg[0]) {
+				switch (opt->arg[0]) {
 					case '\0':
 						Ctrl->W.weighted[GMT_IN] = Ctrl->W.weighted[GMT_OUT] = true;
 						Ctrl->W.sigma[GMT_IN] = Ctrl->W.sigma[GMT_OUT] = sigma;
