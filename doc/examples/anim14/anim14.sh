@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Movie of focal mechanism from 09-1981 to 01-2018 in the flat subduction area
+# Movie of focal mechanisms from 09-1981 to 01-2018 in the flat subduction area
 # in western Argentina and central Chile. Shows an map with a profile.
 # Global CMT web page: https://www.globalcmt.org/
 #
@@ -13,8 +13,8 @@
 # gawk '/^PDE/ {Date=$2; Time=$3; Lat=$4; Long=$5; Depth=$6; getline; Name=$1; getline; getline; Exp=$1; getline; strike1=$12; dip1=$13; rake1=$14; strike2=$15; dip2=$16; rake2=$17; print Long, Lat, Depth, strike1, dip1, rake1, strike2, dip2, rake2, Exp, Date "T" Time, Name}' jan76_dec17.ndk | sed 's/\//-/g' > meca.gmt
 # The meca.gmt file is in the GMT Dataserver cache and can be accessed via @meca.gmt
 # The finished movie is available in our YouTube channel as well:
-# https://youtu.be/...
-# The x-sec, x frame movie took ~x minutes to render on a ... (24-core MacPro 2013).
+# https://youtu.be/9D1qANCoptE
+# The 79-sec, 1896 frame movie took ~50 minutes to render on a 2017 iMac Pro.
 #
 # Author: ESTEBAN, Federico D.
 # Profile coordinates (in degrees) and perpendicular distance to filter the data and to show in the cross section.
