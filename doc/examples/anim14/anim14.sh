@@ -1,17 +1,17 @@
 #!/usr/bin/env bash
 #
-# Movie of focal mechanism from 09-1981 to 01-2018 in the flat subduction area in western Argentina and central Chile.
-# Shows an map with a profile.
+# Movie of focal mechanism from 09-1981 to 01-2018 in the flat subduction area
+# in western Argentina and central Chile. Shows an map with a profile.
 # Global CMT web page: https://www.globalcmt.org/
 #
-# DEM: @earth_relief_03s
-# Data: jan76_dec17.ndk
+# DEM:  @earth_relief_03s
+# Data: @meca.gmt 
 #
-# The data file can be donwload and rearrenged to a gmt format with the followings commands:
+# The original data file jan76_dec17.ndk can be downloaded and rearranged to a gmt format with the followings commands:
 # URL="https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/jan76_dec17.ndk"
 # gmt which $URL -G 
 # gawk '/^PDE/ {Date=$2; Time=$3; Lat=$4; Long=$5; Depth=$6; getline; Name=$1; getline; getline; Exp=$1; getline; strike1=$12; dip1=$13; rake1=$14; strike2=$15; dip2=$16; rake2=$17; print Long, Lat, Depth, strike1, dip1, rake1, strike2, dip2, rake2, Exp, Date "T" Time, Name}' jan76_dec17.ndk | sed 's/\//-/g' > meca.gmt
-#
+# The meca.gmt file is in the GMT Dataserver cache and can be accessed via @meca.gmt
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/...
 # The x-sec, x frame movie took ~x minutes to render on a ... (24-core MacPro 2013).
@@ -29,7 +29,7 @@ Angles=15/60/15
 DEM=@earth_relief_03s
 # Other Variables
 W=22.73   			# Width Profile
-H=2.7c                   	# Profile Heigth
+H=2.7c                   	# Profile Height
 PROJ=M23.78c			# Map projection and width
 X=0.115c			# Offset in X
 Y=0.91c				# Offset in Y
@@ -41,12 +41,12 @@ EOF
 # Filter Focal Mechanism. Create file with data Inside/Outside.
 gmt select @meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_I.gmt
 gmt select @meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_O.gmt -Il
-# Calculate variables (profile lenght, maximum depth of events (+10 to avoid clipping in the profile), vertical exaggeration, table of angles).
+# Calculate variables (profile length, maximum depth of events (+10 to avoid clipping in the profile), vertical exaggeration, table of angles).
 KM=$(echo $Long1 $Lat1 | gmt mapproject -G$Long2/$Lat2+uk -o2)
 DepthMax=$(gmt info coupe_I.gmt -C2 -o5 | gmt math -Q STDIN 10 ADD =)
 VE=$(gmt math -Q $KM $H MUL $W DIV $DepthMax DIV = --FORMAT_FLOAT_OUT=%.2g)
 gmt math -T$Angles T SIND -o0,1,0 = | gmt math STDIN -T -C0 COSD = | gawk '$0=$0"@."' > angles.txt
-Ha=$(gmt math -Q $H 0.7c SUB =) # Heigth of inset with angles
+Ha=$(gmt math -Q $H 0.7c SUB =) # Height of inset with angles
 Wa=$(gmt math -Q $Ha $VE DIV =) # Width of inset with angles (calculated from vertical exaggeration to have same deformation as the profile)
 #       -----------------------------------------------------------------------------------------------------------
 cat << EOF > pre.sh
