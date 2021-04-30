@@ -39,8 +39,8 @@ $Long1 $Lat1
 $Long2 $Lat2
 EOF
 # Filter Focal Mechanism. Create file with data Inside/Outside.
-gmt select "meca.gmt" -L"tmp_profile"+d$Dist+p -fg > "coupe_I.gmt"
-gmt select "meca.gmt" -L"tmp_profile"+d$Dist+p -fg > "coupe_O.gmt" -Il
+gmt select @meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_I.gmt
+gmt select @meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_O.gmt -Il
 # Calculate variables (profile lenght, maximum depth of events (+10 to avoid clipping in the profile), vertical exaggeration, table of angles).
 KM=$(echo $Long1 $Lat1 | gmt mapproject -G$Long2/$Lat2+uk -o2)
 DepthMax=$(gmt info coupe_I.gmt -C2 -o5 | gmt math -Q STDIN 10 ADD =)
@@ -87,6 +87,6 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -Chd -Ttimes.txt -Nanim14 -H2 -Fnone -D24 -Ml,png -Ve -Pd+ac0+jRM+w5.9c+o2.7/0.8c+P3,white+p1,red+a1+f11p,2,white \
+gmt movie main.sh -Sbpre.sh -Chd -Ttimes.txt -Nanim14 -H2 -Fmp4 -D24 -Ml,png -Ve -Pd+ac0+jRM+w5.9c+o2.7/0.8c+P3,white+p1,red+a1+f11p,2,white \
 --FORMAT_CLOCK_MAP=- --FORMAT_DATE_MAP=dd-mm-yyyy --TIME_EPOCH=0000-01-01 -Zs
 rm coupe_*.gmt tmp_profile angles.txt
