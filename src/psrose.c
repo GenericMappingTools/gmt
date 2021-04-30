@@ -510,8 +510,6 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the psrose main code ----------------------------*/
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
-	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
-	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 
 	max_radius = GMT->common.R.wesn[XHI];
@@ -1099,6 +1097,9 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	asize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+	lsize = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];
+
 	if (Ctrl->L.active) {	/* Deactivate those with - */
 		if (Ctrl->L.w[0] == '-' && Ctrl->L.w[1] == '\0') Ctrl->L.w[0] = '\0';
 		if (Ctrl->L.e[0] == '-' && Ctrl->L.e[1] == '\0') Ctrl->L.e[0] = '\0';
@@ -1171,12 +1172,12 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				if (!Ctrl->F.active && GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval > 0.0) {	/* Draw scale bar but only if x-grid interval is set */
 					double xp[4], yp[4];
 					xp[0] = xp[1] = off;	xp[2] = xp[3] = (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale;
-					yp[0] = yp[3] = GMT->current.setting.map_tick_length[0] - off; yp[1] = yp[2] = -off;
+					yp[0] = yp[3] = GMT->current.setting.map_tick_length[GMT_PRIMARY] - off; yp[1] = yp[2] = -off;
 					gmt_setpen (GMT, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 					PSL_plotline (PSL, xp, yp, 4, PSL_MOVE|PSL_STROKE);
 					//PSL_plotsegment (PSL, off, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off);
-					//PSL_plotsegment (PSL, off, -off, off, GMT->current.setting.map_tick_length[0] - off);
-					//PSL_plotsegment (PSL, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, GMT->current.setting.map_tick_length[0] - off);
+					//PSL_plotsegment (PSL, off, -off, off, GMT->current.setting.map_tick_length[GMT_PRIMARY] - off);
+					//PSL_plotsegment (PSL, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, -off, (max_radius - GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval) * Ctrl->S.scale, GMT->current.setting.map_tick_length[GMT_PRIMARY] - off);
 					if (GMT->current.map.frame.axis[GMT_X].label[0]) {
 						strcat (format, " %s");
 						sprintf (text, format, GMT->current.map.frame.axis[GMT_X].item[GMT_GRID_UPPER].interval, GMT->current.map.frame.axis[GMT_X].label);

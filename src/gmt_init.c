@@ -277,7 +277,7 @@ static char *GMT_keyword[GMT_N_KEYS] = {		/* Names of all parameters in gmt.conf
 #include "gmt_keywords.h"
 };
 
-bool GMT_keyword_updated[GMT_N_KEYS] = {false};	/* Will be set to 'true' when individual keywords are set via gmtset */
+bool GMT_keyword_updated[GMT_N_KEYS];	/* Initialized to false in gmt_begin. Will be set to 'true' when individual keywords are set via gmtset */
 
 static char *GMT_unique_option[GMT_N_UNIQUE] = {	/* The common GMT command-line options [ just the subset that accepts arguments (e.g., -O is not listed) ] */
 #include "gmt_unique.h"
@@ -5026,10 +5026,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);
 			GMT->current.proj.got_azimuths = GMT->current.proj.got_elevations = false;
 			GMT->current.proj.z_down = GMT_ZDOWN_R;
-			if ((d = gmt_first_modifier (GMT, args, "afrtz"))) {	/* Process all modifiers */
+			if ((d = gmt_first_modifier (GMT, args, "afkrtz"))) {	/* Process all modifiers */
 				unsigned int pos = 0, uerr = 0;
 				char word[GMT_LEN32] = {""};
-				while (gmt_getmodopt (GMT, 'J', d, "afrtz", &pos, word, &uerr) && uerr == 0) {
+				while (gmt_getmodopt (GMT, 'J', d, "afkrtz", &pos, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
 						case 'a':	/* Using azimuths instead of directions */
 							GMT->current.proj.got_azimuths = true;
@@ -5047,6 +5047,16 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 									}
 									else	/* Gave flip with optional flip radius */
 										GMT->current.proj.flip_radius = atof (&word[1]);
+									break;
+							}
+							break;
+						case 'k':	/* Gave optional +k to indicate angles are longitude (x) or latitude (y) [Just great circle angles] */
+							switch (word[1]) {
+								case 'x':	GMT->current.proj.angle_kind = GMT_IS_LON;	break;
+								case 'y':	GMT->current.proj.angle_kind = GMT_IS_LAT;	break;
+								default:
+									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: +%s not a valid argument\n", word);
+									error++;
 									break;
 							}
 							break;
@@ -5083,10 +5093,6 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				if (uerr) return (GMT_PARSE_ERROR);
 				GMT->current.proj.pars[0] = gmt_M_to_inch (GMT, args);
 				if (d) d[0] = '+';	/* Restore modifiers */
-//				if (GMT->current.proj.z_down && GMT->current.proj.flip) {
-//					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: Cannot select both +f and +z modifiers\n");
-//					error++;
-//				}
 			}
 			else {	/* No modifiers, so look for deprecated syntax such as -Jp|p[a|A], slash-separated scale|width and angular offset, and trailing r or z codes */
 				if (args[0] == 'a' || args[0] == 'A') {	/* Using azimuths instead of directions */
@@ -5112,6 +5118,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				}
 				else
 					error++;
+			}
+			if (GMT->current.proj.got_azimuths && GMT->current.proj.angle_kind) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Polar projection: Cannot select both +a and +k\n");
+				error++;
 			}
 			if (GMT->current.proj.got_azimuths) GMT->current.proj.pars[1] = -GMT->current.proj.pars[1];	/* Because azimuths go clockwise */
 			break;
@@ -7133,7 +7143,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
 			gmt_message (GMT, "\t       Append +v to make the oblique Equator the y-axis [x-axis].\n");
 
-			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+k<kind>][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius))\n");
 			gmt_message (GMT, "\t     Linear scaling for polar coordinates.  Give scale in %s/units.\n",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			gmt_message (GMT, "\t     Append +a to use azimuths (CW from North) instead of directions (CCW from East) [Default].\n");
@@ -7141,6 +7151,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			gmt_message (GMT, "\t       Append e to indicate data are elevations in degrees (s/n must be in 0-90 range).\n");
 			gmt_message (GMT, "\t       Append p to set r = current planetary radius to be the center.\n");
 			gmt_message (GMT, "\t       Append <radius> to indicate the radius at the center.\n");
+			gmt_message (GMT, "\t     Append +k to specify angular kind [angles].\n");
+			gmt_message (GMT, "\t       Append x to indicate angles should be formatted as longitude.\n");
+			gmt_message (GMT, "\t       Append y to indicate angles should be formatted as latitude.\n");
 			gmt_message (GMT, "\t     Append +r to offset the radial values [0].\n");
 			gmt_message (GMT, "\t     Append +t to set <origin> value for angles or azimuths [0].\n");
 			gmt_message (GMT, "\t     Append +z to annotate depths rather than radius [Default]. Alternatively, if you provided depths\n");
@@ -7257,7 +7270,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			gmt_message (GMT, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scl>|<width> (Cylindrical Equal-area)\n");
 
-			gmt_message (GMT, "\t   -Jp|P<scl>|<width>[+a][+f[e|p|<radius>]][+o<offset>][+r<origin][+z[p|<radius>]] (Polar [azimuth] (theta,radius))\n");
+			gmt_message (GMT, "\t   -Jp|P<scl>|<width>[+a][+f[e|p|<radius>]][+k<kind>][+r<offset>][+t<origin][+z[p|<radius>]] (Polar [azimuth] (theta,radius))\n");
 
 			gmt_message (GMT, "\t   -Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
 			gmt_message (GMT, "\t   (See basemap for more details on projection syntax)\n");
@@ -15152,7 +15165,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		opt_J = GMT_Find_Option (API, 'J', *options);
 
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
-			if (opt->arg[0] != '@') continue;	/* No remote file argument given */
+			if (gmt_M_file_is_memory (opt->arg) || opt->arg[0] != '@') continue;	/* No remote file argument given */
 			if ((k_data = gmt_remote_no_extension (API, opt->arg)) != GMT_NOTSET) {	/* Remote file without file extension */
 				char *file = malloc (strlen(opt->arg)+1+strlen (API->remote_info[k_data].ext));
 				sprintf (file, "%s", opt->arg);
@@ -17602,6 +17615,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	char *path1 = NULL, *path2 = NULL, *paths[2] = {NULL, NULL};
 	int  local_count = 0;
 #endif
+
+	gmt_M_memset (GMT_keyword_updated, GMT_N_KEYS, bool); /* Need to start with all set as false */
 
 #ifdef __FreeBSD__
 #ifdef _i386_

@@ -2,9 +2,12 @@
 #
 # Script that places the GMT release files on the SOEST GMT ftp server.
 #
+# Temporary ftp site for pre-release files:
+GMT_FTP_URL=ftp.soest.hawaii.edu
+GMT_FTP_DIR=/export/ftp1/ftp/pub/gmtrelease
 
-if [ ! "${USER}" = "pwessel" ]; then	# Place file in pwessel SOEST ftp release directory and set permissions
-	echo "place-release.sh: Can currently only be run by user pwessel" >&2
+if [ ! "${USER}" = "pwessel" ] && [ ! "${USER}" = "meghanj" ]; then	# Place file in gmtrelease SOEST ftp release directory and set permissions
+	echo "place-release.sh: Can currently only be run by user pwessel or user meghanj" >&2
 	exit 1
 fi
 
@@ -33,35 +36,35 @@ cat << EOF > /tmp/release.sh
 # Script to be placed in pwessel ftp/release directory and executed
 # Place macOS bundle with read permissions
 if [ -f gmt-${Version}-darwin-x86_64.dmg ]; then
-	cp -f gmt-${Version}-darwin-x86_64.dmg ../../gmt/bin
-	chmod og+r ../../gmt/bin/gmt-${Version}-darwin-x86_64.dmg
+	cp -f gmt-${Version}-darwin-x86_64.dmg ../gmt/bin
+	chmod og+r ../gmt/bin/gmt-${Version}-darwin-x86_64.dmg
 fi
 # Place Windows 32-bit installer with read and execute permissions
 if [ -f gmt-${Version}-win32.exe ]; then
-	cp -f gmt-${Version}-win32.exe ../../gmt/bin
-	chmod og+rx ../../gmt/bin/gmt-${Version}-win32.exe
+	cp -f gmt-${Version}-win32.exe ../gmt/bin
+	chmod og+rx ../gmt/bin/gmt-${Version}-win32.exe
 fi
 # Place Windows 64-bit installer with read and execute permissions
 if [ -f gmt-${Version}-win64.exe ]; then
-	cp -f gmt-${Version}-win64.exe ../../gmt/bin
-	chmod og+rx ../../gmt/bin/gmt-${Version}-win64.exe
+	cp -f gmt-${Version}-win64.exe ../gmt/bin
+	chmod og+rx ../gmt/bin/gmt-${Version}-win64.exe
 fi
 # Place tar balls with read permissions
 if [ -f gmt-${Version}-src.tar.gz ]; then
-	cp -f gmt-${Version}-src.tar.gz ../../gmt
-	chmod og+r ../../gmt/gmt-${Version}-src.tar.gz
+	cp -f gmt-${Version}-src.tar.gz ../gmt
+	chmod og+r ../gmt/gmt-${Version}-src.tar.gz
 fi
 # Place tar balls with read permissions
 if [ -f gmt-${Version}-src.tar.xz ]; then
-	cp -f gmt-${Version}-src.tar.xz ../../gmt
-	chmod og+r ../../gmt/gmt-${Version}-src.tar.xz
+	cp -f gmt-${Version}-src.tar.xz ../gmt
+	chmod og+r ../gmt/gmt-${Version}-src.tar.xz
 fi
 # Self-destruct
 rm -f release.sh
 EOF
 # 3. Copy script to pwessel/release dir:
-scp /tmp/release.sh ftp.soest.hawaii.edu:/export/ftp1/ftp/pub/pwessel/release
+scp /tmp/release.sh ${GMT_FTP_URL}:${GMT_FTP_DIR}
 # 4. Run the release.sh script
-ssh pwessel@ftp.soest.hawaii.edu 'bash /export/ftp1/ftp/pub/pwessel/release/release.sh'
+ssh ${USER}@${GMT_FTP_URL} "bash ${GMT_FTP_DIR}/release.sh"
 # 5. Remove the local script copy
 rm -f /tmp/release.sh

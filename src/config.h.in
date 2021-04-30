@@ -61,6 +61,9 @@
 /* Name of core library */
 #define GMT_CORE_LIB_NAME "@GMT_CORE_LIB_NAME@"
 
+/* Name of gs executable */
+#define GMT_GS_EXECUTABLE "@GMT_GS_EXECUTABLE@"
+
 /* Name of supplemental library */
 #define GMT_SUPPL_LIBRARY "@GMT_SUPPL_LIBRARY@"
 

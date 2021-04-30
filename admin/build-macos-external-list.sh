@@ -6,9 +6,11 @@
 # List of executables whose shared libraries must also be included
 #
 # Exceptions:
-# For now (6.0.0), need to do a few things manually first, like
-# 1. Separate install command to avoid version number in GraphicsMagick directory name
-# 2. Build gs from 9.50 tarball and place in /opt (until 9.50 appears in port)
+# For now (6.2.0), need to do a few things manually first, like
+#   1. Separate install command to avoid version number in GraphicsMagick directory name
+#
+# Notes:
+#   1. This is tested on macports where gs is a symbolic link to gsc.
 
 if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
@@ -26,16 +28,16 @@ TMPDIR=${TMPDIR:-/tmp}
 
 # 1a. List of executables needed and whose shared libraries also are needed.
 #     Use full path if you need something not in your path
-EXEPLUSLIBS="/opt/bin/gs /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate /opt/local/lib/libfftw3f_threads.dylib"
+EXEPLUSLIBS="/opt/local/bin/gsc /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate /opt/local/lib/libfftw3f_threads.dylib"
 # 1b. List of any symbolic links needed
 #     Use full path if you need something not in your path
-EXELINKS=
+EXELINKS=/opt/local/bin/gs
 # 1c. List of executables whose shared libraries have already been included via other shared libraries
 #     Use full path if you need something not in your path
 EXEONLY=
 # 1d. Shared directories to be added
 #     Use full path if you need something not in your path
-EXESHARED="gdal /opt/share/ghostscript /opt/local/lib/proj7/share/proj"
+EXESHARED="gdal /opt/local/share/ghostscript /opt/local/lib/proj7/share/proj"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f ${TMPDIR}/raw.lis

@@ -4,6 +4,74 @@
 Changelog
 =========
 
+New Features in GMT 6.2
+=======================
+
+GMT 6.2 includes a new module, new common option, general code and documentation improvements, and numerous
+bug fixes! Here are the general updates included in 6.2:
+
+#. Addition of :doc:`theme-settings` (sets of GMT defaults), with a default modern theme for modern mode, and
+   :ref:`auto scaling options <cookbook/features:Automatic GMT settings>` for many GMT defaults.
+#. New :doc:`animation 13 <animations/anim13>` of seismic waveforms.
+#. Support for **+a**\ *angle* for y-axis as well as x-axis with the :ref:`-B axes settings <gmt:Axes settings>`.
+#. General improvements to the automatic determination of frame attributes.
+#. New **+d**\ *divisor* modifier to the :ref:`-i option <gmt:The **-i** option>` to simplify scaling of input values.
+#. Allow parsing of **-Jz**\ *1:zzzzzz* for vertical scale.
+#. New GMT configuration parameters :term:`MAP_FRAME_PERCENT`, :term:`COLOR_SET`, and :term:`COLOR_CPT`.
+#. Add support for reading variable in NetCDF-4 groups.
+#. Allow specifying the reciprocal increment for generating 1d arrays.
+#. Allow LaTeX expressions in single-line titles and Cartesian axes labels, add support for multi-line plot titles, and
+   add support for subtitles.
+#. Many general documentation improvements.
+#. Various improvements to the API in support of developments taking place in the external wrappers (Python, Julia, Matlab).
+
+New Common Options in GMT 6.2:
+------------------------------
+
+#. :ref:`-w <gmt:The **-w** option>`: Convert selected coordinate to repeating cycles.
+
+New Modules in GMT 6.2:
+-----------------------
+
+#. :doc:`gmtbinstats`: Bin data and determine statistics per bin, with support for both hexagonal and rectangular tiling.
+
+New Core Module Features in GMT 6.2:
+------------------------------------
+
+#. :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; Support
+   slanted annotations with **-S**.
+#. :doc:`events`: New **-Z** option to animate geodesy and seismology symbols; New **-H** option to enable text label
+   boxes; Support plotting lines as series of closely spaced circles.
+#. :doc:`gmtmath`: New **VPDF** operator.
+#. :doc:`gmtsplit`: New name for previous module splitxyz.
+#. :doc:`grd2xyz`: New modifier for the **-W** option to set the length unit used.
+#. :doc:`grdcut`: New **-F** option to clip a grid based on a polygon.
+#. :doc:`grdfft`: New **-Q** option for no wavenumber operations.
+#. :doc:`grdmath`: New **FISHER** and **VPDF** operators.
+#. :doc:`greenspline`, :doc:`grdinterpolate`: Enable writing of 3-D netCDF data cubes.
+#. :doc:`histogram`: New **-E** option for custom bar widths and optional shift; New **+b** modifier to **-C** to set
+   color based on the bin value.
+#. :doc:`legend`: New **-M** option to handle both hidden and given information.
+#. :doc:`makecpt`, :doc:`grd2cpt`: Simplify the addition of category labels to CPT files with **-F**.
+#. :doc:`movie`: New modifiers to **-L** and **-P** to enable drop-shadow and rounded rectangular boxes.
+#. :doc:`plot`, :doc:`plot3d`: New **-H** option to scale the symbol size as well as the symbol pen outline attributes;
+   Support sequential auto-colors for polygon fills or line pens.
+#. :doc:`rose`: New **-N** option to draw the equivalent circular normal distribution.
+#. :doc:`subplot`: New **-D** option to accept previous default plot settings.
+#. :doc:`ternary`: Add support for drawing lines and polygons.
+#. :doc:`text`: New **-S** option to cast shade beneath a text box.
+
+Supplement updates in GMT 6.2:
+------------------------------
+
+#. :doc:`coupe </supplements/seis/coupe>`: Updated syntax for the **-A** option.
+#. :doc:`coupe </supplements/seis/coupe>`, :doc:`meca </supplements/seis/meca>`,
+   :doc:`velo </supplements/geodesy/velo>`: New scaling option **-H**; allow variable transparency; allow adjusting
+   symbol color via intensity; allow setting symbol color using colormaps.
+#. :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>`: Add option to create geometric bodies (spheres, prisms,
+   ellipsoids, etc.) and compute their effect.
+#. :doc:`grdseamount </supplements/potential/grdseamount>`: Add polynomial seamount shape.
+
 Release of GMT 6.1.1
 ====================
 
@@ -30,7 +98,7 @@ changes, we mention
  #. Add modifier **+v** for a *vertical* oblique Equator in -JO [horizontal].
  #. New **-B** modifier **+i** for placing internal frame annotations
  #. New **-B** modifier **+f** to turn on fancy geographic annotations.
- #. New polar projection (**-JP**) modifiers  (**+f**\|\ **r**\|\ **t**\|\ **z**) adds new 
+ #. New polar projection (**-JP**) modifiers  (**+f**\|\ **r**\|\ **t**\|\ **z**) adds new
     capabilities for annotating azimuths, depths or radii.
  #. Revise verbosity default levels and their names and abbreviations.
  #. Add Web-Mercator as new sphere that can be selected.
@@ -40,7 +108,7 @@ changes, we mention
 
 New Common Options in GMT 6.1:
 ------------------------------
- #. **-l**: Add automatic legend entries from the modules :doc:`plot`, :doc:`plot3d`, 
+ #. **-l**: Add automatic legend entries from the modules :doc:`plot`, :doc:`plot3d`,
     :doc:`grdcontour` and :doc:`pscontour` in modern mode.
  #. **-q**\[**i**\|\ **o**\ ]: Select specific data rows to complement selection of data columns (via **-i**, **-o**).
 
