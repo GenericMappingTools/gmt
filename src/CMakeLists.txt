@@ -351,7 +351,8 @@ set (SHARED_LIB_PURPOSE "GMT ${SHARED_LIB_NAME}: The main modules of the Generic
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 
 # Legacy modules for which to install compatibility links via install_module_symlink
-set (GMT_COMPAT_MODULES minmax gmtdp gmtstitch grdreformat ps2raster originator PARENT_SCOPE)
+set (GMT_COMPAT_MODULES minmax gmtdp gmtstitch grdreformat ps2raster originator)
+set (GMT_COMPAT_MODULES ${GMT_COMPAT_MODULES} PARENT_SCOPE) # needed by share/tools/gmt5syntax.in
 
 # gmt core modules
 set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c dimfilter.c docs.c filter1d.c
