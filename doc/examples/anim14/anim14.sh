@@ -11,7 +11,8 @@
 # URL="https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/jan76_dec17.ndk"
 # gmt which $URL -G 
 # gawk '/^PDE/ {Date=$2; Time=$3; Lat=$4; Long=$5; Depth=$6; getline; Name=$1; getline; getline; Exp=$1; getline; mant=$11; strike1=$12; dip1=$13; rake1=$14; strike2=$15; dip2=$16; rake2=$17; print Long, Lat, Depth, strike1, dip1, rake1, strike2, dip2, rake2, mant, Exp, Date "T" Time, Name}' jan76_dec17.ndk | sed 's/\//-/g' > meca.gmt
-# The meca.gmt file is in the GMT Dataserver cache and can be accessed via @meca.gmt
+# gmt select meca.gmt -R-75.1/-63/-34.44/-30.35 > GCMT_1976-2017_meca.gmt
+# The GCMT_1976-2017_meca.gmt file is in the GMT Dataserver cache and can be accessed via @GCMT_1976-2017_meca.gmt
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/9D1qANCoptE
 # The 79-sec, 1896 frame movie took ~50 minutes to render on a 2017 iMac Pro.
@@ -39,8 +40,8 @@ $Long1 $Lat1
 $Long2 $Lat2
 EOF
 # Filter Focal Mechanism. Create file with data Inside/Outside.
-gmt select @meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_I.gmt
-gmt select @meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_O.gmt -Il
+gmt select @GCMT_1976-2017_meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_I.gmt
+gmt select @GCMT_1976-2017_meca.gmt -Ltmp_profile+d$Dist+p -fg > coupe_O.gmt -Il
 # Calculate variables (profile length, maximum depth of events (+10 to avoid clipping in the profile), vertical exaggeration, table of angles).
 KM=$(echo $Long1 $Lat1 | gmt mapproject -G$Long2/$Lat2+uk -o2)
 DepthMax=$(gmt info coupe_I.gmt -C2 -o5 | gmt math -Q STDIN 10 ADD =)
