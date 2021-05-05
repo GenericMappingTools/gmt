@@ -5,7 +5,7 @@
 # Global CMT web page: https://www.globalcmt.org/
 #
 # DEM:  @earth_relief_03s
-# Data: @meca.gmt 
+# Data: @GCMT_1976-2017_meca.gmt 
 #
 # The original data file jan76_dec17.ndk can be downloaded and rearranged to a gmt format with the followings commands:
 # URL="https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/jan76_dec17.ndk"
