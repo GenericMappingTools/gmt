@@ -285,8 +285,11 @@ To make a minimalistic 2x2 basemap layout called panels.pdf, try::
 Restrictions
 ------------
 
-(1) Currently, nesting of subplots is not implemented. (2) If auto-legend option **-l**
-is used then you must complete plotting in one panel before moving to another.
+#. Currently, nesting of subplots is not implemented. 
+#. If auto-legend option **-l** is used then you must complete plotting in one panel 
+   before moving to another.
+#. Specifying separate primary and secondary annotations via **-Bp** and **-Bs** have
+   not yet been implemented.
 
 See Also
 --------
