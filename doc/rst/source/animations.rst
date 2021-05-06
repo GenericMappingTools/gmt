@@ -81,8 +81,7 @@ includes the animations) does not take excessive time.
 
   :doc:`/animations/anim14`
 
-.. toctree::
-   :hidden:
-   :glob:
+- .. youtube:: Wk58r72g_nk
+     :width: 100%
 
    animations/anim*
