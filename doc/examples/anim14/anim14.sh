@@ -14,7 +14,7 @@
 # gmt select meca.gmt -R-75.1/-63/-34.44/-30.35 > GCMT_1976-2017_meca.gmt
 # The GCMT_1976-2017_meca.gmt file is in the GMT Dataserver cache and can be accessed via @GCMT_1976-2017_meca.gmt
 # The finished movie is available in our YouTube channel as well:
-# https://youtu.be/9D1qANCoptE
+# https://youtu.be/Wk58r72g_nk
 # The 79-sec, 1896 frame movie took ~50 minutes to render on a 2017 iMac Pro.
 #
 # Author: ESTEBAN, Federico D.
