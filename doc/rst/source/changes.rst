@@ -13,6 +13,7 @@ bug fixes! Here are the general updates included in 6.2:
 #. Addition of :doc:`theme-settings` (sets of GMT defaults), with a default modern theme for modern mode, and
    :ref:`auto scaling options <cookbook/features:Automatic GMT settings>` for many GMT defaults.
 #. New :doc:`animation 13 <animations/anim13>` of seismic waveforms.
+#. New :doc:`animation 14 <animations/anim14>` of earthquake focal mechanisms.
 #. Support for **+a**\ *angle* for y-axis as well as x-axis with the :ref:`-B axes settings <gmt:Axes settings>`.
 #. General improvements to the automatic determination of frame attributes.
 #. New **+d**\ *divisor* modifier to the :ref:`-i option <gmt:The **-i** option>` to simplify scaling of input values.
