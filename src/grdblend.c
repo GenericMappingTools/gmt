@@ -239,7 +239,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			}
 			/* Data record to process */
 
-			/* Data record to process.  We permint this kind of records:
+			/* Data record to process.  We permit this kind of records:
 			 * file [-Rinner_region ] [weight]
 			 * i.e., file is required but region [grid extent] and/or weight [1] are optional
 			 */

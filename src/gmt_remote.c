@@ -1557,7 +1557,7 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	/* Get here if file is a =tiled_<id>_G|P.xxxxxx file.  Need to do:
 	 * Set up a grdblend command and return the assembled grid
 	 */
-	int k_data;
+	int k_data, v_level = API->verbose;
 	struct GMT_GRID *G = NULL;
 	double *wesn = (region) ? region : API->tile_wesn;	/* Default to -R */
 	char grid[GMT_VF_LEN] = {""}, cmd[GMT_LEN256] = {""}, code = 0;;
@@ -1570,23 +1570,28 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		return NULL;
 	}
 
+	if (API->verbose == GMT_MSG_WARNING) API->verbose = GMT_MSG_ERROR;	/* Drop from warnings to errors only when calling grdblend to avoid annoying messages about phase/shift from SRTM01|3 and 15s */
 	GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, grid);
 	/* Pass -N0 so that missing tiles (oceans) yield z = 0 and not NaN, and -Co+n to override using negative earth_relief_15s values */
 	snprintf (cmd, GMT_LEN256, "%s -R%.16g/%.16g/%.16g/%.16g -I%s -r%c -G%s -fg -Co+n", file, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], API->remote_info[k_data].inc, API->remote_info[k_data].reg, grid);
-	if (code != 'X') strcat (cmd, " -N0");	/* If ocean/land, set empty nodes to 0, else NaN */
+	if (code != 'X') strcat (cmd, " -N0 -Ve");	/* If ocean/land, set empty nodes to 0, else NaN. Also turn of warnings since mixing pixel and gridline grids, possibly */
 	if (GMT_Call_Module (API, "grdblend", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
+		API->verbose = v_level;
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to produce blended grid from %s\n", file);
 		return NULL;
 	}
 	if ((G = GMT_Read_VirtualFile (API, grid)) == NULL) {	/* Load in the resampled grid */
+		API->verbose = v_level;
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to receive blended grid from grdblend\n");
 		return NULL;
 	}
 	if (gmtlib_delete_virtualfile (API, grid)) {	/* Remove trace since passed upwards anyway */
+		API->verbose = v_level;
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to destroy temporary object for assembled grid\n");
 		return NULL;
 	}
 
+	API->verbose = v_level;
 	HH = gmt_get_H_hidden (G->header);
 	HH->orig_datatype = GMT_SHORT;	/* Since we know this */
 	return (G);

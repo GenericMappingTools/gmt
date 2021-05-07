@@ -18,5 +18,5 @@ Transparency may also be controlled on a feature by feature basis when setting c
 :ref:`-Gfill_attrib`). **Note**: The modules :doc:`/plot`, :doc:`/plot3d`, and :doc:`/text` can all change
 transparency on a record-by-record basis if **-t** is given without argument and the input file supplies variable
 transparencies as the last numerical column value(s). **Note**: The transparency is only visible when PDF or raster
-format ouput is selected because the PostScript language does not support transparency. Only the PNG format selection
+format output is selected because the PostScript language does not support transparency. Only the PNG format selection
 adds a transparency layer in the image (for further processing).

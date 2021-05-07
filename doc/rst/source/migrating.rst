@@ -1,4 +1,4 @@
-Migrating from an earlier version
+Migrating from an Earlier Version
 =================================
 
 Many longtime GMT users have older scripts written in GMT 4 and even in GMT 5

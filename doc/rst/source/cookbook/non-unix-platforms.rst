@@ -15,7 +15,7 @@ solutions:
 WINDOWS:
     Choose among these three possibilities:
 
-    #. Install GMT under MinGW/MSYS (A collection of GNU utilities).
+    #. Install GMT under MinGW/MSYS2 (A collection of GNU utilities).
 
     #. Install GMT under Cygwin (A GNU port to Windows).
 
@@ -23,6 +23,17 @@ WINDOWS:
        compilers. Unlike the first two, this option will not provide you
        with any UNIX tools so you will be limited to what you can do
        with DOS batch files.
+
+
+MINGW|MSYS2 and GMT
+-------------------
+
+Though one can install GMT natively using CMake, the simplest way of installing
+under MINGW|MSYS2 is to just install the Windows binaries and use them from
+the msys2 bash shell. As simple as that. Furthermore, GMT programs launch
+faster here than on Cygwin so this is the recommended way of running
+GMT on Windows. As one option, `Git for Windows <https://gitforwindows.org/>`_
+can be easily installed and includes a bash emulator with MINGW|MSYS2.
 
 Cygwin and GMT
 --------------
@@ -64,12 +75,3 @@ limit to 1024 Mb:
     regtool -v list /HKLM/Software/Cygnus\ Solutions/Cygwin
 
 For more installation details see the general README file.
-
-MINGW|MSYS and GMT
-------------------
-
-Though one can install GMT natively using CMake, the simplest way of installing
-under MINGW|MSYS is to just install the Windows binaries and use them from
-the msys bash shell. As simple as that. Furthermore, GMT programs launch
-faster here than on Cygwin so this is the recommended way of running
-GMT on Windows.

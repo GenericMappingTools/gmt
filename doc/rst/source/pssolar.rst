@@ -44,9 +44,9 @@ Examples
 
 .. include:: explain_example.rst_
 
-Print current Sun position and Sunrise, Sunset times at::
+Print current Sun position and Sunrise, Sunset times at given date, time and time zone::
 
-    gmt pssolar -I-7.93/37.079+d2016-02-04T10:01:00
+    gmt pssolar -I-7.93/37.079+d2016-02-04T10:01:00+z02:00
 
 Plot the day-night and civil twilight::
 
