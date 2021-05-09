@@ -977,6 +977,11 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 						strcat (cmd1, string);	strcat (cmd2, string);
 					}
 					break;
+				case GMT_OPT_INFILE:
+					gmt_filename_set (string);	/* Replace any spaces with ASCII 29 */
+					strcat (cmd1, string);	strcat (cmd2, string);
+					break;
+
 				default:	/* These arguments go into both commands (may be -p -n, --, etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;

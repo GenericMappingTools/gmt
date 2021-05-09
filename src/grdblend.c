@@ -441,6 +441,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s is sampled using region %s\n", B[n].file, Rargs);
 		}
 		if (do_sample) {	/* One or more reasons to call upon grdsample before using this grid */
+			gmt_filename_set (B[n].file);	/* Replace any spaces in filename with ASCII 29 */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
 				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);

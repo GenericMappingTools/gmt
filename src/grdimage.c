@@ -441,6 +441,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 		char output[GMT_VF_LEN] = {""}, cmd[GMT_LEN512] = {""};
 		GMT_Report (API, GMT_MSG_COMPAT, "Passing three grids instead of an image is deprecated.  Please consider using an image instead.\n");
 		GMT_Open_VirtualFile (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
+		for (k = 0; k < 3; k++)
+			gmt_filename_set (file[k]);	/* Replace any spaces with ASCII 29 */
 		sprintf (cmd, "%s %s %s -C -N -G%s", file[0], file[1], file[2], output);
 		if (GMT_Call_Module (API, "grdmix", GMT_MODULE_CMD, cmd)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to combine %s/%s/%s into an image - aborting.\n", file[0], file[1], file[2]);
@@ -1434,8 +1436,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			strcat (cmd, data_grd);
 		else if (got_int4_grid)	/* Use the virtual file just assigned a few lines above this call */
 			strcat (cmd, int4_grd);
-		else	/* Default is to use the data file */
+		else {	/* Default is to use the data file; we quote it in case there are spaces in the filename */
+			gmt_filename_set (Ctrl->In.file);	/* Replace any spaces with ASCII 29 */
 			strcat (cmd, Ctrl->In.file);
+			gmt_filename_get (Ctrl->In.file);	/* Replace any ASCII 29 with spaces */
+		}
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdgradient with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
