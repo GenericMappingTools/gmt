@@ -750,6 +750,8 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
 		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+			Return (error);
 		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL,
 		                          Ctrl->N.file, NULL)) == NULL) {
 			for (p = 0; p < n_uv; p++) gmt_M_free (GMT, X[p]);

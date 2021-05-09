@@ -715,7 +715,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < Out->n_segments; seg++) {	/* Each segment represents one x-coordinate */
 				So = Out->table[0]->segment[seg];	/* Short hand to this output segment */
 				for (row = 0; row < So->n_rows; row++) {
-					ij = gmt_M_ijp (Grid->header, row, seg);
+					ij = gmt_M_ijp (Grid->header, So->n_rows-row-1, seg);	/* Must flip order since rows in grid goes down */
 					Grid->data[ij] = (float)So->data[3][row];
 				}
 			}
