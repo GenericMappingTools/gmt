@@ -708,7 +708,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		gmt_set_comment (fp, Ctrl->In.mode, "Postflight script");
 		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
-		fprintf (fp, "cd %s\n", topdir);		/* cd to the starting directory */
+		//fprintf (fp, "cd %s\n", topdir);		/* cd to the starting directory */
 		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since sub-shells may mess things up */
 		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
 			fprintf (fp, "set GMT_SESSION_NAME=1\n");
@@ -725,7 +725,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
-		fprintf (fp, "cd %s\n", tmpwpath);		/* cd back to the working directory */
+		/* Move any final products up to topdir */
+		fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_PREFIX"), topdir);
+		//fprintf (fp, "cd %s\n", tmpwpath);		/* cd back to the working directory */
 		fclose (Ctrl->S[BATCH_POSTFLIGHT].fp);	/* Done reading the postflight script */
 		fclose (fp);	/* Done writing the postflight script */
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
@@ -813,7 +815,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 	fclose (Ctrl->In.fp);	/* Done reading the main script */
 	/* Move job products up to main directory */
-	fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"), topdir);
+	//fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"), topdir);
+	fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"), workdir);
 	fprintf (fp, "cd ..\n");	/* cd up to parent dir */
 	/* Create completion file so batch knows this job is done */
 	fprintf (fp, "%s %s.___\n", createfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_NAME"));
@@ -949,6 +952,29 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 
 	if (!Ctrl->Q.active) {
+		char **file = gmt_get_dir_list (GMT, workdir, NULL);
+		size_t P_len = strlen (Ctrl->N.prefix);
+		uint64_t k = 0, n_files = 0, n_removed = 0;
+		while (file[k]) {
+			n_files++;
+			if (strncmp (file[k], Ctrl->N.prefix, P_len)) {	/* Not a product */
+				if (gmt_remove_file (GMT, file[k]))	/* Delete this temporary file/script */
+					GMT_Report (API, GMT_MSG_WARNING, "Unable to delete the temporary file %s.\n", file[k]);
+				else
+					n_removed++;
+			}
+			k++;
+		}
+		if (n_removed == n_files) {	/* Nothing left in directory, remove it too */
+			char *D = workdir;
+			if (rmdir (D)) {	/* Unable to delete the directory */
+				perror (workdir);
+				GMT_Report (API, GMT_MSG_WARNING, "Unable to delete the working directory %s.\n", workdir);
+			}
+		}
+		gmt_free_dir_list (GMT, &file);
+
+#if 0
 		/* Run cleanup script at the end */
 		if (Ctrl->In.mode == GMT_DOS_MODE)
 			error = system (cleanup_file);
@@ -977,13 +1003,14 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the postflight script %s.\n", post_file);
 			Return (GMT_RUNTIME_ERROR);
 		}
+#endif
 	}
 
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
-	if (!Ctrl->Q.active && gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the cleanup script %s.\n", cleanup_file);
-		Return (GMT_RUNTIME_ERROR);
-	}
+	//if (!Ctrl->Q.active && gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
+	//	GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the cleanup script %s.\n", cleanup_file);
+	//	Return (GMT_RUNTIME_ERROR);
+	//}
 
 	/* Cd back up to the parent directory */
 	if (chdir (topdir)) {	/* Should never happen but we should check */

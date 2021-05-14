@@ -288,6 +288,8 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC char ** gmt_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext);
+EXTERN_MSC void gmt_free_dir_list (struct GMT_CTRL *GMT, char ***list);
 EXTERN_MSC void gmt_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t chunk);
 EXTERN_MSC int gmt_get_precision_width (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC int gmt_convert_double (struct GMT_CTRL *GMT, char *text, double *value);
