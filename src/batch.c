@@ -960,6 +960,23 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running cleanup script %s returned error %d - exiting.\n", cleanup_file, error);
 			Return (GMT_RUNTIME_ERROR);
 		}
+		/* Delete the produced script files, some from input files */
+		if (gmt_remove_file (GMT, init_file)) {	/* Delete the init script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the initialization script %s.\n", init_file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (gmt_remove_file (GMT, main_file)) {	/* Delete the main script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the main script %s.\n", main_file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (Ctrl->S[BATCH_PREFLIGHT].active && gmt_remove_file (GMT, pre_file)) {	/* Delete the preflight script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the preflight script %s.\n", pre_file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+		if (Ctrl->S[BATCH_POSTFLIGHT].active && gmt_remove_file (GMT, post_file)) {	/* Delete the postflight script */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the postflight script %s.\n", post_file);
+			Return (GMT_RUNTIME_ERROR);
+		}
 	}
 
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
