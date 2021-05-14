@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pscoast
+%%Title: GMT v6.2.0_cd069f1-dirty_2021.05.08 [64-bit] Document from pscoast
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:52:44 2018
+%%CreationDate: Thu May 13 13:53:57 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,9 +112,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +255,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +288,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +338,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -336,9 +350,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -556,6 +568,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -570,7 +585,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -594,9 +617,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +660,21 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
+    U
+} def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +685,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +697,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -673,12 +709,73 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pscoast -R60/105/-20/40 -JM95.0/35/16c -Gbisque -K -Bafg8 -P -Xc
-%@PROJ: merc 60.00000000 105.00000000 -20.00000000 40.00000000 -3195085.938 912881.696 -1852032.917 3967815.471 +proj=merc +lon_0=95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: -226.772 72 453.543 642.545
+%@PROJ: merc 60.00000000 105.00000000 -20.00000000 40.00000000 -3195085.938 912881.696 -1852032.917 3967815.471 +proj=merc +lon_0=95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -226.771653543 72 453.543307087 642.544810397
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+8 W
+0 A
+N 0 0 M 0 -83 D S
+N 0 10709 M 0 83 D S
+N 1680 0 M 0 -83 D S
+N 1680 10709 M 0 83 D S
+N 3360 0 M 0 -83 D S
+N 3360 10709 M 0 83 D S
+N 5039 0 M 0 -83 D S
+N 5039 10709 M 0 83 D S
+N 6719 0 M 0 -83 D S
+N 6719 10709 M 0 83 D S
+N 0 0 M -83 0 D S
+N 7559 0 M 83 0 D S
+N 0 1731 M -83 0 D S
+N 7559 1731 M 83 0 D S
+N 0 3408 M -83 0 D S
+N 7559 3408 M 83 0 D S
+N 0 5085 M -83 0 D S
+N 7559 5085 M 83 0 D S
+N 0 6816 M -83 0 D S
+N 7559 6816 M 83 0 D S
+N 0 8662 M -83 0 D S
+N 7559 8662 M 83 0 D S
+N 0 10709 M -83 0 D S
+N 7559 10709 M 83 0 D S
+0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+200 F0
+(60è) tc Z
+0 10876 M (60è) bc Z
+1680 -167 M (70è) tc Z
+1680 10876 M (70è) bc Z
+3360 -167 M (80è) tc Z
+3360 10876 M (80è) bc Z
+5039 -167 M (90è) tc Z
+5039 10876 M (90è) bc Z
+6719 -167 M (100è) tc Z
+6719 10876 M (100è) bc Z
+/PSL_AH1 0
+-167 0 M (î20è) mr Z
+7726 0 M (î20è) ml Z
+(î20è) sw mx
+-167 1731 M (î10è) mr Z
+7726 1731 M (î10è) ml Z
+(î10è) sw mx
+-167 3408 M (0è) mr Z
+7726 3408 M (0è) ml Z
+(0è) sw mx
+-167 5085 M (10è) mr Z
+7726 5085 M (10è) ml Z
+(10è) sw mx
+-167 6816 M (20è) mr Z
+7726 6816 M (20è) ml Z
+(20è) sw mx
+-167 8662 M (30è) mr Z
+7726 8662 M (30è) ml Z
+(30è) sw mx
+-167 10709 M (40è) mr Z
+7726 10709 M (40è) ml Z
+(40è) sw mx
+def
 0 8662 M
 1680 0 D
 0 2047 D
@@ -718,6 +815,7 @@ P
 -10 12 D
 P
 {1 0.894 0.769 C} FS
+O0
 FO
 1680 8662 M
 1680 0 D
@@ -4988,8 +5086,8 @@ FO
 6 7 D
 P
 FO
-25 W
 4 W
+0 A
 672 0 M
 0 10709 D
 S
@@ -5032,31 +5130,7 @@ S
 0 10709 M
 7559 0 D
 S
-8 W
-N 0 0 M 0 -83 D S
-N 0 10709 M 0 83 D S
-N 1680 0 M 0 -83 D S
-N 1680 10709 M 0 83 D S
-N 3360 0 M 0 -83 D S
-N 3360 10709 M 0 83 D S
-N 5039 0 M 0 -83 D S
-N 5039 10709 M 0 83 D S
-N 6719 0 M 0 -83 D S
-N 6719 10709 M 0 83 D S
-N 0 0 M -83 0 D S
-N 7559 0 M 83 0 D S
-N 0 1731 M -83 0 D S
-N 7559 1731 M 83 0 D S
-N 0 3408 M -83 0 D S
-N 7559 3408 M 83 0 D S
-N 0 5085 M -83 0 D S
-N 7559 5085 M 83 0 D S
-N 0 6816 M -83 0 D S
-N 7559 6816 M 83 0 D S
-N 0 8662 M -83 0 D S
-N 7559 8662 M 83 0 D S
-N 0 10709 M -83 0 D S
-N 7559 10709 M 83 0 D S
+25 W
 83 W
 N -42 0 M 0 353 D S
 N 7601 0 M 0 353 D S
@@ -5225,32 +5299,6 @@ N 7642 10709 M -7725 0 D S
 N 7642 10792 M -7725 0 D S
 N 0 10792 M 0 -10875 D S
 N -83 10792 M 0 -10875 D S
-0 -167 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(60è) tc Z
-0 10876 M (60è) bc Z
-1680 -167 M (70è) tc Z
-1680 10876 M (70è) bc Z
-3360 -167 M (80è) tc Z
-3360 10876 M (80è) bc Z
-5039 -167 M (90è) tc Z
-5039 10876 M (90è) bc Z
-6719 -167 M (100è) tc Z
-6719 10876 M (100è) bc Z
--167 0 M (î20è) mr Z
-7726 0 M (î20è) ml Z
--167 1731 M (î10è) mr Z
-7726 1731 M (î10è) ml Z
--167 3408 M (0è) mr Z
-7726 3408 M (0è) ml Z
--167 5085 M (10è) mr Z
-7726 5085 M (10è) ml Z
--167 6816 M (20è) mr Z
-7726 6816 M (20è) ml Z
--167 8662 M (30è) mr Z
-7726 8662 M (30è) ml Z
--167 10709 M (40è) mr Z
-7726 10709 M (40è) ml Z
 %%EndObject
 0 A
 FQ
@@ -5259,12 +5307,12 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt grdvector nuvel1.vx.1.5.nc nuvel1.vy.1.5.nc -R60/105/-20/40 -JM95.0/35/16c -I2 -S10i -Q0.2i+e -Wthicker,lightgray -Glightgray -O -K -t50
-%@PROJ: merc 60.00000000 105.00000000 -20.00000000 40.00000000 -3195085.938 912881.696 -1852032.917 3967815.471 +proj=merc +lon_0=95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 60.00000000 105.00000000 -20.00000000 40.00000000 -3195085.938 912881.696 -1852032.917 3967815.471 +proj=merc +lon_0=95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
-0.5 /Normal PSL_transp
+0.5 0.5 /Normal PSL_transp
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 0.827 A
 {0.827 A} FS
@@ -5276,4281 +5324,5724 @@ clipsave
 -7559 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {25 W 0.827 A [] 0 B} def
 V
 25 W
-V 1344 9053 T 86.557 R
+V 1344 9053 T 86.5384445435 R
 N 0 0 M 255 0 D S
 U
-V 1374 9546 T 86.557 R
+V 1374 9546 T 86.5384445435 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 9053 T 85.6109 R
+25 W
+V 1680 9053 T 85.5873500298 R
 N 0 0 M 269 0 D S
 U
-V 1719 9560 T 85.6109 R
+V 1719 9560 T 85.5873500298 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 9053 T 84.684 R
+25 W
+V 2016 9053 T 84.6554500912 R
 N 0 0 M 283 0 D S
 U
-V 2064 9573 T 84.684 R
+V 2064 9573 T 84.6554500912 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 9053 T 83.773 R
+25 W
+V 2352 9053 T 83.73967874 R
 N 0 0 M 297 0 D S
 U
-V 2410 9586 T 83.773 R
+V 2410 9586 T 83.73967874 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 9053 T 82.8753 R
+25 W
+V 2688 9053 T 82.8372610987 R
 N 0 0 M 310 0 D S
 U
-V 2756 9598 T 82.8753 R
+V 2756 9598 T 82.8372610987 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 8662 T 84.5432 R
+25 W
+V 1344 8662 T 84.5130864457 R
 N 0 0 M 256 0 D S
 U
-V 1391 9156 T 84.5432 R
+V 1391 9156 T 84.5130864457 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 8662 T 83.7163 R
+25 W
+V 1680 8662 T 83.6816329689 R
 N 0 0 M 271 0 D S
 U
-V 1736 9170 T 83.7163 R
+V 1736 9170 T 83.6816329689 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 8662 T 82.9019 R
+25 W
+V 2016 8662 T 82.8628291574 R
 N 0 0 M 285 0 D S
 U
-V 2081 9183 T 82.9019 R
+V 2081 9183 T 82.8628291574 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 8662 T 82.0977 R
+25 W
+V 2352 8662 T 82.0542829274 R
 N 0 0 M 299 0 D S
 U
-V 2426 9196 T 82.0977 R
+V 2426 9196 T 82.0542829274 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 8662 T 81.3014 R
+25 W
+V 2688 8662 T 81.2537608443 R
 N 0 0 M 312 0 D S
 U
-V 2771 9208 T 81.3014 R
+V 2772 9208 T 81.2537608443 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 8662 T 80.5112 R
+25 W
+V 3024 8662 T 80.4593598998 R
 N 0 0 M 325 0 D S
 U
-V 3117 9220 T 80.5112 R
+V 3117 9220 T 80.4593598998 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 8280 T 83.2639 R
+25 W
+V 1008 8280 T 83.2256862729 R
 N 0 0 M 242 0 D S
 U
-V 1064 8759 T 83.2639 R
+V 1065 8759 T 83.2256862729 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 8280 T 82.5495 R
+25 W
+V 1344 8280 T 82.5073584275 R
 N 0 0 M 258 0 D S
 U
-V 1408 8774 T 82.5495 R
+V 1409 8774 T 82.5073584275 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 8280 T 81.8429 R
+25 W
+V 1680 8280 T 81.7968347001 R
 N 0 0 M 273 0 D S
 U
-V 1753 8788 T 81.8429 R
+V 1753 8788 T 81.7968347001 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 8280 T 81.142 R
+25 W
+V 2016 8280 T 81.0921427636 R
 N 0 0 M 287 0 D S
 U
-V 2097 8801 T 81.142 R
+V 2097 8801 T 81.0921427636 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 8280 T 80.4453 R
+25 W
+V 2352 8280 T 80.3915878073 R
 N 0 0 M 301 0 D S
 U
-V 2442 8814 T 80.4453 R
+V 2442 8814 T 80.3915878073 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 8280 T 79.751 R
+25 W
+V 2688 8280 T 79.6935547265 R
 N 0 0 M 315 0 D S
 U
-V 2786 8826 T 79.751 R
+V 2787 8826 T 79.6935547265 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 8280 T 79.0578 R
+25 W
+V 3024 8280 T 78.996684362 R
 N 0 0 M 327 0 D S
 U
-V 3131 8837 T 79.0578 R
+V 3132 8837 T 78.996684362 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 8280 T 78.3644 R
+25 W
+V 3360 8280 T 78.2996386796 R
 N 0 0 M 340 0 D S
 U
-V 3477 8848 T 78.3644 R
+V 3477 8848 T 78.2996386796 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 8280 T 77.6697 R
+25 W
+V 3696 8280 T 77.6012105047 R
 N 0 0 M 352 0 D S
 U
-V 3822 8858 T 77.6697 R
+V 3823 8858 T 77.6012105047 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 7905 T 80.5826 R
+25 W
+V 1344 7905 T 80.5283008804 R
 N 0 0 M 260 0 D S
 U
-V 1426 8399 T 80.5826 R
+V 1426 8399 T 80.5283008804 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 7905 T 79.9966 R
+25 W
+V 1680 7905 T 79.9389782666 R
 N 0 0 M 275 0 D S
 U
-V 1769 8413 T 79.9966 R
+V 1770 8413 T 79.9389782666 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 7905 T 79.4093 R
+25 W
+V 2016 7905 T 79.3485245649 R
 N 0 0 M 290 0 D S
 U
-V 2113 8426 T 79.4093 R
+V 2114 8426 T 79.3485245649 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 7905 T 78.82 R
+25 W
+V 2352 7905 T 78.7559803324 R
 N 0 0 M 304 0 D S
 U
-V 2457 8439 T 78.82 R
+V 2458 8439 T 78.7559803324 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 7905 T 78.2277 R
+25 W
+V 2688 7905 T 78.1604043861 R
 N 0 0 M 317 0 D S
 U
-V 2801 8451 T 78.2277 R
+V 2802 8451 T 78.1604043861 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 7905 T 77.6314 R
+25 W
+V 3024 7905 T 77.5609170065 R
 N 0 0 M 330 0 D S
 U
-V 3146 8462 T 77.6314 R
+V 3146 8462 T 77.5609170065 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 7905 T 77.0305 R
+25 W
+V 3360 7905 T 76.9568229231 R
 N 0 0 M 343 0 D S
 U
-V 3490 8473 T 77.0305 R
+V 3491 8473 T 76.9568229231 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 7905 T 76.424 R
+25 W
+V 3696 7905 T 76.3471472074 R
 N 0 0 M 354 0 D S
 U
-V 3835 8483 T 76.424 R
+V 3836 8483 T 76.3471472074 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 7905 T 75.8113 R
+25 W
+V 4031 7905 T 75.7312810677 R
 N 0 0 M 366 0 D S
 U
-V 4180 8492 T 75.8113 R
+V 4181 8492 T 75.7312810677 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 7905 T 75.1916 R
+25 W
+V 4367 7905 T 75.1083431964 R
 N 0 0 M 376 0 D S
 U
-V 4525 8501 T 75.1916 R
+V 4526 8501 T 75.1083431964 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 7905 T 74.5642 R
+25 W
+V 4703 7905 T 74.4777567638 R
 N 0 0 M 386 0 D S
 U
-V 4870 8509 T 74.5642 R
+V 4871 8509 T 74.4777567638 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 7905 T 73.9283 R
+25 W
+V 5039 7905 T 73.8385897007 R
 N 0 0 M 396 0 D S
 U
-V 5215 8516 T 73.9283 R
+V 5216 8516 T 73.8385897007 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 7905 T 73.2831 R
+25 W
+V 5375 7905 T 73.1902226568 R
 N 0 0 M 404 0 D S
 U
-V 5561 8522 T 73.2831 R
+V 5562 8522 T 73.1902226568 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 7905 T 72.628 R
+25 W
+V 5711 7905 T 72.5319016964 R
 N 0 0 M 413 0 D S
 U
-V 5906 8528 T 72.628 R
+V 5907 8528 T 72.5319016964 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 7537 T 79.3326 R
+25 W
+V 0 7537 T 79.269856594 R
 N 0 0 M 223 0 D S
 U
-V 86 7992 T 79.3326 R
+V 86 7991 T 79.269856594 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 7537 T 78.8918 R
+25 W
+V 336 7537 T 78.8266217315 R
 N 0 0 M 239 0 D S
 U
-V 428 8007 T 78.8918 R
+V 429 8006 T 78.8266217315 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 7537 T 78.4425 R
+25 W
+V 672 7537 T 78.3748508247 R
 N 0 0 M 254 0 D S
 U
-V 771 8021 T 78.4425 R
+V 772 8021 T 78.3748508247 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 7537 T 79.1074 R
+25 W
+V 1008 7537 T 79.0434096436 R
 N 0 0 M 248 0 D S
 U
-V 1100 8016 T 79.1074 R
+V 1101 8015 T 79.0434096436 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 7537 T 78.649 R
+25 W
+V 1344 7537 T 78.5824737249 R
 N 0 0 M 263 0 D S
 U
-V 1443 8030 T 78.649 R
+V 1443 8030 T 78.5824737249 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 7537 T 78.1828 R
+25 W
+V 1680 7537 T 78.113651867 R
 N 0 0 M 279 0 D S
 U
-V 1786 8044 T 78.1828 R
+V 1787 8044 T 78.113651867 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 7537 T 77.7085 R
+25 W
+V 2016 7537 T 77.6367447596 R
 N 0 0 M 293 0 D S
 U
-V 2129 8057 T 77.7085 R
+V 2130 8057 T 77.6367447596 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 7537 T 77.226 R
+25 W
+V 2352 7537 T 77.1515873255 R
 N 0 0 M 307 0 D S
 U
-V 2473 8070 T 77.226 R
+V 2473 8070 T 77.1515873255 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 7537 T 76.7348 R
+25 W
+V 2688 7537 T 76.6578086105 R
 N 0 0 M 321 0 D S
 U
-V 2816 8082 T 76.7348 R
+V 2817 8082 T 76.6578086105 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 7537 T 76.2349 R
+25 W
+V 3024 7537 T 76.1551757359 R
 N 0 0 M 334 0 D S
 U
-V 3160 8094 T 76.2349 R
+V 3161 8093 T 76.1551757359 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 7537 T 75.7258 R
+25 W
+V 3360 7537 T 75.6433316437 R
 N 0 0 M 346 0 D S
 U
-V 3504 8104 T 75.7258 R
+V 3505 8104 T 75.6433316437 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 7537 T 75.2071 R
+25 W
+V 3696 7537 T 75.1219016761 R
 N 0 0 M 358 0 D S
 U
-V 3848 8114 T 75.2071 R
+V 3849 8114 T 75.1219016761 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 7537 T 74.6786 R
+25 W
+V 4031 7537 T 74.5906187343 R
 N 0 0 M 369 0 D S
 U
-V 4192 8124 T 74.6786 R
+V 4193 8124 T 74.5906187343 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 7537 T 74.1397 R
+25 W
+V 4367 7537 T 74.0490006603 R
 N 0 0 M 379 0 D S
 U
-V 4537 8132 T 74.1397 R
+V 4538 8132 T 74.0490006603 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 7537 T 73.5901 R
+25 W
+V 4703 7537 T 73.4965121146 R
 N 0 0 M 389 0 D S
 U
-V 4881 8140 T 73.5901 R
+V 4882 8140 T 73.4965121146 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 7537 T 73.0293 R
+25 W
+V 5039 7537 T 72.9328780344 R
 N 0 0 M 399 0 D S
 U
-V 5226 8147 T 73.0293 R
+V 5227 8147 T 72.9328780344 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 7537 T 72.4566 R
+25 W
+V 5375 7537 T 72.3573585526 R
 N 0 0 M 407 0 D S
 U
-V 5570 8154 T 72.4566 R
+V 5572 8153 T 72.3573585526 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 7537 T 71.8716 R
+25 W
+V 5711 7537 T 71.7694826575 R
 N 0 0 M 415 0 D S
 U
-V 5915 8159 T 71.8716 R
+V 5916 8159 T 71.7694826575 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 7174 T 77.1653 R
+25 W
+V 0 7174 T 77.0889088998 R
 N 0 0 M 227 0 D S
 U
-V 104 7629 T 77.1653 R
+V 104 7629 T 77.0889088998 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 7174 T 76.8597 R
+25 W
+V 336 7174 T 76.781631614 R
 N 0 0 M 243 0 D S
 U
-V 446 7644 T 76.8597 R
+V 446 7643 T 76.781631614 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 7174 T 77.4033 R
+25 W
+V 672 7174 T 77.3282568416 R
 N 0 0 M 235 0 D S
 U
-V 776 7638 T 77.4033 R
+V 776 7637 T 77.3282568416 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 7174 T 77.0871 R
+25 W
+V 1008 7174 T 77.0102684188 R
 N 0 0 M 251 0 D S
 U
-V 1118 7653 T 77.0871 R
+V 1118 7653 T 77.0102684188 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 7174 T 76.7545 R
+25 W
+V 1344 7174 T 76.6758918324 R
 N 0 0 M 267 0 D S
 U
-V 1460 7667 T 76.7545 R
+V 1461 7667 T 76.6758918324 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 7174 T 76.4065 R
+25 W
+V 1680 7174 T 76.325984064 R
 N 0 0 M 282 0 D S
 U
-V 1803 7681 T 76.4065 R
+V 1803 7681 T 76.325984064 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 7174 T 76.0436 R
+25 W
+V 2016 7174 T 75.9610988286 R
 N 0 0 M 297 0 D S
 U
-V 2145 7695 T 76.0436 R
+V 2146 7694 T 75.9610988286 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 7174 T 75.6666 R
+25 W
+V 2352 7174 T 75.5820032581 R
 N 0 0 M 311 0 D S
 U
-V 2488 7707 T 75.6666 R
+V 2489 7707 T 75.5820032581 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 7174 T 75.2755 R
+25 W
+V 2688 7174 T 75.1887643731 R
 N 0 0 M 324 0 D S
 U
-V 2831 7719 T 75.2755 R
+V 2832 7719 T 75.1887643731 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 7174 T 74.8708 R
+25 W
+V 3024 7174 T 74.7819300496 R
 N 0 0 M 337 0 D S
 U
-V 3174 7731 T 74.8708 R
+V 3175 7731 T 74.7819300496 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 7174 T 74.4525 R
+25 W
+V 3360 7174 T 74.3614570977 R
 N 0 0 M 349 0 D S
 U
-V 3518 7741 T 74.4525 R
+V 3518 7741 T 74.3614570977 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 7174 T 74.0208 R
+25 W
+V 3696 7174 T 73.927470281 R
 N 0 0 M 361 0 D S
 U
-V 3861 7752 T 74.0208 R
+V 3862 7751 T 73.927470281 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 7174 T 73.5756 R
+25 W
+V 4031 7174 T 73.4799291771 R
 N 0 0 M 372 0 D S
 U
-V 4205 7761 T 73.5756 R
+V 4206 7761 T 73.4799291771 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 7174 T 73.1169 R
+25 W
+V 4367 7174 T 73.0188635134 R
 N 0 0 M 383 0 D S
 U
-V 4548 7769 T 73.1169 R
+V 4549 7769 T 73.0188635134 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 7174 T 72.6445 R
+25 W
+V 4703 7174 T 72.5439897973 R
 N 0 0 M 392 0 D S
 U
-V 4892 7777 T 72.6445 R
+V 4893 7777 T 72.5439897973 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 7174 T 72.158 R
+25 W
+V 5039 7174 T 72.0550549039 R
 N 0 0 M 402 0 D S
 U
-V 5236 7784 T 72.158 R
+V 5237 7784 T 72.0550549039 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 7174 T 71.6574 R
+25 W
+V 5375 7174 T 71.5519281226 R
 N 0 0 M 410 0 D S
 U
-V 5580 7791 T 71.6574 R
+V 5581 7790 T 71.5519281226 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 6816 T 75.0495 R
+25 W
+V 0 6816 T 74.9598244265 R
 N 0 0 M 231 0 D S
 U
-V 122 7271 T 75.0495 R
+V 122 7271 T 74.9598244265 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 6816 T 75.4568 R
+25 W
+V 336 6816 T 75.3693948749 R
 N 0 0 M 223 0 D S
 U
-V 452 7264 T 75.4568 R
+V 453 7264 T 75.3693948749 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 6816 T 75.2986 R
+25 W
+V 672 6816 T 75.2103733994 R
 N 0 0 M 240 0 D S
 U
-V 794 7280 T 75.2986 R
+V 794 7280 T 75.2103733994 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 6816 T 75.1138 R
+25 W
+V 1008 6816 T 75.024512351 R
 N 0 0 M 256 0 D S
 U
-V 1135 7295 T 75.1138 R
+V 1136 7295 T 75.024512351 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 6816 T 74.9044 R
+25 W
+V 1344 6816 T 74.8139450065 R
 N 0 0 M 271 0 D S
 U
-V 1477 7309 T 74.9044 R
+V 1478 7309 T 74.8139450065 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 6816 T 74.6722 R
+25 W
+V 1680 6816 T 74.5804901015 R
 N 0 0 M 286 0 D S
 U
-V 1819 7323 T 74.6722 R
+V 1820 7323 T 74.5804901015 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 6816 T 74.4187 R
+25 W
+V 2016 6816 T 74.3255978478 R
 N 0 0 M 301 0 D S
 U
-V 2161 7337 T 74.4187 R
+V 2162 7337 T 74.3255978478 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 6816 T 74.145 R
+25 W
+V 2352 6816 T 74.0505100217 R
 N 0 0 M 315 0 D S
 U
-V 2503 7350 T 74.145 R
+V 2504 7349 T 74.0505100217 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 6816 T 73.8523 R
+25 W
+V 2688 6816 T 73.7562137532 R
 N 0 0 M 328 0 D S
 U
-V 2846 7362 T 73.8523 R
+V 2847 7361 T 73.7562137532 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 6816 T 73.5413 R
+25 W
+V 3024 6816 T 73.4435109472 R
 N 0 0 M 341 0 D S
 U
-V 3188 7373 T 73.5413 R
+V 3189 7373 T 73.4435109472 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 6816 T 73.2126 R
+25 W
+V 3360 6816 T 73.1131255624 R
 N 0 0 M 353 0 D S
 U
-V 3531 7384 T 73.2126 R
+V 3532 7383 T 73.1131255624 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 6816 T 72.8666 R
+25 W
+V 3696 6816 T 72.765317997 R
 N 0 0 M 365 0 D S
 U
-V 3874 7394 T 72.8666 R
+V 3875 7393 T 72.765317997 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 6816 T 72.5037 R
+25 W
+V 4031 6816 T 72.4004883939 R
 N 0 0 M 376 0 D S
 U
-V 4217 7403 T 72.5037 R
+V 4218 7403 T 72.4004883939 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 6816 T 72.1242 R
+25 W
+V 4367 6816 T 72.0190529442 R
 N 0 0 M 386 0 D S
 U
-V 4560 7412 T 72.1242 R
+V 4561 7411 T 72.0190529442 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 6816 T 71.728 R
+25 W
+V 4703 6816 T 71.6208701435 R
 N 0 0 M 396 0 D S
 U
-V 4903 7420 T 71.728 R
+V 4904 7419 T 71.6208701435 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 6816 T 71.3154 R
+25 W
+V 5039 6816 T 71.2062193777 R
 N 0 0 M 405 0 D S
 U
-V 5246 7427 T 71.3154 R
+V 5247 7426 T 71.2062193777 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 6816 T 70.8862 R
+25 W
+V 5375 6816 T 70.7748506365 R
 N 0 0 M 413 0 D S
 U
-V 5589 7433 T 70.8862 R
+V 5590 7433 T 70.7748506365 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 6463 T 72.9917 R
+25 W
+V 0 6463 T 72.8893638783 R
 N 0 0 M 236 0 D S
 U
-V 139 6918 T 72.9917 R
+V 140 6917 T 72.8893638783 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 6463 T 73.2728 R
+25 W
+V 336 6463 T 73.1719280962 R
 N 0 0 M 228 0 D S
 U
-V 471 6911 T 73.2728 R
+V 471 6911 T 73.1719280962 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 6463 T 73.2506 R
+25 W
+V 672 6463 T 73.149609575 R
 N 0 0 M 244 0 D S
 U
-V 812 6927 T 73.2506 R
+V 812 6926 T 73.149609575 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 6463 T 73.193 R
+25 W
+V 1008 6463 T 73.0917378877 R
 N 0 0 M 260 0 D S
 U
-V 1153 6942 T 73.193 R
+V 1153 6941 T 73.0917378877 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 6463 T 73.1032 R
+25 W
+V 1344 6463 T 73.0013788115 R
 N 0 0 M 276 0 D S
 U
-V 1494 6956 T 73.1032 R
+V 1495 6956 T 73.0013788115 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 6463 T 72.9836 R
+25 W
+V 1680 6463 T 72.8811622285 R
 N 0 0 M 291 0 D S
 U
-V 1835 6970 T 72.9836 R
+V 1836 6970 T 72.8811622285 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 6463 T 72.8367 R
+25 W
+V 2016 6463 T 72.7334808001 R
 N 0 0 M 305 0 D S
 U
-V 2177 6984 T 72.8367 R
+V 2178 6983 T 72.7334808001 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 6463 T 72.6643 R
+25 W
+V 2352 6463 T 72.560173666 R
 N 0 0 M 319 0 D S
 U
-V 2518 6996 T 72.6643 R
+V 2519 6996 T 72.560173666 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 6463 T 72.4678 R
+25 W
+V 2688 6463 T 72.362622224 R
 N 0 0 M 332 0 D S
 U
-V 2860 7008 T 72.4678 R
+V 2861 7008 T 72.362622224 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 6463 T 72.2485 R
+25 W
+V 3024 6463 T 72.1422044255 R
 N 0 0 M 345 0 D S
 U
-V 3202 7020 T 72.2485 R
+V 3203 7019 T 72.1422044255 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 6463 T 72.0077 R
+25 W
+V 3360 6463 T 71.9001452267 R
 N 0 0 M 357 0 D S
 U
-V 3544 7030 T 72.0077 R
+V 3545 7030 T 71.9001452267 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 6463 T 71.746 R
+25 W
+V 3696 6463 T 71.6370517776 R
 N 0 0 M 369 0 D S
 U
-V 3886 7041 T 71.746 R
+V 3887 7040 T 71.6370517776 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 6463 T 71.4641 R
+25 W
+V 4031 6463 T 71.3537354784 R
 N 0 0 M 379 0 D S
 U
-V 4228 7050 T 71.4641 R
+V 4230 7049 T 71.3537354784 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 6463 T 71.1626 R
+25 W
+V 4367 6463 T 71.0506653325 R
 N 0 0 M 390 0 D S
 U
-V 4571 7058 T 71.1626 R
+V 4572 7058 T 71.0506653325 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 6463 T 70.8418 R
+25 W
+V 4703 6463 T 70.7282500332 R
 N 0 0 M 399 0 D S
 U
-V 4913 7066 T 70.8418 R
+V 4914 7066 T 70.7282500332 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 6463 T 70.5021 R
+25 W
+V 5039 6463 T 70.3868749325 R
 N 0 0 M 408 0 D S
 U
-V 5256 7073 T 70.5021 R
+V 5257 7073 T 70.3868749325 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 6463 T 70.1436 R
+25 W
+V 5375 6463 T 70.0265730221 R
 N 0 0 M 416 0 D S
 U
-V 5598 7080 T 70.1436 R
+V 5600 7079 T 70.0265730221 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 6113 T 70.9972 R
+25 W
+V 0 6113 T 70.8827315033 R
 N 0 0 M 241 0 D S
 U
-V 157 6568 T 70.9972 R
+V 158 6568 T 70.8827315033 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 6113 T 71.1565 R
+25 W
+V 336 6113 T 71.0429170412 R
 N 0 0 M 234 0 D S
 U
-V 489 6562 T 71.1565 R
+V 490 6561 T 71.0429170412 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 6113 T 71.2646 R
+25 W
+V 672 6113 T 71.1515165369 R
 N 0 0 M 250 0 D S
 U
-V 829 6577 T 71.2646 R
+V 830 6577 T 71.1515165369 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 6113 T 71.3292 R
+25 W
+V 1008 6113 T 71.2164970799 R
 N 0 0 M 266 0 D S
 U
-V 1170 6593 T 71.3292 R
+V 1171 6592 T 71.2164970799 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 6113 T 71.3546 R
+25 W
+V 1344 6113 T 71.242002249 R
 N 0 0 M 281 0 D S
 U
-V 1510 6607 T 71.3546 R
+V 1511 6607 T 71.242002249 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 6113 T 71.3441 R
+25 W
+V 1680 6113 T 71.2314775 R
 N 0 0 M 296 0 D S
 U
-V 1851 6621 T 71.3441 R
+V 1852 6621 T 71.2314775 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 6113 T 71.3005 R
+25 W
+V 2016 6113 T 71.1876711903 R
 N 0 0 M 310 0 D S
 U
-V 2192 6634 T 71.3005 R
+V 2193 6634 T 71.1876711903 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 6113 T 71.2264 R
+25 W
+V 2352 6113 T 71.1131999084 R
 N 0 0 M 324 0 D S
 U
-V 2533 6647 T 71.2264 R
+V 2534 6647 T 71.1131999084 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 6113 T 71.1237 R
+25 W
+V 2688 6113 T 71.0099010554 R
 N 0 0 M 337 0 D S
 U
-V 2874 6659 T 71.1237 R
+V 2875 6659 T 71.0099010554 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 6113 T 70.9941 R
+25 W
+V 3024 6113 T 70.8796764558 R
 N 0 0 M 349 0 D S
 U
-V 3216 6671 T 70.9941 R
+V 3217 6670 T 70.8796764558 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 6113 T 70.8392 R
+25 W
+V 3360 6113 T 70.7239875248 R
 N 0 0 M 361 0 D S
 U
-V 3557 6681 T 70.8392 R
+V 3558 6681 T 70.7239875248 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 6113 T 70.66 R
+25 W
+V 3696 6113 T 70.5438753743 R
 N 0 0 M 372 0 D S
 U
-V 3898 6691 T 70.66 R
+V 3900 6691 T 70.5438753743 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 6113 T 70.4577 R
+25 W
+V 4031 6113 T 70.3405308877 R
 N 0 0 M 383 0 D S
 U
-V 4240 6701 T 70.4577 R
+V 4241 6700 T 70.3405308877 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 6113 T 70.233 R
+25 W
+V 4367 6113 T 70.1146684588 R
 N 0 0 M 393 0 D S
 U
-V 4582 6709 T 70.233 R
+V 4583 6709 T 70.1146684588 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 6113 T 69.9864 R
+25 W
+V 4703 6113 T 69.8668125292 R
 N 0 0 M 403 0 D S
 U
-V 4923 6717 T 69.9864 R
+V 4925 6717 T 69.8668125292 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 6113 T 69.7186 R
+25 W
+V 5039 6113 T 69.5977488485 R
 N 0 0 M 411 0 D S
 U
-V 5265 6724 T 69.7186 R
+V 5266 6724 T 69.5977488485 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 6113 T 69.4299 R
+25 W
+V 5375 6113 T 69.3075813573 R
 N 0 0 M 419 0 D S
 U
-V 5607 6731 T 69.4299 R
+V 5608 6730 T 69.3075813573 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 5768 T 68.8252 R
+25 W
+V 0 5768 T 68.6983253779 R
 N 0 0 M 223 0 D S
 U
-V 167 6200 T 68.8252 R
+V 168 6199 T 68.6983253779 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 5768 T 69.113 R
+25 W
+V 336 5768 T 68.9875882818 R
 N 0 0 M 240 0 D S
 U
-V 507 6216 T 69.113 R
+V 508 6216 T 68.9875882818 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 5768 T 69.3449 R
+25 W
+V 672 5768 T 69.2206133962 R
 N 0 0 M 256 0 D S
 U
-V 847 6232 T 69.3449 R
+V 848 6231 T 69.2206133962 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 5768 T 69.5262 R
+25 W
+V 1008 5768 T 69.4028637953 R
 N 0 0 M 271 0 D S
 U
-V 1187 6247 T 69.5262 R
+V 1188 6246 T 69.4028637953 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 5768 T 69.6621 R
+25 W
+V 1344 5768 T 69.5393988956 R
 N 0 0 M 286 0 D S
 U
-V 1527 6261 T 69.6621 R
+V 1528 6261 T 69.5393988956 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 5768 T 69.7565 R
+25 W
+V 1680 5768 T 69.6342339959 R
 N 0 0 M 301 0 D S
 U
-V 1867 6275 T 69.7565 R
+V 1868 6275 T 69.6342339959 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 5768 T 69.8127 R
+25 W
+V 2016 5768 T 69.6907453133 R
 N 0 0 M 315 0 D S
 U
-V 2207 6289 T 69.8127 R
+V 2208 6288 T 69.6907453133 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 5768 T 69.8337 R
+25 W
+V 2352 5768 T 69.7118795086 R
 N 0 0 M 329 0 D S
 U
-V 2548 6301 T 69.8337 R
+V 2549 6301 T 69.7118795086 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 5768 T 69.8219 R
+25 W
+V 2688 5768 T 69.6999917308 R
 N 0 0 M 341 0 D S
 U
-V 2888 6314 T 69.8219 R
+V 2889 6313 T 69.6999917308 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 5768 T 69.7796 R
+25 W
+V 3024 5768 T 69.6574482857 R
 N 0 0 M 354 0 D S
 U
-V 3229 6325 T 69.7796 R
+V 3230 6324 T 69.6574482857 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 5768 T 69.7085 R
+25 W
+V 3360 5768 T 69.586019767 R
 N 0 0 M 365 0 D S
 U
-V 3570 6336 T 69.7085 R
+V 3571 6335 T 69.586019767 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 5768 T 69.61 R
+25 W
+V 3696 5768 T 69.4870243085 R
 N 0 0 M 377 0 D S
 U
-V 3910 6346 T 69.61 R
+V 3912 6345 T 69.4870243085 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 5768 T 69.4855 R
+25 W
+V 4031 5768 T 69.3619082872 R
 N 0 0 M 387 0 D S
 U
-V 4251 6355 T 69.4855 R
+V 4252 6355 T 69.3619082872 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 5768 T 69.336 R
+25 W
+V 4367 5768 T 69.2117091967 R
 N 0 0 M 397 0 D S
 U
-V 4592 6364 T 69.336 R
+V 4593 6363 T 69.2117091967 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 5768 T 69.1624 R
+25 W
+V 4703 5768 T 69.0372504077 R
 N 0 0 M 406 0 D S
 U
-V 4933 6371 T 69.1624 R
+V 4935 6371 T 69.0372504077 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 5768 T 68.9654 R
+25 W
+V 5039 5768 T 68.839295249 R
 N 0 0 M 414 0 D S
 U
-V 5274 6379 T 68.9654 R
+V 5276 6378 T 68.839295249 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 5768 T 68.7455 R
+25 W
+V 5375 5768 T 68.6183072153 R
 N 0 0 M 422 0 D S
 U
-V 5615 6385 T 68.7455 R
+V 5617 6385 T 68.6183072153 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 5425 T 66.7351 R
+25 W
+V 0 5425 T 66.5970323335 R
 N 0 0 M 230 0 D S
 U
-V 186 5857 T 66.7351 R
+V 187 5857 T 66.5970323335 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 5425 T 67.1463 R
+25 W
+V 336 5425 T 67.0100867739 R
 N 0 0 M 246 0 D S
 U
-V 525 5873 T 67.1463 R
+V 526 5873 T 67.0100867739 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 5425 T 67.4949 R
+25 W
+V 672 5425 T 67.3603131275 R
 N 0 0 M 262 0 D S
 U
-V 864 5889 T 67.4949 R
+V 865 5889 T 67.3603131275 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 5425 T 67.787 R
+25 W
+V 1008 5425 T 67.6538463118 R
 N 0 0 M 277 0 D S
 U
-V 1204 5904 T 67.787 R
+V 1205 5904 T 67.6538463118 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 5425 T 68.0281 R
+25 W
+V 1344 5425 T 67.8961105068 R
 N 0 0 M 292 0 D S
 U
-V 1543 5919 T 68.0281 R
+V 1544 5918 T 67.8961105068 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 5425 T 68.2228 R
+25 W
+V 1680 5425 T 68.0916896486 R
 N 0 0 M 307 0 D S
 U
-V 1883 5933 T 68.2228 R
+V 1884 5932 T 68.0916896486 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 5425 T 68.3748 R
+25 W
+V 2016 5425 T 68.2444774192 R
 N 0 0 M 320 0 D S
 U
-V 2222 5946 T 68.3748 R
+V 2223 5946 T 68.2444774192 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 5425 T 68.4875 R
+25 W
+V 2352 5425 T 68.3576779134 R
 N 0 0 M 334 0 D S
 U
-V 2562 5959 T 68.4875 R
+V 2563 5958 T 68.3576779134 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 5425 T 68.5637 R
+25 W
+V 2688 5425 T 68.434303908 R
 N 0 0 M 346 0 D S
 U
-V 2902 5971 T 68.5637 R
+V 2903 5970 T 68.434303908 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 5425 T 68.606 R
+25 W
+V 3024 5425 T 68.4767939331 R
 N 0 0 M 358 0 D S
 U
-V 3242 5982 T 68.606 R
+V 3243 5982 T 68.4767939331 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 5425 T 68.6163 R
+25 W
+V 3360 5425 T 68.4870807553 R
 N 0 0 M 370 0 D S
 U
-V 3582 5993 T 68.6163 R
+V 3583 5993 T 68.4870807553 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 5425 T 68.5964 R
+25 W
+V 3696 5425 T 68.4671506731 R
 N 0 0 M 381 0 D S
 U
-V 3922 6003 T 68.5964 R
+V 3923 6003 T 68.4671506731 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 5425 T 68.5481 R
+25 W
+V 4031 5425 T 68.418556762 R
 N 0 0 M 391 0 D S
 U
-V 4262 6012 T 68.5481 R
+V 4264 6012 T 68.418556762 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 5425 T 68.4723 R
+25 W
+V 4367 5425 T 68.3424290738 R
 N 0 0 M 401 0 D S
 U
-V 4602 6021 T 68.4723 R
+V 4604 6020 T 68.3424290738 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 5425 T 68.3703 R
+25 W
+V 4703 5425 T 68.2398710636 R
 N 0 0 M 409 0 D S
 U
-V 4943 6029 T 68.3703 R
+V 4944 6028 T 68.2398710636 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 5425 T 68.2429 R
+25 W
+V 5039 5425 T 68.1119047725 R
 N 0 0 M 418 0 D S
 U
-V 5283 6036 T 68.2429 R
+V 5285 6035 T 68.1119047725 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 5085 T 64.7331 R
+25 W
+V 0 5085 T 64.5849926433 R
 N 0 0 M 238 0 D S
 U
-V 204 5517 T 64.7331 R
+V 205 5517 T 64.5849926433 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 5085 T 65.2592 R
+25 W
+V 336 5085 T 65.1132898146 R
 N 0 0 M 253 0 D S
 U
-V 542 5533 T 65.2592 R
+V 544 5533 T 65.1132898146 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 5085 T 65.7171 R
+25 W
+V 672 5085 T 65.5732374397 R
 N 0 0 M 269 0 D S
 U
-V 881 5549 T 65.7171 R
+V 882 5548 T 65.5732374397 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 5085 T 66.1136 R
+25 W
+V 1008 5085 T 65.9715800197 R
 N 0 0 M 284 0 D S
 U
-V 1220 5564 T 66.1136 R
+V 1221 5564 T 65.9715800197 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 5085 T 66.4546 R
+25 W
+V 1344 5085 T 66.3140642147 R
 N 0 0 M 298 0 D S
 U
-V 1559 5579 T 66.4546 R
+V 1560 5578 T 66.3140642147 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 5085 T 66.7448 R
+25 W
+V 1680 5085 T 66.605590897 R
 N 0 0 M 312 0 D S
 U
-V 1898 5593 T 66.7448 R
+V 1899 5592 T 66.605590897 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 5085 T 66.9884 R
+25 W
+V 2016 5085 T 66.8503512335 R
 N 0 0 M 326 0 D S
 U
-V 2237 5606 T 66.9884 R
+V 2238 5606 T 66.8503512335 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 5085 T 67.1892 R
+25 W
+V 2352 5085 T 67.0520588918 R
 N 0 0 M 339 0 D S
 U
-V 2576 5619 T 67.1892 R
+V 2577 5618 T 67.0520588918 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 5085 T 67.3502 R
+25 W
+V 2688 5085 T 67.213856661 R
 N 0 0 M 351 0 D S
 U
-V 2915 5631 T 67.3502 R
+V 2917 5630 T 67.213856661 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 5085 T 67.4742 R
+25 W
+V 3024 5085 T 67.3384323947 R
 N 0 0 M 363 0 D S
 U
-V 3255 5642 T 67.4742 R
+V 3256 5642 T 67.3384323947 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 5085 T 67.5636 R
+25 W
+V 3360 5085 T 67.4282475063 R
 N 0 0 M 374 0 D S
 U
-V 3594 5653 T 67.5636 R
+V 3595 5652 T 67.4282475063 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 5085 T 67.6202 R
+25 W
+V 3696 5085 T 67.485171973 R
 N 0 0 M 385 0 D S
 U
-V 3933 5663 T 67.6202 R
+V 3935 5662 T 67.485171973 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 5085 T 67.646 R
+25 W
+V 4031 5085 T 67.5110468386 R
 N 0 0 M 395 0 D S
 U
-V 4273 5672 T 67.646 R
+V 4274 5672 T 67.5110468386 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 5085 T 67.6423 R
+25 W
+V 4367 5085 T 67.5073754741 R
 N 0 0 M 404 0 D S
 U
-V 4613 5681 T 67.6423 R
+V 4614 5680 T 67.5073754741 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 5085 T 67.6104 R
+25 W
+V 4703 5085 T 67.4753087346 R
 N 0 0 M 413 0 D S
 U
-V 4952 5689 T 67.6104 R
+V 4954 5688 T 67.4753087346 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 5085 T 67.5514 R
+25 W
+V 5039 5085 T 67.4160129545 R
 N 0 0 M 421 0 D S
 U
-V 5292 5696 T 67.5514 R
+V 5293 5695 T 67.4160129545 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 4747 T 62.8211 R
+25 W
+V 0 4747 T 62.6642340496 R
 N 0 0 M 246 0 D S
 U
-V 222 5179 T 62.8211 R
+V 223 5178 T 62.6642340496 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 4747 T 63.4532 R
+25 W
+V 336 4747 T 63.298912192 R
 N 0 0 M 261 0 D S
 U
-V 560 5195 T 63.4532 R
+V 561 5195 T 63.298912192 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 4747 T 64.0132 R
+25 W
+V 672 4747 T 63.861156773 R
 N 0 0 M 276 0 D S
 U
-V 898 5211 T 64.0132 R
+V 899 5210 T 63.861156773 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 4747 T 64.5077 R
+25 W
+V 1008 4747 T 64.3577500906 R
 N 0 0 M 291 0 D S
 U
-V 1236 5226 T 64.5077 R
+V 1238 5226 T 64.3577500906 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 4747 T 64.9428 R
+25 W
+V 1344 4747 T 64.7947390537 R
 N 0 0 M 305 0 D S
 U
-V 1575 5241 T 64.9428 R
+V 1576 5240 T 64.7947390537 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 4747 T 65.3236 R
+25 W
+V 1680 4747 T 65.1772191621 R
 N 0 0 M 319 0 D S
 U
-V 1913 5255 T 65.3236 R
+V 1914 5254 T 65.1772191621 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 4747 T 65.6545 R
+25 W
+V 2016 4747 T 65.5095761823 R
 N 0 0 M 332 0 D S
 U
-V 2251 5268 T 65.6545 R
+V 2253 5268 T 65.5095761823 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 4747 T 65.9396 R
+25 W
+V 2352 4747 T 65.7959399218 R
 N 0 0 M 344 0 D S
 U
-V 2590 5281 T 65.9396 R
+V 2591 5280 T 65.7959399218 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 4747 T 66.1821 R
+25 W
+V 2688 4747 T 66.0395250211 R
 N 0 0 M 357 0 D S
 U
-V 2929 5293 T 66.1821 R
+V 2930 5292 T 66.0395250211 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 4747 T 66.3851 R
+25 W
+V 3024 4747 T 66.2434076164 R
 N 0 0 M 368 0 D S
 U
-V 3267 5304 T 66.3851 R
+V 3269 5304 T 66.2434076164 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 4747 T 66.5508 R
+25 W
+V 3360 4747 T 66.4099039288 R
 N 0 0 M 379 0 D S
 U
-V 3606 5315 T 66.5508 R
+V 3607 5314 T 66.4099039288 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 4747 T 66.6817 R
+25 W
+V 3696 4747 T 66.5414532277 R
 N 0 0 M 389 0 D S
 U
-V 3945 5325 T 66.6817 R
+V 3946 5324 T 66.5414532277 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 4747 T 66.7797 R
+25 W
+V 4031 4747 T 66.6398415141 R
 N 0 0 M 399 0 D S
 U
-V 4283 5334 T 66.7797 R
+V 4285 5334 T 66.6398415141 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 4747 T 66.8463 R
+25 W
+V 4367 4747 T 66.7068100843 R
 N 0 0 M 408 0 D S
 U
-V 4622 5343 T 66.8463 R
+V 4624 5342 T 66.7068100843 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 4747 T 66.8831 R
+25 W
+V 4703 4747 T 66.7437361594 R
 N 0 0 M 416 0 D S
 U
-V 4961 5351 T 66.8831 R
+V 4963 5350 T 66.7437361594 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 4747 T 66.8911 R
+25 W
+V 5039 4747 T 66.751807104 R
 N 0 0 M 424 0 D S
 U
-V 5300 5358 T 66.8911 R
+V 5302 5357 T 66.751807104 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 4747 T 76.9439 R
+25 W
+V 5375 4747 T 76.858996012 R
 N 0 0 M 504 0 D S
 U
-V 5543 5472 T 76.9439 R
+V 5544 5472 T 76.858996012 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 4411 T 69.721 R
+25 W
+V 0 4411 T 69.5950839983 R
 U
-V 58 4568 T 69.721 R
+V 59 4568 T 69.5950839983 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 4411 T 61.7296 R
+25 W
+V 336 4411 T 61.5680077429 R
 N 0 0 M 269 0 D S
 U
-V 577 4859 T 61.7296 R
+V 578 4858 T 61.5680077429 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 4411 T 62.3839 R
+25 W
+V 672 4411 T 62.2248398146 R
 N 0 0 M 284 0 D S
 U
-V 915 4875 T 62.3839 R
+V 916 4874 T 62.2248398146 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 4411 T 62.9698 R
+25 W
+V 1008 4411 T 62.8130547304 R
 N 0 0 M 298 0 D S
 U
-V 1252 4890 T 62.9698 R
+V 1254 4889 T 62.8130547304 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 4411 T 63.4934 R
+25 W
+V 1344 4411 T 63.338749761 R
 N 0 0 M 312 0 D S
 U
-V 1590 4905 T 63.4934 R
+V 1591 4904 T 63.338749761 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 4411 T 63.96 R
+25 W
+V 1680 4411 T 63.8071998529 R
 N 0 0 M 325 0 D S
 U
-V 1928 4919 T 63.96 R
+V 1929 4918 T 63.8071998529 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 4411 T 64.3739 R
+25 W
+V 2016 4411 T 64.2228920264 R
 N 0 0 M 338 0 D S
 U
-V 2266 4932 T 64.3739 R
+V 2267 4931 T 64.2228920264 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 4411 T 64.7394 R
+25 W
+V 2352 4411 T 64.5899594868 R
 N 0 0 M 350 0 D S
 U
-V 2604 4945 T 64.7394 R
+V 2605 4944 T 64.5899594868 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 4411 T 65.06 R
+25 W
+V 2688 4411 T 64.9119407289 R
 N 0 0 M 362 0 D S
 U
-V 2941 4957 T 65.06 R
+V 2943 4956 T 64.9119407289 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 4411 T 65.3388 R
+25 W
+V 3024 4411 T 65.1919385621 R
 N 0 0 M 373 0 D S
 U
-V 3279 4968 T 65.3388 R
+V 3281 4967 T 65.1919385621 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 4411 T 65.5785 R
+25 W
+V 3360 4411 T 65.4326885464 R
 N 0 0 M 384 0 D S
 U
-V 3617 4979 T 65.5785 R
+V 3619 4978 T 65.4326885464 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 4411 T 65.7813 R
+25 W
+V 3696 4411 T 65.6364412936 R
 N 0 0 M 394 0 D S
 U
-V 3955 4989 T 65.7813 R
+V 3957 4988 T 65.6364412936 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 4411 T 65.9494 R
+25 W
+V 4031 4411 T 65.80530305 R
 N 0 0 M 403 0 D S
 U
-V 4294 4998 T 65.9494 R
+V 4295 4997 T 65.80530305 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 4411 T 66.0847 R
+25 W
+V 4367 4411 T 65.9412176449 R
 N 0 0 M 412 0 D S
 U
-V 4632 5007 T 66.0847 R
+V 4633 5006 T 65.9412176449 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 4411 T 66.1885 R
+25 W
+V 4703 4411 T 66.0454657696 R
 N 0 0 M 420 0 D S
 U
-V 4970 5015 T 66.1885 R
+V 4971 5014 T 66.0454657696 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 4411 T 66.2622 R
+25 W
+V 5039 4411 T 66.1195356114 R
 N 0 0 M 427 0 D S
 U
-V 5308 5022 T 66.2622 R
+V 5310 5021 T 66.1195356114 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 4411 T 75.3752 R
+25 W
+V 5375 4411 T 75.2806250049 R
 N 0 0 M 509 0 D S
 U
-V 5564 5136 T 75.3752 R
+V 5566 5135 T 75.2806250049 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 4076 T 69.3776 R
+25 W
+V 0 4076 T 69.2498283395 R
 U
-V 59 4233 T 69.3776 R
+V 60 4233 T 69.2498283395 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 4076 T 69.3507 R
+25 W
+V 336 4076 T 69.2227783876 R
 U
-V 396 4234 T 69.3507 R
+V 396 4234 T 69.2227783876 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 4076 T 60.8296 R
+25 W
+V 672 4076 T 60.664632575 R
 N 0 0 M 291 0 D S
 U
-V 931 4540 T 60.8296 R
+V 932 4539 T 60.664632575 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 4076 T 61.5006 R
+25 W
+V 1008 4076 T 61.3380034556 R
 N 0 0 M 305 0 D S
 U
-V 1268 4555 T 61.5006 R
+V 1269 4554 T 61.3380034556 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 4076 T 62.107 R
+25 W
+V 1344 4076 T 61.946711438 R
 N 0 0 M 319 0 D S
 U
-V 1605 4570 T 62.107 R
+V 1606 4569 T 61.946711438 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 4076 T 62.6542 R
+25 W
+V 1680 4076 T 62.4960159584 R
 N 0 0 M 331 0 D S
 U
-V 1942 4583 T 62.6542 R
+V 1944 4583 T 62.4960159584 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 4076 T 63.1467 R
+25 W
+V 2016 4076 T 62.9905197263 R
 N 0 0 M 344 0 D S
 U
-V 2280 4597 T 63.1467 R
+V 2281 4596 T 62.9905197263 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 4076 T 63.5889 R
+25 W
+V 2352 4076 T 63.4344956083 R
 N 0 0 M 356 0 D S
 U
-V 2617 4610 T 63.5889 R
+V 2618 4609 T 63.4344956083 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 4076 T 63.9842 R
+25 W
+V 2688 4076 T 63.8314297269 R
 N 0 0 M 367 0 D S
 U
-V 2954 4622 T 63.9842 R
+V 2955 4621 T 63.8314297269 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 4076 T 64.3359 R
+25 W
+V 3024 4076 T 64.1845971592 R
 N 0 0 M 378 0 D S
 U
-V 3291 4633 T 64.3359 R
+V 3293 4632 T 64.1845971592 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 4076 T 64.6467 R
+25 W
+V 3360 4076 T 64.4967057448 R
 N 0 0 M 388 0 D S
 U
-V 3629 4644 T 64.6467 R
+V 3630 4643 T 64.4967057448 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 4076 T 64.9192 R
+25 W
+V 3696 4076 T 64.7703822845 R
 N 0 0 M 398 0 D S
 U
-V 3966 4654 T 64.9192 R
+V 3968 4653 T 64.7703822845 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 4076 T 65.1555 R
+25 W
+V 4031 4076 T 65.0077118946 R
 N 0 0 M 407 0 D S
 U
-V 4303 4663 T 65.1555 R
+V 4305 4662 T 65.0077118946 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 4076 T 65.3574 R
+25 W
+V 4367 4076 T 65.2105259774 R
 N 0 0 M 416 0 D S
 U
-V 4641 4672 T 65.3574 R
+V 4642 4671 T 65.2105259774 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 4076 T 65.5267 R
+25 W
+V 4703 4076 T 65.3805705366 R
 N 0 0 M 423 0 D S
 U
-V 4978 4680 T 65.5267 R
+V 4980 4679 T 65.3805705366 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 4076 T 73.5292 R
+25 W
+V 5039 4076 T 73.4237817147 R
 N 0 0 M 494 0 D S
 U
-V 5248 4780 T 73.5292 R
+V 5249 4780 T 73.4237817147 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 4076 T 73.8454 R
+25 W
+V 5375 4076 T 73.7417484088 R
 N 0 0 M 514 0 D S
 U
-V 5585 4801 T 73.8454 R
+V 5587 4800 T 73.7417484088 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 3742 T 69.0588 R
+25 W
+V 0 3742 T 68.9294952206 R
 U
-V 60 3899 T 69.0588 R
+V 61 3899 T 68.9294952206 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 3742 T 69.0942 R
+25 W
+V 336 3742 T 68.9651366222 R
 U
-V 396 3900 T 69.0942 R
+V 397 3900 T 68.9651366222 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 3742 T 69.1059 R
+25 W
+V 672 3742 T 68.9768556896 R
 U
-V 733 3900 T 69.1059 R
+V 733 3900 T 68.9768556896 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 3742 T 69.0941 R
+25 W
+V 1008 3742 T 68.9649875901 R
 U
-V 1069 3901 T 69.0941 R
+V 1069 3901 T 68.9649875901 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 3742 T 60.7833 R
+25 W
+V 1344 3742 T 60.6184055232 R
 N 0 0 M 326 0 D S
 U
-V 1620 4235 T 60.7833 R
+V 1621 4235 T 60.6184055232 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 3742 T 61.4063 R
+25 W
+V 1680 3742 T 61.2436027144 R
 N 0 0 M 338 0 D S
 U
-V 1956 4249 T 61.4063 R
+V 1958 4249 T 61.2436027144 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 3742 T 61.9732 R
+25 W
+V 2016 3742 T 61.8126229949 R
 N 0 0 M 350 0 D S
 U
-V 2293 4263 T 61.9732 R
+V 2295 4262 T 61.8126229949 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 3742 T 62.4882 R
+25 W
+V 2352 3742 T 62.3296040102 R
 N 0 0 M 362 0 D S
 U
-V 2630 4275 T 62.4882 R
+V 2631 4275 T 62.3296040102 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 3742 T 62.9548 R
+25 W
+V 2688 3742 T 62.7980303502 R
 N 0 0 M 373 0 D S
 U
-V 2966 4287 T 62.9548 R
+V 2968 4287 T 62.7980303502 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 3742 T 63.3764 R
+25 W
+V 3024 3742 T 63.2212964019 R
 N 0 0 M 383 0 D S
 U
-V 3303 4299 T 63.3764 R
+V 3304 4298 T 63.2212964019 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 3742 T 63.7558 R
+25 W
+V 3360 3742 T 63.602239317 R
 N 0 0 M 393 0 D S
 U
-V 3640 4310 T 63.7558 R
+V 3641 4309 T 63.602239317 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 3742 T 64.0955 R
+25 W
+V 3696 3742 T 63.9433258437 R
 N 0 0 M 402 0 D S
 U
-V 3976 4320 T 64.0955 R
+V 3978 4319 T 63.9433258437 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 3742 T 64.3979 R
+25 W
+V 4031 3742 T 64.246987581 R
 N 0 0 M 411 0 D S
 U
-V 4313 4329 T 64.3979 R
+V 4314 4328 T 64.246987581 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 3742 T 64.6647 R
+25 W
+V 4367 3742 T 64.5150059989 R
 N 0 0 M 419 0 D S
 U
-V 4650 4338 T 64.6647 R
+V 4651 4337 T 64.5150059989 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 3742 T 64.8979 R
+25 W
+V 4703 3742 T 64.7491883229 R
 N 0 0 M 427 0 D S
 U
-V 4986 4345 T 64.8979 R
+V 4988 4345 T 64.7491883229 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 3742 T 71.9391 R
+25 W
+V 5039 3742 T 71.8249402284 R
 N 0 0 M 501 0 D S
 U
-V 5269 4446 T 71.9391 R
+V 5270 4445 T 71.8249402284 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 3742 T 72.3572 R
+25 W
+V 5375 3742 T 72.2453845393 R
 N 0 0 M 520 0 D S
 U
-V 5606 4466 T 72.3572 R
+V 5607 4466 T 72.2453845393 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 3742 T 72.7331 R
+25 W
+V 5711 3742 T 72.6233381361 R
 N 0 0 M 540 0 D S
 U
-V 5943 4486 T 72.7331 R
+V 5944 4486 T 72.6233381361 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 3408 T 68.7644 R
+25 W
+V 0 3408 T 68.6341612266 R
 U
-V 61 3565 T 68.7644 R
+V 62 3565 T 68.6341612266 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 3408 T 68.8618 R
+25 W
+V 336 3408 T 68.7319937001 R
 U
-V 397 3566 T 68.8618 R
+V 397 3566 T 68.7319937001 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 3408 T 68.9349 R
+25 W
+V 672 3408 T 68.8055033229 R
 U
-V 733 3567 T 68.9349 R
+V 733 3567 T 68.8055033229 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 3408 T 68.9843 R
+25 W
+V 1008 3408 T 68.855160769 R
 U
-V 1069 3567 T 68.9843 R
+V 1069 3567 T 68.855160769 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 3408 T 59.5219 R
+25 W
+V 1344 3408 T 59.3533938742 R
 N 0 0 M 333 0 D S
 U
-V 1634 3902 T 59.5219 R
+V 1636 3901 T 59.3533938742 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 3408 T 60.216 R
+25 W
+V 1680 3408 T 60.0498325452 R
 N 0 0 M 345 0 D S
 U
-V 1970 3916 T 60.216 R
+V 1972 3915 T 60.0498325452 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 3408 T 60.853 R
+25 W
+V 2016 3408 T 60.6890343851 R
 N 0 0 M 356 0 D S
 U
-V 2306 3929 T 60.853 R
+V 2308 3928 T 60.6890343851 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 3408 T 61.4371 R
+25 W
+V 2352 3408 T 61.2751609747 R
 N 0 0 M 368 0 D S
 U
-V 2642 3942 T 61.4371 R
+V 2644 3941 T 61.2751609747 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 3408 T 61.9717 R
+25 W
+V 2688 3408 T 61.8117394268 R
 N 0 0 M 378 0 D S
 U
-V 2978 3954 T 61.9717 R
+V 2980 3953 T 61.8117394268 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 3408 T 62.4602 R
+25 W
+V 3024 3408 T 62.3021371558 R
 N 0 0 M 388 0 D S
 U
-V 3314 3965 T 62.4602 R
+V 3316 3964 T 62.3021371558 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 3408 T 62.9055 R
+25 W
+V 3360 3408 T 62.7491811388 R
 N 0 0 M 398 0 D S
 U
-V 3650 3976 T 62.9055 R
+V 3652 3975 T 62.7491811388 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 3408 T 63.3102 R
+25 W
+V 3696 3408 T 63.1554450842 R
 N 0 0 M 407 0 D S
 U
-V 3986 3986 T 63.3102 R
+V 3988 3985 T 63.1554450842 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 3408 T 63.6766 R
+25 W
+V 4031 3408 T 63.5232810997 R
 N 0 0 M 415 0 D S
 U
-V 4322 3995 T 63.6766 R
+V 4324 3994 T 63.5232810997 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 3408 T 64.0066 R
+25 W
+V 4367 3408 T 63.8546921723 R
 N 0 0 M 423 0 D S
 U
-V 4658 4004 T 64.0066 R
+V 4660 4003 T 63.8546921723 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 3408 T 64.3021 R
+25 W
+V 4703 3408 T 64.1514205847 R
 N 0 0 M 430 0 D S
 U
-V 4994 4012 T 64.3021 R
+V 4996 4011 T 64.1514205847 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 3408 T 70.3974 R
+25 W
+V 5039 3408 T 70.2754781778 R
 N 0 0 M 507 0 D S
 U
-V 5290 4112 T 70.3974 R
+V 5292 4112 T 70.2754781778 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 3408 T 70.913 R
+25 W
+V 5375 3408 T 70.7937911822 R
 N 0 0 M 527 0 D S
 U
-V 5626 4133 T 70.913 R
+V 5628 4132 T 70.7937911822 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 3408 T 71.3826 R
+25 W
+V 5711 3408 T 71.2658861486 R
 N 0 0 M 545 0 D S
 U
-V 5962 4152 T 71.3826 R
+V 5964 4152 T 71.2658861486 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 3408 T 71.8102 R
+25 W
+V 6047 3408 T 71.6957935628 R
 N 0 0 M 563 0 D S
 U
-V 6298 4171 T 71.8102 R
+V 6300 4171 T 71.6957935628 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 3074 T 68.4947 R
+25 W
+V 0 3074 T 68.3639415535 R
 U
-V 62 3232 T 68.4947 R
+V 62 3231 T 68.3639415535 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 3074 T 68.6535 R
+25 W
+V 336 3074 T 68.523442656 R
 U
-V 398 3232 T 68.6535 R
+V 398 3232 T 68.523442656 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 3074 T 68.7877 R
+25 W
+V 672 3074 T 68.6583521315 R
 U
-V 734 3233 T 68.7877 R
+V 734 3233 T 68.6583521315 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 3074 T 68.8981 R
+25 W
+V 1008 3074 T 68.7692714447 R
 U
-V 1069 3233 T 68.8981 R
+V 1070 3233 T 68.7692714447 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 3074 T 68.9849 R
+25 W
+V 1344 3074 T 68.8565255629 R
 U
-V 1405 3234 T 68.9849 R
+V 1405 3233 T 68.8565255629 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 3074 T 59.0828 R
+25 W
+V 1680 3074 T 58.9139358026 R
 N 0 0 M 352 0 D S
 U
-V 1984 3582 T 59.0828 R
+V 1985 3581 T 58.9139358026 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 3074 T 59.7858 R
+25 W
+V 2016 3074 T 59.6191953866 R
 N 0 0 M 363 0 D S
 U
-V 2319 3595 T 59.7858 R
+V 2321 3594 T 59.6191953866 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 3074 T 60.4353 R
+25 W
+V 2352 3074 T 60.2708808615 R
 N 0 0 M 374 0 D S
 U
-V 2654 3608 T 60.4353 R
+V 2656 3607 T 60.2708808615 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 3074 T 61.0346 R
+25 W
+V 2688 3074 T 60.8723168015 R
 N 0 0 M 384 0 D S
 U
-V 2990 3620 T 61.0346 R
+V 2991 3619 T 60.8723168015 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 3074 T 61.5873 R
+25 W
+V 3024 3074 T 61.4269095681 R
 N 0 0 M 393 0 D S
 U
-V 3325 3631 T 61.5873 R
+V 3327 3630 T 61.4269095681 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 3074 T 62.0959 R
+25 W
+V 3360 3074 T 61.9374424286 R
 N 0 0 M 403 0 D S
 U
-V 3660 3642 T 62.0959 R
+V 3662 3641 T 61.9374424286 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 3074 T 62.5632 R
+25 W
+V 3696 3074 T 62.4064646218 R
 N 0 0 M 411 0 D S
 U
-V 3996 3652 T 62.5632 R
+V 3997 3651 T 62.4064646218 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 3074 T 62.9916 R
+25 W
+V 4031 3074 T 62.8365100974 R
 N 0 0 M 419 0 D S
 U
-V 4331 3661 T 62.9916 R
+V 4332 3661 T 62.8365100974 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 3074 T 63.3829 R
+25 W
+V 4367 3074 T 63.2294002193 R
 N 0 0 M 426 0 D S
 U
-V 4666 3670 T 63.3829 R
+V 4668 3669 T 63.2294002193 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 3074 T 63.7392 R
+25 W
+V 4703 3074 T 63.5870751546 R
 N 0 0 M 433 0 D S
 U
-V 5001 3678 T 63.7392 R
+V 5003 3677 T 63.5870751546 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 3074 T 68.9064 R
+25 W
+V 5039 3074 T 68.7776605621 R
 N 0 0 M 515 0 D S
 U
-V 5311 3778 T 68.9064 R
+V 5313 3778 T 68.7776605621 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 3074 T 69.5148 R
+25 W
+V 5375 3074 T 69.3890888415 R
 N 0 0 M 534 0 D S
 U
-V 5646 3799 T 69.5148 R
+V 5648 3798 T 69.3890888415 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 3074 T 70.0741 R
+25 W
+V 5711 3074 T 69.9511935919 R
 N 0 0 M 552 0 D S
 U
-V 5981 3819 T 70.0741 R
+V 5983 3818 T 69.9511935919 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 3074 T 70.5884 R
+25 W
+V 6047 3074 T 70.4681415989 R
 N 0 0 M 569 0 D S
 U
-V 6316 3837 T 70.5884 R
+V 6318 3837 T 70.4681415989 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 3074 T 71.0616 R
+25 W
+V 6383 3074 T 70.9438516252 R
 N 0 0 M 586 0 D S
 U
-V 6651 3855 T 71.0616 R
+V 6653 3855 T 70.9438516252 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 2740 T 68.2498 R
+25 W
+V 0 2740 T 68.118927208 R
 U
-V 63 2897 T 68.2498 R
+V 63 2897 T 68.118927208 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 2740 T 68.4694 R
+25 W
+V 336 2740 T 68.3395560512 R
 U
-V 398 2898 T 68.4694 R
+V 399 2898 T 68.3395560512 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 2740 T 68.6644 R
+25 W
+V 672 2740 T 68.535494671 R
 U
-V 734 2899 T 68.6644 R
+V 734 2899 T 68.535494671 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 2740 T 68.8353 R
+25 W
+V 1008 2740 T 68.7073152713 R
 U
-V 1070 2899 T 68.8353 R
+V 1070 2899 T 68.7073152713 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 2740 T 68.9829 R
+25 W
+V 1344 2740 T 68.8555802763 R
 U
-V 1405 2899 T 68.9829 R
+V 1405 2899 T 68.8555802763 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 2740 T 58.0058 R
+25 W
+V 1680 2740 T 57.8352757951 R
 N 0 0 M 359 0 D S
 U
-V 1997 3248 T 58.0058 R
+V 1998 3247 T 57.8352757951 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 2740 T 58.771 R
+25 W
+V 2016 2740 T 58.6027018227 R
 N 0 0 M 369 0 D S
 U
-V 2332 3261 T 58.771 R
+V 2333 3260 T 58.6027018227 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 2740 T 59.4823 R
+25 W
+V 2352 2740 T 59.3162581433 R
 N 0 0 M 379 0 D S
 U
-V 2666 3274 T 59.4823 R
+V 2668 3273 T 59.3162581433 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 2740 T 60.1433 R
+25 W
+V 2688 2740 T 59.9793361615 R
 N 0 0 M 389 0 D S
 U
-V 3001 3286 T 60.1433 R
+V 3002 3285 T 59.9793361615 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 2740 T 60.7571 R
+25 W
+V 3024 2740 T 60.5952432407 R
 N 0 0 M 399 0 D S
 U
-V 3336 3297 T 60.7571 R
+V 3337 3296 T 60.5952432407 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 2740 T 61.3266 R
+25 W
+V 3360 2740 T 61.1667791852 R
 N 0 0 M 407 0 D S
 U
-V 3670 3308 T 61.3266 R
+V 3672 3307 T 61.1667791852 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 2740 T 61.8543 R
+25 W
+V 3696 2740 T 61.6963518631 R
 N 0 0 M 415 0 D S
 U
-V 4005 3318 T 61.8543 R
+V 4006 3317 T 61.6963518631 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 2740 T 62.3426 R
+25 W
+V 4031 2740 T 62.1864685858 R
 N 0 0 M 423 0 D S
 U
-V 4339 3327 T 62.3426 R
+V 4341 3326 T 62.1864685858 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 2740 T 62.7937 R
+25 W
+V 4367 2740 T 62.6392088632 R
 N 0 0 M 430 0 D S
 U
-V 4674 3336 T 62.7937 R
+V 4675 3335 T 62.6392088632 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 2740 T 63.2091 R
+25 W
+V 4703 2740 T 63.0562294584 R
 N 0 0 M 436 0 D S
 U
-V 5008 3344 T 63.2091 R
+V 5010 3343 T 63.0562294584 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 2740 T 67.4677 R
+25 W
+V 5039 2740 T 67.3331199461 R
 N 0 0 M 522 0 D S
 U
-V 5331 3444 T 67.4677 R
+V 5333 3443 T 67.3331199461 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 2740 T 68.1641 R
+25 W
+V 5375 2740 T 68.0328504806 R
 N 0 0 M 541 0 D S
 U
-V 5666 3465 T 68.1641 R
+V 5667 3464 T 68.0328504806 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 2740 T 68.8088 R
+25 W
+V 5711 2740 T 68.6806881867 R
 N 0 0 M 558 0 D S
 U
-V 6000 3484 T 68.8088 R
+V 6002 3484 T 68.6806881867 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 2740 T 69.4062 R
+25 W
+V 6047 2740 T 69.2809435268 R
 N 0 0 M 575 0 D S
 U
-V 6334 3503 T 69.4062 R
+V 6336 3502 T 69.2809435268 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 2740 T 69.9602 R
+25 W
+V 6383 2740 T 69.8377627943 R
 N 0 0 M 591 0 D S
 U
-V 6668 3521 T 69.9602 R
+V 6670 3520 T 69.8377627943 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 2740 T 70.4743 R
+25 W
+V 6719 2740 T 70.3545175145 R
 N 0 0 M 607 0 D S
 U
-V 7002 3538 T 70.4743 R
+V 7004 3537 T 70.3545175145 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 2405 T 68.0296 R
+25 W
+V 0 2405 T 67.8991493855 R
 U
-V 63 2562 T 68.0296 R
+V 64 2562 T 67.8991493855 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 2405 T 68.3095 R
+25 W
+V 336 2405 T 68.180383459 R
 U
-V 399 2563 T 68.3095 R
+V 399 2563 T 68.180383459 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 2405 T 68.5648 R
+25 W
+V 672 2405 T 68.436847399 R
 U
-V 734 2564 T 68.5648 R
+V 735 2564 T 68.436847399 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 2405 T 68.7961 R
+25 W
+V 1008 2405 T 68.6693425971 R
 U
-V 1070 2564 T 68.7961 R
+V 1070 2564 T 68.6693425971 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 2405 T 69.0042 R
+25 W
+V 1344 2405 T 68.8784427825 R
 U
-V 1405 2564 T 69.0042 R
+V 1405 2564 T 68.8784427825 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 2405 T 53.799 R
+25 W
+V 1680 2405 T 53.6204947848 R
 N 0 0 M 325 0 D S
 U
-V 2013 2861 T 53.799 R
+V 2015 2860 T 53.6204947848 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 2405 T 55.5413 R
+25 W
+V 2016 2405 T 55.3664278236 R
 N 0 0 M 347 0 D S
 U
-V 2348 2889 T 55.5413 R
+V 2349 2888 T 55.3664278236 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 2405 T 57.1356 R
+25 W
+V 2352 2405 T 56.9647228302 R
 N 0 0 M 368 0 D S
 U
-V 2682 2916 T 57.1356 R
+V 2683 2915 T 56.9647228302 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 2405 T 58.5971 R
+25 W
+V 2688 2405 T 58.4303081709 R
 N 0 0 M 390 0 D S
 U
-V 3016 2943 T 58.5971 R
+V 3017 2942 T 58.4303081709 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 2405 T 59.9397 R
+25 W
+V 3024 2405 T 59.777046071 R
 N 0 0 M 411 0 D S
 U
-V 3350 2969 T 59.9397 R
+V 3351 2968 T 59.777046071 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 2405 T 61.1753 R
+25 W
+V 3360 2405 T 61.0167406754 R
 N 0 0 M 432 0 D S
 U
-V 3684 2994 T 61.1753 R
+V 3685 2993 T 61.0167406754 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 2405 T 62.3146 R
+25 W
+V 3696 2405 T 62.1601332384 R
 N 0 0 M 453 0 D S
 U
-V 4017 3018 T 62.3146 R
+V 4019 3018 T 62.1601332384 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 2405 T 63.3671 R
+25 W
+V 4031 2405 T 63.2166084096 R
 N 0 0 M 473 0 D S
 U
-V 4351 3042 T 63.3671 R
+V 4353 3041 T 63.2166084096 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 2405 T 64.3412 R
+25 W
+V 4367 2405 T 64.1946110745 R
 N 0 0 M 493 0 D S
 U
-V 4685 3065 T 64.3412 R
+V 4686 3065 T 64.1946110745 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 2405 T 65.2442 R
+25 W
+V 4703 2405 T 65.1012911113 R
 N 0 0 M 512 0 D S
 U
-V 5018 3088 T 65.2442 R
+V 5020 3087 T 65.1012911113 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 2405 T 66.0825 R
+25 W
+V 5039 2405 T 65.9432258914 R
 N 0 0 M 530 0 D S
 U
-V 5352 3109 T 66.0825 R
+V 5353 3108 T 65.9432258914 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 2405 T 66.8621 R
+25 W
+V 5375 2405 T 66.726291428 R
 N 0 0 M 548 0 D S
 U
-V 5685 3130 T 66.8621 R
+V 5687 3129 T 66.726291428 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 2405 T 67.588 R
+25 W
+V 5711 2405 T 67.4555116771 R
 N 0 0 M 565 0 D S
 U
-V 6018 3149 T 67.588 R
+V 6020 3149 T 67.4555116771 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 2405 T 68.2647 R
+25 W
+V 6047 2405 T 68.1353317552 R
 N 0 0 M 582 0 D S
 U
-V 6351 3168 T 68.2647 R
+V 6353 3167 T 68.1353317552 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 2405 T 68.8962 R
+25 W
+V 6383 2405 T 68.7699067705 R
 N 0 0 M 597 0 D S
 U
-V 6685 3186 T 68.8962 R
+V 6686 3185 T 68.7699067705 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 2405 T 69.4861 R
+25 W
+V 6719 2405 T 69.3626999821 R
 N 0 0 M 612 0 D S
 U
-V 7018 3203 T 69.4861 R
+V 7019 3202 T 69.3626999821 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7055 2405 T 70.0377 R
+25 W
+V 7055 2405 T 69.917025633 R
 N 0 0 M 626 0 D S
 U
-V 7351 3219 T 70.0377 R
+V 7352 3218 T 69.917025633 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 2069 T 67.8342 R
+25 W
+V 0 2069 T 67.7046856197 R
 U
-V 64 2226 T 67.8342 R
+V 64 2226 T 67.7046856197 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 2069 T 68.1739 R
+25 W
+V 336 2069 T 68.04591515 R
 U
-V 399 2227 T 68.1739 R
+V 400 2227 T 68.04591515 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 2069 T 68.489 R
+25 W
+V 672 2069 T 68.3625366382 R
 U
-V 735 2227 T 68.489 R
+V 735 2227 T 68.3625366382 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 2069 T 68.7805 R
+25 W
+V 1008 2069 T 68.6553891765 R
 U
-V 1070 2228 T 68.7805 R
+V 1070 2228 T 68.6553891765 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 2069 T 69.0489 R
+25 W
+V 1344 2069 T 68.9250858299 R
 U
-V 1405 2228 T 69.0489 R
+V 1405 2228 T 68.9250858299 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 2069 T 51.6615 R
+25 W
+V 1680 2069 T 51.4820180991 R
 N 0 0 M 341 0 D S
 U
-V 2040 2525 T 51.6615 R
+V 2042 2523 T 51.4820180991 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 2069 T 53.4771 R
+25 W
+V 2016 2069 T 53.3005459134 R
 N 0 0 M 362 0 D S
 U
-V 2374 2552 T 53.4771 R
+V 2375 2551 T 53.3005459134 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 2069 T 55.1494 R
+25 W
+V 2352 2069 T 54.9761653342 R
 N 0 0 M 383 0 D S
 U
-V 2708 2580 T 55.1494 R
+V 2709 2579 T 54.9761653342 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 2069 T 56.6918 R
+25 W
+V 2688 2069 T 56.5221592171 R
 N 0 0 M 403 0 D S
 U
-V 3041 2606 T 56.6918 R
+V 3043 2605 T 56.5221592171 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 2069 T 58.117 R
+25 W
+V 3024 2069 T 57.951138525 R
 N 0 0 M 424 0 D S
 U
-V 3374 2632 T 58.117 R
+V 3376 2631 T 57.951138525 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 2069 T 59.4359 R
+25 W
+V 3360 2069 T 59.2739100305 R
 N 0 0 M 444 0 D S
 U
-V 3707 2658 T 59.4359 R
+V 3709 2657 T 59.2739100305 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 2069 T 60.6585 R
+25 W
+V 3696 2069 T 60.5004621023 R
 N 0 0 M 464 0 D S
 U
-V 4040 2682 T 60.6585 R
+V 4042 2681 T 60.5004621023 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 2069 T 61.7939 R
+25 W
+V 4031 2069 T 61.6397196629 R
 N 0 0 M 483 0 D S
 U
-V 4373 2706 T 61.7939 R
+V 4375 2705 T 61.6397196629 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 2069 T 62.8499 R
+25 W
+V 4367 2069 T 62.6995764735 R
 N 0 0 M 502 0 D S
 U
-V 4706 2729 T 62.8499 R
+V 4708 2728 T 62.6995764735 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 2069 T 63.8338 R
+25 W
+V 4703 2069 T 63.6871596591 R
 N 0 0 M 521 0 D S
 U
-V 5039 2751 T 63.8338 R
+V 5041 2751 T 63.6871596591 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 2069 T 64.7518 R
+25 W
+V 5039 2069 T 64.6088694263 R
 N 0 0 M 538 0 D S
 U
-V 5371 2773 T 64.7518 R
+V 5373 2772 T 64.6088694263 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 2069 T 65.6096 R
+25 W
+V 5375 2069 T 65.4702318611 R
 N 0 0 M 556 0 D S
 U
-V 5704 2793 T 65.6096 R
+V 5706 2793 T 65.4702318611 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 2069 T 66.4124 R
+25 W
+V 5711 2069 T 66.2764640216 R
 N 0 0 M 572 0 D S
 U
-V 6036 2813 T 66.4124 R
+V 6038 2812 T 66.2764640216 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 2069 T 67.1646 R
+25 W
+V 6047 2069 T 67.0319952521 R
 N 0 0 M 588 0 D S
 U
-V 6369 2832 T 67.1646 R
+V 6370 2831 T 67.0319952521 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 2069 T 67.8703 R
+25 W
+V 6383 2069 T 67.7409223798 R
 N 0 0 M 603 0 D S
 U
-V 6701 2850 T 67.8703 R
+V 6703 2849 T 67.7409223798 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 2069 T 68.5331 R
+25 W
+V 6719 2069 T 68.4068324546 R
 N 0 0 M 617 0 D S
 U
-V 7033 2867 T 68.5331 R
+V 7035 2866 T 68.4068324546 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7055 2069 T 69.1564 R
+25 W
+V 7055 2069 T 69.0330207628 R
 N 0 0 M 631 0 D S
 U
-V 7365 2882 T 69.1564 R
+V 7367 2882 T 69.0330207628 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 2069 T 69.7429 R
+25 W
+V 7391 2069 T 69.6223911006 R
 N 0 0 M 643 0 D S
 U
-V 7697 2897 T 69.7429 R
+V 7699 2897 T 69.6223911006 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 1731 T 67.6638 R
+25 W
+V 0 1731 T 67.5355580852 R
 U
-V 65 1888 T 67.6638 R
+V 65 1888 T 67.5355580852 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 1731 T 68.0626 R
+25 W
+V 336 1731 T 67.9362340093 R
 U
-V 400 1889 T 68.0626 R
+V 400 1889 T 67.9362340093 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 1731 T 68.4372 R
+25 W
+V 672 1731 T 68.312517031 R
 U
-V 735 1890 T 68.4372 R
+V 735 1889 T 68.312517031 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 1731 T 45.4632 R
+25 W
+V 1008 1731 T 45.2827228123 R
 N 0 0 M 319 0 D S
 U
-V 1400 2129 T 45.4632 R
+V 1401 2128 T 45.2827228123 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 1731 T 47.651 R
+25 W
+V 1344 1731 T 47.4709729705 R
 N 0 0 M 338 0 D S
 U
-V 1733 2158 T 47.651 R
+V 1735 2157 T 47.4709729705 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 1731 T 49.675 R
+25 W
+V 1680 1731 T 49.4964354178 R
 N 0 0 M 358 0 D S
 U
-V 2067 2187 T 49.675 R
+V 2068 2185 T 49.4964354178 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 1731 T 51.549 R
+25 W
+V 2016 1731 T 51.3725531824 R
 N 0 0 M 378 0 D S
 U
-V 2400 2214 T 51.549 R
+V 2401 2213 T 51.3725531824 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 1731 T 53.2858 R
+25 W
+V 2352 1731 T 53.1119300479 R
 N 0 0 M 397 0 D S
 U
-V 2733 2242 T 53.2858 R
+V 2734 2241 T 53.1119300479 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 1731 T 54.8969 R
+25 W
+V 2688 1731 T 54.7260904589 R
 N 0 0 M 417 0 D S
 U
-V 3066 2268 T 54.8969 R
+V 3067 2267 T 54.7260904589 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 1731 T 56.3937 R
+25 W
+V 3024 1731 T 56.2262486888 R
 N 0 0 M 437 0 D S
 U
-V 3398 2294 T 56.3937 R
+V 3400 2293 T 56.2262486888 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 1731 T 57.7862 R
+25 W
+V 3360 1731 T 57.6222137141 R
 N 0 0 M 456 0 D S
 U
-V 3731 2320 T 57.7862 R
+V 3732 2319 T 57.6222137141 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 1731 T 59.0835 R
+25 W
+V 3696 1731 T 58.9232115797 R
 N 0 0 M 475 0 D S
 U
-V 4063 2344 T 59.0835 R
+V 4065 2343 T 58.9232115797 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 1731 T 60.2939 R
+25 W
+V 4031 1731 T 60.1372676788 R
 N 0 0 M 494 0 D S
 U
-V 4395 2368 T 60.2939 R
+V 4397 2367 T 60.1372676788 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 1731 T 61.425 R
+25 W
+V 4367 1731 T 61.2721272141 R
 N 0 0 M 512 0 D S
 U
-V 4727 2391 T 61.425 R
+V 4729 2390 T 61.2721272141 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 1731 T 62.4837 R
+25 W
+V 4703 1731 T 62.3344697881 R
 N 0 0 M 530 0 D S
 U
-V 5059 2413 T 62.4837 R
+V 5061 2412 T 62.3344697881 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 1731 T 63.4759 R
+25 W
+V 5039 1731 T 63.3303508644 R
 N 0 0 M 547 0 D S
 U
-V 5391 2435 T 63.4759 R
+V 5393 2434 T 63.3303508644 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 1731 T 64.4072 R
+25 W
+V 5375 1731 T 64.2652768763 R
 N 0 0 M 564 0 D S
 U
-V 5722 2455 T 64.4072 R
+V 5724 2455 T 64.2652768763 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 1731 T 65.2827 R
+25 W
+V 5711 1731 T 65.1442564933 R
 N 0 0 M 579 0 D S
 U
-V 6054 2475 T 65.2827 R
+V 6056 2474 T 65.1442564933 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 1731 T 66.1066 R
+25 W
+V 6047 1731 T 65.9715764554 R
 N 0 0 M 595 0 D S
 U
-V 6385 2494 T 66.1066 R
+V 6387 2493 T 65.9715764554 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 1731 T 66.8832 R
+25 W
+V 6383 1731 T 66.7515219325 R
 N 0 0 M 609 0 D S
 U
-V 6717 2512 T 66.8832 R
+V 6718 2511 T 66.7515219325 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 1731 T 67.6159 R
+25 W
+V 6719 1731 T 67.4875272712 R
 N 0 0 M 623 0 D S
 U
-V 7048 2529 T 67.6159 R
+V 7050 2528 T 67.4875272712 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7055 1731 T 68.3082 R
+25 W
+V 7055 1731 T 68.1829038305 R
 N 0 0 M 636 0 D S
 U
-V 7379 2545 T 68.3082 R
+V 7381 2544 T 68.1829038305 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 1731 T 68.9629 R
+25 W
+V 7391 1731 T 68.8406708737 R
 N 0 0 M 648 0 D S
 U
-V 7710 2559 T 68.9629 R
+V 7712 2559 T 68.8406708737 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 1391 T 67.5182 R
+25 W
+V 0 1391 T 67.3918075094 R
 U
-V 65 1548 T 67.5182 R
+V 65 1548 T 67.3918075094 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 1391 T 67.9757 R
+25 W
+V 336 1391 T 67.8512946149 R
 U
-V 400 1549 T 67.9757 R
+V 400 1549 T 67.8512946149 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 1391 T 68.4093 R
+25 W
+V 672 1391 T 68.2868442075 R
 U
-V 735 1549 T 68.4093 R
+V 735 1549 T 68.2868442075 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 1391 T 43.5579 R
+25 W
+V 1008 1391 T 43.3816724657 R
 N 0 0 M 338 0 D S
 U
-V 1427 1789 T 43.5579 R
+V 1428 1788 T 43.3816724657 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 1391 T 45.7708 R
+25 W
+V 1344 1391 T 45.5940916329 R
 N 0 0 M 357 0 D S
 U
-V 1760 1818 T 45.7708 R
+V 1761 1817 T 45.5940916329 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 1391 T 47.8315 R
+25 W
+V 1680 1391 T 47.6553104869 R
 N 0 0 M 375 0 D S
 U
-V 2093 1847 T 47.8315 R
+V 2094 1845 T 47.6553104869 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 1391 T 49.751 R
+25 W
+V 2016 1391 T 49.5761500621 R
 N 0 0 M 394 0 D S
 U
-V 2425 1874 T 49.751 R
+V 2427 1873 T 49.5761500621 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 1391 T 51.5403 R
+25 W
+V 2352 1391 T 51.367324486 R
 N 0 0 M 413 0 D S
 U
-V 2758 1902 T 51.5403 R
+V 2759 1900 T 51.367324486 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 1391 T 53.2091 R
+25 W
+V 2688 1391 T 53.0386666173 R
 N 0 0 M 431 0 D S
 U
-V 3090 1928 T 53.2091 R
+V 3091 1927 T 53.0386666173 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 1391 T 54.7676 R
+25 W
+V 3024 1391 T 54.6000027226 R
 N 0 0 M 450 0 D S
 U
-V 3422 1954 T 54.7676 R
+V 3423 1953 T 54.6000027226 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 1391 T 56.2246 R
+25 W
+V 3360 1391 T 56.060029059 R
 N 0 0 M 469 0 D S
 U
-V 3753 1980 T 56.2246 R
+V 3755 1978 T 56.060029059 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 1391 T 57.5884 R
+25 W
+V 3696 1391 T 57.4271574251 R
 N 0 0 M 487 0 D S
 U
-V 4085 2004 T 57.5884 R
+V 4087 2003 T 57.4271574251 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 1391 T 58.8666 R
+25 W
+V 4031 1391 T 58.7087883401 R
 N 0 0 M 505 0 D S
 U
-V 4416 2028 T 58.8666 R
+V 4418 2027 T 58.7087883401 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 1391 T 60.0663 R
+25 W
+V 4367 1391 T 59.9120339231 R
 N 0 0 M 522 0 D S
 U
-V 4748 2051 T 60.0663 R
+V 4750 2050 T 59.9120339231 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 1391 T 61.1938 R
+25 W
+V 4703 1391 T 61.0431397633 R
 N 0 0 M 539 0 D S
 U
-V 5079 2073 T 61.1938 R
+V 5081 2072 T 61.0431397633 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 1391 T 62.255 R
+25 W
+V 5039 1391 T 62.1079163484 R
 N 0 0 M 556 0 D S
 U
-V 5410 2095 T 62.255 R
+V 5412 2094 T 62.1079163484 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 1391 T 63.2552 R
+25 W
+V 5375 1391 T 63.1116208085 R
 N 0 0 M 572 0 D S
 U
-V 5741 2115 T 63.2552 R
+V 5742 2114 T 63.1116208085 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 1391 T 64.1991 R
+25 W
+V 5711 1391 T 64.0590845054 R
 N 0 0 M 587 0 D S
 U
-V 6071 2135 T 64.1991 R
+V 6073 2134 T 64.0590845054 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 1391 T 65.0911 R
+25 W
+V 6047 1391 T 64.9545426705 R
 N 0 0 M 601 0 D S
 U
-V 6402 2154 T 65.0911 R
+V 6403 2153 T 64.9545426705 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 1391 T 65.9352 R
+25 W
+V 6383 1391 T 65.8020489881 R
 N 0 0 M 615 0 D S
 U
-V 6732 2172 T 65.9352 R
+V 6734 2171 T 65.8020489881 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 1391 T 66.7349 R
+25 W
+V 6719 1391 T 66.6051369947 R
 N 0 0 M 629 0 D S
 U
-V 7062 2189 T 66.7349 R
+V 7064 2188 T 66.6051369947 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7055 1391 T 67.4935 R
+25 W
+V 7055 1391 T 67.3670244008 R
 N 0 0 M 641 0 D S
 U
-V 7392 2204 T 67.4935 R
+V 7394 2204 T 67.3670244008 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 1391 T 68.2141 R
+25 W
+V 7391 1391 T 68.0908078863 R
 N 0 0 M 653 0 D S
 U
-V 7722 2219 T 68.2141 R
+V 7724 2219 T 68.0908078863 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 1048 T 67.3975 R
+25 W
+V 0 1048 T 67.2734165462 R
 U
-V 66 1205 T 67.3975 R
+V 66 1205 T 67.2734165462 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 1048 T 67.9131 R
+25 W
+V 336 1048 T 67.7911485147 R
 U
-V 400 1206 T 67.9131 R
+V 400 1206 T 67.7911485147 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 1048 T 68.4052 R
+25 W
+V 672 1048 T 68.2854352636 R
 U
-V 735 1207 T 68.4052 R
+V 735 1207 T 68.2854352636 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 1048 T 41.8097 R
+25 W
+V 1008 1048 T 41.6389490675 R
 N 0 0 M 358 0 D S
 U
-V 1453 1447 T 41.8097 R
+V 1455 1445 T 41.6389490675 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 1048 T 44.0364 R
+25 W
+V 1344 1048 T 43.8642000101 R
 N 0 0 M 375 0 D S
 U
-V 1786 1476 T 44.0364 R
+V 1787 1474 T 43.8642000101 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 1048 T 46.1223 R
+25 W
+V 1680 1048 T 45.9498232636 R
 N 0 0 M 392 0 D S
 U
-V 2118 1504 T 46.1223 R
+V 2120 1503 T 45.9498232636 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 1048 T 48.0764 R
+25 W
+V 2016 1048 T 47.9044944743 R
 N 0 0 M 410 0 D S
 U
-V 2450 1532 T 48.0764 R
+V 2452 1530 T 47.9044944743 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 1048 T 49.9077 R
+25 W
+V 2352 1048 T 49.7370529381 R
 N 0 0 M 428 0 D S
 U
-V 2782 1559 T 49.9077 R
+V 2783 1558 T 49.7370529381 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 1048 T 51.6247 R
+25 W
+V 2688 1048 T 51.4558361394 R
 N 0 0 M 446 0 D S
 U
-V 3113 1586 T 51.6247 R
+V 3115 1584 T 51.4558361394 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 1048 T 53.2358 R
+25 W
+V 3024 1048 T 53.0692608116 R
 N 0 0 M 464 0 D S
 U
-V 3445 1612 T 53.2358 R
+V 3446 1610 T 53.0692608116 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 1048 T 54.749 R
+25 W
+V 3360 1048 T 54.5851640063 R
 N 0 0 M 481 0 D S
 U
-V 3776 1637 T 54.749 R
+V 3778 1636 T 54.5851640063 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 1048 T 56.1718 R
+25 W
+V 3696 1048 T 56.010886965 R
 N 0 0 M 499 0 D S
 U
-V 4107 1662 T 56.1718 R
+V 4108 1660 T 56.010886965 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 1048 T 57.5109 R
+25 W
+V 4031 1048 T 57.3531774415 R
 N 0 0 M 516 0 D S
 U
-V 4437 1685 T 57.5109 R
+V 4439 1684 T 57.3531774415 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 1048 T 58.773 R
+25 W
+V 4367 1048 T 58.6184762175 R
 N 0 0 M 532 0 D S
 U
-V 4768 1708 T 58.773 R
+V 4770 1707 T 58.6184762175 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 1048 T 59.9639 R
+25 W
+V 4703 1048 T 59.8127827351 R
 N 0 0 M 549 0 D S
 U
-V 5098 1731 T 59.9639 R
+V 5100 1730 T 59.8127827351 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 1048 T 61.089 R
+25 W
+V 5039 1048 T 60.9413850871 R
 N 0 0 M 564 0 D S
 U
-V 5428 1752 T 61.089 R
+V 5430 1751 T 60.9413850871 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 1048 T 62.1535 R
+25 W
+V 5375 1048 T 62.0093152611 R
 N 0 0 M 580 0 D S
 U
-V 5758 1773 T 62.1535 R
+V 5760 1772 T 62.0093152611 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 1048 T 63.1619 R
+25 W
+V 5711 1048 T 63.0211868528 R
 N 0 0 M 594 0 D S
 U
-V 6088 1792 T 63.1619 R
+V 6090 1791 T 63.0211868528 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 1048 T 64.1183 R
+25 W
+V 6047 1048 T 63.9810559663 R
 N 0 0 M 608 0 D S
 U
-V 6418 1811 T 64.1183 R
+V 6419 1810 T 63.9810559663 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 1048 T 65.0266 R
+25 W
+V 6383 1048 T 64.8928636065 R
 N 0 0 M 622 0 D S
 U
-V 6747 1829 T 65.0266 R
+V 6749 1828 T 64.8928636065 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 1048 T 65.8904 R
+25 W
+V 6719 1048 T 65.7600530294 R
 N 0 0 M 634 0 D S
 U
-V 7076 1846 T 65.8904 R
+V 7078 1845 T 65.7600530294 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7055 1048 T 66.7128 R
+25 W
+V 7055 1048 T 66.5857916411 R
 N 0 0 M 646 0 D S
 U
-V 7405 1862 T 66.7128 R
+V 7407 1861 T 66.5857916411 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 1048 T 67.4969 R
+25 W
+V 7391 1048 T 67.373219273 R
 N 0 0 M 657 0 D S
 U
-V 7734 1877 T 67.4969 R
+V 7736 1876 T 67.373219273 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 702 T 67.3018 R
+25 W
+V 0 702 T 67.1803940123 R
 U
-V 66 860 T 67.3018 R
+V 66 860 T 67.1803940123 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 702 T 67.8748 R
+25 W
+V 336 702 T 67.7557882956 R
 U
-V 400 861 T 67.8748 R
+V 401 860 T 67.7557882956 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 702 T 68.425 R
+25 W
+V 672 702 T 68.3083112457 R
 U
-V 735 861 T 68.425 R
+V 735 861 T 68.3083112457 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 702 T 68.9534 R
+25 W
+V 1008 702 T 68.83904828 R
 U
-V 1069 862 T 68.9534 R
+V 1069 861 T 68.83904828 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 702 T 42.437 R
+25 W
+V 1344 702 T 42.2703974187 R
 N 0 0 M 393 0 D S
 U
-V 1811 1130 T 42.437 R
+V 1813 1128 T 42.2703974187 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 702 T 44.5388 R
+25 W
+V 1680 702 T 44.3711699359 R
 N 0 0 M 410 0 D S
 U
-V 2143 1158 T 44.5388 R
+V 2144 1157 T 44.3711699359 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 702 T 46.5183 R
+25 W
+V 2016 702 T 46.3504887768 R
 N 0 0 M 427 0 D S
 U
-V 2474 1186 T 46.5183 R
+V 2476 1185 T 46.3504887768 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 702 T 48.3827 R
+25 W
+V 2352 702 T 48.2154605826 R
 N 0 0 M 444 0 D S
 U
-V 2806 1213 T 48.3827 R
+V 2807 1212 T 48.2154605826 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 702 T 50.1392 R
+25 W
+V 2688 702 T 49.9732150264 R
 N 0 0 M 460 0 D S
 U
-V 3137 1240 T 50.1392 R
+V 3138 1239 T 49.9732150264 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 702 T 51.795 R
+25 W
+V 3024 702 T 51.6307701045 R
 N 0 0 M 477 0 D S
 U
-V 3467 1266 T 51.795 R
+V 3469 1265 T 51.6307701045 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 702 T 53.3571 R
+25 W
+V 3360 702 T 53.1950651037 R
 N 0 0 M 494 0 D S
 U
-V 3798 1291 T 53.3571 R
+V 3799 1290 T 53.1950651037 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 702 T 54.8319 R
+25 W
+V 3696 702 T 54.6724009179 R
 N 0 0 M 511 0 D S
 U
-V 4128 1316 T 54.8319 R
+V 4130 1315 T 54.6724009179 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 702 T 56.2256 R
+25 W
+V 4031 702 T 56.0689422486 R
 N 0 0 M 527 0 D S
 U
-V 4458 1340 T 56.2256 R
+V 4460 1339 T 56.0689422486 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 702 T 57.5443 R
+25 W
+V 4367 702 T 57.390665932 R
 N 0 0 M 543 0 D S
 U
-V 4787 1363 T 57.5443 R
+V 4789 1362 T 57.390665932 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 702 T 58.7933 R
+25 W
+V 4703 702 T 58.6427731187 R
 N 0 0 M 558 0 D S
 U
-V 5117 1385 T 58.7933 R
+V 5119 1384 T 58.6427731187 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 702 T 59.9776 R
+25 W
+V 5039 702 T 59.8303655875 R
 N 0 0 M 573 0 D S
 U
-V 5446 1407 T 59.9776 R
+V 5448 1405 T 59.8303655875 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 702 T 61.102 R
+25 W
+V 5375 702 T 60.9581548924 R
 N 0 0 M 588 0 D S
 U
-V 5775 1427 T 61.102 R
+V 5777 1426 T 60.9581548924 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 702 T 62.1709 R
+25 W
+V 5711 702 T 62.030415835 R
 N 0 0 M 602 0 D S
 U
-V 6104 1447 T 62.1709 R
+V 6106 1446 T 62.030415835 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 702 T 63.1881 R
+25 W
+V 6047 702 T 63.0510810776 R
 N 0 0 M 615 0 D S
 U
-V 6433 1466 T 63.1881 R
+V 6435 1465 T 63.0510810776 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 702 T 64.1575 R
+25 W
+V 6383 702 T 64.023930158 R
 N 0 0 M 628 0 D S
 U
-V 6761 1483 T 64.1575 R
+V 6763 1483 T 64.023930158 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 702 T 65.0826 R
+25 W
+V 6719 702 T 64.9523683933 R
 N 0 0 M 640 0 D S
 U
-V 7090 1500 T 65.0826 R
+V 7092 1499 T 64.9523683933 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7055 702 T 65.9662 R
+25 W
+V 7055 702 T 65.8394014612 R
 N 0 0 M 651 0 D S
 U
-V 7418 1516 T 65.9662 R
+V 7420 1515 T 65.8394014612 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 702 T 66.8115 R
+25 W
+V 7391 702 T 66.6880497736 R
 N 0 0 M 662 0 D S
 U
-V 7746 1531 T 66.8115 R
+V 7748 1530 T 66.6880497736 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 353 T 67.2311 R
+25 W
+V 0 353 T 67.1127691716 R
 U
-V 66 511 T 67.2311 R
+V 66 510 T 67.1127691716 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 353 T 67.8609 R
+25 W
+V 336 353 T 67.7451976075 R
 U
-V 400 511 T 67.8609 R
+V 401 511 T 67.7451976075 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 353 T 68.4687 R
+25 W
+V 672 353 T 68.3554739896 R
 U
-V 735 512 T 68.4687 R
+V 735 512 T 68.3554739896 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 353 T 38.7335 R
+25 W
+V 1008 353 T 38.5762485451 R
 N 0 0 M 397 0 D S
 U
-V 1505 752 T 38.7335 R
+V 1506 750 T 38.5762485451 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 353 T 40.9624 R
+25 W
+V 1344 353 T 40.8022924497 R
 N 0 0 M 412 0 D S
 U
-V 1836 781 T 40.9624 R
+V 1837 779 T 40.8022924497 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 353 T 43.0726 R
+25 W
+V 1680 353 T 42.9107008876 R
 N 0 0 M 428 0 D S
 U
-V 2167 809 T 43.0726 R
+V 2169 808 T 42.9107008876 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 353 T 45.0698 R
+25 W
+V 2016 353 T 44.9070818853 R
 N 0 0 M 443 0 D S
 U
-V 2498 837 T 45.0698 R
+V 2500 836 T 44.9070818853 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 353 T 46.9597 R
+25 W
+V 2352 353 T 46.7969575264 R
 N 0 0 M 459 0 D S
 U
-V 2829 864 T 46.9597 R
+V 2830 863 T 46.7969575264 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 353 T 48.7483 R
+25 W
+V 2688 353 T 48.5862393957 R
 N 0 0 M 475 0 D S
 U
-V 3159 891 T 48.7483 R
+V 3161 890 T 48.5862393957 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 353 T 50.4417 R
+25 W
+V 3024 353 T 50.2808946684 R
 N 0 0 M 491 0 D S
 U
-V 3489 917 T 50.4417 R
+V 3491 916 T 50.2808946684 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 353 T 52.0459 R
+25 W
+V 3360 353 T 51.8867942822 R
 N 0 0 M 507 0 D S
 U
-V 3819 942 T 52.0459 R
+V 3821 941 T 51.8867942822 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 353 T 53.5665 R
+25 W
+V 3696 353 T 53.4095460496 R
 N 0 0 M 523 0 D S
 U
-V 4148 967 T 53.5665 R
+V 4150 966 T 53.4095460496 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 353 T 55.0091 R
+25 W
+V 4031 353 T 54.8545883823 R
 N 0 0 M 538 0 D S
 U
-V 4478 991 T 55.0091 R
+V 4479 989 T 54.8545883823 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 353 T 56.379 R
+25 W
+V 4367 353 T 56.2271477166 R
 N 0 0 M 553 0 D S
 U
-V 4807 1014 T 56.379 R
+V 4808 1012 T 56.2271477166 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 353 T 57.681 R
+25 W
+V 4703 353 T 57.5321307191 R
 N 0 0 M 568 0 D S
 U
-V 5135 1036 T 57.681 R
+V 5137 1035 T 57.5321307191 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 353 T 58.9201 R
+25 W
+V 5039 353 T 58.7742204594 R
 N 0 0 M 582 0 D S
 U
-V 5464 1057 T 58.9201 R
+V 5466 1056 T 58.7742204594 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 353 T 60.1004 R
+25 W
+V 5375 353 T 59.9577035191 R
 N 0 0 M 596 0 D S
 U
-V 5792 1078 T 60.1004 R
+V 5794 1077 T 59.9577035191 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 353 T 61.226 R
+25 W
+V 5711 353 T 61.0865775949 R
 N 0 0 M 609 0 D S
 U
-V 6120 1098 T 61.226 R
+V 6122 1097 T 61.0865775949 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 353 T 62.3007 R
+25 W
+V 6047 353 T 62.1646133735 R
 N 0 0 M 622 0 D S
 U
-V 6448 1116 T 62.3007 R
+V 6450 1115 T 62.1646133735 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 353 T 63.3281 R
+25 W
+V 6383 353 T 63.195412096 R
 N 0 0 M 634 0 D S
 U
-V 6776 1134 T 63.3281 R
+V 6777 1133 T 63.195412096 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 353 T 64.3115 R
+25 W
+V 6719 353 T 64.1821667511 R
 N 0 0 M 645 0 D S
 U
-V 7103 1151 T 64.3115 R
+V 7105 1150 T 64.1821667511 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7055 353 T 65.2538 R
+25 W
+V 7055 353 T 65.1279215337 R
 N 0 0 M 656 0 D S
 U
-V 7430 1167 T 65.2538 R
+V 7432 1166 T 65.1279215337 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 353 T 66.158 R
+25 W
+V 7391 353 T 66.0354732839 R
 N 0 0 M 666 0 D S
 U
-V 7757 1182 T 66.158 R
+V 7759 1181 T 66.0354732839 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 0 0 T 67.1852 R
+25 W
+V 0 0 T 67.0704838624 R
 U
-V 66 157 T 67.1852 R
+V 67 157 T 67.0704838624 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 336 0 T 67.8715 R
+25 W
+V 336 0 T 67.7593784123 R
 U
-V 400 158 T 67.8715 R
+V 401 158 T 67.7593784123 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 0 T 68.5363 R
+25 W
+V 672 0 T 68.4268702379 R
 U
-V 734 159 T 68.5363 R
+V 735 159 T 68.4268702379 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1008 0 T 69.181 R
+25 W
+V 1008 0 T 69.0742549693 R
 U
-V 1068 159 T 69.181 R
+V 1069 159 T 69.0742549693 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1344 0 T 39.603 R
+25 W
+V 1344 0 T 39.4500053521 R
 N 0 0 M 431 0 D S
 U
-V 1860 427 T 39.603 R
+V 1862 426 T 39.4500053521 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 1680 0 T 41.7155 R
+25 W
+V 1680 0 T 41.5602197668 R
 N 0 0 M 445 0 D S
 U
-V 2191 456 T 41.7155 R
+V 2192 454 T 41.5602197668 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 0 T 43.7241 R
+25 W
+V 2016 0 T 43.5673296386 R
 N 0 0 M 460 0 D S
 U
-V 2522 484 T 43.7241 R
+V 2523 482 T 43.5673296386 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2352 0 T 45.633 R
+25 W
+V 2352 0 T 45.4756957693 R
 N 0 0 M 475 0 D S
 U
-V 2852 511 T 45.633 R
+V 2853 510 T 45.4756957693 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2688 0 T 47.4473 R
+25 W
+V 2688 0 T 47.2901599876 R
 N 0 0 M 490 0 D S
 U
-V 3181 538 T 47.4473 R
+V 3183 536 T 47.2901599876 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3024 0 T 49.1722 R
+25 W
+V 3024 0 T 49.0157469633 R
 N 0 0 M 505 0 D S
 U
-V 3511 564 T 49.1722 R
+V 3512 562 T 49.0157469633 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 0 T 50.8125 R
+25 W
+V 3360 0 T 50.6573512105 R
 N 0 0 M 520 0 D S
 U
-V 3840 589 T 50.8125 R
+V 3841 588 T 50.6573512105 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3696 0 T 52.3734 R
+25 W
+V 3696 0 T 52.2199282231 R
 N 0 0 M 535 0 D S
 U
-V 4168 614 T 52.3734 R
+V 4170 612 T 52.2199282231 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4031 0 T 53.8595 R
+25 W
+V 4031 0 T 53.7080852521 R
 N 0 0 M 549 0 D S
 U
-V 4497 637 T 53.8595 R
+V 4499 636 T 53.7080852521 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4367 0 T 55.2757 R
+25 W
+V 4367 0 T 55.1266755577 R
 N 0 0 M 564 0 D S
 U
-V 4825 660 T 55.2757 R
+V 4827 659 T 55.1266755577 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 0 T 56.6264 R
+25 W
+V 4703 0 T 56.4799530382 R
 N 0 0 M 578 0 D S
 U
-V 5153 683 T 56.6264 R
+V 5155 682 T 56.4799530382 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5039 0 T 57.9158 R
+25 W
+V 5039 0 T 57.7721756213 R
 N 0 0 M 591 0 D S
 U
-V 5481 704 T 57.9158 R
+V 5483 703 T 57.7721756213 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5375 0 T 59.148 R
+25 W
+V 5375 0 T 59.0073428627 R
 N 0 0 M 604 0 D S
 U
-V 5808 725 T 59.148 R
+V 5810 724 T 59.0073428627 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 5711 0 T 60.3268 R
+25 W
+V 5711 0 T 60.1892968201 R
 N 0 0 M 617 0 D S
 U
-V 6135 744 T 60.3268 R
+V 6137 743 T 60.1892968201 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 0 T 61.4557 R
+25 W
+V 6047 0 T 61.3214192112 R
 N 0 0 M 629 0 D S
 U
-V 6462 763 T 61.4557 R
+V 6464 762 T 61.3214192112 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6383 0 T 62.5381 R
+25 W
+V 6383 0 T 62.4071130928 R
 N 0 0 M 640 0 D S
 U
-V 6789 781 T 62.5381 R
+V 6791 780 T 62.4071130928 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6719 0 T 63.5772 R
+25 W
+V 6719 0 T 63.44948111 R
 N 0 0 M 651 0 D S
 U
-V 7116 798 T 63.5772 R
+V 7117 797 T 63.44948111 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7055 0 T 64.5758 R
+25 W
+V 7055 0 T 64.4514387186 R
 N 0 0 M 661 0 D S
 U
-V 7442 814 T 64.5758 R
+V 7444 813 T 64.4514387186 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 0 T 65.5366 R
+25 W
+V 7391 0 T 65.4156921885 R
 N 0 0 M 671 0 D S
 U
-V 7768 829 T 65.5366 R
+V 7770 828 T 65.4156921885 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
@@ -9559,7 +11050,7 @@ U
 U
 PSL_cliprestore
 %%EndObject
-1 /Normal PSL_transp
+1 1 /Normal PSL_transp
 0 A
 FQ
 O0
@@ -9567,11 +11058,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt grdvector nuvel1.vx.1.5.nc nuvel1.vy.1.5.nc -R60/105/-20/40 -JM95.0/35/16c -I8 -S10i -Q0.2i+e -Wthicker,black -Gred -O
-%@PROJ: merc 60.00000000 105.00000000 -20.00000000 40.00000000 -3195085.938 912881.696 -1852032.917 3967815.471 +proj=merc +lon_0=95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 60.00000000 105.00000000 -20.00000000 40.00000000 -3195085.938 912881.696 -1852032.917 3967815.471 +proj=merc +lon_0=95 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 25 W
 {1 0 0 C} FS
 O1
@@ -9582,270 +11073,360 @@ clipsave
 -7559 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {25 W 0 A [] 0 B} def
 V
 25 W
-V 2016 9053 T 84.684 R
+V 2016 9053 T 84.6554500912 R
 N 0 0 M 283 0 D S
 U
-V 2064 9573 T 84.684 R
+V 2064 9573 T 84.6554500912 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 7537 T 78.4425 R
+25 W
+V 672 7537 T 78.3748508247 R
 N 0 0 M 254 0 D S
 U
-V 771 8021 T 78.4425 R
+V 772 8021 T 78.3748508247 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 7537 T 77.7085 R
+25 W
+V 2016 7537 T 77.6367447596 R
 N 0 0 M 293 0 D S
 U
-V 2129 8057 T 77.7085 R
+V 2130 8057 T 77.6367447596 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 7537 T 75.7258 R
+25 W
+V 3360 7537 T 75.6433316437 R
 N 0 0 M 346 0 D S
 U
-V 3504 8104 T 75.7258 R
+V 3505 8104 T 75.6433316437 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 7537 T 73.5901 R
+25 W
+V 4703 7537 T 73.4965121146 R
 N 0 0 M 389 0 D S
 U
-V 4881 8140 T 73.5901 R
+V 4882 8140 T 73.4965121146 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 6113 T 71.2646 R
+25 W
+V 672 6113 T 71.1515165369 R
 N 0 0 M 250 0 D S
 U
-V 829 6577 T 71.2646 R
+V 830 6577 T 71.1515165369 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 6113 T 71.3005 R
+25 W
+V 2016 6113 T 71.1876711903 R
 N 0 0 M 310 0 D S
 U
-V 2192 6634 T 71.3005 R
+V 2193 6634 T 71.1876711903 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 6113 T 70.8392 R
+25 W
+V 3360 6113 T 70.7239875248 R
 N 0 0 M 361 0 D S
 U
-V 3557 6681 T 70.8392 R
+V 3558 6681 T 70.7239875248 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 6113 T 69.9864 R
+25 W
+V 4703 6113 T 69.8668125292 R
 N 0 0 M 403 0 D S
 U
-V 4923 6717 T 69.9864 R
+V 4925 6717 T 69.8668125292 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 4747 T 64.0132 R
+25 W
+V 672 4747 T 63.861156773 R
 N 0 0 M 276 0 D S
 U
-V 898 5211 T 64.0132 R
+V 899 5210 T 63.861156773 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 4747 T 65.6545 R
+25 W
+V 2016 4747 T 65.5095761823 R
 N 0 0 M 332 0 D S
 U
-V 2251 5268 T 65.6545 R
+V 2253 5268 T 65.5095761823 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 4747 T 66.5508 R
+25 W
+V 3360 4747 T 66.4099039288 R
 N 0 0 M 379 0 D S
 U
-V 3606 5315 T 66.5508 R
+V 3607 5314 T 66.4099039288 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 4747 T 66.8831 R
+25 W
+V 4703 4747 T 66.7437361594 R
 N 0 0 M 416 0 D S
 U
-V 4961 5351 T 66.8831 R
+V 4963 5350 T 66.7437361594 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 3408 T 68.9349 R
+25 W
+V 672 3408 T 68.8055033229 R
 U
-V 733 3567 T 68.9349 R
+V 733 3567 T 68.8055033229 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 3408 T 60.853 R
+25 W
+V 2016 3408 T 60.6890343851 R
 N 0 0 M 356 0 D S
 U
-V 2306 3929 T 60.853 R
+V 2308 3928 T 60.6890343851 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 3408 T 62.9055 R
+25 W
+V 3360 3408 T 62.7491811388 R
 N 0 0 M 398 0 D S
 U
-V 3650 3976 T 62.9055 R
+V 3652 3975 T 62.7491811388 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 3408 T 64.3021 R
+25 W
+V 4703 3408 T 64.1514205847 R
 N 0 0 M 430 0 D S
 U
-V 4994 4012 T 64.3021 R
+V 4996 4011 T 64.1514205847 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 3408 T 71.8102 R
+25 W
+V 6047 3408 T 71.6957935628 R
 N 0 0 M 563 0 D S
 U
-V 6298 4171 T 71.8102 R
+V 6300 4171 T 71.6957935628 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 2069 T 68.489 R
+25 W
+V 672 2069 T 68.3625366382 R
 U
-V 735 2227 T 68.489 R
+V 735 2227 T 68.3625366382 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 2069 T 53.4771 R
+25 W
+V 2016 2069 T 53.3005459134 R
 N 0 0 M 362 0 D S
 U
-V 2374 2552 T 53.4771 R
+V 2375 2551 T 53.3005459134 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 2069 T 59.4359 R
+25 W
+V 3360 2069 T 59.2739100305 R
 N 0 0 M 444 0 D S
 U
-V 3707 2658 T 59.4359 R
+V 3709 2657 T 59.2739100305 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 2069 T 63.8338 R
+25 W
+V 4703 2069 T 63.6871596591 R
 N 0 0 M 521 0 D S
 U
-V 5039 2751 T 63.8338 R
+V 5041 2751 T 63.6871596591 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 2069 T 67.1646 R
+25 W
+V 6047 2069 T 67.0319952521 R
 N 0 0 M 588 0 D S
 U
-V 6369 2832 T 67.1646 R
+V 6370 2831 T 67.0319952521 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 2069 T 69.7429 R
+25 W
+V 7391 2069 T 69.6223911006 R
 N 0 0 M 643 0 D S
 U
-V 7697 2897 T 69.7429 R
+V 7699 2897 T 69.6223911006 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 672 702 T 68.425 R
+25 W
+V 672 702 T 68.3083112457 R
 U
-V 735 861 T 68.425 R
+V 735 861 T 68.3083112457 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 2016 702 T 46.5183 R
+25 W
+V 2016 702 T 46.3504887768 R
 N 0 0 M 427 0 D S
 U
-V 2474 1186 T 46.5183 R
+V 2476 1185 T 46.3504887768 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 3360 702 T 53.3571 R
+25 W
+V 3360 702 T 53.1950651037 R
 N 0 0 M 494 0 D S
 U
-V 3798 1291 T 53.3571 R
+V 3799 1290 T 53.1950651037 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 4703 702 T 58.7933 R
+25 W
+V 4703 702 T 58.6427731187 R
 N 0 0 M 558 0 D S
 U
-V 5117 1385 T 58.7933 R
+V 5119 1384 T 58.6427731187 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 6047 702 T 63.1881 R
+25 W
+V 6047 702 T 63.0510810776 R
 N 0 0 M 615 0 D S
 U
-V 6433 1466 T 63.1881 R
+V 6435 1465 T 63.0510810776 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
 P clip fs P S 
 U
-V 7391 702 T 66.8115 R
+25 W
+V 7391 702 T 66.6880497736 R
 N 0 0 M 662 0 D S
 U
-V 7746 1531 T 66.8115 R
+V 7748 1530 T 66.6880497736 R
+PSL_vecheadpen
+25 W
 0 0 M
 -240 64 D
 0 -128 D
@@ -9856,7 +11437,8 @@ PSL_cliprestore
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
