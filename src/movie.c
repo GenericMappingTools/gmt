@@ -1391,15 +1391,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	n_data_frames = n_frames;
 
-	if (Ctrl->W.active) {	/* Create the working directory under /tmp or a specified directory */
-		if (Ctrl->W.dir)	/* Make a subdirectory under this directory based on N.prefix */
-			strcpy (workdir, Ctrl->W.dir);
-		else	/* Make a subdirectory in the tempdir based on N.prefix */
-			sprintf (workdir, "%s/%s", API->tmp_dir, Ctrl->N.prefix);
-	}
-	else	/* Create N.prefix locally in the current directory */
-		strcpy (workdir, Ctrl->N.prefix);
-
 	/* Get full path to the current working directory */
 	if (getcwd (topdir, PATH_MAX) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
@@ -1407,6 +1398,23 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	gmt_replace_backslash_in_path (topdir);
+
+	if (Ctrl->W.active) {	/* Do all the work in a temporary directory elsewhere */
+		if (Ctrl->W.dir) {	/* Specified the path to either a relative or absolute temp directory */
+#ifdef WIN32
+			if (Ctrl->W.dir[0] == '/' || Ctrl->W.dir[1] == ':')	/* Absolute path under Windows */
+#else
+			if (Ctrl->W.dir[0] == '/')	/* Absolute path under *nix|macOS */
+#endif
+				strcpy (workdir, Ctrl->W.dir);	/* Use exactly as given */
+			else	/* Gave a relative path */
+				sprintf (workdir, "%s/%s", topdir, Ctrl->W.dir);
+		}
+		else 	/* Make one in the official temp directory based on N.prefix */
+			sprintf (workdir, "%s/%s", API->tmp_dir, Ctrl->N.prefix);
+	}
+	else	/* Use a subdirectory of the current directory */
+		sprintf (workdir, "%s/%s", topdir, Ctrl->N.prefix);
 
 	{	/* Block to check for existing workdir */
 		struct stat S;
