@@ -129,8 +129,8 @@ Optional Arguments
     You can override that selection by giving another *workdir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
-    problems related to low space in the main directory.  The product files will still be placed in the *prefix*
-    directory.  The *workdir* is removed unless **-Q** is specified for debugging.
+    problems related to low space in the main directory.  The *workdir* is removed unless it contain
+    one or more batch product files or when **-Q** is specified for debugging.
 
 .. _-Z:
 
@@ -165,9 +165,17 @@ The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_TAG**), Fu
 was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are also set, yielding one variable per
 column in *timefile*.  If *timefile* has trailing text then that text can be accessed via the variable
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to **-T** then the trailing
-text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc. **Note**: Any
-product(s) made by the processing scripts should be named using **BATCH_NAME** as their name prefix as these
-will be automatically moved up to the starting directory upon completion.
+text is also split into individual word parameters **BATCH_WORD0**\ , **BATCH_WORD1**\ , etc.
+
+Batch Products
+--------------
+
+Any product(s) made by the processing scripts that you wish to keep should be named in one of two ways:
+
+#. Files named **BATCH_PREFIX**.* will be automatically moved up to the starting directory upon completion.
+#. Files named **BATCH_NAME**.* will be placed in the *workdir* directory upon completion.
+
+Any other files found in the *workdir* directory will be deleted.
 
 Data Files
 ----------
@@ -263,8 +271,8 @@ are all completed we determine the standard deviation in the result.  To replica
     EOF
     cat << EOF > post.sh
     gmt begin \${BATCH_PREFIX} pdf
-        gmt grdmath \${BATCH_PREFIX}_*.grd -S STD = \${BATCH_PREFIX}_std.grd
-        gmt grdimage \${BATCH_PREFIX}_std.grd -B -B+t"STD of Gaussians residuals" -Chot
+        gmt grdmath \${BATCH_PREFIX}_*.grd -S STD = \${BATCH_PREFIX}.grd
+        gmt grdimage \${BATCH_PREFIX}.grd -B -B+t"STD of Gaussian residuals" -Chot
         gmt coast -Wthin,white
     gmt end show
     EOF

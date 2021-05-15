@@ -24,6 +24,7 @@
  */
 
 #include "gmt_dev.h"
+#include "gmt_internals.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"clear"
 #define THIS_MODULE_MODERN_NAME	"clear"
