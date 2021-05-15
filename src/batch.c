@@ -477,13 +477,21 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	}
 	gmt_replace_backslash_in_path (topdir);
 
-	if (Ctrl->W.active) {	/* Do all work in a temp directory */
-		if (Ctrl->W.dir)
-			strcpy (workdir, Ctrl->W.dir);
-		else 	/* Make one in tempdir based on N.prefix */
+	if (Ctrl->W.active) {	/* Do all the work in a temporary directory elsewhere */
+		if (Ctrl->W.dir) {	/* Specified the path to either a relative or absolute temp directory */
+#ifdef WIN32
+			if (Ctrl->W.dir[0] == '/' || Ctrl->W.dir[1] == ':')	/* Absolute path under Windows */
+#else
+			if (Ctrl->W.dir[0] == '/')	/* Absolute path under *nix|macOS */
+#endif
+				strcpy (workdir, Ctrl->W.dir);	/* Use exactly as given */
+			else	/* Gave a relative path */
+				sprintf (workdir, "%s/%s", topdir, Ctrl->W.dir);
+		}
+		else 	/* Make one in the official temp directory based on N.prefix */
 			sprintf (workdir, "%s/%s", API->tmp_dir, Ctrl->N.prefix);
 	}
-	else
+	else	/* Use a subdirectory of the current directory */
 		sprintf (workdir, "%s/%s", topdir, Ctrl->N.prefix);
 
 	if (!access ("gmt.conf", R_OK)) {	/* User has a gmt.conf file in the top directory that needs to be shared with the jobs */
