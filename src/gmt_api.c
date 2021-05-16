@@ -12462,7 +12462,7 @@ GMT_LOCAL char gmtapi_grdinterpolate_type (struct GMTAPI_CTRL *API, struct GMT_O
 		else if (T && (strchr (T->arg, '/') || strchr (T->arg, ',')))	/* Making more than one output layer */
 			type = 'U';
 		else
-			type = 'G';	/* Making a single grid layer */
+			type = 'U';	/* Making a single grid layer but need to be cube */
 	}
 	else if (E)	/* Sample a vertical slice as a grid */
 		type = 'G';
