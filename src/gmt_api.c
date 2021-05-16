@@ -15145,6 +15145,8 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 
 	if ((mode & GMT_FILE_CHECK) == 0) gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
 
+	gmt_filename_get (file);	/* Replace any ASCII 29 with spaces (if filename had spaces they may now be ASCII 29) */
+
 	switch (family) {
 		case GMT_IS_GRID:
 			if (!gmt_file_is_tiled_list (API, file, NULL, NULL, NULL) && (c = strchr (file, '='))) {	/* Got filename=id[+modifiers] */

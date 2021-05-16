@@ -13972,6 +13972,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 				if (opt->option != GMT_OPT_INFILE) continue;	/* Look for input files we can append to new list */
 				if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, opt->arg)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
 					return API->error;	/* Failure to make new option and append to list */
+				gmt_filename_set (opt->arg);	/* Replace any spaces with ASCII 29, will be undone by GMT_Get_FilePath */
 			}
 			if (head == NULL) {	/* User gave no input so we must process stdin */
 				/* Make name for a temporary file */
