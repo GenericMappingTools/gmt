@@ -132,7 +132,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREAD_CTRL *Ctrl, struct GMT_OP
 					case 'c': Ctrl->T.mode = GMT_IS_PALETTE;	 break;
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
 					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
-					case 'p': Ctrl->T.mode = GMT_IS_CUBE;	 break;
+					case 'u': Ctrl->T.mode = GMT_IS_CUBE;	 break;
 					default:
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
 						n_errors++;
