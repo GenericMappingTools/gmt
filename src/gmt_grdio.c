@@ -2941,8 +2941,30 @@ int gmt_change_grdreg (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, uns
 	return (old_registration);
 }
 
+void gmt_cube_wminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *z) {
+	/* Reset the wmin/wmax values in the header based on the values in the cube*/
+	unsigned int row, col, layer;
+	uint64_t node, offset = 0, n = 0;
+
+	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
+	for (layer = 0; layer < h->n_bands; layer++) {
+		for (row = 0; row < h->n_rows; row++) {
+			for (col = 0, node = gmt_M_ijp (h, row, 0) + offset; col < h->n_columns; col++, node++) {
+				if (isnan (z[node]))
+					continue;
+				/* Update z_min, z_max */
+				h->z_min = MIN (h->z_min, (double)z[node]);
+				h->z_max = MAX (h->z_max, (double)z[node]);
+				n++;
+			}
+		}
+		offset += h->size;	/* Go to next layer */
+	}
+	if (n == 0) h->z_min = h->z_max = GMT->session.d_NaN;	/* No non-NaNs in the entire grid */
+}
+
 void gmt_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *z) {
-	/* Reset the xmin/zmax values in the header */
+	/* Reset the zmin/zmax values in the header */
 	unsigned int row, col;
 	uint64_t node, n = 0;
 

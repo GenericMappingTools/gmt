@@ -6142,7 +6142,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (S_obj->region) return (gmtlib_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing cube data to GMT_CUBE memory location\n");
-			gmt_grd_zminmax (GMT, U_obj->header, U_obj->data);	/* Must set zmin/zmax since we are not writing */
+			gmt_cube_wminmax (GMT, U_obj->header, U_obj->data);	/* Must set wmin/wmax since we are not writing */
 			gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_OUT), "Cube memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = U_obj;	/* Set resource pointer to the cube */
