@@ -71,7 +71,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t   Specify input and output file names\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify data type. Choose among:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify data type.  Choose among:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c : CPT\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   d : Dataset\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   g : Grid\n");
