@@ -1544,7 +1544,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */
 			for (node = 0; !has_content && node < Grid_orig->header->size; node++)
-				if (!gmt_M_is_dnan (Conf->Grid->data[node])) has_content = true;
+				if (!gmt_M_is_dnan (Grid_orig->data[node])) has_content = true;
 		}
 	}
 
@@ -1718,7 +1718,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* Set grdimage's default image memory layout */
 
 		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {	/* Yikes, must bail */
-			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
+			if (rgb_used) gmt_M_free (GMT, rgb_used);
 			gmt_free_header (API->GMT, &header_G);
 			gmt_free_header (API->GMT, &header_I);
 			Return (API->error);	/* Well, no luck with that allocation */
@@ -1853,7 +1853,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			done = true;	/* Only doing the loop once here since no -Q */
 	}
 
-	if (rgb_cube_scan) gmt_M_free (GMT, rgb_used);	/* Done using the r/g/b cube */
+	if (rgb_used) gmt_M_free (GMT, rgb_used);	/* Done using the r/g/b cube */
 	gmt_M_free (GMT, Conf->actual_row);
 	gmt_M_free (GMT, Conf->actual_col);
 
