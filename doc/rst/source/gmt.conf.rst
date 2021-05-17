@@ -296,7 +296,7 @@ FORMAT Parameters
         ========   =================================================================
 
     **FORMAT_FLOAT_MAP**
-        Format (C language printf syntax) to be used when plotting double
+        Format (C language printf syntax, see :term:`FORMAT_FLOAT_OUT`) to be used when plotting double
         precision floating point numbers along plot frames and contours.
         For geographic coordinates, see :term:`FORMAT_GEO_MAP`. [default is **%.12g**].
 
@@ -311,6 +311,10 @@ FORMAT Parameters
         override the format for all other columns.  Alternatively, you can
         list N space-separated formats and these apply to the first N
         columns.
+
+        The printf syntax is ``%[minimum width].[precision]type``, where
+        **type** may be **f**, **e**, **E**, **g** or **G**.
+        The default is ``%.12g``, i.e. no minimum width and 12 digit precisision.
 
     **FORMAT_TIME_MAP**
         Sets both :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`

@@ -498,7 +498,7 @@
 /* rmdir is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in direct.h */
-#ifdef HAVE__GETCWD
+#ifdef HAVE__RMDIR
 #	define rmdir _rmdir
 #endif
 

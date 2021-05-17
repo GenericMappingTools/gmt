@@ -769,7 +769,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			default:	/* Already checked in parser that this cannot happen */
 				break;
 		}
-		P.n_outputs++;
+		P.n_outputs++;	/* Since we count the extra z's later and add them */
 	}
 
 	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (xyzpqrs) */
@@ -1146,6 +1146,8 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 						}
 					}
 				}
+				else	/* Just need to know how many */
+					P.n_z = n_cols - 2;
 				z_first = false;
 				n_tot_cols = (P.want_z_output) ? P.n_outputs - 1 + P.n_z : P.n_outputs;
 				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_tot_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {
