@@ -169,7 +169,7 @@ static const char *gmtmex_fieldname_dataset[N_MEX_FIELDNAMES_DATASET] =
  * fields listed below. */
 
 #define N_MEX_FIELDNAMES_CUBE	19
-static const char *GMTMEX_fieldname_cube[N_MEX_FIELDNAMES_CUBE] =
+static const char *gmtmex_fieldname_cube[N_MEX_FIELDNAMES_CUBE] =
 	{"v", "x", "y", "z", "range", "inc", "registration", "nodata", "title", "comment",
 	 "command", "datatype", "x_unit", "y_unit", "z_unit", "v_unit", "layout", "proj4", "wkt"};
 
@@ -419,7 +419,7 @@ static void *gmtmex_get_cube (void *API, struct GMT_CUBE *U) {
 	}
 
 	/* Create a MATLAB struct to hold this cube [matrix will be a float (mxSINGLE_CLASS)]. */
-	U_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_CUBE, GMTMEX_fieldname_cube);
+	U_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_CUBE, gmtmex_fieldname_cube);
 	dim[0] = U->header->n_rows;	dim[1] = U->header->n_columns;	dim[2] = U->header->n_bands;
 
 	/* Get pointers and populate structure from the information in U */
@@ -476,7 +476,7 @@ static void *gmtmex_get_cube (void *API, struct GMT_CUBE *U) {
 	for (k = 0; k < U->header->n_rows; k++)
 		y[U->header->n_rows-1-k] = U->y[k];	/* Must reverse the y-array */
 	for (k = 0; k < N_MEX_FIELDNAMES_CUBE; k++)
-		mxSetField (U_struct, 0, GMTMEX_fieldname_cube[k], mxptr[k]);
+		mxSetField (U_struct, 0, gmtmex_fieldname_cube[k], mxptr[k]);
 	return (U_struct);
 }
 
@@ -1867,7 +1867,7 @@ static void *Initiate_Session (unsigned int verbose) {
 	/* Initializing new GMT session with a MATLAB-acceptable replacement for the printf function */
 	/* For debugging with verbose we pass the specified verbose shifted by 10 bits - this is decoded in API */
 	if ((API = GMT_Create_Session (MEX_PROG, 2U, (verbose << 10) + GMT_SESSION_NOEXIT + GMT_SESSION_EXTERNAL +
-	                               GMT_SESSION_COLMAJOR, GMTMEX_print_func)) == NULL)
+	                               GMT_SESSION_COLMAJOR, gmtmex_print_func)) == NULL)
 		mexErrMsgTxt ("GMT: Failure to create new GMT session\n");
 
 #ifndef SINGLE_SESSION
@@ -1885,22 +1885,22 @@ static void *alloc_default_plhs (void *API, struct GMT_RESOURCE *X) {
 	void *ptr = NULL;
 	switch (X->family) {
 		case GMT_IS_CUBE:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CUBE, GMTMEX_fieldname_cube);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CUBE, gmtmex_fieldname_cube);
 			break;
 		case GMT_IS_GRID:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_GRID, GMTMEX_fieldname_grid);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_GRID, gmtmex_fieldname_grid);
 			break;
 		case GMT_IS_IMAGE:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_IMAGE, GMTMEX_fieldname_image);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_IMAGE, gmtmex_fieldname_image);
 			break;
 		case GMT_IS_DATASET:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, GMTMEX_fieldname_dataset);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, gmtmex_fieldname_dataset);
 			break;
 		case GMT_IS_PALETTE:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CPT, GMTMEX_fieldname_cpt);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CPT, gmtmex_fieldname_cpt);
 			break;
 		case GMT_IS_POSTSCRIPT:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_PS, GMTMEX_fieldname_ps);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_PS, gmtmex_fieldname_ps);
 			break;
 		default:
 			break;
