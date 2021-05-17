@@ -864,6 +864,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Get information about z variable */
 		gmtnc_get_units (GMT, ncid, z_id, header->z_units);
+		if (header->z_units[0] == '\0') strcpy (header->z_units, "z");	/* Set a default z-name */
 		if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
 		if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
 #ifdef DOUBLE_PRECISION_GRID
