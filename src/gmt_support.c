@@ -7308,6 +7308,8 @@ void gmt_increment_adjust (struct GMT_CTRL *GMT, double *wesn, double *inc, enum
 	unsigned int one_or_zero, n_rows, n_columns;
 	double s;
 
+	if (GMT->current.io.inc_code[GMT_X] == 0 && GMT->current.io.inc_code[GMT_Y] == 0) return;	/* Nothing to do */
+
 	one_or_zero = !registration;
 
 	/* XINC AND XMIN/XMAX CHECK FIRST */
