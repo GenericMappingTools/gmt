@@ -864,7 +864,6 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Get information about z variable */
 		gmtnc_get_units (GMT, ncid, z_id, header->z_units);
-		if (header->z_units[0] == '\0') strcpy (header->z_units, "z");	/* Set a default z-name */
 		if (nc_get_att_double (ncid, z_id, "scale_factor", &header->z_scale_factor)) header->z_scale_factor = 1.0;
 		if (nc_get_att_double (ncid, z_id, "add_offset", &header->z_add_offset)) header->z_add_offset = 0.0;
 #ifdef DOUBLE_PRECISION_GRID
@@ -1930,7 +1929,7 @@ nc_cube_return:
 
 /* Examine the netCDF data cube and determine if it is a 3-D cube and return the knots */
 
-int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, uint64_t *nz, double **zarray) {
+int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, uint64_t *nz, double **zarray, char *z_unit) {
 	int i, err, ID = -1, dim = 0, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars;
 	int has_vector, ndims = 0, z_dim, status;
 	uint64_t n_layers = 0;
@@ -1980,7 +1979,8 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 	gmtnc_get_units (GMT, ncid, ids[z_dim], z_units);
 	if (strstr (z_units, "seconds since 1970-01-01"))
 		gmt_set_column_type (GMT, GMT_IN, GMT_Z, GMT_IS_ABSTIME);
-
+	else if (z_units[0] == '\0')
+		strcpy (z_units, "z");	/* Set default z-unit name */
 	/* Look for the z-coordinate vector */
 	if ((has_vector = nc_get_var_double (ncid, ids[z_dim], z))) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No 3rd-dimension coordinate vector found in %s\n", file);
@@ -1996,6 +1996,8 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 
 	*zarray = z;
 	*nz = n_layers;
+	if (z_unit)	/* Passed pointer to storage for z-unit in cubes */
+		strncpy (z_unit, z_units, GMT_GRID_UNIT_LEN80);
 
 	return GMT_NOERROR;
 }

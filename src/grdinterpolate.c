@@ -399,7 +399,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			strcpy (cube_layer, &nc_z_named[1]);
 			nc_z_named[0] = '\0';	/* Chop off layer name for now */
 		}
-		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level))) {
+		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level, NULL))) {
 			Return (error);
 		}
 		got_cube = true;
