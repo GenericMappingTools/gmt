@@ -569,11 +569,6 @@ endforeach (_gmt_prog)
 # Rename gmt target to prevent version clash
 set_target_properties (gmt PROPERTIES OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
 
-if (GMT_BUILD_GMTMEX)
-	find_package (Matlab)
-	add_subdirectory (gmtmex)
-endif (GMT_BUILD_GMTMEX)
-
 # psldemo
 add_executable (psldemo psldemo.h psldemo.c)
 target_link_libraries (psldemo pslib)

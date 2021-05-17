@@ -37,7 +37,7 @@
  */
 
 #define GMTMEX_MAJOR_VERSION 2
-#define GMTMEX_MINOR_VERSION 0
+#define GMTMEX_MINOR_VERSION 1
 #define GMTMEX_PATCH_VERSION 0
 
 /* Define the minimum GMT version suitable for this GMTMEX version */
@@ -132,6 +132,8 @@ typedef int mwSize;
 #	define MEXM_IJ(M,row,col) ((row)*M->n_columns + (col))
 	/* And this on GMT_GRID */
 #	define MEXG_IJ(M,row,col) ((row)*M->header->n_columns + (col))
+	/* And this on GMT_CUBE */
+#	define MEXU_IJK(M,layer,row,col) ((layer)*M->header->nm + (row)*M->header->n_columns + (col))
 #else	/* Here we go for Matlab or Octave(mex) */
 #	ifdef GMT_MATLAB
 #		define MEX_PROG "Matlab"
@@ -144,6 +146,8 @@ typedef int mwSize;
 #	define MEXM_IJ(M,row,col) ((col)*M->n_rows + (row))
 	/* And this on GMT_GRID */
 #	define MEXG_IJ(M,row,col) ((col)*M->header->n_rows + M->header->n_rows - (row) - 1)
+	/* And this on GMT_CUBE */
+#	define MEXU_IJK(M,layer,row,col) ((layer)*M->header->nm + (col)*M->header->n_rows + M->header->n_rows - (row) - 1)
 #endif
 
 /* Definitions of MEX structures used to hold GMT objects.
@@ -152,13 +156,22 @@ typedef int mwSize;
 /* GMT_IS_DATASET:
  * Returned by GMT via the parser as a MEX structure with the
  * fields listed below.  Pure datasets will only set the data
- * matrix and leave the text cell array empty, while textsets
- * will fill out both.  Only the first segment will have any
- * information in the info and projection_ref_* items.  */
+ * matrix and leave the text cell array empty, while datasets
+ * with trailing text will fill out both.  Only the first segment
+ * will have any information in the info and projection_ref_* items.  */
 
 #define N_MEX_FIELDNAMES_DATASET	6
 static const char *gmtmex_fieldname_dataset[N_MEX_FIELDNAMES_DATASET] =
 	{"data", "text", "header", "comment", "proj4", "wkt"};
+
+/* GMT_IS_CUBE:
+ * Returned by GMT via the parser as a MEX structure with the
+ * fields listed below. */
+
+#define N_MEX_FIELDNAMES_CUBE	19
+static const char *GMTMEX_fieldname_cube[N_MEX_FIELDNAMES_CUBE] =
+	{"v", "x", "y", "z", "range", "inc", "registration", "nodata", "title", "comment",
+	 "command", "datatype", "x_unit", "y_unit", "z_unit", "v_unit", "layout", "proj4", "wkt"};
 
 /* GMT_IS_GRID:
  * Returned by GMT via the parser as a MEX structure with the
@@ -219,7 +232,14 @@ enum MEX_dim {
  * The packing up of GMT structures into MATLAB structures and vice versa happens after getting the
  * results out of the GMT API and before passing them back to MATLAB.
  *
- * All 5 GMT Resources are supported in this API, according to these rules:
+ * All 6 GMT Resources are supported in this API, according to these rules:
+ *  GMT_CUBE:	Handled with a MATLAB cube structure and we use GMT's GMT_CUBE for the passing
+ *		  + Basic header array of length 12 [xmin, xmax, ymin, ymax, zmin, zmax, vmin, vmax, reg, xinc, yinc, zinc]
+ *		  + The 3-D grid array w (single precision)
+ *		  + An x-array of coordinates
+ *		  + An y-array of coordinates
+ *		  + An z-array of coordinates
+ *		  + Various Proj4 strings
  *  GMT_GRID:	Handled with a MATLAB grid structure and we use GMT's GMT_GRID for the passing
  *		  + Basic header array of length 9 [xmin, xmax, ymin, ymax, zmin, zmax, reg, xinc, yinc]
  *		  + The 2-D grid array z (single precision)
@@ -331,7 +351,7 @@ static void *gmtmex_get_grid (void *API, struct GMT_GRID *G) {
 	mxptr[11] = mxCreateString (G->header->x_units);
 	mxptr[12] = mxCreateString (G->header->y_units);
 	mxptr[13] = mxCreateString (G->header->z_units);
-	mxptr[14] = (G->header->mem_layout[0]) ? mxCreateString(G->header->mem_layout) : mxCreateString ("TCF");
+	mxptr[14] = (G->header->mem_layout[0]) ? mxCreateString(G->header->mem_layout) : mxCreateString ("TCB");
 	mxptr[15] = mxCreateString (G->header->ProjRefPROJ4);
 	mxptr[16] = mxCreateString (G->header->ProjRefWKT);
 
@@ -367,6 +387,97 @@ static void *gmtmex_get_grid (void *API, struct GMT_GRID *G) {
 	for (k = 0; k < N_MEX_FIELDNAMES_GRID; k++)
 		mxSetField (G_struct, 0, gmtmex_fieldname_grid[k], mxptr[k]);
 	return (G_struct);
+}
+
+static void *gmtmex_get_cube (void *API, struct GMT_CUBE *U) {
+	/* Given an incoming GMT cube U, build a MATLAB structure and assign the output components.
+ 	 * Note: Incoming GMT cube has standard padding while MATLAB cube has none. */
+
+	unsigned int k;
+	uint64_t row, col, layer, gmt_ij, offset = 0;
+	mwSize ndim = 3, dim[3];
+	float  *f = NULL;
+	double *d = NULL, *U_x = NULL, *U_y = NULL, *x = NULL, *y = NULL, *z = NULL;
+	mxArray *U_struct = NULL, *mxptr[N_MEX_FIELDNAMES_CUBE];
+
+	if (!U->data)	/* Safety valve */
+		mexErrMsgTxt ("gmtmex_get_cube: programming error, output cube U is empty\n");
+
+	if (U->header->n_bands == 1) {	/* One layer cube is just a grid */
+		struct GMT_GRID *G = NULL;
+		static void *ptr = NULL;
+		if ((G = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_ONLY,
+		        NULL, U->header->wesn, U->header->inc, U->header->registration, 2, NULL)) == NULL)
+			mexErrMsgTxt ("gmtmex_get_cube: Failure to alloc GMT source grid for input\n");
+		G->data = U->data;	/* Temporarily read from the single cube layer */
+		ptr = gmtmex_get_grid (API, G);
+		G->data = NULL;		/* Undo this since nothing was allocated for G above */
+		if (GMT_Destroy_Data (API, &G))
+			mexPrintf("Warning: Failure to delete G (grid layer in gmtmex_get_cube)\n");
+
+		return (ptr);
+	}
+
+	/* Create a MATLAB struct to hold this cube [matrix will be a float (mxSINGLE_CLASS)]. */
+	U_struct = mxCreateStructMatrix (1, 1, N_MEX_FIELDNAMES_CUBE, GMTMEX_fieldname_cube);
+	dim[0] = U->header->n_rows;	dim[1] = U->header->n_columns;	dim[2] = U->header->n_bands;
+
+	/* Get pointers and populate structure from the information in U */
+	mxptr[0]  = mxCreateNumericArray (ndim, dim, mxSINGLE_CLASS, mxREAL);
+	mxptr[1]  = mxCreateNumericMatrix (1, U->header->n_columns, mxDOUBLE_CLASS, mxREAL);
+	mxptr[2]  = mxCreateNumericMatrix (1, U->header->n_rows,    mxDOUBLE_CLASS, mxREAL);
+	mxptr[3]  = mxCreateNumericMatrix (1, U->header->n_bands,   mxDOUBLE_CLASS, mxREAL);
+	mxptr[4]  = mxCreateNumericMatrix (1, 8, mxDOUBLE_CLASS, mxREAL);
+	mxptr[5]  = mxCreateNumericMatrix (1, 3, mxDOUBLE_CLASS, mxREAL);
+	mxptr[6]  = mxCreateDoubleScalar ((double)U->header->registration);
+	mxptr[7]  = mxCreateDoubleScalar ((double)U->header->nan_value);
+	mxptr[8]  = mxCreateString (U->header->title);
+	mxptr[9]  = mxCreateString (U->header->remark);
+	mxptr[10]  = mxCreateString (U->header->command);
+	mxptr[11] = mxCreateString ("float32");
+	mxptr[12] = mxCreateString (U->header->x_units);
+	mxptr[13] = mxCreateString (U->header->y_units);
+	mxptr[14] = mxCreateString (U->units);
+	mxptr[15] = mxCreateString (U->header->z_units);
+	mxptr[16] = (U->header->mem_layout[0]) ? mxCreateString(U->header->mem_layout) : mxCreateString ("TCB");
+	mxptr[17] = mxCreateString (U->header->ProjRefPROJ4);
+	mxptr[18] = mxCreateString (U->header->ProjRefWKT);
+
+	d = mxGetPr (mxptr[4]);	/* Range */
+	for (k = 0; k < 4; k++) d[k] = U->header->wesn[k];
+	d[4] = U->z_range[0];	d[5] = U->z_range[1];
+	d[6] = U->header->z_min;	d[7] = U->header->z_max;
+
+	d = mxGetPr (mxptr[5]);	/* Increments */
+	for (k = 0; k < 2; k++) d[k] = U->header->inc[k];
+	d[2] = U->z_inc;
+
+	/* Load the real grd array into a float MATLAB array by transposing
+           from padded GMT grd format to unpadded MATLAB format */
+	f = mxGetData (mxptr[0]);
+	for (layer = 0; layer < U->header->n_bands; layer++) {
+		for (row = 0; row < U->header->n_rows; row++) {
+			for (col = 0; col < U->header->n_columns; col++) {
+				gmt_ij = GMT_IJP (U->header, row, col) + offset;
+				f[MEXU_IJK(U,layer,row,col)] = U->data[gmt_ij];
+			}
+		}
+		offset += U->header->size;
+	}
+
+	/* Also return the convenient x and y arrays */
+	U_x = GMT_Get_Coord (API, GMT_IS_GRID, GMT_X, U);	/* Get array of x coordinates */
+	U_y = GMT_Get_Coord (API, GMT_IS_GRID, GMT_Y, U);	/* Get array of y coordinates */
+	x = mxGetData (mxptr[1]);
+	y = mxGetData (mxptr[2]);
+	z = mxGetData (mxptr[3]);
+	memcpy (z, U->z, U->header->n_bands  * sizeof (double));
+	memcpy (x, U->x, U->header->n_columns * sizeof (double));
+	for (k = 0; k < U->header->n_rows; k++)
+		y[U->header->n_rows-1-k] = U->y[k];	/* Must reverse the y-array */
+	for (k = 0; k < N_MEX_FIELDNAMES_CUBE; k++)
+		mxSetField (U_struct, 0, GMTMEX_fieldname_cube[k], mxptr[k]);
+	return (U_struct);
 }
 
 static void *gmtmex_get_dataset (void *API, struct GMT_DATASET *D) {
@@ -685,6 +796,191 @@ static void *gmtmex_get_image (void *API, struct GMT_IMAGE *I) {
 		if (mxptr[k]) mxSetField (I_struct, 0, gmtmex_fieldname_image[k], mxptr[k]);
 	}
 	return (I_struct);
+}
+
+static struct GMT_CUBE *gmtmex_cube_init (void *API, unsigned int direction, unsigned int module_input, const mxArray *ptr) {
+	/* Used to Create an empty Cube container to hold a GMT cube.
+ 	 * If direction is GMT_IN then we are given a MATLAB cube and can determine its size, etc.
+	 * If direction is GMT_OUT then we allocate an empty GMT cube as a destination. */
+	unsigned int row, col, layer;
+	uint64_t gmt_ij, offset = 0;
+	struct GMT_CUBE *U = NULL;
+
+	if (direction == GMT_IN) {	/* Dimensions are known from the input pointer */
+		unsigned int registration, flag = (module_input) ? GMT_VIA_MODULE_INPUT : 0;
+		mxArray *mx_ptr = NULL, *mxCube = NULL;
+
+		if (mxIsEmpty (ptr))
+			mexErrMsgTxt ("gmtmex_cube_init: The input that was supposed to contain the Cube, is empty\n");
+
+		if (mxIsStruct(ptr)) {	/* Passed a regular MEX Cube structure */
+			double *inc = NULL, *range = NULL, *z = NULL, *reg = NULL;
+			unsigned int pad = (unsigned int)GMT_NOTSET;
+			uint64_t *this_dim = NULL, dims[3] = {0, 0, 0};
+			char x_unit[GMT_GRID_VARNAME_LEN80] = { "" }, y_unit[GMT_GRID_VARNAME_LEN80] = { "" },
+			     z_unit[GMT_GRID_VARNAME_LEN80] = { "" }, v_unit[GMT_GRID_VARNAME_LEN80] = { "" }, layout[3];
+			mx_ptr = mxGetField (ptr, 0, "inc");
+			if (mx_ptr == NULL)
+				mexErrMsgTxt ("gmtmex_cube_init: Could not find inc array with Cube increments\n");
+			inc = mxGetData (mx_ptr);
+
+			mx_ptr = mxGetField (ptr, 0, "range");
+			if (mx_ptr == NULL)
+				mexErrMsgTxt ("gmtmex_cube_init: Could not find range array for Cube range\n");
+			range = mxGetData (mx_ptr);
+
+			mxCube = mxGetField(ptr, 0, "v");
+			if (mxCube == NULL)
+				mexErrMsgTxt ("gmtmex_cube_init: Could not find data array for Cube\n");
+			if (!mxIsSingle(mxCube) && !mxIsDouble(mxCube))
+				mexErrMsgTxt ("gmtmex_cube_init: data array must be either single or double.\n");
+
+			mx_ptr = mxGetField (ptr, 0, "registration");
+			if (mx_ptr == NULL)
+				mexErrMsgTxt ("gmtmex_cube_init: Could not find registration array for Cube registration\n");
+			reg = mxGetData (mx_ptr);
+			registration = (unsigned int)lrint(reg[0]);
+
+
+			mx_ptr = mxGetField(ptr, 0, "pad");
+			if (mx_ptr != NULL) {
+				double *dpad = mxGetData(mx_ptr);
+				pad = (unsigned int)dpad[0];
+				if (pad > 2)
+					mexPrintf("gmtmex_cube_init:  This pad value (%d) is very probably wrong.\n");
+			}
+
+			if (inc[2] == 0.0) {	/* Non-equidistant cube layering, must allocate based on dimensions */
+				mexPrintf("gmtmex_cube_init:  Detected non-equidistant z-spacing.\n");
+				if ((mx_ptr = mxGetField (ptr, 0, "z")) == NULL)
+					mexErrMsgTxt ("gmtmex_cube_init: Could not find z array for Cube z-nodes\n");
+				dims[2] = mxGetN(mx_ptr);	/* Number of output levels */
+				this_dim = dims;	/* Pointer to the dims instead of NULL */
+				z = mxGetData (mx_ptr);	/* Get the non-equidistant z nodes */
+			}
+			if ((U = GMT_Create_Data (API, GMT_IS_CUBE|flag, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA,
+			                          this_dim, range, inc, registration, pad, NULL)) == NULL)
+				mexErrMsgTxt ("gmtmex_cube_init: Failure to alloc GMT source Cube for input\n");
+
+			if (this_dim) {	/* If not equidistant we must duplicate the level array into the Cube manually */
+				if (U->z == NULL && GMT_Put_Levels (API, U, z, dims[2]))
+					mexErrMsgTxt ("gmtmex_cube_init: Failure to put non-equidistant z-nodes into the cube structure\n");
+			}
+
+			U->z_range[0] = range[4];
+			U->z_range[1] = range[5];
+			U->header->z_min = range[6];
+			U->header->z_max = range[7];
+
+			U->header->registration = registration;
+
+			mx_ptr = mxGetField (ptr, 0, "nodata");
+			if (mx_ptr != NULL)
+				U->header->nan_value = *(float *)mxGetData (mx_ptr);
+
+			mx_ptr = mxGetField (ptr, 0, "proj4");
+			if (mx_ptr != NULL && mxGetN(mx_ptr) > 6) {		/* A true proj4 string will have at least this length */
+				char *str = malloc(mxGetN(mx_ptr) + 1);
+				mxGetString(mx_ptr, str, (mwSize)mxGetN(mx_ptr) + 1);
+				U->header->ProjRefPROJ4 = GMT_Duplicate_String (API, str);
+				free (str);
+			}
+			mx_ptr = mxGetField (ptr, 0, "wkt");
+			if (mx_ptr != NULL && mxGetN(mx_ptr) > 20) {	/* A true WKT string will have more than this length */
+				char *str = malloc(mxGetN(mx_ptr) + 1);
+				mxGetString(mx_ptr, str, (mwSize)mxGetN(mx_ptr) + 1);
+				U->header->ProjRefWKT = GMT_Duplicate_String (API, str);
+				free (str);
+			}
+			mx_ptr = mxGetField (ptr, 0, "title");
+			if (mx_ptr != NULL) {
+				char *str = malloc(mxGetN(mx_ptr) + 1);
+				mxGetString(mx_ptr, str, (mwSize)mxGetN(mx_ptr) + 1);
+				strncpy(U->header->title, str, GMT_GRID_VARNAME_LEN80 - 1);
+				free (str);
+			}
+			mx_ptr = mxGetField (ptr, 0, "command");
+			if (mx_ptr != NULL) {
+				char *str = malloc(mxGetN(mx_ptr) + 1);
+				mxGetString(mx_ptr, str, (mwSize)mxGetN(mx_ptr) + 1);
+				strncpy(U->header->command, str, GMT_GRID_COMMAND_LEN320 - 1);
+				free (str);
+			}
+			mx_ptr = mxGetField (ptr, 0, "comment");
+			if (mx_ptr != NULL) {
+				char *str = malloc(mxGetN(mx_ptr)+2);
+				mxGetString(mx_ptr, str, (mwSize)mxGetN(mx_ptr) + 1);
+				strncpy(U->header->remark, str, GMT_GRID_REMARK_LEN160 - 1);
+				free (str);
+			}
+			mx_ptr = mxGetField (ptr, 0, "x_unit");
+			if (mx_ptr != NULL) {
+				mxGetString(mx_ptr, x_unit, (mwSize)mxGetN(mx_ptr) + 1);
+				strncpy(U->header->x_units, x_unit, GMT_GRID_VARNAME_LEN80 - 1);
+			}
+			mx_ptr = mxGetField (ptr, 0, "y_unit");
+			if (mx_ptr != NULL) {
+				mxGetString(mx_ptr, y_unit, (mwSize)mxGetN(mx_ptr) + 1);
+				strncpy(U->header->y_units, y_unit, GMT_GRID_VARNAME_LEN80 - 1);
+			}
+			mx_ptr = mxGetField (ptr, 0, "z_unit");
+			if (mx_ptr != NULL) {
+				mxGetString(mx_ptr, z_unit, (mwSize)mxGetN(mx_ptr) + 1);
+				strncpy(U->units, z_unit, GMT_GRID_VARNAME_LEN80 - 1);
+			}
+			mx_ptr = mxGetField (ptr, 0, "v_unit");
+			if (mx_ptr != NULL) {
+				mxGetString(mx_ptr, v_unit, (mwSize)mxGetN(mx_ptr) + 1);
+				strncpy(U->header->z_units, z_unit, GMT_GRID_VARNAME_LEN80 - 1);
+			}
+			mx_ptr = mxGetField (ptr, 0, "layout");
+			if (mx_ptr != NULL) {
+				mxGetString(mx_ptr, layout, (mwSize)mxGetN(mx_ptr) + 1);
+				strncpy(U->header->mem_layout, layout, 3);
+			}
+			else
+				strncpy(U->header->mem_layout, "TRS", 3);
+		}
+
+		if (mxIsSingle(mxCube)) {
+			float *f4 = mxGetData(mxCube);
+			if (f4 == NULL)
+				mexErrMsgTxt("gmtmex_cube_init: Cube pointer is NULL where it absolutely could not be.");
+			for (layer = 0; layer < U->header->n_bands; layer++) {
+				for (row = 0; row < U->header->n_rows; row++) {
+					for (col = 0; col < U->header->n_columns; col++) {
+						gmt_ij = GMT_IJP (U->header, row, col) + offset;
+						U->data[gmt_ij] = f4[MEXU_IJK(U,layer,row,col)];
+					}
+				}
+				offset += U->header->size;
+			}
+		}
+		else {
+			double *f8 = mxGetData(mxCube);
+			if (f8 == NULL)
+				mexErrMsgTxt("gmtmex_cube_init: Cube pointer is NULL where it absolutely could not be.");
+			for (layer = 0; layer < U->header->n_bands; layer++) {
+				for (row = 0; row < U->header->n_rows; row++) {
+					for (col = 0; col < U->header->n_columns; col++) {
+						gmt_ij = GMT_IJP (U->header, row, col) + offset;
+						U->data[gmt_ij] = (float)f8[MEXU_IJK(U,layer,row,col)];
+					}
+				}
+				offset += U->header->size;
+			}
+		}
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtmex_cube_init: Allocated GMT Cube %lx\n", (long)U);
+		GMT_Report (API, GMT_MSG_DEBUG,
+		            "gmtmex_cube_init: Registered GMT Grid array %lx via memory reference from MATLAB\n",
+		            (long)U->data);
+	}
+	else {	/* Just allocate an empty container to hold an output grid (signal this by passing 0s and NULLs [mode == GMT_IS_OUTPUT from 5.4]) */
+		if ((U = GMT_Create_Data (API, GMT_IS_CUBE, GMT_IS_VOLUME, GMT_IS_OUTPUT,
+		                          NULL, NULL, NULL, 0, 0, NULL)) == NULL)
+			mexErrMsgTxt ("gmtmex_cube_init: Failure to alloc GMT blank Cube container for holding output cube\n");
+	}
+	return (U);
 }
 
 static struct GMT_GRID *gmtmex_grid_init (void *API, unsigned int direction, unsigned int module_input, const mxArray *ptr) {
@@ -1422,7 +1718,9 @@ static char gmtmex_objecttype (const mxArray *ptr) {
 	mxArray *mx_ptr = NULL;
 	if (mxIsEmpty (ptr))
 		mexErrMsgTxt ("gmtmex_objecttype: Pointer is empty\n");
-	if (mxIsStruct (ptr)) {	/* This means either a dataset, grid, image, cpt, or PS, so must check for fields */
+	if (mxIsStruct (ptr)) {	/* This means either a cube, dataset, grid, image, cpt, or PS, so must check for fields */
+		mx_ptr = mxGetField (ptr, 0, "v_unit");
+		if (mx_ptr) return 'u';
 		mx_ptr = mxGetField (ptr, 0, "data");
 		if (mx_ptr) return 'd';
 		mx_ptr = mxGetField (ptr, 0, "postscript");
@@ -1447,6 +1745,10 @@ static void gmtmex_Set_Object (void *API, struct GMT_RESOURCE *X, const mxArray 
 	unsigned int module_input = (X->option->option == GMT_OPT_INFILE), actual_family = X->family;
 
 	switch (X->family) {
+		case GMT_IS_CUBE:	/* Get a cube from Matlab or a dummy one to hold GMT output */
+			X->object = gmtmex_cube_init (API, X->direction, module_input, ptr);
+			GMT_Report (API, GMT_MSG_DEBUG, "gmtmex_Set_Object: Got Cube\n");
+			break;
 		case GMT_IS_GRID:	/* Get a grid from Matlab or a dummy one to hold GMT output */
 			X->object = gmtmex_grid_init (API, X->direction, module_input, ptr);
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtmex_Set_Object: Got Grid\n");
@@ -1485,6 +1787,9 @@ static void *gmtmex_Get_Object (void *API, struct GMT_RESOURCE *X) {
 	if ((X->object = GMT_Read_VirtualFile (API, X->name)) == NULL && X->family != GMT_IS_DATASET)
 		mexErrMsgTxt ("GMT: Error reading virtual file from GMT\n");
 	switch (X->family) {	/* Determine what container we got */
+		case GMT_IS_CUBE:	/* A GMT cube; make it the pos'th output item */
+			ptr = gmtmex_get_cube (API, X->object);
+			break;
 		case GMT_IS_GRID:	/* A GMT grid; make it the pos'th output item */
 			ptr = gmtmex_get_grid (API, X->object);
 			break;
@@ -1542,7 +1847,7 @@ static void usage (int nlhs, int nrhs) {
 	if (nrhs == 0) {	/* No arguments at all results in the GMT banner message */
 		mexPrintf("\nGMT - The Generic Mapping Tools, %s API, Version %d.%d.%d\n",
 		          MEX_PROG, GMTMEX_MAJOR_VERSION, GMTMEX_MINOR_VERSION, GMTMEX_PATCH_VERSION);
-		mexPrintf("Copyright 1991-2018 Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n");
+		mexPrintf("Copyright 1991-2021 Paul Wessel, Walter H. F. Smith, R. Scharroo, J. Luis, and F. Wobbe\n\n");
 		mexPrintf("This program comes with NO WARRANTY, to the extent permitted by law.\n");
 		mexPrintf("You may redistribute copies of this program under the terms of the\n");
 		mexPrintf("GNU Lesser General Public License.\n");
@@ -1562,7 +1867,7 @@ static void *Initiate_Session (unsigned int verbose) {
 	/* Initializing new GMT session with a MATLAB-acceptable replacement for the printf function */
 	/* For debugging with verbose we pass the specified verbose shifted by 10 bits - this is decoded in API */
 	if ((API = GMT_Create_Session (MEX_PROG, 2U, (verbose << 10) + GMT_SESSION_NOEXIT + GMT_SESSION_EXTERNAL +
-	                               GMT_SESSION_COLMAJOR, gmtmex_print_func)) == NULL)
+	                               GMT_SESSION_COLMAJOR, GMTMEX_print_func)) == NULL)
 		mexErrMsgTxt ("GMT: Failure to create new GMT session\n");
 
 #ifndef SINGLE_SESSION
@@ -1579,20 +1884,23 @@ static void *alloc_default_plhs (void *API, struct GMT_RESOURCE *X) {
 	*/
 	void *ptr = NULL;
 	switch (X->family) {
+		case GMT_IS_CUBE:
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CUBE, GMTMEX_fieldname_cube);
+			break;
 		case GMT_IS_GRID:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_GRID, gmtmex_fieldname_grid);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_GRID, GMTMEX_fieldname_grid);
 			break;
 		case GMT_IS_IMAGE:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_IMAGE, gmtmex_fieldname_image);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_IMAGE, GMTMEX_fieldname_image);
 			break;
 		case GMT_IS_DATASET:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, gmtmex_fieldname_dataset);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_DATASET, GMTMEX_fieldname_dataset);
 			break;
 		case GMT_IS_PALETTE:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CPT, gmtmex_fieldname_cpt);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_CPT, GMTMEX_fieldname_cpt);
 			break;
 		case GMT_IS_POSTSCRIPT:
-			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_PS, gmtmex_fieldname_ps);
+			ptr = (void *)mxCreateStructMatrix (0, 0, N_MEX_FIELDNAMES_PS, GMTMEX_fieldname_ps);
 			break;
 		default:
 			break;
@@ -1600,10 +1908,7 @@ static void *alloc_default_plhs (void *API, struct GMT_RESOURCE *X) {
 	return ptr;
 }
 
-/* This is the function that is called when we type gmt in MATLAB/Octave.
- * It is the only function experted by the GMT API library.
- */
-
+/* This is the function that is called when we type gmt in MATLAB/Octave */
 void GMT_mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]) {
 	int status = 0;                 /* Status code from GMT API */
 	int n_in_objects = 0;           /* Number of input objects passed to module */
@@ -1753,6 +2058,7 @@ void GMT_mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
 		if (cmd[k]) opt_args = &cmd[k];
 	}
 
+
 	/* See if info about installation is required */
 	if (!strcmp(module, "gmt")) {
 		char t[256] = {""};
@@ -1885,7 +2191,10 @@ void GMT_mexFunction (int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[]
 				if (X[kk].object == ppp) X[kk].object = NULL;
 		}
 	}
+#if GMT_MAJOR_VERSION == 6 && GMT_MINOR_VERSION > 1
+	/* Before we just let the memory leak... */
 	GMT_Free (API, &X);
+#endif
 
 	/* 9. Destroy linked option list */
 
