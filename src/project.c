@@ -588,6 +588,8 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 	                                 "Option -W: w_min must be < w_max\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active + Ctrl->E.active + Ctrl->T.active) > 1,
 	                                 "Specify only one of -A, -E, and -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->T.active,
+	                                 "Option -T: Cannot be used with -N; specify using -E or -A instead\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->C.x == Ctrl->E.x) && (Ctrl->C.y == Ctrl->E.y),
 	                                 "Option -E: Second point must differ from origin!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !(Ctrl->E.active || Ctrl->Z.active),
