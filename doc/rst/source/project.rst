@@ -148,7 +148,7 @@ Optional Arguments
     - Optionally, append **+c** when using |-T| to calculate the colatitude that will lead to the small circle
       going through the center *cx*/*cy*.
     - Optionally, append **+h** to report the position of the pole as part of the segment header when using |-T|
-      [Default is no header]
+      [Default is no header].
 
 .. _-L:
 
@@ -199,7 +199,7 @@ Optional Arguments
     and |-G| (sets the distance increment). **Note**: For the Cartesian ellipse (which requires |-N|), we expect
     *direction* counter-clockwise from the horizontal instead of an *azimuth*. The following modifiers are supported:
 
-    - Append **+e** to adjust the increment set via |-G| so that the the ellipse has equal distance increments [Default
+    - Append **+e** to adjust the increment set via |-G| so that the ellipse has equal distance increments [Default
       uses the given increment and closes the ellipse].
     - Append **+n** to set a specific number of unique equidistant points via |-G|. For degenerate ellipses you can
       just supply a single *diameter* instead.  A geographic diameter may be specified in any desired unit other than
