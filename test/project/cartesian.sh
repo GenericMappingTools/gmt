@@ -59,7 +59,7 @@ for az in 30 135 200 290 ; do
 		gmt pstext -R -J -O -K -F+f7p,white -Xa$xpos -Ya$ypos >> $ps <<< "0 1.8 y"
 		(echo "$x $y"; cut -f3,4 tt.d) | gmt psxy -R -J -O -K -W0.5p,- -Xa$xpos -Ya$ypos >> $ps
 		echo "$x $y" | gmt psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -Gblack >> $ps
-		cut -f3,4 tt.d | gmt psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -Gred >> $ps
+		cut -f3,4 tt.d | gmt psxy -R -J -O -K -Xa$xpos -Ya$ypos -Sc0.075i -W0.5p,black -Gred >> $ps
 		printf "0 2 [%s,%s] (%.2f,%.2f) (%.2f,%.2f)\n" $x $y `cat tt.d` | \
 			gmt pstext -R -J -F+f8p+jCB -O -K -Xa$xpos -Ya$ypos -N -D0/0.2i >> $ps
 		gmt pstext -R -J -O -K -Xa$xpos -Ya$ypos -N -D-0.05i/0.05i -Gwhite -W -F+f8p+jBR >> $ps <<< "2 -2 @~a@~ = $az@."
