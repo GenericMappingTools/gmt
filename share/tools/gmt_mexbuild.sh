@@ -66,6 +66,7 @@ cp -f ${BUNDLE_RESOURCES}/share/tools/gmt.m ${BUNDLE_RESOURCES}/bin
 # 8. Update the gmtmex plugin to use rpath also
 version=$(gmt --version | awk -Fr '{print $1}')	# Skip trailing stuff like rc1
 install_name_tool -change @executable_path/../lib/libgmt.${version}.dylib @rpath/libgmt.${version}.dylib ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64
+install_name_tool -add_rpath ${BUNDLE_RESOURCES}/lib ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64
 # 9. Clean up and we are done
 rm -rf /tmp/gmtmexinstall
 printf "done\n" >&2
