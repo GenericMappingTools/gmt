@@ -11,7 +11,7 @@
 # 0. Check if already installed
 if [ -f ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64 ]; then
 	printf "gmt_mexbuild.sh: GMT/MEX toolbox already installed on this computer.\n" >&2
-	printf "gmt_mexbuild.sh: To reinstall you must first remove ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64.\n" >&2
+	printf "gmt_mexbuild.sh: To reinstall you must first remove this file:\n${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64.\n" >&2
 	exit 1
 fi
 
@@ -29,10 +29,10 @@ if ! [ -x "$(command -v xcrun)" ]; then
 fi
 
 printf "\ngmt_mexbuild.sh: Found most recent MATLAB application: %s\n" ${MATLAB_VERSION} >&2
-printf "\ngmt_mexbuild.sh: Will build and place the GMT/MEX toolbox in %s.\n" ${BUNDLE_RESOURCES}/bin >&2
+printf "\ngmt_mexbuild.sh: Will build and place the GMT/MEX toolbox in:\n%s\n" ${BUNDLE_RESOURCES}/bin >&2
 # 3. If use does not have write permission, explain they must use sudo
 if [ ! -w ${BUNDLE_RESOURCES} ]; then
-	printf "You must have sudo privileges on this computer.\n\nContinue? (y/n) [y]:" >&2
+	printf "You must have sudo privileges on this computer to complete this installation.\n\nContinue? (y/n) [y]:" >&2
 	read answer
 	if [ "X$answer" = "Xn" ]; then
 		exit 0
@@ -56,19 +56,22 @@ while read file; do
 done < /tmp/gmtmexinstall/lib.lis
 sh /tmp/gmtmexinstall/mexjob.sh
 
-# 6. Update the gmt executable to use rpath also
+# 6. Update the plugin to use rpath
+install_name_tool -add_rpath ${BUNDLE_RESOURCES}/lib ${BUNDLE_RESOURCES}/lib/gmt/plugins/supplements.so
+
+# 7. Update the gmt executable to use rpath also
 install_name_tool -add_rpath ${BUNDLE_RESOURCES}/lib ${BUNDLE_RESOURCES}/bin/gmt
 
-# 7. Build the gmtmex executable
+# 8. Build the gmtmex executable
 type=$(uname -m)
 xcrun clang -I${BUNDLE_RESOURCES}/include/gmt -I/Applications/${MATLAB_VERSION}/extern/include -m64 -fPIC -fno-strict-aliasing -std=c99 -DGMT_MATLAB -c ${BUNDLE_RESOURCES}/share/tools/gmtmex.c -o /tmp/gmtmexinstall/gmtmex.o
 xcrun clang -undefined error -arch ${type} -bundle /tmp/gmtmexinstall/gmtmex.o -L${BUNDLE_RESOURCES}/lib -lgmt -L/Applications/${MATLAB_VERSION}/bin/maci64 -lmx -lmex -o ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64
 cp -f ${BUNDLE_RESOURCES}/share/tools/gmt.m ${BUNDLE_RESOURCES}/bin
-# 8. Update the gmtmex plugin to use rpath also
+# 9. Update the gmtmex plugin to use rpath also
 version=$(gmt --version | awk -Fr '{print $1}')	# Skip trailing stuff like rc1
 install_name_tool -change @executable_path/../lib/libgmt.${version}.dylib @rpath/libgmt.${version}.dylib ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64
 install_name_tool -add_rpath ${BUNDLE_RESOURCES}/lib ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64
-# 9. Clean up and we are done
+# 10. Clean up and we are done
 rm -rf /tmp/gmtmexinstall
 printf "done\n" >&2
 printf "gmt_mexbuild.sh: You must add this path to your MATLAB path: %s\n" ${BUNDLE_RESOURCES}/bin >&2
