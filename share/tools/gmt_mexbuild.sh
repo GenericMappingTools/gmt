@@ -43,6 +43,7 @@ printf "\ngmt_mexbuild.sh: Working..." >&2
 # 4. Make a listing of all shared libraries but skip symbolic links
 mkdir -p /tmp/gmtmexinstall
 find ${BUNDLE_RESOURCES}/lib -name '*.dylib' > /tmp/gmtmexinstall/raw.lis
+find ${BUNDLE_RESOURCES}/lib -name '*.so'   >> /tmp/gmtmexinstall/raw.lis
 while read file; do
 	if [ ! -L $file ]; then	# Skipping symbolic links
 		echo $file >> /tmp/gmtmexinstall/lib.lis
