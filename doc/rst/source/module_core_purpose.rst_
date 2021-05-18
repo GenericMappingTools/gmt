@@ -26,7 +26,7 @@
 
 .. |gmt2kml_purpose| replace:: Convert GMT data table to Google Earth KML file
 
-.. |gmtbinstats_purpose| replace:: Bin data and determine statistics per bin
+.. |gmtbinstats_purpose| replace:: Bin spatial data and determine statistics per bin
 
 .. |gmtconnect_purpose| replace:: Connect individual lines whose end points match within tolerance
 
