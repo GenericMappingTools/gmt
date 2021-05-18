@@ -286,18 +286,19 @@ GMT_LOCAL void project_sphere_setup (struct GMT_CTRL *GMT, double alat, double a
 	gmt_normalize3v (GMT, c);
 }
 
-GMT_LOCAL void project_flat_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
+GMT_LOCAL void project_flat_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set, bool azim_set) {
 	/* Sets up stuff for rotation of Cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
 	   Output is the negative Cartesian azimuth in degrees.
 	   Latitudes and longitudes are in degrees. */
 
 	if (two_pts)
-		*azim = 90.0 - d_atan2d (blat - alat, blon - alon);
+		*azim = d_atan2d (blat - alat, blon - alon);
 	else if (pole_set)
-		*azim = 180.0 - d_atan2d (plat - alat, plon - alon);
+		*azim = d_atan2d (plat - alat, plon - alon);
+	else if (azim_set)
+		*azim = 90 - *azim;
 
-	*azim = -(*azim);
 	e[0] = e[3] = cosd (*azim);
 	e[1] = sind (*azim);
 	e[2] = -e[1];
@@ -803,7 +804,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Flat Earth mode */
 		theta = Ctrl->A.azimuth;
-		project_flat_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active);
+		project_flat_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active, Ctrl->A.active);
 		/* Azimuth (theta) is now Cartesian in degrees */
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
@@ -965,7 +966,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->N.active) {
-			sincosd (90.0 + theta, &sin_theta, &cos_theta);
+			sincosd (theta, &sin_theta, &cos_theta);
 			for (rec = 0; rec < P.n_used; rec++) {
 				p_data[rec].a[4] = Ctrl->C.x + p_data[rec].a[2] * cos_theta;
 				p_data[rec].a[5] = Ctrl->C.y + p_data[rec].a[2] * sin_theta;
