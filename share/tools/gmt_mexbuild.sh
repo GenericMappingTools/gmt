@@ -74,4 +74,4 @@ install_name_tool -add_rpath ${BUNDLE_RESOURCES}/lib ${BUNDLE_RESOURCES}/bin/gmt
 # 10. Clean up and we are done
 rm -rf /tmp/gmtmexinstall
 printf "done\n" >&2
-printf "gmt_mexbuild.sh: You must add this path to your MATLAB path: %s\n" ${BUNDLE_RESOURCES}/bin >&2
+printf "gmt_mexbuild.sh: You must add this path to your MATLAB path:\n%s\n" ${BUNDLE_RESOURCES}/bin >&2
