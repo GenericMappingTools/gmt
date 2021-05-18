@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.1.0_63e3a49_2020.02.16 [64-bit] Document from pstext
+%%Title: GMT v6.2.0_0a81434_2021.05.17 [64-bit] Document from pstext
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Feb 16 20:08:25 2020
+%%CreationDate: Tue May 18 13:00:44 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,9 +112,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +255,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +288,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +338,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -554,6 +568,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -568,7 +585,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -638,6 +663,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -675,7 +714,7 @@ O0
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 10200 0 D
@@ -700,9 +739,9 @@ O0
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -733,8 +772,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -742,8 +782,8 @@ N 0 1800 M 0 -1800 D S
 N 0 0 M -83 0 D S
 N 0 900 M -83 0 D S
 N 0 1800 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-2) sw mx
@@ -778,8 +818,8 @@ N 0 0 M 1800 0 D S
 N 0 0 M 0 -83 D S
 N 900 0 M 0 -83 D S
 N 1800 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 (-2) sh mx
 (0) sh mx
 (2) sh mx
@@ -804,6 +844,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -900 -1500 TM
 0 A
@@ -817,7 +858,7 @@ O0
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -826,8 +867,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 60 90 900 900 Sw
 U
@@ -845,7 +886,8 @@ O0
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -855,15 +897,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-1804 378 M
--4 2 D
--1800 1040 D
--4 2 D S
 378 -4 M
 2 4 D
 1040 1800 D
 2 4 D S
+1804 378 M
+-4 2 D
+-1800 1040 D
+-4 2 D S
 PSL_cliprestore
+U
 %%EndObject
 -900 -1500 TM
 0 A
@@ -877,7 +920,7 @@ O0
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -886,8 +929,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -917,7 +960,7 @@ O0
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -926,8 +969,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -957,7 +1000,7 @@ O0
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -982,7 +1025,7 @@ O0
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1007,7 +1050,7 @@ O0
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1016,8 +1059,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -1047,7 +1090,7 @@ O0
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1056,8 +1099,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -1085,7 +1128,7 @@ O0
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1111,7 +1154,7 @@ O0
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1137,7 +1180,8 @@ O0
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -1148,9 +1192,10 @@ clipsave
 P
 PSL_clip N
 1665 1350 M
--386 -669 D
+-379 219 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -900 -1500 TM
@@ -1165,7 +1210,7 @@ O0
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1173,8 +1218,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 1665 1350 Sc
 U
@@ -1192,7 +1237,7 @@ O0
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1200,10 +1245,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1279 681 Sc
+45 1286 1569 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -1219,10 +1264,10 @@ O0
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[1.7,1\] \(0.97,1.72\) \(0.84,­0.49\)) bc Z
+(\[1.7,1\] \(1.72,­0.97\) \(0.86,1.49\)) bc Z
 %%EndObject
 -900 -1500 TM
 0 A
@@ -1236,7 +1281,7 @@ O0
 %%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -1265,9 +1310,9 @@ O0
 %%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -1298,8 +1343,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -1327,8 +1373,8 @@ N 0 0 M 1800 0 D S
 N 0 0 M 0 -83 D S
 N 900 0 M 0 -83 D S
 N 1800 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-2) sh mx
@@ -1355,6 +1401,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -3180 -1500 TM
 0 A
@@ -1368,7 +1415,7 @@ O0
 %%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1377,8 +1424,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 60 90 900 900 Sw
 U
@@ -1396,7 +1443,8 @@ O0
 %%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -1406,15 +1454,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-1804 378 M
--4 2 D
--1800 1040 D
--4 2 D S
 378 -4 M
 2 4 D
 1040 1800 D
 2 4 D S
+1804 378 M
+-4 2 D
+-1800 1040 D
+-4 2 D S
 PSL_cliprestore
+U
 %%EndObject
 -3180 -1500 TM
 0 A
@@ -1428,7 +1477,7 @@ O0
 %%BeginObject PSL_Layer_21
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1437,8 +1486,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -1468,7 +1517,7 @@ O0
 %%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1477,8 +1526,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -1508,7 +1557,7 @@ O0
 %%BeginObject PSL_Layer_23
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1533,7 +1582,7 @@ O0
 %%BeginObject PSL_Layer_24
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1558,7 +1607,7 @@ O0
 %%BeginObject PSL_Layer_25
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1567,8 +1616,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -1598,7 +1647,7 @@ O0
 %%BeginObject PSL_Layer_26
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1607,8 +1656,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -1636,7 +1685,7 @@ O0
 %%BeginObject PSL_Layer_27
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1662,7 +1711,7 @@ O0
 %%BeginObject PSL_Layer_28
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1688,7 +1737,8 @@ O0
 %%BeginObject PSL_Layer_29
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -1699,9 +1749,10 @@ clipsave
 P
 PSL_clip N
 450 1575 M
--180 -311 D
+630 -364 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -3180 -1500 TM
@@ -1716,7 +1767,7 @@ O0
 %%BeginObject PSL_Layer_30
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1724,8 +1775,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 450 1575 Sc
 U
@@ -1743,7 +1794,7 @@ O0
 %%BeginObject PSL_Layer_31
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1751,10 +1802,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 270 1264 Sc
+45 1080 1211 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -1770,10 +1821,10 @@ O0
 %%BeginObject PSL_Layer_32
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[­1,1.5\] \(­1.62,0.80\) \(­1.40,0.81\)) bc Z
+(\[­1,1.5\] \(0.80,1.62\) \(0.40,0.69\)) bc Z
 %%EndObject
 -3180 -1500 TM
 0 A
@@ -1787,7 +1838,7 @@ O0
 %%BeginObject PSL_Layer_33
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -1816,9 +1867,9 @@ O0
 %%BeginObject PSL_Layer_34
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -1849,8 +1900,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -1878,8 +1930,8 @@ N 0 0 M 1800 0 D S
 N 0 0 M 0 -83 D S
 N 900 0 M 0 -83 D S
 N 1800 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-2) sh mx
@@ -1906,6 +1958,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -5460 -1500 TM
 0 A
@@ -1919,7 +1972,7 @@ O0
 %%BeginObject PSL_Layer_35
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1928,8 +1981,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 60 90 900 900 Sw
 U
@@ -1947,7 +2000,8 @@ O0
 %%BeginObject PSL_Layer_36
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -1957,15 +2011,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-1804 378 M
--4 2 D
--1800 1040 D
--4 2 D S
 378 -4 M
 2 4 D
 1040 1800 D
 2 4 D S
+1804 378 M
+-4 2 D
+-1800 1040 D
+-4 2 D S
 PSL_cliprestore
+U
 %%EndObject
 -5460 -1500 TM
 0 A
@@ -1979,7 +2034,7 @@ O0
 %%BeginObject PSL_Layer_37
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -1988,8 +2043,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -2019,7 +2074,7 @@ O0
 %%BeginObject PSL_Layer_38
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2028,8 +2083,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -2059,7 +2114,7 @@ O0
 %%BeginObject PSL_Layer_39
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2084,7 +2139,7 @@ O0
 %%BeginObject PSL_Layer_40
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2109,7 +2164,7 @@ O0
 %%BeginObject PSL_Layer_41
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2118,8 +2173,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -2149,7 +2204,7 @@ O0
 %%BeginObject PSL_Layer_42
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2158,8 +2213,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -2187,7 +2242,7 @@ O0
 %%BeginObject PSL_Layer_43
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2213,7 +2268,7 @@ O0
 %%BeginObject PSL_Layer_44
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2239,7 +2294,8 @@ O0
 %%BeginObject PSL_Layer_45
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -2250,9 +2306,10 @@ clipsave
 P
 PSL_clip N
 225 315 M
-422 731 D
+253 -146 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -5460 -1500 TM
@@ -2267,7 +2324,7 @@ O0
 %%BeginObject PSL_Layer_46
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2275,8 +2332,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 225 315 Sc
 U
@@ -2294,7 +2351,7 @@ O0
 %%BeginObject PSL_Layer_47
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2302,10 +2359,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 647 1046 Sc
+45 478 169 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -2321,10 +2378,10 @@ O0
 %%BeginObject PSL_Layer_48
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[­1.5,­1.3\] \(­0.65,­1.88\) \(­0.56,0.32\)) bc Z
+(\[­1.5,­1.3\] \(­1.88,0.65\) \(­0.94,­1.62\)) bc Z
 %%EndObject
 -5460 -1500 TM
 0 A
@@ -2338,7 +2395,7 @@ O0
 %%BeginObject PSL_Layer_49
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -2367,9 +2424,9 @@ O0
 %%BeginObject PSL_Layer_50
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -2400,8 +2457,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -2429,8 +2487,8 @@ N 0 0 M 1800 0 D S
 N 0 0 M 0 -83 D S
 N 900 0 M 0 -83 D S
 N 1800 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-2) sh mx
@@ -2457,6 +2515,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -7740 -1500 TM
 0 A
@@ -2470,7 +2529,7 @@ O0
 %%BeginObject PSL_Layer_51
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2479,8 +2538,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 60 90 900 900 Sw
 U
@@ -2498,7 +2557,8 @@ O0
 %%BeginObject PSL_Layer_52
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -2508,15 +2568,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-1804 378 M
--4 2 D
--1800 1040 D
--4 2 D S
 378 -4 M
 2 4 D
 1040 1800 D
 2 4 D S
+1804 378 M
+-4 2 D
+-1800 1040 D
+-4 2 D S
 PSL_cliprestore
+U
 %%EndObject
 -7740 -1500 TM
 0 A
@@ -2530,7 +2591,7 @@ O0
 %%BeginObject PSL_Layer_53
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2539,8 +2600,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -2570,7 +2631,7 @@ O0
 %%BeginObject PSL_Layer_54
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2579,8 +2640,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -2610,7 +2671,7 @@ O0
 %%BeginObject PSL_Layer_55
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2635,7 +2696,7 @@ O0
 %%BeginObject PSL_Layer_56
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2660,7 +2721,7 @@ O0
 %%BeginObject PSL_Layer_57
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2669,8 +2730,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -2700,7 +2761,7 @@ O0
 %%BeginObject PSL_Layer_58
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2709,8 +2770,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -2738,7 +2799,7 @@ O0
 %%BeginObject PSL_Layer_59
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2764,7 +2825,7 @@ O0
 %%BeginObject PSL_Layer_60
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2790,7 +2851,8 @@ O0
 %%BeginObject PSL_Layer_61
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -2801,9 +2863,10 @@ clipsave
 P
 PSL_clip N
 1575 675 M
--71 -124 D
+-604 349 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -7740 -1500 TM
@@ -2818,7 +2881,7 @@ O0
 %%BeginObject PSL_Layer_62
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2826,8 +2889,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 1575 675 Sc
 U
@@ -2845,7 +2908,7 @@ O0
 %%BeginObject PSL_Layer_63
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -2853,10 +2916,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1504 551 Sc
+45 971 1024 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -2872,10 +2935,10 @@ O0
 %%BeginObject PSL_Layer_64
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[1.5,­0.5\] \(1.55,0.32\) \(1.34,­0.77\)) bc Z
+(\[1.5,­0.5\] \(0.32,­1.55\) \(0.16,0.27\)) bc Z
 %%EndObject
 -7740 -1500 TM
 0 A
@@ -2889,7 +2952,7 @@ O0
 %%BeginObject PSL_Layer_65
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -2918,9 +2981,9 @@ O0
 %%BeginObject PSL_Layer_66
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -2951,8 +3014,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -2960,8 +3024,8 @@ N 0 1800 M 0 -1800 D S
 N 0 0 M -83 0 D S
 N 0 900 M -83 0 D S
 N 0 1800 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-2) sw mx
@@ -3009,6 +3073,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -900 -4200 TM
 0 A
@@ -3022,7 +3087,7 @@ O0
 %%BeginObject PSL_Layer_67
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3031,8 +3096,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -45 90 900 900 Sw
 U
@@ -3050,7 +3115,8 @@ O0
 %%BeginObject PSL_Layer_68
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -3060,15 +3126,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
--6 -6 M
-6 6 D
-1800 1800 D
-6 6 D S
 1806 -6 M
 -6 6 D
 -1800 1800 D
 -6 6 D S
+-6 -6 M
+6 6 D
+1800 1800 D
+6 6 D S
 PSL_cliprestore
+U
 %%EndObject
 -900 -4200 TM
 0 A
@@ -3082,7 +3149,7 @@ O0
 %%BeginObject PSL_Layer_69
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3091,8 +3158,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -3122,7 +3189,7 @@ O0
 %%BeginObject PSL_Layer_70
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3131,8 +3198,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -3162,7 +3229,7 @@ O0
 %%BeginObject PSL_Layer_71
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3187,7 +3254,7 @@ O0
 %%BeginObject PSL_Layer_72
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3212,7 +3279,7 @@ O0
 %%BeginObject PSL_Layer_73
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3221,8 +3288,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -3252,7 +3319,7 @@ O0
 %%BeginObject PSL_Layer_74
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3261,8 +3328,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -3290,7 +3357,7 @@ O0
 %%BeginObject PSL_Layer_75
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3316,7 +3383,7 @@ O0
 %%BeginObject PSL_Layer_76
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3342,7 +3409,8 @@ O0
 %%BeginObject PSL_Layer_77
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -3353,9 +3421,10 @@ clipsave
 P
 PSL_clip N
 1665 1350 M
--157 158 D
+-607 -608 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -900 -4200 TM
@@ -3370,7 +3439,7 @@ O0
 %%BeginObject PSL_Layer_78
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3378,8 +3447,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 1665 1350 Sc
 U
@@ -3397,7 +3466,7 @@ O0
 %%BeginObject PSL_Layer_79
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3405,10 +3474,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1508 1508 Sc
+45 1058 742 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -3424,10 +3493,10 @@ O0
 %%BeginObject PSL_Layer_80
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[1.7,1\] \(­1.91,0.49\) \(1.35,1.35\)) bc Z
+(\[1.7,1\] \(0.49,1.91\) \(0.35,­0.35\)) bc Z
 %%EndObject
 -900 -4200 TM
 0 A
@@ -3441,7 +3510,7 @@ O0
 %%BeginObject PSL_Layer_81
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -3470,9 +3539,9 @@ O0
 %%BeginObject PSL_Layer_82
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -3503,8 +3572,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -3545,6 +3615,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -3180 -4200 TM
 0 A
@@ -3558,7 +3629,7 @@ O0
 %%BeginObject PSL_Layer_83
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3567,8 +3638,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -45 90 900 900 Sw
 U
@@ -3586,7 +3657,8 @@ O0
 %%BeginObject PSL_Layer_84
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -3596,15 +3668,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
--6 -6 M
-6 6 D
-1800 1800 D
-6 6 D S
 1806 -6 M
 -6 6 D
 -1800 1800 D
 -6 6 D S
+-6 -6 M
+6 6 D
+1800 1800 D
+6 6 D S
 PSL_cliprestore
+U
 %%EndObject
 -3180 -4200 TM
 0 A
@@ -3618,7 +3691,7 @@ O0
 %%BeginObject PSL_Layer_85
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3627,8 +3700,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -3658,7 +3731,7 @@ O0
 %%BeginObject PSL_Layer_86
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3667,8 +3740,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -3698,7 +3771,7 @@ O0
 %%BeginObject PSL_Layer_87
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3723,7 +3796,7 @@ O0
 %%BeginObject PSL_Layer_88
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3748,7 +3821,7 @@ O0
 %%BeginObject PSL_Layer_89
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3757,8 +3830,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -3788,7 +3861,7 @@ O0
 %%BeginObject PSL_Layer_90
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3797,8 +3870,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -3826,7 +3899,7 @@ O0
 %%BeginObject PSL_Layer_91
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3852,7 +3925,7 @@ O0
 %%BeginObject PSL_Layer_92
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3878,7 +3951,8 @@ O0
 %%BeginObject PSL_Layer_93
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -3889,9 +3963,10 @@ clipsave
 P
 PSL_clip N
 450 1575 M
-562 -563 D
+-112 -113 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -3180 -4200 TM
@@ -3906,7 +3981,7 @@ O0
 %%BeginObject PSL_Layer_94
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3914,8 +3989,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 450 1575 Sc
 U
@@ -3933,7 +4008,7 @@ O0
 %%BeginObject PSL_Layer_95
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -3941,10 +4016,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1012 1012 Sc
+45 338 1462 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -3960,10 +4035,10 @@ O0
 %%BeginObject PSL_Layer_96
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[­1,1.5\] \(­0.35,­1.77\) \(0.25,0.25\)) bc Z
+(\[­1,1.5\] \(­1.77,0.35\) \(­1.25,1.25\)) bc Z
 %%EndObject
 -3180 -4200 TM
 0 A
@@ -3977,7 +4052,7 @@ O0
 %%BeginObject PSL_Layer_97
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -4006,9 +4081,9 @@ O0
 %%BeginObject PSL_Layer_98
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -4039,8 +4114,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -4081,6 +4157,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -5460 -4200 TM
 0 A
@@ -4094,7 +4171,7 @@ O0
 %%BeginObject PSL_Layer_99
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4103,8 +4180,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -45 90 900 900 Sw
 U
@@ -4122,7 +4199,8 @@ O0
 %%BeginObject PSL_Layer_100
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -4132,15 +4210,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
--6 -6 M
-6 6 D
-1800 1800 D
-6 6 D S
 1806 -6 M
 -6 6 D
 -1800 1800 D
 -6 6 D S
+-6 -6 M
+6 6 D
+1800 1800 D
+6 6 D S
 PSL_cliprestore
+U
 %%EndObject
 -5460 -4200 TM
 0 A
@@ -4154,7 +4233,7 @@ O0
 %%BeginObject PSL_Layer_101
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4163,8 +4242,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -4194,7 +4273,7 @@ O0
 %%BeginObject PSL_Layer_102
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4203,8 +4282,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -4234,7 +4313,7 @@ O0
 %%BeginObject PSL_Layer_103
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4259,7 +4338,7 @@ O0
 %%BeginObject PSL_Layer_104
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4284,7 +4363,7 @@ O0
 %%BeginObject PSL_Layer_105
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4293,8 +4372,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -4324,7 +4403,7 @@ O0
 %%BeginObject PSL_Layer_106
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4333,8 +4412,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -4362,7 +4441,7 @@ O0
 %%BeginObject PSL_Layer_107
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4388,7 +4467,7 @@ O0
 %%BeginObject PSL_Layer_108
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4414,7 +4493,8 @@ O0
 %%BeginObject PSL_Layer_109
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -4425,9 +4505,10 @@ clipsave
 P
 PSL_clip N
 225 315 M
-45 -45 D
+630 630 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -5460 -4200 TM
@@ -4442,7 +4523,7 @@ O0
 %%BeginObject PSL_Layer_110
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4450,8 +4531,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 225 315 Sc
 U
@@ -4469,7 +4550,7 @@ O0
 %%BeginObject PSL_Layer_111
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4477,10 +4558,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 270 270 Sc
+45 855 945 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -4496,10 +4577,10 @@ O0
 %%BeginObject PSL_Layer_112
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[­1.5,­1.3\] \(1.98,­0.14\) \(­1.40,­1.40\)) bc Z
+(\[­1.5,­1.3\] \(­0.14,­1.98\) \(­0.10,0.10\)) bc Z
 %%EndObject
 -5460 -4200 TM
 0 A
@@ -4513,7 +4594,7 @@ O0
 %%BeginObject PSL_Layer_113
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -4542,9 +4623,9 @@ O0
 %%BeginObject PSL_Layer_114
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -4575,8 +4656,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -4617,6 +4699,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -7740 -4200 TM
 0 A
@@ -4630,7 +4713,7 @@ O0
 %%BeginObject PSL_Layer_115
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4639,8 +4722,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -45 90 900 900 Sw
 U
@@ -4658,7 +4741,8 @@ O0
 %%BeginObject PSL_Layer_116
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -4668,15 +4752,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
--6 -6 M
-6 6 D
-1800 1800 D
-6 6 D S
 1806 -6 M
 -6 6 D
 -1800 1800 D
 -6 6 D S
+-6 -6 M
+6 6 D
+1800 1800 D
+6 6 D S
 PSL_cliprestore
+U
 %%EndObject
 -7740 -4200 TM
 0 A
@@ -4690,7 +4775,7 @@ O0
 %%BeginObject PSL_Layer_117
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4699,8 +4784,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -4730,7 +4815,7 @@ O0
 %%BeginObject PSL_Layer_118
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4739,8 +4824,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -4770,7 +4855,7 @@ O0
 %%BeginObject PSL_Layer_119
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4795,7 +4880,7 @@ O0
 %%BeginObject PSL_Layer_120
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4820,7 +4905,7 @@ O0
 %%BeginObject PSL_Layer_121
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4829,8 +4914,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -4860,7 +4945,7 @@ O0
 %%BeginObject PSL_Layer_122
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4869,8 +4954,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -4898,7 +4983,7 @@ O0
 %%BeginObject PSL_Layer_123
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4924,7 +5009,7 @@ O0
 %%BeginObject PSL_Layer_124
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4950,7 +5035,8 @@ O0
 %%BeginObject PSL_Layer_125
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -4961,9 +5047,10 @@ clipsave
 P
 PSL_clip N
 1575 675 M
--450 450 D
+-225 -225 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -7740 -4200 TM
@@ -4978,7 +5065,7 @@ O0
 %%BeginObject PSL_Layer_126
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -4986,8 +5073,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 1575 675 Sc
 U
@@ -5005,7 +5092,7 @@ O0
 %%BeginObject PSL_Layer_127
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5013,10 +5100,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1125 1125 Sc
+45 1350 450 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -5032,10 +5119,10 @@ O0
 %%BeginObject PSL_Layer_128
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[1.5,­0.5\] \(­0.71,1.41\) \(0.50,0.50\)) bc Z
+(\[1.5,­0.5\] \(1.41,0.71\) \(1.00,­1.00\)) bc Z
 %%EndObject
 -7740 -4200 TM
 0 A
@@ -5049,7 +5136,7 @@ O0
 %%BeginObject PSL_Layer_129
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -5078,9 +5165,9 @@ O0
 %%BeginObject PSL_Layer_130
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -5111,8 +5198,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -5120,8 +5208,8 @@ N 0 1800 M 0 -1800 D S
 N 0 0 M -83 0 D S
 N 0 900 M -83 0 D S
 N 0 1800 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-2) sw mx
@@ -5169,6 +5257,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -900 -6900 TM
 0 A
@@ -5182,7 +5271,7 @@ O0
 %%BeginObject PSL_Layer_131
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5191,8 +5280,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -110 90 900 900 Sw
 U
@@ -5210,7 +5299,8 @@ O0
 %%BeginObject PSL_Layer_132
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -5220,15 +5310,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-1803 571 M
--3 1 D
--1800 656 D
--3 1 D S
 571 -3 M
 1 3 D
 656 1800 D
 1 3 D S
+1803 571 M
+-3 1 D
+-1800 656 D
+-3 1 D S
 PSL_cliprestore
+U
 %%EndObject
 -900 -6900 TM
 0 A
@@ -5242,7 +5333,7 @@ O0
 %%BeginObject PSL_Layer_133
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5251,8 +5342,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -5282,7 +5373,7 @@ O0
 %%BeginObject PSL_Layer_134
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5291,8 +5382,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -5322,7 +5413,7 @@ O0
 %%BeginObject PSL_Layer_135
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5347,7 +5438,7 @@ O0
 %%BeginObject PSL_Layer_136
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5372,7 +5463,7 @@ O0
 %%BeginObject PSL_Layer_137
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5381,8 +5472,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -5412,7 +5503,7 @@ O0
 %%BeginObject PSL_Layer_138
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5421,8 +5512,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -5450,7 +5541,7 @@ O0
 %%BeginObject PSL_Layer_139
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5476,7 +5567,7 @@ O0
 %%BeginObject PSL_Layer_140
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5502,7 +5593,8 @@ O0
 %%BeginObject PSL_Layer_141
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -5513,9 +5605,10 @@ clipsave
 P
 PSL_clip N
 1665 1350 M
--234 -643 D
+-531 193 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -900 -6900 TM
@@ -5530,7 +5623,7 @@ O0
 %%BeginObject PSL_Layer_142
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5538,8 +5631,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 1665 1350 Sc
 U
@@ -5557,7 +5650,7 @@ O0
 %%BeginObject PSL_Layer_143
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5565,10 +5658,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1431 707 Sc
+45 1134 1543 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -5584,10 +5677,10 @@ O0
 %%BeginObject PSL_Layer_144
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[1.7,1\] \(­1.26,­1.52\) \(1.18,­0.43\)) bc Z
+(\[1.7,1\] \(­1.52,1.26\) \(0.52,1.43\)) bc Z
 %%EndObject
 -900 -6900 TM
 0 A
@@ -5601,7 +5694,7 @@ O0
 %%BeginObject PSL_Layer_145
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -5630,9 +5723,9 @@ O0
 %%BeginObject PSL_Layer_146
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -5663,8 +5756,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -5705,6 +5799,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -3180 -6900 TM
 0 A
@@ -5718,7 +5813,7 @@ O0
 %%BeginObject PSL_Layer_147
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5727,8 +5822,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -110 90 900 900 Sw
 U
@@ -5746,7 +5841,8 @@ O0
 %%BeginObject PSL_Layer_148
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -5756,15 +5852,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-1803 571 M
--3 1 D
--1800 656 D
--3 1 D S
 571 -3 M
 1 3 D
 656 1800 D
 1 3 D S
+1803 571 M
+-3 1 D
+-1800 656 D
+-3 1 D S
 PSL_cliprestore
+U
 %%EndObject
 -3180 -6900 TM
 0 A
@@ -5778,7 +5875,7 @@ O0
 %%BeginObject PSL_Layer_149
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5787,8 +5884,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -5818,7 +5915,7 @@ O0
 %%BeginObject PSL_Layer_150
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5827,8 +5924,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -5858,7 +5955,7 @@ O0
 %%BeginObject PSL_Layer_151
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5883,7 +5980,7 @@ O0
 %%BeginObject PSL_Layer_152
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5908,7 +6005,7 @@ O0
 %%BeginObject PSL_Layer_153
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5917,8 +6014,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -5948,7 +6045,7 @@ O0
 %%BeginObject PSL_Layer_154
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -5957,8 +6054,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -5986,7 +6083,7 @@ O0
 %%BeginObject PSL_Layer_155
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6012,7 +6109,7 @@ O0
 %%BeginObject PSL_Layer_156
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6038,7 +6135,8 @@ O0
 %%BeginObject PSL_Layer_157
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -6049,9 +6147,10 @@ clipsave
 P
 PSL_clip N
 450 1575 M
--164 -451 D
+614 -224 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -3180 -6900 TM
@@ -6066,7 +6165,7 @@ O0
 %%BeginObject PSL_Layer_158
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6074,8 +6173,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 450 1575 Sc
 U
@@ -6093,7 +6192,7 @@ O0
 %%BeginObject PSL_Layer_159
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6101,10 +6200,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 286 1124 Sc
+45 1064 1351 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -6120,10 +6219,10 @@ O0
 %%BeginObject PSL_Layer_160
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[­1,1.5\] \(1.45,­1.07\) \(­1.37,0.50\)) bc Z
+(\[­1,1.5\] \(­1.07,­1.45\) \(0.37,1.00\)) bc Z
 %%EndObject
 -3180 -6900 TM
 0 A
@@ -6137,7 +6236,7 @@ O0
 %%BeginObject PSL_Layer_161
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -6166,9 +6265,9 @@ O0
 %%BeginObject PSL_Layer_162
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -6199,8 +6298,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -6241,6 +6341,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -5460 -6900 TM
 0 A
@@ -6254,7 +6355,7 @@ O0
 %%BeginObject PSL_Layer_163
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6263,8 +6364,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -110 90 900 900 Sw
 U
@@ -6282,7 +6383,8 @@ O0
 %%BeginObject PSL_Layer_164
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -6292,15 +6394,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-1803 571 M
--3 1 D
--1800 656 D
--3 1 D S
 571 -3 M
 1 3 D
 656 1800 D
 1 3 D S
+1803 571 M
+-3 1 D
+-1800 656 D
+-3 1 D S
 PSL_cliprestore
+U
 %%EndObject
 -5460 -6900 TM
 0 A
@@ -6314,7 +6417,7 @@ O0
 %%BeginObject PSL_Layer_165
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6323,8 +6426,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -6354,7 +6457,7 @@ O0
 %%BeginObject PSL_Layer_166
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6363,8 +6466,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -6394,7 +6497,7 @@ O0
 %%BeginObject PSL_Layer_167
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6419,7 +6522,7 @@ O0
 %%BeginObject PSL_Layer_168
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6444,7 +6547,7 @@ O0
 %%BeginObject PSL_Layer_169
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6453,8 +6556,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -6484,7 +6587,7 @@ O0
 %%BeginObject PSL_Layer_170
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6493,8 +6596,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -6522,7 +6625,7 @@ O0
 %%BeginObject PSL_Layer_171
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6548,7 +6651,7 @@ O0
 %%BeginObject PSL_Layer_172
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6574,7 +6677,8 @@ O0
 %%BeginObject PSL_Layer_173
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -6585,9 +6689,10 @@ clipsave
 P
 PSL_clip N
 225 315 M
-267 734 D
+408 -149 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -5460 -6900 TM
@@ -6602,7 +6707,7 @@ O0
 %%BeginObject PSL_Layer_174
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6610,8 +6715,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 225 315 Sc
 U
@@ -6629,7 +6734,7 @@ O0
 %%BeginObject PSL_Layer_175
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6637,10 +6742,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 492 1049 Sc
+45 633 166 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -6656,10 +6761,10 @@ O0
 %%BeginObject PSL_Layer_176
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[­1.5,­1.3\] \(0.96,1.73\) \(­0.91,0.33\)) bc Z
+(\[­1.5,­1.3\] \(1.73,­0.96\) \(­0.59,­1.63\)) bc Z
 %%EndObject
 -5460 -6900 TM
 0 A
@@ -6673,7 +6778,7 @@ O0
 %%BeginObject PSL_Layer_177
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -6702,9 +6807,9 @@ O0
 %%BeginObject PSL_Layer_178
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -6735,8 +6840,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -6777,6 +6883,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -7740 -6900 TM
 0 A
@@ -6790,7 +6897,7 @@ O0
 %%BeginObject PSL_Layer_179
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6799,8 +6906,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -110 90 900 900 Sw
 U
@@ -6818,7 +6925,8 @@ O0
 %%BeginObject PSL_Layer_180
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -6828,15 +6936,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-1803 571 M
--3 1 D
--1800 656 D
--3 1 D S
 571 -3 M
 1 3 D
 656 1800 D
 1 3 D S
+1803 571 M
+-3 1 D
+-1800 656 D
+-3 1 D S
 PSL_cliprestore
+U
 %%EndObject
 -7740 -6900 TM
 0 A
@@ -6850,7 +6959,7 @@ O0
 %%BeginObject PSL_Layer_181
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6859,8 +6968,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -6890,7 +6999,7 @@ O0
 %%BeginObject PSL_Layer_182
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6899,8 +7008,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -6930,7 +7039,7 @@ O0
 %%BeginObject PSL_Layer_183
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6955,7 +7064,7 @@ O0
 %%BeginObject PSL_Layer_184
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6980,7 +7089,7 @@ O0
 %%BeginObject PSL_Layer_185
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -6989,8 +7098,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -7020,7 +7129,7 @@ O0
 %%BeginObject PSL_Layer_186
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7029,8 +7138,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -7058,7 +7167,7 @@ O0
 %%BeginObject PSL_Layer_187
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7084,7 +7193,7 @@ O0
 %%BeginObject PSL_Layer_188
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7110,7 +7219,8 @@ O0
 %%BeginObject PSL_Layer_189
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -7121,9 +7231,10 @@ clipsave
 P
 PSL_clip N
 1575 675 M
--7 -18 D
+-668 243 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -7740 -6900 TM
@@ -7138,7 +7249,7 @@ O0
 %%BeginObject PSL_Layer_190
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7146,8 +7257,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 1575 675 Sc
 U
@@ -7165,7 +7276,7 @@ O0
 %%BeginObject PSL_Layer_191
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7173,10 +7284,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1568 657 Sc
+45 907 918 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -7192,10 +7303,10 @@ O0
 %%BeginObject PSL_Layer_192
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[1.5,­0.5\] \(­1.58,­0.04\) \(1.49,­0.54\)) bc Z
+(\[1.5,­0.5\] \(­0.04,1.58\) \(0.01,0.04\)) bc Z
 %%EndObject
 -7740 -6900 TM
 0 A
@@ -7209,7 +7320,7 @@ O0
 %%BeginObject PSL_Layer_193
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -7238,9 +7349,9 @@ O0
 %%BeginObject PSL_Layer_194
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -7271,8 +7382,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -7280,8 +7392,8 @@ N 0 1800 M 0 -1800 D S
 N 0 0 M -83 0 D S
 N 0 900 M -83 0 D S
 N 0 1800 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (-2) sw mx
@@ -7329,6 +7441,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -900 -9600 TM
 0 A
@@ -7342,7 +7455,7 @@ O0
 %%BeginObject PSL_Layer_195
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7351,8 +7464,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -200 90 900 900 Sw
 U
@@ -7370,7 +7483,8 @@ O0
 %%BeginObject PSL_Layer_196
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -7380,15 +7494,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-571 -3 M
-1 3 D
-656 1800 D
-1 3 D S
 1803 571 M
 -3 1 D
 -1800 656 D
 -3 1 D S
+571 -3 M
+1 3 D
+656 1800 D
+1 3 D S
 PSL_cliprestore
+U
 %%EndObject
 -900 -9600 TM
 0 A
@@ -7402,7 +7517,7 @@ O0
 %%BeginObject PSL_Layer_197
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7411,8 +7526,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -7442,7 +7557,7 @@ O0
 %%BeginObject PSL_Layer_198
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7451,8 +7566,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -7482,7 +7597,7 @@ O0
 %%BeginObject PSL_Layer_199
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7507,7 +7622,7 @@ O0
 %%BeginObject PSL_Layer_200
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7532,7 +7647,7 @@ O0
 %%BeginObject PSL_Layer_201
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7541,8 +7656,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -7572,7 +7687,7 @@ O0
 %%BeginObject PSL_Layer_202
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7581,8 +7696,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -7610,7 +7725,7 @@ O0
 %%BeginObject PSL_Layer_203
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7636,7 +7751,7 @@ O0
 %%BeginObject PSL_Layer_204
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7662,7 +7777,8 @@ O0
 %%BeginObject PSL_Layer_205
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -7673,9 +7789,10 @@ clipsave
 P
 PSL_clip N
 1665 1350 M
--531 193 D
+-234 -643 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -900 -9600 TM
@@ -7690,7 +7807,7 @@ O0
 %%BeginObject PSL_Layer_206
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7698,8 +7815,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 1665 1350 Sc
 U
@@ -7717,7 +7834,7 @@ O0
 %%BeginObject PSL_Layer_207
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7725,10 +7842,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1134 1543 Sc
+45 1431 707 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -7744,10 +7861,10 @@ O0
 %%BeginObject PSL_Layer_208
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[1.7,1\] \(1.52,­1.26\) \(0.52,1.43\)) bc Z
+(\[1.7,1\] \(­1.26,­1.52\) \(1.18,­0.43\)) bc Z
 %%EndObject
 -900 -9600 TM
 0 A
@@ -7761,7 +7878,7 @@ O0
 %%BeginObject PSL_Layer_209
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -7790,9 +7907,9 @@ O0
 %%BeginObject PSL_Layer_210
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -7823,8 +7940,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -7865,6 +7983,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -3180 -9600 TM
 0 A
@@ -7878,7 +7997,7 @@ O0
 %%BeginObject PSL_Layer_211
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7887,8 +8006,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -200 90 900 900 Sw
 U
@@ -7906,7 +8025,8 @@ O0
 %%BeginObject PSL_Layer_212
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -7916,15 +8036,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-571 -3 M
-1 3 D
-656 1800 D
-1 3 D S
 1803 571 M
 -3 1 D
 -1800 656 D
 -3 1 D S
+571 -3 M
+1 3 D
+656 1800 D
+1 3 D S
 PSL_cliprestore
+U
 %%EndObject
 -3180 -9600 TM
 0 A
@@ -7938,7 +8059,7 @@ O0
 %%BeginObject PSL_Layer_213
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7947,8 +8068,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -7978,7 +8099,7 @@ O0
 %%BeginObject PSL_Layer_214
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -7987,8 +8108,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -8018,7 +8139,7 @@ O0
 %%BeginObject PSL_Layer_215
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8043,7 +8164,7 @@ O0
 %%BeginObject PSL_Layer_216
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8068,7 +8189,7 @@ O0
 %%BeginObject PSL_Layer_217
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8077,8 +8198,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -8108,7 +8229,7 @@ O0
 %%BeginObject PSL_Layer_218
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8117,8 +8238,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -8146,7 +8267,7 @@ O0
 %%BeginObject PSL_Layer_219
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8172,7 +8293,7 @@ O0
 %%BeginObject PSL_Layer_220
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8198,7 +8319,8 @@ O0
 %%BeginObject PSL_Layer_221
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -8209,9 +8331,10 @@ clipsave
 P
 PSL_clip N
 450 1575 M
-614 -224 D
+-164 -451 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -3180 -9600 TM
@@ -8226,7 +8349,7 @@ O0
 %%BeginObject PSL_Layer_222
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8234,8 +8357,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 450 1575 Sc
 U
@@ -8253,7 +8376,7 @@ O0
 %%BeginObject PSL_Layer_223
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8261,10 +8384,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 1064 1351 Sc
+45 286 1124 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -8280,10 +8403,10 @@ O0
 %%BeginObject PSL_Layer_224
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[­1,1.5\] \(1.07,1.45\) \(0.37,1.00\)) bc Z
+(\[­1,1.5\] \(1.45,­1.07\) \(­1.37,0.50\)) bc Z
 %%EndObject
 -3180 -9600 TM
 0 A
@@ -8297,7 +8420,7 @@ O0
 %%BeginObject PSL_Layer_225
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -8326,9 +8449,9 @@ O0
 %%BeginObject PSL_Layer_226
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -8359,8 +8482,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -8401,6 +8525,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -5460 -9600 TM
 0 A
@@ -8414,7 +8539,7 @@ O0
 %%BeginObject PSL_Layer_227
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8423,8 +8548,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -200 90 900 900 Sw
 U
@@ -8442,7 +8567,8 @@ O0
 %%BeginObject PSL_Layer_228
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -8452,15 +8578,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-571 -3 M
-1 3 D
-656 1800 D
-1 3 D S
 1803 571 M
 -3 1 D
 -1800 656 D
 -3 1 D S
+571 -3 M
+1 3 D
+656 1800 D
+1 3 D S
 PSL_cliprestore
+U
 %%EndObject
 -5460 -9600 TM
 0 A
@@ -8474,7 +8601,7 @@ O0
 %%BeginObject PSL_Layer_229
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8483,8 +8610,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -8514,7 +8641,7 @@ O0
 %%BeginObject PSL_Layer_230
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8523,8 +8650,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -8554,7 +8681,7 @@ O0
 %%BeginObject PSL_Layer_231
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8579,7 +8706,7 @@ O0
 %%BeginObject PSL_Layer_232
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8604,7 +8731,7 @@ O0
 %%BeginObject PSL_Layer_233
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8613,8 +8740,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -8644,7 +8771,7 @@ O0
 %%BeginObject PSL_Layer_234
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8653,8 +8780,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -8682,7 +8809,7 @@ O0
 %%BeginObject PSL_Layer_235
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8708,7 +8835,7 @@ O0
 %%BeginObject PSL_Layer_236
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8734,7 +8861,8 @@ O0
 %%BeginObject PSL_Layer_237
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -8745,9 +8873,10 @@ clipsave
 P
 PSL_clip N
 225 315 M
-408 -149 D
+267 734 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -5460 -9600 TM
@@ -8762,7 +8891,7 @@ O0
 %%BeginObject PSL_Layer_238
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8770,8 +8899,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 225 315 Sc
 U
@@ -8789,7 +8918,7 @@ O0
 %%BeginObject PSL_Layer_239
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8797,10 +8926,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 633 166 Sc
+45 492 1049 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -8816,10 +8945,10 @@ O0
 %%BeginObject PSL_Layer_240
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[­1.5,­1.3\] \(­1.73,0.96\) \(­0.59,­1.63\)) bc Z
+(\[­1.5,­1.3\] \(0.96,1.73\) \(­0.91,0.33\)) bc Z
 %%EndObject
 -5460 -9600 TM
 0 A
@@ -8833,7 +8962,7 @@ O0
 %%BeginObject PSL_Layer_241
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -8862,9 +8991,9 @@ O0
 %%BeginObject PSL_Layer_242
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 1800 D
 S
@@ -8895,8 +9024,9 @@ S
 0 1800 M
 1800 0 D
 S
-2 setlinecap
 25 W
+/PSL_slant_y 0 def /PSL_slant_x 0 def
+2 setlinecap
 N 0 1800 M 0 -1800 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -8937,6 +9067,7 @@ N 1800 0 M 0 83 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -1800 T
 0 setlinecap
+0 A
 %%EndObject
 -7740 -9600 TM
 0 A
@@ -8950,7 +9081,7 @@ O0
 %%BeginObject PSL_Layer_243
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -8959,8 +9090,8 @@ clipsave
 P
 PSL_clip N
 /PSL_spiderpen {4 W 0 A [] 0 B} def
-4 W
 V
+4 W
 O1
 120 -200 90 900 900 Sw
 U
@@ -8978,7 +9109,8 @@ O0
 %%BeginObject PSL_Layer_244
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
 clipsave
@@ -8988,15 +9120,16 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-571 -3 M
-1 3 D
-656 1800 D
-1 3 D S
 1803 571 M
 -3 1 D
 -1800 656 D
 -3 1 D S
+571 -3 M
+1 3 D
+656 1800 D
+1 3 D S
 PSL_cliprestore
+U
 %%EndObject
 -7740 -9600 TM
 0 A
@@ -9010,7 +9143,7 @@ O0
 %%BeginObject PSL_Layer_245
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9019,8 +9152,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -9050,7 +9183,7 @@ O0
 %%BeginObject PSL_Layer_246
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9059,8 +9192,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {1 0 0 C} FS
 O1
 8 W
@@ -9090,7 +9223,7 @@ O0
 %%BeginObject PSL_Layer_247
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9115,7 +9248,7 @@ O0
 %%BeginObject PSL_Layer_248
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9140,7 +9273,7 @@ O0
 %%BeginObject PSL_Layer_249
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9149,8 +9282,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -9180,7 +9313,7 @@ O0
 %%BeginObject PSL_Layer_250
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9189,8 +9322,8 @@ clipsave
 P
 PSL_clip N
 /PSL_vecheadpen {8 W 0 A [] 0 B} def
-8 W
 V
+8 W
 {0 A} FS
 O1
 8 W
@@ -9218,7 +9351,7 @@ O0
 %%BeginObject PSL_Layer_251
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9244,7 +9377,7 @@ O0
 %%BeginObject PSL_Layer_252
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9270,7 +9403,8 @@ O0
 %%BeginObject PSL_Layer_253
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 [67 33] 0 B
 clipsave
@@ -9281,9 +9415,10 @@ clipsave
 P
 PSL_clip N
 1575 675 M
--668 243 D
+-7 -18 D
 S
 PSL_cliprestore
+U
 [] 0 B
 %%EndObject
 -7740 -9600 TM
@@ -9298,7 +9433,7 @@ O0
 %%BeginObject PSL_Layer_254
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9306,8 +9441,8 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 45 1575 675 Sc
 U
@@ -9325,7 +9460,7 @@ O0
 %%BeginObject PSL_Layer_255
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 1800 0 D
@@ -9333,10 +9468,10 @@ clipsave
 -1800 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
-45 907 918 Sc
+45 1568 657 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -9352,10 +9487,10 @@ O0
 %%BeginObject PSL_Layer_256
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 900 2040 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 133 F0
-(\[1.5,­0.5\] \(0.04,­1.58\) \(0.01,0.04\)) bc Z
+(\[1.5,­0.5\] \(­1.58,­0.04\) \(1.49,­0.54\)) bc Z
 %%EndObject
 -7740 -9600 TM
 0 A
@@ -9369,7 +9504,7 @@ O0
 %%BeginObject PSL_Layer_257
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 {1 A} FS
 O1
@@ -9398,7 +9533,7 @@ O0
 %%BeginObject PSL_Layer_258
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 %%EndObject
 
 grestore
