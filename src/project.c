@@ -289,7 +289,7 @@ GMT_LOCAL void project_sphere_setup (struct GMT_CTRL *GMT, double alat, double a
 GMT_LOCAL void project_flat_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set, bool azim_set) {
 	/* Sets up stuff for rotation of Cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
-	   Output is the negative Cartesian azimuth in degrees.
+	   Output is the Cartesian azimuth in degrees.
 	   Latitudes and longitudes are in degrees. */
 
 	if (two_pts)
