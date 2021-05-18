@@ -57,7 +57,7 @@ done < /tmp/gmtmexinstall/lib.lis
 sh /tmp/gmtmexinstall/mexjob.sh
 
 # 6. Update the gmt executable to use rpath also
-install_name_tool -add_rpath ${BUNDLE_RESOURCES}/lib gmt
+install_name_tool -add_rpath ${BUNDLE_RESOURCES}/lib ${BUNDLE_RESOURCES}/bin/gmt
 
 # 7. Build the gmtmex executable
 type=$(uname -m)
