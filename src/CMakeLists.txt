@@ -570,6 +570,9 @@ endforeach (_gmt_prog)
 set_target_properties (gmt PROPERTIES OUTPUT_NAME gmt${GMT_INSTALL_NAME_SUFFIX})
 
 if (GMT_BUILD_GMTMEX)
+	# If your Matlab version is younger than Cmake then you must add that version here
+	set (MATLAB_ADDITIONAL_VERSIONS
+		"R2021a=9.10")
 	find_package (Matlab)
 	add_subdirectory (gmtmex)
 endif (GMT_BUILD_GMTMEX)
