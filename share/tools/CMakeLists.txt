@@ -27,8 +27,6 @@ install (PROGRAMS
 	gmt_prepmex.sh
 	gmt_uninstall.sh
 	gmt_mexbuild.sh
-	gmtmex.c
-	gmt.m
 	ncdeflate
 	${CMAKE_CURRENT_BINARY_DIR}/gmt5syntax
 	DESTINATION ${GMT_DATADIR}/tools
