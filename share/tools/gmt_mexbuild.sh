@@ -15,8 +15,23 @@ if [ "X$answer" = "Xn" ]; then
 	exit 0
 fi
 
+# Make all the shared libraries use rpath instead of executable path
+find . -name '*.dylib' > /tmp/raw.lis
+rm -f /tmp/lib.lis
+while read file; do
+	if [ ! -L $file ]; then
+		echo $file >> /tmp/lib.lis
+	fi
+done < /tmp/raw.lis
+# For each library, replace @executable_path/../lib/*.dylib with @rpath/lib*.dylib
+while read file; do
+	echo $file
+	otool -L $file | grep '@executable_path' | tr '/' ' ' | awk '{printf "install_name_tool -change @executable_path/../lib/%s @rpath/%s %s\n", $4, $4, "'$file'"}' | sh -s
+done < /tmp/lib.lis
+
+# Build the gmtmex executable
 type=$(uname -m)
 xcrun clang -I${BUNDLE_RESOURCES}/include/gmt -I/Applications/${MATLAB_VERSION}/extern/include -m64 -fPIC -fno-strict-aliasing -std=c99 -DGMT_MATLAB -c ${BUNDLE_RESOURCES}/share/tools/gmtmex.c -o /tmp/gmtmex.o
-xcrun clang -undefined error -arch ${type} -bundle /tmp/gmtmex.o -L${BUNDLE_RESOURCES}/lib -lgmt -L/Applications/${MATLAB_VERSION}/bin/maci64 -lmx -lmex -o ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64
+xcrun clang -undefined error -arch ${type} -bundle /tmp/gmtmex.o -L${BUNDLE_RESOURCES}/lib -lgmt -L/Applications/${MATLAB_VERSION}/bin/maci64 -lmx -lmex -rpath ${BUNDLE_RESOURCES}/lib -o ${BUNDLE_RESOURCES}/bin/gmtmex.mexmaci64
 cp -f ${BUNDLE_RESOURCES}/share/tools/gmt.m ${BUNDLE_RESOURCES}/bin
 printf "You must add this path to your MATLAB path: %s\n" ${BUNDLE_RESOURCES}/bin >&2
