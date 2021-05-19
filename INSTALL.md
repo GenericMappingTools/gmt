@@ -47,7 +47,7 @@ At the installation step, you may get the warning message:
 Usually it means your system variable `PATH` is already too long and the GMT
 installer can't add its path to the variable. As it says, you need to ignore
 the warning message, and then manually add the GMT bin path
-(e.g., `C:\programs\gmt6`) to `PATH` after finishing the installation.
+(e.g., `C:\programs\gmt6\bin`) to `PATH` after finishing the installation.
 If you don't know how to manually modify `PATH`, just search Google for
 "How to change windows path variable".
 
