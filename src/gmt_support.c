@@ -6892,7 +6892,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		set_NaN = true;	/* Default to current pen width if pen not given */
 	}
 	else
-		sprintf (def_width, "%gp", P->width);	/* Default to current pen width if pen not given */
+		sprintf (def_width, "%.16gp", P->width);	/* Default to current pen width if pen not given */
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", width, color, style);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
@@ -6928,7 +6928,8 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 			strncpy (color, width, GMT_LEN256-1);
 			strncpy (width, def_width, GMT_LEN256-1);
 		}
-		/* Unstated else branch means we got width stored correctly */
+		else	/* Means we got width stored correctly */
+			set_NaN = false;
 	}
 	/* Unstated else branch means we got width stored correctly */
 	/* Assign width, color, style if given */
