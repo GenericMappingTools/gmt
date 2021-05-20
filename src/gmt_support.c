@@ -6751,7 +6751,7 @@ GMT_LOCAL bool gmtsupport_is_pen (struct GMT_CTRL *GMT, char *line) {
 /*! . */
 bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	int i, n;
-	char width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
+	char def_width[GMT_LEN256] = {""}, width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 	assert (P);	/* P needs to not point to NULL */
@@ -6881,6 +6881,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 
 	/* Processes pen specifications given as [width[,<color>[,<style>[t<unit>]]][@<transparency>] */
 
+	if (P->width > 0.0) sprintf (def_width, "%gp", P->width);	/* Default to current pen width if pen not given */
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", width, color, style);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
@@ -6888,33 +6889,33 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		if (line[0] == ',') {	/* ,color,style got stored in width,color */
 			strncpy (style, color, GMT_LEN256-1);
 			strncpy (color, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		else if (gmtsupport_is_penstyle (color)) {	/* style got stored in color */
 			strncpy (style, color, GMT_LEN256-1);
 			color[0] = '\0';
 			if (gmtlib_is_color (GMT, width)) {	/* color got stored in width */
 				strncpy (color, width, GMT_LEN256-1);
-				width[0] = '\0';
+				strncpy (width, def_width, GMT_LEN256-1);
 			}
 		}
 	}
 	else if (n == 1) {	/* Could be width or color or style */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,style got stored in width */
 			strncpy (style, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		else if (line[0] == ',') {		/* ,color got stored in width */
 			strncpy (color, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		else if (gmtsupport_is_penstyle (width)) {	/* style got stored in width */
 			strncpy (style, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		else if (gmtlib_is_color (GMT, width)) {	/* color got stored in width */
 			strncpy (color, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		/* Unstated else branch means we got width stored correctly */
 	}
