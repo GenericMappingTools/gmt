@@ -203,8 +203,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	ATANH      1  1    atanh (A)\n"
 		"	BCDF       3  1    Binomial cumulative distribution function for p = A, n = B and x = C\n"
 		"	BPDF       3  1    Binomial probability density function for p = A, n = B and x = C\n"
-		"	BEI        1  1    bei (A)\n"
-		"	BER        1  1    ber (A)\n"
+		"	BEI        1  1    Kelvin function bei (A)\n"
+		"	BER        1  1    Kelvin function ber (A)\n"
 		"	BITAND     2  1    A & B (bitwise AND operator)\n"
 		"	BITLEFT    2  1    A << B (bitwise left-shift operator)\n"
 		"	BITNOT     1  1    ~A (bitwise NOT operator, i.e., return two's complement)\n"
@@ -285,8 +285,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	JN         2  1    Bessel function of A (1st kind, order B)\n"
 		"	K0         1  1    Modified Kelvin function of A (2nd kind, order 0)\n"
 		"	K1         1  1    Modified Bessel function of A (2nd kind, order 1)\n"
-		"	KEI        1  1    kei (A)\n"
-		"	KER        1  1    ker (A)\n"
+		"	KEI        1  1    Kelvin function kei (A)\n"
+		"	KER        1  1    Kelvin function ker (A)\n"
 		"	KM2DEG     1  1    Converts Kilometers to Spherical Degrees\n"
 		"	KN         2  1    Modified Bessel function of A (2nd kind, order B)\n"
 		"	KURT       1  1    Kurtosis of A\n"
@@ -1076,7 +1076,7 @@ GMT_LOCAL void grdmath_BPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 }
 
 GMT_LOCAL void grdmath_BEI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BEI 1 1 bei (A).  */
+/*OPERATOR: BEI 1 1 Kelvin function bei (A).  */
 {
 	uint64_t node;
 	double a = 0.0;
@@ -1086,7 +1086,7 @@ GMT_LOCAL void grdmath_BEI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 }
 
 GMT_LOCAL void grdmath_BER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: BER 1 1 ber (A).  */
+/*OPERATOR: BER 1 1 Kelvin function  ber (A).  */
 {
 	uint64_t node;
 	double a = 0.0;
@@ -2959,7 +2959,7 @@ GMT_LOCAL void grdmath_K1 (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, stru
 }
 
 GMT_LOCAL void grdmath_KEI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: KEI 1 1 kei (A).  */
+/*OPERATOR: KEI 1 1 Kelvin function kei (A).  */
 {
 	uint64_t node;
 	float a = 0.0f;
@@ -2969,7 +2969,7 @@ GMT_LOCAL void grdmath_KEI (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 }
 
 GMT_LOCAL void grdmath_KER (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: KER 1 1 ker (A).  */
+/*OPERATOR: KER 1 1 Kelvin function ker (A).  */
 {
 	uint64_t node;
 	double a = 0.0;

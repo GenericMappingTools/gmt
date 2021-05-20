@@ -286,18 +286,19 @@ GMT_LOCAL void project_sphere_setup (struct GMT_CTRL *GMT, double alat, double a
 	gmt_normalize3v (GMT, c);
 }
 
-GMT_LOCAL void project_flat_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set) {
+GMT_LOCAL void project_flat_setup (double alat, double alon, double blat, double blon, double plat, double plon, double *azim, double *e, bool two_pts, bool pole_set, bool azim_set) {
 	/* Sets up stuff for rotation of Cartesian 2-vectors, analogous
 	   to the spherical three vector stuff above.
-	   Output is the negative Cartesian azimuth in degrees.
+	   Output is the Cartesian azimuth in degrees.
 	   Latitudes and longitudes are in degrees. */
 
 	if (two_pts)
-		*azim = 90.0 - d_atan2d (blat - alat, blon - alon);
+		*azim = d_atan2d (blat - alat, blon - alon);
 	else if (pole_set)
-		*azim = 180.0 - d_atan2d (plat - alat, plon - alon);
+		*azim = d_atan2d (plat - alat, plon - alon);
+	else if (azim_set)
+		*azim = 90 - *azim;
 
-	*azim = -(*azim);
 	e[0] = e[3] = cosd (*azim);
 	e[1] = sind (*azim);
 	e[2] = -e[1];
@@ -587,6 +588,8 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 	                                 "Option -W: w_min must be < w_max\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->A.active + Ctrl->E.active + Ctrl->T.active) > 1,
 	                                 "Specify only one of -A, -E, and -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->T.active,
+	                                 "Option -T: Cannot be used with -N; specify using -E or -A instead\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && (Ctrl->C.x == Ctrl->E.x) && (Ctrl->C.y == Ctrl->E.y),
 	                                 "Option -E: Second point must differ from origin!\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.active && Ctrl->L.min == Ctrl->L.max && !(Ctrl->E.active || Ctrl->Z.active),
@@ -769,7 +772,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			default:	/* Already checked in parser that this cannot happen */
 				break;
 		}
-		P.n_outputs++;
+		P.n_outputs++;	/* Since we count the extra z's later and add them */
 	}
 
 	if (P.n_outputs == 0 && !Ctrl->G.active) {	/* Generate default -F setting (xyzpqrs) */
@@ -803,7 +806,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 
 	if (Ctrl->N.active) {	/* Flat Earth mode */
 		theta = Ctrl->A.azimuth;
-		project_flat_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active);
+		project_flat_setup (Ctrl->C.y, Ctrl->C.x, Ctrl->E.y, Ctrl->E.x, Ctrl->T.y, Ctrl->T.x, &theta, e, Ctrl->E.active, Ctrl->T.active, Ctrl->A.active);
 		/* Azimuth (theta) is now Cartesian in degrees */
 		if (Ctrl->L.constrain) {
 			Ctrl->L.min = 0.0;
@@ -965,7 +968,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			}
 		}
 		else if (Ctrl->N.active) {
-			sincosd (90.0 + theta, &sin_theta, &cos_theta);
+			sincosd (theta, &sin_theta, &cos_theta);
 			for (rec = 0; rec < P.n_used; rec++) {
 				p_data[rec].a[4] = Ctrl->C.x + p_data[rec].a[2] * cos_theta;
 				p_data[rec].a[5] = Ctrl->C.y + p_data[rec].a[2] * sin_theta;
@@ -1146,6 +1149,8 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 						}
 					}
 				}
+				else	/* Just need to know how many */
+					P.n_z = n_cols - 2;
 				z_first = false;
 				n_tot_cols = (P.want_z_output) ? P.n_outputs - 1 + P.n_z : P.n_outputs;
 				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_tot_cols, gmt_M_colmode (In->text))) != GMT_NOERROR) {

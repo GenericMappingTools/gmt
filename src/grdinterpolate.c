@@ -35,7 +35,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdinterpolate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate a 3-D cube, 2-D grids or 1-D series from a 3-D data cube or stack of 2-D grids"
-#define THIS_MODULE_KEYS	"<G{+,>?}"
+#define THIS_MODULE_KEYS	"<G{+,G?}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"->RVfn"
 
@@ -399,7 +399,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			strcpy (cube_layer, &nc_z_named[1]);
 			nc_z_named[0] = '\0';	/* Chop off layer name for now */
 		}
-		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level))) {
+		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level, NULL))) {
 			Return (error);
 		}
 		got_cube = true;
@@ -715,7 +715,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			for (seg = 0; seg < Out->n_segments; seg++) {	/* Each segment represents one x-coordinate */
 				So = Out->table[0]->segment[seg];	/* Short hand to this output segment */
 				for (row = 0; row < So->n_rows; row++) {
-					ij = gmt_M_ijp (Grid->header, row, seg);
+					ij = gmt_M_ijp (Grid->header, So->n_rows-row-1, seg);	/* Must flip order since rows in grid goes down */
 					Grid->data[ij] = (float)So->data[3][row];
 				}
 			}
@@ -771,8 +771,11 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			gmt_set_cartesian (GMT, GMT_OUT);
 		if (z_is_abstime) gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ABSTIME);
 	}
-	else if (C[GMT_IN] == NULL && (C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
-		Return (GMT_DATA_READ_ERROR);
+	else if (C[GMT_IN] == NULL) {	/* Read the cube */
+		gmt_M_free (GMT, level);	/* Free this one now since it will be re-read by GMT_Read_Data */
+		if ((C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
+			Return (GMT_DATA_READ_ERROR);
+	}
 
 	if (convert_to_cube) {	/* Just want to build cube from input stack */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Convert %" PRIu64 " grid layers to a single data cube %s.\n", n_layers, Ctrl->G.file);

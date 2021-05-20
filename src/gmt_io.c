@@ -9114,8 +9114,10 @@ char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 void gmtlib_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
 	/* Free allocated array with directory content */
 	unsigned int k = 0;
-	char **list = *addr;
+	char **list;
 
+	if (addr == NULL) return;	/* Sanity check */
+	if ((list = *addr) == NULL) return;	/* Sanity check */
 	while (list[k]) {
 		gmt_M_str_free (list[k]);
 		k++;

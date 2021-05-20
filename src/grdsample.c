@@ -242,6 +242,8 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 	else
 		registration = Gin->header->registration;
 
+	gmt_increment_adjust (GMT, wesn_o, inc, registration);	/* In case user specified incs using distance units we must call this here before adjusting wesn_o */
+
 	if (GMT->common.R.active[RSET]) {		/* Gave -R */
 		bool wrap_360_i = (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]));
 		bool wrap_360_o = (gmt_M_x_is_lon (GMT, GMT_OUT) && gmt_M_360_range (wesn_o[XLO], wesn_o[XHI]));

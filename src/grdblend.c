@@ -239,7 +239,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			}
 			/* Data record to process */
 
-			/* Data record to process.  We permint this kind of records:
+			/* Data record to process.  We permit this kind of records:
 			 * file [-Rinner_region ] [weight]
 			 * i.e., file is required but region [grid extent] and/or weight [1] are optional
 			 */
@@ -351,6 +351,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			return (-GMT_RUNTIME_ERROR);
 		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
 		 * will plow through and modify inc if it does not fit, we don't want that here. */
+		if (GMT->common.R.active[ISET])	/* Got -I [-R -r] */
+			gmt_increment_adjust (GMT, wesn, GMT->common.R.inc, (GMT->common.R.active[GSET]) ? GMT->common.R.registration : B[0].G->header->registration);	/* In case user specified incs using distance units we must call this here before adjusting wesn */
 		inc = (GMT->common.R.active[ISET]) ? GMT->common.R.inc : B[0].G->header->inc;	/* Either use -I if given else they all have the same increments */
 		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/inc[GMT_X] - GMT_CONV6_LIMIT);
 		wesn[XHI] = wesn[XLO] + pp * B[0].G->header->inc[GMT_X];
@@ -441,6 +443,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s is sampled using region %s\n", B[n].file, Rargs);
 		}
 		if (do_sample) {	/* One or more reasons to call upon grdsample before using this grid */
+			gmt_filename_set (B[n].file);	/* Replace any spaces in filename with ASCII 29 */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
 				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
@@ -859,6 +862,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 		if (Ctrl->In.n == 1 && grdblend_got_plot_domain (API, Ctrl->In.file[0], &zcase)) {	/* Must adjust -R to be exact multiple of desired grid inc */
 			double inc15[2] = {15.0 / 3600.0, 15.0/ 3600.0};
 			double *inc = (zcase == 'O') ? inc15 : GMT->common.R.inc;	/* Pointer to the grid increment */
+			gmt_increment_adjust (GMT, GMT->common.R.wesn, inc, GMT_GRID_DEFAULT_REG);	/* In case user specified incs using distance units we must call this here before adjusting wesn */
 			wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / inc[GMT_X]) + GMT_CONV8_LIMIT) * inc[GMT_X];
 			wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / inc[GMT_X]) - GMT_CONV8_LIMIT) * inc[GMT_X];
 			wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / inc[GMT_Y]) + GMT_CONV8_LIMIT) * inc[GMT_Y];

@@ -42,7 +42,7 @@ EXTERN_MSC char * gmt_strdup (struct GMT_CTRL *GMT, const char *s);
 /* gmt_nc.c: */
 
 EXTERN_MSC bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file);
-EXTERN_MSC int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *wrange, uint64_t *nz, double **zarray);
+EXTERN_MSC int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *wrange, uint64_t *nz, double **zarray, char *z_units);
 EXTERN_MSC int gmt_nc_open (struct GMT_CTRL *GMT, char *path, int mode, int *id);
 EXTERN_MSC int gmt_nc_close (struct GMT_CTRL *GMT, int id);
 EXTERN_MSC int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *id);
@@ -222,9 +222,11 @@ EXTERN_MSC void gmt_grd_pad_off (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 EXTERN_MSC void gmt_cube_pad_off (struct GMT_CTRL *GMT, struct GMT_CUBE *U);
 EXTERN_MSC void gmt_grd_pad_zero (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 EXTERN_MSC void gmt_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *z);
+EXTERN_MSC void gmt_cube_vminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *w);
 EXTERN_MSC int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header);
 EXTERN_MSC int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant);
 EXTERN_MSC int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int mode);
+EXTERN_MSC void gmt_increment_adjust (struct GMT_CTRL *GMT, double *wesn, double *inc, enum GMT_enum_reg registration);
 EXTERN_MSC int gmt_read_img (struct GMT_CTRL *GMT, char *imgfile, struct GMT_GRID *G, double *wesn, double scale, unsigned int mode, double lat, bool init);
 EXTERN_MSC bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int *pad);
 EXTERN_MSC int gmt_set_outgrid (struct GMT_CTRL *GMT, char *file, bool separate, unsigned int min_pad, struct GMT_GRID *G, struct GMT_GRID **Out);

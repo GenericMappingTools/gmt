@@ -434,6 +434,7 @@ struct GMT_PROJ {
 	double p_base_angle, flip_radius, radial_offset, z_radius;
 	bool got_azimuths, got_elevations, flip;
 	enum GMT_enum_zdown z_down;
+	unsigned int angle_kind;	/* 0 = angle, 4 = longitude, 2 = latitude (for annotation purposes) */
 
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;

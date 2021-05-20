@@ -257,8 +257,8 @@ static const char *GMT_type[GMT_N_TYPES] = {"byte", "byte", "integer", "integer"
 
 /*! Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
-	GMTAPI_BY_SET 	= 0,	/* Default is to read the entire dataset or texset */
-	GMTAPI_BY_REC	= 1};	/* Means we will access the registere files on a record-by-record basis */
+	GMTAPI_BY_SET 	= 0,	/* Default is to read the entire dataset */
+	GMTAPI_BY_REC	= 1};	/* Means we will access the registered files on a record-by-record basis */
 
 /*! Entries into dim[] for matrix or vector */
 enum GMT_dim {
@@ -808,36 +808,66 @@ GMT_LOCAL void gmtapi_set_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OB
 }
 #endif
 
-GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, int mode, void *args) {
+GMT_LOCAL bool gmtapi_modern_onliner (struct GMTAPI_CTRL *API, struct GMT_OPTION *head) {
+	/* Must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
+	bool modern = false;
+	unsigned pos;
+	size_t len;
+	char format[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
+	struct GMT_OPTION *opt;
+
+	for (opt = head; opt; opt = opt->next) {
+		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
+		if (strchr ("bejpPt", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
+		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
+		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
+		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
+		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
+			modern = true;	/* Seems like it is, but check the rest of the formats, if there are more */
+			if (c == NULL) continue;	/* Nothing else to check, go to next option */
+			/* Make sure any other formats are valid, too */
+			if (c) c[0] = ',';	/* Restore any comma we found */
+			pos = 0;
+			while (modern && gmt_strtok (format, ",", &pos, p)) {	/* Check each format to make sure each is OK */
+				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)	/* Oh, something wrong was given, cannot be modern */
+					modern = false;
+			}
+		}
+	}
+	return modern;
+}
+
+GMT_LOCAL int gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const char *module, int mode, void *args) {
 	/* Determine if user is attempting a modern mode one-liner plot, and if so, set run mode to GMT_MODERN.
 	 * This is needed since there is not gmt begin | end sequence in this case.
 	 * Also, if a user wants to get the usage message for a modern mode module then it is also a type
 	 * of one-liner and thus we set to GMT_MODERN as well, but only for modern module names. */
 
-	unsigned modern = 0, pos;
-	char format[GMT_LEN128] = {""}, p[GMT_LEN16] = {""}, *c = NULL;
-	bool usage = false;
-	size_t len;
-	struct GMT_OPTION *opt = NULL, *head = NULL;
+	bool usage = false, modern;
+	int error = GMT_NOERROR;
+	struct GMT_OPTION *opt, *head = NULL;
 
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Just need to check if a classic name was given... */
+	head = GMT_Create_Options (API, mode, args);	/* Get option list */
+	modern = gmtapi_modern_onliner (API, head);		/* Return true if one-liner syntax was detected */
+	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to check if a classic name was given or if user tried a one-liner in modern mode */
+		if (modern) {	/* Yikes, someone is using one-liner within a GMT modern mode session */
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot run a one-liner modern command within an existing modern mode session\n");
+			error = GMT_RUNTIME_ERROR;
+			goto free_and_return;
+		}
 		if (!strncmp (module, "ps", 2U) && strncmp (module, "psconvert", 9U)) {	/* Gave classic ps* name in modern mode but not psconvert */
 			char not_used[GMT_LEN32] = {""};
 			const char *mod_name = gmt_current_name (module, not_used);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Detected a classic module name (%s) in modern mode - please use the modern mode name %s instead.\n", module, mod_name);
 		}
-		return;	/* Done, since we know it is a modern mode session */
+		goto free_and_return;
 	}
 
-	head = GMT_Create_Options (API, mode, args);	/* Get option list */
 	if ((opt = GMT_Find_Option (API, 'V', head)))	/* Remove -V here so that we can run gmt plot -? -Vd and still get modern mode usage plus debug info */
 		GMT_Delete_Option (API, opt, &head);
 
-	if (!strcmp (module, "grdcontour") && GMT_Find_Option (API, 'N', head)) {	/* Special case of two module calls cannot be oneliner here */
-		if (GMT_Destroy_Options (API, &head))	/* Done with these here */
-			GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
-		return;
-	}
+	if (!strcmp (module, "grdcontour") && GMT_Find_Option (API, 'N', head))	/* Special case of two module calls cannot be oneliner here */
+		goto free_and_return;
 
 	API->GMT->current.setting.use_modern_name = gmtlib_is_modern_name (API, module);
 
@@ -847,7 +877,7 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 				API->usage = true;	/* Modern mode name given with no args so not yet in modern mode - allow it to get usage */
 				API->GMT->current.setting.run_mode = GMT_MODERN;	/* Safe here to flag it as modern since no session will be started */
 			}
-			return;
+			return GMT_NOERROR;
 		}
 		if (head->next == NULL) {	/* Gave a single argument */
 			if (head->option == GMT_OPT_USAGE || head->option == GMT_OPT_SYNOPSIS || (head->option == '+' && !head->arg[0])) modern = 1;
@@ -855,25 +885,6 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 		}
 	}
 
-	/* Finally, must check if a one-liner with special graphics format settings were given, e.g., "gmt pscoast -Rg -JH0/15c -Gred -png map" */
-	for (opt = head; opt; opt = opt->next) {
-		if (opt->option == GMT_OPT_INFILE || opt->option == GMT_OPT_OUTFILE) continue;	/* Skip file names */
-		if (strchr ("bejpPt", opt->option) == NULL) continue;	/* Option not the first letter of a valid graphics format [UPDATE LIST IF ADDING MORE FORMATS IN FUTURE] */
-		if ((len = strlen (opt->arg)) == 0 || len >= GMT_LEN128) continue;	/* No arg or very long args that are filenames can be skipped */
-		snprintf (format, GMT_LEN128, "%c%s", opt->option, opt->arg);	/* Get a local copy so we can mess with it */
-		if ((c = strchr (format, ','))) c[0] = 0;	/* Chop off other formats for the initial id test */
-		if (gmt_get_graphics_id (API->GMT, format) != GMT_NOTSET) {	/* Found a valid graphics format option */
-			modern = 1;	/* Seems like it is, but check the rest of the formats, if there are more */
-			if (c == NULL) continue;	/* Nothing else to check, go to next option */
-			/* Make sure any other formats are valid, too */
-			if (c) c[0] = ',';	/* Restore any comma we found */
-			pos = 0;
-			while (modern && gmt_strtok (format, ",", &pos, p)) {	/* Check each format to make sure each is OK */
-				if (gmt_get_graphics_id (API->GMT, p) == GMT_NOTSET)	/* Oh, something wrong was given, cannot be modern */
-					modern = 0;
-			}
-		}
-	}
 	if (modern) {	/* This is indeed a modern mode one-liner command */
 		API->GMT->current.setting.run_mode = GMT_MODERN;
 		API->usage = usage;
@@ -881,8 +892,11 @@ GMT_LOCAL void gmtapi_check_for_modern_oneliner (struct GMTAPI_CTRL *API, const 
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)	/* If running in modern mode we want to use modern names */
 		API->GMT->current.setting.use_modern_name = true;
 
+free_and_return:
+
 	if (GMT_Destroy_Options (API, &head))	/* Done with these here */
 		GMT_Report (API, GMT_MSG_WARNING, "Unable to free options in gmtapi_check_for_modern_oneliner?\n");
+	return error;
 }
 
 /* Function to get PPID under Windows is a bit different */
@@ -1563,7 +1577,7 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 				type = (char)toupper (opt->arg[0]);	/* Find type and replace any ? in keys with this type in uppercase (CDGIP) in gmtapi_process_keys below */
 				if (type == 'T')	/* There is no longer a T type but we may honor T from GMT5.  The gmtread|write module will decide depending on compatibility level set */
 					type = 'D';	/* opt->arg will still be 't' and is handled in the modules */
-				if (!strchr ("CDGIP", type)) {
+				if (!strchr ("CDGIPU", type)) {
 					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_process_keys: No or bad data type given to read|write (%c)\n", type);
 					return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
 				}
@@ -2722,7 +2736,7 @@ GMT_LOCAL bool gmtapi_validate_geometry (struct GMTAPI_CTRL *API, int family, in
 		case GMT_IS_IMAGE:       if (geometry != GMT_IS_SURFACE) problem = true;    break;	/* Only surface is valid */
 		case GMT_IS_PALETTE:     if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
 		case GMT_IS_POSTSCRIPT:  if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
-		case GMT_IS_CUBE:    if (geometry != GMT_IS_VOLUME) problem = true;     break;	/* Only volume is valid */
+		case GMT_IS_CUBE:        if (geometry != GMT_IS_VOLUME) problem = true;     break;	/* Only volume is valid */
 		case GMT_IS_VECTOR:      if ((geometry & GMT_IS_PLP) == 0) problem = true;  break; 	/* Must be one of those three */
 		case GMT_IS_MATRIX:      if (geometry == GMT_IS_NONE) problem = true;       break;	/* Matrix can hold surfaces or DATASETs */
 		case GMT_IS_COORD:       if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
@@ -5378,7 +5392,7 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			gmt_M_memcpy (G_obj->header->pad, GMT->current.io.pad, 4, int);		/* Set desired padding */
 			G_copy->header->size = gmtapi_set_grdarray_size (GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = gmt_M_memory_aligned (GMT, NULL, G_copy->header->size, gmt_grdfloat);
-			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing */
+			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing to file */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
 					ij_orig = gmt_M_ijp (G_obj->header, row, col);	/* Position of this (row,col) in original grid organization */
@@ -5397,7 +5411,7 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (S_obj->region) return (gmtlib_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing grid data to GMT_GRID memory location\n");
-			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing */
+			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing to file */
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_OUT), "Grid memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
@@ -5580,7 +5594,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			/* When source is an actual file we place the cube container into the S_obj->resource slot; no new object required */
 			/* If we need to read the header etc then we based this on the first layer in the cube */
 			if ((mode & GMT_DATA_ONLY) == 0) {	/* Get the cube header information */
-				char cube_layer[GMT_LEN64] = {""}, *nc_z_named = NULL, *the_file = NULL;
+				char cube_layer[GMT_LEN64] = {""}, z_name[GMT_GRID_UNIT_LEN80] = {""}, *nc_z_named = NULL, *the_file = NULL;
 				/* Got a single 3-D cube netCDF name, possibly selecting a specific variable via ?<name> */
 				the_file = strdup (S_obj->filename);		/* Duplicate filename since we may change it */
 				nc_z_named = strchr (the_file, '?');	/* Maybe given a specific variable? */
@@ -5588,7 +5602,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					strcpy (cube_layer, &nc_z_named[1]);	/* Place variable name in cube_layer string */
 					nc_z_named[0] = '\0';	/* Chop off layer name for now */
 				}
-				if (gmt_nc_read_cube_info (GMT, the_file, w_range, &n_layers, &level)) {	/* Learn the basics about the cube */
+				if (gmt_nc_read_cube_info (GMT, the_file, w_range, &n_layers, &level, z_name)) {	/* Learn the basics about the cube */
 					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to examine cube %s.\n", the_file);
 					gmt_M_str_free (the_file);
 					return_null (API, GMT_RUNTIME_ERROR);
@@ -5613,6 +5627,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				U_obj->header->n_bands = n_layers;
 				U_obj->mode = mode;
 				if (nc_z_named) strncpy (U_obj->name, cube_layer, GMT_GRID_VARNAME_LEN80);	/* Remember this name if given */
+				strncpy (U_obj->units, z_name, GMT_GRID_UNIT_LEN80);	/* Place the cube's z-unit (for z-dimension) */
 				HH = gmt_get_H_hidden (U_obj->header);
 				strncpy (HH->name, the_file, GMT_GRID_NAME_LEN256);	/* Filename minus any specified variable */
 				if (nc_z_named) nc_z_named[0] = '?';	/* Restore layer name in file name */
@@ -6106,7 +6121,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			gmt_M_memcpy (U_obj->header->pad, GMT->current.io.pad, 4, int);		/* Set desired padding */
 			U_copy->header->size = gmtapi_set_grdarray_size (GMT, U_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 			U_copy->data = gmt_M_memory_aligned (GMT, NULL, U_copy->header->size, gmt_grdfloat);
-			U_copy->header->z_min = DBL_MAX;	U_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing */
+			U_copy->header->z_min = DBL_MAX;	U_copy->header->z_max = -DBL_MAX;	/* Must set vmin/vmax since we are not writing to file */
 			U_copy->header->n_bands = k1 - k0 + 1;
 			for (k = k0; k <= k1; k++) {
 				for (row = j0; row <= j1; row++) {
@@ -6128,7 +6143,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (S_obj->region) return (gmtlib_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing cube data to GMT_CUBE memory location\n");
-			gmt_grd_zminmax (GMT, U_obj->header, U_obj->data);	/* Must set zmin/zmax since we are not writing */
+			gmt_cube_vminmax (GMT, U_obj->header, U_obj->data);	/* Must set cube's vmin/vmax since we are not writing to file */
 			gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_OUT), "Cube memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = U_obj;	/* Set resource pointer to the cube */
@@ -10511,8 +10526,8 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* This is a cardinal sin */
-	if (object == NULL) return (false);	/* Null address, quietly skip */
-	if (!gmtapi_ptrvoid(object)) return (false);	/* Null pointer, quietly skip */
+	if (object == NULL) return_error (API, GMT_NOERROR);	/* Null address, quietly skip */
+	if (!gmtapi_ptrvoid(object)) return_error (API, GMT_NOERROR);	/* Null pointer, quietly skip */
 	API = gmtapi_get_api_ptr (V_API);		/* Now we need to get that API pointer to check further */
 	if ((object_ID = gmtapi_get_object_id_from_data_ptr (API, object)) == GMT_NOTSET) return_error (API, GMT_OBJECT_NOT_FOUND);	/* Could not find the object in the list */
 	if ((item = gmtlib_validate_id (API, GMT_NOTSET, object_ID, GMT_NOTSET, GMT_NOTSET)) == GMT_NOTSET) return_error (API, API->error);	/* Could not find that item */
@@ -10578,6 +10593,25 @@ int GMT_Destroy_Data (void *V_API, void *object) {
 int GMT_Destroy_Data_ (void *object) {
 	/* Fortran version: We pass the global GMT_FORTRAN structure */
 	return (GMT_Destroy_Data (GMT_FORTRAN, object));
+}
+#endif
+
+/*! . */
+int GMT_Free (void *V_API, void *ptr) {
+	struct GMTAPI_CTRL *API = NULL;
+	void *address = NULL;
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);	/* This is a cardinal sin */
+	if (ptr == NULL) return_error (V_API, GMT_NOERROR);	/* Null address, quietly skip */
+	if ((address = gmtapi_ptrvoid(ptr)) == NULL) return_error (V_API, GMT_NOERROR);	/* Null pointer, quietly skip */
+	API = gmtapi_get_api_ptr (V_API);		/* Now we need to get that API pointer to check further */
+	gmt_M_free (API->GMT, address);
+	return_error (API, GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Free_ (void *ptr) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Free (GMT_FORTRAN, ptr));
 }
 #endif
 
@@ -12204,7 +12238,7 @@ int GMT_Call_Module (void *V_API, const char *module, int mode, void *args) {
 		return (GMT_NOERROR);
 	else {	/* Call the function and pass back its return value */
 		gmt_manage_workflow (API, GMT_USE_WORKFLOW, NULL);		/* First detect and set modern mode if modern mode session dir is found */
-		gmtapi_check_for_modern_oneliner (API, module, mode, args);	/* If a modern mode one-liner we must switch run--mode here */
+		if ((status = gmtapi_check_for_modern_oneliner (API, module, mode, args))) return status;	/* If a modern mode one-liner we must switch run--mode here, or fail if an error */
 		if (API->external && gmt_M_is_verbose (API->GMT, GMT_MSG_DEBUG)) {
 			/* For externals only, print the equivalent command-line string under -Vd */
 			char *text = (mode == GMT_MODULE_OPT) ? GMT_Create_Cmd (API, args) : args;
@@ -12411,28 +12445,21 @@ GMT_LOCAL bool gmtapi_operator_takes_dataset (struct GMT_OPTION *opt, int *geome
 }
 
 GMT_LOCAL char gmtapi_grdinterpolate_type (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
-	unsigned int n_files = 0;
-	char type = 'D';	/* For -S */
-	struct GMT_OPTION *opt = NULL, *E = NULL, *S = NULL, *T = NULL;
+	char type;
+	struct GMT_OPTION *opt = NULL, *E = NULL, *S = NULL;
 	gmt_M_unused (API);
 
-	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
-		if (opt->option == GMT_OPT_INFILE) n_files++;
-		else if (opt->option == 'E') E = opt;
+	for (opt = options; opt; opt = opt->next) {	/* Look for -E and -S */
+		if (opt->option == 'E') E = opt;
 		else if (opt->option == 'S') S = opt;
-		else if (opt->option == 'T') T = opt;
 	}
 	/* Now determine the various cases that yield different return types */
-	if (E == NULL && S == NULL) {	/* Interpolating onto a single grid or a new cube */
-		if (T == NULL && n_files > 1)	/* Repackaging multiple grids as a single cube */
-			type = 'U';
-		else if (T && (strchr (T->arg, '/') || strchr (T->arg, ',')))	/* Making more than one output layer */
-			type = 'U';
-		else
-			type = 'G';	/* Making a single grid layer */
-	}
-	else if (E)	/* Sample a vertical slice as a grid */
+	if (S)	/* Sample down lines and returning result via a dataset */
+		type = 'D';
+	else if (E)	/* Return a vertical slice via a grid */
 		type = 'G';
+	else	/* Interpolating onto a single or multilayer cube */
+		type = 'U';
 
 	return (type);
 }
@@ -12782,7 +12809,7 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		return_null (NULL, GMT_ONLY_ONE_ALLOWED);	/* Too many output objects */
 	}
 	n_alloc = n_keys;	/* Initial number of allocations */
-	if ((info = calloc (n_alloc, sizeof (struct GMT_RESOURCE))) == NULL) {
+	if ((info = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_RESOURCE)) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Unable to allocate GMT_RESOURCE array\n");
 		return_null (NULL, GMT_MEMORY_ERROR);
 	}
@@ -12971,15 +12998,13 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 
 	/* Reallocate the information structure array or remove entirely if nothing given. */
 	if (n_items && n_items < n_alloc) {
-		if ((info = realloc (info, n_items * sizeof (struct GMT_RESOURCE))) == NULL) {
+		if ((info = gmt_M_memory (API->GMT, info, n_items, struct GMT_RESOURCE)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: Unable to finalize size of GMT_RESOURCE array\n");
 			return_null (NULL, GMT_MEMORY_ERROR);
 		}
 	}
-	else if (n_items == 0) {
-		free (info);	/* No containers used */
-		info = NULL;
-	}
+	else if (n_items == 0)	/* No containers used */
+		gmt_M_free (API->GMT, info);
 
 	gmt_M_memset (nn, 4, unsigned int);
 	for (ku = 0; ku < n_items; ku++)	/* Count how many primary and secondary objects each for input and output */
@@ -15089,7 +15114,7 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 	 * https://<address>/grdfile[=<id>][+o<offset>][+n<invalid>][+s<scale>][+u|U<unit>]
 	 */
 
-	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was, *file = NULL, *c = NULL, *f = NULL;
+	char remote_path[PATH_MAX] = {""}, local_path[PATH_MAX] = {""}, was = '\0', *file = NULL, *c = NULL, *f = NULL;
 	struct GMTAPI_CTRL *API = NULL;
 
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
@@ -15113,6 +15138,8 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 	}
 
 	if ((mode & GMT_FILE_CHECK) == 0) gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
+
+	gmt_filename_get (file);	/* Replace any ASCII 29 with spaces (if filename had spaces they may now be ASCII 29) */
 
 	switch (family) {
 		case GMT_IS_GRID:

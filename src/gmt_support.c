@@ -7283,24 +7283,46 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	   On output the grid boundaries are always gridline or pixel oriented, depending on registration.
 	   The routine is not run when n_columns and n_rows are already set.
 	*/
-	unsigned int one_or_zero;
-	double s;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
-	one_or_zero = !h->registration;
 	h->xy_off = 0.5 * h->registration;	/* Use to calculate mean location of block */
+
+	gmt_increment_adjust (GMT, h->wesn, h->inc, h->registration);
+
+	/* Determine n_columns */
+	h->n_columns = gmt_M_grd_get_nx (GMT, h);
+	/* Determine n_rows */
+	h->n_rows = gmt_M_grd_get_ny (GMT, h);
+
+	/* Set the inverse increments */
+	HH->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];
+	HH->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
+}
+
+/*! . */
+void gmt_increment_adjust (struct GMT_CTRL *GMT, double *wesn, double *inc, enum GMT_enum_reg registration) {
+	/* This routine adjusts raw grid increments given with projected units and ensures they are compatible
+	 * with teh given domain boundaries.  Depending on -I settings we may need to adjust inc as well as
+	 * xmax and ymax.
+	*/
+	unsigned int one_or_zero, n_rows, n_columns;
+	double s;
+
+	if (GMT->current.io.inc_code[GMT_X] == 0 && GMT->current.io.inc_code[GMT_Y] == 0) return;	/* Nothing to do */
+
+	one_or_zero = !registration;
 
 	/* XINC AND XMIN/XMAX CHECK FIRST */
 
 	/* Adjust x_inc */
 
 	if (GMT->current.io.inc_code[GMT_X] & GMT_INC_IS_NNODES) {	/* Got n_columns */
-		int64_t n = lrint (h->inc[GMT_X]);
-		if (n <= 0 || !doubleAlmostEqual (h->inc[GMT_X], (double)n)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your number of x-nodes %g is not a valid integer\n", h->inc[GMT_X]);
+		int64_t n = lrint (inc[GMT_X]);
+		if (n <= 0 || !doubleAlmostEqual (inc[GMT_X], (double)n)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your number of x-nodes %g is not a valid integer\n", inc[GMT_X]);
 		}
-		h->inc[GMT_X] = gmt_M_get_inc (GMT, h->wesn[XLO], h->wesn[XHI], n, h->registration);
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given n_columns implies x_inc = %g\n", h->inc[GMT_X]);
+		inc[GMT_X] = gmt_M_get_inc (GMT, wesn[XLO], wesn[XHI], n, registration);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given n_columns implies x_inc = %g\n", inc[GMT_X]);
 	}
 	else if (GMT->current.io.inc_code[GMT_X] & GMT_INC_UNITS) {	/* Got funny units */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {
@@ -7325,8 +7347,8 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 					s = 1.0;
 					break;
 			}
-			h->inc[GMT_X] *= s / (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (h->wesn[YLO] + h->wesn[YHI])));	/* Latitude scaling of E-W distances */
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Distance to degree conversion implies x_inc = %g\n", h->inc[GMT_X]);
+			inc[GMT_X] *= s / (GMT->current.proj.DIST_M_PR_DEG * cosd (0.5 * (wesn[YLO] + wesn[YHI])));	/* Latitude scaling of E-W distances */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Distance to degree conversion implies x_inc = %g\n", inc[GMT_X]);
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cartesian x-increments are unit-less! - unit ignored\n");
@@ -7334,25 +7356,22 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 		}
 	}
 	if (!(GMT->current.io.inc_code[GMT_X] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust x_inc to exactly fit west/east */
-		s = h->wesn[XHI] - h->wesn[XLO];
-		h->n_columns = urint (s / h->inc[GMT_X]);
-		s /= h->n_columns;
-		h->n_columns += one_or_zero;
-		if (fabs (s - h->inc[GMT_X]) > 0.0) {
-			h->inc[GMT_X] = s;
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given domain implies x_inc = %g\n", h->inc[GMT_X]);
+		s = wesn[XHI] - wesn[XLO];
+		n_columns = urint (s / inc[GMT_X]);
+		s /= n_columns;
+		if (fabs (s - inc[GMT_X]) > 0.0) {
+			inc[GMT_X] = s;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given domain implies x_inc = %g\n", inc[GMT_X]);
 		}
 	}
 
-	/* Determine n_columns */
-
-	h->n_columns = gmt_M_grd_get_nx (GMT, h);
-
 	if (GMT->current.io.inc_code[GMT_X] & GMT_INC_IS_EXACT) {	/* Want to keep x_inc exactly as given; adjust x_max accordingly */
-		s = (h->wesn[XHI] - h->wesn[XLO]) - h->inc[GMT_X] * (h->n_columns - one_or_zero);
+		/* Determine n_columns */
+		n_columns = gmt_M_get_n (GMT, wesn[XLO], wesn[XHI], inc[GMT_X], registration);
+		s = (wesn[XHI] - wesn[XLO]) - inc[GMT_X] * (n_columns - one_or_zero);
 		if (fabs (s) > 0.0) {
-			h->wesn[XHI] -= s;
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "x_max adjusted to %g\n", h->wesn[XHI]);
+			wesn[XHI] -= s;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "x_max adjusted to %g\n", wesn[XHI]);
 		}
 	}
 
@@ -7361,12 +7380,12 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 	/* Adjust y_inc */
 
 	if (GMT->current.io.inc_code[GMT_Y] & GMT_INC_IS_NNODES) {	/* Got n_rows */
-		int64_t n = lrint (h->inc[GMT_Y]);
-		if (n <= 0 || !doubleAlmostEqual (h->inc[GMT_Y], (double)n)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your number of y-nodes %g is not a valid integer\n", h->inc[GMT_Y]);
+		int64_t n = lrint (inc[GMT_Y]);
+		if (n <= 0 || !doubleAlmostEqual (inc[GMT_Y], (double)n)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your number of y-nodes %g is not a valid integer\n", inc[GMT_Y]);
 		}
-		h->inc[GMT_Y] = gmt_M_get_inc (GMT, h->wesn[YLO], h->wesn[YHI], n, h->registration);
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given n_rows implies y_inc = %g\n", h->inc[GMT_Y]);
+		inc[GMT_Y] = gmt_M_get_inc (GMT, wesn[YLO], wesn[YHI], n, registration);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given n_rows implies y_inc = %g\n", inc[GMT_Y]);
 	}
 	else if (GMT->current.io.inc_code[GMT_Y] & GMT_INC_UNITS) {	/* Got funny units */
 		if (gmt_M_is_geographic (GMT, GMT_IN)) {
@@ -7391,8 +7410,8 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 					s = 1.0;
 					break;
 			}
-			h->inc[GMT_Y] = (h->inc[GMT_Y] == 0.0) ? h->inc[GMT_X] : h->inc[GMT_Y] * s / GMT->current.proj.DIST_M_PR_DEG;
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Distance to degree conversion implies y_inc = %g\n", h->inc[GMT_Y]);
+			inc[GMT_Y] = (inc[GMT_Y] == 0.0) ? inc[GMT_X] : inc[GMT_Y] * s / GMT->current.proj.DIST_M_PR_DEG;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Distance to degree conversion implies y_inc = %g\n", inc[GMT_Y]);
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cartesian y-increments are unit-less! - unit ignored\n");
@@ -7400,30 +7419,26 @@ void gmt_RI_prepare (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h) {
 		}
 	}
 	if (!(GMT->current.io.inc_code[GMT_Y] & (GMT_INC_IS_NNODES | GMT_INC_IS_EXACT))) {	/* Adjust y_inc to exactly fit south/north */
-		s = h->wesn[YHI] - h->wesn[YLO];
-		h->n_rows = urint (s / h->inc[GMT_Y]);
-		s /= h->n_rows;
-		h->n_rows += one_or_zero;
-		if (fabs (s - h->inc[GMT_Y]) > 0.0) {
-			h->inc[GMT_Y] = s;
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given domain implies y_inc = %g\n", h->inc[GMT_Y]);
+		s = wesn[YHI] - wesn[YLO];
+		n_rows = urint (s / inc[GMT_Y]);
+		s /= n_rows;
+		if (fabs (s - inc[GMT_Y]) > 0.0) {
+			inc[GMT_Y] = s;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given domain implies y_inc = %g\n", inc[GMT_Y]);
 		}
 	}
-
-	/* Determine n_rows */
-
-	h->n_rows = gmt_M_grd_get_ny (GMT, h);
 
 	if (GMT->current.io.inc_code[GMT_Y] & GMT_INC_IS_EXACT) {	/* Want to keep y_inc exactly as given; adjust y_max accordingly */
-		s = (h->wesn[YHI] - h->wesn[YLO]) - h->inc[GMT_Y] * (h->n_rows - one_or_zero);
+		/* Determine n_rows */
+		n_rows = gmt_M_get_n (GMT, wesn[YLO], wesn[YHI], inc[GMT_Y], registration);
+		s = (wesn[YHI] - wesn[YLO]) - inc[GMT_Y] * (n_rows - one_or_zero);
 		if (fabs (s) > 0.0) {
-			h->wesn[YHI] -= s;
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "y_max adjusted to %g\n", h->wesn[YHI]);
+			wesn[YHI] -= s;
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "y_max adjusted to %g\n", wesn[YHI]);
 		}
 	}
 
-	HH->r_inc[GMT_X] = 1.0 / h->inc[GMT_X];
-	HH->r_inc[GMT_Y] = 1.0 / h->inc[GMT_Y];
+	GMT->current.io.inc_code[GMT_X] = GMT->current.io.inc_code[GMT_Y] = 0;	/* Processed, so resetting these */
 }
 
 /*! . */
@@ -15067,12 +15082,12 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 /* do_minutes:	true if degree and minutes are desired, false for just integer degrees */
 /* do_seconds:	true if degree, minutes, and seconds are desired */
 /* do_hemi:	true if compass headings (W, E, S, N) are desired */
-/* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed */
+/* lonlat:	0 = longitudes, 1 = latitudes, 2 non-geographical data passed, 3 = latitudes in longitude positions, 4 = great-circle degrees */
 /* worldmap:	T/F, whatever GMT->current.map.is_world is */
 
 	int sign, d, m, s, m_sec;
 	unsigned int k, n_items, level, type;
-	bool zero_fix = false;
+	bool zero_fix = false, lat_special = (lonlat == 3), deg_special = (lonlat == 4);
 	char hemi[GMT_LEN16] = {""};
 
 	/* Must override do_minutes and/or do_seconds if format uses decimal notation for that item */
@@ -15081,6 +15096,8 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 	if (GMT->current.plot.calclock.geo.order[2] == -1) do_seconds = false;
 	for (k = n_items = 0; k < 3; k++) if (GMT->current.plot.calclock.geo.order[k] >= 0) n_items++;	/* How many of d, m, and s are requested as integers */
 
+	if (lat_special) lonlat = 1;	/* Remove the special flag */
+	if (deg_special) lonlat = 0;	/* Remove the special flag */
 	if (lonlat == 0) {	/* Fix longitudes range first */
 		gmt_lon_range_adjust (GMT->current.plot.calclock.geo.range, &val);
 	}
@@ -15114,16 +15131,21 @@ void gmtlib_get_annot_label (struct GMT_CTRL *GMT, double val, char *label, bool
 		else
 			strcat (hemi, (val < 0.0) ? GMT->current.language.cardinal_name[2][2] : GMT->current.language.cardinal_name[2][3]);
 
-		val = fabs (val);
-		if (hemi[0] == ' ' && hemi[1] == 0) hemi[0] = 0;	/* No space if no hemisphere indication */
+		if (!deg_special) {
+			val = fabs (val);
+			if (hemi[0] == ' ' && hemi[1] == 0) hemi[0] = 0;	/* No space if no hemisphere indication */
+		}
 	}
-	if (GMT->current.plot.calclock.geo.no_sign) val = fabs (val);
+	if (deg_special)
+		hemi[0] = 0;
+	else if (GMT->current.plot.calclock.geo.no_sign)
+		val = fabs (val);
 	sign = (val < 0.0) ? -1 : 1;
 
 	level = do_minutes + do_seconds;		/* 0, 1, or 2 */
 	type = (GMT->current.plot.calclock.geo.n_sec_decimals > 0) ? 1 : 0;
 
-	if (GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta (set in )*/
+	if (!(lat_special || deg_special) && GMT->current.plot.r_theta_annot && lonlat)	/* Special check for the r in r-theta [set via -Jp|P +fe modifier] */
 		gmt_sprintf_float (GMT, label, GMT->current.setting.format_float_map, val);
 	else if (GMT->current.plot.calclock.geo.decimal)
 		sprintf (label, GMT->current.plot.calclock.geo.x_format, val, hemi);
