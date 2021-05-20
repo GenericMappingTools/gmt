@@ -53,6 +53,7 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P);
 EXTERN_MSC bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file);
 EXTERN_MSC void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bool *upper_case, unsigned int *flavor);
 EXTERN_MSC bool gmtlib_fixed_paper_size (struct GMTAPI_CTRL *API);

@@ -9926,6 +9926,7 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 	/* We must adjust all frame items with unspecified size according to plot dimension */
 	bool geo_frame = false;
 	bool auto_scale = false;
+	char style[GMT_PEN_LEN] = {""};
 	double fontsize, scale;
 	double const pt = 1.0/72.0;	/* points to inch */
 
@@ -10088,26 +10089,36 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 
 	if (gmt_M_is_dnan (GMT->current.setting.map_frame_pen.width)) {
 		GMT->current.setting.map_frame_pen.width = 1.5 * scale; /* 1.5p (thicker) */
+		strncpy (style, GMT->current.setting.map_frame_pen.style, GMT_PEN_LEN);
+		gmtlib_getpenstyle (GMT, style, &GMT->current.setting.map_frame_pen);
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_FRAME_PEN] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_pen[GMT_PRIMARY].width)) {
 		GMT->current.setting.map_tick_pen[GMT_PRIMARY].width = 0.5 * scale;	/* 0.5p (thinner) */
+		strncpy (style, GMT->current.setting.map_tick_pen[GMT_PRIMARY].style, GMT_PEN_LEN);
+		gmtlib_getpenstyle (GMT, style, &GMT->current.setting.map_tick_pen[GMT_PRIMARY]);
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_TICK_PEN_PRIMARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_tick_pen[GMT_SECONDARY].width)) {
 		GMT->current.setting.map_tick_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
+		strncpy (style, GMT->current.setting.map_tick_pen[GMT_SECONDARY].style, GMT_PEN_LEN);
+		gmtlib_getpenstyle (GMT, style, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_TICK_PEN_SECONDARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_grid_pen[GMT_PRIMARY].width)) {
 		GMT->current.setting.map_grid_pen[GMT_PRIMARY].width = 0.25 * scale;	/* 0.25p (default) */
+		strncpy (style, GMT->current.setting.map_grid_pen[GMT_PRIMARY].style, GMT_PEN_LEN);
+		gmtlib_getpenstyle (GMT, style, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_GRID_PEN_PRIMARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_grid_pen[GMT_SECONDARY].width)) {
 		GMT->current.setting.map_grid_pen[GMT_SECONDARY].width = 0.5 * scale;	/* 0.5p (thinner) */
+		strncpy (style, GMT->current.setting.map_grid_pen[GMT_SECONDARY].style, GMT_PEN_LEN);
+		gmtlib_getpenstyle (GMT, style, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_GRID_PEN_SECONDARY] = true;
 	}
