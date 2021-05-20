@@ -6920,7 +6920,7 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		/* Unstated else branch means we got width stored correctly */
 	}
 	/* Unstated else branch means we got width stored correctly */
-
+fprintf (stderr, "Pen is %s,%s,%s\n", width, color, style);
 	/* Assign width, color, style if given */
 	if (gmtsupport_getpenwidth (GMT, width, P)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen width (%s) not recognized. Using default.\n", width);
 	if (gmt_getrgb (GMT, color, P->rgb)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen color (%s) not recognized. Using default.\n", color);
