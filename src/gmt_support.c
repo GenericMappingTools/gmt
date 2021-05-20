@@ -1016,14 +1016,14 @@ int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	char tmp[GMT_PEN_LEN] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
 
 	if (!line || !line[0]) return (GMT_NOERROR);	/* Nothing to do as no style given.  Note we do not reset any existing style here; use solid to do so */
-	if (gmt_M_is_dnan (P->width))  {
-		strncpy (P->style, line, GMT_PEN_LEN);	/* Must save as is since we do not know the width yet */
-		return (GMT_NOERROR);
-	}
 	if (!strcmp (line, "solid")) {	/* Used to override any other default style */
 		P->offset = 0.0;
 		P->style[0] = '\0';
 		 return (GMT_NOERROR);
+	}
+	if (gmt_M_is_dnan (P->width))  {	/* Must save style as given since we do not know the width yet */
+		strncpy (P->style, line, GMT_PEN_LEN);	/* We will update style in gmt_set_undefined_defaults. */
+		return (GMT_NOERROR);
 	}
 	if (!strncmp (line, "dashdot", 7U)) strcpy (line, "-.");	/* Accept "dashdot*" to mean -. */
 	if (!strncmp (line, "dotdash", 7U)) strcpy (line, ".-");	/* Accept "dotdash*" to mean .- */
@@ -6887,12 +6887,12 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 
 	/* Processes pen specifications given as [width[,<color>[,<style>[t<unit>]]][@<transparency>] */
 
-	if (gmt_M_is_dnan (P->width)) {
-		strcpy (def_width, "0");	/* Default to current pen width if pen not given */
-		set_NaN = true;	/* Default to current pen width if pen not given */
+	if (gmt_M_is_dnan (P->width)) {	/* Worry in case no width is given */
+		strcpy (def_width, "0");	/* To avoid any parsing errors */
+		set_NaN = true;	/* Flag this specific case */
 	}
-	else
-		sprintf (def_width, "%.16gp", P->width);	/* Default to current pen width if pen not given */
+	else	/* Default to current pen width if pen width is not given */
+		sprintf (def_width, "%.16gp", P->width);
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", width, color, style);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
@@ -6928,14 +6928,13 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 			strncpy (color, width, GMT_LEN256-1);
 			strncpy (width, def_width, GMT_LEN256-1);
 		}
-		else	/* Means we got width stored correctly */
+		else	/* Means we got width */
 			set_NaN = false;
 	}
-	/* Unstated else branch means we got width stored correctly */
 	/* Assign width, color, style if given */
 	if (gmtsupport_getpenwidth (GMT, width, P)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen width (%s) not recognized. Using default.\n", width);
 	if (gmt_getrgb (GMT, color, P->rgb)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen color (%s) not recognized. Using default.\n", color);
-	if (set_NaN) P->width = GMT->session.d_NaN;
+	if (set_NaN) P->width = GMT->session.d_NaN;	/* This will prevent gmtlib_getpenstyle to set final style since that needs actual width [see gmt_set_undefined_defaults] */
 	if (gmtlib_getpenstyle (GMT, style, P)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen style (%s) not recognized. Using default.\n", style);
 
 	return (false);
