@@ -380,6 +380,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	STEPY      1  1    Heaviside step function in y: H(y-A)\n"
 		"	SUB        2  1    A - B\n"
 		"	SUM        1  1    Sum of all values in A\n"
+		"	SUMCOL     1  1    Cumulative sum up each column in A\n"
+		"	SUMROW     1  1    Cumulative sum across each row in A\n"
 		"	TAN        1  1    tan (A) (A in radians)\n"
 		"	TAND       1  1    tan (A) (A in degrees)\n"
 		"	TANH       1  1    tanh (A)\n"
@@ -5022,74 +5024,43 @@ GMT_LOCAL void grdmath_SUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 GMT_LOCAL void grdmath_SUMROW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: SUMROW 1 1 Cumulative sum across each row.  */
 {
-	uint64_t node, ij;
+	uint64_t node;
 	unsigned int row, col;
-	double c, left, next_left;
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
 
-	/* Central 1st difference in x */
+	/* Cumulate sums across rows (from x = min to x = max) */
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "geographic grid given to a Cartesian operator [DDX]!\n");
-	if (stack[last]->constant) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand to DDX is constant!\n");
-		gmt_M_memset (stack[last]->G->data, info->size, float);
-		return;
-	}
-
-	gmt_M_row_loop (GMT, info->G, row) {	/* Process d/dx row by row since dx may change with row */
-		c = 0.5 / info->dx[row];
-		/* Unless pad has real data we assign outside col values via natural BCs */
-		ij = gmt_M_ijp (info->G->header, row, 0);	/* First col */
-		if (HH->BC[XLO] != GMT_BC_IS_DATA)
-			stack[last]->G->data[ij-1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij+1]);	/* Set left node via BC curv = 0 */
-		next_left = stack[last]->G->data[ij-1];
-		ij = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-1);	/* Last col */
-		if (HH->BC[XHI] != GMT_BC_IS_DATA)
-			stack[last]->G->data[ij+1] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-1]);	/* Set right node via BC curv = 0 */
-		gmt_M_col_loop (GMT, info->G, row, col, node) {	/* Loop over cols; always save the next left before we update the array at that col */
-			left = next_left;
-			next_left = stack[last]->G->data[node];
-			stack[last]->G->data[node] = (float)(c * (stack[last]->G->data[node+1] - left));
-		}
+	gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row */
+		node = gmt_M_ijp (info->G->header, row, 1);	/* Node of 2nd col in this row */
+		for (col = 1; col < info->G->header->n_columns; col++, node++)
+			stack[last]->G->data[node] += stack[last]->G->data[node-1];
 	}
 }
 
 GMT_LOCAL void grdmath_SUMCOL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: SUMCOL 1 1 Cumulative sum up each column.  */
 {
-	uint64_t node, ij;
-	unsigned int row, col, mx;
-	double c, bottom, next_bottom;
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (stack[last]->G->header);
+	uint64_t node, previous, mx;
+	unsigned int row, col;
 
-	/* Central 1st difference in y */
+	/* Cumulate sums up columns (from y = min to y = max) */
 
-	if (gmt_M_is_geographic (GMT, GMT_IN)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "geographic grid given to a Cartesian operator [DDY]!\n");
 	if (stack[last]->constant) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand to DDY is constant!\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand to SUMCOL is constant!\n");
 		gmt_M_memset (stack[last]->G->data, info->size, float);
 		return;
 	}
 
-	c = -0.5 / info->dy;	/* Because the loop over j below goes from ymax to ymin we compensate with a minus sign here */
 	mx = info->G->header->mx;
-	gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process d/dy column by column */
-		/* Unless pad has real data we assign outside row values via natural BCs */
-		if (HH->BC[YHI] != GMT_BC_IS_DATA) 	/* Set top node via BC curv = 0 */
-			stack[last]->G->data[node-mx] = (float)(2.0 * stack[last]->G->data[node] - stack[last]->G->data[node+mx]);
-		next_bottom = stack[last]->G->data[node-mx];
-		ij = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
-		if (HH->BC[YLO] != GMT_BC_IS_DATA) 	/* Set bottom node via BC curv = 0 */
-			stack[last]->G->data[ij+mx] = (float)(2.0 * stack[last]->G->data[ij] - stack[last]->G->data[ij-mx]);
-		gmt_M_row_loop (GMT, info->G, row) {
-			ij = gmt_M_ijp (info->G->header, row, col);	/* current node in this column */
-			bottom = next_bottom;
-			next_bottom = stack[last]->G->data[ij];
-			stack[last]->G->data[ij] = (float)(c * (stack[last]->G->data[ij+mx] - bottom));
+	gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column */
+		previous = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
+		for (row = 1; row < info->G->header->n_rows; row++) {
+			node = previous - mx;	/* current node in this column */
+			stack[last]->G->data[node] += stack[last]->G->data[previous];
+			previous = node;
 		}
 	}
-	gmt_grd_pad_zero (GMT, stack[last]->G);	/* Reset the boundary pad */
 }
+
 GMT_LOCAL void grdmath_TAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: TAN 1 1 tan (A) (A in radians).  */
 {
@@ -5818,7 +5789,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 226
+#define GRDMATH_N_OPERATORS 228
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -6050,6 +6021,8 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[223] = grdmath_DAYNIGHT;	n_args[223] = 3;	n_out[223] = 1;
 	ops[224] = grdmath_VPDF;	n_args[224] = 3;	n_out[224] = 1;
 	ops[225] = grdmath_FISHER;	n_args[225] = 3;	n_out[225] = 1;
+	ops[226] = grdmath_SUMCOL;	n_args[226] = 1;	n_out[226] = 1;
+	ops[227] = grdmath_SUMROW;	n_args[227] = 1;	n_out[227] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6468,6 +6441,8 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"DAYNIGHT",	/* id = 223 */
 		"VPDF",	/* id = 224 */
 		"FISHER",	/* id = 225 */
+		"SUMCOL",	/* id = 226 */
+		"SUMROW",	/* id = 227 */
 		"" /* last element is intentionally left blank */
 	};
 
