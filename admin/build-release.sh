@@ -65,7 +65,7 @@ if [ ! -d admin ]; then
 fi
 
 # pngquant is need to optimize images
-if ! [ -x "$(command -v gmt)" ]; then
+if ! [ -x "$(command -v pngquant)" ]; then
 	echo 'build-release.sh: Error: pngquant is not found in your search PATH.' >&2
 	exit 1
 fi
