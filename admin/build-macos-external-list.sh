@@ -18,9 +18,8 @@ if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 elif [ $(which cmake) = "/usr/local/bin/cmake" ]; then
 	distro=HomeBrew
 	top=/usr/local
-else
-	distro=Fink
-	/sw
+else	# Requires either MacPorts of HomeBrew
+	exit 1
 fi
 
 # Set temporary directory
@@ -115,3 +114,4 @@ install (FILES
 	DESTINATION \${GMT_LIBDIR}/GraphicsMagick/config
 	COMPONENT Runtime)
 EOF
+exit 0

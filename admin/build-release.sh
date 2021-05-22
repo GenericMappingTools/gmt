@@ -119,7 +119,11 @@ trap abort_build SIGINT
 rm -rf build
 mkdir build
 # 2b. Build list of external programs and shared libraries
-admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
+answer=$(admin/build-macos-external-list.sh > build/add_macOS_cpack.txt)
+if [ $answer -ne 0 ]; then
+	echo 'build-release.sh: Error: Requires either MacPorts of HomeBrew' >&2
+	exit 1
+fi
 cd build
 # 2c. Set CMake cache for MP build:
 COMPC=$(which gcc-mp-9)
