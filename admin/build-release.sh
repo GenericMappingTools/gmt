@@ -1,22 +1,23 @@
 #!/usr/bin/env bash
 #
 # Script that builds a GMT release and makes the compressed tarballs.
-# If run under macOS it also builds the macOS Bundle.
+# If run under macOS it also builds the macOS Bundle.  For now it
+# must be run in a MacPort installation for the bundle to be built.
 #
 # Requirements in addition to libraries and tools to build GMT:
-#	1) pngquant for squeezing PNG files down in size
+#	1) pngquant for squeezing PNG files down in size (package pngquant)
 #	2) GMT_GSHHG_SOURCE and GMT_DCW_SOURCE environmental parameters set
 #	3) A ghostscript version we can include in the macOS bundle [MacPort]
 #	4) sphinx-build 
 #	5) grealpath (package coreutils)
 #	6) GNU tar (package gnutar)
-#	7) gcc-mp-9 must be installed and in path
-#	8) g++-mp-9 must be installed and in path
+#	7) For OpenMP: clang-mp-11 and clang++-mp-11 must be installed and in path (package clang-11)
 #
 #  Notes:
 #	1. CMAKE_INSTALL_PATH, EXEPLUSLIBS, and EXESHARED in build-macos-external-list.sh may need to be changed for different users.
 #	2. Settings for GS_LIB, PROJ_LIB etc in cmake/dist/startup_macosx.sh.in may need to be updated as new gs,proj.gm releases are issued
 
+CLANG_V=11	# Current Clang version to use
 # Temporary ftp site for pre-release files:
 GMT_FTP_URL=ftp.soest.hawaii.edu
 GMT_FTP_DIR=/export/ftp1/ftp/pub/gmtrelease
@@ -36,26 +37,22 @@ abort_build() {	# Called when we abort this script via Crtl-C
 }
 
 TOPDIR=$(pwd)
-if [ "${USER}" = "pwessel" ] || [ "${USER}" = "meghanj" ]; then	# Set ftp default action
+do_ftp=0
+if [ "X${1}" = "X-p" ]; then
 	do_ftp=1
-else
-	do_ftp=0
-fi
-
-if [ "X${1}" = "X-n" ]; then
-	do_ftp=0
 elif [ "X${1}" = "X-m" ]; then
 	do_ftp=2
 elif [ $# -gt 0 ]; then
 	cat <<- EOF  >&2
-	Usage: build-release.sh [-n]
+	Usage: build-release.sh [-p|m]
 	
 	build-release.sh must be run from top-level gmt directory.
 	Will create the release compressed tarballs and (under macOS) the bundle.
 	Requires you have set GMT_PACKAGE_VERSION_* and GMT_PUBLIC_RELEASE in cmake/ConfigDefaults.cmake.
 	Requires GMT_GSHHG_SOURCE and GMT_DCW_SOURCE to be set in the environment.
-	Passing -n means we do not copy the files to the SOEST ftp directory
+	Passing -p means we copy the files to the SOEST ftp directory
 	Passing -m means only copy the macOS bundle to the SOEST ftp directory
+	[Default places no files in the SOEST ftp directory]
 	EOF
 	exit 1
 fi
@@ -65,7 +62,7 @@ if [ ! -d admin ]; then
 fi
 
 # pngquant is need to optimize images
-if ! [ -x "$(command -v gmt)" ]; then
+if ! [ -x "$(command -v pngquant)" ]; then
 	echo 'build-release.sh: Error: pngquant is not found in your search PATH.' >&2
 	exit 1
 fi
@@ -85,18 +82,6 @@ fi
 # gnutar is need to build the tarballs
 if ! [ -x "$(command -v gnutar)" ]; then
 	echo 'build-release.sh: Error: gnutar is not found in your search PATH.' >&2
-	exit 1
-fi
-
-# gcc-mp-9 is need to build with OpenMP
-if ! [ -x "$(command -v gcc-mp-9)" ]; then
-	echo 'build-release.sh: Error: gcc-mp-9 is not found in your search PATH.' >&2
-	exit 1
-fi
-
-# gcc-mp-9 is need to build with OpenMP
-if ! [ -x "$(command -v g++-mp-9)" ]; then
-	echo 'build-release.sh: Error: g++-mp-9 is not found in your search PATH.' >&2
 	exit 1
 fi
 
@@ -136,24 +121,43 @@ rm -rf build
 mkdir build
 # 2b. Build list of external programs and shared libraries
 admin/build-macos-external-list.sh > build/add_macOS_cpack.txt
+if [ $? -ne 0 ]; then
+	echo 'build-release.sh: Error: Requires either MacPorts of HomeBrew' >&2
+	exit 1
+fi
 cd build
 # 2c. Set CMake cache for MP build:
-COMPC=$(which gcc-mp-9)
-COMPG=$(which g++-mp-9)
-cat << EOF > cache-mp-gcc.cmake
-# Cache settings for building the macOS release with GCC and OpenMP
-# This cache file is set for the binary paths of macports
-#
-SET ( CMAKE_C_COMPILER "${COMPC}" CACHE STRING "GNU MP C compiler" )
-SET ( CMAKE_CXX_COMPILER "${COMPG}" CACHE STRING "GNU MP C++ compiler" )
-SET ( CMAKE_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS")
-SET ( CMAKE_C_FLAGS_DEBUG -flax-vector-conversions CACHE STRING "C FLAGS DEBUG")
-SET ( CMAKE_C_FLAGS_RELEASE -flax-vector-conversions CACHE STRING "C FLAGS RELEASE")
-SET ( OpenMP_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS OPENMP")
-EOF
-
+COMPC=$(which clang-mp-${CLANG_V})
+COMPG=$(which clang++-mp-${CLANG_V})
 echo "build-release.sh: Configure and build tarballs" >&2
-cmake -G Ninja  -C cache-mp-gcc.cmake ..
+if [ "X${COMPC}" = "X" ]; then	# No clang support, no OpenMP
+	echo 'build-release.sh: Warning: clang-mp-${CLANG_V} is not found in your search PATH - OpenMP will be disabled.' >&2
+	cmake -G Ninja ..
+else
+	# clang-mp-${CLANG_V} is needed to build with OpenMP
+	if ! [ -x "$(command -v clang-mp-${CLANG_V})" ]; then
+		echo 'build-release.sh: Error: clang-mp-${CLANG_V} is not found in your search PATH.' >&2
+		exit 1
+	fi
+	# clang++-mp-${CLANG_V} is needed to build with OpenMP
+	if ! [ -x "$(command -v clang++-mp-${CLANG_V})" ]; then
+		echo 'build-release.sh: Error: clang++-mp-${CLANG_V} is not found in your search PATH.' >&2
+		exit 1
+	fi
+
+	cat <<- EOF > cache-mp-clang.cmake
+	# Cache settings for building the macOS release with Clang and OpenMP
+	# This cache file is set for the binary paths of macports
+	#
+	SET ( CMAKE_C_COMPILER "/opt/local/bin/clang-mp-${CLANG_V}" CACHE STRING "CLANG MP C compiler" )
+	SET ( CMAKE_CXX_COMPILER "/opt/local/bin/clang++-mp-${CLANG_V}" CACHE STRING "CLANG MP C++ compiler" )
+	SET ( CMAKE_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS")
+	SET ( CMAKE_C_FLAGS_DEBUG -flax-vector-conversions CACHE STRING "C FLAGS DEBUG")
+	SET ( CMAKE_C_FLAGS_RELEASE -flax-vector-conversions CACHE STRING "C FLAGS RELEASE")
+	SET ( OpenMP_C_FLAGS -flax-vector-conversions CACHE STRING "C FLAGS OPENMP")
+	EOF
+	cmake -G Ninja  -C cache-mp-clang.cmake ..
+fi
 # 3. Build the release and the tarballs
 cmake --build . --target gmt_release
 cmake --build . --target gmt_release_tar
