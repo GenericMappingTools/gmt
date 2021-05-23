@@ -70,7 +70,9 @@ Required Arguments
     =\ *flist*, where *flist* is an ASCII table with one *topogrd* filename
     and load time per record.  These load times can be different from
     the evaluation times given via **-T**.  For load time format, see
-    **-T**.
+    **-T**. **Note**: If *flist* has an optional third column it will be
+    interpreted as a load density and used for that layer instead of
+    the fixed *rl* setting in **-D**.
 
 .. _-D:
 
@@ -337,7 +339,6 @@ In the most common scenario, :math:`N_s` are all zero and the elastic response f
 .. math::
 
     \Phi_e(k_r) = \left [ 1 + \alpha_r^4 \right ]^{-1}.
-
 
 Firmoviscous response function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
