@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>project &mdash; GMT 6.2.0 documentation</title>
+  <title>project &mdash; GMT 6.2.0rc2 documentation</title>
   
 
   
@@ -45,6 +45,7 @@
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
         <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -240,11 +241,11 @@
 <p><strong>gmt project</strong> [ <em>table</em> ] <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cx</em>/<em>cy</em> [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>azimuth</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>bx</em>/<em>by</em> ] [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>flags</em> ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>dist</em>[/<em>colat</em>][<strong>+c</strong>|<strong>h</strong>] ]
-[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<strong>w</strong>|<em>l_min</em>/<em>l_max</em>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<strong>w</strong>|<em>lmin</em>/<em>lmax</em>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ] [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ] [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>px</em>/<em>py</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
-[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>w_min</em>/<em>w_max</em> ]
+[ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>wmin</em>/<em>wmax</em> ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>major</em>/<em>minor</em>/<em>azimuth</em>[<strong>+e</strong>|<strong>n</strong>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
@@ -262,59 +263,58 @@
 </div>
 <div class="section" id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
-<p><strong>project</strong> reads arbitrary (<em>x</em>, <em>y</em>[,<em>z</em>]) data from standard input
-[or <em>table</em> ] and writes to standard output any combination of (<em>x</em>,
-<em>y</em>, <em>z</em>, <em>p</em>, <em>q</em>, <em>r</em>, <em>s</em>), where (<em>p</em>, <em>q</em>) are the coordinates in
-the projection, (<em>r</em>, <em>s</em>) is the position in the (<em>x</em>, <em>y</em>) coordinate
-system of the point on the profile (<em>q</em> = 0 path) closest to (<em>x</em>, <em>y</em>),
-and <em>z</em> is all remaining columns in the input (beyond the required <em>x</em>
-and <em>y</em> columns).</p>
-<p>Alternatively, <strong>project</strong> may be used to generate (<em>r</em>, <em>s</em>, <em>p</em>)
-triples at equal increments <em>dist</em> along a profile. In this case (
-<strong>-G</strong> option), no input is read.</p>
-<p>Projections are defined in any (but only) one of three ways:</p>
-<p>(Definition 1) By a Center <strong>-C</strong> and an Azimuth <strong>-A</strong> in degrees
-clockwise from North.</p>
-<p>(Definition 2) By a Center <strong>-C</strong> and end point E of the projection path <strong>-E</strong>.</p>
-<p>(Definition 3) By a Center <strong>-C</strong> and a roTation pole position <strong>-T</strong>.</p>
-<p>To spherically project data along a great circle path, an oblique
-coordinate system is created which has its equator along that path, and
-the zero meridian through the Center. Then the oblique longitude
-(<em>p</em>) corresponds to the distance from the Center
-along the great circle, and the oblique latitude (<em>q</em>) corresponds to
-the distance perpendicular to the great circle path. When moving in the
-increasing (<em>p</em>) direction, (toward <em>B</em> or in the
-<em>azimuth</em> direction), the positive (<em>q</em>) direction is to your left. If a
-Pole has been specified, then the positive (<em>q</em>) direction is toward the
+<p><strong>project</strong> reads arbitrary <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span> [,<em>z</em>]) data from standard input
+[or <em>table</em>] and writes to standard output any combination of (<span class="math notranslate nohighlight">\(x, y\)</span>, <em>z</em>,
+<span class="math notranslate nohighlight">\(p, q, r, s\)</span>), where (<span class="math notranslate nohighlight">\(p, q\)</span>) are the coordinates in
+the projection, (<span class="math notranslate nohighlight">\(r, s\)</span>) is the position in the (<span class="math notranslate nohighlight">\(x, y\)</span>) coordinate
+system of the point on the profile (<span class="math notranslate nohighlight">\(q = 0\)</span> path) closest to (<span class="math notranslate nohighlight">\(x, y\)</span>),
+and <em>z</em> is all remaining columns in the input (beyond the required <span class="math notranslate nohighlight">\(x\)</span>
+and <span class="math notranslate nohighlight">\(y\)</span> columns).</p>
+<p>Alternatively, <strong>project</strong> may be used to generate (<span class="math notranslate nohighlight">\(r,s,p\)</span>)
+triples at equal increments <em>dist</em> along a profile using <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>. In this case, no input is read.</p>
+<p>Projections are defined in one of three ways:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>By a center (<em>cx</em>/<em>cy</em>) using <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and an azimuth in degrees clockwise from North using <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>.</p></li>
+<li><p>By a center (<em>cx</em>/<em>cy</em>) using <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and end point (<em>bx</em>/<em>by</em>) of the projection path using <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>.</p></li>
+<li><p>By a center (<em>cx</em>/<em>cy</em>) using <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and a rotation pole position (<em>px</em>/<em>py</em>) using <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> (not allowed when a
+Cartesian transformation is set by <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>).</p></li>
+</ol>
+</div></blockquote>
+<p>To spherically project data along a great circle path, an oblique coordinate
+system is created which has its equator along that path, and the zero meridian
+through <em>cx</em>/<em>cy</em>. Then the oblique longitude (<span class="math notranslate nohighlight">\(p\)</span>) corresponds to the
+distance from <em>cx</em>/<em>cy</em> along the great circle, and the oblique latitude (<em>q</em>)
+corresponds to the distance perpendicular to the great circle path. When moving
+in the increasing (<span class="math notranslate nohighlight">\(p\)</span>) direction, (in the direction set by
+<a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>azimuth</em> ), the positive (<span class="math notranslate nohighlight">\(q\)</span>) direction is to the left. If a pole
+has been specified by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>, then the positive (<em>q</em>) direction is toward the
 pole.</p>
-<p>To specify an oblique projection, use the <strong>-T</strong> option to set the Pole.
-Then the equator of the projection is already determined and the <strong>-C</strong>
-option is used to locate the <em>p</em> = 0 meridian. The Center <em>cx/cy</em> will
-be taken as a point through which the <em>p</em> = 0 meridian passes. If you do
-not care to choose a particular point, use the South pole (<em>ox</em> = 0,
-<em>oy</em> = -90).</p>
-<p>Data can be selectively windowed by using the <strong>-L</strong> and <strong>-W</strong> options.
-If <strong>-W</strong> is used, the projection Width is set to use only points with
-<em>w_min</em> &lt; q &lt; <em>w_max</em>. If <strong>-L</strong> is set, then the Length is set to use
-only those points with <em>l_min</em> &lt; p &lt; <em>l_max</em>. If the <strong>-E</strong> option has
-been used to define the projection, then <strong>-Lw</strong> may be selected to
-window the length of the projection to exactly the span from <strong>O</strong> to
-<strong>B</strong>.</p>
+<p>To specify an oblique projection, use the <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> option to set the pole.
+Then the equator of the projection is already determined and the <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>
+option is used to locate the <span class="math notranslate nohighlight">\(p = 0\)</span> meridian. The center <em>cx/cy</em> will
+be taken as a point through which the <span class="math notranslate nohighlight">\(p = 0\)</span> meridian passes. If you do
+not care to choose a particular point, use the South pole (<em>cx</em> = 0,
+<em>cy</em> = -90).</p>
+<p>Data can be selectively windowed by using the <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> and <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> options.
+If <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> is used, the projection width is set to use only points with
+<span class="math notranslate nohighlight">\(w_{min} &lt; q &lt; w_{max}\)</span>. If <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is set, then the length is set to use
+only those points with <span class="math notranslate nohighlight">\(l_{min} &lt; p &lt; l_{max}\)</span>. If the <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> option has
+been used to define the projection, then <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><strong>w</strong> may be selected to
+window the length of the projection to exactly the span from the center (<a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>) to
+to the endpoint (<a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>).</p>
 <p>Flat Earth (Cartesian) coordinate transformations can also be made. Set
-<strong>-N</strong> and remember that <em>azimuth</em> is clockwise from North (the <em>y</em>
+<a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> and remember that <em>azimuth</em> is clockwise from North (the <span class="math notranslate nohighlight">\(y\)</span>
 axis), NOT the usual cartesian theta, which is counterclockwise from the
-<em>x</em> axis. <em>azimuth</em> = 90 - theta.</p>
-<p>No assumptions are made regarding the units for <em>x</em>, <em>y</em>, <em>r</em>, <em>s</em>, <em>p</em>,
-<em>q</em>, <em>dist</em>, <em>l_min</em>, <em>l_max</em>, <em>w_min</em>, <em>w_max</em>. If <strong>-Q</strong> is
-selected, map units are assumed and <em>x</em>, <em>y</em>, <em>r</em>, <em>s</em> must be in
-degrees and <em>p</em>, <em>q</em>, <em>dist</em>, <em>l_min</em>, <em>l_max</em>, <em>w_min</em>, <em>w_max</em>
+<span class="math notranslate nohighlight">\(x\)</span> axis. (i.e., <span class="math notranslate nohighlight">\(azimuth = 90 - theta\)</span>).</p>
+<p>No assumptions are made regarding the units for <span class="math notranslate nohighlight">\(x, y, r, s, p, q\)</span>, <em>dist</em>,
+<span class="math notranslate nohighlight">\(l_{min}, l_{max}, w_{min}, w_{max}\)</span>. If <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> is
+selected, map units are assumed and <span class="math notranslate nohighlight">\(x, y, r, s\)</span>, must be in
+degrees and <span class="math notranslate nohighlight">\(p, q\)</span>, <em>dist</em>, <span class="math notranslate nohighlight">\(l_{min}, l_{max}, w_{min}, w_{max}\)</span>
 will be in km.</p>
 <p>Calculations of specific great-circle and geodesic distances or for
 back-azimuths or azimuths are better done using <a class="reference internal" href="mapproject.html"><span class="doc">mapproject</span></a> as
-<strong>project</strong> is strictly spherical.</p>
-<p><strong>project</strong> is CASE SENSITIVE. Use UPPER CASE for all one-letter
-designators which begin optional arguments. Use lower case for the
-xyzpqrs letters in <strong>F</strong><em>flags</em>.</p>
+<a class="reference internal" href="#"><span class="doc">project</span></a> is strictly spherical.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
@@ -325,64 +325,62 @@ then we read from standard input.  </p>
 </dd>
 </dl>
 <dl class="simple" id="c">
-<dt><strong>-C</strong><em>cx</em>/<em>cy</em></dt><dd><p><em>cx/cy</em> sets the origin of the projection, in Definition 1 or 2. If
-Definition 3 is used (<strong>-T</strong>), then <em>cx/cy</em> are the coordinates of a
-point through which the oblique zero meridian (<em>p</em> = 0) should pass.
-The <em>cx/cy</em> is not required to be 90 degrees from the pole.</p>
+<dt><strong>-C</strong><em>cx</em>/<em>cy</em></dt><dd><p>Set the origin <em>cx</em>/<em>cy</em> of the projection when used with <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> or <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> or set the coordinates <em>cx</em>/<em>cy</em> of a point
+through which the oblique zero meridian (<span class="math notranslate nohighlight">\(p = 0\)</span>) should pass when used with <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>. <em>cx</em>/<em>cy</em> is not required
+to be 90 degrees from the pole set by <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>.</p>
 </dd>
 </dl>
 </div>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><em>azimuth</em></dt><dd><p><em>azimuth</em> defines the azimuth of the projection (Definition 1).</p>
+<dt><strong>-A</strong><em>azimuth</em></dt><dd><p>Set the <em>azimuth</em> of the projection. The <em>azimuth</em> is clockwise from North (the <span class="math notranslate nohighlight">\(y\)</span> axis) regardless of
+whether spherical or Cartesian coordinate transformation is applied.</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
-<dt><strong>-E</strong><em>bx</em>/<em>by</em></dt><dd><p><em>bx/by</em> defines the end point of the projection path (Definition 2).</p>
+<dt><strong>-E</strong><em>bx</em>/<em>by</em></dt><dd><p>Set the end point <em>bx/by</em> of the projection path.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong><em>flags</em></dt><dd><p>Specify your desired output using any combination of <strong>xyzpqrs</strong>, in
-any order [Default is <strong>xyzpqrs</strong>]. Do not space between the letters.
-Use lower case. The output will be ASCII (or binary, see <strong>-bo</strong>)
-columns of values corresponding to your <em>flags</em>. The <strong>z</strong> flag is
-special and refers to all numerical columns beyond the leading <strong>x</strong> and <strong>y</strong> in
-your input record.  If output format is ASCII then <strong>z</strong> also includes any
-trailing text (which is placed at the end of the record regardless
-of the order of <strong>z</strong> in <em>flags</em>). <strong>Note</strong>: If <strong>-G</strong> is selected, then the
-output order is hardwired to be <strong>rsp</strong> and <strong>-F</strong> is not allowed.</p>
+<dt><strong>-F</strong><em>flags</em></dt><dd><p>Specify the desired output using any combination of <em>xyzpqrs</em> in any order, where (<span class="math notranslate nohighlight">\(p, q\)</span>) are the
+coordinates in the projection, (<span class="math notranslate nohighlight">\(r, s\)</span>) is the position in the (<span class="math notranslate nohighlight">\(x, y\)</span>) coordinate system of the point
+on the profile (<span class="math notranslate nohighlight">\(q = 0\)</span> path) closest to (<span class="math notranslate nohighlight">\(x, y\)</span>), and <em>z</em> is all remaining columns in the input
+(beyond the required <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> columns). [Default is <em>xyzpqrs</em>]. If output format is ASCII then
+<em>z</em> also includes any trailing text (which is placed at the end of the record regardless of the order of <em>z</em>
+in <em>flags</em>). Use lower case and do not add spaces between the letters. <strong>Note</strong>: If <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is selected, then the
+output order is set to be <em>rsp</em> and <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> is not allowed.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
-<dt><strong>-G</strong><em>dist</em>[/<em>colat</em>][<strong>+c</strong>|<strong>h</strong>]</dt><dd><p>Generate mode. No input is read. Create (<em>r</em>, <em>s</em>, <em>p</em>) output
-points every <em>dist</em> units of <em>p</em>. See <strong>-Q</strong> option. Alternatively,
-append <strong>/</strong><em>colat</em> for a small circle instead [Default is a
-colatitude of 90, i.e., a great circle]. If setting a pole with <strong>-T</strong>
-and you want the small circle to go through <em>cx</em>/<em>cy</em>, append <strong>+c</strong> to
-compute the required colatitude. Use <strong>-C</strong> and <strong>-E</strong> to
-generate a circle that goes through the center and end point. Note,
-in this case the center and end point cannot be farther apart than
-2*|<em>colat</em>|. Finally, if you append <strong>+h</strong> the we will report
-the position of the pole as part of the segment header [no header].</p>
+<dt><strong>-G</strong><em>dist</em>[/<em>colat</em>][<strong>+c</strong>|<strong>h</strong>]</dt><dd><p>Create (<em>r</em>, <em>s</em>, <em>p</em>) output points every <em>dist</em> units of <em>p</em>, assuming all units are the same unless
+<span class="math notranslate nohighlight">\(x, y, r, s\)</span> are set to degrees using <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>. No input is read when <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> is used. The following directives
+and modifiers are supported:</p>
+<ul class="simple">
+<li><p>Optionally, append /<em>colat</em> for a small circle instead [Default is a colatitude of 90, i.e., a great circle]. Note,
+when using <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> and <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> to generate a circle that goes through the center and end point, the center and end point
+cannot be farther apart than <span class="math notranslate nohighlight">\(2|colat|\)</span>.</p></li>
+<li><p>Optionally, append <strong>+c</strong> when using <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong> to calculate the colatitude that will lead to the small circle
+going through the center <em>cx</em>/<em>cy</em>.</p></li>
+<li><p>Optionally, append <strong>+h</strong> to report the position of the pole as part of the segment header when using <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>
+[Default is no header].</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple" id="l">
-<dt><strong>-L</strong>[<strong>w</strong>|<em>l_min</em>/<em>l_max</em>]</dt><dd><p>Length controls. Project only those points whose <em>p</em> coordinate is
-within <em>l_min</em> &lt; <em>p</em> &lt; <em>l_max</em>. If <strong>-E</strong> has been set, then you
-may alternatively use <strong>-Lw</strong> to stay within the distance from <strong>C</strong> to <strong>E</strong>.</p>
+<dt><strong>-L</strong>[<strong>w</strong>|<em>lmin</em>/<em>lmax</em>]</dt><dd><p>Specify length controls for the projected points. Project only those points whose <em>p</em> coordinate is
+within <span class="math notranslate nohighlight">\(l_{min} &lt; p &lt; l_{max}\)</span>. If <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> has been set, then you may alternatively use <strong>-Lw</strong> to stay within
+the distance from <em>cx</em>/<em>cy</em> to <em>bx</em>/<em>by</em>.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
-<dt><strong>-N</strong></dt><dd><p>Flat Earth. Make a Cartesian coordinate transformation in the plane.
+<dt><strong>-N</strong></dt><dd><p>Specify the Flat Earth case (i.e., Cartesian coordinate transformation in the plane).
 [Default uses spherical trigonometry.]</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong></dt><dd><p>Map type units, i.e., project assumes <em>x</em>, <em>y</em>, <em>r</em>, <em>s</em> are in
-degrees while <em>p</em>, <em>q</em>, <em>dist</em>, <em>l_min</em>, <em>l_max</em>, <em>w_min</em>,
-<em>w_max</em> are in km. If <strong>-Q</strong> is not set, then all these are assumed
-to be in the same units.</p>
+<dt><strong>-Q</strong></dt><dd><p>Specify that  <span class="math notranslate nohighlight">\(x\)</span>, <span class="math notranslate nohighlight">\(y\)</span>, <em>r</em>, <em>s</em> are in degrees while <em>p</em>, <em>q</em>, <em>dist</em>, <em>lmin</em>, <em>lmax</em>, <em>wmin</em>,
+<em>wmax</em> are in km. If <strong>-Q</strong> is not set, then all these are assumed to be in the same units.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -391,8 +389,7 @@ random data into a sequential profile.</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
-<dt><strong>-T</strong><em>px</em>/<em>py</em></dt><dd><p><em>px/py</em> sets the position of the rotation pole of the projection.
-(Definition 3).</p>
+<dt><strong>-T</strong><em>px</em>/<em>py</em></dt><dd><p>Set the position of the rotation pole of the projection as <em>px/py</em>.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -400,23 +397,23 @@ random data into a sequential profile.</p>
 </dd>
 </dl>
 <dl class="simple" id="w">
-<dt><strong>-W</strong><em>w_min</em>/<em>w_max</em></dt><dd><p>Width controls. Project only those points whose <em>q</em> coordinate is
-within <em>w_min</em> &lt; <em>q</em> &lt; <em>w_max</em>.</p>
+<dt><strong>-W</strong><em>wmin</em>/<em>wmax</em></dt><dd><p>Specify width controls for the projected points. Project only those points whose <em>q</em> coordinate is
+within <span class="math notranslate nohighlight">\(w_{min} &lt; q &lt; w_{max}\)</span>.</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong><em>major</em>/<em>minor</em>/<em>azimuth</em>[<strong>+e</strong>|<strong>n</strong>]</dt><dd><p>Used in conjunction with <strong>-C</strong> (sets its center) and <strong>-G</strong> (sets the
-distance increment) to create the coordinates of an ellipse
-with <em>major</em> and <em>minor</em> axes given in km (unless <strong>-N</strong> is given for a
-Cartesian ellipse) and the <em>azimuth</em> of the major axis in degrees.
-Append <strong>+e</strong> to adjust the increment set via <strong>-G</strong> so that the the ellipse
-has equal distance increments [Default uses the given increment and closes
-the ellipse].  Instead, append <strong>+n</strong> to set a specific number of unique equidistant
-points via <strong>-G</strong>. For degenerate ellipses you can just supply a single <em>diameter</em>
-instead.  A geographic diameter may be specified in any desired unit other than km [Default]
-by appending the unit (e.g., 3d for degrees); if so we assume the increment is also given in
-the same unit (see <a class="reference internal" href="#units">Units</a>).  <strong>Note</strong>: For the Cartesian ellipse (which requires <strong>-N</strong>), we
-expect <em>direction</em> counter-clockwise from the horizontal instead of an <em>azimuth</em>.</p>
+<dt><strong>-Z</strong><em>major</em>/<em>minor</em>/<em>azimuth</em>[<strong>+e</strong>|<strong>n</strong>]</dt><dd><p>Create the coordinates of an ellipse with <em>major</em> and <em>minor</em> axes given in km (unless <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> is given for a
+Cartesian ellipse) and the <em>azimuth</em> of the major axis in degrees; used in conjunction with <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> (sets its center)
+and <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> (sets the distance increment). <strong>Note</strong>: For the Cartesian ellipse (which requires <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>), we expect
+<em>direction</em> counter-clockwise from the horizontal instead of an <em>azimuth</em>. The following modifiers are supported:</p>
+<ul class="simple">
+<li><p>Append <strong>+e</strong> to adjust the increment set via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> so that the ellipse has equal distance increments [Default
+uses the given increment and closes the ellipse].</p></li>
+<li><p>Append <strong>+n</strong> to set a specific number of unique equidistant points via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>. For degenerate ellipses you can
+just supply a single <em>diameter</em> instead.  A geographic diameter may be specified in any desired unit other than
+km [Default is km] by appending the unit (e.g., 3d for degrees); if so we assume the increment is also given in
+the same unit (see <a class="reference internal" href="#units">Units</a>).</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="simple">
@@ -424,7 +421,7 @@ expect <em>direction</em> counter-clockwise from the horizontal instead of an <e
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary output. [Default is given by <strong>-F</strong> or <strong>-G</strong>].</p>
+<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary output. [Default is given by <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong> or <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>].</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -565,8 +562,8 @@ data from NE of the profile and within ±500 km of the origin, run:</p>
 with a large negative <em>q</em> coordinate. This will take those points which
 are on our right as we walk along the great circle path, or to the NE in this example.)</p>
 <p>To make a Cartesian coordinate transformation of mydata.xy so that the
-new origin is at 5,3 and the new <em>x</em> axis (<em>p</em>) makes
-an angle of 20 degrees with the old <em>x</em> axis, use:</p>
+new origin is at 5,3 and the new <span class="math notranslate nohighlight">\(x\)</span> axis (<em>p</em>) makes
+an angle of 20 degrees with the old <span class="math notranslate nohighlight">\(x\)</span> axis, use:</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt project mydata.xy -C5/3 -A70 -Fpq &gt; mydata.pq
 </pre></div>
@@ -629,7 +626,7 @@ This gives coordinates for an oblique small circle.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Apr 22, 2021.
+        Last updated on May 24, 2021.
       </span>
 
     </p>

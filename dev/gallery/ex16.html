@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>(16) Gridding of data, continued &mdash; GMT 6.2.0 documentation</title>
+  <title>(16) Gridding of data, continued &mdash; GMT 6.2.0rc2 documentation</title>
   
 
   
@@ -291,7 +291,7 @@ and place the four panels, and place the colorbar beneath the subplot.</p>
 <span class="c1"># Unix progs:	rm</span>
 <span class="c1">#</span>
 gmt begin ex16
-	gmt subplot begin 2x2 -M0.1c -Fs8c/0 -R0/6.5/-0.2/6.5 -Jx1c -SCb -SRl+t -Bwesn -T<span class="s2">&quot;Gridding of Data&quot;</span>
+	gmt subplot begin 2x2 -M0.1c -Fs8c/0 -R-0.2/6.6/-0.2/6.6 -Jx1c -SCb -SRl+t -Bwesn -T<span class="s2">&quot;Gridding of Data&quot;</span>
 		gmt surface @Table_5_11.txt -I0.2 -Graws0.nc
 		gmt contour @Table_5_11.txt -C@ex_16.cpt -I -B+t<span class="s2">&quot;contour (triangulate)&quot;</span> -c0,0
 		<span class="c1">#</span>
@@ -331,7 +331,7 @@ rm -f raws0.nc raws5.nc rawt.nc filtered.nc
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Apr 22, 2021.
+        Last updated on May 24, 2021.
       </span>
 
     </p>

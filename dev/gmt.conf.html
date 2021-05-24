@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>gmt.conf &mdash; GMT 6.2.0 documentation</title>
+  <title>gmt.conf &mdash; GMT 6.2.0rc2 documentation</title>
   
 
   
@@ -529,7 +529,7 @@ various terms have the following purpose:</p>
 </tbody>
 </table>
 </dd>
-<dt id="term-FORMAT_FLOAT_MAP"><strong>FORMAT_FLOAT_MAP</strong><a class="headerlink" href="#term-FORMAT_FLOAT_MAP" title="Permalink to this term">¶</a></dt><dd><p>Format (C language printf syntax) to be used when plotting double
+<dt id="term-FORMAT_FLOAT_MAP"><strong>FORMAT_FLOAT_MAP</strong><a class="headerlink" href="#term-FORMAT_FLOAT_MAP" title="Permalink to this term">¶</a></dt><dd><p>Format (C language printf syntax, see <a class="reference internal" href="#term-FORMAT_FLOAT_OUT"><span class="xref std std-term">FORMAT_FLOAT_OUT</span></a>) to be used when plotting double
 precision floating point numbers along plot frames and contours.
 For geographic coordinates, see <a class="reference internal" href="#term-FORMAT_GEO_MAP"><span class="xref std std-term">FORMAT_GEO_MAP</span></a>. [default is <strong>%.12g</strong>].</p>
 </dd>
@@ -543,6 +543,9 @@ some columns a separate format, supply one or more comma-separated
 override the format for all other columns.  Alternatively, you can
 list N space-separated formats and these apply to the first N
 columns.</p>
+<p>The printf syntax is <code class="docutils literal notranslate"><span class="pre">%[minimum</span> <span class="pre">width].[precision]type</span></code>, where
+<strong>type</strong> may be <strong>f</strong>, <strong>e</strong>, <strong>E</strong>, <strong>g</strong> or <strong>G</strong>.
+The default is <code class="docutils literal notranslate"><span class="pre">%.12g</span></code>, i.e. no minimum width and 12 digit precisision.</p>
 </dd>
 <dt id="term-FORMAT_TIME_MAP"><strong>FORMAT_TIME_MAP</strong><a class="headerlink" href="#term-FORMAT_TIME_MAP" title="Permalink to this term">¶</a></dt><dd><p>Sets both <a class="reference internal" href="#term-FORMAT_TIME_PRIMARY_MAP"><span class="xref std std-term">FORMAT_TIME_PRIMARY_MAP</span></a> and <a class="reference internal" href="#term-FORMAT_TIME_SECONDARY_MAP"><span class="xref std std-term">FORMAT_TIME_SECONDARY_MAP</span></a>
 to the value specified. This setting is not included in the <strong>gmt.conf</strong> file.</p>
@@ -1537,7 +1540,7 @@ correspond to 1800 through 1828. [default is <strong>1950</strong>].</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Apr 22, 2021.
+        Last updated on May 24, 2021.
       </span>
 
     </p>
