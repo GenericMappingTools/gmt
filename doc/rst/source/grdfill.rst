@@ -13,8 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfill** *ingrid*
-|-A|\ *mode*\ [*arg*]
-|-G|\ *outgrid*
+[ |-A|\ *mode*\ [*arg*] ]
+[ |-G|\ *outgrid* ]
 [ |SYN_OPT-R| ]
 [ |-L|\ [**p**] ]
 [ |SYN_OPT-V| ]
@@ -29,13 +29,16 @@ Description
 **grdfill** reads a grid that presumably has unfilled holes that the user
 wants to fill in some fashion.  Holes are identified by NaN values but
 this criteria can be changed.  There are several different algorithms that
-can be used to replace the hole values.
+can be used to replace the hole values.  One of **-A** or **-L** is required.
 
 Required Arguments
 ------------------
 
 *ingrid*
     This is the input grid file.
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -50,9 +53,6 @@ Required Arguments
 
 **-G**\ *outgrid*
     This is the output grid file.
-
-Optional Arguments
-------------------
 
 .. _-N:
 
