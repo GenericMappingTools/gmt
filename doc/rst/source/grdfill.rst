@@ -15,8 +15,8 @@ Synopsis
 **gmt grdfill** *ingrid*
 [ |-A|\ *mode*\ [*arg*] ]
 [ |-G|\ *outgrid* ]
-[ |SYN_OPT-R| ]
 [ |-L|\ [**p**] ]
+[ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
