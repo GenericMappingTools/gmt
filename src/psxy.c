@@ -1060,6 +1060,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Get color from cpt -Z and store in -G */
 			if (Ctrl->Z.file) {
 				/* Must temporarily let the x-column contain datavalues for the CPT lookup */
+				gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -Z file */
 				enum gmt_col_enum x_col_type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 				enum gmt_col_enum z_col_type = gmt_get_column_type (GMT, GMT_IN, GMT_Z);
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, z_col_type);
@@ -1067,6 +1068,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					Return (API->error);
 				}
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, x_col_type);
+				gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			}
 			else {
 				double rgb[4];
