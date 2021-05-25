@@ -5569,9 +5569,9 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	cross_length = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters [or degrees] */
 	n_cross++;	/* Since one more node than increments */
 	n_half_cross = (n_cross % 2) ? (n_cross - 1) / 2 : n_cross / 2;	/* Half-width of points in a cross profile depending on odd/even */
-	if (unit && strchr ("dms", unit))	/* Gave increments in arc units (now in degrees) */
+	if (unit && strchr ("dms", unit))	/* Gave increments in arc units (already in degrees at this point) */
 		across_ds_radians = D2R * cross_length / (n_cross - 1);	/* Angular change from point to point */
-	else	/* Must convert distances to degres */
+	else	/* Must convert distances to degrees */
 		across_ds_radians = D2R * (cross_length / GMT->current.proj.DIST_M_PR_DEG) / (n_cross - 1);	/* Angular change from point to point */
 	if ((n_cross % 2) == 0) ds_phase = 0.5;
 	k_start = -n_half_cross;
