@@ -5570,9 +5570,9 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	n_cross++;	/* Since one more node than increments */
 	n_half_cross = (n_cross % 2) ? (n_cross - 1) / 2 : n_cross / 2;	/* Half-width of points in a cross profile depending on odd/even */
 	if (unit && strchr ("dms", unit))	/* Gave increments in arc units (now in degrees) */
-		across_ds_radians = D2R * cross_length / n_cross;	/* Angular change from point to point */
+		across_ds_radians = D2R * cross_length / (n_cross - 1);	/* Angular change from point to point */
 	else	/* Must convert distances to degres */
-		across_ds_radians = D2R * (cross_length / GMT->current.proj.DIST_M_PR_DEG) / n_cross;	/* Angular change from point to point */
+		across_ds_radians = D2R * (cross_length / GMT->current.proj.DIST_M_PR_DEG) / (n_cross - 1);	/* Angular change from point to point */
 	if ((n_cross % 2) == 0) ds_phase = 0.5;
 	k_start = -n_half_cross;
 	k_stop = k_start + n_cross - 1;
@@ -5709,6 +5709,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 	struct GMT_DATASET *Xout = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	gmt_M_unused (unit);	/* For now */
 
 	if (Din->n_columns < 2) {	/* Trouble */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Dataset does not have at least 2 columns with coordinates\n");
