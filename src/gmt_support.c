@@ -5522,7 +5522,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_resample_data_cartesian (struct GMT_CT
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode) {
+GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Din is a data set with at least two columns (lon/lat);
 	 * it can contain any number of tables and segments.
 	 * cross_length is the desired length of cross-profiles, in meters.
@@ -5532,7 +5532,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	 * have 4 + n_cols columns, where the first 4 are x,y,d,az.
 	 */
 
-	int k, ndig, sdig, n_half_cross, k_start, k_stop;
+	int k, ndig, sdig, n_cross, n_half_cross, k_start, k_stop;
 
 	unsigned int ii, np_cross;
 
@@ -5545,8 +5545,8 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 
 	char buffer[GMT_BUFSIZ] = {""}, seg_name[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 
-	double dist_inc, cross_half_width, d_shift, orientation, sign = 1.0, az_cross, x, y;
-	double dist_across_seg, angle_radians, across_ds_radians;
+	double dist_inc, d_shift, orientation, sign = 1.0, az_cross, x, y;
+	double dist_across_seg, angle_radians, across_ds_radians, ds_phase = 0.0, n_cross_float;
 	double Rot[3][3], Rot0[3][3], E[3], P[3], L[3], R[3], T[3], X[3];
 
 	struct GMT_DATASET *Xout = NULL;
@@ -5562,12 +5562,20 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 
 	/* Get resampling step size and zone width in degrees */
 
-	cross_length *= 0.5;	/* Now half-length in user's units */
-	cross_half_width = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters */
-	n_half_cross = irint (cross_length / across_ds);	/* Half-width of points in a cross profile */
-	across_ds_radians = D2R * (cross_half_width / GMT->current.proj.DIST_M_PR_DEG) / n_half_cross;	/* Angular change from point to point */
+	n_cross_float = cross_length / across_ds;	/* Number of points in a cross profile may be a fraction if badly chosen increments */
+	n_cross = irint (n_cross_float);	/* Number of integer points in a cross profile */
+	if (fabs (n_cross_float - n_cross) > (0.05 * across_ds))	/* Use a 5% slop */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your crossprofile length (%g) is not an integer multiple of your along-profile-spacing (%g); %g will be rounded to nearest integer %d\n", cross_length, across_ds, n_cross_float, n_cross);
+	cross_length = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters [or degrees] */
+	n_cross++;	/* Since one more node than increments */
+	n_half_cross = (n_cross % 2) ? (n_cross - 1) / 2 : n_cross / 2;	/* Half-width of points in a cross profile depending on odd/even */
+	if (unit && strchr ("dms", unit))	/* Gave increments in arc units (now in degrees) */
+		across_ds_radians = D2R * cross_length / n_cross;	/* Angular change from point to point */
+	else	/* Must convert distances to degres */
+		across_ds_radians = D2R * (cross_length / GMT->current.proj.DIST_M_PR_DEG) / n_cross;	/* Angular change from point to point */
+	if ((n_cross % 2) == 0) ds_phase = 0.5;
 	k_start = -n_half_cross;
-	k_stop = n_half_cross;
+	k_stop = k_start + n_cross - 1;
 	if (mode & GMT_LEFT_ONLY)	/* Only want left side of profiles */
 		k_stop = 0;
 	else if (mode & GMT_RIGHT_ONLY)	/* Only want right side of profiles */
@@ -5617,7 +5625,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 				dist_across_seg = 0.0;
 				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np_cross, n_tot_cols, NULL, NULL);
 				for (k = k_start, ii = 0; k <= k_stop; k++, ii++) {	/* For each point along normal to FZ */
-					angle_radians = sign * k * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
+					angle_radians = sign * (k + ds_phase) * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
 					gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 					gmtlib_load_rot_matrix (angle_radians, Rot, E);		/* Build the actual rotation matrix for this angle */
 					gmt_matrix_vect_mult (GMT, 3U, Rot, P, X);				/* Rotate the current FZ point along the normal */
@@ -5676,7 +5684,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode) {
+GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Din is a data set with at least two columns (x,y);
 	 * it can contain any number of tables and segments.
 	 * cross_length is the desired length of cross-profiles, in Cartesian units.
@@ -15778,13 +15786,13 @@ struct GMT_DATASET * gmt_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 }
 
 /*! . */
-struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode) {
+struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Call either the spherical or Cartesian version */
 	struct GMT_DATASET *D = NULL;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, mode);
+		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, mode, unit);
 	else
-		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, mode);
+		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, mode, unit);
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
