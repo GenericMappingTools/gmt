@@ -30,9 +30,9 @@ jobs:
 
       - name: Set release or release candidate from GMT version
         run: |
-          if [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+ ]];
+          if [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+ ]]; then
             echo "GMT_RELEASE=true" >> $GITHUB_ENV
-          elif [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+rc[0-9]+ ]];
+          elif [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+rc[0-9]+ ]]; then
             echo "GMT_RELEASE=false" >> $GITHUB_ENV
           fi
 
