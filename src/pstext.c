@@ -802,7 +802,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 	char text[GMT_BUFSIZ] = {""}, cp_line[GMT_BUFSIZ] = {""}, label[GMT_BUFSIZ] = {""}, buffer[GMT_BUFSIZ] = {""};
 	char pjust_key[5] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_f[GMT_LEN256] = {""};
 	char *paragraph = NULL, *line = NULL, *curr_txt = NULL, *in_txt = NULL, **c_txt = NULL, *use_text = NULL;
-	char this_size[GMT_LEN256] = {""}, this_font[GMT_LEN256] = {""}, just_key[5] = {""};
+	char this_size[GMT_LEN256] = {""}, this_font[GMT_LEN256] = {""}, just_key[5] = {""}, save_h_chars[GMT_LEN32] = {""};
 
 	enum GMT_enum_geometry geometry;
 
@@ -960,6 +960,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 		rec_mode = GMT_READ_TEXT;
 		geometry = GMT_IS_TEXT;
 		GMT_Set_Columns (API, GMT_IN, 0, GMT_COL_FIX);
+		strncpy (save_h_chars, GMT->current.setting.io_head_marker_in, GMT_LEN32);	/* Must allow quotes and percentage signs in paragraph text */
+		strcpy (GMT->current.setting.io_head_marker_in, "#");
 	}
 	else {
 		unsigned int ncol = Ctrl->Z.active;	/* Input will have z */
@@ -1054,7 +1056,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				pos = 0;
 
 				if (gmt_M_compat_check (GMT, 4)) {
-					if (input_format_version == GMT_NOTSET) input_format_version = pstext_get_input_format_version (GMT, line, 1);
+					if (input_format_version == GMT_NOTSET) input_format_version = pstext_get_input_format_version (GMT, buffer, 1);
 				}
 				if (input_format_version == 4) {	/* Old-style GMT 4 records */
 					nscan += sscanf (buffer, "%s %lf %s %s %s %s %s\n", this_size, &T.paragraph_angle, this_font, just_key, txt_a, txt_b, pjust_key);
@@ -1428,6 +1430,7 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 			n_paragraphs++;
 		}
 	 	gmt_M_free (GMT, paragraph);
+	 	strncpy (GMT->current.setting.io_head_marker_in, save_h_chars, GMT_LEN32);	/* Restore original default */
 	}
 	if (Ctrl->G.mode && m) {
 		int n_labels = m, form = (T.boxflag & 4) ? PSL_TXT_ROUND : 0;	/* PSL_TXT_ROUND = Rounded rectangle */

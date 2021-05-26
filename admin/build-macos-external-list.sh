@@ -18,9 +18,8 @@ if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 elif [ $(which cmake) = "/usr/local/bin/cmake" ]; then
 	distro=HomeBrew
 	top=/usr/local
-else
-	distro=Fink
-	/sw
+else	# Requires either MacPorts of HomeBrew
+	exit 1
 fi
 
 # Set temporary directory
@@ -28,7 +27,8 @@ TMPDIR=${TMPDIR:-/tmp}
 
 # 1a. List of executables needed and whose shared libraries also are needed.
 #     Use full path if you need something not in your path
-EXEPLUSLIBS="/opt/local/bin/gsc /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr /opt/local/bin/gdal_translate /opt/local/lib/libfftw3f_threads.dylib"
+EXEPLUSLIBS="/opt/local/bin/gsc /opt/local/bin/gm /opt/local/bin/ffmpeg /opt/local/bin/ogr2ogr \
+ /opt/local/bin/gdal_translate /opt/local/lib/libfftw3f_threads.dylib /opt/local/lib/libomp/libomp.dylib"
 # 1b. List of any symbolic links needed
 #     Use full path if you need something not in your path
 EXELINKS=/opt/local/bin/gs
@@ -115,3 +115,4 @@ install (FILES
 	DESTINATION \${GMT_LIBDIR}/GraphicsMagick/config
 	COMPONENT Runtime)
 EOF
+exit 0
