@@ -245,7 +245,7 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CSCD**      | 1 1   | csc (A) (A in degrees)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **CUMSUM**    | 2 1   | Cumulative sum of each row (B=±1) or column (B=±2) in A. Sign of B gives direction of summation        |
+| **CUMSUM**    | 2 1   | Cumulative sum of each row (B=±1|3) or column (B=±2|4) in A. Sign of B gives direction of summation    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CURV**      | 1 1   | Curvature of A (Laplacian)                                                                             |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -746,6 +746,10 @@ Notes On Operators
    0 or 1, but close, and the smaller C the closer we get.
 
 #. The **VPDF** operator expects angles in degrees.
+
+#. The **CUMSUM** operator normally resets the accumulated sums at the end of a
+   row or column.  Use ±3 or ±4 to have the accumulated sums continue with the
+   start of the next row or column.
 
 .. include:: explain_float.rst_
 

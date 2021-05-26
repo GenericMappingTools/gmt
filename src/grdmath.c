@@ -232,7 +232,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	CSC        1  1    csc (A) (A in radians)\n"
 		"	CSCD       1  1    csc (A) (A in degrees)\n"
 		"	CSCH       1  1    csch (A)\n"
-		"	CUMSUM     2  1    Cumulative sum of rows (B=+/-1) or columns (B=+/-2) in A\n"
+		"	CUMSUM     2  1    Cumulative sum of rows (B=+/-1|3) or columns (B=+/-2|4) in A\n"
 		"	CURV       1  1    Curvature of A (Laplacian)\n"
 		"	D2DX2      1  1    d^2(A)/dx^2 2nd derivative\n"
 		"	D2DY2      1  1    d^2(A)/dy^2 2nd derivative\n"
