@@ -232,6 +232,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	CSC        1  1    csc (A) (A in radians)\n"
 		"	CSCD       1  1    csc (A) (A in degrees)\n"
 		"	CSCH       1  1    csch (A)\n"
+		"	CUMSUM     2  1    Cumulative sum of rows (B=+/-1) or columns (B=+/-2) in A\n"
 		"	CURV       1  1    Curvature of A (Laplacian)\n"
 		"	D2DX2      1  1    d^2(A)/dx^2 2nd derivative\n"
 		"	D2DY2      1  1    d^2(A)/dy^2 2nd derivative\n"
@@ -380,8 +381,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	STEPY      1  1    Heaviside step function in y: H(y-A)\n"
 		"	SUB        2  1    A - B\n"
 		"	SUM        1  1    Sum of all values in A\n"
-		"	SUMCOL     1  1    Cumulative sum up each column in A\n"
-		"	SUMROW     1  1    Cumulative sum across each row in A\n"
 		"	TAN        1  1    tan (A) (A in radians)\n"
 		"	TAND       1  1    tan (A) (A in degrees)\n"
 		"	TANH       1  1    tanh (A)\n"
@@ -1656,6 +1655,66 @@ GMT_LOCAL void grdmath_CSCH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 	if (stack[last]->constant) a = (float)(1.0 / sinh (stack[last]->factor));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : 1.0f / sinhf (stack[last]->G->data[node]);
+}
+
+GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: CUMSUM 2 1 Cumulative sum across each row.  */
+{
+	uint64_t node, previous, mx;
+	unsigned int prev = last - 1, row, col;
+	int code;
+
+	if (!stack[last]->constant) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be a constant\n");
+		return;
+	}
+	code = irint (stack[last]->factor);
+	if (!gmt_M_is_zero (fabs (stack[last]->factor - code))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be an integer\n");
+		return;
+	}
+	if (code < -2 || code > 2 || code == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be either +/- 1 or 2\n");
+		return;
+	}
+
+	switch (code) {
+		case +1:	/* Sum rows in positive x-direction */
+			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row */
+				node = gmt_M_ijp (info->G->header, row, 1);	/* Node of 2nd col in this row */
+				for (col = 1; col < info->G->header->n_columns; col++, node++)
+					stack[prev]->G->data[node] += stack[prev]->G->data[node-1];
+			}
+			break;
+		case -1:	/* Sum rows in negative x-direction */
+			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row */
+				node = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-2);	/* Node of 2nd col from the right in this row */
+				for (col = 1; col < info->G->header->n_columns; col++, node--)
+					stack[prev]->G->data[node] += stack[prev]->G->data[node+1];
+			}
+			break;
+		case +2:	/* Sum columns in positive y-direction */
+			mx = info->G->header->mx;
+			gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column */
+				previous = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
+				for (row = 1; row < info->G->header->n_rows; row++) {
+					node = previous - mx;	/* current node in this column */
+					stack[prev]->G->data[node] += stack[prev]->G->data[previous];
+					previous = node;
+				}
+			}
+			break;
+		case -2:	/* Sum columns in negative y-direction */
+			mx = info->G->header->mx;
+			gmt_M_col_loop (GMT, info->G, 0, col, previous) {	/* Process sums by column */
+				for (row = 1; row < info->G->header->n_rows; row++) {
+					node = previous + mx;	/* current node in this column */
+					stack[prev]->G->data[node] += stack[prev]->G->data[previous];
+					previous = node;
+				}
+			}
+			break;
+	}
 }
 
 GMT_LOCAL void grdmath_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -5021,46 +5080,6 @@ GMT_LOCAL void grdmath_SUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, str
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (float)sum;
 }
 
-GMT_LOCAL void grdmath_SUMROW (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: SUMROW 1 1 Cumulative sum across each row.  */
-{
-	uint64_t node;
-	unsigned int row, col;
-
-	/* Cumulate sums across rows (from x = min to x = max) */
-
-	gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row */
-		node = gmt_M_ijp (info->G->header, row, 1);	/* Node of 2nd col in this row */
-		for (col = 1; col < info->G->header->n_columns; col++, node++)
-			stack[last]->G->data[node] += stack[last]->G->data[node-1];
-	}
-}
-
-GMT_LOCAL void grdmath_SUMCOL (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
-/*OPERATOR: SUMCOL 1 1 Cumulative sum up each column.  */
-{
-	uint64_t node, previous, mx;
-	unsigned int row, col;
-
-	/* Cumulate sums up columns (from y = min to y = max) */
-
-	if (stack[last]->constant) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Operand to SUMCOL is constant!\n");
-		gmt_M_memset (stack[last]->G->data, info->size, float);
-		return;
-	}
-
-	mx = info->G->header->mx;
-	gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column */
-		previous = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
-		for (row = 1; row < info->G->header->n_rows; row++) {
-			node = previous - mx;	/* current node in this column */
-			stack[last]->G->data[node] += stack[last]->G->data[previous];
-			previous = node;
-		}
-	}
-}
-
 GMT_LOCAL void grdmath_TAN (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: TAN 1 1 tan (A) (A in radians).  */
 {
@@ -5789,7 +5808,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 228
+#define GRDMATH_N_OPERATORS 227
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -6021,8 +6040,7 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[223] = grdmath_DAYNIGHT;	n_args[223] = 3;	n_out[223] = 1;
 	ops[224] = grdmath_VPDF;	n_args[224] = 3;	n_out[224] = 1;
 	ops[225] = grdmath_FISHER;	n_args[225] = 3;	n_out[225] = 1;
-	ops[226] = grdmath_SUMCOL;	n_args[226] = 1;	n_out[226] = 1;
-	ops[227] = grdmath_SUMROW;	n_args[227] = 1;	n_out[227] = 1;
+	ops[226] = grdmath_CUMSUM;	n_args[226] = 2;	n_out[226] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6441,8 +6459,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"DAYNIGHT",	/* id = 223 */
 		"VPDF",	/* id = 224 */
 		"FISHER",	/* id = 225 */
-		"SUMCOL",	/* id = 226 */
-		"SUMROW",	/* id = 227 */
+		"CUMSUM",	/* id = 226 */
 		"" /* last element is intentionally left blank */
 	};
 
