@@ -1660,7 +1660,8 @@ GMT_LOCAL void grdmath_CSCH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
 /*OPERATOR: CUMSUM 2 1 Cumulative sum across each row.  */
 {
-	uint64_t node, previous, mx;
+	bool add = false;
+	uint64_t node, previous, mx, shift;
 	unsigned int prev = last - 1, row, col;
 	int code;
 
@@ -1673,30 +1674,42 @@ GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be an integer\n");
 		return;
 	}
-	if (code < -2 || code > 2 || code == 0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be either +/- 1 or 2\n");
+	if (code < -4 || code > 4 || code == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be either +/- 1-4\n");
 		return;
 	}
 
+	mx = info->G->header->mx;
 	switch (code) {
+		case +3:	/* Sum rows in positive x-direction, start next row with previous sum */
+			add = true;	/* Fall through on purpose */
+			shift = info->G->header->pad[XLO] + info->G->header->pad[XHI] + 2;
 		case +1:	/* Sum rows in positive x-direction */
-			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row */
+			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row in positive x-direction*/
 				node = gmt_M_ijp (info->G->header, row, 1);	/* Node of 2nd col in this row */
+				if (add && row) stack[prev]->G->data[node-1] += stack[prev]->G->data[node-shift];
 				for (col = 1; col < info->G->header->n_columns; col++, node++)
 					stack[prev]->G->data[node] += stack[prev]->G->data[node-1];
 			}
 			break;
+		case -3:	/* Sum rows in negative x-direction, start next row with previous sum */
+			add = true;	/* Fall through on purpose */
+			shift = 2 * mx - info->G->header->pad[XLO] - info->G->header->pad[XHI] - 2;
 		case -1:	/* Sum rows in negative x-direction */
-			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row */
+			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row in negative x-direction*/
 				node = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-2);	/* Node of 2nd col from the right in this row */
+				if (add && row) stack[prev]->G->data[node+1] += stack[prev]->G->data[node-shift];
 				for (col = 1; col < info->G->header->n_columns; col++, node--)
 					stack[prev]->G->data[node] += stack[prev]->G->data[node+1];
 			}
 			break;
+		case +4:	/* Sum columns in positive y-direction, start new column with previous sum */
+			add = true;	/* Fall through on purpose */
+			shift = (info->G->header->n_rows - 1) * mx + 1;
 		case +2:	/* Sum columns in positive y-direction */
-			mx = info->G->header->mx;
-			gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column */
+			gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column in positive y-direction */
 				previous = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
+				if (add && col) stack[prev]->G->data[previous] += stack[prev]->G->data[previous-shift];
 				for (row = 1; row < info->G->header->n_rows; row++) {
 					node = previous - mx;	/* current node in this column */
 					stack[prev]->G->data[node] += stack[prev]->G->data[previous];
@@ -1704,9 +1717,13 @@ GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, 
 				}
 			}
 			break;
+		case -4:	/* Sum columns in negative y-direction, start new column with previous sum */
+			add = true;	/* Fall through on purpose */
+			shift = (info->G->header->n_rows - 1) * mx - 1;
 		case -2:	/* Sum columns in negative y-direction */
-			mx = info->G->header->mx;
-			gmt_M_col_loop (GMT, info->G, 0, col, previous) {	/* Process sums by column */
+			gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column in negative y-direction */
+				previous = gmt_M_ijp (info->G->header, 0, col);	/* First row for this column */
+				if (add && col) stack[prev]->G->data[previous] += stack[prev]->G->data[previous+shift];
 				for (row = 1; row < info->G->header->n_rows; row++) {
 					node = previous + mx;	/* current node in this column */
 					stack[prev]->G->data[node] += stack[prev]->G->data[previous];
