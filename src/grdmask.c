@@ -42,6 +42,7 @@ struct GRDMASK_CTRL {
 	struct GRDMASK_A {	/* -A[m|y|p|x|r|t<step>] */
 		bool active;
 		unsigned int mode;
+		bool polar;
 		double step;
 	} A;
 	struct GRDMASK_G {	/* -G<maskfile> */
