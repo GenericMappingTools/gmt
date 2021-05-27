@@ -17023,13 +17023,19 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	/* 1b. Check if argument is a local file */
+	/* 1b. Check if argument is a memory file */
+	if (gmt_M_file_is_memory (argument)) {	/* Yep */
+		T->file = strdup (argument);
+		return (GMT_NOERROR);
+	}
+
+	/* 1c. Check if argument is a local file */
 	if (!gmt_access (GMT, argument, F_OK)) {	/* File exists */
 		T->file = strdup (argument);
 		return (GMT_NOERROR);
 	}
 
-	/* 1c. Check if we are given a list t1,t2,t3,... */
+	/* 1d. Check if we are given a list t1,t2,t3,... */
 	if (strchr (argument, ',')) {
 		T->list = strdup (argument);
 		if (strchr (argument, 'T')) {	/* Gave list of absolute times */
