@@ -399,7 +399,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			strcpy (cube_layer, &nc_z_named[1]);
 			nc_z_named[0] = '\0';	/* Chop off layer name for now */
 		}
-		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level))) {
+		if ((error = gmt_nc_read_cube_info (GMT, Ctrl->In.file[0], w_range, &n_layers, &level, NULL))) {
 			Return (error);
 		}
 		got_cube = true;
@@ -771,8 +771,11 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			gmt_set_cartesian (GMT, GMT_OUT);
 		if (z_is_abstime) gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_ABSTIME);
 	}
-	else if (C[GMT_IN] == NULL && (C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
-		Return (GMT_DATA_READ_ERROR);
+	else if (C[GMT_IN] == NULL) {	/* Read the cube */
+		gmt_M_free (GMT, level);	/* Free this one now since it will be re-read by GMT_Read_Data */
+		if ((C[GMT_IN] = GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, Ctrl->In.file[0], NULL)) == NULL)
+			Return (GMT_DATA_READ_ERROR);
+	}
 
 	if (convert_to_cube) {	/* Just want to build cube from input stack */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Convert %" PRIu64 " grid layers to a single data cube %s.\n", n_layers, Ctrl->G.file);

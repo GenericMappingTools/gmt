@@ -399,7 +399,7 @@ void spotter_setrot (struct GMT_CTRL *GMT, struct EULER *e) {
 	e->lat_r = e->lat * D2R;
 }
 
-int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, unsigned int flowline, bool total_out, bool invert, double *t_max) {
+int spotter_init (struct GMT_CTRL *GMT, char *infile, struct EULER **p, unsigned int flowline, bool total_out, bool invert, double *t_max) {
 	/* file;	Name of file with backward stage poles, always GEOCENTRIC */
 	/* p;		Pointer to stage pole array */
 	/* flowline;	1 if flowlines rather than hotspot-tracks are needed */
@@ -414,9 +414,11 @@ int spotter_init (struct GMT_CTRL *GMT, char *file, struct EULER **p, unsigned i
 	FILE *fp = NULL;
 	struct EULER *e = NULL;
 	char buffer[GMT_BUFSIZ] = {""}, A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""}, txt[GMT_LEN64] = {""}, comment[GMT_BUFSIZ] = {""};
-	char Plates[GMT_BUFSIZ] = {""}, Rotations[GMT_BUFSIZ] = {""}, *this_c = NULL;
+	char file[PATH_MAX] = {""}, Plates[GMT_BUFSIZ] = {""}, Rotations[GMT_BUFSIZ] = {""}, *this_c = NULL;
 	double K[9];
 
+	strncpy (file, infile, PATH_MAX);
+	gmt_filename_get (file);	/* Replace any ASCII 29 with spaces */
 	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		gmt_download_file_if_not_found (GMT, file, 0);
 	}

@@ -359,7 +359,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
 
-#define DEF_HEADER_MARKERS "#%!;\"\'"
+#define DEF_HEADER_MARKERS "#%!;\"\'"	/* Default accepts GMT or MATLAB header records or comments of quoted text */
 
 #define N_MAP_ANNOT_OBLIQUE_ITEMS 7
 
@@ -719,7 +719,8 @@ GMT_LOCAL void gmtinit_translate_to_long_options (struct GMTAPI_CTRL *API, struc
 GMT_LOCAL int gmtinit_check_markers (struct GMT_CTRL *GMT) {
 	int error = GMT_NOERROR;
 	/* Make sure segment header markers and header markers are not the same */
-	strcpy (GMT->current.setting.io_head_marker_in, "#%\"\'");	/* Accept GMT or MATLAB header records or comments or quoted text */
+	if (GMT->current.setting.io_head_marker_in[0] == '\0')	/* Nothing, set default before comparison */
+		strcpy (GMT->current.setting.io_head_marker_in, DEF_HEADER_MARKERS);
 
 	if (strchr (GMT->current.setting.io_head_marker_in, GMT->current.setting.io_seg_marker[GMT_IN])) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conflict between the settings of IO_HEADER_MARKER and IO_SEGMENT_MARKER for input:\n");
@@ -8657,7 +8658,11 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	if ((c = strstr (item, "+u"))) {	/* Got +u<unit> appended to something */
 		c[0] = '\0';	/* Chop off all modifiers so range can be determined */
 		r_unit = c[2];	/* The data unit */
-		if (gmt_M_is_linear (GMT))	/* Just scale up the values */
+		if (!strchr (GMT_LEN_UNITS2, r_unit)) {	/* +u is meant for projected distances only */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -R: The +u<unit> modifier only applies to projected coordinates. Your unit %c is ignored\n", r_unit);
+			r_unit = '\0';
+		}
+		else if (gmt_M_is_linear (GMT))	/* Just scale up the values */
 			scale_coord = true;
 		else
 			inv_project = true;	/* Flag here that we already now we want to invert these units to degrees */
@@ -13972,6 +13977,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 				if (opt->option != GMT_OPT_INFILE) continue;	/* Look for input files we can append to new list */
 				if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, opt->arg)) == NULL || (head = GMT_Append_Option (API, tmp, head)) == NULL)
 					return API->error;	/* Failure to make new option and append to list */
+				gmt_filename_set (opt->arg);	/* Replace any spaces with ASCII 29, will be undone by GMT_Get_FilePath */
 			}
 			if (head == NULL) {	/* User gave no input so we must process stdin */
 				/* Make name for a temporary file */

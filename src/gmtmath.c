@@ -503,8 +503,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	ATAN2      2  1    atan2 (A, B)\n"
 		"	ATANH      1  1    atanh (A)\n"
 		"	BCDF       3  1    Binomial cumulative distribution function for p = A, n = B and x = C\n"
-		"	BEI        1  1    bei (A)\n"
-		"	BER        1  1    ber (A)\n"
+		"	BEI        1  1    Kelvin function bei (A)\n"
+		"	BER        1  1    Kelvin function ber (A)\n"
 		"	BPDF       3  1    Binomial probability density function for p = A, n = B and x = C\n"
 		"	BITAND     2  1    A & B (bitwise AND operator)\n"
 		"	BITLEFT    2  1    A << B (bitwise left-shift operator)\n"
@@ -575,8 +575,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	K0         1  1    Modified Kelvin function of A (2nd kind, order 0)\n"
 		"	K1         1  1    Modified Bessel function of A (2nd kind, order 1)\n"
 		"	KN         2  1    Modified Bessel function of A (2nd kind, order B)\n"
-		"	KEI        1  1    kei (A)\n"
-		"	KER        1  1    ker (A)\n"
+		"	KEI        1  1    Kelvin function kei (A)\n"
+		"	KER        1  1    Kelvin function ker (A)\n"
 		"	KURT       1  1    Kurtosis of A\n"
 		"	LAB2HSV    3  3    Convert lab to hsv, with l = A, a = B and b = C\n"
 		"	LAB2RGB    3  3    Convert lab to rgb, with l = A, a = B and b = C\n"
@@ -1174,7 +1174,7 @@ GMT_LOCAL int gmtmath_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 }
 
 GMT_LOCAL int gmtmath_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
-/*OPERATOR: BEI 1 1 bei (A).  */
+/*OPERATOR: BEI 1 1 Kelvin function bei (A).  */
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -1187,7 +1187,7 @@ GMT_LOCAL int gmtmath_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int gmtmath_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
-/*OPERATOR: BER 1 1 ber (A).  */
+/*OPERATOR: BER 1 1 Kelvin function ber (A).  */
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -2719,7 +2719,7 @@ GMT_LOCAL int gmtmath_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 }
 
 GMT_LOCAL int gmtmath_KEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: KEI 1 1 kei (A).  */
+/*OPERATOR: KEI 1 1 Kelvin function kei (A).  */
 {
 	uint64_t s, row;
 	double a = 0.0;
@@ -2731,7 +2731,7 @@ GMT_LOCAL int gmtmath_KEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int gmtmath_KER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: KER 1 1 ker (A).  */
+/*OPERATOR: KER 1 1 Kelvin function ker (A).  */
 {
 	uint64_t s, row;
 	double a = 0.0;

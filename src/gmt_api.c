@@ -257,8 +257,8 @@ static const char *GMT_type[GMT_N_TYPES] = {"byte", "byte", "integer", "integer"
 
 /*! Two different i/o mode: GMT_Put|Get_Data vs GMT_Put|Get_Record */
 enum GMT_enum_iomode {
-	GMTAPI_BY_SET 	= 0,	/* Default is to read the entire dataset or texset */
-	GMTAPI_BY_REC	= 1};	/* Means we will access the registere files on a record-by-record basis */
+	GMTAPI_BY_SET 	= 0,	/* Default is to read the entire dataset */
+	GMTAPI_BY_REC	= 1};	/* Means we will access the registered files on a record-by-record basis */
 
 /*! Entries into dim[] for matrix or vector */
 enum GMT_dim {
@@ -1577,7 +1577,7 @@ GMT_LOCAL char ** gmtapi_process_keys (void *V_API, const char *string, char typ
 				type = (char)toupper (opt->arg[0]);	/* Find type and replace any ? in keys with this type in uppercase (CDGIP) in gmtapi_process_keys below */
 				if (type == 'T')	/* There is no longer a T type but we may honor T from GMT5.  The gmtread|write module will decide depending on compatibility level set */
 					type = 'D';	/* opt->arg will still be 't' and is handled in the modules */
-				if (!strchr ("CDGIP", type)) {
+				if (!strchr ("CDGIPU", type)) {
 					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_process_keys: No or bad data type given to read|write (%c)\n", type);
 					return_null (NULL, GMT_NOT_A_VALID_TYPE);	/* Unknown type */
 				}
@@ -2736,7 +2736,7 @@ GMT_LOCAL bool gmtapi_validate_geometry (struct GMTAPI_CTRL *API, int family, in
 		case GMT_IS_IMAGE:       if (geometry != GMT_IS_SURFACE) problem = true;    break;	/* Only surface is valid */
 		case GMT_IS_PALETTE:     if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
 		case GMT_IS_POSTSCRIPT:  if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
-		case GMT_IS_CUBE:    if (geometry != GMT_IS_VOLUME) problem = true;     break;	/* Only volume is valid */
+		case GMT_IS_CUBE:        if (geometry != GMT_IS_VOLUME) problem = true;     break;	/* Only volume is valid */
 		case GMT_IS_VECTOR:      if ((geometry & GMT_IS_PLP) == 0) problem = true;  break; 	/* Must be one of those three */
 		case GMT_IS_MATRIX:      if (geometry == GMT_IS_NONE) problem = true;       break;	/* Matrix can hold surfaces or DATASETs */
 		case GMT_IS_COORD:       if (geometry != GMT_IS_NONE) problem = true;       break;	/* Only text is valid */
@@ -5392,7 +5392,7 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			gmt_M_memcpy (G_obj->header->pad, GMT->current.io.pad, 4, int);		/* Set desired padding */
 			G_copy->header->size = gmtapi_set_grdarray_size (GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 			G_copy->data = gmt_M_memory_aligned (GMT, NULL, G_copy->header->size, gmt_grdfloat);
-			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing */
+			G_copy->header->z_min = DBL_MAX;	G_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing to file */
 			for (row = j0; row <= j1; row++) {
 				for (col = i0; col <= i1; col++, ij++) {
 					ij_orig = gmt_M_ijp (G_obj->header, row, col);	/* Position of this (row,col) in original grid organization */
@@ -5411,7 +5411,7 @@ GMT_LOCAL int gmtapi_export_grid (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (S_obj->region) return (gmtlib_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing grid data to GMT_GRID memory location\n");
-			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing */
+			gmt_grd_zminmax (GMT, G_obj->header, G_obj->data);	/* Must set zmin/zmax since we are not writing to file */
 			gmt_BC_init (GMT, G_obj->header);	/* Initialize grid interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_OUT), "Grid memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = G_obj;	/* Set resource pointer to the grid */
@@ -5594,7 +5594,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			/* When source is an actual file we place the cube container into the S_obj->resource slot; no new object required */
 			/* If we need to read the header etc then we based this on the first layer in the cube */
 			if ((mode & GMT_DATA_ONLY) == 0) {	/* Get the cube header information */
-				char cube_layer[GMT_LEN64] = {""}, *nc_z_named = NULL, *the_file = NULL;
+				char cube_layer[GMT_LEN64] = {""}, z_name[GMT_GRID_UNIT_LEN80] = {""}, *nc_z_named = NULL, *the_file = NULL;
 				/* Got a single 3-D cube netCDF name, possibly selecting a specific variable via ?<name> */
 				the_file = strdup (S_obj->filename);		/* Duplicate filename since we may change it */
 				nc_z_named = strchr (the_file, '?');	/* Maybe given a specific variable? */
@@ -5602,7 +5602,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					strcpy (cube_layer, &nc_z_named[1]);	/* Place variable name in cube_layer string */
 					nc_z_named[0] = '\0';	/* Chop off layer name for now */
 				}
-				if (gmt_nc_read_cube_info (GMT, the_file, w_range, &n_layers, &level)) {	/* Learn the basics about the cube */
+				if (gmt_nc_read_cube_info (GMT, the_file, w_range, &n_layers, &level, z_name)) {	/* Learn the basics about the cube */
 					GMT_Report (API, GMT_MSG_ERROR, "gmtapi_import_cube: Unable to examine cube %s.\n", the_file);
 					gmt_M_str_free (the_file);
 					return_null (API, GMT_RUNTIME_ERROR);
@@ -5627,6 +5627,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				U_obj->header->n_bands = n_layers;
 				U_obj->mode = mode;
 				if (nc_z_named) strncpy (U_obj->name, cube_layer, GMT_GRID_VARNAME_LEN80);	/* Remember this name if given */
+				strncpy (U_obj->units, z_name, GMT_GRID_UNIT_LEN80);	/* Place the cube's z-unit (for z-dimension) */
 				HH = gmt_get_H_hidden (U_obj->header);
 				strncpy (HH->name, the_file, GMT_GRID_NAME_LEN256);	/* Filename minus any specified variable */
 				if (nc_z_named) nc_z_named[0] = '?';	/* Restore layer name in file name */
@@ -6120,7 +6121,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			gmt_M_memcpy (U_obj->header->pad, GMT->current.io.pad, 4, int);		/* Set desired padding */
 			U_copy->header->size = gmtapi_set_grdarray_size (GMT, U_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which may include padding */
 			U_copy->data = gmt_M_memory_aligned (GMT, NULL, U_copy->header->size, gmt_grdfloat);
-			U_copy->header->z_min = DBL_MAX;	U_copy->header->z_max = -DBL_MAX;	/* Must set zmin/zmax since we are not writing */
+			U_copy->header->z_min = DBL_MAX;	U_copy->header->z_max = -DBL_MAX;	/* Must set vmin/vmax since we are not writing to file */
 			U_copy->header->n_bands = k1 - k0 + 1;
 			for (k = k0; k <= k1; k++) {
 				for (row = j0; row <= j1; row++) {
@@ -6142,7 +6143,7 @@ GMT_LOCAL int gmtapi_export_cube (struct GMTAPI_CTRL *API, int object_ID, unsign
 			if (S_obj->region) return (gmtlib_report_error (API, GMT_SUBSET_NOT_ALLOWED));
 			if (mode & GMT_CONTAINER_ONLY) return (gmtlib_report_error (API, GMT_NOT_A_VALID_MODE));
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing cube data to GMT_CUBE memory location\n");
-			gmt_grd_zminmax (GMT, U_obj->header, U_obj->data);	/* Must set zmin/zmax since we are not writing */
+			gmt_cube_vminmax (GMT, U_obj->header, U_obj->data);	/* Must set cube's vmin/vmax since we are not writing to file */
 			gmt_BC_init (GMT, U_obj->header);	/* Initialize cube interpolation and boundary condition parameters */
 			if (gmt_M_err_pass (GMT, gmt_cube_BC_set (GMT, U_obj, GMT_OUT), "Cube memory")) return (gmtlib_report_error (API, GMT_GRID_BC_ERROR));	/* Set boundary conditions */
 			S_obj->resource = U_obj;	/* Set resource pointer to the cube */
@@ -12444,28 +12445,21 @@ GMT_LOCAL bool gmtapi_operator_takes_dataset (struct GMT_OPTION *opt, int *geome
 }
 
 GMT_LOCAL char gmtapi_grdinterpolate_type (struct GMTAPI_CTRL *API, struct GMT_OPTION *options) {
-	unsigned int n_files = 0;
-	char type = 'D';	/* For -S */
-	struct GMT_OPTION *opt = NULL, *E = NULL, *S = NULL, *T = NULL;
+	char type;
+	struct GMT_OPTION *opt = NULL, *E = NULL, *S = NULL;
 	gmt_M_unused (API);
 
-	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
-		if (opt->option == GMT_OPT_INFILE) n_files++;
-		else if (opt->option == 'E') E = opt;
+	for (opt = options; opt; opt = opt->next) {	/* Look for -E and -S */
+		if (opt->option == 'E') E = opt;
 		else if (opt->option == 'S') S = opt;
-		else if (opt->option == 'T') T = opt;
 	}
 	/* Now determine the various cases that yield different return types */
-	if (E == NULL && S == NULL) {	/* Interpolating onto a single grid or a new cube */
-		if (T == NULL && n_files > 1)	/* Repackaging multiple grids as a single cube */
-			type = 'U';
-		else if (T && (strchr (T->arg, '/') || strchr (T->arg, ',')))	/* Making more than one output layer */
-			type = 'U';
-		else
-			type = 'G';	/* Making a single grid layer */
-	}
-	else if (E)	/* Sample a vertical slice as a grid */
+	if (S)	/* Sample down lines and returning result via a dataset */
+		type = 'D';
+	else if (E)	/* Return a vertical slice via a grid */
 		type = 'G';
+	else	/* Interpolating onto a single or multilayer cube */
+		type = 'U';
 
 	return (type);
 }
@@ -15144,6 +15138,8 @@ int GMT_Get_FilePath (void *V_API, unsigned int family, unsigned int direction, 
 	}
 
 	if ((mode & GMT_FILE_CHECK) == 0) gmt_set_unspecified_remote_registration (API, file_ptr);	/* Complete remote filenames without registration information */
+
+	gmt_filename_get (file);	/* Replace any ASCII 29 with spaces (if filename had spaces they may now be ASCII 29) */
 
 	switch (family) {
 		case GMT_IS_GRID:
