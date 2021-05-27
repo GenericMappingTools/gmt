@@ -35,7 +35,7 @@ PROJ=M23.78c			# Map projection and width
 X=0.115c			# Offset in X
 Y=0.91c				# Offset in Y
 # Create Profile
-cat << 'EOF' > tmp_profile
+cat << EOF > tmp_profile
 $Long1 $Lat1
 $Long2 $Lat2
 EOF

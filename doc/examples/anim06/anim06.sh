@@ -14,7 +14,7 @@
 rate=24			# Frames per seconds
 frames=$(gmt math -Q 60 $rate MUL =)
 # 0. Initial parameters
-cat << 'EOF' > init.sh
+cat << EOF > init.sh
 R=-R-7.5/2.5/-1.5/2	# Fixed plot domain window
 J=-JX22c/11.5c		# Frame size after removing margin space
 f=2			# Frequency of chirp in Hz at end time
