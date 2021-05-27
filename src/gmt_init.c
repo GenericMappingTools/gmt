@@ -359,7 +359,7 @@ static struct GMT_FONTSPEC GMT_standard_fonts[GMT_N_STANDARD_FONTS] = {
 #include "standard_adobe_fonts.h"
 };
 
-#define DEF_HEADER_MARKERS "#%!;\"\'"
+#define DEF_HEADER_MARKERS "#%!;\"\'"	/* Default accepts GMT or MATLAB header records or comments of quoted text */
 
 #define N_MAP_ANNOT_OBLIQUE_ITEMS 7
 
@@ -719,7 +719,8 @@ GMT_LOCAL void gmtinit_translate_to_long_options (struct GMTAPI_CTRL *API, struc
 GMT_LOCAL int gmtinit_check_markers (struct GMT_CTRL *GMT) {
 	int error = GMT_NOERROR;
 	/* Make sure segment header markers and header markers are not the same */
-	strcpy (GMT->current.setting.io_head_marker_in, "#%\"\'");	/* Accept GMT or MATLAB header records or comments or quoted text */
+	if (GMT->current.setting.io_head_marker_in[0] == '\0')	/* Nothing, set default before comparison */
+		strcpy (GMT->current.setting.io_head_marker_in, DEF_HEADER_MARKERS);
 
 	if (strchr (GMT->current.setting.io_head_marker_in, GMT->current.setting.io_seg_marker[GMT_IN])) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Conflict between the settings of IO_HEADER_MARKER and IO_SEGMENT_MARKER for input:\n");

@@ -89,14 +89,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid file with NaN-holes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid file with NaN holes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify algorithm and parameters for in-fill:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c<value> Fill in NaNs with the constant <value>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaNs with nearest neighbor values;\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   c<value> Fill in NaN holes with the constant <value>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaN holes with nearest neighbor values;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     append <max_radius> nodes for the outward search.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     [Default radius is sqrt(nx^2+ny^2), with (nx,ny) the dimensions of the grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s Fill in NaNs with a spline (optionally append tension).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   s Fill in NaN holes with a spline (optionally append tension).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the file to write the filled-in grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Just list the subregions w/e/s/n of each hole.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   No grid fill takes place and -G is ignored.\n");
@@ -191,6 +191,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->L.active), "Must specify an algorithm with -A unless -L is used\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->L.active || Ctrl->G.file), "Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->L.active), "Must specify either -A or -L\n");
 
