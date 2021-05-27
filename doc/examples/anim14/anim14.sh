@@ -35,7 +35,7 @@ PROJ=M23.78c			# Map projection and width
 X=0.115c			# Offset in X
 Y=0.91c				# Offset in Y
 # Create Profile
-cat << EOF > tmp_profile
+cat << 'EOF' > tmp_profile
 $Long1 $Lat1
 $Long2 $Lat2
 EOF
@@ -50,7 +50,7 @@ gmt math -T$Angles T SIND -o0,1,0 = | gmt math STDIN -T -C0 COSD = | gawk '$0=$0
 Ha=$(gmt math -Q $H 0.7c SUB =) # Height of inset with angles
 Wa=$(gmt math -Q $Ha $VE DIV =) # Width of inset with angles (calculated from vertical exaggeration to have same deformation as the profile)
 #       -----------------------------------------------------------------------------------------------------------
-cat << EOF > pre.sh
+cat << 'EOF' > pre.sh
 	gmt set FONT_LABEL 10p FONT_ANNOT_PRIMARY 7p MAP_FRAME_PEN thin,black MAP_GRID_PEN faint,gray
 gmt begin
 	# 1a. Create list of dates for the animation
@@ -79,12 +79,12 @@ gmt begin
 gmt end
 EOF
 # 2. Set up main script
-cat << EOF > main.sh
+cat << 'EOF' > main.sh
 gmt begin
 	gmt set TIME_UNIT d
-	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R0/$KM/0/$DepthMax -JX$W/-$H -Y$Y -X$X -Z"coupe -Aa$Long1/$Lat1/$Long2/$Lat2+w$Dist -Q -Sc0.3c+f0" -Cq.cpt 
-	gmt events coupe_O.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sc0.3c+f0" -Yh+0.3c
-	gmt events coupe_I.gmt -Wfaint -T\${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sc0.3c+f0" -Cq.cpt
+	gmt events coupe_I.gmt -Wfaint -T${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R0/$KM/0/$DepthMax -JX$W/-$H -Y$Y -X$X -Z"coupe -Aa$Long1/$Lat1/$Long2/$Lat2+w$Dist -Q -Sc0.3c+f0" -Cq.cpt 
+	gmt events coupe_O.gmt -Wfaint -T${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sc0.3c+f0" -Yh+0.3c
+	gmt events coupe_I.gmt -Wfaint -T${MOVIE_COL0} -Es+r21+p42+d35+f1 -Mi0.6 -Ms1.5+c0.8 -Mt+c10 -R$REGION -J$PROJ -Z"meca -Sc0.3c+f0" -Cq.cpt
 gmt end
 EOF
 # 3. Run the movie
