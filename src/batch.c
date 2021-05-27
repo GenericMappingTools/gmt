@@ -855,7 +855,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Run master script %s %s\n", main_file, state_tag);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running master script %s for argument %s returned error %d - exiting.\n", main_file, state_tag, error);
-			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
 		Return (GMT_NOERROR);	/* We are done */
@@ -920,7 +919,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Run postflight script %s\n", post_file);
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
-			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
