@@ -18032,7 +18032,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead: %s", start);
 				else if (strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
 					prev = p - 1;	/* Get previous character */
-					if (prev < start || prev[0] != '$')
+					if ((prev < start || prev[0] != '$') && strchr (p, '\"') == NULL)	/* Appears to be (....) but not inside double-quotes */
 						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
 				}
 			}
