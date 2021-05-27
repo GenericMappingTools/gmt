@@ -397,6 +397,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused, n_to_run;
 	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job;
 
+	size_t P_len;
+
 	bool done = false, n_written = false, has_text = false, is_classic = false, has_conf = false;
 
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, var_token[4] = "$$%";
@@ -410,6 +412,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmpwpath[PATH_MAX] = {""};
 	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cwd[PATH_MAX] = {""}, conf_file[PATH_MAX];
 	char completion_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
+
+	char **work_files = NULL;
 
 	double percent = 0.0;
 
@@ -706,46 +710,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	else	/* Compute width from largest job number */
 		precision = irint (ceil (log10 ((double)(Ctrl->T.start_job+n_jobs))+0.1));	/* Width needed to hold largest job number, guaranteed to give at least 1 */
 
-	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the temporary postflight script */
-		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
-		GMT_Report (API, GMT_MSG_INFORMATION, "Create postflight script %s\n", post_file);
-		if ((fp = fopen (post_file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to create postflight file %s - exiting\n", post_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
-		}
-		gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
-		gmt_set_comment (fp, Ctrl->In.mode, "Postflight script");
-		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
-		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since sub-shells may mess things up */
-		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
-			fprintf (fp, "set GMT_SESSION_NAME=1\n");
-		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
-			gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
-		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_POSTFLIGHT].fp)) {	/* Read the postflight script and copy to the temporary postflight script with some exceptions */
-			if (gmt_is_gmtmodule (line, "begin")) {
-				fprintf (fp, "%s", line);	/* Allow args since the script may make a plot */
-				if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
-				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
-			}
-			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
-				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
-				fprintf (fp, "%s", line);	/* Just copy the line as is */
-			}
-		}
-		/* Move any final products up to topdir */
-		fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_PREFIX"), topdir);
-		fclose (Ctrl->S[BATCH_POSTFLIGHT].fp);	/* Done reading the postflight script */
-		fclose (fp);	/* Done writing the postflight script */
-#ifndef WIN32	/* Set executable bit if not Windows cmd */
-		if (chmod (post_file, S_IRWXU)) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
-			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
-		}
-#endif
-	}
-
 	/* Create parameter include files, one for each job */
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Parameter files for main processing: %d\n", n_to_run);
@@ -913,7 +877,54 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, status);	/* Done with this structure array */
 
-	if (Ctrl->S[BATCH_POSTFLIGHT].active) {
+	work_files = gmt_get_dir_list (GMT, workdir, NULL);	/* Get list of all files in workdir */
+	P_len = strlen (Ctrl->N.prefix);	/* Length of the prefix */
+
+	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the temporary postflight script */
+		bool found_products = false;
+		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
+		GMT_Report (API, GMT_MSG_INFORMATION, "Create postflight script %s\n", post_file);
+		if ((fp = fopen (post_file, "w")) == NULL) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to create postflight file %s - exiting\n", post_file);
+			fclose (Ctrl->In.fp);
+			Return (GMT_ERROR_ON_FOPEN);
+		}
+		gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
+		gmt_set_comment (fp, Ctrl->In.mode, "Postflight script");
+		fprintf (fp, "%s %s\n", load[Ctrl->In.mode], init_file);	/* Include the initialization parameters */
+		fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a SESSION_NAME since sub-shells may mess things up */
+		if (Ctrl->In.mode == GMT_DOS_MODE)	/* Set GMT_SESSION_NAME under Windows to 1 since we run this separately */
+			fprintf (fp, "set GMT_SESSION_NAME=1\n");
+		else	/* On UNIX we may use the script's PID as GMT_SESSION_NAME */
+			gmt_set_tvalue (fp, Ctrl->In.mode, true, "GMT_SESSION_NAME", "$$");
+		while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->S[BATCH_POSTFLIGHT].fp)) {	/* Read the postflight script and copy to the temporary postflight script with some exceptions */
+			if (gmt_is_gmtmodule (line, "begin")) {
+				fprintf (fp, "%s", line);	/* Allow args since the script may make a plot */
+				if (has_conf && !strstr (line, "-C")) fprintf (fp, cpconf[Ctrl->In.mode], conf_file);
+				fprintf (fp, "\tgmt set DIR_DATA \"%s\"\n", datadir);
+			}
+			else if (!strstr (line, "#!/"))	{	/* Skip any leading shell incantation since already placed */
+				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
+				fprintf (fp, "%s", line);	/* Just copy the line as is */
+			}
+		}
+		/* Move any final products up to topdir if they exist */
+		k = 0;
+		while (!found_products && work_files[k]) {	/* Keep looking until we hit NULL */
+			if (!strncmp (work_files[k], Ctrl->N.prefix, P_len) && strlen (work_files[k]) > P_len && work_files[k][P_len] != '_')	/* Found a product we wish to keep */
+				found_products = true;
+			k++;
+		}
+		if (found_products) fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_PREFIX"), topdir);
+		fclose (Ctrl->S[BATCH_POSTFLIGHT].fp);	/* Done reading the postflight script */
+		fclose (fp);	/* Done writing the postflight script */
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+		if (chmod (post_file, S_IRWXU)) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
+			fclose (Ctrl->In.fp);
+			Return (GMT_RUNTIME_ERROR);
+		}
+#endif
 		/* Run post-flight now since all processing has completed */
 		sprintf (cmd, "%s %s", sys_cmd_wait[Ctrl->In.mode], post_file);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Run postflight script %s\n", post_file);
@@ -925,21 +936,20 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->Q.active) {	/* Clean up after ourselves */
 		/* We will delete all files whose name does not start with the prefix set via -N */
-		char **file = gmt_get_dir_list (GMT, workdir, NULL);	/* Get list of all files in workdir */
-		size_t P_len = strlen (Ctrl->N.prefix);	/* Length of the prefix */
 		uint64_t k = 0, n_removed = 0;
-		while (file[k]) {	/* Keep looking until we hit NULL */
-			if (strncmp (file[k], Ctrl->N.prefix, P_len)) {	/* Not a product we wish to keep */
-				if (gmt_remove_file (GMT, file[k]))	/* Delete this temporary file/script */
-					GMT_Report (API, GMT_MSG_WARNING, "Unable to delete the temporary file %s.\n", file[k]);
+		while (work_files[k]) {	/* Keep looking until we hit NULL */
+			if (strncmp (work_files[k], Ctrl->N.prefix, P_len)) {	/* Not a product we wish to keep */
+				if (gmt_remove_file (GMT, work_files[k]))	/* Delete this temporary file/script */
+					GMT_Report (API, GMT_MSG_WARNING, "Unable to delete the temporary file %s.\n", work_files[k]);
 				else {
 					n_removed++;
-					GMT_Report (API, GMT_MSG_DEBUG, "Temporary file %s deleted\n", file[k]);
+					GMT_Report (API, GMT_MSG_DEBUG, "Temporary file %s deleted\n", work_files[k]);
 				}
 			}
 			k++;
 		}
-		gmt_free_dir_list (GMT, &file);
+		if (Ctrl->S[BATCH_POSTFLIGHT].active && gmt_remove_file (GMT,post_file))	/* Delete this temporary file/script */
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to delete the temporary file %s.\n", work_files[k]);
 		if (n_removed == k) {	/* Nothing left in directory, remove it too */
 			if (gmt_remove_dir (API, workdir, false))
 				GMT_Report (API, GMT_MSG_WARNING, "Unable to delete the working directory %s.\n", workdir);
@@ -949,6 +959,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		else
 			GMT_Report (API, GMT_MSG_NOTICE, "Work directory %s not deleted as it contains %" PRIu64 " product files.\n", workdir, k - n_removed);
 	}
+
+	if (work_files) gmt_free_dir_list (GMT, &work_files);
 
 	/* Cd back up to the parent directory */
 	if (chdir (topdir)) {	/* Should never happen but we should check */
