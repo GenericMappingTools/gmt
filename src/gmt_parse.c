@@ -533,7 +533,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		unsigned int pos = 0, new_n_args = 0, k;
 		bool quoted;
 		size_t n_alloc = GMT_SMALL_CHUNK;
-		char p[GMT_LEN1024] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
+		char p[GMT_BUFSIZ] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
 		new_args = gmt_M_memory (G, NULL, n_alloc, char *);
 		/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 		 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
