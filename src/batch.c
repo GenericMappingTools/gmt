@@ -387,6 +387,21 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
+GMT_LOCAL bool batch_is_product (char *file, char *prefix, size_t len, int precision) {
+	/* A product file leads with the BATCH_PREFIX and not the BATCH_NAME.
+	 * Since BATCH_NAME = BATCH_PREFIX_##### (number of # is precision) we
+	 * may need to check if those # are all digits as part of the checking. */
+	size_t L;
+	if (strncmp (file, prefix, len)) return false;	/* Not the right prefix */
+	if ((L = strlen (file)) == len) return false;	/* A directory? */
+	/* Now must determine difference between prefix and name */
+	if (L <= (len + precision + 1)) return true;	/* Can't be a name so found a product we wish to keep */
+	for (int k = 0; k < precision; k++) {
+		if (!isdigit (file[len+1+k])) return true;	/* Can't be a name so found a product we wish to keep */
+	}
+	return false;	/* Must be a name file */
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -877,11 +892,9 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	gmt_M_free (GMT, status);	/* Done with this structure array */
 
-	work_files = gmt_get_dir_list (GMT, workdir, NULL);	/* Get list of all files in workdir */
 	P_len = strlen (Ctrl->N.prefix);	/* Length of the prefix */
 
 	if (Ctrl->S[BATCH_POSTFLIGHT].active) {	/* Prepare the temporary postflight script */
-		bool found_products = false;
 		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Create postflight script %s\n", post_file);
 		if ((fp = fopen (post_file, "w")) == NULL) {
@@ -908,14 +921,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				fprintf (fp, "%s", line);	/* Just copy the line as is */
 			}
 		}
-		/* Move any final products up to topdir if they exist */
-		k = 0;
-		while (!found_products && work_files[k]) {	/* Keep looking until we hit NULL */
-			if (!strncmp (work_files[k], Ctrl->N.prefix, P_len) && strlen (work_files[k]) > P_len && work_files[k][P_len] != '_')	/* Found a product we wish to keep */
-				found_products = true;
-			k++;
-		}
-		if (found_products) fprintf (fp, "%s %s.* %s\n", mvfile[Ctrl->In.mode], gmt_place_var (Ctrl->In.mode, "BATCH_PREFIX"), topdir);
 		fclose (Ctrl->S[BATCH_POSTFLIGHT].fp);	/* Done reading the postflight script */
 		fclose (fp);	/* Done writing the postflight script */
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
@@ -932,11 +937,28 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 			Return (GMT_RUNTIME_ERROR);
 		}
+
+		/* Move any final products up to topdir if they exist */
+		work_files = gmt_get_dir_list (GMT, workdir, NULL);	/* Get list of all files in workdir */
+		k = 0;
+		while (work_files[k]) {	/* Keep looking until we hit NULL */
+			/* A product file leads with the BATCH_PREFIX and not the BATCH_NAME */
+			if (batch_is_product (work_files[k], Ctrl->N.prefix, P_len, precision)) {	/* Found a product we wish to keep */
+				sprintf (line, "%s %s %s", mvfile[Ctrl->In.mode], work_files[k], topdir);
+				if ((error = system (line))) {
+					GMT_Report (API, GMT_MSG_ERROR, "Running command %s returned error %d - aborting.\n", line, error);
+					Return (GMT_RUNTIME_ERROR);
+				}
+			}
+			k++;
+		}
+		gmt_free_dir_list (GMT, &work_files);
 	}
 
 	if (!Ctrl->Q.active) {	/* Clean up after ourselves */
 		/* We will delete all files whose name does not start with the prefix set via -N */
 		uint64_t k = 0, n_removed = 0;
+		work_files = gmt_get_dir_list (GMT, workdir, NULL);	/* Get list of all files in workdir */
 		while (work_files[k]) {	/* Keep looking until we hit NULL */
 			if (strncmp (work_files[k], Ctrl->N.prefix, P_len)) {	/* Not a product we wish to keep */
 				if (gmt_remove_file (GMT, work_files[k]))	/* Delete this temporary file/script */
@@ -948,8 +970,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			}
 			k++;
 		}
-		if (Ctrl->S[BATCH_POSTFLIGHT].active && gmt_remove_file (GMT,post_file))	/* Delete this temporary file/script */
-			GMT_Report (API, GMT_MSG_WARNING, "Unable to delete the temporary file %s.\n", work_files[k]);
 		if (n_removed == k) {	/* Nothing left in directory, remove it too */
 			if (gmt_remove_dir (API, workdir, false))
 				GMT_Report (API, GMT_MSG_WARNING, "Unable to delete the working directory %s.\n", workdir);
