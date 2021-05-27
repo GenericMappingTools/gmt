@@ -192,6 +192,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->L.active || Ctrl->G.file), "Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->L.active), "Must specify either -A or -L\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }

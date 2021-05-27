@@ -30,13 +30,16 @@ Description
 **grdfill** reads a grid that presumably has unfilled holes that the user
 wants to fill in some fashion.  Holes are identified by NaN values but
 this criteria can be changed via **-N**.  There are several different algorithms that
-can be used to replace the hole values.
+can be used to replace the hole values.  **Note**: You must select either **-A** or **-L**.
 
 Required Arguments
 ------------------
 
 *ingrid*
     This is the input grid file.
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -51,9 +54,6 @@ Required Arguments
 
 **-G**\ *outgrid*
     This is the output grid file.
-
-Optional Arguments
-------------------
 
 .. _-N:
 
