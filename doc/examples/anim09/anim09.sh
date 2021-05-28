@@ -18,7 +18,7 @@
 # https://youtu.be/LTxlR5LuJ8g
 # The movie took ~6 hours to render on a 24-core MacPro 2013.
 
-cat << EOF > pre.sh
+cat << 'EOF' > pre.sh
 #!/usr/bin/env bash
 # Pre-script: Runs once to produce files needed for all frames
 gmt begin
@@ -26,21 +26,21 @@ gmt begin
 	gmt makecpt -Cgeo -H > MOR_topo.cpt
 gmt end
 EOF
-cat << EOF > include.sh
+cat << 'EOF' > include.sh
 # A set of parameters needed by all frames
 ALTITUDE=1000
 TILT=55
 WIDTH=36
 HEIGHT=34
 EOF
-cat << EOF > main.sh
+cat << 'EOF' > main.sh
 #!/usr/bin/env bash
 # Main frame script that makes a single frame given the location and twist from the data file
 # and the other view parameters from the include file.
 gmt begin
-	gmt grdimage -Rg -JG\${MOVIE_COL0}/\${MOVIE_COL1}/\${ALTITUDE}/\${MOVIE_COL2}/\${TILT}/\${MOVIE_COL3}/\${WIDTH}/\${HEIGHT}/\${MOVIE_WIDTH} \
+	gmt grdimage -Rg -JG${MOVIE_COL0}/${MOVIE_COL1}/${ALTITUDE}/${MOVIE_COL2}/${TILT}/${MOVIE_COL3}/${WIDTH}/${HEIGHT}/${MOVIE_WIDTH} \
 	  -Y0 -X0 @earth_relief_30s -I/tmp/earth_relief_30s+2.5_int.nc -CMOR_topo.cpt
-	gmt events MOR_names.txt -L100 -Et+r6+f6 -T\${MOVIE_FRAME} -F+f12p,Helvetica-Bold,yellow
+	gmt events MOR_names.txt -L100 -Et+r6+f6 -T${MOVIE_FRAME} -F+f12p,Helvetica-Bold,yellow
 gmt end
 EOF
 # 3. Run the movie

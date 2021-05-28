@@ -12,7 +12,7 @@ else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th fr
 	opt="-Fmp4 -A+l+s10"
 fi
 # 1. Create files needed in the loop
-cat << EOF > pre.sh
+cat << 'EOF' > pre.sh
 # Set up flight path
 gmt begin
 	gmt project -C-73.8333/40.75 -E-80.133/25.75 -G10 -Q > flight_path.txt
@@ -22,9 +22,9 @@ gmt begin
 gmt end
 EOF
 # 2. Set up the main frame script
-cat << EOF > main.sh
+cat << 'EOF' > main.sh
 gmt begin
-	gmt grdimage -JG\${MOVIE_COL0}/\${MOVIE_COL1}/160/210/55/0/36/34/\${MOVIE_WIDTH}+du \
+	gmt grdimage -JG${MOVIE_COL0}/${MOVIE_COL1}/160/210/55/0/36/34/${MOVIE_WIDTH}+du \
 		-Rg USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0
 	gmt plot -W1p flight_path.txt
 gmt end
