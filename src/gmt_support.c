@@ -1099,6 +1099,11 @@ int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 				strcat (P->style, tmp);
 				n_dash += 2;
 			}
+			else if (line[i] == ':') { 	/* :<phase> setting given at the end */
+				i++;	/* Advance past the colon */
+				P->offset = atof (line) * GMT->session.u2u[unit][GMT_PT];
+				i = strlen (line) - 1;	/* So that when i++ happens at the end of the for loop we will exit */
+			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pen attributes not using just - and . for dashes and dots. Offending character --> %c\n", line[i]);
 				return GMT_PARSE_ERROR;

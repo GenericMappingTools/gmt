@@ -837,8 +837,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 		/* Need geometric mean dimension of subplot to calculate the undefined quantities */
 
-		if (Ctrl->F.mode == SUBPLOT_FIGURE)	/* Got figure dimensions */
-			gmean_dim = sqrt (Ctrl->F.dim[GMT_X] * Ctrl->F.dim[GMT_Y]);
+		if (Ctrl->F.mode == SUBPLOT_FIGURE)	/* Got figure dimensions, approximate panel size */
+			gmean_dim = sqrt ((Ctrl->F.dim[GMT_X] / Ctrl->N.dim[GMT_X]) * (Ctrl->F.dim[GMT_Y] / Ctrl->N.dim[GMT_Y]));
 		else {	/* Got panel dimension(s), compute total figure dimensions */
 			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
@@ -846,7 +846,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			/* Sum up individual widths or heights and add the fluff space */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) width  += Ctrl->F.w[col];
 			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) height += Ctrl->F.h[row];
-			gmean_dim = sqrt (width * height);
+			gmean_dim = sqrt ((width / Ctrl->N.dim[GMT_X]) * (height / Ctrl->N.dim[GMT_Y]));
 			width = height = 0.0;	/* Reset */
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot max panel dimension estimated: %g inch\n", gmean_dim);
