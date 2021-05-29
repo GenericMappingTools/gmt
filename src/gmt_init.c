@@ -2381,8 +2381,8 @@ bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item) {
 		if (cr) cr[0] = '+';	/* Restore string */
 		return (false);		/* Nothing more to do */
 	}
-	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode |= GMT_IO_NAN_ANY, n--;			/* Old syntax set -sa */
-	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode |= GMT_IO_NAN_KEEP, n--;	/* Old syntax set -sr */
+	if (item[n-1] == 'a') GMT->current.setting.io_nan_mode = GMT_IO_NAN_ANY, n--;			/* Old syntax set -sa */
+	else if (item[n-1] == 'r') GMT->current.setting.io_nan_mode = GMT_IO_NAN_KEEP, n--;	/* Old syntax set -sr */
 	if (n == 0) return (false);		/* No column arguments to process */
 	/* Here we have user-supplied column information */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) tmp[i] = -1;
