@@ -281,10 +281,11 @@ GMT_LOCAL int gmtparse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION
 		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
 	assert (B_id != GMT_NOTSET);	/* Safety valve just in case */
 	check_B = (strncmp (GMT->init.module_name, "psscale", 7U) && strncmp (GMT->init.module_name, "docs", 4U));
-	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
+	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame.<fig> file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		snprintf (file, PATH_MAX, "%s/gmt.frame", GMT->parent->gwf_dir);
+		int fig = gmt_get_current_figure (GMT->parent);	/* Get current figure number */
+		snprintf (file, PATH_MAX, "%s/gmt.frame.%d", GMT->parent->gwf_dir, fig);
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to create file %s\n", file);
 			return (-1);

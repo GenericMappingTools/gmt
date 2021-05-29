@@ -18956,6 +18956,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	struct GMT_OPTION *opt = NULL;
 	char *c = NULL;
 	unsigned int n_errors = 0;
+	int fig;
 	FILE *fp = NULL;
 	/* Initialize the default settings before considering any -B history */
 	gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values for now */
@@ -18973,8 +18974,9 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 		default: return; break;	/* No auto-adjust for the rest */
 	}
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Determined colorbar side = %c and axis = %c\n", side, axis);
+	fig = gmt_get_current_figure (GMT->parent);	/* Get current figure number */
 
-	snprintf (file, PATH_MAX, "%s/gmt.frame", GMT->parent->gwf_dir);
+	snprintf (file, PATH_MAX, "%s/gmt.frame.%d", GMT->parent->gwf_dir, fig);
 	if ((fp = fopen (file, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "No file %s with frame information - no adjustments made\n", file);
 		return;
