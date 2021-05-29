@@ -6919,6 +6919,8 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 				strncpy (width, def_width, GMT_LEN256-1);
 			}
 		}
+		else	/* Means we got width, color */
+			set_NaN = false;
 	}
 	else if (n == 1) {	/* Could be width or color or style */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,style got stored in width */
