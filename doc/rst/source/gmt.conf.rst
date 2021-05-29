@@ -314,7 +314,7 @@ FORMAT Parameters
 
         The printf syntax is ``%[minimum width].[precision]type``, where
         **type** may be **f**, **e**, **E**, **g** or **G**.
-        The default is ``%.12g``, i.e. no minimum width and 12 digit precisision.
+        The default is ``%.12g``, i.e. no minimum width and 12 digit precision.
 
     **FORMAT_TIME_MAP**
         Sets both :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
