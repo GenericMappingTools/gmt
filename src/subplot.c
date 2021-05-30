@@ -531,7 +531,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				if (c) {	/* Gave paint/pen/debug modifiers */
 					c[0] = '+';	/* Restore modifiers */
 					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "acdgpfw", GMT_MSG_ERROR)) n_errors++;
-					if (gmt_get_modifier (opt->arg, 'a', string))
+					if (gmt_get_modifier (opt->arg, 'a', string) && string[0] == 's')
 						Ctrl->F.panel_scale = true;
 					if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance for rectangle */
 						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->F.clearance) < 0) n_errors++;
