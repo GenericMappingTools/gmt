@@ -18,7 +18,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autolabel* ]
 [ |-C|\ [*side*]\ *clearance* ]
 [ |-D| ]
@@ -51,7 +51,7 @@ Required Arguments (begin mode)
 
 .. _-F:
 
-**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
     Specify the dimensions of the figure.  There are two different ways to do this:
     (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
     a single subplot.
@@ -81,6 +81,8 @@ Required Arguments (begin mode)
     Optionally, you may draw the outline (**+p**\ *pen*) or paint (**+g**\ *fill*\) the figure rectangle behind the
     subplots, add dividing lines between panels (**+w**\ *pen*), and even expand it via **+c**.  These are most
     useful if you supply **-B+n** to **subplot begin**, meaning no ticks or annotations will take place in the subplots.
+    By default (**+af**), we auto-scale the fonts and pens based on the geometric mean dimension of the entire figure.
+    Append **+as** to instead determine the scaling from the geometric mean subplot dimension.
 
 Optional Arguments (begin mode)
 -------------------------------
