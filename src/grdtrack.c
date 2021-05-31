@@ -766,7 +766,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		GC[g].HH = gmt_get_H_hidden (GC[g].G->header);
 		/* Temporary fix for external grids with no pad; see discussion at https://github.com/GenericMappingTools/pygmt/issues/1309 */
 		if (GC[g].G->header->pad[XLO] < 2 || GC[g].G->header->pad[XHI] < 2 || GC[g].G->header->pad[YLO] < 2 || GC[g].G->header->pad[YHI] < 2)
-			GMT->common.n.interpolant = MAX (GMT->common.n.interpolant, BCR_BILINEAR);	/* Can only do near-neighbor or bilinar without 2 pad */
+			GMT->common.n.interpolant = MAX (GMT->common.n.interpolant, BCR_BILINEAR);	/* Can only do near-neighbor or bilinear without 2 pad */
 	}
 
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
