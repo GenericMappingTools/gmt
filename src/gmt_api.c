@@ -9567,11 +9567,26 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 		S->status = GMT_IS_USING;				/* Mark as being read */
 		n_use = gmtapi_n_cols_needed_for_gaps (GMT, S->n_columns);
 		gmtapi_update_prev_rec (GMT, n_use);
-		for (col = 0; col < API->current_get_n_columns; col++) {	/* We know the number of columns from registration */
-			col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-			ij = API->current_get_M_index (S->rec, col_pos, M->dim);
-			API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
-		}
+		//for (col = 0; col < API->current_get_n_columns; col++) {	/* We know the number of columns from registration */
+		//	col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
+		//	ij = API->current_get_M_index (S->rec, col_pos, M->dim);
+		//	API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
+		//}
+
+        col = 0;
+        while (col < API->current_get_n_columns) {
+            col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
+            ij = API->current_get_M_index (S->rec, col_pos, M->dim);
+            API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
+            col++;           
+            while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
+                /* This input column is requested more than once */
+                col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
+                ij = API->current_get_M_index (S->rec, col_pos, M->dim);
+                API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
+                col++;
+            }
+       }
 		S->rec++;
 		if ((status = gmtapi_bin_input_memory (GMT, S->n_columns, n_use)) < 0) {	/* Process the data record */
 			if (status == GMTAPI_GOT_SEGGAP)	 /* Since we inserted a segment header we must revisit this record as first in next segment */
