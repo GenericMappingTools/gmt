@@ -9582,7 +9582,6 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
             while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
                 /* This input column is requested more than once */
                 col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
-                ij = API->current_get_M_index (S->rec, col_pos, M->dim);
                 API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
                 col++;
             }
