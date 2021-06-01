@@ -1194,7 +1194,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Special case were number of output columns is known before reading input records */
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z-columns only */
 			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
-			if (GMT->common.s.active && GMT->current.io.io_nan_ncols == 1 && GMT->current.io.io_nan_col[0] == GMT_Z)	/* Shift z nan-col setting */
+			if (GMT->common.s.active && !isdigit (GMT->common.s.string[0]))	/* Shift z nan-col setting to first column */
 				GMT->current.io.io_nan_col[0] = GMT_X;
 			n_out = Ctrl->G.n_grids;
 			n_lead = 0;	/* None of the input columns will be used */
