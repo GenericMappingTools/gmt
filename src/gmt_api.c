@@ -9637,11 +9637,13 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
         while (col < API->current_get_n_columns) {
             col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
             API->current_get_V_val[col_pos] (&(V->data[col_pos]), S->rec, &(GMT->current.io.curr_rec[col]));
-            col++;           
+            GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], GMT->current.io.curr_rec[col]);
+           col++;           
             while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
                 /* This input column is requested more than once */
                 col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
-                 API->current_get_V_val[col_pos] (&(V->data[col_pos]), S->rec, &(GMT->current.io.curr_rec[col]));
+                API->current_get_V_val[col_pos] (&(V->data[col_pos]), S->rec, &(GMT->current.io.curr_rec[col]));
+                GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], GMT->current.io.curr_rec[col]);
                 col++;
             }
         }
