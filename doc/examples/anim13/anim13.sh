@@ -10,8 +10,8 @@
 #
 # DEM:  @earth_relief_06m
 # Data: @waveform_AV.DOL.txt
-# 
-# The data file @waveform_AV.DOL.txt contains 4 columns: 
+#
+# The data file @waveform_AV.DOL.txt contains 4 columns:
 # UTC times, and three-component movement in east-west, north-south and up-down directions
 #
 # The finished movie is available in our YouTube channel as well:
@@ -44,7 +44,7 @@ gmt begin
 		gmt plot @waveform_AV.DOL.txt -Bpxafg -Bsxa1D -Bpyaf -BWSrt -W0.5p,darkgray -i0,1+s1e-6
 	gmt subplot end
 	# 1d. Create location map and metadata
-	gmt text -R0/4.5/0/13 -Jx1c -F+j+f -B0 -X-5.25c -Y-0.5c <<- 'EOF'
+	gmt text -R0/4.5/0/13 -Jx1c -F+j+f -B0 -X-5.25c -Y-0.5c <<- EOF
 	2.25 12.5 CM 18p 2020-10-06
 	2.25 11.7 CM 9p SE of Sand Point, Alaska
 	2.25 11 CM 10p 54.851@.N, 159.851@.W
@@ -54,7 +54,7 @@ gmt begin
 	gmt grdimage -R190W/130W/30/75 @earth_relief_06m -Ba30+f -JM3.5c -I+d -Cterra --MAP_FRAME_TYPE=plain -X0.75c -Y0.5c -BWNbr --MAP_ANNOT_OBLIQUE=lat_parallel --FONT_ANNOT_PRIMARY=9p
 	echo 161.86W 55.15N | gmt plot -St0.2c -GBlack
 	echo 159.851W 54.851N | gmt plot -Sa0.25c -Gred -Wfaint
-	gmt meca -Sc2.5c -M -G110/168/255 -W0.5p -Yh+0.5c <<- 'EOF'
+	gmt meca -Sc2.5c -M -G110/168/255 -W0.5p -Yh+0.5c <<- EOF
 	-159.851 54.851 40.5 245 29 93 61 61 88 1.048 18
 	EOF
 gmt end

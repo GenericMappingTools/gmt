@@ -29,7 +29,7 @@ gmt begin
 	# Create standard seismicity cpt
 	gmt makecpt -Cred,green,blue -T0,70,300,10000 -H > q.cpt
 	# Make lons go from 160 to 240 with a pause at 200 mid movie
-	cat <<- 'EOF' | gmt sample1d -fT --TIME_UNIT=d -I1 -Fa > times.txt
+	cat <<- EOF | gmt sample1d -fT --TIME_UNIT=d -I1 -Fa > times.txt
 	2018-01-01T	160
 	2018-05-01T	200
 	2018-06-01T	200
