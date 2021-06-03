@@ -452,7 +452,9 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 		if (Ctrl->M.active) {	/* Must convert to stage poles and adjust opening angles */
 			char tmpfile[GMT_LEN32] = {""}, cmd[GMT_LEN128] = {""};
 			sprintf (tmpfile, "gmt_half_rots.%d", (int)getpid());
+			gmt_filename_set (Ctrl->E.rot.file);	/* Replace any spaces in filename with ASCII 29 */
 			sprintf (cmd, "%s -M%g -Fs ->%s", Ctrl->E.rot.file, Ctrl->M.value, tmpfile);
+			gmt_filename_get (Ctrl->E.rot.file);	/* Replace any ASCII 29 with spaces */
 			if (GMT_Call_Module (API, "rotconverter", GMT_MODULE_CMD, cmd) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to convert %s to half-rates\n", Ctrl->E.rot.file);
 				Return (API->error);

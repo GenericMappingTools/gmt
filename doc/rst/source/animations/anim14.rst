@@ -1,6 +1,6 @@
 .. _anim14:
 
-(14) Animating earthquake focal mechamisms
+(14) Animating earthquake focal mechanisms
 ==========================================
 
 Here we make a movie of the focal mechanisms of large earthquakes from September 1981

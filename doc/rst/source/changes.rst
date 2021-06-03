@@ -34,7 +34,7 @@ New Common Options in GMT 6.2:
 New Modules in GMT 6.2:
 -----------------------
 
-#. :doc:`gmtbinstats`: Bin data and determine statistics per bin, with support for both hexagonal and rectangular tiling.
+#. :doc:`gmtbinstats`: Bin spatial data and determine statistics per bin, with support for both hexagonal and rectangular tiling.
 
 New Core Module Features in GMT 6.2:
 ------------------------------------
