@@ -14980,10 +14980,11 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 }
 
 /*! . */
-int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord) {
+int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord, double delta) {
 	/* Returns the formatted annotation string for the non-geographic axes */
 	bool upper = false;
-	unsigned int kind = 0, code;
+	unsigned int kind = 0, axis, code;
+	enum gmt_col_enum type;
 	int ival;
 
 	switch (GMT->current.map.frame.axis[T->parent].type) {
@@ -15006,7 +15007,17 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 					if (upper) gmt_str_toupper (string);
 					break;
 				default:
-					gmt_sprintf_float (GMT, string, format, coord);
+					if ((type = gmt_get_column_type (GMT, GMT_IN, T->parent)) & GMT_IS_GEO) {	/* Actually a geographic coordinate */
+						bool do_minutes = false, do_seconds = false;
+						if (!gmt_M_is_dnan (delta)) {
+							do_minutes = (fabs (fmod (delta, 1.0)) > GMT_CONV4_LIMIT);
+							do_seconds = gmtlib_set_do_seconds (GMT, delta);
+						}
+						axis = (type & GMT_IS_LON) ? GMT_X : GMT_Y;
+						gmtlib_get_annot_label (GMT, coord, string, do_minutes, do_seconds, true, axis, GMT->current.map.is_world);
+					}
+					else
+						gmt_sprintf_float (GMT, string, format, coord);
 					break;
 			}
 			break;

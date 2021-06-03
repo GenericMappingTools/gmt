@@ -2338,7 +2338,7 @@ GMT_LOCAL void gmtplot_map_tickmarks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	PSL_setdash (PSL, NULL, 0);
 }
 
-GMT_LOCAL bool gmtplot_set_do_seconds (struct GMT_CTRL *GMT, double inc) {
+bool gmtlib_set_do_seconds (struct GMT_CTRL *GMT, double inc) {
 	/* Determines if seconds are to be labelled based on size of increment */
 	if (GMT->current.plot.calclock.geo.order[2] == -1) return (false);			/* Seconds not requested by format */
 	if (GMT->current.plot.calclock.geo.n_sec_decimals > 0) return (true);			/* If asked for ss.xxx annotations */
@@ -2413,7 +2413,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 		dy = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_Y].type, &GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER]);
 		if (gmt_M_y_is_lat (GMT, GMT_IN)) {
 			do_minutes = (fabs (fmod (dy, 1.0)) > GMT_CONV4_LIMIT);
-			do_seconds = gmtplot_set_do_seconds (GMT, dy);
+			do_seconds = gmtlib_set_do_seconds (GMT, dy);
 			lonlat = 1;
 		}
 		else {	/* Also, we know that GMT->current.setting.format_geo_out = -1 in this case */
@@ -2521,7 +2521,7 @@ GMT_LOCAL void gmtplot_consider_internal_annotations (struct GMT_CTRL *GMT, stru
 	if (GMT->current.map.frame.internal_annot == 2) {	/* Placement of longitude annotations along selected parallel */
 		dx = gmtlib_get_map_interval (GMT, GMT->current.map.frame.axis[GMT_X].type, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER]);
 		do_minutes = (fabs (fmod (dx, 1.0)) > GMT_CONV4_LIMIT);
-		do_seconds = gmtplot_set_do_seconds (GMT, dx);
+		do_seconds = gmtlib_set_do_seconds (GMT, dx);
 
 		if (GMT->current.map.frame.axis[GMT_X].file_custom)
 			nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER], &val, &label_c);
@@ -2754,7 +2754,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 		if (dx[k] > 0.0 && (gmt_M_x_is_lon (GMT, GMT_IN) || GMT->current.proj.projection_GMT == GMT_POLAR)) {	/* Annotate the S and N boundaries */
 			done_Greenwich = done_Dateline = false;
 			do_minutes = (fabs (fmod (dx[k], 1.0)) > GMT_CONV4_LIMIT);
-			do_seconds = gmtplot_set_do_seconds (GMT, dx[k]);
+			do_seconds = gmtlib_set_do_seconds (GMT, dx[k]);
 
 			if (GMT->current.map.frame.axis[GMT_X].file_custom)
 				nx = gmtlib_coordinate_array (GMT, w, e, &GMT->current.map.frame.axis[GMT_X].item[GMT_ANNOT_UPPER], &val, &label_c);
@@ -2804,7 +2804,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 
 			if (gmt_M_y_is_lat (GMT, GMT_IN)) {
 				do_minutes = (fabs (fmod (dy[k], 1.0)) > GMT_CONV4_LIMIT);
-				do_seconds = gmtplot_set_do_seconds (GMT, dy[k]);
+				do_seconds = gmtlib_set_do_seconds (GMT, dy[k]);
 				lonlat = 1;
 			}
 			else {	/* Also, we know that GMT->current.setting.format_geo_out = -1 in this case */
@@ -5360,7 +5360,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	bool skip = false, just_set = false;
 	bool save_pi = GMT->current.plot.substitute_pi;
 	double *knots = NULL, *knots_p = NULL;	/* Array pointers with tick/annotation knots, the latter for primary annotations */
-	double x, t_use, text_angle, cos_a = 0.0, sin_a = 0.0;	/* Misc. variables */
+	double x, t_use, text_angle, cos_a = 0.0, sin_a = 0.0, delta;	/* Misc. variables */
 	double x_angle_add = 0.0, y_angle_add = 0.0;	/* Used when dealing with perspectives */
 	struct GMT_FONT font;			/* Annotation font (FONT_ANNOT_PRIMARY or FONT_ANNOT_SECONDARY) */
 	struct GMT_PLOT_AXIS_ITEM *T = NULL;	/* Pointer to the current axis item */
@@ -5521,6 +5521,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 
 		is_interval = (T->type == 'i' || T->type == 'I');	/* Interval or tick mark annotation? */
 		nx = gmtlib_coordinate_array (GMT, val0, val1, &A->item[k], &knots, &label_c);	/* Get all the annotation tick knots */
+      delta = (label_c) ? GMT->session.d_NaN : A->item[k].interval;
 		do_annot = (nx && k < GMT_TICK_UPPER && annotate && !gmt_M_axis_is_geo_strict (GMT, axis) && T->unit != 'r');	/* Cannot annotate a Gregorian week */
 		do_tick = !((T->unit == 'K' || T->unit == 'k') && T->interval > 1 && fmod (T->interval, 7.0) > 0.0);	/* Do we want tick marks? */
 		nx1 = (nx > 0 && is_interval) ? nx - 1 : nx;
@@ -5559,10 +5560,11 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				x = (*xyz_fwd) (GMT, knots[i]);	/* Convert to inches on the page */
 				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (x) < GMT_CONV4_LIMIT || fabs (x - length) < GMT_CONV4_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (!is_interval && gmtplot_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
-				if (label_c && label_c[i] && label_c[i][0])
+				if (label_c && label_c[i] && label_c[i][0]) {
 					strncpy (string, label_c[i], GMT_LEN256-1);
+            }
 				else
-					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
+					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i], delta);	/* Get annotation string */
 				PSL_deftextdim (PSL, ortho ? "-w" : "-h", font.size, string);
 				PSL_command (PSL, "mx\n");		/* Update the longest annotation stored in PSL_AH? */
 			}
@@ -5573,7 +5575,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				if (label_c && label_c[nx1-1] && label_c[nx1-1][0])	/* We only use the string for the max annotation value at index nx1-1 */
 					strncpy (string, label_c[nx1-1], GMT_LEN256-1);
 				else
-					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[nx1-1]);	/* Get annotation string */
+					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[nx1-1], delta);	/* Get annotation string */
 				PSL_deftextdim (PSL, "-w", font.size, string);	/* Compute the width */
 				PSL_command (PSL, " %.12g mul def\n", sin_a);	/* Multiply this width by sine of the angle to get the y-component */
 				//PSL_command (PSL, " %.12g mul %g add def\n", sin_a, PSL_IZ (PSL, 72.0 * GMT->current.setting.font_annot[GMT_PRIMARY].size));	/* Multiply this width by sine of the angle to get the y-component */
@@ -5608,7 +5610,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				if (label_c && label_c[i] && label_c[i][0])
 					strncpy (string, label_c[i], GMT_LEN256-1);
 				else
-					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i]);	/* Get annotation string */
+					gmtlib_get_coordinate_label (GMT, string, &GMT->current.plot.calclock, format, T, knots[i], delta);	/* Get annotation string */
 				PSL_plottext (PSL, 0.0, 0.0, -font.size, string, text_angle, justify, form);
 			}
 			if (!faro) PSL_command (PSL, "/PSL_A%d_y PSL_A%d_y PSL_AH%d add def\n", annot_pos, annot_pos, annot_pos);
