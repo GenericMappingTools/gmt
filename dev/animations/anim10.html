@@ -273,16 +273,16 @@ Demonstrate the effect of sub-pixeling</p>
 <span class="c1"># The movie took ~2 minutes to render on a 24-core MacPro 2013.</span>
 <span class="c1"># Demonstrate the effect of sub-pixeling</span>
 <span class="c1"># 1. Create the angle file</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt math -T0/30/0.05 T 15 ADD = angles.txt</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	echo &quot;BELL&quot; | gmt text -R-26/-12/63/67 -JM6i -F+f144p+cCM -Bafg \</span>
-<span class="s">		-X2i -Y1.25i -p\${MOVIE_COL0}/\${MOVIE_COL1}+w20W/65N+v3i/1.5i</span>
+<span class="s">		-X2i -Y1.25i -p${MOVIE_COL0}/${MOVIE_COL1}+w20W/65N+v3i/1.5i</span>
 <span class="s">	echo -15 65 100 | gmt plot -SE- -Gred -p</span>
 <span class="s">	echo -25 66.5 -20 66.5  | gmt plot -SV0.5i+s+e+h0.5 -Gblue -W3p -p</span>
 <span class="s">gmt end</span>
@@ -318,7 +318,7 @@ rm -f top.mp4 bot.mp4 jitter_H?.mp4 main.sh pre.sh angles.txt
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

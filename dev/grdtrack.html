@@ -459,7 +459,10 @@ To instead replace the input point with the coordinates of the nearest node, app
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong></dt><dd><p>Only write out the sampled z-values [Default writes all columns].</p>
+<dt><strong>-Z</strong></dt><dd><p>Only write out the sampled z-values [Default writes all columns].
+<strong>Note</strong>: If used in conjunction with <strong>-s</strong> then the default
+column becomes 0 instead of 2.  If specifying specific columns
+in <strong>-s</strong> then start numbering the z-columns from 0 instead of 2.</p>
 </dd>
 <dt><strong>-:</strong></dt><dd><p>Toggles between (longitude,latitude) and (latitude,longitude)
 input/output. [Default is (longitude,latitude)].</p>
@@ -651,7 +654,7 @@ try:</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

@@ -255,7 +255,7 @@ gridded data. The red arrow points in the direction of the illumination.</p>
 	<span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-A+l&quot;</span>
 <span class="k">fi</span>
 <span class="c1"># 1. Create files needed in the loop</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt math -T0/360/10 T 180 ADD = angles.txt</span>
 <span class="s">	gmt makecpt -Crainbow -T500/4500 -H &gt; main.cpt</span>
@@ -263,13 +263,13 @@ cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
-<span class="s">	width=\$(gmt math -Q \${MOVIE_WIDTH} 0.5i SUB =)</span>
-<span class="s">	gmt grdimage topo.nc -I+a\${MOVIE_COL0}+nt2 -JM\${width} -Cmain.cpt \</span>
+<span class="s">	width=$(gmt math -Q ${MOVIE_WIDTH} 0.5i SUB =)</span>
+<span class="s">	gmt grdimage topo.nc -I+a${MOVIE_COL0}+nt2 -JM${width} -Cmain.cpt \</span>
 <span class="s">		-BWSne -B1 -X0.4i -Y0.3i --FONT_ANNOT_PRIMARY=9p</span>
 <span class="s">	gmt plot -Sc0.8i -Gwhite -Wthin &lt;&lt;&lt; &quot;256.25 35.6&quot;</span>
-<span class="s">	gmt plot -Sv0.1i+e -Gred -Wthick &lt;&lt;&lt; &quot;256.25 35.6 \${MOVIE_COL1} 0.37i&quot;</span>
+<span class="s">	gmt plot -Sv0.1i+e -Gred -Wthick &lt;&lt;&lt; &quot;256.25 35.6 ${MOVIE_COL1} 0.37i&quot;</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie</span>
@@ -302,7 +302,7 @@ how to frame perspective views.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

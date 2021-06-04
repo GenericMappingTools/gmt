@@ -273,7 +273,7 @@ P. Wessel, 2019, GMT science animations for the masses, Abstract IN21B-11.</p>
 <span class="c1"># https://youtu.be/LTxlR5LuJ8g</span>
 <span class="c1"># The movie took ~6 hours to render on a 24-core MacPro 2013.</span>
 
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">#!/usr/bin/env bash</span>
 <span class="s"># Pre-script: Runs once to produce files needed for all frames</span>
 <span class="s">gmt begin</span>
@@ -281,21 +281,21 @@ cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">	gmt makecpt -Cgeo -H &gt; MOR_topo.cpt</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
-cat <span class="s">&lt;&lt; EOF &gt; include.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; include.sh</span>
 <span class="s"># A set of parameters needed by all frames</span>
 <span class="s">ALTITUDE=1000</span>
 <span class="s">TILT=55</span>
 <span class="s">WIDTH=36</span>
 <span class="s">HEIGHT=34</span>
 <span class="s">EOF</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">#!/usr/bin/env bash</span>
 <span class="s"># Main frame script that makes a single frame given the location and twist from the data file</span>
 <span class="s"># and the other view parameters from the include file.</span>
 <span class="s">gmt begin</span>
-<span class="s">	gmt grdimage -Rg -JG\${MOVIE_COL0}/\${MOVIE_COL1}/\${ALTITUDE}/\${MOVIE_COL2}/\${TILT}/\${MOVIE_COL3}/\${WIDTH}/\${HEIGHT}/\${MOVIE_WIDTH} \</span>
+<span class="s">	gmt grdimage -Rg -JG${MOVIE_COL0}/${MOVIE_COL1}/${ALTITUDE}/${MOVIE_COL2}/${TILT}/${MOVIE_COL3}/${WIDTH}/${HEIGHT}/${MOVIE_WIDTH} \</span>
 <span class="s">	  -Y0 -X0 @earth_relief_30s -I/tmp/earth_relief_30s+2.5_int.nc -CMOR_topo.cpt</span>
-<span class="s">	gmt events MOR_names.txt -L100 -Et+r6+f6 -T\${MOVIE_FRAME} -F+f12p,Helvetica-Bold,yellow</span>
+<span class="s">	gmt events MOR_names.txt -L100 -Et+r6+f6 -T${MOVIE_FRAME} -F+f12p,Helvetica-Bold,yellow</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie</span>
@@ -324,7 +324,7 @@ rm -f gmt.conf
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

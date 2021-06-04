@@ -239,10 +239,11 @@
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt grdfill</strong> <em>ingrid</em>
-<a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>mode</em>[<em>arg</em>]
-<a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
-[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>mode</em>[<em>arg</em>] ]
+[ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<strong>p</strong>] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>value</em> ]
+[ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
@@ -252,8 +253,8 @@
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><strong>grdfill</strong> reads a grid that presumably has unfilled holes that the user
 wants to fill in some fashion.  Holes are identified by NaN values but
-this criteria can be changed.  There are several different algorithms that
-can be used to replace the hole values.</p>
+this criteria can be changed via <strong>-N</strong>.  There are several different algorithms that
+can be used to replace the hole values.  <strong>Note</strong>: One of <strong>-A</strong> or <strong>-L</strong> is required.</p>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
@@ -261,23 +262,23 @@ can be used to replace the hole values.</p>
 <dt><em>ingrid</em></dt><dd><p>This is the input grid file.</p>
 </dd>
 </dl>
+</div>
+<div class="section" id="optional-arguments">
+<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><em>mode</em>[<em>arg</em>]</dt><dd><p>Specify the hole-filling algorithm to use.  Choose from <strong>c</strong> for constant
-fill and append the constant value, <strong>n</strong> for nearest neighbor (and optionally
-append a search radius in pixels [default radius is <span class="math notranslate nohighlight">\(r^2 = \sqrt{X^2 + Y^2}\)</span>,
+<dt><strong>-A</strong><em>mode</em>[<em>arg</em>]</dt><dd><p>Specify the hole-filling algorithm to use.  Choose among <strong>c</strong> for constant
+fill (and append the constant fill <em>value</em>), <strong>n</strong> for nearest neighbor (and optionally
+append a search <em>radius</em> in pixels [default radius is <span class="math notranslate nohighlight">\(r^2 = \sqrt{X^2 + Y^2}\)</span>,
 where (<em>X,Y</em>) are the node dimensions of the grid]), or
-<em>s*</em> for bicubic spline [NOT IMPLEMENTED YET].</p>
+<strong>s</strong> for bicubic spline (optionally append a <em>tension</em> parameter [no tension]).</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
 <dt><strong>-G</strong><em>outgrid</em></dt><dd><p>This is the output grid file.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="optional-arguments">
-<h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="n">
-<dt><strong>-N</strong>[<em>nodata</em>]</dt><dd><p>Sets the node value that identifies a point as a member of a hole [Default is NaN].</p>
+<dt><strong>-N</strong>[<em>nodata</em>]</dt><dd><p>Sets the node value used to identify a point as a member of a hole [Default is NaN].</p>
 </dd>
 </dl>
 <dl class="simple" id="r">
@@ -384,7 +385,7 @@ nearest non-NaN neighbor, try</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

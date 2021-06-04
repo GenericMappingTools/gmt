@@ -268,7 +268,7 @@ cat <span class="s">&lt;&lt; EOF &gt; init.sh</span>
 <span class="s">frames=$frames</span>
 <span class="s">EOF</span>
 <span class="c1"># 1. Make a title slide explaining things</span>
-cat <span class="s">&lt;&lt; EOF &gt; title.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; title.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	echo &quot;12 11.5 Demonstration of aliasing by sampling a linear chirp&quot; | gmt text -R0/24/0/13.5 -Jx1c -F+f26p,Helvetica-Bold+jCB -X0 -Y0</span>
 <span class="s">	echo &quot;12 10.5 y(t) = cos (2@~p@~t@+2@+/60)&quot; | gmt text -F+f36p,Times-Italic+jTC</span>
@@ -291,9 +291,9 @@ cat <span class="s">&lt;&lt; EOF &gt; title.sh</span>
 <span class="s">gmt end show</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Create background plot and build data files needed in the main script</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
-<span class="s">	gmt plot \$R \$J -X1c -Y1c -B+gcornsilk -S1c -Ggreen &lt;&lt;- END</span>
+<span class="s">	gmt plot $R $J -X1c -Y1c -B+gcornsilk -S1c -Ggreen &lt;&lt;- END</span>
 <span class="s">	0	-1.5	t</span>
 <span class="s">	0	+2.0	i</span>
 <span class="s">	END</span>
@@ -302,42 +302,42 @@ cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">	echo &quot;Nyquist frequency = 1 Hz&quot; | gmt text -F+f18p,Helvetica-Bold+jBL+cBL -Dj0.3c</span>
 <span class="s">gmt end</span>
 <span class="s"># Build chirp data sets for 1 minute (60 secs); one every 1 ms and one every 0.5 sec as samples</span>
-<span class="s">gmt math -T0/60/0.001 T 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS = chirp.txt</span>
-<span class="s">gmt math -T0/60/0.5 -Ca T -C1 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS = chirp_samples.txt</span>
-<span class="s">gmt math -T0/\$frames/1 T \$rate DIV = frame_times.txt</span>
+<span class="s">gmt math -T0/60/0.001 T 2 POW 2 DIV 60 DIV $f MUL 2 MUL PI MUL COS = chirp.txt</span>
+<span class="s">gmt math -T0/60/0.5 -Ca T -C1 2 POW 2 DIV 60 DIV $f MUL 2 MUL PI MUL COS = chirp_samples.txt</span>
+<span class="s">gmt math -T0/$frames/1 T $rate DIV = frame_times.txt</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Set up the main frame script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# Shift the chirp in time to simulate paper movement</span>
-<span class="s">	gmt math chirp.txt -C0 \${MOVIE_COL1} SUB = chirp_shifted.txt</span>
+<span class="s">	gmt math chirp.txt -C0 ${MOVIE_COL1} SUB = chirp_shifted.txt</span>
 <span class="s">	# Plot the shifted chirp</span>
-<span class="s">	gmt plot \$R \$J chirp_shifted.txt -W1p,red -X1c -Y1c</span>
+<span class="s">	gmt plot $R $J chirp_shifted.txt -W1p,red -X1c -Y1c</span>
 <span class="s">	# Compute index of most recent sample number</span>
-<span class="s">	last_sample=\$(gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV DIV FLOOR RINT =)</span>
+<span class="s">	last_sample=$(gmt math -Q ${MOVIE_FRAME} $rate 2 DIV DIV FLOOR RINT =)</span>
 <span class="s">	# Extract all the old samples before the present</span>
-<span class="s">	gmt convert chirp_samples.txt -Z:\$last_sample &gt; tmp.txt</span>
+<span class="s">	gmt convert chirp_samples.txt -Z:$last_sample &gt; tmp.txt</span>
 <span class="s">	if [ -s tmp.txt ]; then</span>
-<span class="s">		gmt math tmp.txt -C0 \${MOVIE_COL1} SUB = samples.txt</span>
+<span class="s">		gmt math tmp.txt -C0 ${MOVIE_COL1} SUB = samples.txt</span>
 <span class="s">		gmt plot -Sc0.3c -Gblue samples.txt</span>
 <span class="s">	fi</span>
 <span class="s">	# Take a new sample every 12 frames = 0.5 seconds</span>
-<span class="s">	take_sample=\$(gmt math -Q \${MOVIE_FRAME} \$rate 2 DIV MOD 0 EQ =)</span>
-<span class="s">	if [ \${MOVIE_FRAME} -gt 12 ]; then	# Interpolating up to most recent sample</span>
+<span class="s">	take_sample=$(gmt math -Q ${MOVIE_FRAME} $rate 2 DIV MOD 0 EQ =)</span>
+<span class="s">	if [ ${MOVIE_FRAME} -gt 12 ]; then	# Interpolating up to most recent sample</span>
 <span class="s">		gmt sample1d samples.txt -I0.001 &gt; resampled.txt</span>
 <span class="s">		gmt plot -W2.5p,blue resampled.txt</span>
 <span class="s">	fi</span>
-<span class="s">	if [ \$take_sample -eq 1 ]; then	# Take and plot sample at zero time</span>
-<span class="s">		y=\$(gmt math -Q \${MOVIE_COL1} 2 POW 2 DIV 60 DIV \$f MUL 2 MUL PI MUL COS =)</span>
-<span class="s">		echo 0 \$y | gmt plot -Sc0.5c -Gred</span>
+<span class="s">	if [ $take_sample -eq 1 ]; then	# Take and plot sample at zero time</span>
+<span class="s">		y=$(gmt math -Q ${MOVIE_COL1} 2 POW 2 DIV 60 DIV $f MUL 2 MUL PI MUL COS =)</span>
+<span class="s">		echo 0 $y | gmt plot -Sc0.5c -Gred</span>
 <span class="s">	fi</span>
 <span class="s">	# Add time counter in upper left corner</span>
-<span class="s">	printf &quot;t = %6.3f s\n&quot; \${MOVIE_COL1} | gmt text -F+f18p,Helvetica-Bold+jTL+cTL -Dj0.3c</span>
+<span class="s">	printf &quot;t = %6.3f s\n&quot; ${MOVIE_COL1} | gmt text -F+f18p,Helvetica-Bold+jTL+cTL -Dj0.3c</span>
 <span class="s">	# Add cycles counter in upper right corner</span>
-<span class="s">	fnow=\$(gmt math -Q \${MOVIE_COL1} 60 DIV \$f MUL =)</span>
-<span class="s">	printf &quot;f = %6.4f Hz\n&quot; \$fnow | gmt text -F+f16p,Helvetica-Bold+jTR+cTR -Dj0.3c</span>
+<span class="s">	fnow=$(gmt math -Q ${MOVIE_COL1} 60 DIV $f MUL =)</span>
+<span class="s">	printf &quot;f = %6.4f Hz\n&quot; $fnow | gmt text -F+f16p,Helvetica-Bold+jTR+cTR -Dj0.3c</span>
 <span class="s">	# Add frame counter in lower right corner</span>
-<span class="s">	printf &quot;%04d\n&quot; \${MOVIE_FRAME} | gmt text -F+f14p,Helvetica-Bold+jBR+cBR -Dj0.3c</span>
+<span class="s">	printf &quot;%04d\n&quot; ${MOVIE_FRAME} | gmt text -F+f14p,Helvetica-Bold+jBR+cBR -Dj0.3c</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 4. Run the movie</span>
@@ -364,7 +364,7 @@ gmt movie main.sh -Sbpre.sh -CHD -Iinit.sh -Tframe_times.txt -D<span class="nv">
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

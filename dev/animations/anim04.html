@@ -261,7 +261,7 @@ expect to add this functionality in a future version.</p>
 	<span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-Fmp4 -A+l+s10&quot;</span>
 <span class="k">fi</span>
 <span class="c1"># 1. Create files needed in the loop</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s"># Set up flight path</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt project -C-73.8333/40.75 -E-80.133/25.75 -G10 -Q &gt; flight_path.txt</span>
@@ -271,9 +271,9 @@ cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
-<span class="s">	gmt grdimage -JG\${MOVIE_COL0}/\${MOVIE_COL1}/160/210/55/0/36/34/\${MOVIE_WIDTH}+du \</span>
+<span class="s">	gmt grdimage -JG${MOVIE_COL0}/${MOVIE_COL1}/160/210/55/0/36/34/${MOVIE_WIDTH}+du \</span>
 <span class="s">		-Rg USEast_Coast.nc -Iint_US.nc -Cglobe_US.cpt -X0 -Y0</span>
 <span class="s">	gmt plot -W1p flight_path.txt</span>
 <span class="s">gmt end</span>
@@ -307,7 +307,7 @@ gmt movie main.sh -C7.2ix4.8ix100 -Nanim04 -Tflight_path.txt -Sbpre.sh -Zs -H2 -
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

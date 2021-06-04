@@ -431,7 +431,10 @@ is a closed polygon.</p>
 the intersection of polygons (closed), <strong>-Su</strong> which returns the
 union of polygons (closed), <strong>-Ss</strong> which will split polygons that
 straddle the Dateline, and <strong>-Sj</strong> which will join polygons that
-were split by the Dateline.  <strong>Note</strong>: Only <strong>-Sb</strong>, <strong>-Sh</strong> and <strong>-Ss</strong> have been implemented.</p>
+were split by the Dateline. <strong>Note1</strong>: Only <strong>-Sb</strong>, <strong>-Sh</strong> and <strong>-Ss</strong> have been implemented.
+<strong>Note2</strong>: <strong>-Sb</strong> is a purely Cartesian operation so <em>width</em> must be in data units.
+That is, for geographical coordinates <em>width</em> must be provided in degrees or, preferably, project data into
+an equal-area projection, compute the buffer and then convert back to geographical.</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
@@ -623,7 +626,7 @@ two OGR/GMT files.  The solution is to convert them to regular datasets via
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

@@ -256,14 +256,16 @@ of PNG HD images.</p>
 <span class="c1"># https://youtu.be/X8TojLs0NYk</span>
 <span class="c1"># The movie took ~4 minutes to render on a 24-core MacPro 2013.</span>
 <span class="c1"># To make a UHD (4k) movie, comment/uncomment the SIZE, INC and FILT settings</span>
-<span class="nv">SIZE</span><span class="o">=</span>HD
-<span class="nv">INC</span><span class="o">=</span><span class="m">11</span>.25
-<span class="nv">FILT</span><span class="o">=</span><span class="m">21</span>
-<span class="c1"># SIZE=UHD</span>
-<span class="c1"># INC=5.625</span>
-<span class="c1"># FILT=10.5</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; inc.sh</span>
+<span class="s">SIZE=HD</span>
+<span class="s">INC=11.25</span>
+<span class="s">FILT=21</span>
+<span class="s"># SIZE=UHD</span>
+<span class="s"># INC=5.625</span>
+<span class="s"># FILT=10.5</span>
+<span class="s">EOF</span>
 <span class="c1"># 1. Create preflight script to build data files needed in the loop</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">  # Set view time for June 20-21, 2020 with steps of 1 minute</span>
 <span class="s">  gmt math -T2020-06-20T/2020-06-21T/1 -o0 --TIME_UNIT=m  T = times.txt</span>
@@ -276,27 +278,27 @@ cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up main script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">  # Let HSV minimum value go to zero and faint map border</span>
 <span class="s">  gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint</span>
 <span class="s">  # Make global grid with a smooth 2-degree day/night transition for this time.</span>
-<span class="s">  gmt grdmath -Rd -I${INC}m -r \$(gmt solar -C -o0:1 -I+d\${BATCH_COL0}) 2 DAYNIGHT = daynight_${SIZE}.grd</span>
+<span class="s">  gmt grdmath -Rd -I${INC}m -r $(gmt solar -C -o0:1 -I+d${BATCH_COL0}) 2 DAYNIGHT = daynight_${SIZE}.grd</span>
 <span class="s">  # Blend the day and night Earth images using the weights, so that when w is 1</span>
 <span class="s">  # we get the daytime view, and then adjust colors based on the intensity.</span>
-<span class="s">  gmt grdmix @earth_day_${SIZE}.tif @earth_night_${SIZE}.tif -Wdaynight_${SIZE}.grd -Iintens_${SIZE}.grd -G\${BATCH_NAME}.png -Ve</span>
+<span class="s">  gmt grdmix @earth_day_${SIZE}.tif @earth_night_${SIZE}.tif -Wdaynight_${SIZE}.grd -Iintens_${SIZE}.grd -G${BATCH_NAME}.png -Ve</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Create postflight script to build movie from the images</span>
-cat <span class="s">&lt;&lt; EOF &gt; post.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; post.sh</span>
 <span class="s">gmt begin</span>
-<span class="s">  prec=\$(gmt math -Q \${BATCH_NJOBS} LOG10 CEIL =)</span>
-<span class="s">  ffmpeg -loglevel warning  -f image2 -framerate 24 -y -i &quot;\${BATCH_PREFIX}_%0\${prec}d.png&quot; -vcodec libx264 -pix_fmt yuv420p \${BATCH_PREFIX}_${SIZE}.mp4</span>
-<span class="s">  rm -f \${BATCH_PREFIX}_*.png</span>
+<span class="s">  prec=$(gmt math -Q ${BATCH_NJOBS} LOG10 CEIL =)</span>
+<span class="s">  ffmpeg -loglevel warning  -f image2 -framerate 24 -y -i &quot;${BATCH_PREFIX}_%0${prec}d.png&quot; -vcodec libx264 -pix_fmt yuv420p ${BATCH_PREFIX}_${SIZE}.mp4</span>
+<span class="s">  rm -f ${BATCH_PREFIX}_*.png</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 4. Run the batch, requesting a fade in/out via white</span>
-gmt batch main.sh -Sbpre.sh -Sfpost.sh -Ttimes.txt -Nanim12 -V -W -Zs
+gmt batch main.sh -Iinc.sh -Sbpre.sh -Sfpost.sh -Ttimes.txt -Nanim12 -V -W -Zs
 </pre></div>
 </div>
 <div class="youtube_wrapper" style="padding-bottom: 56.250000%; padding-top: 30px; position: relative; width: 100%">
@@ -319,7 +321,7 @@ gmt batch main.sh -Sbpre.sh -Sfpost.sh -Ttimes.txt -Nanim12 -V -W -Zs
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

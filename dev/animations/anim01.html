@@ -256,7 +256,7 @@ we convert them to a single animated GIF file.</p>
 	<span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-A+l&quot;</span>
 <span class="k">fi</span>
 <span class="c1"># 1. Create files needed in the loop</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt math -T0/360/20 T SIND = sin_point.txt</span>
 <span class="s">gmt math -T0/360/2 T SIND = sin_curve.txt</span>
 <span class="s">gmt begin</span>
@@ -265,15 +265,15 @@ cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">#	Plot smooth blue curve and dark red dots at all angle steps so far</span>
-<span class="s">	last=\$(gmt math -Q \${MOVIE_FRAME} 10 MUL =)</span>
-<span class="s">	gmt convert sin_curve.txt -Z0:\${last} | gmt plot -W1p,blue -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i</span>
-<span class="s">	gmt convert sin_point.txt -Z0:\${MOVIE_FRAME} | gmt plot -Sc0.1i -Gdarkred</span>
+<span class="s">	last=$(gmt math -Q ${MOVIE_FRAME} 10 MUL =)</span>
+<span class="s">	gmt convert sin_curve.txt -Z0:${last} | gmt plot -W1p,blue -R0/360/-1.2/1.6 -JX3.5i/1.65i -X0.35i -Y0.25i</span>
+<span class="s">	gmt convert sin_point.txt -Z0:${MOVIE_FRAME} | gmt plot -Sc0.1i -Gdarkred</span>
 <span class="s">#	Plot bright red dot at current angle and annotate</span>
-<span class="s">	gmt plot -Sc0.1i -Gred &lt;&lt;&lt; &quot;\${MOVIE_COL0} \${MOVIE_COL1}&quot;</span>
-<span class="s">	printf &quot;0 1.6 a = %3.3d&quot; \${MOVIE_COL0} | gmt text -F+f14p,Helvetica-Bold+jTL -N -Dj0.1i/0.05i</span>
+<span class="s">	gmt plot -Sc0.1i -Gred &lt;&lt;&lt; &quot;${MOVIE_COL0} ${MOVIE_COL1}&quot;</span>
+<span class="s">	printf &quot;0 1.6 a = %3.3d&quot; ${MOVIE_COL0} | gmt text -F+f14p,Helvetica-Bold+jTL -N -Dj0.1i/0.05i</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie</span>
@@ -307,7 +307,7 @@ on a single PostScript plot before running a lengthy animation script.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

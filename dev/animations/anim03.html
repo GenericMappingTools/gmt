@@ -254,7 +254,7 @@ GIF image.</p>
 	<span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-A+l&quot;</span>
 <span class="k">fi</span>
 <span class="c1"># 1. Create files needed in the loop</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt math -T0/355/5 -o1 T = angles.txt</span>
 <span class="s">	gmt makecpt -Crelief -T-2000/2000/20 -H &gt; iceland.cpt</span>
@@ -262,10 +262,10 @@ cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt grdview above.nc -R-26/-12/63/67 -JM2.5i -Ciceland.cpt -Qi100 -Bafg \</span>
-<span class="s">		-X0.5i -Y0.5i -p\${MOVIE_COL0}/35+w20W/65N+v1.5i/0.75i</span>
+<span class="s">		-X0.5i -Y0.5i -p${MOVIE_COL0}/35+w20W/65N+v1.5i/0.75i</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 3. Run the movie</span>
@@ -294,7 +294,7 @@ gmt movie main.sh -C4ix2.5ix100 -Nanim03 -Tangles.txt -Sbpre.sh -D10 -Pb -Zs <sp
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

@@ -258,19 +258,19 @@ for an animated GIF.</p>
 	<span class="nv">opt</span><span class="o">=</span><span class="s2">&quot;-A+l&quot;</span>
 <span class="k">fi</span>
 <span class="c1"># 1. Create files needed in the loop</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	gmt makecpt -Cpolar -T-25/25 -H &gt; t.cpt</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up the main frame script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
-<span class="s">	let k=\${MOVIE_FRAME}+1</span>
-<span class="s">	gmt greenspline @Table_5_11.txt -R0/6.5/0/6.5 -I0.05 -Sc -Gt.nc -Z1 -Cn\${k} -Emisfit.txt</span>
+<span class="s">	let k=${MOVIE_FRAME}+1</span>
+<span class="s">	gmt greenspline @Table_5_11.txt -R0/6.5/0/6.5 -I0.05 -Sc -Gt.nc -Z1 -Cn${k} -Emisfit.txt</span>
 <span class="s">	gmt grdcontour t.nc -C25 -A50 -Baf -BWsNE -JX4i -Gl3.6/6.5/4.05/0.75 -Xc -Y0.6i</span>
 <span class="s">	gmt plot misfit.txt -Ct.cpt -Sc0.15c -Wfaint -i0,1,4</span>
-<span class="s">	printf &quot;%2.2d&quot; \$k | gmt text -F+cTR+jTR+f18p -Dj0.1i -Gwhite -W0.25p</span>
+<span class="s">	printf &quot;%2.2d&quot; $k | gmt text -F+cTR+jTR+f18p -Dj0.1i -Gwhite -W0.25p</span>
 <span class="s">	gmt colorbar -Ct.cpt -DJBC+e -Bxaf -By+l&quot;misfit&quot;</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
@@ -300,7 +300,7 @@ gmt movie main.sh -C4.5ix5.0ix100 -Nanim05 -T@Table_5_11.txt -Sbpre.sh -D10 -Zs 
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>

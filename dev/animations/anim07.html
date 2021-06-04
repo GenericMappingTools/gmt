@@ -263,7 +263,7 @@ The movie took ~2.5 hours to render on a 24-core MacPro 2013.</p>
 <span class="c1"># The higher resolution movie on YouTube used the 02m data set resolution.</span>
 
 <span class="c1"># 1. Create background plot and data files needed in the loop</span>
-cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; pre.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# Set view and sun longitudes</span>
 <span class="s">	gmt math -T-12/372/0.5 -I T 5 SUB = longitudes.txt</span>
@@ -274,14 +274,14 @@ cat <span class="s">&lt;&lt; EOF &gt; pre.sh</span>
 <span class="s">gmt end</span>
 <span class="s">EOF</span>
 <span class="c1"># 2. Set up main script</span>
-cat <span class="s">&lt;&lt; EOF &gt; main.sh</span>
+cat <span class="s">&lt;&lt; &#39;EOF&#39; &gt; main.sh</span>
 <span class="s">gmt begin</span>
 <span class="s">	# Let HSV minimum value go to zero and faint map border</span>
 <span class="s">	gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint</span>
 <span class="s">	# Fake simulation of sun illumination from east added to relief intensities</span>
-<span class="s">	gmt grdmath intens.grd X \${MOVIE_COL1} SUB SIND 0.8 MUL ADD 0.2 SUB = s.nc</span>
+<span class="s">	gmt grdmath intens.grd X ${MOVIE_COL1} SUB SIND 0.8 MUL ADD 0.2 SUB = s.nc</span>
 <span class="s">	# Plot age grid first using EarthByte age cpt</span>
-<span class="s">	gmt grdimage @earth_age_06m -Is.nc -JG\${MOVIE_COL0}/15/10.8c -X0 -Y0</span>
+<span class="s">	gmt grdimage @earth_age_06m -Is.nc -JG${MOVIE_COL0}/15/10.8c -X0 -Y0</span>
 <span class="s">	# Clip to expose land areas only</span>
 <span class="s">	gmt coast -G -Di</span>
 <span class="s">	# Overlay relief over land only using dem cpt</span>
@@ -314,7 +314,7 @@ gmt movie main.sh -Sbpre.sh -C10.8cx10.8cx100 -Tlongitudes.txt -Nanim07 -Lf -K+g
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on May 25, 2021.
+        Last updated on Jun 04, 2021.
       </span>
 
     </p>
