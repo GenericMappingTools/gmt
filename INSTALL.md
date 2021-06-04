@@ -14,7 +14,7 @@ for compiling GMT source package (either stable release or development version).
 
 - [Windows](#windows)
 - [macOS](#macos)
-  * [Application Bundles](#application-bundle)
+  * [Application Bundles](#application-bundles)
   * [Install via Homebrew](#install-via-homebrew)
   * [Install via Macports](#install-via-macports)
 - [Linux](#linux)
