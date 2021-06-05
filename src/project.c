@@ -932,7 +932,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				gmt_M_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
 			}
 		}
-		p_data[P.n_used].a[2] = (!Ctrl->Z.active || Ctrl->Z.exact) ? Ctrl->L.max : p_data[P.n_used-1].a[2] + Ctrl->G.inc;
+		p_data[P.n_used].a[2] = Ctrl->L.max;
 		p_data[P.n_used].t = NULL;	/* Initialize since that is not done by realloc */
 		p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
 		P.n_used ++;
