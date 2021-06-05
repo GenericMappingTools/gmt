@@ -724,11 +724,6 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 			Ctrl->C.active = Ctrl->F.active = true;
 	}
 
-	if (Ctrl->L.active && GMT->common.j.mode == GMT_GEODESIC) {	/* -L is spherical so cannot pretend to support -je */
-		GMT_Report (API, GMT_MSG_WARNING, "Option -L: Requires spherical calculation so -je is ignored [Defaults to -jg]");
-		gmt_parse_j_option (GMT, "g");
-	}
-
 	if (will_need_RJ) {
 		/* Treat mapproject differently than other non-PS producing modules to allow a -R from previous plot to be used.
 		 * Perhaps this needs to be more nuanced beyond PS vs no-PS if other modules end up needed the same treatment */
@@ -737,6 +732,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 		GMT->current.ps.active = false;	/* Come to our senses */
 	}
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->common.j.mode == GMT_GEODESIC, "Option -L: Requires spherical calculations so -je cannot be used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->used[MP_COL_DS], "Option -Z requires -G+i\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
 	                                   "-T cannot work with -E, -G or -L\n");
