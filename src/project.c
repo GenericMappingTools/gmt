@@ -932,7 +932,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				gmt_M_memset (&(p_data[old_n_alloc]), n_alloc - old_n_alloc, struct PROJECT_DATA);	/* Set to NULL/0 */
 			}
 		}
-		p_data[P.n_used].a[2] = Ctrl->L.max;
+		p_data[P.n_used].a[2] = (!Ctrl->Z.active || Ctrl->Z.exact) ? Ctrl->L.max : p_data[P.n_used-1].a[2] + Ctrl->G.inc;
 		p_data[P.n_used].t = NULL;	/* Initialize since that is not done by realloc */
 		p_data[P.n_used].z = NULL;	/* Initialize since that is not done by realloc */
 		P.n_used ++;
@@ -940,7 +940,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		/* We need to find r,s  */
 
 		if (Ctrl->Z.active) {
-			uint64_t ne = urint (Ctrl->L.max / Ctrl->G.inc);
+			uint64_t ne = P.n_used;
 			if (Ctrl->N.active) {	/* Cartesian ellipse */
 				double r, ca, sa, d_azim = TWO_PI / ne, e2 = 1.0 - pow (Ctrl->Z.minor/Ctrl->Z.major, 2.0);
 				sincosd (Ctrl->Z.azimuth - 90.0, &sin_theta, &cos_theta);
@@ -958,7 +958,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				z_header = strdup ("Testing Cartesian ellipse");
 			}
 			else {	/* Geographic ellipse */
-				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
+				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne-1);
 				for (rec = 0; rec < P.n_used; rec++) {
 					p_data[rec].a[4] = S->data[GMT_X][rec];
 					p_data[rec].a[5] = S->data[GMT_Y][rec];
