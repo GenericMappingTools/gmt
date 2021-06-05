@@ -236,6 +236,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to get line segment id and fractional point number instead of lon/lat.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Spherical calculations - cannot be combined with -je.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Convert from geodetic to auxiliary latitudes; use -I for inverse conversion.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a(uthalic), c(onformal), g(eocentric), or m(eridional) to select a conversion [geocentric].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q List all projection parameters and stop [Default].  For subsets, use\n");
@@ -579,7 +580,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				Ctrl->I.active = true;
 				will_need_RJ = true;	/* Since -I means inverse projection */
 				break;
-			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] */
+			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
 				Ctrl->L.active = true;
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
@@ -721,6 +722,11 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 		/* See if scale == 1:1 and if yes set -C -F */
 		if (GMT->current.proj.pars[14] == 1)
 			Ctrl->C.active = Ctrl->F.active = true;
+	}
+
+	if (Ctrl->L.active && GMT->common.j.mode == GMT_GEODESIC) {	/* -L is spherical so cannot pretend to support -je */
+		GMT_Report (API, GMT_MSG_WARNING, "Option -L: Requires spherical calculation so -je is ignored [Defaults to -jg]");
+		gmt_parse_j_option (GMT, "g");
 	}
 
 	if (will_need_RJ) {
