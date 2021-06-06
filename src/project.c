@@ -940,7 +940,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		/* We need to find r,s  */
 
 		if (Ctrl->Z.active) {
-			uint64_t ne = P.n_used;
+			uint64_t ne = P.n_used - 1;
 			if (Ctrl->N.active) {	/* Cartesian ellipse */
 				double r, ca, sa, d_azim = TWO_PI / ne, e2 = 1.0 - pow (Ctrl->Z.minor/Ctrl->Z.major, 2.0);
 				sincosd (Ctrl->Z.azimuth - 90.0, &sin_theta, &cos_theta);
@@ -958,7 +958,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				z_header = strdup ("Testing Cartesian ellipse");
 			}
 			else {	/* Geographic ellipse */
-				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne-1);
+				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
 				for (rec = 0; rec < P.n_used; rec++) {
 					p_data[rec].a[4] = S->data[GMT_X][rec];
 					p_data[rec].a[5] = S->data[GMT_Y][rec];
