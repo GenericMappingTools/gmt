@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>colorbar &mdash; GMT 6.2.0 documentation</title>
+  <title>colorbar &mdash; GMT 6.3.0 documentation</title>
   
 
   
@@ -82,7 +82,7 @@
             
             
               <div class="version">
-                6.2
+                6.3
               </div>
             
           
@@ -319,7 +319,7 @@ be set to its default range (if it has one) before plotting.</p>
 </dd>
 </dl>
 <dl id="d">
-<dt><strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em>[<strong>+w</strong><em>length</em>[/<em>width</em>]][<strong>+e</strong>[<strong>b</strong>|<strong>f</strong>][<em>length</em>]][<strong>+h</strong>|<strong>v</strong>][<strong>+j</strong><em>justify</em>][<strong>+m</strong>[<strong>a</strong>|<strong>c</strong>|<strong>l</strong>|<strong>u</strong>]][<strong>+n</strong>[<em>txt</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]]</dt><dd><p>Defines the reference point on the map for the color scale using one of four coordinate systems:</p>
+<dt><strong>-D</strong>[<strong>g</strong>|<strong>j</strong>|<strong>J</strong>|<strong>n</strong>|<strong>x</strong>]<em>refpoint</em>[<strong>+w</strong><em>length</em>[/<em>width</em>]][<strong>+e</strong>[<strong>b</strong>|<strong>f</strong>][<em>length</em>]][<strong>+h</strong>|<strong>v</strong>][<strong>+j</strong><em>justify</em>][<strong>+m</strong>[<strong>a</strong>|<strong>c</strong>|<strong>l</strong>|<strong>u</strong>]][<strong>+n</strong>[<em>txt</em>]][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+r</strong>]</dt><dd><p>Defines the reference point on the map for the color scale using one of four coordinate systems:</p>
 <ol class="arabic simple">
 <li><p>Append <strong>g</strong><em>lon</em>/<em>lat</em> for <a class="reference internal" href="cookbook/features.html#reference-points-g"><span class="std std-ref">map coordinates</span></a>. Requires both <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong> and <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong> to be set.</p></li>
 <li><p>Append <strong>j</strong><em>code</em> or <strong>J</strong><em>code</em> for setting the <em>refpoint</em> via a 2-char
@@ -338,7 +338,7 @@ away from the map frame.
 However, you can override any of these with these modifiers:
 Append <strong>+w</strong> followed by the <em>length</em> and <em>width</em> of the color bar.  If <em>width</em> is not
 specified then it is set to 4% of the given <em>length</em>.
-Give a negative <em>length</em> to reverse the scale bar. Append <strong>+h</strong> to get a
+Give a negative <em>length</em> to reverse the scale bar, or append <strong>+r</strong>. Append <strong>+h</strong> to get a
 horizontal scale [Default is vertical (<strong>+v</strong>)].
 By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
 can be changed by appending <strong>+j</strong> followed by a 2-char justification code <em>justify</em> (see <a class="reference internal" href="text.html"><span class="doc">text</span></a>).
@@ -598,7 +598,7 @@ symbol at the left, unless <strong>+n</strong> was used in which case we center 
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 04, 2021.
+        Last updated on Jun 06, 2021.
       </span>
 
     </p>

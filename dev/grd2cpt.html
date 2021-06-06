@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>grd2cpt &mdash; GMT 6.2.0 documentation</title>
+  <title>grd2cpt &mdash; GMT 6.3.0 documentation</title>
   
 
   
@@ -82,7 +82,7 @@
             
             
               <div class="version">
-                6.2
+                6.3
               </div>
             
           
@@ -355,7 +355,12 @@ when the CPT is plotted. The <em>label</em> may be a comma-separated list of
 category names (you can skip a category by not giving a name), or give
 <em>start*[-], where we automatically build monotonically increasing labels
 from *start</em> (a single letter or an integer). Append - to build ranges
-<em>start</em>-<em>start+1</em> instead.</p>
+<em>start</em>-<em>start+1</em> instead.  <strong>Note</strong>: If <strong>+cM</strong> is given and the number
+of categories is 12, then we automatically create a list of month names.
+Likewise, if <strong>+cD</strong> is given and the number of categories is 7 then we
+make a list of weekday names.  The format of these labels will depend on the
+<a class="reference internal" href="gmt.conf.html#term-FORMAT_TIME_PRIMARY_MAP"><span class="xref std std-term">FORMAT_TIME_PRIMARY_MAP</span></a>, <a class="reference internal" href="gmt.conf.html#term-GMT_LANGUAGE"><span class="xref std std-term">GMT_LANGUAGE</span></a> and possibly
+<a class="reference internal" href="gmt.conf.html#term-TIME_WEEK_START"><span class="xref std std-term">TIME_WEEK_START</span></a> settings.</p>
 </dd>
 </dl>
 <dl class="simple" id="g">
@@ -593,7 +598,7 @@ CPTs.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 04, 2021.
+        Last updated on Jun 06, 2021.
       </span>
 
     </p>

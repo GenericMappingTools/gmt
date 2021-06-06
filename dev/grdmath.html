@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>grdmath &mdash; GMT 6.2.0 documentation</title>
+  <title>grdmath &mdash; GMT 6.3.0 documentation</title>
   
 
   
@@ -82,7 +82,7 @@
             
             
               <div class="version">
-                6.2
+                6.3
               </div>
             
           
@@ -612,507 +612,511 @@ and output arguments.</p>
 <td><p>1 1</p></td>
 <td><p>csc (A) (A in degrees)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>CURV</strong></p></td>
+<tr class="row-even"><td><p><strong>CUMSUM</strong></p></td>
+<td><p>2 1</p></td>
+<td><p>Cumulative sum of each row (B=±1|3) or column (B=±2|4) in A. Sign of B gives direction of summation</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>CURV</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Curvature of A (Laplacian)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>D2DX2</strong></p></td>
+<tr class="row-even"><td><p><strong>D2DX2</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>d^2(A)/dx^2 2nd derivative</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>D2DY2</strong></p></td>
+<tr class="row-odd"><td><p><strong>D2DY2</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>d^2(A)/dy^2 2nd derivative</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>D2DXY</strong></p></td>
+<tr class="row-even"><td><p><strong>D2DXY</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>d^2(A)/dxdy 2nd derivative</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>D2R</strong></p></td>
+<tr class="row-odd"><td><p><strong>D2R</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Converts Degrees to Radians</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>DDX</strong></p></td>
+<tr class="row-even"><td><p><strong>DDX</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>d(A)/dx Central 1st derivative</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>DAYNIGHT</strong></p></td>
+<tr class="row-odd"><td><p><strong>DAYNIGHT</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>1 where sun at (A, B) shines and 0 elsewhere, with C transition width</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>DDY</strong></p></td>
+<tr class="row-even"><td><p><strong>DDY</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>d(A)/dy Central 1st derivative</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>DEG2KM</strong></p></td>
+<tr class="row-odd"><td><p><strong>DEG2KM</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Converts Spherical Degrees to Kilometers</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>DENAN</strong></p></td>
+<tr class="row-even"><td><p><strong>DENAN</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Replace NaNs in A with values from B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>DILOG</strong></p></td>
+<tr class="row-odd"><td><p><strong>DILOG</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>dilog (A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>DIV</strong></p></td>
+<tr class="row-even"><td><p><strong>DIV</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>A / B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>DOT</strong></p></td>
+<tr class="row-odd"><td><p><strong>DOT</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>2-D (Cartesian) or 3-D (geographic) dot products between nodes and stack (A, B) unit vector(s)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>DUP</strong></p></td>
+<tr class="row-even"><td><p><strong>DUP</strong></p></td>
 <td><p>1 2</p></td>
 <td><p>Places duplicate of A on the stack</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ECDF</strong></p></td>
+<tr class="row-odd"><td><p><strong>ECDF</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Exponential cumulative distribution function for x = A and lambda = B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>ECRIT</strong></p></td>
+<tr class="row-even"><td><p><strong>ECRIT</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Exponential distribution critical value for alpha = A and lambda = B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>EPDF</strong></p></td>
+<tr class="row-odd"><td><p><strong>EPDF</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Exponential probability density function for x = A and lambda = B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>ERF</strong></p></td>
+<tr class="row-even"><td><p><strong>ERF</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Error function erf (A)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ERFC</strong></p></td>
+<tr class="row-odd"><td><p><strong>ERFC</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Complementary Error function erfc (A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>EQ</strong></p></td>
+<tr class="row-even"><td><p><strong>EQ</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>1 if A == B, else 0</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ERFINV</strong></p></td>
+<tr class="row-odd"><td><p><strong>ERFINV</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Inverse error function of A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>EXCH</strong></p></td>
+<tr class="row-even"><td><p><strong>EXCH</strong></p></td>
 <td><p>2 2</p></td>
 <td><p>Exchanges A and B on the stack</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>EXP</strong></p></td>
+<tr class="row-odd"><td><p><strong>EXP</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>exp (A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>FACT</strong></p></td>
+<tr class="row-even"><td><p><strong>FACT</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>A! (A factorial)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>EXTREMA</strong></p></td>
+<tr class="row-odd"><td><p><strong>EXTREMA</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Local Extrema: +2/-2 is max/min, +1/-1 is saddle with max/min in x, 0 elsewhere</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>FCDF</strong></p></td>
+<tr class="row-even"><td><p><strong>FCDF</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>F cumulative distribution function for F = A, nu1 = B, and nu2 = C</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>FCRIT</strong></p></td>
+<tr class="row-odd"><td><p><strong>FCRIT</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>F distribution critical value for alpha = A, nu1 = B, and nu2 = C</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>FISHER</strong></p></td>
+<tr class="row-even"><td><p><strong>FISHER</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Fisher probability density function at nodes for center lon = A, lat = B, with kappa = C</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>FLIPLR</strong></p></td>
+<tr class="row-odd"><td><p><strong>FLIPLR</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Reverse order of values in each row</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>FLIPUD</strong></p></td>
+<tr class="row-even"><td><p><strong>FLIPUD</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Reverse order of values in each column</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>FLOOR</strong></p></td>
+<tr class="row-odd"><td><p><strong>FLOOR</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>floor (A) (greatest integer &lt;= A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>FMOD</strong></p></td>
+<tr class="row-even"><td><p><strong>FMOD</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>A % B (remainder after truncated division)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>FPDF</strong></p></td>
+<tr class="row-odd"><td><p><strong>FPDF</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>F probability density function for F = A, nu1 = B, and nu2 = C</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>GE</strong></p></td>
+<tr class="row-even"><td><p><strong>GE</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>1 if A &gt;= B, else 0</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>GT</strong></p></td>
+<tr class="row-odd"><td><p><strong>GT</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>1 if A &gt; B, else 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>HSV2RGB</strong></p></td>
+<tr class="row-even"><td><p><strong>HSV2RGB</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (both in 0-1)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>HSV2RGB</strong></p></td>
+<tr class="row-odd"><td><p><strong>HSV2RGB</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert h,s,v triplets to r,g,b triplets, with h = A (0-360), s = B and v = C (0-1)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>HSV2XYZ</strong></p></td>
+<tr class="row-even"><td><p><strong>HSV2XYZ</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert h,s,v triplets to x,t,z triplets, with h = A (0-360), s = B and v = C (0-1)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>HYPOT</strong></p></td>
+<tr class="row-odd"><td><p><strong>HYPOT</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>hypot (A, B) = sqrt (A*A + B*B)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>I0</strong></p></td>
+<tr class="row-even"><td><p><strong>I0</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Modified Bessel function of A (1st kind, order 0)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>I1</strong></p></td>
+<tr class="row-odd"><td><p><strong>I1</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Modified Bessel function of A (1st kind, order 1)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>IFELSE</strong></p></td>
+<tr class="row-even"><td><p><strong>IFELSE</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>B if A != 0, else C</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>IN</strong></p></td>
+<tr class="row-odd"><td><p><strong>IN</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Modified Bessel function of A (1st kind, order B)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>INRANGE</strong></p></td>
+<tr class="row-even"><td><p><strong>INRANGE</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>1 if B &lt;= A &lt;= C, else 0</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>INSIDE</strong></p></td>
+<tr class="row-odd"><td><p><strong>INSIDE</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>1 when inside or on polygon(s) in A, else 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>INV</strong></p></td>
+<tr class="row-even"><td><p><strong>INV</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>1 / A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ISFINITE</strong></p></td>
+<tr class="row-odd"><td><p><strong>ISFINITE</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>1 if A is finite, else 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>ISNAN</strong></p></td>
+<tr class="row-even"><td><p><strong>ISNAN</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>1 if A == NaN, else 0</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>J0</strong></p></td>
+<tr class="row-odd"><td><p><strong>J0</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Bessel function of A (1st kind, order 0)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>J1</strong></p></td>
+<tr class="row-even"><td><p><strong>J1</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Bessel function of A (1st kind, order 1)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>JN</strong></p></td>
+<tr class="row-odd"><td><p><strong>JN</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Bessel function of A (1st kind, order B)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>K0</strong></p></td>
+<tr class="row-even"><td><p><strong>K0</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Modified Kelvin function of A (2nd kind, order 0)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>K1</strong></p></td>
+<tr class="row-odd"><td><p><strong>K1</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Modified Bessel function of A (2nd kind, order 1)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>KEI</strong></p></td>
+<tr class="row-even"><td><p><strong>KEI</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Kelvin function kei (A)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>KER</strong></p></td>
+<tr class="row-odd"><td><p><strong>KER</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Kelvin function ker (A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>KM2DEG</strong></p></td>
+<tr class="row-even"><td><p><strong>KM2DEG</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Converts Kilometers to Spherical Degrees</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>KN</strong></p></td>
+<tr class="row-odd"><td><p><strong>KN</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Modified Bessel function of A (2nd kind, order B)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>KURT</strong></p></td>
+<tr class="row-even"><td><p><strong>KURT</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Kurtosis of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LAB2HSV</strong></p></td>
+<tr class="row-odd"><td><p><strong>LAB2HSV</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert l,a,b triplets to h,s,v triplets</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LAB2RGB</strong></p></td>
+<tr class="row-even"><td><p><strong>LAB2RGB</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert l,a,b triplets to r,g,b triplets</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LAB2XYZ</strong></p></td>
+<tr class="row-odd"><td><p><strong>LAB2XYZ</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert l,a,b triplets to x,y,z triplets</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LCDF</strong></p></td>
+<tr class="row-even"><td><p><strong>LCDF</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Laplace cumulative distribution function for z = A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LCRIT</strong></p></td>
+<tr class="row-odd"><td><p><strong>LCRIT</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Laplace distribution critical value for alpha = A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LDIST</strong></p></td>
+<tr class="row-even"><td><p><strong>LDIST</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Compute minimum distance (in km if -fg) from lines in multi-segment ASCII file A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LDIST2</strong></p></td>
+<tr class="row-odd"><td><p><strong>LDIST2</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>As LDIST, from lines in ASCII file B but only to nodes where A != 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LDISTG</strong></p></td>
+<tr class="row-even"><td><p><strong>LDISTG</strong></p></td>
 <td><p>0 1</p></td>
 <td><p>As LDIST, but operates on the GSHHG dataset (see -A, -D for options).</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LE</strong></p></td>
+<tr class="row-odd"><td><p><strong>LE</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>1 if A &lt;= B, else 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LOG</strong></p></td>
+<tr class="row-even"><td><p><strong>LOG</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>log (A) (natural log)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LOG10</strong></p></td>
+<tr class="row-odd"><td><p><strong>LOG10</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>log10 (A) (base 10)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LOG1P</strong></p></td>
+<tr class="row-even"><td><p><strong>LOG1P</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>log (1+A) (accurate for small A)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LOG2</strong></p></td>
+<tr class="row-odd"><td><p><strong>LOG2</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>log2 (A) (base 2)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LMSSCL</strong></p></td>
+<tr class="row-even"><td><p><strong>LMSSCL</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>LMS (Least Median of Squares) scale estimate (LMS STD) of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LMSSCLW</strong></p></td>
+<tr class="row-odd"><td><p><strong>LMSSCLW</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Weighted LMS (Least Median of Squares) scale estimate (LMS STD) of A for weights in B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LOWER</strong></p></td>
+<tr class="row-even"><td><p><strong>LOWER</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>The lowest (minimum) value of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LPDF</strong></p></td>
+<tr class="row-odd"><td><p><strong>LPDF</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Laplace probability density function for z = A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>LRAND</strong></p></td>
+<tr class="row-even"><td><p><strong>LRAND</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Laplace random noise with mean A and std. deviation B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>LT</strong></p></td>
+<tr class="row-odd"><td><p><strong>LT</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>1 if A &lt; B, else 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>MAD</strong></p></td>
+<tr class="row-even"><td><p><strong>MAD</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Median Absolute Deviation (L1 STD) of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>MAX</strong></p></td>
+<tr class="row-odd"><td><p><strong>MAX</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Maximum of A and B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>MEAN</strong></p></td>
+<tr class="row-even"><td><p><strong>MEAN</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Mean value of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>MEANW</strong></p></td>
+<tr class="row-odd"><td><p><strong>MEANW</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Weighted mean value of A for weights in B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>MEDIAN</strong></p></td>
+<tr class="row-even"><td><p><strong>MEDIAN</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Median value of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>MEDIANW</strong></p></td>
+<tr class="row-odd"><td><p><strong>MEDIANW</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Weighted median value of A for weights in B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>MIN</strong></p></td>
+<tr class="row-even"><td><p><strong>MIN</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Minimum of A and B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>MOD</strong></p></td>
+<tr class="row-odd"><td><p><strong>MOD</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>A mod B (remainder after floored division)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>MODE</strong></p></td>
+<tr class="row-even"><td><p><strong>MODE</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Mode value (Least Median of Squares) of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>MODEW</strong></p></td>
+<tr class="row-odd"><td><p><strong>MODEW</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Weighted mode value (Least Median of Squares) of A for weights in B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>MUL</strong></p></td>
+<tr class="row-even"><td><p><strong>MUL</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>A * B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>NAN</strong></p></td>
+<tr class="row-odd"><td><p><strong>NAN</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>NaN if A == B, else A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>NEG</strong></p></td>
+<tr class="row-even"><td><p><strong>NEG</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>-A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>NEQ</strong></p></td>
+<tr class="row-odd"><td><p><strong>NEQ</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>1 if A != B, else 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>NORM</strong></p></td>
+<tr class="row-even"><td><p><strong>NORM</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Normalize (A) so max(A)-min(A) = 1</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>NOT</strong></p></td>
+<tr class="row-odd"><td><p><strong>NOT</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>NaN if A == NaN, 1 if A == 0, else 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>NRAND</strong></p></td>
+<tr class="row-even"><td><p><strong>NRAND</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Normal, random values with mean A and std. deviation B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>OR</strong></p></td>
+<tr class="row-odd"><td><p><strong>OR</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>NaN if B == NaN, else A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>PCDF</strong></p></td>
+<tr class="row-even"><td><p><strong>PCDF</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Poisson cumulative distribution function for x = A and lambda = B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>PDIST</strong></p></td>
+<tr class="row-odd"><td><p><strong>PDIST</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Compute minimum distance (in km if -fg) from points in ASCII file A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>PDIST2</strong></p></td>
+<tr class="row-even"><td><p><strong>PDIST2</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>As PDIST, from points in ASCII file B but only to nodes where A != 0</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>PERM</strong></p></td>
+<tr class="row-odd"><td><p><strong>PERM</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Permutations n_P_r, with n = A and r = B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>PLM</strong></p></td>
+<tr class="row-even"><td><p><strong>PLM</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Associated Legendre polynomial P(A) degree B order C</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>PLMg</strong></p></td>
+<tr class="row-odd"><td><p><strong>PLMg</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>POINT</strong></p></td>
+<tr class="row-even"><td><p><strong>POINT</strong></p></td>
 <td><p>1 2</p></td>
 <td><p>Compute mean x and y from ASCII file A and place them on the stack</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>POP</strong></p></td>
+<tr class="row-odd"><td><p><strong>POP</strong></p></td>
 <td><p>1 0</p></td>
 <td><p>Delete top element from the stack</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>POW</strong></p></td>
+<tr class="row-even"><td><p><strong>POW</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>A ^ B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>PPDF</strong></p></td>
+<tr class="row-odd"><td><p><strong>PPDF</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Poisson distribution P(x,lambda), with x = A and lambda = B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>PQUANT</strong></p></td>
+<tr class="row-even"><td><p><strong>PQUANT</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>The B’th Quantile (0-100%) of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>PQUANTW</strong></p></td>
+<tr class="row-odd"><td><p><strong>PQUANTW</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>The C’th weighted quantile (0-100%) of A for weights in B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>PSI</strong></p></td>
+<tr class="row-even"><td><p><strong>PSI</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Psi (or Digamma) of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>PV</strong></p></td>
+<tr class="row-odd"><td><p><strong>PV</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Legendre function Pv(A) of degree v = real(B) + imag(C)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>QV</strong></p></td>
+<tr class="row-even"><td><p><strong>QV</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Legendre function Qv(A) of degree v = real(B) + imag(C)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>R2</strong></p></td>
+<tr class="row-odd"><td><p><strong>R2</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>R2 = A^2 + B^2</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>R2D</strong></p></td>
+<tr class="row-even"><td><p><strong>R2D</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Convert Radians to Degrees</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>RAND</strong></p></td>
+<tr class="row-odd"><td><p><strong>RAND</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Uniform random values between A and B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>RCDF</strong></p></td>
+<tr class="row-even"><td><p><strong>RCDF</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Rayleigh cumulative distribution function for z = A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>RCRIT</strong></p></td>
+<tr class="row-odd"><td><p><strong>RCRIT</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Rayleigh distribution critical value for alpha = A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>RGB2HSV</strong></p></td>
+<tr class="row-even"><td><p><strong>RGB2HSV</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert r,g,b triplets to h,s,v triplets, with r = A, g = B, and b = C (all in 0-255 range)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>RGB2LAB</strong></p></td>
+<tr class="row-odd"><td><p><strong>RGB2LAB</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert r,g,b triplets to l,a,b triplets, with r = A, g = B, and b = C (in 0-255 range)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>RGB2XYZ</strong></p></td>
+<tr class="row-even"><td><p><strong>RGB2XYZ</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert r,g,b triplets to x,y,x triplets, with r = A, g = B, and b = C (in 0-255 range)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>RINT</strong></p></td>
+<tr class="row-odd"><td><p><strong>RINT</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>rint (A) (round to integral value nearest to A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>RMS</strong></p></td>
+<tr class="row-even"><td><p><strong>RMS</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Root-mean-square of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>RMSW</strong></p></td>
+<tr class="row-odd"><td><p><strong>RMSW</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Root-mean-square of A for weights in B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>RPDF</strong></p></td>
+<tr class="row-even"><td><p><strong>RPDF</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Rayleigh probability density function for z = A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ROLL</strong></p></td>
+<tr class="row-odd"><td><p><strong>ROLL</strong></p></td>
 <td><p>2 0</p></td>
 <td><p>Cyclicly shifts the top A stack items by an amount B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>ROTX</strong></p></td>
+<tr class="row-even"><td><p><strong>ROTX</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Rotate A by the (constant) shift B in x-direction</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ROTY</strong></p></td>
+<tr class="row-odd"><td><p><strong>ROTY</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Rotate A by the (constant) shift B in y-direction</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>SDIST</strong></p></td>
+<tr class="row-even"><td><p><strong>SDIST</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Spherical (Great circle|geodesic) distance (in km) between nodes and stack (A, B) <a href="#openModal">Example</a>
 <div id="openModal" class="modalDialog">
@@ -1123,199 +1127,199 @@ and output arguments.</p>
  </div>
 </div></p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SDIST2</strong></p></td>
+<tr class="row-odd"><td><p><strong>SDIST2</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>As SDIST but only to nodes that are != 0</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>SAZ</strong></p></td>
+<tr class="row-even"><td><p><strong>SAZ</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Spherical azimuth from grid nodes to stack lon, lat (i.e., A, B)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SBAZ</strong></p></td>
+<tr class="row-odd"><td><p><strong>SBAZ</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Spherical back-azimuth from grid nodes to stack lon, lat (i.e., A, B)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>SEC</strong></p></td>
+<tr class="row-even"><td><p><strong>SEC</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>sec (A) (A in radians)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SECD</strong></p></td>
+<tr class="row-odd"><td><p><strong>SECD</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>sec (A) (A in degrees)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>SIGN</strong></p></td>
+<tr class="row-even"><td><p><strong>SIGN</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>sign (+1 or -1) of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SIN</strong></p></td>
+<tr class="row-odd"><td><p><strong>SIN</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>sin (A) (A in radians)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>SINC</strong></p></td>
+<tr class="row-even"><td><p><strong>SINC</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>sinc (A) (sin (pi*A)/(pi*A))</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SIND</strong></p></td>
+<tr class="row-odd"><td><p><strong>SIND</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>sin (A) (A in degrees)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>SINH</strong></p></td>
+<tr class="row-even"><td><p><strong>SINH</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>sinh (A)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SKEW</strong></p></td>
+<tr class="row-odd"><td><p><strong>SKEW</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Skewness of A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>SQR</strong></p></td>
+<tr class="row-even"><td><p><strong>SQR</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>A^2</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SQRT</strong></p></td>
+<tr class="row-odd"><td><p><strong>SQRT</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>sqrt (A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>STD</strong></p></td>
+<tr class="row-even"><td><p><strong>STD</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Standard deviation of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>STDW</strong></p></td>
+<tr class="row-odd"><td><p><strong>STDW</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Weighted standard deviation of A for weights in B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>STEP</strong></p></td>
+<tr class="row-even"><td><p><strong>STEP</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Heaviside step function: H(A)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>STEPX</strong></p></td>
+<tr class="row-odd"><td><p><strong>STEPX</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Heaviside step function in x: H(x-A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>STEPY</strong></p></td>
+<tr class="row-even"><td><p><strong>STEPY</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Heaviside step function in y: H(y-A)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>SUB</strong></p></td>
+<tr class="row-odd"><td><p><strong>SUB</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>A - B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>SUM</strong></p></td>
+<tr class="row-even"><td><p><strong>SUM</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Sum of all values in A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>TAN</strong></p></td>
+<tr class="row-odd"><td><p><strong>TAN</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>tan (A) (A in radians)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>TAND</strong></p></td>
+<tr class="row-even"><td><p><strong>TAND</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>tan (A) (A in degrees)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>TANH</strong></p></td>
+<tr class="row-odd"><td><p><strong>TANH</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>tanh (A)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>TAPER</strong></p></td>
+<tr class="row-even"><td><p><strong>TAPER</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Unit weights cosine-tapered to zero within A and B of x and y grid margins</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>TCDF</strong></p></td>
+<tr class="row-odd"><td><p><strong>TCDF</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Student’s t cumulative distribution function for t = A, and nu = B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>TCRIT</strong></p></td>
+<tr class="row-even"><td><p><strong>TCRIT</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Student’s t distribution critical value for alpha = A and nu = B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>TN</strong></p></td>
+<tr class="row-odd"><td><p><strong>TN</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Chebyshev polynomial Tn(-1&lt;t&lt;+1,n), with t = A, and n = B</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>TPDF</strong></p></td>
+<tr class="row-even"><td><p><strong>TPDF</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Student’s t probability density function for t = A, and nu = B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>TRIM</strong></p></td>
+<tr class="row-odd"><td><p><strong>TRIM</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Alpha-trim C to NaN if values fall in tails A and B (in percentage)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>UPPER</strong></p></td>
+<tr class="row-even"><td><p><strong>UPPER</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>The highest (maximum) value of A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>VAR</strong></p></td>
+<tr class="row-odd"><td><p><strong>VAR</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Variance of A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>VARW</strong></p></td>
+<tr class="row-even"><td><p><strong>VARW</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Weighted variance of A for weights in B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>VPDF</strong></p></td>
+<tr class="row-odd"><td><p><strong>VPDF</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Von Mises density distribution P(x,mu,kappa), with x = A, mu = B, and kappa = C</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>WCDF</strong></p></td>
+<tr class="row-even"><td><p><strong>WCDF</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Weibull cumulative distribution function for x = A, scale = B, and shape = C</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>WCRIT</strong></p></td>
+<tr class="row-odd"><td><p><strong>WCRIT</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Weibull distribution critical value for alpha = A, scale = B, and shape = C</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>WPDF</strong></p></td>
+<tr class="row-even"><td><p><strong>WPDF</strong></p></td>
 <td><p>3 1</p></td>
 <td><p>Weibull density distribution P(x,scale,shape), with x = A, scale = B, and shape = C</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>WRAP</strong></p></td>
+<tr class="row-odd"><td><p><strong>WRAP</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>wrap A in radians onto [-pi,pi]</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>XOR</strong></p></td>
+<tr class="row-even"><td><p><strong>XOR</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>0 if A == NaN and B == NaN, NaN if B == NaN, else A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>XYZ2HSV</strong></p></td>
+<tr class="row-odd"><td><p><strong>XYZ2HSV</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert x,y,x triplets to h,s,v triplets</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>XYZ2LAB</strong></p></td>
+<tr class="row-even"><td><p><strong>XYZ2LAB</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert x,y,x triplets to l,a,b triplets</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>XYZ2RGB</strong></p></td>
+<tr class="row-odd"><td><p><strong>XYZ2RGB</strong></p></td>
 <td><p>3 3</p></td>
 <td><p>Convert x,y,x triplets to r,g,b triplets</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>Y0</strong></p></td>
+<tr class="row-even"><td><p><strong>Y0</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Bessel function of A (2nd kind, order 0)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>Y1</strong></p></td>
+<tr class="row-odd"><td><p><strong>Y1</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Bessel function of A (2nd kind, order 1)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>YLM</strong></p></td>
+<tr class="row-even"><td><p><strong>YLM</strong></p></td>
 <td><p>2 2</p></td>
 <td><p>Re and Im orthonormalized spherical harmonics degree A order B</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>YLMg</strong></p></td>
+<tr class="row-odd"><td><p><strong>YLMg</strong></p></td>
 <td><p>2 2</p></td>
 <td><p>Cos and Sin normalized spherical harmonics degree A order B (geophysical convention)</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>YN</strong></p></td>
+<tr class="row-even"><td><p><strong>YN</strong></p></td>
 <td><p>2 1</p></td>
 <td><p>Bessel function of A (2nd kind, order B)</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ZCDF</strong></p></td>
+<tr class="row-odd"><td><p><strong>ZCDF</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Normal cumulative distribution function for z = A</p></td>
 </tr>
-<tr class="row-odd"><td><p><strong>ZPDF</strong></p></td>
+<tr class="row-even"><td><p><strong>ZPDF</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Normal probability density function for z = A</p></td>
 </tr>
-<tr class="row-even"><td><p><strong>ZCRIT</strong></p></td>
+<tr class="row-odd"><td><p><strong>ZCRIT</strong></p></td>
 <td><p>1 1</p></td>
 <td><p>Normal distribution critical value for alpha = A</p></td>
 </tr>
@@ -1483,6 +1487,9 @@ either 1 or 0, but if C is nonzero then we approximate the step function
 using an atan-approximation instead.  Thus, the values are never exactly
 0 or 1, but close, and the smaller C the closer we get.</p></li>
 <li><p>The <strong>VPDF</strong> operator expects angles in degrees.</p></li>
+<li><p>The <strong>CUMSUM</strong> operator normally resets the accumulated sums at the end of a
+row or column.  Use ±3 or ±4 to have the accumulated sums continue with the
+start of the next row or column.</p></li>
 </ol>
 </div>
 <div class="section" id="grid-values-precision">
@@ -1668,7 +1675,7 @@ Publishing Corp.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 04, 2021.
+        Last updated on Jun 06, 2021.
       </span>
 
     </p>

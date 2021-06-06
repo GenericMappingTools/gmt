@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>movie &mdash; GMT 6.2.0 documentation</title>
+  <title>movie &mdash; GMT 6.3.0 documentation</title>
   
 
   
@@ -82,7 +82,7 @@
             
             
               <div class="version">
-                6.2
+                6.3
               </div>
             
           
@@ -250,7 +250,7 @@
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>includefile</em> ]
 [ <a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong>[<strong>+f</strong>[<strong>i</strong>|<strong>o</strong>]<em>fade</em>[<strong>s</strong>]][<strong>+g</strong><em>fill</em>][<strong>+p</strong>] ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>labelinfo</em> ]
-[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>frame</em>],[<em>format</em>] ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>frame</em>],[<em>format</em>][<strong>+r</strong><em>dpu</em>] ]
 [ <a class="reference internal" href="#p"><span><strong>-P</strong></span></a></strong><em>progress</em> ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>s</strong>] ]
 [ <a class="reference internal" href="#sb"><span><strong>-Sb</strong></span></a></strong><em>background</em> ]
@@ -426,10 +426,11 @@ or floating point  (%e, %f, %g) format specification.</p>
 </dd>
 </dl>
 <dl class="simple" id="m">
-<dt><strong>-M</strong>[<em>frame</em>|<strong>f</strong>|<strong>m</strong>|<strong>l</strong>],[<em>format</em>]</dt><dd><p>In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
+<dt><strong>-M</strong>[<em>frame</em>|<strong>f</strong>|<strong>m</strong>|<strong>l</strong>],[<em>format</em>][<strong>+r</strong><em>dpu</em>]</dt><dd><p>In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
 be written to the current directory with name <em>prefix.format</em>, where <em>format</em> can one of the
 graphics extensions from the allowable graphics <a class="reference internal" href="begin.html#tbl-formats"><span class="std std-ref">formats</span></a> [pdf].  Instead of a frame number
-we also recognize the codes <strong>f</strong>irst, <strong>m</strong>iddle, and <strong>l</strong>ast frame.</p>
+we also recognize the codes <strong>f</strong>irst, <strong>m</strong>iddle, and <strong>l</strong>ast frame. <strong>Note</strong>: For raster frame formats
+you may optionally specify the <em>dpu</em> of that frame via the <strong>+r</strong> modifier [same dpu as the movie frames].</p>
 </dd>
 </dl>
 <dl class="simple" id="p">
@@ -795,7 +796,7 @@ ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex <span class="nv">vstack</span><s
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 04, 2021.
+        Last updated on Jun 06, 2021.
       </span>
 
     </p>
