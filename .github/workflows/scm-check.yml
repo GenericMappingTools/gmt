@@ -6,6 +6,8 @@
 #
 name: SCM Check
 on:
+  # uncomment the 'pull_request' line to enable testing in PRs
+  # pull_request:
   schedule:
     # weekly cron job
     - cron: '0 0 * * 0'
@@ -19,48 +21,21 @@ jobs:
       - name: Check the latest release
         id: scm
         run: |
-          scm_output=scm_version_string.txt
           scm_version_in_gmt=7.0.0
 
-          # Crawl the version string for parsing
-          echo "Crawling the official site: http://www.fabiocrameri.ch/colourmaps.php"
-          curl -s http://www.fabiocrameri.ch/colourmaps.php | grep Version > ${scm_output}
+          # Get version string and date from Zenodo API
+          # https://doi.org/10.5281/zenodo.1243862
+          scm_version=$(curl -Ls https://zenodo.org/api/records/1243862 | jq '.metadata.version' | sed 's/"//g')
+          scm_version_date=$(curl -Ls https://zenodo.org/api/records/1243862 | jq '.metadata.publication_date' | sed 's/"//g')
+          echo "SCM version ${scm_version} (${scm_version_date})"
 
-          # The number of lines in ${scm_output} must be 1
-          nlines=$(wc ${scm_output} | awk '{print $1}')
-          echo "Number of matched version strings: ${nlines}"
-          if [ "$nlines" != 1 ]; then
-            echo "${nlines} mactched version strings found. Will create a bug report!"
-            echo "::set-output name=error_code::1"
-          fi
-
-          # parse version string and date
-          scm_version=$(awk -F'Version <strong>' '{print $2}' scm_version_string.txt | awk -F'</strong>' '{print $1}')
-          scm_version_date=$(awk -F'(' '{print $2}' scm_version_string.txt | awk -F')' '{print $1}' | awk -F, '{print $1}')
+          # Set output of the current step
           echo "::set-output name=scm_version::${scm_version}"
           echo "::set-output name=scm_version_date::${scm_version_date}"
-
-          echo "Find version ${scm_version} released on ${scm_version_date}"
           if [ "${scm_version}" != ${scm_version_in_gmt} ]; then
-            echo "The latest SCM version ${scm_version} is different the one in GMT ${scm_version_in_gmt}!"
-            echo "Will create a update request!"
+            echo "The latest SCM version (${scm_version}) is different the one in GMT (${scm_version_in_gmt})!"
             echo "::set-output name=error_code::2"
           fi
-
-      - name: Create a bug report
-        if: ${{ steps.scm.outputs.error_code == 1 }}
-        uses: nashmaniac/create-issue-action@v1.1
-        with:
-          title: Error in checking ScientificColourMap release
-          token: ${{secrets.GITHUB_TOKEN}}
-          assignees: seisman
-          labels: bug
-          body: |
-            The ["SCM check"](.github/workflows/scm-check.yml) has an error in
-            parsing the version string of Scientific Colour Maps from
-            http://www.fabiocrameri.ch/colourmaps.php.
-
-            Please manually check it and fix the workflow.
 
       - name: Create an update request
         if: ${{ steps.scm.outputs.error_code == 2 }}

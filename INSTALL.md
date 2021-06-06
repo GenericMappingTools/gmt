@@ -14,7 +14,7 @@ for compiling GMT source package (either stable release or development version).
 
 - [Windows](#windows)
 - [macOS](#macos)
-  * [Application Bundle](#application-bundle)
+  * [Application Bundles](#application-bundles)
   * [Install via Homebrew](#install-via-homebrew)
   * [Install via Macports](#install-via-macports)
 - [Linux](#linux)
@@ -53,21 +53,21 @@ If you don't know how to manually modify `PATH`, just search Google for
 
 ## macOS
 
-### Application Bundle
+### Application Bundles
 
-We provide macOS application bundle in the [GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
-The bundle comes with GDAL, FFmpeg, Ghostscript and GraphicsMagick pre-installed.
+We provide macOS application bundles for Intel and ARM architectures in the [GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
+The bundles come with GDAL, FFmpeg, Ghostscript and GraphicsMagick pre-installed.
 
-Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg), double-click to mount it
-and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
+Download the suitable application bundle (gmt-6.x.x-darwin-x86_64.dmg or gmt-6.x.x-darwin-arm64.dmg),
+double-click to mount it and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
 
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
 your search path for executables. For that, just run GMT-6.x.x.app once and follow
 the instructions at the end of the GMT splash screen.
 
-**Note**: The installer is always built for the latest macOS version only,
-and works for macOS Sierra (10.12) or higher.
+**Note**: The installers are always built for the latest macOS version only,
+and work for macOS Sierra (10.12) or higher; the arm64 version requires a computer with the M1 Apple Silicon chip.
 
 ### Install via Homebrew
 

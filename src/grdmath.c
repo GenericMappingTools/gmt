@@ -232,6 +232,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"	CSC        1  1    csc (A) (A in radians)\n"
 		"	CSCD       1  1    csc (A) (A in degrees)\n"
 		"	CSCH       1  1    csch (A)\n"
+		"	CUMSUM     2  1    Cumulative sum of rows (B=+/-1|3) or columns (B=+/-2|4) in A\n"
 		"	CURV       1  1    Curvature of A (Laplacian)\n"
 		"	D2DX2      1  1    d^2(A)/dx^2 2nd derivative\n"
 		"	D2DY2      1  1    d^2(A)/dy^2 2nd derivative\n"
@@ -1654,6 +1655,83 @@ GMT_LOCAL void grdmath_CSCH (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 	if (stack[last]->constant) a = (float)(1.0 / sinh (stack[last]->factor));
 	for (node = 0; node < info->size; node++) stack[last]->G->data[node] = (stack[last]->constant) ? a : 1.0f / sinhf (stack[last]->G->data[node]);
+}
+
+GMT_LOCAL void grdmath_CUMSUM (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
+/*OPERATOR: CUMSUM 2 1 Cumulative sum across each row.  */
+{
+	bool add = false;
+	uint64_t node, previous, mx, shift;
+	unsigned int prev = last - 1, row, col;
+	int code;
+
+	if (!stack[last]->constant) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be a constant\n");
+		return;
+	}
+	code = irint (stack[last]->factor);
+	if (!gmt_M_is_zero (fabs (stack[last]->factor - code))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be an integer\n");
+		return;
+	}
+	if (code < -4 || code > 4 || code == 0) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "CUMSUM: Argument B must be either +/- 1-4\n");
+		return;
+	}
+
+	mx = info->G->header->mx;
+	switch (code) {
+		case +3:	/* Sum rows in positive x-direction, start next row with previous sum */
+			add = true;	/* Fall through on purpose */
+			shift = info->G->header->pad[XLO] + info->G->header->pad[XHI] + 2;
+		case +1:	/* Sum rows in positive x-direction */
+			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row in positive x-direction*/
+				node = gmt_M_ijp (info->G->header, row, 1);	/* Node of 2nd col in this row */
+				if (add && row) stack[prev]->G->data[node-1] += stack[prev]->G->data[node-shift];
+				for (col = 1; col < info->G->header->n_columns; col++, node++)
+					stack[prev]->G->data[node] += stack[prev]->G->data[node-1];
+			}
+			break;
+		case -3:	/* Sum rows in negative x-direction, start next row with previous sum */
+			add = true;	/* Fall through on purpose */
+			shift = 2 * mx - info->G->header->pad[XLO] - info->G->header->pad[XHI] - 2;
+		case -1:	/* Sum rows in negative x-direction */
+			gmt_M_row_loop (GMT, info->G, row) {	/* Process sums by row in negative x-direction*/
+				node = gmt_M_ijp (info->G->header, row, info->G->header->n_columns-2);	/* Node of 2nd col from the right in this row */
+				if (add && row) stack[prev]->G->data[node+1] += stack[prev]->G->data[node-shift];
+				for (col = 1; col < info->G->header->n_columns; col++, node--)
+					stack[prev]->G->data[node] += stack[prev]->G->data[node+1];
+			}
+			break;
+		case +4:	/* Sum columns in positive y-direction, start new column with previous sum */
+			add = true;	/* Fall through on purpose */
+			shift = (info->G->header->n_rows - 1) * mx + 1;
+		case +2:	/* Sum columns in positive y-direction */
+			gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column in positive y-direction */
+				previous = gmt_M_ijp (info->G->header, info->G->header->n_rows-1, col);	/* Last row for this column */
+				if (add && col) stack[prev]->G->data[previous] += stack[prev]->G->data[previous-shift];
+				for (row = 1; row < info->G->header->n_rows; row++) {
+					node = previous - mx;	/* current node in this column */
+					stack[prev]->G->data[node] += stack[prev]->G->data[previous];
+					previous = node;
+				}
+			}
+			break;
+		case -4:	/* Sum columns in negative y-direction, start new column with previous sum */
+			add = true;	/* Fall through on purpose */
+			shift = (info->G->header->n_rows - 1) * mx - 1;
+		case -2:	/* Sum columns in negative y-direction */
+			gmt_M_col_loop (GMT, info->G, 0, col, node) {	/* Process sums by column in negative y-direction */
+				previous = gmt_M_ijp (info->G->header, 0, col);	/* First row for this column */
+				if (add && col) stack[prev]->G->data[previous] += stack[prev]->G->data[previous+shift];
+				for (row = 1; row < info->G->header->n_rows; row++) {
+					node = previous + mx;	/* current node in this column */
+					stack[prev]->G->data[node] += stack[prev]->G->data[previous];
+					previous = node;
+				}
+			}
+			break;
+	}
 }
 
 GMT_LOCAL void grdmath_CURV (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, struct GRDMATH_STACK *stack[], unsigned int last)
@@ -5747,7 +5825,7 @@ GMT_LOCAL void grdmath_ZPDF (struct GMT_CTRL *GMT, struct GRDMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GRDMATH_N_OPERATORS 226
+#define GRDMATH_N_OPERATORS 227
 
 static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO *, struct GRDMATH_STACK **, unsigned int), unsigned int n_args[], unsigned int n_out[])
 {
@@ -5979,6 +6057,7 @@ static void grdmath_init (void (*ops[]) (struct GMT_CTRL *, struct GRDMATH_INFO 
 	ops[223] = grdmath_DAYNIGHT;	n_args[223] = 3;	n_out[223] = 1;
 	ops[224] = grdmath_VPDF;	n_args[224] = 3;	n_out[224] = 1;
 	ops[225] = grdmath_FISHER;	n_args[225] = 3;	n_out[225] = 1;
+	ops[226] = grdmath_CUMSUM;	n_args[226] = 2;	n_out[226] = 1;
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -6397,6 +6476,7 @@ EXTERN_MSC int GMT_grdmath (void *V_API, int mode, void *args) {
 		"DAYNIGHT",	/* id = 223 */
 		"VPDF",	/* id = 224 */
 		"FISHER",	/* id = 225 */
+		"CUMSUM",	/* id = 226 */
 		"" /* last element is intentionally left blank */
 	};
 

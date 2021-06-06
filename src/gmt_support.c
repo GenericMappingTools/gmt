@@ -7632,14 +7632,44 @@ unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALET
 	return GMT_NOERROR;
 }
 
-char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *label, unsigned int n) {
-	/* Generate categorical labels for n categories from the label magic argument */
-	unsigned int k = 0;
-	char **Clabel = gmt_M_memory (GMT, NULL, n, char *);
+char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *in_label, unsigned int n) {
+	/* Generate categorical labels for n categories from the label magic argument.
+	 * Note: If n = 12 and label = M then we create month names.
+	 * Note: If n = 7 and label = D then we create day names
+	 */
+	unsigned int k = 0, kind = 0;
+	bool upper = false;
+	char all_items[12*GMT_LEN16] = {""};
+	char *label = NULL, **Clabel = gmt_M_memory (GMT, NULL, n, char *);
 
+	if (n == 12 && !strcmp (in_label, "M")) {	/* Create a month-list from current defaults */
+		gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
+		strcpy (all_items, GMT->current.language.month_name[kind][0]);
+		for (k = 1; k < 12; k++) {	/* Append comma-separated list of months in current language, format */
+			strcat (all_items, ",");
+			strcat (all_items, GMT->current.language.month_name[kind][k]);
+		}
+		if (upper) gmt_str_toupper (all_items);
+		label = all_items;
+	}
+	else if (n == 7 && !strcmp (in_label, "D")) {	/* Create a weekday-list from current defaults */
+		unsigned int day;
+		gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
+		day = (GMT->current.setting.time_week_start + GMT_WEEK2DAY_I) % GMT_WEEK2DAY_I;	/* Wrap around */
+		strcpy (all_items, GMT->current.language.day_name[kind][day]);
+		for (k = 1; k < 7; k++) {	/* Append comma-separated list of weekdays in current language, format */
+			day = (k + GMT->current.setting.time_week_start + GMT_WEEK2DAY_I) % GMT_WEEK2DAY_I;	/* Wrap around */
+			strcat (all_items, ",");
+			strcat (all_items, GMT->current.language.day_name[kind][day]);
+		}
+		if (upper) gmt_str_toupper (all_items);
+		label = all_items;
+	}
+	else 	/* Pass what we were given as is */
+		label = in_label;
 	if (strchr (label, ',')) {	/* Got list of category names */
 		char *word = NULL, *trail = NULL, *orig = strdup (label);
-		trail = orig;
+		trail = orig;	k = 0;
 		while ((word = strsep (&trail, ",")) != NULL && k < n) {
 			if (*word != '\0')	/* Skip empty strings */
 				Clabel[k] = strdup (word);
@@ -14980,10 +15010,11 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 }
 
 /*! . */
-int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord) {
+int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord, double delta) {
 	/* Returns the formatted annotation string for the non-geographic axes */
 	bool upper = false;
-	unsigned int kind = 0, code;
+	unsigned int kind = 0, axis, code;
+	enum gmt_col_enum type;
 	int ival;
 
 	switch (GMT->current.map.frame.axis[T->parent].type) {
@@ -15006,7 +15037,17 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 					if (upper) gmt_str_toupper (string);
 					break;
 				default:
-					gmt_sprintf_float (GMT, string, format, coord);
+					if ((type = gmt_get_column_type (GMT, GMT_IN, T->parent)) & GMT_IS_GEO) {	/* Actually a geographic coordinate */
+						bool do_minutes = false, do_seconds = false;
+						if (!gmt_M_is_dnan (delta)) {
+							do_minutes = (fabs (fmod (delta, 1.0)) > GMT_CONV4_LIMIT);
+							do_seconds = gmtlib_set_do_seconds (GMT, delta);
+						}
+						axis = (type & GMT_IS_LON) ? GMT_X : GMT_Y;
+						gmtlib_get_annot_label (GMT, coord, string, do_minutes, do_seconds, true, axis, GMT->current.map.is_world);
+					}
+					else
+						gmt_sprintf_float (GMT, string, format, coord);
 					break;
 			}
 			break;
