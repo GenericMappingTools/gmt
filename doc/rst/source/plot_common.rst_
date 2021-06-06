@@ -34,7 +34,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
+**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**]
     By default, geographic line segments are drawn as great circle arcs by resampling
     coarse input data along such arcs. To disable this sampling and draw them as
     straight lines, use the **-A** flag.  Alternatively, add **m** to draw
@@ -42,7 +42,9 @@ Optional Arguments
     to start following a parallel, then a meridian. (This can be practical
     to draw a line along parallels, for example).  For Cartesian data, points
     are simply connected, unless you append **x** or **y** to draw stair-case
-    curves that whose first move is along *x* or *y*, respectively.
+    curves that whose first move is along *x* or *y*, respectively. For polar
+    projection, append **r** or **t** to draw stair-case curves that whose first
+    move is along *r* or *theta*, respectively.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
