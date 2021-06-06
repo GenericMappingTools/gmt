@@ -117,11 +117,12 @@ struct SUBPLOT_CTRL {
 	struct SUBPLOT_D {	/* -D determine correct dimensions but do not draw frames and annotations  */
 		bool active;
 	} D;
-	struct SUBPLOT_F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
+	struct SUBPLOT_F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+af|s][+c<clearance>][+d][+g<fill>][+p<pen>][+w<pen>] */
 		bool active;
 		bool lines;
-		bool debug;		/* Draw red faint lines to illustrate the result of space partitioning */
+		bool debug;		/* Draw red faint lines to illustrate the result of space partitioning (+d) */
 		bool reset_h;		/* True when height was given as 0 and we need to update based on what was learned */
+		bool panel_scale;	/* Auto-scale fonts/pens for average subplot size instead of entire figure [default is +af] */
 		unsigned int mode;	/* Whether dimensions given are for figure or individual subplots */
 		double dim[2];		/* Figure dimension (0/0 if subplot dimensions were given) */
 		double *w, *h;		/* Arrays with variable (or constant) normalized subplot widths and heights fractions */
@@ -189,7 +190,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+af|s][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>] [-D] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
 	 	GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C[<side>]<clearance>] [%s]\n", name, GMT_V_OPT);
@@ -208,6 +209,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   list of widths and/or heights.  A single value means constant width or height.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   As an option the composite figure rectangle may be extended, drawn or filled.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This is most useful if you are not plotting any map frames in the subplots.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +as to scale fonts/pens to average panel size [Default (+af) scales to subplot size].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for extending the figure rectangle outwards [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the figure rectangle with <fill> color [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the figure rectangle using selected pen [no outline].\n");
@@ -528,7 +530,9 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				}
 				if (c) {	/* Gave paint/pen/debug modifiers */
 					c[0] = '+';	/* Restore modifiers */
-					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "cdgpfw", GMT_MSG_ERROR)) n_errors++;
+					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "acdgpfw", GMT_MSG_ERROR)) n_errors++;
+					if (gmt_get_modifier (opt->arg, 'a', string) && string[0] == 's')
+						Ctrl->F.panel_scale = true;
 					if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance for rectangle */
 						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->F.clearance) < 0) n_errors++;
 					if (gmt_get_modifier (opt->arg, 'g', Ctrl->F.fill) && Ctrl->F.fill[0]) {
@@ -824,7 +828,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot attributes once */
-		int RP_id, RG_id;
+		int RP_id, RG_id, div_x = 1, div_y = 1;
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
 		double gmean_dim, x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
@@ -837,8 +841,11 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 		/* Need geometric mean dimension of subplot to calculate the undefined quantities */
 
-		if (Ctrl->F.mode == SUBPLOT_FIGURE)	/* Got figure dimensions */
-			gmean_dim = sqrt (Ctrl->F.dim[GMT_X] * Ctrl->F.dim[GMT_Y]);
+		if (Ctrl->F.panel_scale) {	/* Want the average panel geometric mean dimension */
+			div_x = Ctrl->N.dim[GMT_X];	div_y = Ctrl->N.dim[GMT_Y];
+		}
+		if (Ctrl->F.mode == SUBPLOT_FIGURE)	/* Got figure dimensions, approximate panel size */
+			gmean_dim = sqrt ((Ctrl->F.dim[GMT_X] / div_x) * (Ctrl->F.dim[GMT_Y] / div_y));
 		else {	/* Got panel dimension(s), compute total figure dimensions */
 			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
@@ -846,10 +853,13 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			/* Sum up individual widths or heights and add the fluff space */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) width  += Ctrl->F.w[col];
 			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) height += Ctrl->F.h[row];
-			gmean_dim = sqrt (width * height);
+			gmean_dim = sqrt ((width / div_x) * (height / div_y));
 			width = height = 0.0;	/* Reset */
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot max panel dimension estimated: %g inch\n", gmean_dim);
+		if (Ctrl->F.panel_scale)
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot geometric average panel dimension for font/pen auto-scaling: %g inch\n", gmean_dim);
+		else
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot geometric average figure dimension for font/pen auto-scaling: %g inch\n", gmean_dim);
 
 		/* We must change any undefined defaults given this representative dimension now so that font sizes and dimensions
 		 * can be written to this subplot's gmt.conf file and thus give the same settings for all panels. The gmt.conf is

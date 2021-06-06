@@ -778,6 +778,10 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 	}
 
 	if (convert_to_cube) {	/* Just want to build cube from input stack */
+		if (Ctrl->D.active && gmt_decode_cube_h_info (GMT, Ctrl->D.information, C[GMT_IN])) {
+			GMT_Destroy_Data (API, &C[GMT_IN]);
+			Return (GMT_PARSE_ERROR);
+		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Convert %" PRIu64 " grid layers to a single data cube %s.\n", n_layers, Ctrl->G.file);
 		if (GMT_Set_Comment (API, GMT_IS_CUBE, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, C[GMT_IN]))
 			Return (EXIT_FAILURE);
@@ -809,7 +813,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_MEMORY_ERROR);
 
 	if (Ctrl->D.active && gmt_decode_cube_h_info (GMT, Ctrl->D.information, C[GMT_OUT])) {
-		GMT_Destroy_Data (API, &C[GMT_OUT]);	/* Done with the output cube */
+		GMT_Destroy_Data (API, &C[GMT_OUT]);
 		Return (GMT_PARSE_ERROR);
 	}
 

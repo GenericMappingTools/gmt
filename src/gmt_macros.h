@@ -59,6 +59,9 @@
 #define gmt_nc_put_varm_grdfloat nc_put_varm_float
 #endif
 
+/*! Macro to apply columns log/scale/offset conversion on the fly */
+#define gmt_M_convert_col(S,x) ((S.convert) ? ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset : x)
+
 /* This macro is called via each modules "Return" macro so API and options are available */
 #define gmt_M_free_options(mode) {if (GMT_Destroy_Options (API, &options) != GMT_OK) return (GMT_MEMORY_ERROR);}
 
