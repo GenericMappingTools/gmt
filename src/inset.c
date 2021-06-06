@@ -282,7 +282,7 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		PSL_setorigin (PSL, Ctrl->D.inset.refpoint->x + Ctrl->M.margin[XLO], Ctrl->D.inset.refpoint->y + Ctrl->M.margin[YLO], 0.0, PSL_FWD);	/* Shift plot a bit */
 
 		/* First get the -B options in place before inset was called */
-		sprintf (ffile, "%s/gmt.frame", API->gwf_dir);
+		sprintf (ffile, "%s/gmt.frame.%d", API->gwf_dir, fig);
 		if ((fp = fopen (ffile, "r")) == NULL)
 			GMT_Report (API, GMT_MSG_INFORMATION, "No file %s with frame information - no adjustments made\n", ffile);
 		else {
@@ -340,18 +340,18 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		sprintf (ffile, "%s/%s.%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
 		gmt_remove_file (GMT, ffile);
 		/* Restore the old frame B setting to what it was before inset begin was called, if any */
-		if ((fp = fopen (file, "r"))) {	/* There is a gmt.frame file */
+		if ((fp = fopen (file, "r"))) {	/* There is a gmt.frame.<fig> file */
 			while (fgets (Bopts, GMT_LEN256, fp) && strncmp (Bopts, "# FRAME: ", 9U));	/* Wind to reading the frame setting */
 			gmt_chop (Bopts);
-			fclose (fp);	/* Done reading the gmt.frame file */
+			fclose (fp);	/* Done reading the gmt.frame.<fig> file */
 			if (!strncmp (Bopts, "# FRAME: ", 9U) && strlen (Bopts) > 9 && Bopts[9]) {	/* Got a previously saved -B frame setting */
-				sprintf (ffile, "%s/gmt.frame", API->gwf_dir);
+				sprintf (ffile, "%s/gmt.frame.%d", API->gwf_dir, fig);
 				if ((fp = fopen (ffile, "w")) == NULL) {	/* Not good */
 					GMT_Report (API, GMT_MSG_ERROR, "Cannot create frame file %s\n", ffile);
 					Return (GMT_ERROR_ON_FOPEN);
 				}
 				GMT_Report (API, GMT_MSG_DEBUG, "inset: Restore previous frame in %s\n", ffile);
-				/* Restore the previous frame setting in gmt.frame */
+				/* Restore the previous frame setting in gmt.frame.<fig> */
 				fprintf (fp, "%s\n", &Bopts[9]);
 				fclose (fp);
 			}

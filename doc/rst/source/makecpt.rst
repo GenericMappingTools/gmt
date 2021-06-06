@@ -125,7 +125,12 @@ Optional Arguments
     keys instead of numerical entries then append **+k**\ *keys*, where
     *keys* is either a file with one key per record or a single letter (e.g., D),
     then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
-    For comma-separated lists of keys, use **-T** instead.
+    For comma-separated lists of keys, use **-T** instead.  **Note**: If **+cM** is given and the number
+    of categories is 12, then we automatically create a list of month names.
+    Likewise, if **+cD** is given and the number of categories is 7 then we
+    make a list of weekday names.  The format of these labels will depend on the
+    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
+    :term:`TIME_WEEK_START` settings.
 
 .. _-G:
 

@@ -30,15 +30,16 @@ jobs:
 
       - name: Set release or release candidate from GMT version
         run: |
-          if [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+ ]];
+          if [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+ ]]; then
             echo "GMT_RELEASE=true" >> $GITHUB_ENV
-          elif [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+rc[0-9]+ ]];
+          elif [[ ${{ env.GMT_VERSION }} == [0-9]+.[0-9]+.[0-9]+rc[0-9]+ ]]; then
             echo "GMT_RELEASE=false" >> $GITHUB_ENV
           fi
 
       - name: Download GMT tarballs and installers
         run: |
           curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
+          curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-darwin-arm64.dmg
           curl -O ftp://ftp.soest.hawaii.edu/gmt/gmt-${{ env.GMT_VERSION }}-src.tar.gz
           curl -O ftp://ftp.soest.hawaii.edu/gmt/gmt-${{ env.GMT_VERSION }}-src.tar.xz
           curl -O ftp://ftp.soest.hawaii.edu/gmt/bin/gmt-${{ env.GMT_VERSION }}-win64.exe
@@ -52,6 +53,7 @@ jobs:
         run: |
           shasum -a 256 \
                 gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg \
+                gmt-${{ env.GMT_VERSION }}-darwin-arm64.dmg \
                 gmt-${{ env.GMT_VERSION }}-src.tar.gz \
                 gmt-${{ env.GMT_VERSION }}-src.tar.xz \
                 gmt-${{ env.GMT_VERSION }}-win64.exe \
@@ -80,7 +82,8 @@ jobs:
             | **File**                       | **Description**                         |
             |--------------------------------|-----------------------------------------|
             | gmt-${{ env.GMT_VERSION }}-checksums.txt     | sha256sum of source and binary packages |
-            | gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg | macOS bundle                            |
+            | gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg | macOS bundle (intel)                    |
+            | gmt-${{ env.GMT_VERSION }}-darwin-arm64.dmg  | macOS bundle (arm64)                    |
             | gmt-${{ env.GMT_VERSION }}-src.tar.gz        | Source code                             |
             | gmt-${{ env.GMT_VERSION }}-src.tar.xz        | Source code                             |
             | gmt-${{ env.GMT_VERSION }}-win32.exe         | Windows installer (32bit)               |
@@ -90,6 +93,7 @@ jobs:
           files: |
             gmt-${{ env.GMT_VERSION }}-checksums.txt
             gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
+            gmt-${{ env.GMT_VERSION }}-darwin-arm64.dmg
             gmt-${{ env.GMT_VERSION }}-src.tar.gz
             gmt-${{ env.GMT_VERSION }}-src.tar.xz
             gmt-${{ env.GMT_VERSION }}-win32.exe
@@ -107,7 +111,8 @@ jobs:
             | **File**                       | **Description**                         |
             |--------------------------------|-----------------------------------------|
             | gmt-${{ env.GMT_VERSION }}-checksums.txt     | sha256sum of source and binary packages |
-            | gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg | macOS bundle                            |
+            | gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg | macOS bundle (intel)                    |
+            | gmt-${{ env.GMT_VERSION }}-darwin-arm64.dmg  | macOS bundle (arm64)                    |
             | gmt-${{ env.GMT_VERSION }}-src.tar.gz        | Source code                             |
             | gmt-${{ env.GMT_VERSION }}-src.tar.xz        | Source code                             |
             | gmt-${{ env.GMT_VERSION }}-win64.exe         | Windows installer (64bit)               |
@@ -116,6 +121,7 @@ jobs:
           files: |
             gmt-${{ env.GMT_VERSION }}-checksums.txt
             gmt-${{ env.GMT_VERSION }}-darwin-x86_64.dmg
+            gmt-${{ env.GMT_VERSION }}-darwin-arm64.dmg
             gmt-${{ env.GMT_VERSION }}-src.tar.gz
             gmt-${{ env.GMT_VERSION }}-src.tar.xz
             gmt-${{ env.GMT_VERSION }}-win64.exe

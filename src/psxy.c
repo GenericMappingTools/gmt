@@ -978,6 +978,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	unsigned int bcol, ex1, ex2, ex3, change = 0, pos2x, pos2y, save_u = false;
 	unsigned int xy_errors[2], error_type[2] = {EBAR_NONE, EBAR_NONE}, error_cols[5] = {0,1,2,4,5};
 	int error = GMT_NOERROR, outline_setting = 0, seq_n_legends = 0, seq_frequency = 0;
+	uint64_t n_z_for_cpt = 0;
 
 	char s_args[GMT_BUFSIZ] = {""};
 
@@ -991,7 +992,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
-	struct GMT_DATASET *Decorate = NULL, *Zin = NULL;
+	struct GMT_DATASET *Decorate = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXY_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;		/* General GMT internal parameters */
@@ -1060,13 +1061,30 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Get color from cpt -Z and store in -G */
 			if (Ctrl->Z.file) {
 				/* Must temporarily let the x-column contain datavalues for the CPT lookup */
+				struct GMT_DATASET *Zin = NULL;
 				enum gmt_col_enum x_col_type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 				enum gmt_col_enum z_col_type = gmt_get_column_type (GMT, GMT_IN, GMT_Z);
+				gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -Z file */
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, z_col_type);
 				if ((Zin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->Z.file, NULL)) == NULL) {
 					Return (API->error);
 				}
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, x_col_type);
+				gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+				if (Zin->n_segments > 1) {
+					GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a single segment with one z-value for each polygon in the input file\n");
+					Return (API->error);
+				}
+				if (Zin->n_columns == 0) {
+					GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a at least one data column and we will choose the last column\n");
+					Return (API->error);
+				}
+				n_z_for_cpt = Zin->table[0]->segment[0]->n_rows;	/* Remember length of segment */
+				z_for_cpt = gmt_M_memory (GMT, NULL, n_z_for_cpt, double);
+				gmt_M_memcpy (z_for_cpt, Zin->table[0]->segment[0]->data[Zin->n_columns-1], n_z_for_cpt, double);
+				if (GMT_Destroy_Data (API, &Zin) != GMT_NOERROR) {	/* Finished with this file */
+					Return (API->error);
+				}
 			}
 			else {
 				double rgb[4];
@@ -2205,20 +2223,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (Zin) {	/* Check that the Z file matches our polygon file */
-			if (Zin->n_records < D->n_segments) {
-				GMT_Report (API, GMT_MSG_ERROR, "Number of Z values is less then number of polygons\n");
+		if (z_for_cpt) {	/* Check that the Z file matches our polygon file */
+			if (n_z_for_cpt < D->n_segments) {
+				GMT_Report (API, GMT_MSG_ERROR, "Number of Z values (%" PRIu64 ") is less then number of polygons (%" PRIu64 ")\n", n_z_for_cpt, D->n_segments);
+				gmt_M_free (GMT, z_for_cpt);
 				Return (API->error);
 			}
-			if (Zin->n_segments > 1) {
-				GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a single segment with one z-value for each polygon in the input file\n");
-				Return (API->error);
-			}
-			if (Zin->n_columns == 0) {
-				GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a at least one data column and we will choose the last column\n");
-				Return (API->error);
-			}
-			z_for_cpt = Zin->table[0]->segment[0]->data[Zin->n_columns-1];	/* Short hand to the required z-array */
 		}
 
 		DH = gmt_get_DD_hidden (D);
@@ -2329,7 +2339,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				 * but reallocating x below lead to disasters.  */
 
 				outline_setting = outline_active ? 1 : 0;
-				if (Zin != NULL) {
+				if (z_for_cpt != NULL) {
 					double rgb[4];
 					(void)gmt_get_rgb_from_z (GMT, P, z_for_cpt[seg], rgb);
 					if (Ctrl->W.set_color) {	/* To be used in polygon or symbol outline */
@@ -2409,7 +2419,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					else if (Ctrl->G.active)
 						current_fill = Ctrl->G.fill;
 				}
-				else if (Zin == NULL) {
+				else if (z_for_cpt == NULL) {
 					if (change & 1) polygon = true;
 					if (change & 2 && !Ctrl->L.polygon) {
 						polygon = false;
@@ -2614,6 +2624,8 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
+		if (z_for_cpt) gmt_M_free (GMT, z_for_cpt);
+
 		gmt_map_clip_off (GMT);
 	}
 	PSL_command (GMT->PSL, "U\n");	/* Undo the gsave for all symbols or lines */

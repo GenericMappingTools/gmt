@@ -14,7 +14,7 @@
 # The higher resolution movie on YouTube used the 02m data set resolution.
 
 # 1. Create background plot and data files needed in the loop
-cat << EOF > pre.sh
+cat << 'EOF' > pre.sh
 gmt begin
 	# Set view and sun longitudes
 	gmt math -T-12/372/0.5 -I T 5 SUB = longitudes.txt
@@ -25,14 +25,14 @@ gmt begin
 gmt end
 EOF
 # 2. Set up main script
-cat << EOF > main.sh
+cat << 'EOF' > main.sh
 gmt begin
 	# Let HSV minimum value go to zero and faint map border
 	gmt set COLOR_HSV_MIN_V 0 MAP_FRAME_PEN=faint
 	# Fake simulation of sun illumination from east added to relief intensities
-	gmt grdmath intens.grd X \${MOVIE_COL1} SUB SIND 0.8 MUL ADD 0.2 SUB = s.nc
+	gmt grdmath intens.grd X ${MOVIE_COL1} SUB SIND 0.8 MUL ADD 0.2 SUB = s.nc
 	# Plot age grid first using EarthByte age cpt
-	gmt grdimage @earth_age_06m -Is.nc -JG\${MOVIE_COL0}/15/10.8c -X0 -Y0
+	gmt grdimage @earth_age_06m -Is.nc -JG${MOVIE_COL0}/15/10.8c -X0 -Y0
 	# Clip to expose land areas only
 	gmt coast -G -Di
 	# Overlay relief over land only using dem cpt
