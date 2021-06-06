@@ -13,10 +13,11 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfill** *ingrid*
-|-A|\ *mode*\ [*arg*]
-|-G|\ *outgrid*
-[ |SYN_OPT-R| ]
+[ |-A|\ *mode*\ [*arg*] ]
+[ |-G|\ *outgrid* ]
 [ |-L|\ [**p**] ]
+[ |-N|\ *value* ]
+[ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -28,8 +29,8 @@ Description
 
 **grdfill** reads a grid that presumably has unfilled holes that the user
 wants to fill in some fashion.  Holes are identified by NaN values but
-this criteria can be changed.  There are several different algorithms that
-can be used to replace the hole values.
+this criteria can be changed via **-N**.  There are several different algorithms that
+can be used to replace the hole values.  **Note**: One of **-A** or **-L** is required.
 
 Required Arguments
 ------------------
@@ -37,27 +38,27 @@ Required Arguments
 *ingrid*
     This is the input grid file.
 
+Optional Arguments
+------------------
+
 .. _-A:
 
 **-A**\ *mode*\ [*arg*]
-    Specify the hole-filling algorithm to use.  Choose from **c** for constant
-    fill and append the constant value, **n** for nearest neighbor (and optionally
-    append a search radius in pixels [default radius is :math:`r^2 = \sqrt{X^2 + Y^2}`,
+    Specify the hole-filling algorithm to use.  Choose among **c** for constant
+    fill (and append the constant fill *value*), **n** for nearest neighbor (and optionally
+    append a search *radius* in pixels [default radius is :math:`r^2 = \sqrt{X^2 + Y^2}`,
     where (*X,Y*) are the node dimensions of the grid]), or
-    *s** for bicubic spline [NOT IMPLEMENTED YET].
+    **s** for bicubic spline (optionally append a *tension* parameter [no tension]).
 
 .. _-G:
 
 **-G**\ *outgrid*
     This is the output grid file.
 
-Optional Arguments
-------------------
-
 .. _-N:
 
 **-N**\ [*nodata*]
-    Sets the node value that identifies a point as a member of a hole [Default is NaN].
+    Sets the node value used to identify a point as a member of a hole [Default is NaN].
 
 .. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
 .. include:: explain_-R.rst_

@@ -764,6 +764,12 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			img_conv_needed = true;
 		}
 		GC[g].HH = gmt_get_H_hidden (GC[g].G->header);
+		/* Temporary fix for external grids with no pad; see discussion at https://github.com/GenericMappingTools/pygmt/issues/1309 */
+		if (GC[g].G->header->pad[XLO] < 2 || GC[g].G->header->pad[XHI] < 2 || GC[g].G->header->pad[YLO] < 2 || GC[g].G->header->pad[YHI] < 2) {
+			GMT->common.n.interpolant = MIN (GMT->common.n.interpolant, BCR_BILINEAR);	/* Can only do near-neighbor or bilinear without 2 pad */
+			GC[g].HH->bcr_interpolant = GMT->common.n.interpolant;
+			GC[g].HH->bcr_n = (GC[g].HH->bcr_interpolant == BCR_NEARNEIGHBOR) ? 1 : 2;
+		}
 	}
 
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */
@@ -870,7 +876,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_DEV]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked deviations(s) in each profile */
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
-		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.mode)) == NULL) Return (API->error);
+		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.mode, Ctrl->C.unit)) == NULL) Return (API->error);
 
 		if (Ctrl->F.active) {	/* Keep a record of the along-track distances produced in -C */
 			dist = gmt_M_memory (GMT, NULL, Dtmp->n_records, double);
@@ -1188,6 +1194,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Special case were number of output columns is known before reading input records */
 			gmt_set_cartesian (GMT, GMT_OUT);	/* Since we are outputting z-columns only */
 			GMT->current.setting.io_lonlat_toggle[GMT_OUT] = false;	/* Since no x,y involved here */
+			if (GMT->common.s.active && !isdigit (GMT->common.s.string[0]))	/* Shift z nan-col setting to first column */
+				GMT->current.io.io_nan_col[0] = GMT_X;
 			n_out = Ctrl->G.n_grids;
 			n_lead = 0;	/* None of the input columns will be used */
 			if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_out, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
