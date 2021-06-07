@@ -182,6 +182,8 @@ Optional Arguments
     report the line segment id and the fractional point number instead
     of lon/lat of the nearest point.
     See `Output Order`_ for how **-L** affects the output record.
+    **Note**: Calculation mode for geographic data is spherical, hence **-je**
+    cannot be used in combination with **-L**.
 
 .. _-N:
 

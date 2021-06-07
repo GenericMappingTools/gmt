@@ -250,6 +250,9 @@ Optional Arguments
 
 **-Z**
     Only write out the sampled z-values [Default writes all columns].
+    **Note**: If used in conjunction with **-s** then the default
+    column becomes 0 instead of 2.  If specifying specific columns
+    in **-s** then start numbering the z-columns from 0 instead of 2.
 
 **-:**
     Toggles between (longitude,latitude) and (latitude,longitude)

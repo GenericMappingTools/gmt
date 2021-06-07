@@ -170,6 +170,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The <label>, if present, sets the labels for each category. It may be a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   comma-separated list of category names, or <start>[-], where we automatically build\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build ranges <start>-<start+1>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If number of categories is 12 and label is M then we auto-create month name labels, and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     if it is 7 and label is D then we auto-create weekday name labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <keys> is a single letter then we build sequential alphabetical keys from that letter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");

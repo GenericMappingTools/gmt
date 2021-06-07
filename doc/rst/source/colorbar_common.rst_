@@ -64,7 +64,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+w**\ *length*\ [/\ *width*]]\ [**+e**\ [**b**\|\ **f**][*length*]][**+h**\|\ **v**][**+j**\ *justify*]\ [**+m**\ [**a**\|\ **c**\|\ **l**\|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]]
+**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ [**+w**\ *length*\ [/\ *width*]]\ [**+e**\ [**b**\|\ **f**][*length*]][**+h**\|\ **v**][**+j**\ *justify*]\ [**+m**\ [**a**\|\ **c**\|\ **l**\|\ **u**]][**+n**\ [*txt*]][**+o**\ *dx*\ [/*dy*]][**+r**]
     Defines the reference point on the map for the color scale using one of four coordinate systems:
 
     .. include:: explain_refpoint.rst_
@@ -77,7 +77,7 @@ Optional Arguments
     However, you can override any of these with these modifiers:
     Append **+w** followed by the *length* and *width* of the color bar.  If *width* is not
     specified then it is set to 4% of the given *length*.
-    Give a negative *length* to reverse the scale bar. Append **+h** to get a
+    Give a negative *length* to reverse the scale bar, or append **+r**. Append **+h** to get a
     horizontal scale [Default is vertical (**+v**)].
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this
     can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).

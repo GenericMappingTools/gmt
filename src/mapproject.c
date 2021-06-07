@@ -236,6 +236,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates (-R, -J).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Three columns are added on output: min dist and lon, lat of the closest point on the line.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to get line segment id and fractional point number instead of lon/lat.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Spherical calculations - cannot be combined with -je.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Convert from geodetic to auxiliary latitudes; use -I for inverse conversion.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append a(uthalic), c(onformal), g(eocentric), or m(eridional) to select a conversion [geocentric].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q List all projection parameters and stop [Default].  For subsets, use\n");
@@ -579,7 +580,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				Ctrl->I.active = true;
 				will_need_RJ = true;	/* Since -I means inverse projection */
 				break;
-			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] */
+			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
 				Ctrl->L.active = true;
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
@@ -731,6 +732,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 		GMT->current.ps.active = false;	/* Come to our senses */
 	}
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && GMT->common.j.mode == GMT_GEODESIC, "Option -L: Requires spherical calculations so -je cannot be used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->used[MP_COL_DS], "Option -Z requires -G+i\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->G.mode + Ctrl->E.active + Ctrl->L.active) > 0,
 	                                   "-T cannot work with -E, -G or -L\n");
