@@ -308,10 +308,8 @@ https://docs.generic-mapping-tools.org/latest/changes.html.
 1. Go to https://github.com/GenericMappingTools/gmt/releases and click on the 'Edit' button next to the current draft
    release note. Copy the text of the automatically drafted release notes under the 'Write' tab to
    `doc/rst/source/changes.rst`.
-2. Open a new Pull Request using the title 'Changelog entry for vX.Y.Z' with the updated release notes, so that other
+2. Open a new Pull Request using the title 'Changelog entry for GMT X.Y.Z' with the updated release notes, so that other
    people can help to review and collaborate on the changelog curation process described next.
 3. Edit the change list to remove any trivial changes (updates to the README, typo fixes, CI configuration, etc).
 4. Edit the formatting to use [ReST style](https://docs.generic-mapping-tools.org/latest/rst-cheatsheet.html).
 5. Add links in the changelog to elements of the documentation as appropriate.
-4. Edit the list of people who contributed to the release, linking to their GitHub account. Sort their names by the
-   number of commits made since the last release (e.g., use `git shortlog HEAD...v0.1.2 -sne`).
