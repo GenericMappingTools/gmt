@@ -190,7 +190,7 @@ GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INF
 	return false;
 }
 
-GMT_LOCAL bool grdblend_outside_y (struct GMT_GRID_HEADER *h, double *wesn) {
+GMT_LOCAL bool grdblend_outside_y_range (struct GMT_GRID_HEADER *h, double *wesn) {
 	if (h->registration == GMT_GRID_NODE_REG) {
 		if (h->wesn[YLO] > wesn[YHI] || h->wesn[YHI] < wesn[YLO]) return true;
 	}
@@ -200,7 +200,7 @@ GMT_LOCAL bool grdblend_outside_y (struct GMT_GRID_HEADER *h, double *wesn) {
 	return false;
 }
 
-GMT_LOCAL bool grdblend_outside_x (struct GMT_GRID_HEADER *h, double *wesn) {
+GMT_LOCAL bool grdblend_outside_cartesian_x_range (struct GMT_GRID_HEADER *h, double *wesn) {
 	if (h->registration == GMT_GRID_NODE_REG) {
 		if (h->wesn[XLO] > wesn[XHI] || h->wesn[XHI] < wesn[XLO] || h->wesn[YLO] > wesn[YHI] || h->wesn[YHI] < wesn[YLO]) return true;
 	}
@@ -397,7 +397,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		struct GMT_GRID_HEADER *t = B[n].G->header;	/* Shortcut for this tile header */
 
 		/* Skip the file if its outer region does not lie within the final grid region */
-		if (grdblend_outside_y (h, B[n].wesn)) {
+		if (grdblend_outside_y_range (h, B[n].wesn)) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "File %s entirely outside y-range of final grid region (skipped)\n", B[n].file);
 			B[n].ignore = true;
@@ -407,7 +407,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* Check header for -+360 issues and overlap */
 			if (grdblend_overlap_check (GMT, &B[n], h, 1)) continue;	/* Check inner region for -+360 issues and overlap */
 		}
-		else if (grdblend_outside_x (h, B[n].wesn)) {
+		else if (grdblend_outside_cartesian_x_range (h, B[n].wesn)) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "File %s entirely outside x-range of final grid region (skipped)\n", B[n].file);
 			B[n].ignore = true;
