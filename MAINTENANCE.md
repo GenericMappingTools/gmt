@@ -13,6 +13,7 @@ Below are instructions for developers and advanced users.
 - [Debugging GMT](#debugging-gmt)
 - [Using build and test aliases](#using-build-and-test-aliases)
 - [Continuous Integration](#continuous-integration)
+- [Updating the changelog](#updating-the-changelog)
 
 ## Building the source code
 
@@ -287,3 +288,28 @@ There are 11 configuration files located in `.github/workflows/`:
     This workflow is run when Pull Requests are merged into the *master* branch, if the Pull Request involved changes
     to the folders that contain source code, workflows, tests, or scripts for generating documentation figures. It runs
     the full GMT test suite on Linux, macOS, and Windows.
+
+12. `release-drafter.yml` (Drafts the next release notes)
+
+    This workflow is run to update the next releases notes as pull requests are merged into master.
+
+## Updating the changelog
+
+The Release Drafter GitHub Action will automatically keep a draft changelog at
+https://github.com/GenericMappingTools/gmt/releases, adding a new entry every time a Pull Request (with a proper label)
+is merged into the master branch. This release drafter tool has two configuration files, one for the GitHub Action
+at .github/workflows/release-drafter.yml, and one for the changelog template at .github/release-drafter.yml.
+Configuration settings can be found at https://github.com/release-drafter/release-drafter. The maintenance documentation
+for this workflow is based on the [PyGMT Maintenance Documentation](https://www.pygmt.org/dev/maintenance.html).
+
+The drafted release notes are not perfect, so we will need to tidy it prior to publishing the actual release notes at
+https://docs.generic-mapping-tools.org/latest/changes.html.
+
+1. Go to https://github.com/GenericMappingTools/gmt/releases and click on the 'Edit' button next to the current draft
+   release note. Copy the text of the automatically drafted release notes under the 'Write' tab to
+   `doc/rst/source/changes.rst`.
+2. Open a new Pull Request using the title 'Changelog entry for GMT X.Y.Z' with the updated release notes, so that other
+   people can help to review and collaborate on the changelog curation process described next.
+3. Edit the change list to remove any trivial changes (updates to the README, typo fixes, CI configuration, etc).
+4. Edit the formatting to use [ReST style](https://docs.generic-mapping-tools.org/latest/rst-cheatsheet.html).
+5. Add links in the changelog to elements of the documentation as appropriate.
