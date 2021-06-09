@@ -200,7 +200,7 @@ You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericM
 
 ### Gentoo
 
-**NOTE:** This may provide old GMT versions. Consider building from source.
+**NOTE:** This may provide old GMT versions. Consider [building from source](BUILDING.md).
 
 Install GMT via:
 
