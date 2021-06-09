@@ -9135,7 +9135,8 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 			}
 		}
 	}
-	qsort (GMT->current.io.col[GMT_IN], k, sizeof (struct GMT_COL_INFO), gmtinit_compare_cols);
+	/* Use mergesort since qsort is unstable (i.e., unpredictable order) when items are identical */
+	mergesort (GMT->current.io.col[GMT_IN], k, sizeof (struct GMT_COL_INFO), gmtinit_compare_cols);
 	GMT->common.i.n_cols = k;
 	if (k) {	/* Because the user may have repeated some columns we also determine how many unique columns were requested */
 		GMT->common.i.n_actual_cols = 1;
