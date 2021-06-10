@@ -31,7 +31,7 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
    the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
    :ref:`cookbook/options:Grid registration: The **-r** option`\ ).
 
-#. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]]. This indirectly supplies the region by consulting
+#. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]. This indirectly supplies the region by consulting
    the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
    the codes. Simply append one or more comma-separated countries using the two-character
    `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)>`_.
