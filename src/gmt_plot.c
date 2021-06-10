@@ -5632,9 +5632,21 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 		double label_angle;
 		char *this_label = (far_ && A->secondary_label[0]) ? A->secondary_label : A->label;	/* Get primary or secondary axis label */
 
-      if (GMT->current.setting.map_label_offset < 0.0) { /* Fixed distance from axis */
-         gmtplot_map_label (GMT, 0.0, fabs (GMT->current.setting.map_label_offset), this_label, label_angle, l_just, axis, below);
-     }
+      if (axis == GMT_Y && A->label_mode) {
+         l_just = (below) ? PSL_MR : PSL_ML;
+         label_angle = 0.0 + y_angle_add;
+      }
+      else {
+         double angle_add = (axis == GMT_X) ? x_angle_add : y_angle_add;
+         l_just = (axis == GMT_X) ? lx_just : ly_just;
+         label_angle = (horizontal ? 0.0 : 90.0) + angle_add;
+      }
+      if (GMT->current.setting.map_label_offset < 0.0) { /* Base of label is a fixed distance from axis */
+         double s = (below) ? -1.0 : 1.0;
+         double xc = (horizontal) ? 0.5 * length : s * fabs (GMT->current.setting.map_label_offset);
+         double yc = (horizontal) ? s * fabs (GMT->current.setting.map_label_offset) : 0.5 * length;
+         gmtplot_map_label (GMT, xc, yc, this_label, label_angle, l_just, axis, below);
+      }
       else {
    		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
    		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
@@ -5649,15 +5661,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
    			PSL_command (PSL, "%d PSL_L_y PSL_slant_x add MM\n", PSL_IZ (PSL, 0.5 * length));
    		else
    			PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
-   		if (axis == GMT_Y && A->label_mode) {
-   			l_just = (below) ? PSL_MR : PSL_ML;
-   			label_angle = 0.0 + y_angle_add;
-   		}
-   		else {
-   			double angle_add = (axis == GMT_X) ? x_angle_add : y_angle_add;
-   			l_just = (axis == GMT_X) ? lx_just : ly_just;
-   			label_angle = (horizontal ? 0.0 : 90.0) + angle_add;
-   		}
    		gmtplot_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below);
       }
 	}

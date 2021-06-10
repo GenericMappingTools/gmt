@@ -788,7 +788,10 @@ MAP Parameters
     **MAP_LABEL_OFFSET**
         Distance from base of axis annotations to the top of the axis label
         [default is :doc:`theme dependent <theme-settings>`]. Choose **auto**
-        for :ref:`automatic scaling with plot size <auto-scaling>`.
+        for :ref:`automatic scaling with plot size <auto-scaling>`. **Note**:
+        If a negative offset is given then it is interpreted as the absolute
+        offset from the axis to the base of the label; this is useful when
+        wishing to align several y-axis labels in stacked plots.
 
     **MAP_LINE_STEP**
         Determines the maximum length (> 0) of individual straight
