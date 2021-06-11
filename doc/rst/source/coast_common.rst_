@@ -28,7 +28,7 @@ Required Arguments
 
 .. _-R:
 
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. |Add_-Rgeo| replace:: Not required when |-E| is used.
 .. include:: explain_-Rgeo.rst_
 
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
