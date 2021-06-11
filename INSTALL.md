@@ -39,6 +39,10 @@ In addition to the GMT installer, you also need to download and install
 [GraphicsMagick](http://www.graphicsmagick.org/) if you want to create
 animated GIFs.
 
+
+**NOTE:**
+It is recommended that you use a UNIX style terminal with a bash shell for GMT scripting, to leverage GMT's symbiotic relationship with UNIX. One simple option for accessing a UNIX style terminal is *Git for Windows*, which can be downloaded from [their official website](https://gitforwindows.org/).
+
 **NOTE:**
 At the installation step, you may get the warning message:
 
