@@ -42,7 +42,7 @@ Optional Arguments
     Sunrise, Sunset, Noon and length of the day.
     Add **+d**\ *date* in ISO 8601 format, e.g, **+d**\ *2000-04-25T04:52*, to compute sun parameters
     for this date and time. If necessary, append time zone via **+z**\ *TZ*. The time zone is given as an offset from UTC.
-    Negative UTC offsets look like *−03:00* or *−03*. Positive UTC offsets look like *02:00* or *02*.
+    Negative offsets look like *−03:00* or *−03*. Positive offsets look like *02:00* or *02*.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
