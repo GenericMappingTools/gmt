@@ -15,4 +15,4 @@ gmt makecpt -A50 -Cturbo -T-4000/-1000 -D > t.cpt
 gmt psscale -Ct.cpt -R -J -Y-5c -O -K -Baf -Bx+l"Continuous CPT All Slices Transparent" >> $ps
 # 5. Discrete CPT with some transparent colors
 gmt makecpt -Cturbo -T-4000/-1000/500 -D | awk '{if (NF == 5 && NR%2) {printf "%s\t%s@50\t%s\t%s@50\t%s\n", $1, $2, $3, $4, $5} else {print $0}}'> t.cpt
-gmt psscale -Ct.cpt -R -J -Y-5c -O -Baf -Bx+l"Discrete CPT Odd Transparent" >> $ps
+gmt psscale -Ct.cpt -R -J -Y-5c -O -Baf -Bx+l"Discrete CPT Odd Slices Transparent" >> $ps
