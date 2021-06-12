@@ -209,7 +209,7 @@ GMT_LOCAL void pswiggle_draw_z_scale (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL
 	gmt_xyz_to_xy (GMT, x0, y0 + dy, 0.0, &xx[2], &yy[2]);
 	gmt_xyz_to_xy (GMT, x0 + GMT->current.setting.map_scale_height, y0 + dy, 0.0, &xx[3], &yy[3]);
 	PSL_plotline (PSL, xx, yy, 4, PSL_MOVE|PSL_STROKE);
-	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[0] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
+	off = ((GMT->current.setting.map_scale_height > 0.0) ? GMT->current.setting.map_tick_length[GMT_PRIMARY] : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
 	form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 	PSL_plottext (PSL, x0 + off, y0, GMT->current.setting.font_annot[GMT_PRIMARY].size, txt, 0.0, PSL_ML, form);
 }
@@ -357,7 +357,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 					n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore modifiers */
-				if (pos && neg) Ctrl->G.fill[1-k] = Ctrl->G.fill[k];	/* Duplicate fill */
+				if (pos && neg) Ctrl->G.active[PSWIGGLE_NEG] = true, Ctrl->G.fill[PSWIGGLE_NEG] = Ctrl->G.fill[PSWIGGLE_POS];	/* Duplicate fill */
 				break;
 			case 'I':
 				Ctrl->I.value = atof (opt->arg);

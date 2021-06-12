@@ -72,10 +72,10 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-R| replace:: Special case for the UTM projection: If **-C** is used and **-R** is not given then the
     region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
@@ -182,6 +182,8 @@ Optional Arguments
     report the line segment id and the fractional point number instead
     of lon/lat of the nearest point.
     See `Output Order`_ for how **-L** affects the output record.
+    **Note**: Calculation mode for geographic data is spherical, hence **-je**
+    cannot be used in combination with **-L**.
 
 .. _-N:
 

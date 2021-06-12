@@ -190,6 +190,7 @@ enum GMT_time_period {
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
 #define GMT_LEN_UNITS2	"efkMnu"	/* Distances in meter, foot, survey foot, km, Mile, nautical mile */
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
+#define GMT_ARC_UNITS	"dms"		/* Distances in arc-{degree,minute,second}t */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
 #define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */

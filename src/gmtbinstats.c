@@ -30,7 +30,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"gmtbinstats"
 #define THIS_MODULE_MODERN_NAME	"gmtbinstats"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Bin data and determine statistics per bin"
+#define THIS_MODULE_PURPOSE	"Bin spatial data and determine statistics per bin"
 #define THIS_MODULE_KEYS	"<D{,>?}"
 #define THIS_MODULE_NEEDS	"R"
 #define THIS_MODULE_OPTIONS "-:RVabdefghiqrsw"

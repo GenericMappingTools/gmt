@@ -441,6 +441,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 		char output[GMT_VF_LEN] = {""}, cmd[GMT_LEN512] = {""};
 		GMT_Report (API, GMT_MSG_COMPAT, "Passing three grids instead of an image is deprecated.  Please consider using an image instead.\n");
 		GMT_Open_VirtualFile (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, output);
+		for (k = 0; k < 3; k++)
+			gmt_filename_set (file[k]);	/* Replace any spaces with ASCII 29 */
 		sprintf (cmd, "%s %s %s -C -N -G%s", file[0], file[1], file[2], output);
 		if (GMT_Call_Module (API, "grdmix", GMT_MODULE_CMD, cmd)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to combine %s/%s/%s into an image - aborting.\n", file[0], file[1], file[2]);
@@ -605,6 +607,12 @@ GMT_LOCAL void grdimage_set_proj_limits (struct GMT_CTRL *GMT, struct GMT_GRID_H
 		}
 		if (all_lats) {	/* Full -90/+90, use min/max for y */
 			r->wesn[YLO] = GMT->current.proj.rect[YLO];	r->wesn[YHI] = GMT->current.proj.rect[YHI];
+		}
+		if (GMT->current.map.is_world && gmt_M_is_periodic (GMT)) {	/* Worry about grids crossing a periodic boundary as the search above may fail */
+			if (g->wesn[XLO] < (GMT->current.proj.central_meridian+180) && g->wesn[XHI] > (GMT->current.proj.central_meridian+180))
+				r->wesn[XLO] = GMT->current.proj.rect[XLO],	r->wesn[XHI] = GMT->current.proj.rect[XHI];
+			else if (g->wesn[XLO] < (GMT->current.proj.central_meridian-180) && g->wesn[XHI] > (GMT->current.proj.central_meridian-180))
+				r->wesn[XLO] = GMT->current.proj.rect[XLO],	r->wesn[XHI] = GMT->current.proj.rect[XHI];
 		}
 	}
 	else if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Extra check for non-projected longitudes that wrap */
@@ -956,10 +964,10 @@ GMT_LOCAL void grdimage_img_gray_with_intensity (struct GMT_CTRL *GMT, struct GR
 GMT_LOCAL void grdimage_img_gray_no_intensity (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GRDIMAGE_CONF *Conf, unsigned char *image) {
 	/* Function that fills out the image in the special case of 1) image, 2) gray, 3) no intensity */
 	int64_t srow, scol;	/* Due to OPENMP on Windows requiring signed int loop variables */
-	gmt_M_unused (Ctrl);
 	uint64_t byte, kk_s, node_s;
 	struct GMT_GRID_HEADER *H_s = Conf->Image->header;	/* Pointer to the active data header */
 	gmt_M_unused (GMT);
+	gmt_M_unused (Ctrl);
 
 #ifdef _OPENMP
 #pragma omp parallel for private(srow,byte,kk_s,scol,node_s) shared(GMT,Conf,Ctrl,H_s,image)
@@ -1151,7 +1159,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	struct GMT_GRID *Grid_orig = NULL, *Grid_proj = NULL;
 	struct GMT_GRID *Intens_orig = NULL, *Intens_proj = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL, *IH = NULL;
+	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_PALETTE *P = NULL;
 	struct GRDIMAGE_CTRL *Ctrl = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;	/* General GMT internal parameters */
@@ -1428,8 +1436,11 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			strcat (cmd, data_grd);
 		else if (got_int4_grid)	/* Use the virtual file just assigned a few lines above this call */
 			strcat (cmd, int4_grd);
-		else	/* Default is to use the data file */
+		else {	/* Default is to use the data file; we quote it in case there are spaces in the filename */
+			gmt_filename_set (Ctrl->In.file);	/* Replace any spaces with ASCII 29 */
 			strcat (cmd, Ctrl->In.file);
+			gmt_filename_get (Ctrl->In.file);	/* Replace any ASCII 29 with spaces */
+		}
 		/* Call the grdgradient module */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdgradient with args %s\n", cmd);
 		if (GMT_Call_Module (API, "grdgradient", GMT_MODULE_CMD, cmd))
@@ -1533,7 +1544,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->W.active) {	/* Check if there are just NaNs in the grid */
 			for (node = 0; !has_content && node < Grid_orig->header->size; node++)
-				if (!gmt_M_is_dnan (Conf->Grid->data[node])) has_content = true;
+				if (!gmt_M_is_dnan (Grid_orig->data[node])) has_content = true;
 		}
 	}
 
@@ -1649,7 +1660,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	/* From here, use Grid_proj or Img_proj plus optionally Intens_proj in making the (now) Cartesian rectangular image */
 
-	if (use_intensity_grid) IH = gmt_get_H_hidden (Intens_proj->header);
 	if (got_z_grid) { /* Dealing with a projected grid, so we only have one band [z]*/
 		Grid_proj->header->n_bands = 1;
 		header_work = Grid_proj->header;	/* Later when need to refer to the header, use this copy */
@@ -1708,7 +1718,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		GMT_Set_Default (API, "API_IMAGE_LAYOUT", "TRPa");			/* Set grdimage's default image memory layout */
 
 		if ((Out = GMT_Create_Data (API, GMT_IS_IMAGE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, dim, img_wesn, img_inc, 1, 0, NULL)) == NULL) {	/* Yikes, must bail */
-			if (Ctrl->Q.active) gmt_M_free (GMT, rgb_used);
+			if (rgb_used) gmt_M_free (GMT, rgb_used);
 			gmt_free_header (API->GMT, &header_G);
 			gmt_free_header (API->GMT, &header_I);
 			Return (API->error);	/* Well, no luck with that allocation */
@@ -1843,7 +1853,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			done = true;	/* Only doing the loop once here since no -Q */
 	}
 
-	if (rgb_cube_scan) gmt_M_free (GMT, rgb_used);	/* Done using the r/g/b cube */
+	if (rgb_used) gmt_M_free (GMT, rgb_used);	/* Done using the r/g/b cube */
 	gmt_M_free (GMT, Conf->actual_row);
 	gmt_M_free (GMT, Conf->actual_col);
 

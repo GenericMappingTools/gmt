@@ -1885,7 +1885,7 @@ nc_err:
 bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file) {
 	/* Return true if the file is a 3-D netCDF cube */
 	bool is_cube = false;
-	int i, ID = GMT_NOTSET, ncid, z_id = GMT_NOTSET, dim = 0, nvars, ndims = 0;
+	int i, ID = GMT_NOTSET, ncid, z_id = GMT_NOTSET, nvars, ndims = 0;
 	char varname[GMT_GRID_NAME_LEN256] = {""}, *c = NULL;
 	gmt_M_unused (API);
 
@@ -1916,10 +1916,8 @@ bool gmt_nc_is_cube (struct GMTAPI_CTRL *API, char *file) {
 			if (nc_inq_varndims (ncid, i, &ndims)) goto nc_cube_return;	/* Not good */
 			if (ndims == 3)	/* Found the first 3-D grid */
 				z_id = i;
-			else if (ID == GMT_NOTSET && ndims > 3 && ndims < 5) {	/* Also look for higher-dim grid in case no 3-D */
+			else if (ID == GMT_NOTSET && ndims > 3 && ndims < 5)	/* Also look for higher-dim grid in case no 3-D */
 				ID = i;
-				dim = ndims;
-			}
 			i++;
 		}
 	}
@@ -1931,7 +1929,7 @@ nc_cube_return:
 
 /* Examine the netCDF data cube and determine if it is a 3-D cube and return the knots */
 
-int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, uint64_t *nz, double **zarray) {
+int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, uint64_t *nz, double **zarray, char *z_unit) {
 	int i, err, ID = -1, dim = 0, ncid, z_id = -1, ids[5] = {-1,-1,-1,-1,-1}, dims[5], nvars;
 	int has_vector, ndims = 0, z_dim, status;
 	uint64_t n_layers = 0;
@@ -1981,7 +1979,8 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 	gmtnc_get_units (GMT, ncid, ids[z_dim], z_units);
 	if (strstr (z_units, "seconds since 1970-01-01"))
 		gmt_set_column_type (GMT, GMT_IN, GMT_Z, GMT_IS_ABSTIME);
-
+	else if (z_units[0] == '\0')
+		strcpy (z_units, "z");	/* Set default z-unit name */
 	/* Look for the z-coordinate vector */
 	if ((has_vector = nc_get_var_double (ncid, ids[z_dim], z))) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No 3rd-dimension coordinate vector found in %s\n", file);
@@ -1997,6 +1996,8 @@ int gmt_nc_read_cube_info (struct GMT_CTRL *GMT, char *file, double *w_range, ui
 
 	*zarray = z;
 	*nz = n_layers;
+	if (z_unit)	/* Passed pointer to storage for z-unit in cubes */
+		strncpy (z_unit, z_units, GMT_GRID_UNIT_LEN80);
 
 	return GMT_NOERROR;
 }

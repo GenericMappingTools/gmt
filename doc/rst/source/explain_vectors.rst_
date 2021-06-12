@@ -38,9 +38,10 @@ end point (**e**) of a line segment:
     **-G**\ *fill* option and if used will select the fill as well.
 
     **+h**\ *shape* sets the shape of the vector head (range -2/2). Default
-    is controlled by :term:`MAP_VECTOR_SHAPE` [0]. A zero value produces no notch
-    (e.g., the dashed line in the figure). Positive values moves the notch toward the
-    head apex while a negative value moves away. The example above uses **+h**\ 0.5.
+    is controlled by :term:`MAP_VECTOR_SHAPE` [default is :doc:`theme dependent </theme-settings>`].
+    A zero value produces no notch (e.g., the dashed line in the figure). Positive values
+    moves the notch toward the head apex while a negative value moves away. The example above
+    uses **+h**\ 0.5.
 
     **+l** draws half-arrows, using only the left side of specified heads [both sides].
 

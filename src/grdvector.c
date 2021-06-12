@@ -695,6 +695,8 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 			}
 			else {	/* Draw straight Cartesian vectors */
 				gmt_geo_to_xy (GMT, x, y, &plot_x, &plot_y);
+				if (gmt_M_is_geographic (GMT, GMT_IN))	/* Must align azimuth with local north */
+					vec_azim = 90.0 - gmt_azim_to_angle (GMT, x, y, 0.1, vec_azim);
 				if (Ctrl->T.active)	/* Deal with negative scales in x and/or y which affect the azimuths */
 					gmt_flip_azim_d (GMT, &vec_azim);
 				vec_azim = 90.0 - vec_azim;	/* Transform azimuths to plot angle */

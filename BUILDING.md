@@ -43,6 +43,7 @@ Optionally install these for more capabilities within GMT:
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed under macOS])
 - [Ninja](https://ninja-build.org/) (Small build system focused on speed)
+- [pngquant](https://pngquant.org/) (Ability to optimize PNG images)
 
 For movie-making capabilities these executables are needed:
 
@@ -66,7 +67,7 @@ You also need to download support data:
 
 - [GSHHG](https://github.com/GenericMappingTools/gshhg-gmt): A Global Self-consistent, Hierarchical, High-resolution
   Geography Database (>=2.2.0)
-- [DCW](https://github.com/GenericMappingTools/dcw-gmt): The Digital Chart of the World (optional, >=1.0.5)
+- [DCW](https://github.com/GenericMappingTools/dcw-gmt): The Digital Chart of the World (optional, >=2.0.0)
 
 ## Getting GMT source codes
 

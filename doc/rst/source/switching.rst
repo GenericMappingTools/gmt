@@ -1,4 +1,4 @@
-Switching between different versions
+Switching between Different Versions
 ====================================
 
 We encourage all GMT users to start using version 5 immediately; it

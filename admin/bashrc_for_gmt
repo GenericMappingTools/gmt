@@ -27,8 +27,9 @@ EDITOR=subl		# Program that can open and display text files
 #--------------------------------------------------------------
 
 # These are needed to run admin/build-gmt-release.sh
+export GMT_REPO_DIR=${REPO_DIR}
 export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7
-export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-1.1.4
+export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-2.0.0
 
 # To run matlab without the GUI:
 alias matlab='$MATLAB/bin/matlab -nojvm'

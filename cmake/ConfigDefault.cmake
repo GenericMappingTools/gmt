@@ -42,17 +42,17 @@ set (GMT_PACKAGE_DESCRIPTION_SUMMARY "The Generic Mapping Tools")
 set (GMT_VERSION_YEAR "2021")
 
 # The GMT release DOI
-set (GMT_VERSION_DOI "https://doi.org/10.5281/zenodo.3924517")
+set (GMT_VERSION_DOI "https://doi.org/10.5281/zenodo.4900001")
 
 # The GMT release citation
 set (GMT_VERSION_CITATION "Wessel, P., Luis, J. F., Uieda, L., Scharroo, R., Wobbe, F., Smith, W. H. F., & Tian, D. (2019). The Generic Mapping Tools version 6. Geochemistry, Geophysics, Geosystems, 20, 5556–5564. https://doi.org/10.1029/2019GC008515")
 
 # The GMT package version.
 set (GMT_PACKAGE_VERSION_MAJOR 6)
-set (GMT_PACKAGE_VERSION_MINOR 2)
+set (GMT_PACKAGE_VERSION_MINOR 3)
 set (GMT_PACKAGE_VERSION_PATCH 0)
 # If this is a beta version or similar, add a string suffix
-# set (GMT_PACKAGE_VERSION_SUFFIX "")
+#set (GMT_PACKAGE_VERSION_SUFFIX "rc")
 
 # Whether to make a public release.
 # When making internal releases or just an ordinary developer build, it is set to FALSE.
@@ -143,6 +143,15 @@ endif (NOT DEFINED GMT_RELEASE_PREFIX)
 if (NOT DEFINED GMT_DATA_SERVER)
 	set (GMT_DATA_SERVER "oceania")
 endif (NOT DEFINED GMT_DATA_SERVER)
+
+# Default name of ghostscript executable
+if (NOT DEFINED GMT_GS_EXECUTABLE)
+	if (WIN32)
+		set (GMT_GS_EXECUTABLE "gswin64c")
+	else (WIN32)
+		set (GMT_GS_EXECUTABLE "gs")
+	endif (WIN32)
+endif (NOT DEFINED GMT_GS_EXECUTABLE)
 
 # You can set the build configuration type as a command-line argument to 'cmake' using -DCMAKE_BUILD_TYPE:STRING=Debug for example.
 # If no build configuration type was given as a command-line option to 'cmake' then a default cache entry is set here.

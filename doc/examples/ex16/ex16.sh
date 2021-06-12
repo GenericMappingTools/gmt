@@ -6,7 +6,7 @@
 # Unix progs:	rm
 #
 gmt begin ex16
-	gmt subplot begin 2x2 -M0.1c -Fs8c/0 -R0/6.5/-0.2/6.5 -Jx1c -SCb -SRl+t -Bwesn -T"Gridding of Data"
+	gmt subplot begin 2x2 -M0.1c -Fs8c/0 -R-0.2/6.6/-0.2/6.6 -Jx1c -SCb -SRl+t -Bwesn -T"Gridding of Data"
 		gmt surface @Table_5_11.txt -I0.2 -Graws0.nc
 		gmt contour @Table_5_11.txt -C@ex_16.cpt -I -B+t"contour (triangulate)" -c0,0
 		#

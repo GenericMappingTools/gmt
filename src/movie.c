@@ -213,11 +213,13 @@ struct MOVIE_CTRL {
 	struct MOVIE_L {	/* Repeatable: -L[e|f|c#|t#|s<string>][+c<clearance>][+f<font>][+g<fill>][+h[<dx>/<dy>/][<shade>]][+j<justify>][+o<offset>][+p<pen>][+r][+t<fmt>][+s<scl>] */
 		bool active;
 	} L;
-	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format] */
+	struct MOVIE_M {	/* -M[<frame>|f|l|m][,format][+r<dpu>] */
 		bool active;
 		bool exit;
+		bool dpu_set;
 		unsigned int update;	/* 1 = set middle, 2 = set last frame */
 		unsigned int frame;	/* Frame selected as master frame */
+		double dpu;
 		char *format;	/* Plot format for master frame */
 	} M;
 	struct MOVIE_N {	/* -N<movieprefix> */
@@ -319,7 +321,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -C<canvas> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>]] [-F<format>[+o<opts>][+t]] [-G[<fill>][+p<pen>]] [-H<factor>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progress>] [-Q[s]] [-Sb<background>]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Sf<foreground>] [%s] [-W[<workdir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -408,6 +410,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Create a master frame plot as well; append comma-separated frame number [0] and format [pdf].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Master plot will be named <prefix>.<format> and placed in the current directory.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of frame number you can specify f(irst), m(iddle), or l(last) frame.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a raster master frame you may optionally select another <dpu> via +r [same as movie].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-P Automatic plotting of progress indicator(s); repeatable (max 32).  Places chosen indicator at frame perimeter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append desired indicator (a-f) [a] and consult the movie documentation for which attributes are needed:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j<refpoint> to specify where the indicator should be plotted [TR for circles, BC for axes].\n");
@@ -950,6 +953,11 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'M':	/* Create a single frame plot as well as movie (unless -Q is active) */
 				Ctrl->M.active = true;
+				if ((s = strstr (opt->arg, "+r")) ) {	/* Gave specific resolution for master frame */
+					Ctrl->M.dpu = atof (&s[2]);
+					Ctrl->M.dpu_set = true;
+					s[0] = '\0';	/* Truncate for now */
+				}
 				if ((c = strchr (opt->arg, ',')) ) {	/* Gave frame and format */
 					Ctrl->M.format = strdup (&c[1]);
 					c[0] = '\0';	/* Chop off format */
@@ -974,6 +982,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					Ctrl->M.format = strdup (opt->arg);
 				else /* Default is PDF of frame 0 */
 					Ctrl->M.format = strdup ("pdf");
+				if (s) s[0] = '+';	/* Restore */
 				break;
 
 			case 'N':	/* Movie prefix and directory name */
@@ -1391,15 +1400,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	}
 	n_data_frames = n_frames;
 
-	if (Ctrl->W.active) {	/* Create the working directory under /tmp or a specified directory */
-		if (Ctrl->W.dir)	/* Make a subdirectory under this directory based on N.prefix */
-			strcpy (workdir, Ctrl->W.dir);
-		else	/* Make a subdirectory in the tempdir based on N.prefix */
-			sprintf (workdir, "%s/%s", API->tmp_dir, Ctrl->N.prefix);
-	}
-	else	/* Create N.prefix locally in the current directory */
-		strcpy (workdir, Ctrl->N.prefix);
-
 	/* Get full path to the current working directory */
 	if (getcwd (topdir, PATH_MAX) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
@@ -1407,6 +1407,23 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	gmt_replace_backslash_in_path (topdir);
+
+	if (Ctrl->W.active) {	/* Do all the work in a temporary directory elsewhere */
+		if (Ctrl->W.dir) {	/* Specified the path to either a relative or absolute temp directory */
+#ifdef WIN32
+			if (Ctrl->W.dir[0] == '/' || Ctrl->W.dir[1] == ':')	/* Absolute path under Windows */
+#else
+			if (Ctrl->W.dir[0] == '/')	/* Absolute path under *nix|macOS */
+#endif
+				strcpy (workdir, Ctrl->W.dir);	/* Use exactly as given */
+			else	/* Gave a relative path */
+				sprintf (workdir, "%s/%s", topdir, Ctrl->W.dir);
+		}
+		else 	/* Make one in the official temp directory based on N.prefix */
+			sprintf (workdir, "%s/%s", API->tmp_dir, Ctrl->N.prefix);
+	}
+	else	/* Use a subdirectory of the current directory */
+		sprintf (workdir, "%s/%s", topdir, Ctrl->N.prefix);
 
 	{	/* Block to check for existing workdir */
 		struct stat S;
@@ -1603,6 +1620,9 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			n_frames = n_data_frames = (unsigned int)D->n_records;	/* Number of records means number of frames */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-frame parameters we need to place into the per-frame parameter files */
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
+			if (strchr (Ctrl->T.file, 'T'))	/* Check here since gmtmath does not pass that info back */
+				gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);	/* Set first input column type as absolute time */
+
 		}
 		else	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
 			n_frames = n_data_frames = atoi (Ctrl->T.file);
@@ -2007,7 +2027,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 							L_col = D->table[0]->segment[0]->data[I->col][use_frame];
 							if ((type = gmt_M_type (GMT, GMT_IN, I->col)) == GMT_IS_ABSTIME) {	/* Time formatting */
 								char date[GMT_LEN16] = {""}, clock[GMT_LEN16] = {""};
-								gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
+								if (I->kind == 'F')	/* Must give a proper ISO region */
+									gmt_format_calendar (GMT, date, clock, &GMT->current.io.date_output, &GMT->current.io.clock_output, false, 1, L_col);
+								else
+									gmt_format_calendar (GMT, date, clock, &GMT->current.plot.calclock.date, &GMT->current.plot.calclock.clock, upper_case[k], flavor[k], L_col);
 								if (GMT->current.plot.calclock.clock.skip)
 									sprintf (string, "%s", date);
 								else if (GMT->current.plot.calclock.date.skip)
@@ -2133,6 +2156,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				fprintf (fp, " %s", extra);
 				if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 					{}	/* No dpu needed */
+				else if (Ctrl->M.dpu_set)
+					fprintf (fp, ",E%g", Ctrl->M.dpu);
 				else
 					fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 				fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
@@ -2150,6 +2175,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						fprintf (fp, " %s", extra);
 						if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 							{}	/* No dpu needed */
+						else if (Ctrl->M.dpu_set)
+							fprintf (fp, ",E%g", Ctrl->M.dpu);
 						else
 							fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 						fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */
@@ -2173,6 +2200,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 					fprintf (fp, " %s", extra);
 					if (strstr (Ctrl->M.format, "pdf") || strstr (Ctrl->M.format, "eps") || strstr (Ctrl->M.format, "ps"))
 						{}	/* No dpu needed */
+					else if (Ctrl->M.dpu_set)
+						fprintf (fp, ",E%g", Ctrl->M.dpu);
 					else
 						fprintf (fp, ",E%s", gmt_place_var (Ctrl->In.mode, "MOVIE_DPU"));
 					fprintf (fp, " -I../movie_params_%c1.%s\n", var_token[Ctrl->In.mode], extension[Ctrl->In.mode]);	/* Pass the frame parameter file to figure via undocumented option -I */

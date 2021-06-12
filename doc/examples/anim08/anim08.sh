@@ -17,15 +17,15 @@
 # The movie took ~1 hour to render on a 24-core MacPro 2013.
 
 # 1. Extract 2018 data >= Mag 5 from URL and prepare inputs and frame times
-cat << EOF > pre.sh
+cat << 'EOF' > pre.sh
 SITE="https://earthquake.usgs.gov/fdsnws/event/1/query.csv"
 TIME="starttime=2018-01-01%2000:00:00&endtime=2018-12-31%2000:00:00"
 MAG="minmagnitude=5"
 ORDER="orderby=time-asc"
-URL="\${SITE}?\${TIME}&\${MAG}&\${ORDER}"
+URL="${SITE}?${TIME}&${MAG}&${ORDER}"
 gmt begin
 	# Get seismicity and scale magnitude by 50 to give symbol size in km
-	gmt convert \$URL -i2,1,3,4+s50,0 -hi1 > q.txt
+	gmt convert $URL -i2,1,3,4+s50,0 -hi1 > q.txt
 	# Create standard seismicity cpt
 	gmt makecpt -Cred,green,blue -T0,70,300,10000 -H > q.cpt
 	# Make lons go from 160 to 240 with a pause at 200 mid movie
@@ -43,18 +43,18 @@ gmt begin
 gmt end
 EOF
 # 2. Set up main script
-cat << EOF > main.sh
+cat << 'EOF' > main.sh
 gmt begin
 	# Let HSV minimum value go to zero
 	gmt set COLOR_HSV_MIN_V 0
 	# Fake simulation of sun illumination from east combined with relief slopes
-	gmt grdmath intens.nc X \${MOVIE_COL1} SUB DUP -180 LE 360 MUL ADD 90 DIV ERF ADD 0.5 SUB = s.nc
+	gmt grdmath intens.nc X ${MOVIE_COL1} SUB DUP -180 LE 360 MUL ADD 90 DIV ERF ADD 0.5 SUB = s.nc
 	# Overlay relief over land only using dem cpt
-	gmt grdimage @earth_relief_02m -Is.nc -Ct.cpt -JG\${MOVIE_COL1}/5/18c -X0 -Y0
+	gmt grdimage @earth_relief_02m -Is.nc -Ct.cpt -JG${MOVIE_COL1}/5/18c -X0 -Y0
 	# Plot the mid-ocean ridge line
 	gmt plot @ridge.txt -W0.5p,darkyellow
 	# Plot seismicity at this time according to visibility and enhancement settings
-	gmt events q.txt -SE- -Cq.cpt --TIME_UNIT=d -T\${MOVIE_COL0} -Es+r2+d6 -Ms5+c0.5 -Mi1+c-0.6 -Mt+c0
+	gmt events q.txt -SE- -Cq.cpt --TIME_UNIT=d -T${MOVIE_COL0} -Es+r2+d6 -Ms5+c0.5 -Mi1+c-0.6 -Mt+c0
 gmt end
 EOF
 # 3. Run the movie at 24 frames/sec at 60 dpc to give 1080x1080 size, each frame represent one day

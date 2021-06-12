@@ -650,6 +650,8 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			n_jobs = (unsigned int)D->n_records;	/* Number of records means number of jobs */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-job parameters we need to place into the per-job parameter files */
 			has_text = (D && D->table[0]->segment[0]->text);	/* Trailing text present */
+			if (strchr (Ctrl->T.file, 'T'))	/* Check here since gmtmath does not pass that info back */
+				gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);	/* Set first input column type as absolute time */
 		}
 		else	/* Just gave the number of jobs (we hope, or we got a bad filename and atoi should return 0) */
 			n_jobs = atoi (Ctrl->T.file);

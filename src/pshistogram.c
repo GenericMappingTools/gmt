@@ -466,6 +466,17 @@ GMT_LOCAL int pshistogram_get_loc_scl (struct GMT_CTRL *GMT, double *data, uint6
 
 	if (n < 3) return (-1);
 
+	if (GMT->common.w.active) {	/* Test wrapping on circle */
+		double *d = gmt_M_memory (GMT, NULL, n, double);
+		double f = 360.0 / GMT->current.io.cycle_range;	/* COnvert data to a 0-360 circular data set */
+		for (i = 0; i < n; i++)
+			d[i] = f * data[i];
+		stats[0] = gmt_von_mises_mu_and_kappa (GMT, d, NULL, n, &stats[3]);
+		stats[6] = f;	/* Save this here since probably needed to draw the Von Mises curve to convert to 0-360 angles */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "For wrapped data: mu = %g kappa = %g\n", stats[0], stats[3]);
+		gmt_M_free (GMT, d);
+		return (0);	/* Since only L2 solution is available */
+	}
 	gmt_M_tic (GMT);	/* Initialize elapsed time */
 
 	if (selected[PSHISTOGRAM_L1] || selected[PSHISTOGRAM_LMS])	/* Must sort array */
@@ -712,13 +723,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 					case '1': mode = PSHISTOGRAM_L1;	break;
 					case '2': mode = PSHISTOGRAM_LMS;	break;
 					default:
-					GMT_Report (API, GMT_MSG_ERROR, "Option -N: mode %c unrecognized.\n", opt->arg[0]);
-					n_errors++;
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: mode %c unrecognized.\n", opt->arg[0]);
+						n_errors++;
+						break;
 				}
 				Ctrl->N.selected[mode] = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {
 					if (gmt_getpen (GMT, &c[2], &Ctrl->N.pen[mode])) {
-						gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
+						gmt_pen_syntax (GMT, 'N', NULL, " ", 0);
 						n_errors++;
 					}
 				}
@@ -832,6 +844,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *Ctrl, struct GM
 	/* Now must specify either fill color with -G or outline pen with -W */
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->C.active || Ctrl->I.active || Ctrl->G.active || Ctrl->W.active), "Must specify either fill (-G) or lookup colors (-C), outline pen attributes (-W), or both.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->G.active, "Cannot specify both fill (-G) and lookup colors (-C).\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && (Ctrl->N.selected[PSHISTOGRAM_L1] || Ctrl->N.selected[PSHISTOGRAM_LMS]), "Option -N: Only -N is supported when -w is selected.\n");
+	n_errors += gmt_M_check_condition (GMT, GMT->common.w.active && Ctrl->N.selected[PSHISTOGRAM_L2] && Ctrl->Q.active, "Option -N: Cannot use -Q when -w is selected.\n");
 	n_errors += gmt_check_binary_io (GMT, 0);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 
@@ -850,7 +864,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	char format[GMT_BUFSIZ] = {""};
 
-	double *data = NULL, *weights = NULL, stats[6], area, tmp, x_min, x_max, *in = NULL;
+	double *data = NULL, *weights = NULL, stats[7], area, tmp, x_min, x_max, *in = NULL;
 
 	struct PSHISTOGRAM_INFO F;
 	struct PSHISTOGRAM_CTRL *Ctrl = NULL;
@@ -892,7 +906,7 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	gmt_M_memset (&F, 1, struct PSHISTOGRAM_INFO);
-	gmt_M_memset (stats, 6, double);
+	gmt_M_memset (stats, 7, double);
 	F.hist_type  = Ctrl->Z.mode;
 	F.cumulative = Ctrl->Q.mode;
 	F.center_box = Ctrl->F.active;
@@ -1321,11 +1335,14 @@ EXTERN_MSC int GMT_pshistogram (void *V_API, int mode, void *args) {
 			/* Draw this estimation of a normal distribution */
 			gmt_setpen (GMT, &Ctrl->N.pen[type]);
 			f = (Ctrl->Q.active) ? 0.5 : 1.0 / (stats[type+3] * sqrt (M_PI * 2.0));
+			if (GMT->common.w.active) f = stats[6] * D2R;	/* Scale area by bin-width in radians */
 			f *= area;
 			for (k = 0; k < NP; k++) {
 				xp[k] = F.wesn[XLO] + inc * k;
 				z = (xp[k] - stats[type]) / stats[type+3];	/* z-score for chosen statistic */
-				if (Ctrl->Q.active) {	/* Want a cumulative curve */
+				if (GMT->common.w.active)	/* stats[6] converts wrapped z to 0-360 degrees, stats[0] is mu and stats[3] is kappa */
+					yp[k] = f * gmt_vonmises_pdf (GMT, stats[6] * xp[k], stats[0], stats[3]);
+				else if (Ctrl->Q.active) {	/* Want a cumulative curve */
 					yp[k] = f * (1.0 + erf (z / M_SQRT2));
 					if (Ctrl->Q.mode == -1) yp[k] = f - yp[k];
 				}

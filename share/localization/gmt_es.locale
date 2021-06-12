@@ -18,7 +18,7 @@ M	12	Diciembre	Dec	D
 U	1	Semana		Sem	S
 # Weeknames, with 3-char and 1-char abbreviations
 # (List starts on Sunday regardless of TIME_WEEK_START)
-W	1	Domingo		Dgo	D
+W	1	Domingo		Dom	D
 W	2	Lunes		Lun	L
 W	3	Martes		Mar	M
 W	4	Miércoles	Mie	M

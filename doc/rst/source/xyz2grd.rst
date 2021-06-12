@@ -46,7 +46,8 @@ mean value. As an option (using **-Z**), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
 of formats, see **-Z** below.)  **Note**: **xyz2grd** does not grid the data,
 it simply reformats existing data to a grid structure.  For gridding,
-see **surface**, **greenspline**, **nearneighbor**, or **triangulate**.
+see :doc:`surface`, :doc:`greenspline`, :doc:`nearneighbor`, or
+:doc:`triangulate`.
 
 Required Arguments
 ------------------
@@ -94,12 +95,12 @@ Optional Arguments
 
 .. include:: explain_-D_cap.rst_
 
-.. _-J:
-
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant metadata in
     netCDF grids. Remember also that PROJ syntax can be used directly in **-J**. This referencing will be
     recognized by GDAL and increasingly also by GMT.
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 

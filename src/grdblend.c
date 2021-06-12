@@ -173,7 +173,7 @@ GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INF
 	/* Here the grids are not global so we must carefully check for overlap while being aware of periodicity in 360 degrees */
 	w = ((mode) ? B->wesn[XLO] : B->G->header->wesn[XLO]) - shift;	e = ((mode) ? B->wesn[XHI] : B->G->header->wesn[XHI]) - shift;
 	while (e < h->wesn[XLO]) { w += 360.0; e += 360.0; shift -= 360.0; }
-	if (w > h->wesn[XHI]) {
+	if ((h->registration == GMT_GRID_NODE_REG && w > h->wesn[XHI]) || (h->registration == GMT_GRID_PIXEL_REG && w >= h->wesn[XHI]))  {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "File %s entirely outside longitude range of final grid region (skipped)\n", B->file);
 		B->ignore = true;
 		return true;
@@ -190,12 +190,32 @@ GMT_LOCAL bool grdblend_overlap_check (struct GMT_CTRL *GMT, struct GRDBLEND_INF
 	return false;
 }
 
+GMT_LOCAL bool grdblend_outside_y_range (struct GMT_GRID_HEADER *h, double *wesn) {
+	if (h->registration == GMT_GRID_NODE_REG) {
+		if (h->wesn[YLO] > wesn[YHI] || h->wesn[YHI] < wesn[YLO]) return true;
+	}
+	else {	/* Pixel registration */
+		if (h->wesn[YLO] >= wesn[YHI] || h->wesn[YHI] <= wesn[YLO]) return true;
+	}
+	return false;
+}
+
+GMT_LOCAL bool grdblend_outside_cartesian_x_range (struct GMT_GRID_HEADER *h, double *wesn) {
+	if (h->registration == GMT_GRID_NODE_REG) {
+		if (h->wesn[XLO] > wesn[XHI] || h->wesn[XHI] < wesn[XLO] || h->wesn[YLO] > wesn[YHI] || h->wesn[YHI] < wesn[YLO]) return true;
+	}
+	else{	/* Pixel registration */
+		if (h->wesn[XLO] >= wesn[XHI] || h->wesn[XHI] <= wesn[XLO] || h->wesn[YLO] >= wesn[YHI] || h->wesn[YHI] <= wesn[YLO]) return true;
+	}
+	return false;
+}
+
 EXTERN_MSC void gmtlib_close_grd (struct GMT_CTRL *GMT, struct GMT_GRID *G);
 
 GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsigned int n_files, struct GMT_GRID_HEADER **h_ptr, struct GRDBLEND_INFO **blend, bool delayed, struct GMT_GRID *Grid) {
 	/* Returns how many blend files or a negative error value if something went wrong */
 	int type, status, not_supported = 0, t_data, k_data = GMT_NOTSET;
-	unsigned int one_or_zero, n = 0, nr, do_sample, n_download = 0, down = 0, srtm_res = 0;
+	unsigned int one_or_zero, n = 0, n_scanned, do_sample, n_download = 0, down = 0, srtm_res = 0;
 	bool srtm_job = false, common_inc = true, common_reg = true;
 	struct GRDBLEND_INFO *B = NULL;
 	struct GMT_GRID_HEADER *h = *h_ptr;	/* Input header may be NULL or preset */
@@ -239,22 +259,22 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			}
 			/* Data record to process */
 
-			/* Data record to process.  We permint this kind of records:
+			/* Data record to process.  We permit this kind of records:
 			 * file [-Rinner_region ] [weight]
 			 * i.e., file is required but region [grid extent] and/or weight [1] are optional
 			 */
 
-			nr = sscanf (In->text, "%s %s %lf", file, r_in, &weight);
-			if (nr < 1) {
+			n_scanned = sscanf (In->text, "%s %s %lf", file, r_in, &weight);
+			if (n_scanned < 1) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Read error for blending parameters near row %d\n", n);
 				gmt_M_free (GMT, L);
 				return (-GMT_DATA_READ_ERROR);
 			}
 			if (n == n_alloc) L = gmt_M_malloc (GMT, L, n, &n_alloc, struct BLEND_LIST);
 			L[n].file = strdup (file);
-			L[n].region = (nr > 1 && r_in[0] == '-' && r_in[1] == 'R') ? strdup (r_in) : strdup ("-");
-			if (n == 2 && !(r_in[0] == '-' && (r_in[1] == '\0' || r_in[1] == 'R'))) weight = atof (r_in);	/* Got "file weight" record */
-			L[n].weight = (nr == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
+			L[n].region = (n_scanned > 1 && r_in[0] == '-' && r_in[1] == 'R') ? strdup (r_in) : strdup ("-");
+			if (n_scanned == 2 && !(r_in[0] == '-' && (r_in[1] == '\0' || r_in[1] == 'R'))) weight = atof (r_in);	/* Got "file weight" record */
+			L[n].weight = (n_scanned == 1 || (n == 2 && r_in[0] == '-')) ? 1.0 : weight;	/* Default weight is 1 if none were given */
 			if ((t_data = gmt_file_is_a_tile (GMT->parent, L[n].file, GMT_LOCAL_DIR)) != GMT_NOTSET) {
 				if (strstr (L[n].file, ".earth_relief_01s_g.")) {	/* A 1s SRTM tile */
 					srtm_res = 1;	srtm_job = true;
@@ -351,6 +371,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			return (-GMT_RUNTIME_ERROR);
 		/* While the inc may be fixed, our wesn may not be in phase, so since gmt_set_grddim
 		 * will plow through and modify inc if it does not fit, we don't want that here. */
+		if (GMT->common.R.active[ISET])	/* Got -I [-R -r] */
+			gmt_increment_adjust (GMT, wesn, GMT->common.R.inc, (GMT->common.R.active[GSET]) ? GMT->common.R.registration : B[0].G->header->registration);	/* In case user specified incs using distance units we must call this here before adjusting wesn */
 		inc = (GMT->common.R.active[ISET]) ? GMT->common.R.inc : B[0].G->header->inc;	/* Either use -I if given else they all have the same increments */
 		pp = (uint64_t)ceil ((wesn[XHI] - wesn[XLO])/inc[GMT_X] - GMT_CONV6_LIMIT);
 		wesn[XHI] = wesn[XLO] + pp * B[0].G->header->inc[GMT_X];
@@ -375,7 +397,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		struct GMT_GRID_HEADER *t = B[n].G->header;	/* Shortcut for this tile header */
 
 		/* Skip the file if its outer region does not lie within the final grid region */
-		if (h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
+		if (grdblend_outside_y_range (h, B[n].wesn)) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "File %s entirely outside y-range of final grid region (skipped)\n", B[n].file);
 			B[n].ignore = true;
@@ -385,7 +407,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			if (grdblend_overlap_check (GMT, &B[n], h, 0)) continue;	/* Check header for -+360 issues and overlap */
 			if (grdblend_overlap_check (GMT, &B[n], h, 1)) continue;	/* Check inner region for -+360 issues and overlap */
 		}
-		else if (h->wesn[XLO] > B[n].wesn[XHI] || h->wesn[XHI] < B[n].wesn[XLO] || h->wesn[YLO] > B[n].wesn[YHI] || h->wesn[YHI] < B[n].wesn[YLO]) {
+		else if (grdblend_outside_cartesian_x_range (h, B[n].wesn)) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING,
 			            "File %s entirely outside x-range of final grid region (skipped)\n", B[n].file);
 			B[n].ignore = true;
@@ -441,6 +463,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "File %s is sampled using region %s\n", B[n].file, Rargs);
 		}
 		if (do_sample) {	/* One or more reasons to call upon grdsample before using this grid */
+			gmt_filename_set (B[n].file);	/* Replace any spaces in filename with ASCII 29 */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
 				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
 					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
@@ -859,6 +882,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 		if (Ctrl->In.n == 1 && grdblend_got_plot_domain (API, Ctrl->In.file[0], &zcase)) {	/* Must adjust -R to be exact multiple of desired grid inc */
 			double inc15[2] = {15.0 / 3600.0, 15.0/ 3600.0};
 			double *inc = (zcase == 'O') ? inc15 : GMT->common.R.inc;	/* Pointer to the grid increment */
+			gmt_increment_adjust (GMT, GMT->common.R.wesn, inc, GMT_GRID_DEFAULT_REG);	/* In case user specified incs using distance units we must call this here before adjusting wesn */
 			wesn[XLO] = floor ((GMT->common.R.wesn[XLO] / inc[GMT_X]) + GMT_CONV8_LIMIT) * inc[GMT_X];
 			wesn[XHI] = ceil  ((GMT->common.R.wesn[XHI] / inc[GMT_X]) - GMT_CONV8_LIMIT) * inc[GMT_X];
 			wesn[YLO] = floor ((GMT->common.R.wesn[YLO] / inc[GMT_Y]) + GMT_CONV8_LIMIT) * inc[GMT_Y];

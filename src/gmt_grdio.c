@@ -1267,6 +1267,45 @@ bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, u
 	}
 }
 
+int gmtlib_get_matrixtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_MATRIX *M) {
+	/* Determine if input or output matrix is Cartesian or geographic, and if so if longitude range is <360, ==360, or >360 */
+	char *dir[2] = {"input", "output"};
+	if (gmt_M_x_is_lon (GMT, direction)) {	/* Data set is geographic with x = longitudes */
+		if (fabs (M->range[XHI] - M->range[XLO] - 360.0) < GMT_CONV4_LIMIT) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geographic %s matrix, longitudes span exactly 360\n", dir[direction]);
+			/* If w/e is 360 and gridline reg then we have a repeat entry for 360.  For pixel there are never repeat pixels */
+			return ((M->registration == GMT_GRID_NODE_REG) ? GMT_GRID_GEOGRAPHIC_EXACT360_REPEAT : GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT);
+		}
+		else if (fabs (M->n_columns * M->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geographic %s matrix, longitude cells span exactly 360\n", dir[direction]);
+			/* If n*xinc = 360 and previous test failed then we do not have a repeat node */
+			return (GMT_GRID_GEOGRAPHIC_EXACT360_NOREPEAT);
+		}
+		else if ((M->range[XHI] - M->range[XLO]) > 360.0) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geographic %s matrix, longitudes span more than 360\n", dir[direction]);
+			return (GMT_GRID_GEOGRAPHIC_MORE360);
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Geographic %s matrix, longitudes span less than 360\n", dir[direction]);
+			return (GMT_GRID_GEOGRAPHIC_LESS360);
+		}
+	}
+	else if (M->range[YLO] >= -90.0 && M->range[YHI] <= 90.0) {	/* Here we simply advice the user if matrix looks like geographic but is not set as such */
+		if (fabs (M->range[XHI] - M->range[XLO] - 360.0) < GMT_CONV4_LIMIT) {
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Cartesian %s matrix, yet x spans exactly 360 and -90 <= y <= 90.\n", dir[direction]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "     To make sure the matrix is recognized as geographical and global, use the -fg option\n");
+			return (GMT_GRID_CARTESIAN);
+		}
+		else if (fabs (M->n_columns * M->inc[GMT_X] - 360.0) < GMT_CONV4_LIMIT) {
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Cartesian %s matrix, yet x cells span exactly 360 and -90 <= y <= 90.\n", dir[direction]);
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "     To make sure the matrix is recognized as geographical and global, use the -fg option\n");
+			return (GMT_GRID_CARTESIAN);
+		}
+	}
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Cartesian %s matrix\n", dir[direction]);
+	return (GMT_GRID_CARTESIAN);
+}
+
 int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h) {
 	/* Determine if input or output grid is Cartesian or geographic, and if so if longitude range is <360, ==360, or >360 */
 	char *dir[2] = {"input", "output"};
@@ -1604,7 +1643,7 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 	 * Date:	20 April 1998
 	 */
 
-	unsigned int error = 0;
+	unsigned int error = 0, level = (mode == 0) ? GMT_MSG_ERROR : GMT_MSG_WARNING;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	if (!strcmp (GMT->init.module_name, "grdedit")) return (GMT_NOERROR);	/* Separate handling in grdedit to allow grdedit -A */
@@ -1622,7 +1661,7 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 			break;
 		case 1:
 			if (HH->var_spacing[GMT_X] == 0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR,
+				GMT_Report (GMT->parent, level,
 			            "(x_max-x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 				error++;
 			}
@@ -1642,7 +1681,7 @@ int gmt_grd_RI_verify (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned
 			break;
 		case 1:
 			if (HH->var_spacing[GMT_Y] == 0) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR,
+				GMT_Report (GMT->parent, level,
 			            "(y_max-y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 				error++;
 			}
@@ -2902,8 +2941,30 @@ int gmt_change_grdreg (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, uns
 	return (old_registration);
 }
 
+void gmt_cube_vminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *z) {
+	/* Reset the vmin/vmax values in the header based on the non-NaN values in the cube */
+	unsigned int row, col, layer;
+	uint64_t node, offset = 0, n = 0;
+
+	h->z_min = DBL_MAX;	h->z_max = -DBL_MAX;
+	for (layer = 0; layer < h->n_bands; layer++) {
+		for (row = 0; row < h->n_rows; row++) {
+			for (col = 0, node = gmt_M_ijp (h, row, 0) + offset; col < h->n_columns; col++, node++) {
+				if (isnan (z[node]))
+					continue;
+				/* Update v_min, v_max (called z_min/max in header) */
+				h->z_min = MIN (h->z_min, (double)z[node]);
+				h->z_max = MAX (h->z_max, (double)z[node]);
+				n++;
+			}
+		}
+		offset += h->size;	/* Go to next layer */
+	}
+	if (n == 0) h->z_min = h->z_max = GMT->session.d_NaN;	/* No non-NaNs in the entire grid */
+}
+
 void gmt_grd_zminmax (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, gmt_grdfloat *z) {
-	/* Reset the xmin/zmax values in the header */
+	/* Reset the zmin/zmax values in the header based on the non-NaN values in the grid */
 	unsigned int row, col;
 	uint64_t node, n = 0;
 

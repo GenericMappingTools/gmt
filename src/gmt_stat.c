@@ -984,6 +984,10 @@ double gmt_plm (struct GMT_CTRL *GMT, int l, int m, double x) {
 	return (pll);
 }
 
+#ifndef M_SQRTPI
+#define M_SQRTPI	1.77245385090551602729	
+#endif
+
 double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	/* This function computes the normalized associated Legendre function of x for degree
 	 * l and order m. x must be in the range [-1;1] and 0 <= |m| <= l.
@@ -1057,9 +1061,9 @@ double gmt_plm_bar (struct GMT_CTRL *GMT, int l, int m, double x, bool ortho) {
 	   In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 	if (ortho)
-		pmm *= 1.0 / d_sqrt(M_PI);
+		pmm /= (M_SQRT2 * M_SQRTPI);
 	else if (m != 0)
-		pmm *= d_sqrt(2.0);
+		pmm *= M_SQRT2;
 
 	/* If C-S phase is requested, apply it now */
 
@@ -1168,9 +1172,9 @@ void gmt_plm_bar_all (struct GMT_CTRL *GMT, int lmax, double x, bool ortho, doub
 		In case of geophysical conversion : multiply by sqrt(2-delta_0m) */
 
 		if (ortho)
-			plm[mm] = pmm * 0.5 / d_sqrt(M_PI);
+			plm[mm] = pmm / (M_SQRT2 * M_SQRTPI);
 		else if (m != 0)
-			plm[mm] = pmm * d_sqrt(2.0);
+			plm[mm] = pmm * M_SQRT2;
 
 		/* If C-S phase is requested, apply it now */
 
@@ -2831,3 +2835,50 @@ void gmt_get_cellarea (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
 	else
 		gmtstat_get_cart_cellarea (GMT, G);
 }
+
+double gmt_von_mises_mu_and_kappa (struct GMT_CTRL *GMT, double *data, double *w, uint64_t n, double *kappa) {
+	/* Return the mean and kappa for a von Mises fit to (possibly weighted) data.
+	 * It is assumed that data have been scaled to 0-360. Weights w is possibly NULL for no weights */
+	uint64_t k;
+	double mean = 0.0, x_r = 0.0, y_r = 0.0, s_w = 0.0, ww = 1.0;
+	double lo, hi, midval, range2, delta_R, s, c, R_bar;
+
+	for (k = 0; k < n; k++) {
+		if (gmt_M_is_dnan (data[k])) continue;
+		if (w) ww = w[k];	/* Otherwise it is a constant 1 */
+		sincosd (data[k], &s, &c);
+		x_r += c * ww;	y_r += s * ww;
+		s_w += ww;
+	}
+	if (s_w > 0.0) {	/* Can compute the statistics */
+		x_r /= s_w;	y_r /= s_w;
+		mean = atan2d (y_r, x_r);
+	}
+	else {	/* No data, basically */
+		*kappa = GMT->session.d_NaN;
+		return (GMT->session.d_NaN);
+	}
+	/* Here we have actual values */
+	R_bar = hypot (x_r, y_r);
+	if (R_bar >= 0.999) {	/* Just return a big kappa for R almost = 1 */
+		*kappa = 500.0;	/* kappa = 500 gives R_bar = 0.998999916722 so close enough */
+		return (mean);
+	}
+	/* Compute kappa by a dumb bisection search */
+	lo = 0.0;	hi = 500.0;
+	while (fabs (hi - lo) > GMT_CONV8_LIMIT) {
+		midval = 0.5 * (hi + lo);
+		range2 = 0.5 * (hi - lo);
+		delta_R = (gmt_i1 (GMT, midval) / gmt_i0 (GMT, midval)) - R_bar;
+		if (delta_R > GMT_CONV8_LIMIT)	/* Need a smaller R next time */
+			hi -= range2;
+		else if (delta_R < -GMT_CONV8_LIMIT)	/* Need a larger R next time */
+			lo += range2;
+		else 	/* Got it, set lo = hi to exit loop */
+			lo = hi;
+	}
+	*kappa = midval;
+
+	return (mean);
+}
+

@@ -19,10 +19,10 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -98,7 +98,8 @@ Optional Arguments
     wiggles [Default is no fill]. Optionally, append **+p** to fill
     positive areas (this is the default behavior). Append **+n** to fill
     negative areas. Append **+n+p** to fill both positive and negative
-    areas with the same fill.
+    areas with the same fill.  **Note**: You will need to repeat the **-G** option
+    to select different fills for the positive and negative wiggles.
 
 .. _-I:
 

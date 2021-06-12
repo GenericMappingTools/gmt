@@ -481,9 +481,9 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	/* Initialize values whose defaults are not 0/false/NULL */
 #ifdef WIN32
 	if (psconvert_ghostbuster(GMT->parent, C) != GMT_NOERROR)  /* Try first to find the gspath from registry */
-		C->G.file = strdup ("gswin64c");     /* Fall back to this default and expect a miracle */
+		C->G.file = strdup (GMT_GS_EXECUTABLE);     /* Fall back to this default and expect a miracle */
 #else
-	C->G.file = strdup ("gs");
+	C->G.file = strdup (GMT_GS_EXECUTABLE);
 #endif
 	C->D.dir = strdup (".");
 
@@ -1813,7 +1813,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (pos_ext < 0 && ps_file[j] == '.') pos_ext = j;	/* Beginning of file extension */
 			if (pos_file < 0 && (ps_file[j] == '/' || ps_file[j] == '\\')) pos_file = j + 1;	/* Beginning of file name */
 		}
-		if (pos_ext == -1) pos_ext = (unsigned int)len - 1;	/* File has no extension */
+		if (pos_ext == -1) pos_ext = (unsigned int)len;	/* File has no extension */
 		if (!Ctrl->D.active || pos_file == -1) pos_file = 0;	/* File either has no leading directory or we want to use it */
 
 		/* Adjust to a tight BoundingBox if user requested so */
@@ -2095,9 +2095,10 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 								"image coordinates seem to be geographical, a linear transformation "
 								"will be used.\n");
 					}
-					else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {	/* Do not operate on a twice unknown setting */
-						GMT_Report (API, GMT_MSG_ERROR, "Requested an automatic geotiff generation, but "
-								"no recognized psconvert option was used for the PS creation.\n");
+					else if (!strcmp (proj4_name,"xy") && Ctrl->W.warp) {
+						proj4_cmd = strdup ("xy");
+						GMT_Report (API, GMT_MSG_DEBUG, "Requested an automatic geotiff generation, but "
+								"not sure a good psconvert option was used for the PS creation.\n");
 					}
 				}
 				else if (Ctrl->W.kml) {

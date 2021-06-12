@@ -53,6 +53,9 @@ struct GMT_XINGS {
 EXTERN_MSC char *dlerror (void);
 #endif
 
+EXTERN_MSC bool gmtlib_set_do_seconds (struct GMT_CTRL *GMT, double inc);
+EXTERN_MSC int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P);
+EXTERN_MSC bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file);
 EXTERN_MSC void gmtlib_set_case_and_kind (struct GMT_CTRL *GMT, char *format, bool *upper_case, unsigned int *flavor);
 EXTERN_MSC bool gmtlib_fixed_paper_size (struct GMTAPI_CTRL *API);
 EXTERN_MSC struct GMT_CUBE *gmtlib_create_cube (struct GMT_CTRL *GMT);
@@ -170,7 +173,7 @@ EXTERN_MSC void gmtlib_encode (struct GMT_CTRL *GMT, void *vptr, uint64_t k, gmt
 EXTERN_MSC struct GMT_CUSTOM_SYMBOL * gmtlib_get_custom_symbol (struct GMT_CTRL *GMT, char *name);
 EXTERN_MSC void gmtlib_free_custom_symbols (struct GMT_CTRL *GMT);
 EXTERN_MSC bool gmtlib_geo_to_dms (double val, int n_items, double fact, int *d, int *m,  int *s,  int *ix);
-EXTERN_MSC int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord);
+EXTERN_MSC int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord, double delta);
 EXTERN_MSC void gmtlib_get_time_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, struct GMT_PLOT_AXIS_ITEM *T, double t);
 EXTERN_MSC int gmtlib_getrgb_index (struct GMT_CTRL *GMT, double *rgb);
 EXTERN_MSC char * gmtlib_getuserpath (struct GMT_CTRL *GMT, const char *stem, char *path);	/* Look for user file */
@@ -214,6 +217,7 @@ EXTERN_MSC bool gmtlib_is_gleap (int gyear);
 EXTERN_MSC char * gmtlib_cptfile_unitscale (struct GMTAPI_CTRL *API, char *name);
 EXTERN_MSC void gmtlib_set_oblique_pole_and_origin (struct GMT_CTRL *GMT, double plon, double plat, double olon, double olat);
 EXTERN_MSC int gmtlib_get_grdtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_GRID_HEADER *h);
+EXTERN_MSC int gmtlib_get_matrixtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_MATRIX *M);
 EXTERN_MSC void gmtlib_grd_real_interleave (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt_grdfloat *data);
 EXTERN_MSC void gmtlib_grd_get_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);
 EXTERN_MSC void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header);

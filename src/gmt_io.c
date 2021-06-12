@@ -185,9 +185,6 @@ typedef enum {
 	Int64len = 8
 } SwapWidth;
 
-/*! Macro to apply columns log/scale/offset conversion on the fly */
-#define gmt_M_convert_col(S,x) ((S.convert) ? ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset : x)
-
 /* These functions are defined and used below but not in any *.h file so we repeat them here */
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
@@ -9114,8 +9111,10 @@ char ** gmtlib_get_dir_list (struct GMT_CTRL *GMT, char *path, char *ext) {
 void gmtlib_free_dir_list (struct GMT_CTRL *GMT, char ***addr) {
 	/* Free allocated array with directory content */
 	unsigned int k = 0;
-	char **list = *addr;
+	char **list;
 
+	if (addr == NULL) return;	/* Sanity check */
+	if ((list = *addr) == NULL) return;	/* Sanity check */
 	while (list[k]) {
 		gmt_M_str_free (list[k]);
 		k++;

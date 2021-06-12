@@ -111,11 +111,12 @@ Optional Arguments
 
 **-E**\ [*nlevels*][**+c**][**+f**\ *file*]
     Create a linear color table by using the grid z-range as the new
-    limits in the CPT.  Alternatively, append *nlevels* and we will
+    limits in the CPT, so the number of levels in the CPT remain unchanged.
+    Alternatively, append *nlevels* and we will instead
     resample the color table into *nlevels* equidistant slices. As an
     option, append **+c** to estimate the cumulative density function
-    of the data and assign color levels accordingly.  if **+c** is used
-    the you may optionally append **+f** to save the CDF to *file*;
+    of the data and assign color levels accordingly. If **+c** is used
+    then you may optionally append **+f** to save the CDF to *file*;
     see **-bo** and **-o** for output formatting.
 
 .. _-F:
@@ -130,7 +131,12 @@ Optional Arguments
     category names (you can skip a category by not giving a name), or give
     *start*[-], where we automatically build monotonically increasing labels
     from *start* (a single letter or an integer). Append - to build ranges
-    *start*-*start+1* instead.
+    *start*-*start+1* instead.  **Note**: If **+cM** is given and the number
+    of categories is 12, then we automatically create a list of month names.
+    Likewise, if **+cD** is given and the number of categories is 7 then we
+    make a list of weekday names.  The format of these labels will depend on the
+    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
+    :term:`TIME_WEEK_START` settings.
 
 .. _-G:
 
@@ -162,7 +168,8 @@ Optional Arguments
 
 **-L**\ *minlimit/maxlimit*
     Limit range of CPT to *minlimit/maxlimit*, and don't count data
-    outside this range when estimating CDF(Z). [Default uses min and max of data.]
+    outside this range when estimating CDF(Z). To set only one limit,
+    specify the other limit as "-" [Default uses min and max of data.]
 
 .. _-M:
 

@@ -42,7 +42,7 @@ if (WIN32)
     endif()
 endif (WIN32)
 if (APPLE)
-    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-darwin-x86_64")
+    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-darwin-${CMAKE_HOST_SYSTEM_PROCESSOR}")
 endif (APPLE)
 
 # Install components:

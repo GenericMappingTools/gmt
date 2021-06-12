@@ -169,6 +169,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +k<keys> to set categorical keys rather than numerical values.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <keys> may be a file with one key per line or a comma-separated list of keys.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <keys> is a single letter then we build sequential alphabetical keys from that letter.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If number of categories is 12 and label is M then we auto-create month name labels, and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     if it is 7 and label is D then we auto-create weekday name labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)

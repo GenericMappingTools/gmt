@@ -530,6 +530,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 GMT_LOCAL unsigned int pscoupe_parse_old_A (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, char *arg) {
 	int n;
 	char *p = NULL;
+	gmt_M_unused (GMT);
 	if ((p = strstr (arg, "+f"))) {	/* Get the frame from the cross-section parameters */
 		Ctrl->A.frame = true;
 		p[0] = '\0';	/* Chop off modifier */
@@ -558,7 +559,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 	unsigned int n_errors = 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""}, *p = NULL;
 	struct GMT_OPTION *opt = NULL;
-	double lon1, lat1, lon2, lat2;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -604,6 +604,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
 							Ctrl->A.PREF.str = atof (txt_c);
 							Ctrl->A.p_length = atof (txt_d);
+							break;
 						case 'c':
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_a, GMT_IS_FLOAT, &Ctrl->A.lon1), txt_a);
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, txt_b, GMT_IS_FLOAT, &Ctrl->A.lat1), txt_b);
@@ -615,6 +616,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->A.lat1), txt_b);
 							Ctrl->A.PREF.str = atof (txt_c);
 							Ctrl->A.p_length = atof (txt_d);
+							break;
 						default:
 							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Unrecognized mode %c.\n", Ctrl->A.proj_type);
 							n_errors++;

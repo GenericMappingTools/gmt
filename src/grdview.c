@@ -923,6 +923,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				strcpy (data_file, Ctrl->In.file);
 
 		/* Prepare the grdgradient arguments using selected -A -N */
+		gmt_filename_set (data_file);	/* Replace any spaces with ASCII 29 */
 		sprintf (cmd, "%s -G%s -A%s -N%s+a%s -R%.16g/%.16g/%.16g/%.16g --GMT_HISTORY=readonly",
 			data_file, int_grd, Ctrl->I.azimuth, Ctrl->I.method, Ctrl->I.ambient, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI]);
 		/* Call the grdgradient module */

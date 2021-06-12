@@ -913,7 +913,9 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 		 * overlay grdcontour arguments. These are built on the fly */
 
 		for (opt = options; opt; opt = opt->next) {
+			if (opt->option == GMT_OPT_INFILE) gmt_filename_set (opt->arg);	/* Replace any spaces with ASCII 29 */
 			sprintf (string, " -%c%s", opt->option, opt->arg);
+			if (opt->option == GMT_OPT_INFILE) gmt_filename_get (opt->arg);	/* Undo */
 			switch (opt->option) {
 				case 'A' : case 'D': case 'F': case 'G': case 'K': case 'L': case 'Q': case 'T': case 'U': case 'W': case 'Z':	/* Only for grdcontour */
 					strcat (cmd2, string); break;
@@ -977,6 +979,7 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 						strcat (cmd1, string);	strcat (cmd2, string);
 					}
 					break;
+
 				default:	/* These arguments go into both commands (may be -p -n, --, etc) */
 					strcat (cmd1, string);	strcat (cmd2, string);
 					break;

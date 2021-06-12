@@ -39,9 +39,10 @@
 #define GRDMASK_N_CART_MASK	9
 
 struct GRDMASK_CTRL {
-	struct GRDMASK_A {	/* -A[m|p|x|y|step] */
+	struct GRDMASK_A {	/* -A[m|y|p|x|r|t<step>] */
 		bool active;
 		unsigned int mode;
+		bool polar;
 		double step;
 	} A;
 	struct GRDMASK_G {	/* -G<maskfile> */
@@ -83,7 +84,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y]] [-N[z|Z|p|P][<values>]] [-S%s | <xlim>/<ylim>]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y|r|t]] [-N[z|Z|p|P][<values>]] [-S%s | <xlim>/<ylim>]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t%s[%s] [%s]\n\n",
 		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 		GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -98,6 +99,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian data, use -Ax or -Ay to connect first in x, then y, or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -S is used since input data are then considered to be points.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   if -R is theta/r, use -At or -Ar to connect first in theta, then r, or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set <out>/<edge>/<in> to use if node is outside, on the path, or inside.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -Nz (inside) or -NZ (inside & edge) to set the inside\n");
@@ -164,6 +166,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *Ctrl, struct GMT_OP
 				switch (opt->arg[0]) {
 					case 'm': case 'y': Ctrl->A.mode = GMT_STAIRS_Y; break;
 					case 'p': case 'x': Ctrl->A.mode = GMT_STAIRS_X; break;
+					case 'r': Ctrl->A.mode = GMT_STAIRS_Y; Ctrl->A.polar = true; break;
+					case 't': Ctrl->A.mode = GMT_STAIRS_X; Ctrl->A.polar = true; break;
 #ifdef DEBUG
 					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature; requires step in degrees */
 #endif
@@ -421,6 +425,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 			D = GMT_Duplicate_Data (API, GMT_IS_DATASET, GMT_DUPLICATE_ALLOC + GMT_ALLOC_NORMAL, Din);
 			DH = gmt_get_DD_hidden (D);
 		}
+		if (Ctrl->A.polar) GMT->current.proj.projection = GMT_POLAR;	/* Cheat to trigger polar resampling */
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {	/* For each segment in the table */
 				S = D->table[tbl]->segment[seg];	/* Current segment */
@@ -432,6 +437,7 @@ EXTERN_MSC int GMT_grdmask (void *V_API, int mode, void *args) {
 				gmt_set_seg_minmax (GMT, D->geometry, 2, S);	/* Update min/max or x/y only */
 			}
 		}
+		if (Ctrl->A.polar) GMT->current.proj.projection = 0;	/* Undo the trick */
 	}
 
 	if (!Ctrl->S.active)

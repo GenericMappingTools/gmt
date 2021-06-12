@@ -1622,7 +1622,7 @@ of several types. The escape sequences recognized in GMT are listed in
 Table :ref:`escape <tbl-escape>`. Only one level of sub- or superscript is supported.
 Note that under Windows the percent symbol indicates a batch variable,
 hence you must use two percent-signs for each one required in the escape
-sequence for font switching.
+sequence for font switching. In bash scripts the brackets have special meaning, hence you must add double quotes.
 
 .. _tbl-escape:
 
@@ -1697,7 +1697,7 @@ GMT strings using the Standard+ encoding:
 | ``Stresses are @~s@~@+*@+@-xx@- MPa`` = Stresses are :math:`\sigma^{*}_{xx}` MPa
 | ``Se@nor Gar@con`` = Señor Garçon
 | ``M@!\305anoa stra@se`` = Manoa straße
-| ``A@\#cceleration@\# (ms@+-2@+)`` = ACCELERATION
+| ``A@#cceleration@# (ms@+-2@+)`` = ACCELERATION (ms\ :math:`^{-2}`)
 
 The option in :doc:`/text` to draw a
 rectangle surrounding the text will not work for strings with escape

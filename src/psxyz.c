@@ -36,7 +36,7 @@
 /* Control structure for psxyz */
 
 struct PSXYZ_CTRL {
-	struct PSXYZ_A {	/* -A[x|y] */
+	struct PSXYZ_A {	/* -A[m|y|p|x|r|t|step] */
 		bool active;
 		unsigned int mode;
 		double step;
@@ -159,7 +159,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *mod_name = &name[4];	/* To skip the leading gmt for usage messages */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s\n\t[%s] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, PLOT_L_OPT, API->O_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[m|p|x|y|r|t]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s\n\t[%s] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, PLOT_L_OPT, API->O_OPT);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
@@ -172,11 +172,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "J-Z,R3");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
 	GMT_Option (API, "<,B-");
-	GMT_Usage (API, 1, "-A[x|y]");
+	GMT_Usage (API, 1, "\n-A[m|p|x|y|r|t]");
 	GMT_Usage (API, -2, "Suppress drawing geographic line segments as great circle arcs, i.e., draw "
-		"straight lines instead.  Two optional directives instead convert paths to staircase curves:");
-	GMT_Usage (API, 3, "x: First follow x (longitude), then y (latitude) for staircase curves.");
-	GMT_Usage (API, 3, "y: First follow y (latitude), then x (longitude) for staircase curves.");
+		"straight lines instead.  Six optional directives instead convert paths to staircase curves:");
+	GMT_Usage (API, 3, "m: First follow meridians, then parallels when connecting geographic points.");
+	GMT_Usage (API, 3, "p: First follow parallels, then meridians when connecting geographic point.");
+	GMT_Usage (API, 3, "r: First follow radius, then theta for staircase curves for Polar projection.");
+	GMT_Usage (API, 3, "t: First follow theta, then radius for staircase curves for Polar projection.");
+	GMT_Usage (API, 3, "x: First follow x, then y for staircase curves for Cartesian projections.");
+	GMT_Usage (API, 3, "y: First follow y, then x for staircase curves for Cartesian projections.");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on t-value in 4rd column.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, %s excepts lines/polygons\n", mod_name);
@@ -351,9 +355,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 
 			case 'A':	/* Turn off draw_arc mode */
 				Ctrl->A.active = true;
-				switch (opt->arg[0]) {	/* Allow for old-style m and p for backwards compatibility */
-					case 'm': case 'y': Ctrl->A.mode = GMT_STAIRS_Y; break;
-					case 'p': case 'x': Ctrl->A.mode = GMT_STAIRS_X; break;
+				switch (opt->arg[0]) {
+					case 'm': case 'y': case 'r': Ctrl->A.mode = GMT_STAIRS_Y; break;
+					case 'p': case 'x': case 't': Ctrl->A.mode = GMT_STAIRS_X; break;
 
 #ifdef DEBUG
 					default: Ctrl->A.step = atof (opt->arg); break; /* Undocumented test feature */
@@ -651,7 +655,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	unsigned int k, j, geometry, tbl, pos2x, pos2y, xcol = 0, icol = 0, tcol_f = 0, tcol_s = 0, grid_order, frame_order, n_z = 0;
 	unsigned int n_cols_start = 3, justify, v4_outline = 0, v4_status = 0, bcol, ex1, ex2, ex3, change = 0, n_needed = 0;
 	int error = GMT_NOERROR, seq_n_legends = 0, seq_frequency = 0;
-	uint64_t i, n, n_total_read = 0;
+	uint64_t i, n, n_total_read = 0, n_z_for_cpt = 0;
 	size_t n_alloc = 0;
 
 	char s_args[GMT_BUFSIZ] = {""};
@@ -667,7 +671,6 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 	struct GMT_SYMBOL S;
 	struct GMT_PALETTE *P = NULL;
 	struct GMT_PALETTE_HIDDEN *PH = NULL;
-	struct GMT_DATASET *Zin = NULL;
 	struct GMT_DATASEGMENT *L = NULL;
 	struct PSXYZ_DATA *data = NULL;
 	struct PSXYZ_CTRL *Ctrl = NULL;
@@ -730,13 +733,30 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Get color from cpt -Z and store in -G */
 			if (Ctrl->Z.file) {
 				/* Must temporarily let the x-column contain datavalues for the CPT lookup */
+				struct GMT_DATASET *Zin = NULL;
 				enum gmt_col_enum x_col_type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 				enum gmt_col_enum v_col_type = gmt_get_column_type (GMT, GMT_IN, 3);
+				gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -Z file */
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, v_col_type);
 				if ((Zin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->Z.file, NULL)) == NULL) {
 					Return (API->error);
 				}
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, x_col_type);
+				gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+				if (Zin->n_segments > 1) {
+					GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a single segment with one z-value for each polygon in the input file\n");
+					Return (API->error);
+				}
+				if (Zin->n_columns == 0) {
+					GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a at least one data column and we will choose the last column\n");
+					Return (API->error);
+				}
+				n_z_for_cpt = Zin->table[0]->segment[0]->n_rows;	/* Remember length of segment */
+				z_for_cpt = gmt_M_memory (GMT, NULL, n_z_for_cpt, double);
+				gmt_M_memcpy (z_for_cpt, Zin->table[0]->segment[0]->data[Zin->n_columns-1], n_z_for_cpt, double);
+				if (GMT_Destroy_Data (API, &Zin) != GMT_NOERROR) {	/* Finished with this file */
+					Return (API->error);
+				}
 			}
 			else {
 				double rgb[4];
@@ -1851,20 +1871,12 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 			}
 		}
 
-		if (Zin) {	/* Check that the Z file matches our polygon file */
-			if (Zin->n_records < D->n_segments) {
-				GMT_Report (API, GMT_MSG_ERROR, "Number of Z values is less then number of polygons\n");
+		if (z_for_cpt) {	/* Check that the Z length matches our polygon file */
+			if (n_z_for_cpt < D->n_segments) {
+				GMT_Report (API, GMT_MSG_ERROR, "Number of Z values (%" PRIu64 ") is less then number of polygons (%" PRIu64 ")\n", n_z_for_cpt, D->n_segments);
+				gmt_M_free (GMT, z_for_cpt);
 				Return (API->error);
 			}
-			if (Zin->n_segments > 1) {
-				GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a single segment with one z-value for each polygon in the input file\n");
-				Return (API->error);
-			}
-			if (Zin->n_columns == 0) {
-				GMT_Report (API, GMT_MSG_ERROR, "The file given via -Z must have a at least one data column and we will choose the last column\n");
-				Return (API->error);
-			}
-			z_for_cpt = Zin->table[0]->segment[0]->data[Zin->n_columns-1];	/* Short hand to the required z-array */
 		}
 
 		if (!seq_legend && GMT->common.l.active) {
@@ -1942,7 +1954,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				 * but reallocating x below lead to disasters.  */
 
 				outline_setting = outline_active ? 1 : 0;
-				if (Zin != NULL) {
+				if (z_for_cpt != NULL) {
 					double rgb[4];
 					(void)gmt_get_rgb_from_z (GMT, P, z_for_cpt[seg], rgb);
 					if (Ctrl->W.set_color) {	/* To be used in polygon outline */
@@ -2009,7 +2021,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					else if (Ctrl->G.active)
 						current_fill = Ctrl->G.fill;
 				}
-				else if (Zin == NULL) {
+				else if (z_for_cpt == NULL) {
 					if (change & 1) polygon = true;
 					if (change & 2 && !Ctrl->L.polygon) {
 						polygon = false;
@@ -2176,6 +2188,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		if (GMT_Destroy_Data (API, &D) != GMT_NOERROR) {
 			Return (API->error);
 		}
+		if (z_for_cpt) gmt_M_free (GMT, z_for_cpt);
 	}
 	PSL_command (GMT->PSL, "U\n");	/* Undo the gsave for all symbols or lines */
 

@@ -18,7 +18,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autolabel* ]
 [ |-C|\ [*side*]\ *clearance* ]
 [ |-D| ]
@@ -51,7 +51,7 @@ Required Arguments (begin mode)
 
 .. _-F:
 
-**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
     Specify the dimensions of the figure.  There are two different ways to do this:
     (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
     a single subplot.
@@ -81,6 +81,8 @@ Required Arguments (begin mode)
     Optionally, you may draw the outline (**+p**\ *pen*) or paint (**+g**\ *fill*\) the figure rectangle behind the
     subplots, add dividing lines between panels (**+w**\ *pen*), and even expand it via **+c**.  These are most
     useful if you supply **-B+n** to **subplot begin**, meaning no ticks or annotations will take place in the subplots.
+    By default (**+af**), we auto-scale the fonts and pens based on the geometric mean dimension of the entire figure.
+    Append **+as** to instead determine the scaling from the geometric mean subplot dimension.
 
 Optional Arguments (begin mode)
 -------------------------------
@@ -131,10 +133,10 @@ Optional Arguments (begin mode)
     the frames.  With different **-B**, **-C**, **-M** and **-S** choices the two subplots may not align, but with
     **-D** they will.  **Note**: It is assumed that **-F** stays the same [Draw and annotate frames as indicated].
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 
@@ -282,10 +284,14 @@ To make a minimalistic 2x2 basemap layout called panels.pdf, try::
     gmt end show
 
 
-Restriction
------------
+Restrictions
+------------
 
-Currently, nesting of subplots is not implemented.
+#. Currently, nesting of subplots is not implemented. 
+#. If auto-legend option **-l** is used then you must complete plotting in one panel 
+   before moving to another.
+#. Specifying separate primary and secondary annotations via **-Bp** and **-Bs** have
+   not yet been implemented.
 
 See Also
 --------

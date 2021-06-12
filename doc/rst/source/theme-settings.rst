@@ -2,13 +2,13 @@
 GMT Themes
 ##########
 
-GMT offers 3 build-in themes (classic, modern, and minimal). Classic theme is the default for classic mode and modern
+GMT offers 3 built-in themes (classic, modern, and minimal). Classic theme is the default for classic mode and modern
 theme is the default for modern mode. You can also create and use your own themes by compiling files of desired settings
 and placing them in your GMT user themes directory (usually ~/.gmt/themes) and naming them *theme*.conf, where *theme*
 is any valid string. The :term:`GMT_THEME` parameter  is used to set the current theme. The table below lists the
 default settings for the classic, modern, and minimal themes.
 
-Default settings for build-in themes
+Default settings for built-in themes
 ------------------------------------
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | Parameter                         | Classic                         | Modern                          | Minimal                         |
@@ -45,9 +45,9 @@ Default settings for build-in themes
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | :term:`MAP_FRAME_WIDTH`           | 5p                              | :ref:`auto <auto-scaling>`      | n/a                             |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
-| :term:`MAP_GRID_PEN_PRIMARY`      | default,black                   | :ref:`auto <auto-scaling>`      | thinner, lightgrey              |
+| :term:`MAP_GRID_PEN_PRIMARY`      | default,black                   | :ref:`auto <auto-scaling>`      | thinner,lightgrey               |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
-| :term:`MAP_GRID_PEN_SECONDARY`    | thinner,black                   | :ref:`auto <auto-scaling>`      | thinnest, lightgrey             |
+| :term:`MAP_GRID_PEN_SECONDARY`    | thinner,black                   | :ref:`auto <auto-scaling>`      | thinnest,lightgrey              |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+
 | :term:`MAP_HEADING_OFFSET`        | 18p                             | :ref:`auto <auto-scaling>`      | :ref:`auto <auto-scaling>`      |
 +-----------------------------------+---------------------------------+---------------------------------+---------------------------------+

@@ -19,10 +19,10 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
@@ -100,8 +100,8 @@ Optional Arguments
     If neither **s** or **t** is given then we set the time knots for both features. **Note 1**: The **+l** modifier is
     restricted to **-Et** and specifies an alternative duration (visibility) of the text [same duration as symbol].
     Furthermore, the **+p** and **+d** periods do not apply to text labels.  **Note 2**: The **-Et** option is
-    required if you wish to plot labels [plot symbols only].  **Note 3**: For lines or polygons the the **+p**
-    and **+d** periods do not apply., and for lines none of the modifiers apply.
+    required if you wish to plot labels [plot symbols only].  **Note 3**: For lines or polygons the **+p**
+    and **+d** periods do not apply, and for lines none of the modifiers are allowed.
 
 .. _-F:
 

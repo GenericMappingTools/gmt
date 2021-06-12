@@ -102,7 +102,7 @@
    * - :ref:`Polar [azimuthal] <-Jp>`  (:math:`\theta, r`) (or cylindrical)
      - **-Jp**\|\ **P**
      - **-Jpolar/**
-     - *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\
+     - *scale*\|\ *width*\ [**+a**]\ [**+f**\ [**e**\|\ **p**\|\ *radius*]]\ [**+k**\ *kind*]\
        [**+r**\ *offset*][**+t**\ *origin*][**+z**\ [**p**\|\ *radius*]]
    * - :ref:`(American) polyconic <-Jpoly>` 
      - **-Jpoly**\|\ **Poly**
