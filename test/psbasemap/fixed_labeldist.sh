@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 # Test a fixed label offset distance form all axes
 # Script from https://github.com/GenericMappingTools/gmt/issues/5182
-# A negative MAP_LABEL_OFFSET means the base of the map label will be set
-# at exactly the absolute value of the OFFSET, regardless of which side
-# of whatever axis it applies to. So while this mostly makes sense for
-# Cartesian y-axes, there are no limitations on it side (yet)
+# The defaults MAP_LABEL_MODE = axis means the distance to the map label
+# will be measured relative to the axis, not the top of the annotations.
+# 
 ps=fixed_labeldist.ps
-gmt set FONT_LABEL 10p MAP_LABEL_OFFSET -32p FONT_ANNOT_PRIMARY 8p
+gmt set FONT_LABEL 10p MAP_LABEL_OFFSET 8p/32p MAP_LABEL_MODE annot/axis FONT_ANNOT_PRIMARY 8p
 
 plot_width=16c
 plot_height=2.5c

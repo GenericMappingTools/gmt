@@ -223,6 +223,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "MAP_GRID_PEN_PRIMARY"},
 	{ 0, "MAP_GRID_PEN_SECONDARY"},
 	{ 0, "MAP_HEADING_OFFSET"},
+	{ 0, "MAP_LABEL_MODE"},
 	{ 0, "MAP_LABEL_OFFSET"},
 	{ 0, "MAP_LINE_STEP"},
 	{ 0, "MAP_LOGO"},
@@ -6161,7 +6162,7 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_heading_offset = 18 * pt;	/* 18p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_HEADING_OFFSET] = 'p';
 	/* MAP_LABEL_OFFSET */
-	GMT->current.setting.map_label_offset = 8 * pt;	/* 8p */
+	GMT->current.setting.map_label_offset[GMT_X] = GMT->current.setting.map_label_offset[GMT_Y] = 8 * pt;	/* 8p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p';
 	/* MAP_LINE_STEP */
 	GMT->current.setting.map_line_step = 0.75 * pt;	/* 0.75p */
@@ -6514,7 +6515,7 @@ GMT_LOCAL void gmtinit_conf_modern_override (struct GMT_CTRL *GMT) {
 	GMT->current.setting.map_heading_offset = GMT->session.d_NaN;	/* 16p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_HEADING_OFFSET] = 'p';
 	/* MAP_LABEL_OFFSET */
-	GMT->current.setting.map_label_offset = GMT->session.d_NaN;	/* 6p */
+	GMT->current.setting.map_label_offset[GMT_X] = GMT->current.setting.map_label_offset[GMT_Y] = GMT->session.d_NaN;	/* 6p */
 	GMT->current.setting.given_unit[GMTCASE_MAP_LABEL_OFFSET] = 'p';
 	/* MAP_POLAR_CAP */
 	GMT->current.setting.map_polar_cap[0] = GMT->session.d_NaN;	/* 85 */
@@ -10016,8 +10017,13 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = true;
 	}
-	if (gmt_M_is_dnan (GMT->current.setting.map_label_offset)) {
-		GMT->current.setting.map_label_offset = 6 * pt * scale;	/* 6p */
+	if (gmt_M_is_dnan (GMT->current.setting.map_label_offset[GMT_X])) {
+		GMT->current.setting.map_label_offset[GMT_X] = 6 * pt * scale;	/* 6p */
+		auto_scale = true;
+		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_LABEL_OFFSET] = true;
+	}
+	if (gmt_M_is_dnan (GMT->current.setting.map_label_offset[GMT_Y])) {
+		GMT->current.setting.map_label_offset[GMT_Y] = 6 * pt * scale;	/* 6p */
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_LABEL_OFFSET] = true;
 	}
@@ -10325,7 +10331,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_annot_offset[GMT_PRIMARY] *= scale;
 				GMT->current.setting.map_annot_offset[GMT_SECONDARY] *= scale;
 				GMT->current.setting.map_heading_offset *= scale;
-				GMT->current.setting.map_label_offset *= scale;
+				GMT->current.setting.map_label_offset[GMT_X] *= scale;
+				GMT->current.setting.map_label_offset[GMT_Y] *= scale;
 				GMT->current.setting.map_title_offset *= scale;
 				GMT->current.setting.map_frame_width *= scale;
 				GMT->current.setting.map_tick_length[GMT_PRIMARY] *= scale;
@@ -10654,11 +10661,24 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_MAP_HEADING_OFFSET:
 			GMT->current.setting.map_heading_offset = gmt_M_to_inch (GMT, value);
 			break;
+		case GMTCASE_MAP_LABEL_MODE:
+			if ((i = sscanf (value, "%[^/]/%s", txt_a, txt_b)) == 2) {	/* Separate settings for x and y */
+				GMT->current.setting.map_label_mode[GMT_X] = (!strcmp (txt_a, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
+				GMT->current.setting.map_label_mode[GMT_Y] = (!strcmp (txt_b, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
+			}
+			else
+				GMT->current.setting.map_label_mode[GMT_X] = GMT->current.setting.map_label_mode[GMT_Y] = (!strcmp (value, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
+			break;
 		case GMTCASE_LABEL_OFFSET:
 			GMT_COMPAT_TRANSLATE ("MAP_LABEL_OFFSET");
 			break;
 		case GMTCASE_MAP_LABEL_OFFSET:
-			GMT->current.setting.map_label_offset = gmt_M_to_inch (GMT, value);
+			if ((i = sscanf (value, "%[^/]/%s", txt_a, txt_b)) == 2) {	/* Separate settings for x and y */
+				GMT->current.setting.map_label_offset[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+				GMT->current.setting.map_label_offset[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+			}
+			else
+				GMT->current.setting.map_label_offset[GMT_X] = GMT->current.setting.map_label_offset[GMT_Y] = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_LINE_STEP:
 			GMT_COMPAT_TRANSLATE ("MAP_LINE_STEP");
@@ -12193,13 +12213,28 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 		case GMTCASE_MAP_HEADING_OFFSET:
 			gmtinit_place_value (GMT, GMT->current.setting.map_heading_offset, GMTCASE_MAP_HEADING_OFFSET, value);
 			break;
+		case GMTCASE_MAP_LABEL_MODE:
+			snprintf (value, GMT_LEN256, (GMT->current.setting.map_label_mode[GMT_X]) ? "axis" : "annot");
+			if (GMT->current.setting.map_label_mode[GMT_X] != GMT->current.setting.map_label_mode[GMT_Y]) {
+				strcat (value, "/");
+				if (GMT->current.setting.map_label_mode[GMT_Y])
+					strcat (value, "axis");
+				else
+					strcat (value, "annot");
+			}
+			break;
 		case GMTCASE_LABEL_OFFSET:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
 				GMT_COMPAT_WARN;
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_LABEL_OFFSET:
-			gmtinit_place_value (GMT, GMT->current.setting.map_label_offset, GMTCASE_MAP_LABEL_OFFSET, value);
+			if (doubleAlmostEqualZero (GMT->current.setting.map_label_offset[GMT_X], GMT->current.setting.map_label_offset[GMT_Y]))
+				gmtinit_place_value (GMT, GMT->current.setting.map_label_offset[GMT_X], GMTCASE_MAP_LABEL_OFFSET, value);
+			else {
+				snprintf (value, GMT_LEN256, "%g%c/%g%c", GMT->current.setting.map_label_offset[GMT_X] * GMT_def_scale(GMTCASE_MAP_LABEL_OFFSET), GMT_def_unit(GMTCASE_MAP_LABEL_OFFSET),
+					 GMT->current.setting.map_label_offset[GMT_Y] * GMT_def_scale(GMTCASE_MAP_LABEL_OFFSET), GMT_def_unit(GMTCASE_MAP_LABEL_OFFSET));
+			}
 			break;
 		case GMTCASE_LINE_STEP:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -18973,8 +19008,8 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	/* Initialize the default settings before considering any -B history */
 	gmt_set_undefined_defaults (GMT, 0.0, false);	/* Must set undefined to their reference values for now */
 
-	offset[GMT_OUT] = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
-	offset[GMT_IN]  = GMT->current.setting.map_label_offset;
+	offset[GMT_OUT] = GMT->current.setting.map_label_offset[GMT_Y] + GMT->current.setting.map_frame_width;
+	offset[GMT_IN]  = GMT->current.setting.map_label_offset[GMT_Y];
 
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) return;	/* No can do */
 
@@ -19013,7 +19048,7 @@ void gmt_auto_offsets_for_colorbar (struct GMT_CTRL *GMT, double offset[], int j
 	}
 	if (add_label) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Adding label space\n");
-		offset[GMT_OUT] += (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset);
+		offset[GMT_OUT] += (GMT_LETTER_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH) + MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]);
 	}
 	/* Because the next call will reset frame sides i will make a copy and override the override here */
 	gmt_M_memcpy (sides, GMT->current.map.frame.side, 5U, unsigned int);
