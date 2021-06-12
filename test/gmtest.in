@@ -94,6 +94,7 @@ for apiprog in \
     testapi_cube \
     testapi_makecpt \
     testapi_matrix \
+    testapi_matrix_pad \
     testapi_matrix_plot \
     testapi_mixmatrix \
     testapi_userdataset \
