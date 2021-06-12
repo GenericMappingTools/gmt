@@ -5641,28 +5641,23 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
          l_just = (axis == GMT_X) ? lx_just : ly_just;
          label_angle = (horizontal ? 0.0 : 90.0) + angle_add;
       }
-      if (GMT->current.setting.map_label_offset < 0.0) { /* Base of label is a fixed distance from axis */
-         double s = (below) ? -1.0 : 1.0;
-         double xc = (horizontal) ? 0.5 * length : s * fabs (GMT->current.setting.map_label_offset);
-         double yc = (horizontal) ? s * fabs (GMT->current.setting.map_label_offset) : 0.5 * length;
-         gmtplot_map_label (GMT, xc, yc, this_label, label_angle, l_just, axis, below);
-      }
-      else {
-   		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
-   		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-   		PSL_command (PSL, "/PSL_LH ");	/* PSL_LH is the height of the label text based on height of letter M */
-   		PSL_deftextdim (PSL, "-h", GMT->current.setting.font_label.size, "M");
-   		PSL_command (PSL, "def\n");
-   		PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", PSL_IZ (PSL, GMT->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
-   		/* Move to new anchor point for label */
-   		if (angled && axis == GMT_X)	/* Add offset due to angled x-annotations */
-   			PSL_command (PSL, "%d PSL_L_y PSL_slant_y add MM\n", PSL_IZ (PSL, 0.5 * length));
-   		else if (angled && axis == GMT_Y)
-   			PSL_command (PSL, "%d PSL_L_y PSL_slant_x add MM\n", PSL_IZ (PSL, 0.5 * length));
-   		else
-   			PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
-   		gmtplot_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below);
-      }
+		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
+		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
+		PSL_command (PSL, "/PSL_LH ");	/* PSL_LH is the height of the label text based on height of letter M */
+		PSL_deftextdim (PSL, "-h", GMT->current.setting.font_label.size, "M");
+		PSL_command (PSL, "def\n");
+      if (GMT->current.setting.map_label_offset < 0.0) /* Base of label is a fixed distance from axis */
+         PSL_command (PSL, "/PSL_L_y %d %sdef\n", PSL_IZ (PSL, fabs (GMT->current.setting.map_label_offset)), (neg == horizontal) ? "PSL_LH add " : "");
+      else
+         PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", PSL_IZ (PSL, GMT->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
+		/* Move to new anchor point for label */
+		if (angled && axis == GMT_X)	/* Add offset due to angled x-annotations */
+			PSL_command (PSL, "%d PSL_L_y PSL_slant_y add MM\n", PSL_IZ (PSL, 0.5 * length));
+		else if (angled && axis == GMT_Y)
+			PSL_command (PSL, "%d PSL_L_y PSL_slant_x add MM\n", PSL_IZ (PSL, 0.5 * length));
+		else
+			PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
+		gmtplot_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below);
 	}
 	else
 		PSL_command (PSL, "/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def\n");
