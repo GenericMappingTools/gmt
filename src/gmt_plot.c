@@ -8817,9 +8817,12 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					gmt_setpen (GMT, &pen);
 					outline = 1;
 				}
+            if (P->shade[0] && gmt_getfill (GMT, P->shade, &fill)) {  /* Want to paint shade behind the tag box */
+               PSL_setfill (PSL, fill.rgb, 0);  /* Shade color */
+               PSL_plottextbox (PSL, plot_x+P->soff[GMT_X], plot_y+P->soff[GMT_Y], GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
+            }
 				if (P->fill[0] && gmt_getfill (GMT, P->fill, &fill))	/* Want to paint inside of tag box */
 					gmt_fill_syntax (GMT, 'g', NULL, " ");
-
 				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
 				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
 				form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */

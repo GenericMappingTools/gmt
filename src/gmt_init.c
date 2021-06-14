@@ -13808,13 +13808,14 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 			return NULL;
 		}
 		if (P->row == row && P->col == col) {	/* Found it */
-			if ((n = sscanf (line, "%*d %*d %*d %*d %*d %lg %lg %lg %lg %s %lg %lg %lg %lg %s %s %s %s",
-				&P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], &P->clearance[GMT_X], &P->clearance[GMT_Y], P->refpoint, P->justify, P->fill, P->pen)) != 13) {
+			if ((n = sscanf (line, "%*d %*d %*d %*d %*d %lg %lg %lg %lg %s %lg %lg %lg %lg %s %s %s %s %lg %lg %s",
+				&P->x, &P->y, &P->w, &P->h, P->tag, &P->off[GMT_X], &P->off[GMT_Y], &P->clearance[GMT_X], &P->clearance[GMT_Y], P->refpoint, P->justify, P->fill, P->pen, &P->soff[GMT_X], &P->soff[GMT_Y], P->shade)) != 16) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failure while decoding subplot information file %s.  Bad format? [%s] (n=%d)\n", file, line, n);
 				fclose (fp);
 				return NULL;
 			}
-			if (P->fill[0] == '-') P->fill[0] = '\0';	/* - means no fill */
+			if (P->fill[0] == '-') P->fill[0] = '\0';		/* - means no fill */
+			if (P->shade[0] == '-') P->shade[0] = '\0';	/* - means no fill */
 			if (P->pen[0] == '-') P->pen[0] = '\0';		/* - means no pen */
 			P->first = first;
 			gmt_M_memcpy (P->gap, gap, 4, double);
