@@ -10018,12 +10018,18 @@ void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool con
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_ANNOT_OFFSET_SECONDARY] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_label_offset[GMT_X])) {
-		GMT->current.setting.map_label_offset[GMT_X] = 6 * pt * scale;	/* 6p */
+		if (GMT->current.setting.map_label_mode[GMT_X] == GMT_LABEL_AXIS)
+			GMT->current.setting.map_label_offset[GMT_X] = 32 * pt;
+		else
+			GMT->current.setting.map_label_offset[GMT_X] = 6 * pt * scale;	/* 6p */
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_LABEL_OFFSET] = true;
 	}
 	if (gmt_M_is_dnan (GMT->current.setting.map_label_offset[GMT_Y])) {
-		GMT->current.setting.map_label_offset[GMT_Y] = 6 * pt * scale;	/* 6p */
+		if (GMT->current.setting.map_label_mode[GMT_Y] == GMT_LABEL_AXIS)
+			GMT->current.setting.map_label_offset[GMT_Y] = 32 * pt;
+		else
+			GMT->current.setting.map_label_offset[GMT_Y] = 6 * pt * scale;	/* 6p */
 		auto_scale = true;
 		if (conf_update) GMT_keyword_updated[GMTCASE_MAP_LABEL_OFFSET] = true;
 	}
