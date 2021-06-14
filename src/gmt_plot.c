@@ -8804,31 +8804,31 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_command (PSL, PSL_makecolor (PSL, GMT->current.setting.font_tag.fill.rgb));
 			PSL_command (PSL, " ");
 			PSL_setfont (PSL, GMT->current.setting.font_tag.id);
-			if (P->pen[0] || P->fill[0]) {	/* Must deal with textbox fill/outline */
+			if (P->pen[0] || P->fill[0] || P->shade[0]) {	/* Must deal with textbox fill/outline/shade */
+            /* All fills and pens have already gone through a syntax check in subplot -A */
 				int outline = 0;
 				struct GMT_FILL fill;
+            struct GMT_PEN pen;
+            gmt_M_memset (&pen, 1, struct GMT_PEN);
 				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
 				PSL_command (PSL, "FQ O0\n");	/* Ensure fill/pen have been reset */
-				if (P->pen[0]) {	/* Want to draw outline of tag box */
-					struct GMT_PEN pen;
-					gmt_M_memset (&pen, 1, struct GMT_PEN);
-					if (gmt_getpen (GMT, P->pen, &pen))
-						gmt_pen_syntax (GMT, 'w', NULL, "sets pen attributes:", 3);
-					gmt_setpen (GMT, &pen);
-					outline = 1;
-				}
-            if (P->shade[0] && gmt_getfill (GMT, P->shade, &fill)) {  /* Want to paint shade behind the tag box */
+            if (P->shade[0] && !gmt_getfill (GMT, P->shade, &fill)) {  /* Want to paint an offset, shaded rectangle behind the tag box */
                PSL_setfill (PSL, fill.rgb, 0);  /* Shade color */
                PSL_plottextbox (PSL, plot_x+P->soff[GMT_X], plot_y+P->soff[GMT_Y], GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
             }
-				if (P->fill[0] && gmt_getfill (GMT, P->fill, &fill))	/* Want to paint inside of tag box */
-					gmt_fill_syntax (GMT, 'g', NULL, " ");
-				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
-				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
+				if (P->pen[0] && !gmt_getpen (GMT, P->pen, &pen)) {	/* Want to draw the outline of the tag box */
+					gmt_setpen (GMT, &pen);
+					outline = 1;
+				}
+            if (P->fill[0] && !gmt_getfill (GMT, P->fill, &fill)) {  /* Want to paint inside of tag box */
+               PSL_setfill (PSL, fill.rgb, outline);	/* Box color and possible outline */
+               PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
+            }
 				form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
+            /* Finally place the tag text in the box */
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, NULL, 0.0, justify, form);
 			}
-			else
+			else   /* Just place the tag text */
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
 			/* Because PSL_plot_completion is called at the end of the module, we must forget we used fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */

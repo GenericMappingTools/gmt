@@ -109,7 +109,7 @@ struct SUBPLOT_CTRL {
 		char placement[3];		/* Placement of tag [TL] */
 		char justify[3];		/* Justification of tag [TL] */
 		double off[2];			/* Offset from placement location [20% of font size] */
-		double soff[2];			/* Shade offset from tag location [20% of font size] */
+		double soff[2];			/* Shade offset from tag location [2p/-2p] */
 		double clearance[2];		/* Padding around text for rectangle behind the tag [15%] */
 	} A;
 	struct SUBPLOT_C {	/* -C[side]<clearance>  */
@@ -228,7 +228,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset tag in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase [arabic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the tag panel [Default is 4p/-4p/gray50].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the tag panel [Default is 2p/-2p/gray50].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v to number down columns [subplots are numbered across rows].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a gap of dimension <clearance> to the <side> (w|e|s|n) of the plottable subplot.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
@@ -394,23 +394,22 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 							Ctrl->A.roman = GMT_IS_ROMAN_LCASE;
 						else if (gmt_get_modifier (opt->arg, 'R', string))	/* Want upper-case roman numbering */
 							Ctrl->A.roman = GMT_IS_ROMAN_UCASE;
-						if (gmt_get_modifier (opt->arg, 's', string)) {	/* shading behind rectangle */
+						if (gmt_get_modifier (opt->arg, 's', string)) {	/* Want shading behind tag rectangle */
 							char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
-							n = sscanf (string, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
-							Ctrl->A.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is (4p,-4p) */
+							int ns = sscanf (string, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+							Ctrl->A.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_TAG_CLEARANCE;	/* Default is (2p,-2p) */
 							Ctrl->A.soff[GMT_Y] = -Ctrl->A.soff[GMT_X];
-							strcpy (Ctrl->A.shade, "127");	/* Default gray shade */
-							if (n == 1)	/* Just got a new shade */
+							strcpy (Ctrl->A.shade, "gray50");	/* Default gray shade */
+							if (ns == 1)	/* Just got a new shade */
 								strcpy (Ctrl->A.shade, txt_a);
-							else if (n == 2) {	/* Just got a new shade offset */
+							else if (ns == 2) {	/* Just got a new shade offset */
 								if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->A.soff) < 0) n_errors++;
 							}
-							else if (n == 3) {	/* Got offset and shade */
+							else if (ns == 3) {	/* Got offset and shade */
 								Ctrl->A.soff[GMT_X] = gmt_M_to_inch (GMT, txt_a);
 								Ctrl->A.soff[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
 								strcpy (Ctrl->A.shade, txt_c);
-							}
-							else n_errors++;
+							} /* else we got nothing and use the defaults set initially */
 							if (gmt_getfill (GMT, Ctrl->A.shade, &fill)) n_errors++;
 						}
 						if (gmt_get_modifier (opt->arg, 'v', string))	/* Tag order is vertical down columns */
