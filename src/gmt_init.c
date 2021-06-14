@@ -13814,7 +13814,7 @@ struct GMT_SUBPLOT *gmt_subplot_info (struct GMTAPI_CTRL *API, int fig) {
 				fclose (fp);
 				return NULL;
 			}
-			if (P->fill[0] == '-') P->fill[0] = '\0';		/* - means no fill */
+			if (P->fill[0] == '-') P->fill[0] = '\0';	/* - means no fill */
 			if (P->shade[0] == '-') P->shade[0] = '\0';	/* - means no fill */
 			if (P->pen[0] == '-') P->pen[0] = '\0';		/* - means no pen */
 			P->first = first;
