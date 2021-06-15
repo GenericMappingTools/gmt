@@ -176,12 +176,14 @@ struct GMT_SUBPLOT {
 	double dim[2];			/* Dimension of entire subplot */
 	double origin[2];		/* Location of lower left figure origin set via -X -Y */
 	double off[2];			/* Offset from justification point of panel tag */
-	double clearance[4];		/* Space around text for surrounding textbox */
+	double soff[2];			/* Shade offset from justification point of panel tag */
+	double clearance[4];	/* Space around text for surrounding textbox */
 	double gap[4];			/* Shrink plottable region to make space for enhancements */
 	char refpoint[3];		/* Reference point for panel tag */
 	char justify[3];		/* Justification relative to refpoint */
 	char tag[GMT_LEN128];		/* Panel tag, e.g., a) */
 	char fill[GMT_LEN64];		/* Panel fill color */
+	char shade[GMT_LEN64];		/* Panel tag shade color */
 	char pen[GMT_LEN64];		/* Panel tag pen outline */
 	char Baxes[GMT_LEN128];		/* The -B setting for selected axes, including +color, tec */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */

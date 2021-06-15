@@ -90,6 +90,7 @@ struct GRD2CPT_CTRL {
 	} I;
 	struct GRD2CPT_L {	/* -L<min_limit>/<max_limit> */
 		bool active;
+		bool minimum_given, maximum_given;
 		double min, max;
 	} L;
 	struct GRD2CPT_M {	/* -M */
@@ -170,6 +171,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The <label>, if present, sets the labels for each category. It may be a\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   comma-separated list of category names, or <start>[-], where we automatically build\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build ranges <start>-<start+1>.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   If number of categories is 12 and label is M then we auto-create month name labels, and\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t     if it is 7 and label is D then we auto-create weekday name labels.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <keys> is a single letter then we build sequential alphabetical keys from that letter.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
@@ -179,7 +182,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ic Reverse sense of color table as well as back- and foreground color [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Iz Reverse sign of z-values in the color table (takes affect before -G, T are consulted).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Limit the range of the data.  Node values outside this range are set to NaN.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses actual min,max of data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   To only give min or max limit, set the other to - [Default uses actual min,max of data].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Use GMT defaults to set back-, foreground, and NaN colors [Default uses color table].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Assign a logarithmic colortable [Default is linear].\n");
@@ -316,9 +319,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'L':	/* Limit data range */
 				Ctrl->L.active = true;
-				if (sscanf (opt->arg, "%lf/%lf", &Ctrl->L.min, &Ctrl->L.max) != 2) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Cannot decode limits\n");
+				if ((n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) != 2) {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Cannot decode two limits\n");
 					n_errors++;
+				}
+				else {	/* Assign limits unless give as "-" which means to skip that limit */
+					if (strcmp (txt_a, "-")) Ctrl->L.min = atof (txt_a), Ctrl->L.minimum_given = true;
+					if (strcmp (txt_b, "-")) Ctrl->L.max = atof (txt_b), Ctrl->L.maximum_given = true;
 				}
 				break;
 			case 'M':	/* Override fore/back/NaN using GMT defaults */
@@ -434,7 +441,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 					"Options -W and -Z cannot be used simultaneously\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.cat && Ctrl->Z.active,
 	                                "Options -F+c and -Z cannot be used simultaneously\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.min >= Ctrl->L.max,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.minimum_given && Ctrl->L.maximum_given && Ctrl->L.min >= Ctrl->L.max,
 					"Option -L: min_limit must be less than max_limit.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.mode == 0 && (Ctrl->T.high <= Ctrl->T.low || Ctrl->T.inc <= 0.0),
 					"Option -S: Bad arguments\n");
@@ -596,14 +603,18 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	nfound = 0;
 	mean = sd = 0.0;
 	if (Ctrl->L.active) {	/* Loop over the grdfiles, and set anything outside the limiting values to NaN.  */
-		G[0]->header->z_min = Ctrl->L.min;
-		G[0]->header->z_max = Ctrl->L.max;
+		G[0]->header->z_min = (Ctrl->L.minimum_given) ? Ctrl->L.min : G[0]->header->z_max;
+		G[0]->header->z_max = (Ctrl->L.maximum_given) ? Ctrl->L.max : G[0]->header->z_min;
 		for (k = 0; k < ngrd; k++) {	/* For each grid */
 			gmt_M_grd_loop (GMT, G[k], row, col, ij) {
 				if (gmt_M_is_fnan (G[k]->data[ij]))
 					nfound++;
 				else {
-					if (G[k]->data[ij] < Ctrl->L.min || G[k]->data[ij] > Ctrl->L.max) {
+					if (Ctrl->L.minimum_given && G[k]->data[ij] < Ctrl->L.min) {
+						nfound++;
+						G[k]->data[ij] = GMT->session.f_NaN;
+					}
+					else if (Ctrl->L.maximum_given && G[k]->data[ij] > Ctrl->L.max) {
 						nfound++;
 						G[k]->data[ij] = GMT->session.f_NaN;
 					}
@@ -615,10 +626,14 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 					else {
 						mean += G[k]->data[ij];
 						sd += G[k]->data[ij] * G[k]->data[ij];
+						if (!Ctrl->L.minimum_given && G[k]->data[ij] < Ctrl->L.min) Ctrl->L.min = G[k]->data[ij];
+						if (!Ctrl->L.maximum_given && G[k]->data[ij] > Ctrl->L.max) Ctrl->L.max = G[k]->data[ij];
 					}
 				}
 			}
 		}
+		if (!Ctrl->L.minimum_given) G[0]->header->z_min = Ctrl->L.min;
+		if (!Ctrl->L.maximum_given) G[0]->header->z_max = Ctrl->L.max;
 	}
 	else {
 		Ctrl->L.min = G[0]->header->z_max;	/* This is just to double check G[k]->header->z_min, G[k]->header->z_max  */

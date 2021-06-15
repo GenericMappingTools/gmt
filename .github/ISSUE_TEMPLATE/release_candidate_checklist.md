@@ -22,8 +22,8 @@ assignees: ''
 	- [ ] gmtmex (@PaulWessel, @joa-quim)
 - [ ] run `src/gmt_make_*.sh` to update some .c and .h files
 - [ ] run `admin/gs_check.sh` to test if latest ghostscript version works
-- [ ] update [changelog](/doc/rst/source/changes.rst)
-- [ ] check installation instructions in [INSTALL.md](/INSTALL.md)
+- [ ] update [changelog](https://github.com/GenericMappingTools/gmt/blob/master/doc/rst/source/changes.rst)
+- [ ] check installation instructions in [INSTALL.md](https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md)
 - [ ] check if there are any warnings when building the documentation
 - [ ] add one new entry in `doc/rst/_static/version_switch.js` if it's a minor release
 - [ ] check/set values in `cmake/ConfigDefault.cmake`
@@ -36,11 +36,11 @@ assignees: ''
 
 **Release**:
 
-- [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel)
-- [ ] create macOS bundle (@PaulWessel)
+- [ ] create source tarballs (tar.gz and tar.xz) (@PaulWessel, @meghanrjones)
+- [ ] create macOS bundle (@PaulWessel, @meghanrjones)
 - [ ] create Windows installers (win64) (@joa-quim)
 - [ ] check if the source tarballs, macOS bundle and Windows installers work well
-- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel)
+- [ ] upload source tarballs, macOS bundle, Windows installers to the GMT FTP (@PaulWessel, @meghanrjones)
 - [ ] make a tag and push it to github (**Must be done after uploading packages to the GMT FTP**)
     ```bash
     # checkout master (for minor releases) or 6.x branch (for patch releases)
@@ -53,7 +53,7 @@ assignees: ''
 - [ ] make a GitHub release.
   The GitHub Actions automatically create a draft release after pushing the tag to github.
   We need to go to the [GitHub Release](https://github.com/GenericMappingTools/gmt/releases) page, and review it manually.
-  - [ ] 5 files are attached as release assets (2 source tarballs, 2 installers and 1 checksum file).
+  - [ ] 6 files are attached as release assets (2 source tarballs, 3 installers and 1 checksum file).
   - [ ] download the checksum file and check if the checksums are correct
   - [ ] edit the draft release, set the target to the correct tag, and publish the release
 - [ ] make announcements in the [GMT forum](https://forum.generic-mapping-tools.org/)

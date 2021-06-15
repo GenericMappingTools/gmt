@@ -185,9 +185,6 @@ typedef enum {
 	Int64len = 8
 } SwapWidth;
 
-/*! Macro to apply columns log/scale/offset conversion on the fly */
-#define gmt_M_convert_col(S,x) ((S.convert) ? ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset : x)
-
 /* These functions are defined and used below but not in any *.h file so we repeat them here */
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);

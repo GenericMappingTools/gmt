@@ -52,7 +52,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**]
+**-A**\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**]
     By default, geographic line segments are connected as great circle arcs. To connect them as
     straight lines, use the **-A** flag. Alternatively, add **m** to connect
     the line by first following a meridian, then a parallel. Or append **p**
@@ -60,7 +60,8 @@ Optional Arguments
     to connect lines along parallels, for example).
     For Cartesian data, points are simply connected, unless you append
     **x** or **y** to construct stair-case paths whose first move is along
-    *x* or *y*, respectively.
+    *x* or *y*, respectively. For polar projection, append **r** or **t** to
+    draw stair-case curves that whose first move is along *r* or *theta*, respectively.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_

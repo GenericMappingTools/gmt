@@ -69,10 +69,11 @@ struct PSSCALE_CTRL {
 		bool active;
 		char *file;
 	} C;
-	struct PSSCALE_D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n[<text>]] */
+	struct PSSCALE_D {	/* -D[g|j|n|x]<refpoint>+w<length>/<width>[+m<move>][+h][+j<justify>][+o<dx>[/<dy>]]+e[b|f][<length>][+n[<text>]][+r] */
 		bool active;
 		bool horizontal;
 		bool move;
+		bool reverse;
 		struct GMT_REFPOINT *refpoint;
 		int justify;
 		unsigned int mmode;
@@ -161,7 +162,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C<cpt>]\n", name, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s]\n", GMT_XYANCHOR, GMT_OFFSET);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s[+r]]\n", GMT_XYANCHOR, GMT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]]\n", GMT_J_OPT, API->K_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Q] [%s] [-S[+a<angle>][+c|n][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT);
@@ -181,7 +182,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   For -DJ|j w/TC|BC|ML|MR the values for +w (85%% of map width),+h|v,+j,+o,+m have defaults.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   You can override any of these settings with these explicit modifiers:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length>[/<width>] for the scale dimensions [Default width is 4%% of <length>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Give negative <length> to reverse the positive direction along the scale bar, or append +r.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h for a horizontal scale [Default is vertical (+v)].\n");
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_COLORBAR, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to add sidebar triangles for back- and foreground colors.\n");
@@ -483,7 +484,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 					break;
 			}
 		}
-		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnovw", GMT_MSG_ERROR)) n_errors++;
+		if (gmt_validate_modifiers (GMT, Ctrl->D.refpoint->args, 'D', "ehjmnorvw", GMT_MSG_ERROR)) n_errors++;
+		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'r', string))
+			Ctrl->D.reverse = true;
 		/* Required modifier +w */
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
 			if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
@@ -494,6 +497,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				n_errors++;
 			else if (n == 1)	/* Set height as 4% of width */
 				Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * fabs (Ctrl->D.dim[GMT_X]);
+			if (Ctrl->D.reverse) Ctrl->D.dim[GMT_X] = -fabs(Ctrl->D.dim[GMT_X]);
 		}
 		/* Optional modifiers +e, +h, +j, +m, +n, +o, +v */
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'e', string)) {
@@ -672,6 +676,22 @@ GMT_LOCAL void psscale_plot_cycle (struct GMT_CTRL *GMT, double x, double y, dou
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
 }
 
+GMT_LOCAL unsigned int psscale_cpt_transparency (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
+	/* Determine the status of transparency in the CPT:
+	 * Bit 1 means the CPT has transparency of some sort
+	 * Bit 2 means different slices have different transparencies
+	 * Bit 3 means at least one slice has different transparencies within it
+	 */
+	unsigned int k, status = 0;
+	for (k = 0; k < P->n_colors; k++) {
+		if (P->data[k].rgb_low[3] > 0.0 || P->data[k].rgb_high[3] > 0.0) status |= 1;	/* Transparency detected */
+		if (k && !doubleAlmostEqualZero (P->data[k].rgb_low[3], P->data[k-1].rgb_low[3]))   status |= 2;	/* Unequal transparencies between slices */
+		if (k && !doubleAlmostEqualZero (P->data[k].rgb_high[3], P->data[k-1].rgb_high[3])) status |= 2;	/* Unequal transparencies between slices */
+		if (status && !doubleAlmostEqualZero (P->data[k].rgb_low[3], P->data[k].rgb_high[3])) status |= 4;	/* Unequal transparencies within slice */
+	}
+	return (status);
+}
+
 #define FONT_HEIGHT_PRIMARY (GMT->session.font[GMT->current.setting.font_annot[GMT_PRIMARY].id].height)
 
 GMT_LOCAL bool psscale_letter_hangs_down (char *text) {
@@ -726,7 +746,7 @@ GMT_LOCAL unsigned int psscale_set_custom_annot (struct GMT_CTRL *GMT, struct GM
 	return (this_just);
 }
 
-GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width) {
+GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_PALETTE *P, double *z_width, unsigned int tr_status) {
 	unsigned int i, ii, id, j, nb, ndec = 0, dec, depth, flip = Ctrl->D.mmode, l_justify, n_use_labels = 0, p_arg;
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nv, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
 	int this_just, p_val, center = 0;
@@ -738,7 +758,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	double hor_annot_width, annot_off, label_off = 0.0, len, len2, size, x0, x1, dx, xx, dir, y_base, y_annot, y_label, xd = 0.0, yd = 0.0, xt = 0.0;
 	double z = 0.0, xleft, xright, inc_i, inc_j, start_val, stop_val, nan_off = 0.0, rgb[4], rrggbb[4], prev_del_z, this_del_z = 0.0, yt = 0.0;
 	double length = Ctrl->D.dim[GMT_X], width = Ctrl->D.dim[GMT_Y], gap = Ctrl->L.spacing, t_len, max_intens[2], xp[4], yp[4];
-	double *xpos = NULL, elength[2] = {0.0, 0.0}, t_angle;
+	double *xpos = NULL, elength[2] = {0.0, 0.0}, t_angle, transp[2] = {0.0, 0.0};
 	struct GMT_FILL *f = NULL;
 	struct GMT_PLOT_AXIS *A = NULL;
 	struct GMT_MAP_PANEL *panel = Ctrl->F.panel;	/* Shorthand */
@@ -848,7 +868,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	else if (Ctrl->N.mode == N_FAVOR_POLY)	/* favor polygon if possible */
 		use_image = P->is_continuous;
 	else	/* Auto mode */
-		use_image = (!P->has_pattern && gap <= 0.0 && (Ctrl->L.active || const_width || P->is_continuous));
+		use_image = ((tr_status & 2) == 0 && !P->has_pattern && gap <= 0.0 && (Ctrl->L.active || const_width || P->is_continuous));
 	/* So if CPT has pattern AND continuous color sections then use_image is false but we still need to do an image later */
 	need_image = (P->has_pattern && P->is_continuous);
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Color bar will be plotted using %s\n", method[use_image]);
@@ -1080,10 +1100,27 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 	depth = (Ctrl->M.active || P->is_gray) ? 8 : 24;
 	if (Ctrl->D.horizontal) {
-		if (use_image)	/* Must plot entire bar as image */
+		if (use_image) {	/* Must plot entire bar as image */
+			if (tr_status & 1) {
+				transp[GMT_FILL_TRANSP] = P->data[0].rgb_low[3];	/* Any one will do */
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotcolorimage (PSL, 0.0, 0.0, length, width, PSL_BL, bar, nx, ny, depth);
+			if (tr_status & 1) {
+				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+				PSL_settransparencies (PSL, transp);
+			}
+		}
 		else if (need_image) {	/* Some parts require image, we overwrite where patterns are needed */
+			if (tr_status & 1) {
+				transp[GMT_FILL_TRANSP] = P->data[0].rgb_low[3];	/* Any one will do */
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotcolorimage (PSL, 0.0, 0.0, length, width, PSL_BL, bar, nx, ny, depth);
+			if (tr_status & 1) {
+				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+				PSL_settransparencies (PSL, transp);
+			}
 			x0 = x1 = 0.0;
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
@@ -1093,7 +1130,15 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					continue;
 				}
 				gmt_setfill (GMT, f, center);	/* Set fill and paint box */
+				if (P->data[ii].rgb_low[3] > 0.0) {
+					transp[GMT_FILL_TRANSP] = P->data[ii].rgb_low[3];
+					PSL_settransparencies (PSL, transp);
+				}
 				PSL_plotbox (PSL, x0+gap, 0.0, x1-gap, width);
+				if (P->data[ii].rgb_low[3] > 0.0) {
+					transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+					PSL_settransparencies (PSL, transp);
+				}
 				x0 = x1;
 			}
 		}
@@ -1105,6 +1150,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (P->data[ii].skip) {	/* Do not paint this slice at all */
 					x0 = x1;
 					continue;
+				}
+				if (P->data[ii].rgb_low[3] > 0.0) {
+					transp[GMT_FILL_TRANSP] = P->data[ii].rgb_low[3];
+					PSL_settransparencies (PSL, transp);
 				}
 				if ((f = P->data[ii].fill) != NULL)	/* Using pattern fills */
 					gmt_setfill (GMT, f, center);
@@ -1127,6 +1176,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 					PSL_setfill (PSL, rgb, center);
 				}
 				PSL_plotbox (PSL, x0+gap, 0.0, x1-gap, width);
+				if (P->data[ii].rgb_low[3] > 0.0) {
+					transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+					PSL_settransparencies (PSL, transp);
+				}
 				x0 = x1;
 			}
 		}
@@ -1163,7 +1216,15 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
+			if (P->bfn[id].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] =P->bfn[id].rgb[3];
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotpolygon (PSL, xp, yp, nv);
+			if (P->bfn[id].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotline (PSL, xp, yp, nv, p_arg);
 			nan_off = Ctrl->D.elength - xd;	/* Must make space for the triangle */
 		}
@@ -1179,7 +1240,15 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 1);
 			}
+			if (P->bfn[GMT_NAN].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] =P->bfn[GMT_NAN].rgb[3];
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
+			if (P->bfn[GMT_NAN].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+				PSL_settransparencies (PSL, transp);
+			}
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, 0.0, PSL_MR, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle on right side */
@@ -1196,7 +1265,15 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
+			if (P->bfn[id].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] =P->bfn[id].rgb[3];
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotpolygon (PSL, xp, yp, nv);
+			if (P->bfn[id].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotline (PSL, xp, yp, nv, p_arg);
 		}
 
@@ -1326,10 +1403,27 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 	else {	/* Vertical scale */
 		PSL_setorigin (PSL, width, 0.0, 90.0, PSL_FWD);
-		if (use_image)	/* Must plot with image */
+		if (use_image) {	/* Must plot with image */
+			if (tr_status & 1) {
+				transp[GMT_FILL_TRANSP] = P->data[0].rgb_low[3];	/* Any one will do */
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotcolorimage (PSL, 0.0, 0.0, length, width, PSL_BL, bar, nx, ny, depth);
+			if (tr_status & 1) {
+				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+				PSL_settransparencies (PSL, transp);
+			}
+		}
 		else if (need_image) {	/* Sme parts require image, overwrite the rest */
+			if (tr_status & 1) {
+				transp[GMT_FILL_TRANSP] = P->data[0].rgb_low[3];	/* Any one will do */
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotcolorimage (PSL, 0.0, 0.0, length, width, PSL_BL, bar, nx, ny, depth);
+			if (tr_status & 1) {
+				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
+				PSL_settransparencies (PSL, transp);
+			}
 			x0 = x1 = 0.0;
 			for (i = 0; i < P->n_colors; i++) {
 				ii = (reverse) ? P->n_colors - i - 1 : i;
@@ -1341,8 +1435,16 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				gmt_setfill (GMT, f, center);	/* Set fill and paint box */
 				/* Must undo rotation so patterns remain aligned with original setup */
 				PSL_setorigin (PSL, x0 + gap, 0.0, -90.0, PSL_FWD);
+				if (P->data[ii].rgb_low[3] > 0.0) {
+					transp[GMT_FILL_TRANSP] = P->data[ii].rgb_low[3];
+					PSL_settransparencies (PSL, transp);
+				}
 				PSL_plotbox (PSL, -width, 0.0, 0.0, x1 - x0 - 2.0 * gap);
 				PSL_setorigin (PSL, -(x0 + gap), 0.0, 90.0, PSL_INV);
+				if (P->data[ii].rgb_low[3] > 0.0) {
+					transp[GMT_FILL_TRANSP] = 0.0;
+					PSL_settransparencies (PSL, transp);
+				}
 				x0 = x1;
 			}
 		}
@@ -1354,6 +1456,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (P->data[ii].skip) {	/* Do not paint this slice at all */
 					x0 = x1;
 					continue;
+				}
+				if (P->data[ii].rgb_low[3] > 0.0) {
+					transp[GMT_FILL_TRANSP] = P->data[ii].rgb_low[3];
+					PSL_settransparencies (PSL, transp);
 				}
 				if ((f = P->data[ii].fill) != NULL)	/* Using pattern fills */
 					gmt_setfill (GMT, f, center);
@@ -1382,6 +1488,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				}
 				else
 					PSL_plotbox (PSL, x0 + gap, 0.0, x1 - gap, width);
+				if (P->data[ii].rgb_low[3] > 0.0) {
+					transp[GMT_FILL_TRANSP] = 0.0;
+					PSL_settransparencies (PSL, transp);
+				}
 				x0 = x1;
 			}
 		}
@@ -1430,8 +1540,16 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
+			if (P->bfn[id].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = P->bfn[id].rgb[3];
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotpolygon (PSL, xp, yp, nv);
 			PSL_plotline (PSL, xp, yp, nv, p_arg);
+			if (P->bfn[id].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = 0.0;
+				PSL_settransparencies (PSL, transp);
+			}
 			nan_off = Ctrl->D.elength - xd;	/* Must make space for the triangle */
 		}
 		if (Ctrl->D.emode & 4) {	/* Add NaN rectangle on left side */
@@ -1446,7 +1564,15 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 1);
 			}
+			if (P->bfn[GMT_NAN].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = P->bfn[GMT_NAN].rgb[3];
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotpolygon (PSL, xp, yp, 4);
+			if (P->bfn[GMT_NAN].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = 0.0;
+				PSL_settransparencies (PSL, transp);
+			}
 			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, -90.0, PSL_TC, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle at top */
@@ -1463,7 +1589,15 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (Ctrl->M.active) rgb[0] = rgb[1] = rgb[2] = gmt_M_yiq (rgb);
 				PSL_setfill (PSL, rgb, 0);
 			}
+			if (P->bfn[id].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = P->bfn[id].rgb[3];
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotpolygon (PSL, xp, yp, nv);
+			if (P->bfn[id].rgb[3] > 0.0) {
+				transp[GMT_FILL_TRANSP] = 0.0;
+				PSL_settransparencies (PSL, transp);
+			}
 			PSL_plotline (PSL, xp, yp, nv, p_arg);
 		}
 
@@ -1643,7 +1777,7 @@ EXTERN_MSC int gmtlib_parse_B_option (struct GMT_CTRL *GMT, char *in);
 EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	/* High-level function that implements the psscale task */
 	int error = 0;
-	unsigned int i;
+	unsigned int i, tr_status;
 
 	char text[GMT_LEN256] = {""};
 
@@ -1683,6 +1817,26 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 	if ((P = GMT_Read_Data (API, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->C.file, NULL)) == NULL) {
 		Return (API->error);
 	}
+	if ((tr_status = psscale_cpt_transparency (GMT, P))) {	/* Learn if there are transparencies in the CPT */
+		if (tr_status == 1) {
+			GMT_Report (API, GMT_MSG_DEBUG, "Entire colorbar will have transparency applied: %g %%\n", 100.0 * P->data[0].rgb_low[3]);
+		}
+		if ((tr_status & 2)) {	/* Variable transparency between slices */
+			if (P->is_continuous) {
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot honor variable transparency and continuous color changes - transparency ignored\n");
+				tr_status = 0;
+			}
+			else if (Ctrl->N.mode == N_FAVOR_IMAGE) {
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot honor variable transparency and select -N[<dpi>), so -N ignored\n");
+				Ctrl->N.mode = N_FAVOR_POLY;
+			}
+		}
+		if (tr_status & 4) {
+			GMT_Report (API, GMT_MSG_WARNING, "Cannot honor variable transparency within a CPT slice - transparency ignored\n");
+				tr_status = 0;
+		}
+	}
+
 	if (Ctrl->D.extend && P->is_wrapping) {
 		GMT_Report (API, GMT_MSG_ERROR, "Cannot use +e for cycling color bar; +e deactivated\n");
 		Ctrl->D.extend = false;
@@ -1765,6 +1919,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		if (Ctrl->D.dim[GMT_X] == 0.0) {	/* Automatically set scale width */
 			Ctrl->D.dim[GMT_X] = PSSCALE_L_SCALE * (Ctrl->D.horizontal ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI]);
 			Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * Ctrl->D.dim[GMT_X];
+			if (Ctrl->D.reverse) Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 			if (Ctrl->Q.active && GMT->current.map.frame.draw)
 				sprintf (text, "X%gil/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 			else if (P->mode & GMT_CPT_TIME)	/* Need time axis */
@@ -1841,7 +1996,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 	GMT->current.map.frame.side[S_SIDE] = GMT->current.map.frame.side[E_SIDE] = GMT->current.map.frame.side[N_SIDE] = GMT->current.map.frame.side[W_SIDE] = GMT_AXIS_ALL;
 
-	psscale_draw_colorbar (GMT, Ctrl, P, z_width);
+	psscale_draw_colorbar (GMT, Ctrl, P, z_width, tr_status);
 
 	PSL_setorigin (PSL, -Ctrl->D.refpoint->x, -Ctrl->D.refpoint->y, 0.0, PSL_FWD);
 	gmt_plane_perspective (GMT, -1, 0.0);

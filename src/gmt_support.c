@@ -1010,7 +1010,7 @@ GMT_LOCAL int gmtsupport_getpenwidth (struct GMT_CTRL *GMT, char *line, struct G
 }
 
 /*! . */
-GMT_LOCAL int gmtsupport_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
+int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P) {
 	unsigned int i, n, pos, unit = GMT_PT, n_dash = 0;
 	double width;
 	char tmp[GMT_PEN_LEN] = {""}, string[GMT_BUFSIZ] = {""}, ptr[GMT_BUFSIZ] = {""};
@@ -1020,6 +1020,10 @@ GMT_LOCAL int gmtsupport_getpenstyle (struct GMT_CTRL *GMT, char *line, struct G
 		P->offset = 0.0;
 		P->style[0] = '\0';
 		 return (GMT_NOERROR);
+	}
+	if (gmt_M_is_dnan (P->width))  {	/* Must save style as given since we do not know the width yet */
+		strncpy (P->style, line, GMT_PEN_LEN);	/* We will update style in gmt_set_undefined_defaults. */
+		return (GMT_NOERROR);
 	}
 	if (!strncmp (line, "dashdot", 7U)) strcpy (line, "-.");	/* Accept "dashdot*" to mean -. */
 	if (!strncmp (line, "dotdash", 7U)) strcpy (line, ".-");	/* Accept "dotdash*" to mean .- */
@@ -1048,6 +1052,7 @@ GMT_LOCAL int gmtsupport_getpenstyle (struct GMT_CTRL *GMT, char *line, struct G
 		unit = gmtlib_unit_lookup (GMT, line[n], GMT->current.setting.proj_length_unit);
 
 	width = (P->width < GMT_CONV4_LIMIT) ? GMT_PENWIDTH : P->width;
+
 	if (isdigit ((int)line[0])) {	/* Specified numeric pattern will start with an integer */
 		unsigned int c_pos;
 
@@ -1093,6 +1098,11 @@ GMT_LOCAL int gmtsupport_getpenstyle (struct GMT_CTRL *GMT, char *line, struct G
 				snprintf (tmp, GMT_PEN_LEN, "%g %g ", width, 4.0 * width);
 				strcat (P->style, tmp);
 				n_dash += 2;
+			}
+			else if (line[i] == ':') { 	/* :<phase> setting given at the end */
+				i++;	/* Advance past the colon */
+				P->offset = atof (line) * GMT->session.u2u[unit][GMT_PT];
+				i = strlen (line) - 1;	/* So that when i++ happens at the end of the for loop we will exit */
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Pen attributes not using just - and . for dashes and dots. Offending character --> %c\n", line[i]);
@@ -5522,7 +5532,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_resample_data_cartesian (struct GMT_CT
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode) {
+GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Din is a data set with at least two columns (lon/lat);
 	 * it can contain any number of tables and segments.
 	 * cross_length is the desired length of cross-profiles, in meters.
@@ -5532,7 +5542,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	 * have 4 + n_cols columns, where the first 4 are x,y,d,az.
 	 */
 
-	int k, ndig, sdig, n_half_cross, k_start, k_stop;
+	int k, ndig, sdig, n_cross, n_half_cross, k_start, k_stop;
 
 	unsigned int ii, np_cross;
 
@@ -5545,8 +5555,8 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 
 	char buffer[GMT_BUFSIZ] = {""}, seg_name[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 
-	double dist_inc, cross_half_width, d_shift, orientation, sign = 1.0, az_cross, x, y;
-	double dist_across_seg, angle_radians, across_ds_radians;
+	double dist_inc, d_shift, orientation, sign = 1.0, az_cross, x, y;
+	double dist_across_seg, angle_radians, across_ds_radians, ds_phase = 0.0, n_cross_float;
 	double Rot[3][3], Rot0[3][3], E[3], P[3], L[3], R[3], T[3], X[3];
 
 	struct GMT_DATASET *Xout = NULL;
@@ -5562,12 +5572,20 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 
 	/* Get resampling step size and zone width in degrees */
 
-	cross_length *= 0.5;	/* Now half-length in user's units */
-	cross_half_width = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters */
-	n_half_cross = irint (cross_length / across_ds);	/* Half-width of points in a cross profile */
-	across_ds_radians = D2R * (cross_half_width / GMT->current.proj.DIST_M_PR_DEG) / n_half_cross;	/* Angular change from point to point */
+	n_cross_float = cross_length / across_ds;	/* Number of points in a cross profile may be a fraction if badly chosen increments */
+	n_cross = irint (n_cross_float);	/* Number of integer points in a cross profile */
+	if (fabs (n_cross_float - n_cross) > (0.05 * across_ds))	/* Use a 5% slop */
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your crossprofile length (%g) is not an integer multiple of your along-profile-spacing (%g); %g will be rounded to nearest integer %d\n", cross_length, across_ds, n_cross_float, n_cross);
+	cross_length = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters [or degrees] */
+	n_cross++;	/* Since one more node than increments */
+	n_half_cross = (n_cross % 2) ? (n_cross - 1) / 2 : n_cross / 2;	/* Half-width of points in a cross profile depending on odd/even */
+	if (unit && strchr (GMT_ARC_UNITS, unit))	/* Gave increments in arc units (already in degrees at this point) */
+		across_ds_radians = D2R * cross_length / (n_cross - 1);	/* Angular change from point to point */
+	else	/* Must convert distances to degrees */
+		across_ds_radians = D2R * (cross_length / GMT->current.proj.DIST_M_PR_DEG) / (n_cross - 1);	/* Angular change from point to point */
+	if ((n_cross % 2) == 0) ds_phase = 0.5;
 	k_start = -n_half_cross;
-	k_stop = n_half_cross;
+	k_stop = k_start + n_cross - 1;
 	if (mode & GMT_LEFT_ONLY)	/* Only want left side of profiles */
 		k_stop = 0;
 	else if (mode & GMT_RIGHT_ONLY)	/* Only want right side of profiles */
@@ -5617,7 +5635,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 				dist_across_seg = 0.0;
 				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np_cross, n_tot_cols, NULL, NULL);
 				for (k = k_start, ii = 0; k <= k_stop; k++, ii++) {	/* For each point along normal to FZ */
-					angle_radians = sign * k * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
+					angle_radians = sign * (k + ds_phase) * across_ds_radians;		/* The required rotation for this point relative to FZ origin */
 					gmt_M_memcpy (Rot, Rot0, 9, double);			/* Get a copy of the "0-angle" rotation matrix */
 					gmtlib_load_rot_matrix (angle_radians, Rot, E);		/* Build the actual rotation matrix for this angle */
 					gmt_matrix_vect_mult (GMT, 3U, Rot, P, X);				/* Rotate the current FZ point along the normal */
@@ -5676,7 +5694,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode) {
+GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Din is a data set with at least two columns (x,y);
 	 * it can contain any number of tables and segments.
 	 * cross_length is the desired length of cross-profiles, in Cartesian units.
@@ -5701,6 +5719,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 	struct GMT_DATASET *Xout = NULL;
 	struct GMT_DATATABLE *Tin = NULL, *Tout = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
+	gmt_M_unused (unit);	/* For now */
 
 	if (Din->n_columns < 2) {	/* Trouble */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Dataset does not have at least 2 columns with coordinates\n");
@@ -6751,7 +6770,8 @@ GMT_LOCAL bool gmtsupport_is_pen (struct GMT_CTRL *GMT, char *line) {
 /*! . */
 bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 	int i, n;
-	char width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
+	bool set_NaN = false;
+	char def_width[GMT_LEN256] = {""}, width[GMT_LEN256] = {""}, color[GMT_LEN256] = {""}, style[GMT_LEN256] = {""}, line[GMT_BUFSIZ] = {""}, *c = NULL;
 
 	if (!buffer || !buffer[0]) return (false);		/* Nothing given: return silently, leaving P in tact */
 	assert (P);	/* P needs to not point to NULL */
@@ -6881,6 +6901,12 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 
 	/* Processes pen specifications given as [width[,<color>[,<style>[t<unit>]]][@<transparency>] */
 
+	if (gmt_M_is_dnan (P->width)) {	/* Worry in case no width is given */
+		strcpy (def_width, "0");	/* To avoid any parsing errors */
+		set_NaN = true;	/* Flag this specific case */
+	}
+	else	/* Default to current pen width if pen width is not given */
+		sprintf (def_width, "%.16gp", P->width);
 	for (i = 0; line[i]; i++) if (line[i] == ',') line[i] = ' ';	/* Replace , with space */
 	n = sscanf (line, "%s %s %s", width, color, style);
 	for (i = 0; line[i]; i++) if (line[i] == ' ') line[i] = ',';	/* Replace space with , */
@@ -6888,42 +6914,44 @@ bool gmt_getpen (struct GMT_CTRL *GMT, char *buffer, struct GMT_PEN *P) {
 		if (line[0] == ',') {	/* ,color,style got stored in width,color */
 			strncpy (style, color, GMT_LEN256-1);
 			strncpy (color, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		else if (gmtsupport_is_penstyle (color)) {	/* style got stored in color */
 			strncpy (style, color, GMT_LEN256-1);
 			color[0] = '\0';
 			if (gmtlib_is_color (GMT, width)) {	/* color got stored in width */
 				strncpy (color, width, GMT_LEN256-1);
-				width[0] = '\0';
+				strncpy (width, def_width, GMT_LEN256-1);
 			}
 		}
+		else	/* Means we got width, color */
+			set_NaN = false;
 	}
 	else if (n == 1) {	/* Could be width or color or style */
 		if (line[0] == ',' && line[1] == ',') {	/* ,,style got stored in width */
 			strncpy (style, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		else if (line[0] == ',') {		/* ,color got stored in width */
 			strncpy (color, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		else if (gmtsupport_is_penstyle (width)) {	/* style got stored in width */
 			strncpy (style, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
 		else if (gmtlib_is_color (GMT, width)) {	/* color got stored in width */
 			strncpy (color, width, GMT_LEN256-1);
-			width[0] = '\0';
+			strncpy (width, def_width, GMT_LEN256-1);
 		}
-		/* Unstated else branch means we got width stored correctly */
+		else	/* Means we got width */
+			set_NaN = false;
 	}
-	/* Unstated else branch means we got width stored correctly */
-
 	/* Assign width, color, style if given */
 	if (gmtsupport_getpenwidth (GMT, width, P)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen width (%s) not recognized. Using default.\n", width);
 	if (gmt_getrgb (GMT, color, P->rgb)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen color (%s) not recognized. Using default.\n", color);
-	if (gmtsupport_getpenstyle (GMT, style, P)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen style (%s) not recognized. Using default.\n", style);
+	if (set_NaN) P->width = GMT->session.d_NaN;	/* This will prevent gmtlib_getpenstyle to set final style since that needs actual width [see gmt_set_undefined_defaults] */
+	if (gmtlib_getpenstyle (GMT, style, P)) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Representation of pen style (%s) not recognized. Using default.\n", style);
 
 	return (false);
 }
@@ -7604,14 +7632,44 @@ unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALET
 	return GMT_NOERROR;
 }
 
-char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *label, unsigned int n) {
-	/* Generate categorical labels for n categories from the label magic argument */
-	unsigned int k = 0;
-	char **Clabel = gmt_M_memory (GMT, NULL, n, char *);
+char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *in_label, unsigned int n) {
+	/* Generate categorical labels for n categories from the label magic argument.
+	 * Note: If n = 12 and label = M then we create month names.
+	 * Note: If n = 7 and label = D then we create day names
+	 */
+	unsigned int k = 0, kind = 0;
+	bool upper = false;
+	char all_items[12*GMT_LEN16] = {""};
+	char *label = NULL, **Clabel = gmt_M_memory (GMT, NULL, n, char *);
 
+	if (n == 12 && !strcmp (in_label, "M")) {	/* Create a month-list from current defaults */
+		gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
+		strcpy (all_items, GMT->current.language.month_name[kind][0]);
+		for (k = 1; k < 12; k++) {	/* Append comma-separated list of months in current language, format */
+			strcat (all_items, ",");
+			strcat (all_items, GMT->current.language.month_name[kind][k]);
+		}
+		if (upper) gmt_str_toupper (all_items);
+		label = all_items;
+	}
+	else if (n == 7 && !strcmp (in_label, "D")) {	/* Create a weekday-list from current defaults */
+		unsigned int day;
+		gmtlib_set_case_and_kind (GMT, GMT->current.setting.format_time[GMT_PRIMARY], &upper, &kind);
+		day = (GMT->current.setting.time_week_start + GMT_WEEK2DAY_I) % GMT_WEEK2DAY_I;	/* Wrap around */
+		strcpy (all_items, GMT->current.language.day_name[kind][day]);
+		for (k = 1; k < 7; k++) {	/* Append comma-separated list of weekdays in current language, format */
+			day = (k + GMT->current.setting.time_week_start + GMT_WEEK2DAY_I) % GMT_WEEK2DAY_I;	/* Wrap around */
+			strcat (all_items, ",");
+			strcat (all_items, GMT->current.language.day_name[kind][day]);
+		}
+		if (upper) gmt_str_toupper (all_items);
+		label = all_items;
+	}
+	else 	/* Pass what we were given as is */
+		label = in_label;
 	if (strchr (label, ',')) {	/* Got list of category names */
 		char *word = NULL, *trail = NULL, *orig = strdup (label);
-		trail = orig;
+		trail = orig;	k = 0;
 		while ((word = strsep (&trail, ",")) != NULL && k < n) {
 			if (*word != '\0')	/* Skip empty strings */
 				Clabel[k] = strdup (word);
@@ -13539,7 +13597,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	P->radius = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_RADIUS;	/* 6 pt */
 	gmt_init_fill (GMT, &P->fill, -1.0, -1.0, -1.0);			/* Default is no fill unless specified */
 	gmt_init_fill (GMT, &P->sfill, gmt_M_is255 (127), gmt_M_is255 (127), gmt_M_is255 (127));	/* Default if gray shade is used */
-	P->pen1 = GMT->current.setting.map_frame_pen;			/* Heavier pen for main outline */
+	(void) gmt_getpen (GMT, "thicker,black", &P->pen1);			/* Heavier pen for main outline */
 	P->pen2 = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
 	P->debug_pen = GMT->current.setting.map_default_pen;			/* Thinner pen for optional inner outline */
 	P->gap = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_GAP;	/* Default is 2p */
@@ -14952,10 +15010,11 @@ bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_
 }
 
 /*! . */
-int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord) {
+int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_PLOT_CALCLOCK *P, char *format, struct GMT_PLOT_AXIS_ITEM *T, double coord, double delta) {
 	/* Returns the formatted annotation string for the non-geographic axes */
 	bool upper = false;
-	unsigned int kind = 0, code;
+	unsigned int kind = 0, axis, code;
+	enum gmt_col_enum type;
 	int ival;
 
 	switch (GMT->current.map.frame.axis[T->parent].type) {
@@ -14978,7 +15037,17 @@ int gmtlib_get_coordinate_label (struct GMT_CTRL *GMT, char *string, struct GMT_
 					if (upper) gmt_str_toupper (string);
 					break;
 				default:
-					gmt_sprintf_float (GMT, string, format, coord);
+					if ((type = gmt_get_column_type (GMT, GMT_IN, T->parent)) & GMT_IS_GEO) {	/* Actually a geographic coordinate */
+						bool do_minutes = false, do_seconds = false;
+						if (!gmt_M_is_dnan (delta)) {
+							do_minutes = (fabs (fmod (delta, 1.0)) > GMT_CONV4_LIMIT);
+							do_seconds = gmtlib_set_do_seconds (GMT, delta);
+						}
+						axis = (type & GMT_IS_LON) ? GMT_X : GMT_Y;
+						gmtlib_get_annot_label (GMT, coord, string, do_minutes, do_seconds, true, axis, GMT->current.map.is_world);
+					}
+					else
+						gmt_sprintf_float (GMT, string, format, coord);
 					break;
 			}
 			break;
@@ -15778,13 +15847,13 @@ struct GMT_DATASET * gmt_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 }
 
 /*! . */
-struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode) {
+struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Call either the spherical or Cartesian version */
 	struct GMT_DATASET *D = NULL;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, mode);
+		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, mode, unit);
 	else
-		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, mode);
+		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, mode, unit);
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
@@ -17023,13 +17092,19 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	/* 1b. Check if argument is a local file */
+	/* 1b. Check if argument is a memory file */
+	if (gmt_M_file_is_memory (argument)) {	/* Yep */
+		T->file = strdup (argument);
+		return (GMT_NOERROR);
+	}
+
+	/* 1c. Check if argument is a local file */
 	if (!gmt_access (GMT, argument, F_OK)) {	/* File exists */
 		T->file = strdup (argument);
 		return (GMT_NOERROR);
 	}
 
-	/* 1c. Check if we are given a list t1,t2,t3,... */
+	/* 1d. Check if we are given a list t1,t2,t3,... */
 	if (strchr (argument, ',')) {
 		T->list = strdup (argument);
 		if (strchr (argument, 'T')) {	/* Gave list of absolute times */

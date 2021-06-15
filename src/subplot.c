@@ -95,10 +95,11 @@ struct SUBPLOT_CTRL {
 		unsigned int mode;	/* SUBPLOT_BEGIN|SUBPLOT_SET|SUBPLOT_END*/
 		int row, col;		/* Current (row,col) subplot */
 	} In;
-	struct SUBPLOT_A {	/* -A[<letter>|<number>][+c<clearance>][+g<fill>][+j|J<pos>][+o<offset>][+p<pen>][+r|R][+v] */
+	struct SUBPLOT_A {	/* -A[<letter>|<number>][+c<clearance>][+g<fill>][+j|J<pos>][+o<offset>][+p<pen>][+r|R][+s[<dx>/<dy>/][<shade>]][+v] */
 		bool active;			/* Want to plot subplot tags */
 		char format[GMT_LEN128];	/* Format for plotting tag (or constant string when done via subplot set) */
 		char fill[GMT_LEN64];		/* Color fill for optional rectangle behind the tag [none] */
+		char shade[GMT_LEN64];		/* Color fill for optional shade behind rectangle behind the tag [none] */
 		char pen[GMT_LEN64];		/* Outline pen for optional rectangle behind the tag [none] */
 		unsigned int mode;		/* Either letter (0) of number (1) tag */
 		unsigned int nstart;		/* Offset count number for first subplot (0) */
@@ -108,6 +109,7 @@ struct SUBPLOT_CTRL {
 		char placement[3];		/* Placement of tag [TL] */
 		char justify[3];		/* Justification of tag [TL] */
 		double off[2];			/* Offset from placement location [20% of font size] */
+		double soff[2];			/* Shade offset from tag location [2p/-2p] */
 		double clearance[2];		/* Padding around text for rectangle behind the tag [15%] */
 	} A;
 	struct SUBPLOT_C {	/* -C[side]<clearance>  */
@@ -117,11 +119,12 @@ struct SUBPLOT_CTRL {
 	struct SUBPLOT_D {	/* -D determine correct dimensions but do not draw frames and annotations  */
 		bool active;
 	} D;
-	struct SUBPLOT_F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+p<pen>][+g<fill>][+c<clearance>][+d][+w<pen>] */
+	struct SUBPLOT_F {	/* -F[f|s][<width>/<height>][+f<wfracs/hfracs>][+af|s][+c<clearance>][+d][+g<fill>][+p<pen>][+w<pen>] */
 		bool active;
 		bool lines;
-		bool debug;		/* Draw red faint lines to illustrate the result of space partitioning */
+		bool debug;		/* Draw red faint lines to illustrate the result of space partitioning (+d) */
 		bool reset_h;		/* True when height was given as 0 and we need to update based on what was learned */
+		bool panel_scale;	/* Auto-scale fonts/pens for average subplot size instead of entire figure [default is +af] */
 		unsigned int mode;	/* Whether dimensions given are for figure or individual subplots */
 		double dim[2];		/* Figure dimension (0/0 if subplot dimensions were given) */
 		double *w, *h;		/* Arrays with variable (or constant) normalized subplot widths and heights fractions */
@@ -166,7 +169,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	sprintf (C->A.justify, "TL");
 	C->A.off[GMT_X] = C->A.off[GMT_Y] = 0.01 * GMT_TEXT_OFFSET * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH; /* 20% */
 	C->A.clearance[GMT_X] = C->A.clearance[GMT_Y] = 0.01 * GMT_TEXT_CLEARANCE * GMT->current.setting.font_tag.size / PSL_POINTS_PER_INCH;	/* 15% */
-	C->A.fill[0] = C->A.pen[0] = '-';	/* No fill or outline */
+	C->A.fill[0] = C->A.shade[0] = C->A.pen[0] = '-';	/* No fills or outline */
 	C->F.fill[0] = C->F.pen[0] = '-';	/* No fill or outline */
 	for (unsigned int k = 0; k < 4; k++) C->M.margin[k] = 0.5 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Split annot font across two sides */
 	return (C);
@@ -189,7 +192,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+af|s][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>] [-D] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
 	 	GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C[<side>]<clearance>] [%s]\n", name, GMT_V_OPT);
@@ -208,12 +211,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   list of widths and/or heights.  A single value means constant width or height.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   As an option the composite figure rectangle may be extended, drawn or filled.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This is most useful if you are not plotting any map frames in the subplots.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +as to scale fonts/pens to average panel size [Default (+af) scales to subplot size].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for extending the figure rectangle outwards [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the figure rectangle with <fill> color [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the figure rectangle using selected pen [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to draw dividing lines between interior subplots using selected pen [no lines].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each subplot.  Append either a number or letter [a].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each subplot. Append either a number or letter [a].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the tag of the top-left subplot and others follow sequentially.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Surround number or letter by parentheses on any side if these should be typeset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j|J<refpoint> to specify where the tag should be plotted in the subplot [TL].\n");
@@ -224,6 +228,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset tag in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase [arabic].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>][/<shade>] to plot a shadow behind the tag panel [Default is 2p/-2p/gray50].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v to number down columns [subplots are numbered across rows].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a gap of dimension <clearance> to the <side> (w|e|s|n) of the plottable subplot.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
@@ -363,8 +368,8 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					}
 					if (c) {	/* Gave modifiers so we must parse those now */
 						c[0] = '+';	/* Restore modifiers */
-						/* Modifiers are [+c<dx/dy>][+g<fill>][+j|J<justify>][+o<dx/dy>][+p<pen>][+r|R][+v] */
-						if (gmt_validate_modifiers (GMT, opt->arg, 'A', "cgjJoprRv", GMT_MSG_ERROR)) n_errors++;
+						/* Modifiers are [+c<dx/dy>][+g<fill>][+j|J<justify>][+o<dx/dy>][+p<pen>][+r|R][+s[<dx>/<dy>/][<shade>]][+v] */
+						if (gmt_validate_modifiers (GMT, opt->arg, 'A', "cgjJoprsRv", GMT_MSG_ERROR)) n_errors++;
 						if (gmt_get_modifier (opt->arg, 'j', Ctrl->A.placement)) {	/* Inside placement */
 							gmt_just_validate (GMT, Ctrl->A.placement, "TL");
 							strncpy (Ctrl->A.justify, Ctrl->A.placement, 2);
@@ -389,6 +394,24 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 							Ctrl->A.roman = GMT_IS_ROMAN_LCASE;
 						else if (gmt_get_modifier (opt->arg, 'R', string))	/* Want upper-case roman numbering */
 							Ctrl->A.roman = GMT_IS_ROMAN_UCASE;
+						if (gmt_get_modifier (opt->arg, 's', string)) {	/* Want shading behind tag rectangle */
+							char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""};
+							int ns = sscanf (string, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
+							Ctrl->A.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_TAG_CLEARANCE;	/* Default is (2p,-2p) */
+							Ctrl->A.soff[GMT_Y] = -Ctrl->A.soff[GMT_X];
+							strcpy (Ctrl->A.shade, "gray50");	/* Default gray shade */
+							if (ns == 1)	/* Just got a new shade */
+								strcpy (Ctrl->A.shade, txt_a);
+							else if (ns == 2) {	/* Just got a new shade offset */
+								if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->A.soff) < 0) n_errors++;
+							}
+							else if (ns == 3) {	/* Got offset and shade */
+								Ctrl->A.soff[GMT_X] = gmt_M_to_inch (GMT, txt_a);
+								Ctrl->A.soff[GMT_Y] = gmt_M_to_inch (GMT, txt_b);
+								strcpy (Ctrl->A.shade, txt_c);
+							} /* else we got nothing and use the defaults set initially */
+							if (gmt_getfill (GMT, Ctrl->A.shade, &fill)) n_errors++;
+						}
 						if (gmt_get_modifier (opt->arg, 'v', string))	/* Tag order is vertical down columns */
 							Ctrl->A.way = GMT_IS_COL_FORMAT;
 					}
@@ -528,7 +551,9 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				}
 				if (c) {	/* Gave paint/pen/debug modifiers */
 					c[0] = '+';	/* Restore modifiers */
-					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "cdgpfw", GMT_MSG_ERROR)) n_errors++;
+					if (gmt_validate_modifiers (GMT, opt->arg, 'F', "acdgpfw", GMT_MSG_ERROR)) n_errors++;
+					if (gmt_get_modifier (opt->arg, 'a', string) && string[0] == 's')
+						Ctrl->F.panel_scale = true;
 					if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance for rectangle */
 						if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->F.clearance) < 0) n_errors++;
 					if (gmt_get_modifier (opt->arg, 'g', Ctrl->F.fill) && Ctrl->F.fill[0]) {
@@ -824,7 +849,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Determine and save subplot attributes once */
-		int RP_id, RG_id;
+		int RP_id, RG_id, div_x = 1, div_y = 1;
 		unsigned int row, col, k, panel, nx, ny, factor, last_row, last_col, *Lx = NULL, *Ly = NULL;
 		uint64_t seg;
 		double gmean_dim, x, y, width = 0.0, height = 0.0, tick_height, annot_height, label_height, title_height, y_header_off = 0.0;
@@ -837,8 +862,11 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 
 		/* Need geometric mean dimension of subplot to calculate the undefined quantities */
 
-		if (Ctrl->F.mode == SUBPLOT_FIGURE)	/* Got figure dimensions */
-			gmean_dim = sqrt (Ctrl->F.dim[GMT_X] * Ctrl->F.dim[GMT_Y]);
+		if (Ctrl->F.panel_scale) {	/* Want the average panel geometric mean dimension */
+			div_x = Ctrl->N.dim[GMT_X];	div_y = Ctrl->N.dim[GMT_Y];
+		}
+		if (Ctrl->F.mode == SUBPLOT_FIGURE)	/* Got figure dimensions, approximate panel size */
+			gmean_dim = sqrt ((Ctrl->F.dim[GMT_X] / div_x) * (Ctrl->F.dim[GMT_Y] / div_y));
 		else {	/* Got panel dimension(s), compute total figure dimensions */
 			if (Ctrl->F.reset_h) {	/* Update h based on map aspect ratio and width of a constant column */
 				for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) Ctrl->F.h[row] = Ctrl->F.w[0] * (GMT->current.map.height / GMT->current.map.width);
@@ -846,10 +874,13 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 			/* Sum up individual widths or heights and add the fluff space */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++) width  += Ctrl->F.w[col];
 			for (row = 0; row < Ctrl->N.dim[GMT_Y]; row++) height += Ctrl->F.h[row];
-			gmean_dim = sqrt (width * height);
+			gmean_dim = sqrt ((width / div_x) * (height / div_y));
 			width = height = 0.0;	/* Reset */
 		}
-		GMT_Report (API, GMT_MSG_DEBUG, "Subplot max panel dimension estimated: %g inch\n", gmean_dim);
+		if (Ctrl->F.panel_scale)
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot geometric average panel dimension for font/pen auto-scaling: %g inch\n", gmean_dim);
+		else
+			GMT_Report (API, GMT_MSG_DEBUG, "Subplot geometric average figure dimension for font/pen auto-scaling: %g inch\n", gmean_dim);
 
 		/* We must change any undefined defaults given this representative dimension now so that font sizes and dimensions
 		 * can be written to this subplot's gmt.conf file and thus give the same settings for all panels. The gmt.conf is
@@ -1214,7 +1245,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		if (GMT->common.J.active && GMT->current.proj.projection == GMT_LINEAR)	/* Write axes directions for Cartesian plots as +1 or -1 */
 			fprintf (fp, "# DIRECTION: %d %d\n", 2*GMT->current.proj.xyz_pos[GMT_X]-1, 2*GMT->current.proj.xyz_pos[GMT_Y]-1);
 		/* Write header record */
-		fprintf (fp, "#subplot\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_clearx\ttag_cleary\ttag_pos\ttag_just\ttag_fill\ttag_pen\tBframe\tBx\tBy\tAx\tAy\n");
+		fprintf (fp, "#subplot\trow\tcol\tnrow\tncol\tx0\ty0\tw\th\ttag\ttag_dx\ttag_dy\ttag_clearx\ttag_cleary\ttag_pos\ttag_just\ttag_fill\ttag_pen\tshade_offx\tshade_offy\tshade\tBframe\tBx\tBy\tAx\tAy\n");
 		for (row = panel = 0; row < Ctrl->N.dim[GMT_Y]; row++) {	/* For each row of subplots */
 			for (col = 0; col < Ctrl->N.dim[GMT_X]; col++, panel++) {	/* For each col of subplots */
 				k = (Ctrl->A.way == GMT_IS_COL_FORMAT) ? col * Ctrl->N.dim[GMT_Y] + row : row * Ctrl->N.dim[GMT_X] + col;
@@ -1232,10 +1263,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 					else	/* A character, perhaps offset from a) */
 						fprintf (fp, Ctrl->A.format, Ctrl->A.cstart + k);
 					fprintf (fp, "\t%g\t%g\t%g\t%g\t%s\t%s", Ctrl->A.off[GMT_X], Ctrl->A.off[GMT_Y], Ctrl->A.clearance[GMT_X], Ctrl->A.clearance[GMT_Y], Ctrl->A.placement, Ctrl->A.justify);
-					fprintf (fp, "\t%s\t%s", Ctrl->A.fill, Ctrl->A.pen);
+					fprintf (fp, "\t%s\t%s\t%g\t%g\t%s", Ctrl->A.fill, Ctrl->A.pen, Ctrl->A.soff[GMT_X], Ctrl->A.soff[GMT_Y], Ctrl->A.shade);
 				}
 				else	/* No subplot tags, write default fillers */
-					fprintf (fp, "-\t0\t0\t0\t0\tBL\tBL\t-\t-");
+					fprintf (fp, "-\t0\t0\t0\t0\tBL\tBL\t-\t-\t0\t0\t-");
 				/* Now the four -B settings items placed between GMT_ASCII_GS characters since there may be spaces in them */
 				if (no_frame || Ctrl->D.active)	/* Default filler since we don't want any frames */
 					fprintf (fp, "\t%c+n%c%c%c%c%c\n", GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS, GMT_ASCII_GS);	/* Pass -B+n only */

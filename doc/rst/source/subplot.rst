@@ -18,7 +18,7 @@ Synopsis (begin mode)
 .. include:: common_SYN_OPTs.rst_
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
-|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+|-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
 [ |-A|\ *autolabel* ]
 [ |-C|\ [*side*]\ *clearance* ]
 [ |-D| ]
@@ -51,7 +51,7 @@ Required Arguments (begin mode)
 
 .. _-F:
 
-**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
+**-F**\ [**f**\|\ **s**]\ *width(s)*\ /*height(s)*\ \ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
     Specify the dimensions of the figure.  There are two different ways to do this:
     (**f**) Specify overall figure dimensions or (**s**) specify the dimensions of
     a single subplot.
@@ -81,13 +81,15 @@ Required Arguments (begin mode)
     Optionally, you may draw the outline (**+p**\ *pen*) or paint (**+g**\ *fill*\) the figure rectangle behind the
     subplots, add dividing lines between panels (**+w**\ *pen*), and even expand it via **+c**.  These are most
     useful if you supply **-B+n** to **subplot begin**, meaning no ticks or annotations will take place in the subplots.
+    By default (**+af**), we auto-scale the fonts and pens based on the geometric mean dimension of the entire figure.
+    Append **+as** to instead determine the scaling from the geometric mean subplot dimension.
 
 Optional Arguments (begin mode)
 -------------------------------
 
 .. _-A:
 
-**-A**\ [*autolabel*][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+j**\|\ **J**\ *refpoint*][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+r**\|\ **R**][**+v**]
+**-A**\ [*autolabel*][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+j**\|\ **J**\ *refpoint*][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+r**\|\ **R**][**+s**\ [[*dx*/*dy*][/*shade*]]][**+v**]
     Specify automatic tagging of each subplot.  Append either a number or letter [a].
     This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
@@ -103,6 +105,9 @@ Optional Arguments (begin mode)
     Append **+p**\ *pen* to draw the outline of the tag's text box using selected *pen* [no outline].
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
+    Append **+s** to draw an offset background shaded rectangle. Here, *dx*/*dy* indicates the
+    shift relative to the tag box [default is **2p**\ /**-2p**] and *shade* sets the
+    fill style to use for shading [default is **gray50**].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
 
 .. |Add_-B| replace:: |Add_-B_links|

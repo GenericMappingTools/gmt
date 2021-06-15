@@ -5838,7 +5838,7 @@ GMT_LOCAL bool gmtmap_near_a_point_cartesian (struct GMT_CTRL *GMT, double x, do
 GMT_LOCAL bool gmtmap_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, double lat, uint64_t seg, struct GMT_DATASEGMENT *S, unsigned int return_mindist, double *dist_min, double *x_near, double *y_near) {
 	bool perpendicular_only = false, interior, within;
 	uint64_t row0, row1;
-	double edge, dx, dy, xc, yc, s, s_inv, d, dist_AB, fraction;
+	double edge, dx, dy, xc, yc, s, s_inv, d, dist_AB, fraction, S_dist, S_dist2;
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	/* gmtmap_near_a_line_cartesian works in one of two modes, depending on return_mindist.
 	   Since return_mindist is composed of two settings we must first set
@@ -5869,8 +5869,12 @@ GMT_LOCAL bool gmtmap_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, d
 
 	if (S->n_rows <= 0) return (false);	/* empty; skip */
 
-	if (return_mindist) SH->dist = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
-
+	if (return_mindist)
+		S_dist = S_dist2 = 0.0;	/* Explicitly set dist to zero so the shortest distance can be found */
+	else {
+		S_dist = SH->dist;
+		S_dist2 = S_dist * S_dist;	/* Since we compute distances squared for Cartesian cases */
+	}
 	/* Find nearest point on this line */
 
 	for (row0 = 0; row0 < S->n_rows; row0++) {	/* loop over nodes on current line */
@@ -5881,7 +5885,7 @@ GMT_LOCAL bool gmtmap_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, d
 			else if (return_mindist == 3) { *x_near = (double)seg; *y_near = (double)row0;}		/* Instead update (seg, pt) of nearest point on the line */
 		}
 		interior = (row0 > 0 && row0 < (S->n_rows - 1));	/* Only false if we are processing one of the end points */
-		if (d <= SH->dist && (interior || !perpendicular_only)) return (true);		/* Node inside the critical distance; we are done */
+		if (d <= S_dist2 && (interior || !perpendicular_only)) return (true);		/* Node inside the critical distance; we are done */
 	}
 
 	if (S->n_rows < 2) return (false);	/* 1-point "line" is a point; skip segment check */
@@ -5893,13 +5897,13 @@ GMT_LOCAL bool gmtmap_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, d
 
 	for (row0 = 0, row1 = 1, within = false; row1 < S->n_rows; row0++, row1++) {	/* loop over straight segments on current line */
 		if (!return_mindist) {
-			edge = lon - SH->dist;
+			edge = lon - S_dist;
 			if (S->data[GMT_X][row0] < edge && S->data[GMT_X][row1] < edge) continue;	/* Left of square */
-			edge = lon + SH->dist;
+			edge = lon + S_dist;
 			if (S->data[GMT_X][row0] > edge && S->data[GMT_X][row1] > edge) continue;	/* Right of square */
-			edge = lat - SH->dist;
+			edge = lat - S_dist;
 			if (S->data[GMT_Y][row0] < edge && S->data[GMT_Y][row1] < edge) continue;	/* Below square */
-			edge = lat + SH->dist;
+			edge = lat + S_dist;
 			if (S->data[GMT_Y][row0] > edge && S->data[GMT_Y][row1] > edge) continue;	/* Above square */
 		}
 
@@ -5946,8 +5950,10 @@ GMT_LOCAL bool gmtmap_near_a_line_cartesian (struct GMT_CTRL *GMT, double lon, d
 			}
 			within = true;
 		}
-		if (d <= SH->dist) return (true);		/* Node inside the critical distance; we are done */
+		if (d <= S_dist2) return (true);		/* Node inside the critical distance; we are done */
 	}
+
+	if (return_mindist) *dist_min = sqrt (*dist_min);	/* Undo the squared distances */
 
 	return (within);	/* All tests failed, we are not close to the line(s), or we just return distance and interior (see comments above) */
 }
@@ -8036,16 +8042,18 @@ int gmt_grd_project (struct GMT_CTRL *GMT, struct GMT_GRID *I, struct GMT_GRID *
 
 	/* Only input grid MUST have at least 2 rows/cols padding - otherwise we must allocate a temp grid */
 	if (I->header->pad[XLO] < 2 || I->header->pad[XHI] < 2 || I->header->pad[YLO] < 2 || I->header->pad[YHI] < 2) {
-		unsigned int pad2[4] = {2, 2, 2, 2};
+		unsigned int def_pad[4], pad2[4] = {2, 2, 2, 2};
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_project: Input grid has insufficient padding - create and work on a duplicate with r row/col pad\n");
-		if ((I2 = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA, I)) == NULL) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Unable to duplicate grid\n");
+		gmt_M_memcpy (def_pad, GMT->current.io.pad, 4, unsigned int);	/* Save default pad */
+		gmt_M_memcpy (GMT->current.io.pad, pad2, 4, unsigned int);		/* Change default pad */
+		if ((I2 = GMT_Duplicate_Data (GMT->parent, GMT_IS_GRID, GMT_DUPLICATE_DATA | GMT_DUPLICATE_RESET, I)) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_grd_project: Unable to duplicate grid with padding\n");
 			return GMT_RUNTIME_ERROR;
 		}
-		gmt_grd_pad_on (GMT, I2, pad2);	/* Add pad */
 		gmt_BC_init (GMT, I2->header);	/* Initialize grid interpolation and boundary condition parameters */
 		gmt_grd_BC_set (GMT, I2, GMT_IN);	/* Set boundary conditions */
 		I = I2;	/* Use this input grid instead */
+		gmt_M_memcpy (GMT->current.io.pad, def_pad, 4, unsigned int);		/* Restore default pad */
 	}
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_grd_project: In [%.12g/%.12g/%.12g/%.12g] and out [%.12g/%.12g/%.12g/%.12g]\n",
