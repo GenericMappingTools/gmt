@@ -19,10 +19,9 @@ making a simple loop over the metadata preferable to writing 12
 near-identical subplot sections.  **Note**: For optimal resolution
 you should switch to the 2x2 arc-minute relief data instead.
 
-We use a small table of metadata for the 12 cities obtained from the
-full listing at https://simplemaps.com/data/world-cities and created
-a file with longitude, latitude, population (in millions), ISO-2
-country code, and city name.
+We use a small table containing longitude, latitude, population
+(in millions), ISO-2 country code, and city name for the 12 cities; see
+https://simplemaps.com/data/world-cities for the full data set.
 
 The example script then reads one line at the time from the metadata
 file and creates a DEM map for that city, embellished with a tag
