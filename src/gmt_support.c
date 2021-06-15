@@ -4824,7 +4824,10 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 			return k;	/* Found local *.def or *.eps file */
 		}
 	}
-	if (!try_remote) return 0;	/* Not found, and since not a cache file we don't need to look further */
+	if (!try_remote) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
+		return 0;	/* Not found, and since not a cache file we don't need to look further */
+	}
 
 	/* Here we failed to find the cache file locally.  Now try remote cache */
 	for (k = GMT_CUSTOM_DEF; k <= GMT_CUSTOM_EPS; k++) {
