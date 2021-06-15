@@ -13872,6 +13872,7 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 		if ((opt = GMT_Find_Option (API, 'J', options))) return true;	/* -J writes PS regardless of -E */
 		if ((opt = GMT_Find_Option (API, 'E', options)) == NULL) return true;	/* Without -E writes PS */
 		if (strstr (opt->arg, "+g") || strstr (opt->arg, "+p")) return true;	/* -E...+g|p writes PS */
+		if (strstr (opt->arg, "+c") || strstr (opt->arg, "+C")) return true;	/* -E...+c|C writes PS */
 		if (strstr (opt->arg, "+r") || strstr (opt->arg, "+R")) return false;	/* -E...+r|R writes dataset */
 	}
 	else if (!strncmp (name, "grdimage", 8U)) {	/* Check for -A option */
@@ -14236,7 +14237,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 		if (c) {	/* Now process the modifiers */
 			c[0] = '+';	/* Unhide the modifiers */
 			pos = 0;	/* Initialize position counter for this string */
-			while (gmt_getmodopt (GMT, 'E', c, "lLgprRwz", &pos, p, &n_errors) && n_errors == 0) {
+			while (gmt_getmodopt (GMT, 'E', c, "lLcCgprRwz", &pos, p, &n_errors) && n_errors == 0) {
 				switch (p[0]) {
 					case 'r': case 'R':
 						if (r_opt[0] == 0) {	/* Only set this once */
@@ -14602,7 +14603,7 @@ GMT_LOCAL bool gmtinit_panel_B_get (struct GMTAPI_CTRL *API, int fig, int row, i
 }
 
 bool gmtlib_module_may_get_R_from_RP (struct GMT_CTRL *GMT, const char *mod_name) {
-	/* THe cases where a module can consult the plot region because a projection or grid domain is not set is
+	/* The cases where a module can consult the plot region because a projection or grid domain is not set is
 	 * limited to these cases:
 	 * 	  pscoast -M:  We wish to dump data and often as part of a plot situation
 	 *    psbasemap -A: Writing out the bounds of the region may need the plot region
@@ -14733,10 +14734,15 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	/* Making -R<country-codes> globally available means it must affect history, etc.  The simplest fix here is to
 	 * make sure pscoast -E, if passing old +r|R area settings via -E, is split into -R before GMT_Parse_Common is called */
 
-	if (options && !strcmp (mod_name, "pscoast") && (E = GMT_Find_Option (API, 'E', *options)) && strstr (E->arg, "+g") == NULL && strstr (E->arg, "+p") == NULL) { /* Determine if need for RJ */
-		if (!((opt = GMT_Find_Option (API, 'G', *options)) || (opt = GMT_Find_Option (API, 'M', *options)) || (opt = GMT_Find_Option (API, 'W', *options)))) {
-			required = "";
-			GMT_Report (API, GMT_MSG_DEBUG, "Given -E, -R -J not required for pscoast.\n");
+	if (options && !strcmp (mod_name, "pscoast") && (E = GMT_Find_Option (API, 'E', *options))) { /* Determine if need for RJ */
+		if (strstr (E->arg, "+c") || strstr (E->arg, "+C")) {
+			/* Will need RJ */
+		}
+		else if (strstr (E->arg, "+g") == NULL && strstr (E->arg, "+p") == NULL) { /* Determine if need for RJ */
+			if (!((opt = GMT_Find_Option (API, 'G', *options)) || (opt = GMT_Find_Option (API, 'M', *options)) || (opt = GMT_Find_Option (API, 'W', *options)))) {
+				required = "";
+				GMT_Report (API, GMT_MSG_DEBUG, "Given -E, -R -J not required for pscoast.\n");
+			}
 		}
 	}
 	/* Determine if module is one of the 4 horsemen of the apocalypse that potentially uses -Dx and thus may have no -R -J, but needed in subplots */
