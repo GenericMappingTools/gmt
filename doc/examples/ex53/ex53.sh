@@ -6,7 +6,7 @@
 #
 
 gmt begin ex53 ps
-	gmt set PROJ_ELLIPSOID Sphere MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel,tick_normal FONT_TAG 10p PS_MEDIA letter
+	gmt set PROJ_ELLIPSOID Sphere MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel,tick_normal FONT_TAG 10p
 	gmt makecpt -Cterra
 	data=$(gmt which -G @Top12Cities.txt)
 	gmt subplot begin 4x3 -Fs6c -A+gwhite+p0.25p+o0.2c+sblack@50 -Baf -R-1500/1500/-1500/1500+uk -X1c -Y0.9c

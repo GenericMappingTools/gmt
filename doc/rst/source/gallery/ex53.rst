@@ -5,18 +5,18 @@
 
 This example illustrates two separate effects:
 
-#. How to automate the plotting or a large set of subplot panels
+#. How to automate the plotting of a large set of subplot panels
    via a simple loop that picks up panel-specific parameters from
    a configuration file.
-3. How to highlight a country using a DEM with darker ambient shading
-   outside the country boundaries.
+#. How to highlight a country using a DEM with darker ambient shading
+   outside the country boundaries from DCW.
 
-We use the 6 arc-minute global relief file for these plots that shows
+We use the 6 arc-minute global relief file for these plots and show
 topographic relief in an equal-area block of 3000 by 3000 km centered
 on one of the dozen most populated cities in the world. Apart from
 the metadata for each city, all subplot panels are identical, thus
 making a simple loop over the metadata preferable to writing 12
-near-identical subplot sections.  **Note**: For optional resolution
+near-identical subplot sections.  **Note**: For optimal resolution
 you should switch to the 2x2 arc-minute relief data instead.
 
 We use a small table of metadata for the 12 cities obtained from the
@@ -27,7 +27,10 @@ country code, and city name.
 The example script then reads one line at the time from the metadata
 file and creates a DEM map for that city, embellished with a tag
 containing the city and the population, while using the ISO-2 country
-code to set up a clip path to highlight the relief inside its boundaries.
+code to set up a clip path to highlight the relief inside its boundaries
+as given by the Digital Chart of the World (DCW).
+We use the city custom symbol to indicate the location of the city at the
+center of each map.
 
 .. literalinclude:: /_verbatim/ex53.txt
    :language: bash
