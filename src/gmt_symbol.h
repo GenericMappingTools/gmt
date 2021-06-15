@@ -41,6 +41,7 @@
 
 /* PANEL attributes are used by pslegend, psscale, psimage, gmtlogo */
 
+#define GMT_TAG_CLEARANCE	2.0	/* In points */
 #define GMT_FRAME_CLEARANCE	4.0	/* In points */
 #define GMT_FRAME_GAP		2.0	/* In points */
 #define GMT_FRAME_RADIUS	6.0	/* In points */
