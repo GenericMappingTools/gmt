@@ -11,12 +11,13 @@ This example illustrates two separate effects:
 3. How to highlight a country using a DEM with darker ambient shading
    outside the country boundaries.
 
-We use the 2 arc-minute global relief file for these plots that shows
+We use the 6 arc-minute global relief file for these plots that shows
 topographic relief in an equal-area block of 3000 by 3000 km centered
 on one of the dozen most populated cities in the world. Apart from
 the metadata for each city, all subplot panels are identical, thus
 making a simple loop over the metadata preferable to writing 12
-near-identical subplot sections.
+near-identical subplot sections.  **Note**: For optional resolution
+you should switch to the 2x2 arc-minute relief data instead.
 
 We use a small table of metadata for the 12 cities obtained from the
 full listing at https://simplemaps.com/data/world-cities and created
