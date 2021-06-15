@@ -674,20 +674,23 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	if (D) gmt_set_dataset_minmax (GMT, D);		/* Update stats */
 
-	if (special) {	/* Plot via psxy */
-		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""}, *module[2] = {"psxy", "psclip"};
+	if (special) {	/* Plot via psxy or clip via psclip, then free dataset */
+		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""};
+		static char *module[2] = {"psxy", "psclip"};
+		/* Get a virtual file for the current DCW dataset */
 		if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, in_string) == GMT_NOTSET) {
 			return (NULL);
 		}
-		/* All pen and fill settings are passed via segment headers */
+		/* All pen and fill settings are passed via segment headers, so this part is common to both psxy and psclip: */
 		snprintf (cmd, GMT_BUFSIZ, "-R -J -O -K %s", in_string);
-		if (special == GMT_DCW_CLIPPING && F->mode & GMT_DCW_CLIP_OUT)	/* Set the outside clip flag */
+		if (F->mode & GMT_DCW_CLIP_OUT)	/* Set the outside clip flag */
 			strcat (cmd, " -N");	/* Select the outside clip flag */
 		strcat (cmd, " --GMT_HISTORY=readonly");	/* Ignore history on exit */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling %s with args %s\n", module[special-1], cmd);
 		if (GMT_Call_Module (GMT->parent, module[special-1], GMT_MODULE_CMD, cmd) != GMT_OK) {
 			return (NULL);
 		}
+		/* Close the virtual file and destroy the resource */
 		GMT_Close_VirtualFile (GMT->parent, in_string);
 		GMT_Destroy_Data (GMT->parent, &D);
 	}
