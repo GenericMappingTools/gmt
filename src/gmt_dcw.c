@@ -267,6 +267,9 @@ GMT_LOCAL bool gmtdcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STA
  *----------------------------------------------------------|
  */
 
+#define GMT_DCW_PLOTTING	1
+#define GMT_DCW_CLIPPING	2
+
 struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode) {
 	/* Given comma-separated names, read the corresponding netCDF variables.
  	 * mode = GMT_DCW_REGION	: Return the joint w/e/s/n limits
@@ -280,8 +283,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	uint64_t k, seg, n_segments;
 	unsigned int n_items = 0, r_item = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
-	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0};
-	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, special = false, new_CN_codes = false;
+	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0}, special = 0;
+	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, new_CN_codes = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
 	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
@@ -362,11 +365,20 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if (mode & GMT_DCW_PLOT) {	/* Plot via psxy instead */
 		/* Because holes in polygons comes last we cannot just plot as we go. Instead, we must assemble
 		 * the entire list of polygons for one item, then pass that dataset to psxy for plotting.
-		 * SO here, that means switch to GMT_DCW_EXTRACT but set a special flag so that we call psxy
-		 * and then delete the dataset instead of returning it */
+		 * So here, that means switch to GMT_DCW_EXTRACT but set a special flag so that we call psxy
+		 * and then delete the dataset instead of returning it. */
 		mode -= GMT_DCW_PLOT;
 		mode += GMT_DCW_EXTRACT;
-		special = true;
+		special = GMT_DCW_PLOTTING;
+	}
+	else if (mode & (GMT_DCW_CLIP_IN|GMT_DCW_CLIP_OUT)) {	/* Lay down clip path via clip instead */
+		/* Because holes in polygons comes last we cannot just set clip path as we go. Instead, we must assemble
+		 * the entire list of polygons for one item, then pass that dataset to clip for clipping.
+		 * So here, that means switch to GMT_DCW_EXTRACT but set a special flag so that we call clip
+		 * and then delete the dataset instead of returning it. */
+		mode -= (mode & GMT_DCW_CLIP_IN) ? GMT_DCW_CLIP_IN : GMT_DCW_CLIP_OUT;
+		mode += GMT_DCW_EXTRACT;
+		special = GMT_DCW_CLIPPING;
 	}
 
 	if (!gmtdcw_get_path (GMT, "dcw-gmt", ".nc", path)) {
@@ -550,7 +562,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			gmt_free_table (GMT, D->table[tbl]);
 			D->table[tbl] = gmt_create_table (GMT, n_segments, 0, 2, 0, false);
 		}
-		if (special) {	/* Time to consider fill/pen change */
+		if (special == GMT_DCW_PLOTTING) {	/* Time to consider fill/pen change */
 			outline = (F->item[order[tbl]]->mode & DCW_DO_OUTLINE);
 			fill = (F->item[order[tbl]]->mode & DCW_DO_FILL);
 			spen = (outline) ? &(F->item[order[tbl]]->pen) : NULL;
@@ -599,7 +611,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			else if (mode & GMT_DCW_EXTRACT) {	/* Attach to dataset */
 				S = D->table[tbl]->segment[seg];
 				SH = gmt_get_DS_hidden (S);
-				if (special) {
+				if (special == GMT_DCW_PLOTTING) {
 					if (sfill) {
 						strcat (header, " -G"); strcat (header, gmtlib_putfill (GMT, sfill));
 					}
@@ -663,14 +675,19 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	if (D) gmt_set_dataset_minmax (GMT, D);		/* Update stats */
 
 	if (special) {	/* Plot via psxy */
-		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""};
+		char cmd[GMT_BUFSIZ] = {""}, in_string[GMT_VF_LEN] = {""}, *module[2] = {"psxy", "psclip"};
 		if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POLY, GMT_IN|GMT_IS_REFERENCE, D, in_string) == GMT_NOTSET) {
 			return (NULL);
 		}
 		/* All pen and fill settings are passed via segment headers */
-		snprintf (cmd, GMT_BUFSIZ, "-R -J -O -K %s --GMT_HISTORY=readonly", in_string);
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling psxy with args %s\n", cmd);
-		if (GMT_Call_Module (GMT->parent, "psxy", GMT_MODULE_CMD, cmd) != GMT_OK) {
+		snprintf (cmd, GMT_BUFSIZ, "-R -J -O -K %s", in_string);
+		if (special == GMT_DCW_CLIPPING) {	/* Set the clip flag(s) */
+			strcat (cmd, " -C");	/* Start new clip path */
+			if (F->mode & GMT_DCW_CLIP_OUT) strcat (cmd, " -N");	/* Select the outside clip flag */
+		}
+		strcat (cmd, " --GMT_HISTORY=readonly");	/* Ignore history on exit */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling %s with args %s\n", module[special-1], cmd);
+		if (GMT_Call_Module (GMT->parent, module[special-1], GMT_MODULE_CMD, cmd) != GMT_OK) {
 			return (NULL);
 		}
 		GMT_Close_VirtualFile (GMT->parent, in_string);
@@ -821,6 +838,12 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 				case 'L': 	/* Country and state list */
 					F->mode = DCW_GET_COUNTRY_AND_STATE;
 					F->mode |= GMT_DCW_LIST;
+					break;
+				case 'c':		/* Set up a clip path around the selections instead */
+					F->mode |= GMT_DCW_CLIP_IN;
+					break;
+				case 'C':		/* Set up a clip path outside the selections instead */
+					F->mode |= GMT_DCW_CLIP_OUT;
 					break;
 				case 'p':
 					if (gmt_getpen (GMT, &p[1], &(this_item->pen))) {	/* Error decoding pen */
