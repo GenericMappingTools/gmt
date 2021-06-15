@@ -89,7 +89,7 @@ Optional Arguments (begin mode)
 
 .. _-A:
 
-**-A**\ [*autolabel*][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+j**\|\ **J**\ *refpoint*][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+r**\|\ **R**][**+s**\ [[*dx*/*dy*/][*shade*]]][**+v**]
+**-A**\ [*autolabel*][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+j**\|\ **J**\ *refpoint*][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+r**\|\ **R**][**+s**\ [[*dx*/*dy*][/*shade*]]][**+v**]
     Specify automatic tagging of each subplot.  Append either a number or letter [a].
     This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
