@@ -681,10 +681,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		}
 		/* All pen and fill settings are passed via segment headers */
 		snprintf (cmd, GMT_BUFSIZ, "-R -J -O -K %s", in_string);
-		if (special == GMT_DCW_CLIPPING) {	/* Set the clip flag(s) */
-			strcat (cmd, " -C");	/* Start new clip path */
-			if (F->mode & GMT_DCW_CLIP_OUT) strcat (cmd, " -N");	/* Select the outside clip flag */
-		}
+		if (special == GMT_DCW_CLIPPING && F->mode & GMT_DCW_CLIP_OUT)	/* Set the outside clip flag */
+			strcat (cmd, " -N");	/* Select the outside clip flag */
 		strcat (cmd, " --GMT_HISTORY=readonly");	/* Ignore history on exit */
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Calling %s with args %s\n", module[special-1], cmd);
 		if (GMT_Call_Module (GMT->parent, module[special-1], GMT_MODULE_CMD, cmd) != GMT_OK) {
@@ -789,7 +787,8 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to add -Z<countrycode> to multisegment headers if extracting polygons.\n");
 	if (plot == 1) {
 		GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +g<fill> to fill [none].\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   One of +p|g must be specified to plot; if -M is in effect we just get the data.\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   Append +c or +C to set clip paths for the inside or outside area, respectively [none].\n");
+		GMT_Message (API, GMT_TIME_NONE, "\t   One of +c|C|p|g must be specified to plot; if -M is in effect we just get the data.\n");
 		GMT_Message (API, GMT_TIME_NONE, "\t   Repeat -%c to give different groups of items their own pen/fill settings.\n", option);
 	}
 }
