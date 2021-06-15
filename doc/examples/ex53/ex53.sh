@@ -5,11 +5,11 @@
 # GMT modules:  makecpt, subplot, set, plot, grdimage, coast
 #
 
-gmt begin ex53 png
+gmt begin ex53
 	gmt set PROJ_ELLIPSOID Sphere MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel,tick_normal FONT_TAG 10p
 	gmt makecpt -Cterra
 	gmt subplot begin 4x3 -Fs6c -A+gwhite+p0.25p+o0.2c+sblack@50 -Baf -R-1500/1500/-1500/1500+uk -Y1.25c
-		while read lat lon population iso name; do
+		while read lon lat population iso name; do
 			gmt subplot set -A"${name} [${population}M]"
 			gmt grdimage @earth_relief_02m -JA${lon}/${lat}/? -I+a-45+nt1+m-0.4
 			#gmt coast -N1/thin,darkred -Wfaint
