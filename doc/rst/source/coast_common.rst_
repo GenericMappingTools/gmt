@@ -82,8 +82,9 @@ Optional Arguments
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
     Finally, you can append **+l**\|\ **+L** to **-E**\ =\ *continent* to only list countries in that continent;
     repeat if more than one continent is requested.
-    To set up clip paths based on your selection, append **+c** or **+C** for inside or outside clipping, respectively.
-    Append **+p**\ *pen* to draw polygon outlines [no outline] and
+    To set up clip paths based on your selection, append **+c** or **+C** for inside or outside (area between selection
+    and the map boundary) clipping, respectively.  To plot instead,
+    append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+c**\|\ **C**\|\ **g**\|\ **p** must be
     specified unless **-M** is in effect, in which case only one **-E** option can be given;
     append **+z** to place the country code in the segment headers via **-Z**\ *code* settings.
