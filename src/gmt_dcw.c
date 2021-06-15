@@ -874,6 +874,14 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 			}
 		}
 	}
+	if ((F->mode & (GMT_DCW_PLOT|DCW_DO_FILL)) && (F->mode & (GMT_DCW_CLIP_IN|GMT_DCW_CLIP_OUT))) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot mix clipping and plotting!\n", option);
+		n_errors++;
+	}
+	if ((F->mode & (GMT_DCW_CLIP_IN|GMT_DCW_CLIP_OUT)) && (F->mode & GMT_DCW_ZHEADER)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot mix clipping and setting header codes!\n", option);
+		n_errors++;
+	}
 	if (this_item->codes[0] == '\0' && !(F->mode & (DCW_GET_COUNTRY+DCW_GET_COUNTRY_AND_STATE))) {	/* Did not give +l or +L, and no codes */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No country codes given\n", option);
 		n_errors++;
