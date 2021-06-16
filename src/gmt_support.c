@@ -4824,7 +4824,10 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 			return k;	/* Found local *.def or *.eps file */
 		}
 	}
-	if (!try_remote) return 0;	/* Not found, and since not a cache file we don't need to look further */
+	if (!try_remote) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
+		return 0;	/* Not found, and since not a cache file we don't need to look further */
+	}
 
 	/* Here we failed to find the cache file locally.  Now try remote cache */
 	for (k = GMT_CUSTOM_DEF; k <= GMT_CUSTOM_EPS; k++) {
@@ -13358,8 +13361,8 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
 		ms->justify = gmt_M_just_default (GMT, ms->refpoint, PSL_MC);
 		if (vertical || ms->vertical || gmt_M_is_cartesian (GMT, GMT_IN)) {
-			double out_offset = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
-			double in_offset  = GMT->current.setting.map_label_offset;
+			double out_offset = GMT->current.setting.map_label_offset[GMT_Y] + GMT->current.setting.map_frame_width;
+			double in_offset  = GMT->current.setting.map_label_offset[GMT_Y];
 			switch (ms->refpoint->justify) {        /* Autoset +a, +o when placed centered on a side: Note: +a, +o may overrule this later */
 				case PSL_TC:
 					ms->off[GMT_Y] = (ms->refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;

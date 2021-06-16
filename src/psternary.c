@@ -30,11 +30,15 @@
 #define THIS_MODULE_MODERN_NAME	"ternary"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
-#define THIS_MODULE_KEYS	"<D{,>X},>DM,C-("
+#define THIS_MODULE_KEYS	"<D{,>?},>DM,C-("
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy"
 
 struct PSTERNARY_CTRL {
+	struct PSTERNARY_Out {	/* -> */
+		bool active;
+		char *file;
+	} Out;
 	struct PSTERNARY_A {	/* -A[-][labelinfo] NOT IMPLEMENTED YET */
 		bool active;
 		char *string;	/* Since we will simply pass this on to pscontour */
@@ -85,6 +89,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->A.string);
 	gmt_M_str_free (C->C.string);
 	gmt_M_str_free (C->G.string);
@@ -142,7 +147,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, ni_files = 0, no_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -151,7 +156,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 
 			case '<':	/* Input files */
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
-				n_files++;
+				ni_files++;
+				break;
+			case '>':	/* Got named output file */
+				if (no_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -410,7 +421,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
 
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, NULL, D) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to write x,y file to stdout\n");
 			Return (API->error);
 		}
@@ -475,7 +486,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 			PSL_plotline (PSL, &tri_x[2], &tri_y[2], 2, PSL_MOVE|PSL_STROKE);
 	}
 
-	L_off = 3.0 * GMT->current.setting.map_label_offset;	T_off = 2.0 * GMT->current.setting.map_title_offset;
+	L_off = 3.0 * GMT->current.setting.map_label_offset[GMT_X];	T_off = 2.0 * GMT->current.setting.map_title_offset;
 	if (GMT->current.map.frame.header[0]) {	/* Plot title */
 		PSL_comment (PSL, "Placing plot title\n");
 		gmt_map_title (GMT, tri_x[2], tri_y[2]+2.0*T_off);

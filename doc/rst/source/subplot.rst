@@ -89,7 +89,7 @@ Optional Arguments (begin mode)
 
 .. _-A:
 
-**-A**\ [*autolabel*][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+j**\|\ **J**\ *refpoint*][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+r**\|\ **R**][**+v**]
+**-A**\ [*autolabel*][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+j**\|\ **J**\ *refpoint*][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+r**\|\ **R**][**+s**\ [[*dx*/*dy*][/*shade*]]][**+v**]
     Specify automatic tagging of each subplot.  Append either a number or letter [a].
     This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
@@ -105,6 +105,9 @@ Optional Arguments (begin mode)
     Append **+p**\ *pen* to draw the outline of the tag's text box using selected *pen* [no outline].
     Append **+r** to typeset your tag numbers using lowercase Roman numerals;
     use **+R** for uppercase Roman numerals [Arabic numerals].
+    Append **+s** to draw an offset background shaded rectangle. Here, *dx*/*dy* indicates the
+    shift relative to the tag box [default is **2p**\ /**-2p**] and *shade* sets the
+    fill style to use for shading [default is **gray50**].
     Append **+v** to increase tag numbers vertically down columns [horizontally across rows].
 
 .. |Add_-B| replace:: |Add_-B_links|
