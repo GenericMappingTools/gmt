@@ -221,7 +221,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output CVA convolution grid.\n");
 	GMT_Option (API, "I,Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Co-registered grid with upper ages to use [Default is flowlines for all ages].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set optional output grids:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Di<file> Use flowlines to estimate data importance DI grid.\n");

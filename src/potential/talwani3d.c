@@ -239,7 +239,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<modelfile> is a multiple-segment ASCII file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A The z-axis is positive upwards [Default is down].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set a fixed density contrast that overrides settings in model file (in kg/m^3).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field component:\n");

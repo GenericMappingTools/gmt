@@ -343,7 +343,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   In a Cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the location of the center to be <ox>/<oy>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Force the location of the Discontinuity in the r coordinate;\n");

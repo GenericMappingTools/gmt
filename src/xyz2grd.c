@@ -95,7 +95,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grid file.\n");
 	GMT_Option (API, "IR");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Determine what to do if multiple entries are found for a node:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad: Compute the range (between min and max) of multiple entries per node.\n");

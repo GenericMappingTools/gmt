@@ -198,7 +198,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Scale affecting distance between points along flowline [0.5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");

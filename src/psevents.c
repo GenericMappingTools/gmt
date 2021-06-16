@@ -178,7 +178,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify the time for preparing events.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Record format: lon lat [z] [size] time [length|time2].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Select plotting of lines or polygons when no -S is given.  Choose input mode:\n");

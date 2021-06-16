@@ -441,7 +441,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "I,J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Terminate existing clip-path.  No other options required.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump clip polygons as data polygons; no plotting takes place.\n");

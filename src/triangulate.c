@@ -142,7 +142,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute propagated uncertainty via CURVE algorithm. Give name of input slope grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The slope grid (in degrees) also sets -R -I [-r].  Expects (x,y,h,v) or (x,y,z,h,v) on input.\n");

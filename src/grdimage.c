@@ -177,7 +177,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grid> is instead expected to be an image.\n");
 
 	GMT_Option (API, "J-");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	if (API->external)	/* External interface */
 		GMT_Message (API, GMT_TIME_NONE, "\t-A Return a GMT raster image instead of a PostScript plot.\n");
 	else {

@@ -104,8 +104,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "\tREQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "JZ,R");
-	GMT_Message (API, GMT_TIME_NONE, "\nOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n\n");
 	GMT_Usage (API, 1, "\n-A No plotting, just write coordinates of the (possibly oblique) rectangular map boundary "
 		"to given file (or stdout).  Requires -R and -J only.  Spacing along border "
 		"in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].",

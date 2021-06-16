@@ -127,7 +127,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a mixed numerical/text report.  Use -F to return just data columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append the output columns you want as one or more of fmnsc in any order:\n");

@@ -48,7 +48,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   api, colors, cookbook, data, gallery, gmt, home, settings, and tutorial.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Also acceptable are forum (GMT Discourse Forum) and [web]site (GMT Main Website).\n");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q will only display the URLs and not open them in a viewer.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If given, -Q must be the first argument to %s.\n", name);
 	GMT_Message (API, GMT_TIME_NONE, "\t-S will open documentation files from the GMT server.\n");

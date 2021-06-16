@@ -98,7 +98,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set how many cells (divisions) of data range to make [16].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump level information to <table> or stdout if not given.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Create an equalized output grid file called <outgrid>.\n");

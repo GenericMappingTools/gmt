@@ -88,7 +88,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	gmt_dist_syntax (API->GMT, "T<tolerance>[<unit>]", "Set tolerance as the maximum distance mismatch. ");
 	GMT_Usage (API, -2, "If no units are appended we will do a Cartesian calculation instead.");
-	GMT_Message (API, GMT_TIME_NONE, "\nOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\n\tOPTIONAL ARGUMENTS:\n\n");
 	GMT_Option (API, "<");
 	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,o,q,:,.");
 

@@ -160,7 +160,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   st(a)r, (c)ircle, (d)iamond, (h)exagon, (i)nvtriangle\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (p)oint, (s)quare, (t)riangle, and (x)cross.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify color symbol for station in extensive part.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Fill can be either <r/g/b> (each 0-255) for color \n");

@@ -90,7 +90,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tgshhs|wdb_rivers|wdb_borders_[f|h|i|l|c].b is a GSHHG polygon or line file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
         GMT_Message (API, GMT_TIME_NONE, "\t-A Extract polygons whose area is greater than or equal to <area> (in km^2) [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Write '%%' at start of each segment header [P or L] (overwrites -M)\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   and write 'NaN NaN' after each segment to enable import by MATLAB or GNU Octave.\n");

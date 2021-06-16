@@ -216,7 +216,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the figure rectangle with <fill> color [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the figure rectangle using selected pen [no outline].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to draw dividing lines between interior subplots using selected pen [no lines].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each subplot. Append either a number or letter [a].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the tag of the top-left subplot and others follow sequentially.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Surround number or letter by parentheses on any side if these should be typeset.\n");

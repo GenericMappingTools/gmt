@@ -170,7 +170,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-B Set scale annotation interval and label. Use y-label to set unit label.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no annotation interval is set it is taken from the CPT.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file. If not set, standard input is read.\n");

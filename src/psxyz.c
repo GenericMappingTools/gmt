@@ -169,8 +169,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "\tREQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "J-Z,R3");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Usage (API, 1, "\n-A[m|p|x|y|r|t]");
 	GMT_Usage (API, -2, "Suppress drawing geographic line segments as great circle arcs, i.e., draw "

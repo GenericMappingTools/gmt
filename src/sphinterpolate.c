@@ -107,7 +107,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for the final gridded solution.\n");
 	GMT_Option (API, "I");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete exact duplicate points [Default deletes no duplicates except at poles].\n");

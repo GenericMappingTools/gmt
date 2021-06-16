@@ -84,7 +84,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the new converted grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   scale and offset, if given, will multiply data by scale and add offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, +n designates an invalid grid value to act as NaN.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Useful when creating files to be used by external programs.\n");
 	GMT_Option (API, "R,V");

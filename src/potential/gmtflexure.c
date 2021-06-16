@@ -313,7 +313,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append +n to inc to indicate the number of points instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qq[<load>] is a file (or stdin) with (x,load in Pa) for all points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Qt[<load>] is a file (or stdin) with (x,load in m or km) for all points (see -M).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Al and -Ar specify boundary conditions at the left and right end, respectively.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Four types of BC's are recognized (here, w = w(x) = the deflection):\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Al0 or -Ar0 :         \"Infinity\" condition, w' = w'' = 0\n");

@@ -129,7 +129,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name the output grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid size(s).\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A (or -Az): Add multiple entries at the same node.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append n (-An): Count number of multiple entries per node instead.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default (no -A option) will compute mean values].\n");

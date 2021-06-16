@@ -132,7 +132,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify a single output file name (or a filename format template; also see -S).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   To write a series of 2-D grids instead of a cube, include a floating-point C-format\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   statement in <outfile> set via -G for embedding the level in the file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	gmt_cube_info_syntax (API->GMT, 'D');
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set up a single crossection based on <file> or on the given <line1>[,<line2>,...]. Give start and stop\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   coordinates for each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");

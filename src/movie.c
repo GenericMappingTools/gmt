@@ -358,7 +358,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first frame [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We use any white-space as separators; use +W to strictly use TABs only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Animated GIF: Append +l for looping [no loop]; optionally append number of loops [infinite loop].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -F is used you may restrict the GIF animation to use every <stride> frame only [all];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <stride> must be taken from the list 2, 5, 10, 20, 50, 100, 200, or 500.\n");

@@ -90,7 +90,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid file with NaN holes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify algorithm and parameters for in-fill:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   c<value> Fill in NaN holes with the constant <value>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaN holes with nearest neighbor values;\n");

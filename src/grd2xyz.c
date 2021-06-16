@@ -83,7 +83,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\t<grid> is one or more grid files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ci to write grid index instead of (x,y).\n");
 	GMT_Option (API, "R,V");

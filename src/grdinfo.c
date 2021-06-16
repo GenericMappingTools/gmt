@@ -118,7 +118,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<grid> may be one or more grid files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report in fields on a single line using the format\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <file w e s n {b t} v0 v1 dx dy {dz} n_columns n_rows {n_layers} [x0 y0 {z0} x1 y1 {z1}] [med L1scale] [mean std rms] [n_nan] [mode LMSscale] registration type>,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   where -M adds [x0 y0 x1 y1] and [n_nan], -L1 adds [median L1scale], -L2 adds [mean std rms],\n");

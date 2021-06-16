@@ -231,7 +231,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth for preferred positive wiggle orientation [0.0 (north)].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Normals to the track are mapped into a -90/+90 window centered on <azimuth>.\n");

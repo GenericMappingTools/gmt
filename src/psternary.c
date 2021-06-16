@@ -113,7 +113,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data sets.  If none, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-B Specify axis annotations for the three axis a, b, c with separate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ba<args> -Bb<args> -Bc<args> or a single -B<args> for all axes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign symbol colors based on z-value in 3rd column (with -S), or\n");

@@ -190,7 +190,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	gmt_GSHHG_syntax (API->GMT, 'A');
 	GMT_Message (API, GMT_TIME_NONE, "\t   (ignored  unless -N is set).\n");

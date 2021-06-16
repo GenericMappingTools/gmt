@@ -242,7 +242,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t3. Specify a set of output locations via the -N option.\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Output data. Give name of output file.\n");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A ASCII file with surface gradients V to use in the modeling.  Specify format:\n");

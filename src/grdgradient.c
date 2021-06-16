@@ -137,7 +137,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  -A<azim>/<azim2> will compute two directions and select the one larger in magnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  If <azim> is a grid we expect variable azimuths on a grid coregistered with <ingrid>.\n");
