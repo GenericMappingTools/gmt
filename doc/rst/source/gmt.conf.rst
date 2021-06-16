@@ -789,8 +789,8 @@ MAP Parameters
         Determines from where the label offset is measured: Choose **annot**
         to mean the distance from the end of the annotation or **axis**
         to mean the distance from the axis.  To set separate modes for the
-        *x* and *y* axes, separate modes by a slash [annot/annot]. Choose **axis**
-        if you need to align multiple axes labels across many rows or columns.
+        *x* and *y* axes, separate modes by a slash [default is **annot/annot**]. Choose
+        **axis** if you need to align multiple axes labels across many rows or columns.
 
     **MAP_LABEL_OFFSET**
         Distance from base of axis annotations to the top of the axis label
