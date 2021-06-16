@@ -206,7 +206,7 @@ Legend Codes
     separated by whitespace.  The sum of these widths are equated to the
     legend width set via **-D**.  If no argument is given the we set
     *n_columns* to 1.
-**P** *paragraph-mode-header-for-pstext*
+**P** *paragraph-mode-header-for-text*
     Start a new text paragraph by specifying all the parameters needed
     (see :doc:`text` **-M** record description). Note that the module knows
     what all those values should be, so normally you can leave the

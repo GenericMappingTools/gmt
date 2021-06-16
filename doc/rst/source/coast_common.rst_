@@ -28,7 +28,7 @@ Required Arguments
 
 .. _-R:
 
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. |Add_-Rgeo| replace:: Not required when |-E| is used.
 .. include:: explain_-Rgeo.rst_
 
 .. |Add_-Rz| unicode:: 0x20 .. just an invisible code
@@ -69,13 +69,12 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+g**\ *fill*][**+p**\ *pen*][**+z**]
-    Select painting or dumping country polygons from the Digital Chart of the World.
+**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+c**\|\ **C**][**+g**\ *fill*][**+p**\ *pen*][**+z**]
+    Select painting, clipping or dumping country polygons from the Digital Chart of the World.
     This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
     Append one or more comma-separated countries using the
     `2-character ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_.
-    To select a state of a country
-    (if available), append .state, e.g, US.TX for Texas.  To specify a
+    To select a state of a country (if available), append .state, e.g, US.TX for Texas.  To specify a
     whole continent, prepend = to any of the continent codes AF (Africa),
     AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
     NA (North America), or SA (South America).  Append **+l** to
@@ -83,8 +82,10 @@ Optional Arguments
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
     Finally, you can append **+l**\|\ **+L** to **-E**\ =\ *continent* to only list countries in that continent;
     repeat if more than one continent is requested.
-    Append **+p**\ *pen* to draw polygon outlines [no outline] and
-    **+g**\ *fill* to fill them [no fill].  One of **+p**\|\ **g** must be
+    To set up clip paths based on your selection, append **+c** or **+C** for inside or outside (area between selection
+    and the map boundary) clipping, respectively.  To plot instead,
+    append **+p**\ *pen* to draw polygon outlines [no outline] and
+    **+g**\ *fill* to fill them [no fill].  One of **+c**\|\ **C**\|\ **g**\|\ **p** must be
     specified unless **-M** is in effect, in which case only one **-E** option can be given;
     append **+z** to place the country code in the segment headers via **-Z**\ *code* settings.
     Otherwise, you may repeat **-E** to give different groups of items their own pen/fill settings.

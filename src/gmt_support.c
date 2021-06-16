@@ -4824,7 +4824,10 @@ int gmt_locate_custom_symbol (struct GMT_CTRL *GMT, const char *in_name, char *n
 			return k;	/* Found local *.def or *.eps file */
 		}
 	}
-	if (!try_remote) return 0;	/* Not found, and since not a cache file we don't need to look further */
+	if (!try_remote) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find either custom symbol or EPS macro %s\n", name);
+		return 0;	/* Not found, and since not a cache file we don't need to look further */
+	}
 
 	/* Here we failed to find the cache file locally.  Now try remote cache */
 	for (k = GMT_CUSTOM_DEF; k <= GMT_CUSTOM_EPS; k++) {
@@ -5579,7 +5582,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	cross_length = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters [or degrees] */
 	n_cross++;	/* Since one more node than increments */
 	n_half_cross = (n_cross % 2) ? (n_cross - 1) / 2 : n_cross / 2;	/* Half-width of points in a cross profile depending on odd/even */
-	if (unit && strchr ("dms", unit))	/* Gave increments in arc units (already in degrees at this point) */
+	if (unit && strchr (GMT_ARC_UNITS, unit))	/* Gave increments in arc units (already in degrees at this point) */
 		across_ds_radians = D2R * cross_length / (n_cross - 1);	/* Angular change from point to point */
 	else	/* Must convert distances to degrees */
 		across_ds_radians = D2R * (cross_length / GMT->current.proj.DIST_M_PR_DEG) / (n_cross - 1);	/* Angular change from point to point */
@@ -13357,8 +13360,8 @@ int gmt_getscale (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	else {	/* With -Dj or -DJ, set default to reference (mirrored) justify point, else MC */
 		ms->justify = gmt_M_just_default (GMT, ms->refpoint, PSL_MC);
 		if (vertical || ms->vertical || gmt_M_is_cartesian (GMT, GMT_IN)) {
-			double out_offset = GMT->current.setting.map_label_offset + GMT->current.setting.map_frame_width;
-			double in_offset  = GMT->current.setting.map_label_offset;
+			double out_offset = GMT->current.setting.map_label_offset[GMT_Y] + GMT->current.setting.map_frame_width;
+			double in_offset  = GMT->current.setting.map_label_offset[GMT_Y];
 			switch (ms->refpoint->justify) {        /* Autoset +a, +o when placed centered on a side: Note: +a, +o may overrule this later */
 				case PSL_TC:
 					ms->off[GMT_Y] = (ms->refpoint->mode == GMT_REFPOINT_JUST_FLIP) ? out_offset : in_offset;

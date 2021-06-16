@@ -23,6 +23,7 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
    making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
    upper right corner geographic coordinates, followed by the modifier **+r**. This form guarantees a rectangular map
    even though lines of equal longitude and latitude are not straight lines.
+
 #. **-R**\ **g** or **-R**\ **d**. These forms can be used to quickly specify the global domain (0/360 for **-Rg** and
    -180/+180 for **-Rd** in longitude, with -90/+90 in latitude).
 
@@ -30,7 +31,7 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
    the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
    :ref:`cookbook/options:Grid registration: The **-r** option`\ ).
 
-#. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]]. This indirectly supplies the region by consulting
+#. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]. This indirectly supplies the region by consulting
    the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
    the codes. Simply append one or more comma-separated countries using the two-character
    `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)>`_.
@@ -57,4 +58,4 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
 #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*/*zmin*/*zmax*. This method can be used for perspective views with the **-Jz**
    and the :ref:`-p <option_-p>` option, where the z-range (*zmin*/*zmax*) is appended to the first method to indicate
    the third dimension. This is not used for :ref:`-p <option_-p>` without **-Jz**, in which case a perspective view of
-   the place is plotted with no third dimension
+   the place is plotted with no third dimension.
