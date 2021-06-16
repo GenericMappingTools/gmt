@@ -490,7 +490,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|x|y|r|t]] "
 			"[%s] [-C<cpt>] [-D<dx>/<dy>] [%s] [-F%s] [-G<fill>|+z] "
 			"[-H[<scale>]] [-I[<intens>]] %s[%s] [-N[c|r]] %s%s "
-			"[-S[<symbol>][<size>]] [%s] [%s] [-W[<pen>][<attr>][+z]] [%s] [%s] [-Z<arg>[+f|l]] [%s] "
+			"[-S[<symbol>][<size>]] [%s] [%s] [-W[<pen>][<attr>][+z]] [%s] [%s] [-Z<value>[+f|l]] [%s] "
 			"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name,
 				GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, PSXY_E_OPT, GMT_SEGMENTIZE3, API->K_OPT, PLOT_L_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
 				GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT,
@@ -676,10 +676,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", 15);
 	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
-	GMT_Usage (API, 1, "\n-Z<arg>[+f|l]");
+	GMT_Usage (API, 1, "\n-Z<value>");
 	GMT_Usage (API, -2, "Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. ");
-	GMT_Usage (API, 3, "%s To use <color> for fill, select -G+z. ", GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s To use <color> for an outline pen, select -W<pen>+z.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s To use <color> for fill, also select -G+z. ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s To use <color> for an outline pen, also select -W<pen>+z.", GMT_LINE_BULLET);
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Usage (API, 2, "Default is the required number of columns.");
 	GMT_Option (API, "c,di,e,f,g,h,i,l,p,qi,T,w,:,.");

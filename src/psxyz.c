@@ -164,7 +164,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
 	else
 		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<value>|<file>] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -304,9 +304,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", 8);
 	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify <file> with z-values in the last data column instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l for just pen color or +f for fill color [Default sets both].\n");
+	GMT_Usage (API, 1, "\n-Z<value>");
+	GMT_Usage (API, -2, "Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. ");
+	GMT_Usage (API, 3, "%s To use <color> for fill, also select -G+z. ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s To use <color> for an outline pen, also select -W<pen>+z.", GMT_LINE_BULLET);
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
 	GMT_Option (API, "c,di,e,f,g,h,i,l,p,qi,T,w,:,.");

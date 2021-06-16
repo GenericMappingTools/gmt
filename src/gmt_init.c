@@ -7725,6 +7725,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 */
 void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
 	struct GMTAPI_CTRL *API = GMT->parent;
+	gmt_M_unused (option);
  	GMT_Usage (API, 1, "\n%s", GMT_A_OPT);
  	GMT_Usage (API, -2, "Place limits on coastline features from the GSHHG data base. "
 		"Features smaller than <min_area> (in km^2) or of levels (0-4) outside the <min_level>/<max_level> "
@@ -7915,9 +7916,9 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 	GMT_Usage (API, 3, "%s A valid color name.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s P|p<pattern>[+b<color>][+f<color>][+r<dpi>]. "
 		"Give <pattern> number from 1-90 or a filename. Optional modifiers:", GMT_LINE_BULLET);
-	GMT_Usage (API, 5, "+r Specify the <dpi> of the pattern [%g]. ", PSL_DOTS_PER_INCH_PATTERN);
-	GMT_Usage (API, 5, "+b Change the background <color> (no <color> sets transparency).");
-	GMT_Usage (API, 5, "+f Change the foreground <color> (no <color> sets transparency).");
+	GMT_Usage (API, 4, "+r Specify the <dpi> of the pattern [%g]. ", PSL_DOTS_PER_INCH_PATTERN);
+	GMT_Usage (API, 4, "+b Change the background <color> (no <color> sets transparency).");
+	GMT_Usage (API, 4, "+f Change the foreground <color> (no <color> sets transparency).");
 	GMT_Usage (API, -2, "For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].");
 }
 
