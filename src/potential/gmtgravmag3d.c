@@ -208,7 +208,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   sphere,rad/z_center[/x0/y0/npts/n_slices]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\t Sphere of radius <rad> and center at depth <z_center>\n");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <f_dec>/<f_dip> -> geomagnetic declination/inclination.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <m_int></m_dec></m_dip> -> body magnetic intensity/declination/inclination.\n");

@@ -78,7 +78,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   i : Image\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p : PostScript\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   u : Cube\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "R,V,.");
 
 	return (GMT_MODULE_USAGE);

@@ -104,7 +104,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The independent variable (see -N) must be monotonically in/de-creasing.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when increment has a unit appended:\n");

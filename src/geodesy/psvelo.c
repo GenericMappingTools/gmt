@@ -672,10 +672,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify arrow head attributes:\n");
-	gmt_vector_syntax (API->GMT, 15);
+	gmt_vector_syntax (API->GMT, 15, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on vector magnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -W and -Z.\n");

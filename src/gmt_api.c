@@ -206,8 +206,11 @@
 #endif
 
 #ifdef WIN32	/* Special for Windows */
+#	include <windows.h>
 #	include <process.h>
 #	define getpid _getpid
+#else
+#	include <sys/ioctl.h>
 #endif
 
 #define GMTAPI_MAX_ID 999999	/* Largest integer that will fit in the %06d format */
@@ -325,6 +328,11 @@ GMT_LOCAL int gmtapi_skip_modern_module (const char *name) {
 	if (!strncmp (name, "end", 3U)) return 1;		/* Skip the end module */
 	return 0;	/* Display this one */
 }
+
+struct GMT_WORD {	/* Used by GMT_Wrap_Line only */
+	char *word;
+	unsigned int space;
+};
 
 EXTERN_MSC int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], const char *file);
 
@@ -7879,6 +7887,19 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	size_t len;
 	static char *unknown = "unknown";
 	char *dir = NULL;
+	/* Determine the width of the current terminal */
+#ifdef WIN32
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo (GetStdHandle(STD_ERROR_HANDLE), &csbi);
+    int n_columns = csbi.srWindow.Right;
+#else
+	struct winsize w;
+	int err = 0;
+    if ((err = ioctl (STDERR_FILENO, TIOCGWINSZ, &w))) {
+ 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session: Unable to get terminal width via ioctl, err = %d\n", err);
+    }
+    int n_columns = w.ws_col;
+#endif
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	API->verbose = (mode >> 16);	/* Pick up any -V settings from gmt.c */
@@ -7896,11 +7917,16 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 		gmt_M_str_free (tmptag);
 	}
 
-	if ((API->message = calloc (4*GMT_BUFSIZ, sizeof (char))) == NULL) {	/* Failed to allocate the message string */
+	if ((API->message = calloc (GMT_MSGSIZ, sizeof (char))) == NULL) {	/* Failed to allocate the message string */
 	 	gmt_M_str_free (API);	/* Not gmt_M_free since this item was allocated before GMT was initialized */
 		return_null (NULL, GMT_MEMORY_ERROR);
 	}
-
+	/* Ensure Windows terminal can handle UTF-8 characters */
+#ifdef WIN32
+	SetConsoleOutputCP (CP_UTF8);
+#endif
+	API->terminal_width = (n_columns > 24) ? n_columns : 100;	/* Character width of current terminal [100] */
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session: Terminal width = %d\n", API->terminal_width);
 	/* Set temp directory used by GMT */
 
 #ifdef WIN32
@@ -12185,8 +12211,8 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	mode_name = gmtlib_get_active_name (API, name);
 	lib = (component) ? component : core;
 	snprintf (full_name, GMT_LEN32, "gmt %s", mode_name);
-	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", full_name, lib, GMT_version(), purpose);
-	GMT_Message (V_API, GMT_TIME_NONE, message);
+	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n", full_name, lib, GMT_version(), purpose);
+	GMT_Usage (V_API, 0, message);
 	gmtlib_set_KOP_strings (API);
 	return full_name;
 }
@@ -13445,6 +13471,159 @@ int GMT_Report_ (unsigned int *level, const char *format, int len) {
 	return (GMT_Report (GMT_FORTRAN, *level, format));
 }
 #endif
+
+GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
+	/* Split line into an array of words where words are separated by either
+	 * a space (like between options), the occurrence of "][" sequences, or
+	 * items separated by slashes "/" or bars "|".
+	 * These are the places where we are allowed to break the line. */
+	struct GMT_WORD *array = NULL;
+	unsigned int n = 0, c, start = 0, next, end, j, stop, space = 0, n_alloc = GMT_LEN256;
+	array = calloc (n_alloc, sizeof (struct GMT_WORD));
+	while (line[start]) {	/* More line to chop up */
+		/* Find the next break location */
+		stop = start;
+		while (line[stop] && !(strchr (" /|", line[stop]) || (line[stop] == ']' && line[stop+1] == '['))) stop++;
+		end = next = stop;	/* Mark likely end */
+		array[n].space = space;	/* Do we need a leading space (set via previous word)? */
+		if (line[stop] == ' ') {	/* Skip the space to start over at next word */
+			while (line[stop] == ' ') stop++;	/* In case there are more than one space */
+			next = stop; space = 1;
+		}
+		else if (line[stop] && strchr ("/|]", line[stop])) {	/* Include this char then break */
+			next = ++end, space = 0;
+		}
+		array[n].word = calloc (end - start + 1, sizeof (char));	/* Allocate space for word */
+		for (j = start, c = 0; j < end; j++, c++) array[n].word[c] = line[j];
+		n++;	/* Got another word */
+		if (n == n_alloc) {	/* Need more memory, must be a long line */
+			n_alloc += GMT_LEN256;
+			array = realloc (array, n_alloc*sizeof (struct GMT_WORD));
+		}
+		start = next;	/* Advance to start of next word */
+	}
+	/* Finalize array length - keep one extra to indicate end of array */
+	array = realloc (array, (n+1)*sizeof (struct GMT_WORD));
+#if 0	/* Left for possible debug in case there are unresolved issues of breaking things up into words */
+	fprintf (stderr, "Found %d words\n", n);
+	for (j = 0; j < n; j++)
+		fprintf (stderr, "%2.2d: [%d] %s\n", j, array[j].space, array[j].word);
+	fprintf (stderr, "\n");
+#endif
+
+	return (array);
+}
+
+GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *fp, const char *in_line) {
+	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
+	bool keep_same_indent = (level < 0);
+	int width, k, j, next_level, current_width = 0;
+	static int gmtapi_indent[7] = {0, 2, 5, 7, 10, 13, 15};
+	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
+	char message[GMT_MSGSIZ] = {""};
+
+	/* Start with any fixed indent */
+	level = abs (level);	/* In case it was negative */
+	next_level = (keep_same_indent) ? level : level + 1;	/* Do we indent when we wrap or not */
+	for (j = 0; j < gmtapi_indent[level]; j++) strcat (message, " ");	/* Starting spaces */
+	current_width = gmtapi_indent[level];
+	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
+		width = (W[k+1].space) ? API->terminal_width : API->terminal_width - 1;	/* May need one space for ellipsis at end */
+		if ((current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
+			if (W[k].space)	/* This word requires a leading space */
+				strcat (message, " ");
+			strcat (message, W[k].word);
+			current_width += strlen (W[k].word) + W[k].space;	/* Update line width so far */
+			free (W[k].word);	/* Free the word we are done with */
+			if (W[k+1].word == NULL)	/* Finalize the last line */
+				strcat (message, "\n");
+		}
+		else {	/* Must split at the current break point and continue on next line */
+			if (W[k].space) { /* No break character needed since space separation is expected */
+				strcat (message, "\n");	/* Move to new line */
+				for (j = 0; j < gmtapi_indent[next_level]; j++) strcat (message, " ");	/* Initial indent plus possibly next indent*/
+				current_width = gmtapi_indent[next_level];	/* Indent plus next indent */
+			}
+			else {	/* Split in the middle of an option so append breakline and start new line with ellipsis after indent */
+				strcat (message, GMT_LINE_BREAK);
+				strcat (message, "\n");
+				for (j = 0; j < gmtapi_indent[next_level]; j++) strcat (message, " ");	/* Initial indent plus possibly next indent */
+				strcat (message, GMT_LINE_CONT);		/* And the ellipsis */
+				current_width = gmtapi_indent[next_level];	/* Indent plus the next indent */
+			}
+			W[k].space = 0;	/* Can be no leading space if starting a the line */
+			k--;	/* Since k will be incremented by loop and we did not write this word yet */
+		}
+	}
+	free (W);	/* Free the structure array */
+	API->print_func (fp, message);	/* Do the printing */
+}
+
+/*! . */
+int GMT_Usage (void *V_API, int level, const char *format, ...) {
+	/* Wrapped usage message independent of verbosity.
+	 * level is the starting indent level of the line
+	 * format and optional args must be printed to a string first, then wrapped.
+	 *
+	 * Explanation for the use of level:
+	 * 0  : Only use for the synopsis message where we start all the way to the left.
+	 *      Once the first line wraps we indent all subsequent lines by the same amount.
+	 *      Below, | here means the start of the terminal's left margin and the number
+	 *      in braces {2} indicates which level was used for that line.
+	 *      |usage: gmt gmtsimplify [<table>] -T<tolerance>[<unit>] [-Q...]<return> {0}
+	 *      |  [-d[i|o]<nodata>] [-e[~]<pattern>] ...
+	 * 1  : First level is used for listing of options:
+	 *      |  -Rwest/east/south/north[+r]   {1}
+	 *      |     Set the region of the plot, blah blah...
+	 *      The text set with level = 1 that wraps will indent one more step
+	 * -1 : A negative level means no indent once the line wraps. Thus, multi-line
+	 *      wrapped text will all share the same left margin.
+	 *      |  Furthermore, this options is deadly because ... {-1}
+	 *      |  and that is why we skip this line.
+	 * 2  : Used for a paragraph under an option that should be wrapped and indented
+	 *      if it exceeds a line, e.g.
+	 *      |     You may optionally do this or that or this or that, for instance, {2}
+	 *      |       you could append a constant....
+	 * -2 : Same as -1 but for level 2.  No further indent, just stays at that level.
+	 * 3  : Used to indent separate modifiers under an option.  E.g. (for +a,b below):
+	 *      |  -Q<value][+a][+b]...   {1}
+	 *      |     Mess up the plot by random lines ... blah blah.  Available modifiers: {-1}
+	 *      |       +a Draw random lines from a Poisson distribution so that we get {3}
+	 *      |          a quirky plot.
+	 *      |       +b Add 7 to all answers just for fun.  {3}
+	 * -3:  Same as -1 but for level 3.  No further indent, just stay at that level.
+	 * etc, etc.
+	 */
+	struct GMTAPI_CTRL *API = NULL;
+	unsigned int k = 0;
+	FILE *err = stderr;
+	va_list args;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
+	API = gmtapi_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
+	API->message[0] = '\0';	/* Start fresh */
+
+	va_start (args, format);
+	vsnprintf (API->message, GMT_MSGSIZ, format, args);
+	va_end (args);
+	assert (strlen (API->message) < GMT_MSGSIZ);
+	if (API->GMT) err = API->GMT->session.std[GMT_ERR];
+	if (API->message[0] == '\n') {
+		API->print_func (err, "\n");	/* Blank line to separate paragraphs */
+		k = 1;
+	}
+	gmtapi_wrap_the_line (API, level, err, &(API->message)[k]);
+	return_error (V_API, GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Usage_ (unsigned int *level, const char *format, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Usage (GMT_FORTRAN, *level, format));
+}
+#endif
+
 
 char * GMT_Error_Message (void *V_API) {
 	struct GMTAPI_CTRL *API = NULL;

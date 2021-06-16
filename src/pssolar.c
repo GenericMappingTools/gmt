@@ -125,7 +125,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report selected via -I in a single line of numbers only.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");

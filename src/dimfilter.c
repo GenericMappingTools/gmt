@@ -285,7 +285,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator). If using p:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append +l to return the lowest mode if multiple modes are found [return average].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append +u to return the uppermost mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 #ifdef OBSOLETE
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Remove local planar trend from data, apply filter, then add back trend at filtered value.\n");
 #endif

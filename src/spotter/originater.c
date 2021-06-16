@@ -219,7 +219,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify file name for hotspot locations.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d if we should look for hotspot drift tables.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If found then we interpolate to get hotspot location as a function of time [fixed].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set sampling interval in km along tracks [5].\n");
