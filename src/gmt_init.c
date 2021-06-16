@@ -10669,11 +10669,19 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_MAP_LABEL_MODE:
 			if ((i = sscanf (value, "%[^/]/%s", txt_a, txt_b)) == 2) {	/* Separate settings for x and y */
-				GMT->current.setting.map_label_mode[GMT_X] = (!strcmp (txt_a, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
-				GMT->current.setting.map_label_mode[GMT_Y] = (!strcmp (txt_b, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
+				if (strcmp (txt_a, "annot") && strcmp(txt_a,"axis") && strcmp(txt_b,"annot") && strcmp(txt_b,"axis"))
+					error = true;
+				else {
+					GMT->current.setting.map_label_mode[GMT_X] = (!strcmp (txt_a, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
+					GMT->current.setting.map_label_mode[GMT_Y] = (!strcmp (txt_b, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
+				}
 			}
-			else
-				GMT->current.setting.map_label_mode[GMT_X] = GMT->current.setting.map_label_mode[GMT_Y] = (!strcmp (value, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
+			else {
+				if (strcmp (value, "annot") && strcmp(value,"axis"))
+					error = true;
+				else
+					GMT->current.setting.map_label_mode[GMT_X] = GMT->current.setting.map_label_mode[GMT_Y] = (!strcmp (value, "axis") ? GMT_LABEL_AXIS : GMT_LABEL_ANNOT);
+			}
 			break;
 		case GMTCASE_LABEL_OFFSET:
 			GMT_COMPAT_TRANSLATE ("MAP_LABEL_OFFSET");
