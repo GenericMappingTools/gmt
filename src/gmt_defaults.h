@@ -140,7 +140,7 @@ struct GMT_DEFAULTS {
 	double map_frame_width;			/* Thickness of fancy map frame [5p] */
 	double map_grid_cross_size[2];	/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
 	double map_heading_offset;		/* Distance between top of panel title and base of subplot heading [18p] */
-	double map_label_offset;		/* Distance between lowermost annotation and top of label [8p] */
+	double map_label_offset[2];		/* Distance between lowermost annotation and top of label [8p/8p] */
 	double map_line_step;			/* Maximum straight linesegment length for arcuate lines [0.75p] */
 	double map_logo_pos[2];			/* Where to plot timestamp relative to origin [BL/-54p/-54p] */
 	double map_origin[2];			/* x- and y-origin of plot, i.e. where lower left corner plots on paper [1i/1i] */
@@ -149,12 +149,13 @@ struct GMT_DEFAULTS {
 	double map_tick_length[4];		/* Length of primary and secondary major and minor tickmarks [5p/2.5p/15p/3.75p] */
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
-	double map_graph_extension;		/* If mapframetype is graph, how must longer to make axis length. [7.5%] */
+	double map_graph_extension;		/* If map_frame_type is graph, how must longer to make axis length. [7.5%] */
 	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [GMT_OBL_ANNOT_ANYWHERE] */
 	unsigned int map_grid_cross_type[2];	/* 0 = normal cross, 1 = symmetric tick, 2 = asymmetric tick */
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
 	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
-	unsigned int map_graph_extension_unit;	/* If mapframetype is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
+	unsigned int map_graph_extension_unit;	/* If map_frame_type is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
+	double map_label_mode[2];		/* If label is relative to annotation (0) or axis (1) for x/t [0/0] */
 	bool map_annot_oblique_set;		/* true if user changed map_annot_oblique via a gmt.conf or --par=val */
 	bool map_logo;			/* Plot time and map projection on map [false] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */

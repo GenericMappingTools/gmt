@@ -12812,6 +12812,11 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "grdinfo", 7U)) {
 		type = ((opt = GMT_Find_Option (API, 'Q', *head))) ? 'U' : 'G';	/* Giving -Q means we are reading 3-D cubes */
 	}
+    /* 1u. Check if psternary is plotting or dumping */
+    else if (!strncmp (module, "psternary", 9U)) {
+        /* PostScript output unless -M */
+        type = (GMT_Find_Option (API, 'M', *head)) ? 'D' : 'X';  /* -M means dump (x,b,c) data */
+    }
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
