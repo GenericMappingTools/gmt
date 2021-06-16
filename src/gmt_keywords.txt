@@ -116,6 +116,7 @@ MAP_GRID_PEN			# Pen for any grid-lines/crosses [does not go in gmt.conf]
 MAP_GRID_PEN_PRIMARY		# Pen for primary grid-lines/crosses
 MAP_GRID_PEN_SECONDARY		# Pen for secondary grid-lines/crosses
 MAP_HEADING_OFFSET		# Distance between a panel title and subplot heading
+MAP_LABEL_MODE			# Measure label distance from the annotation or axis
 MAP_LABEL_OFFSET		# Distance between an axis label and the annotations
 MAP_LINE_STEP			# Max step length when approximating curves on maps
 MAP_LOGO			# Plot the time stamp?
