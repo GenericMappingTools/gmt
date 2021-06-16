@@ -1018,7 +1018,6 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
-	if (Ctrl->E.active) Ctrl->L.active = true;
 
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
