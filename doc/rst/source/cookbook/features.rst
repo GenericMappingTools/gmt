@@ -363,6 +363,10 @@ equivalent of **WrStZ**. The default for the Gnomonic and general perspective
 projections is **WESNZ**. The default for non-perspective, non-Gnomonic, and
 non-polar plots using **MAP_FRAME_AXES**\ =\ **auto** is **WrStZ**.
 
+For **MAP_LABEL_OFFSET, **auto** will scale the offset based on figure size if
+**MAP_LABEL_MODE** is set to **annot**, but will default to **32p** if
+**MAP_LABEL_MODE** is set to **axis**.
+
 Changing GMT defaults
 ~~~~~~~~~~~~~~~~~~~~~
 

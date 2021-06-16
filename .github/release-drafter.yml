@@ -1,0 +1,29 @@
+name-template: '$RESOLVED_VERSION Changelog'
+version-resolver:
+  minor:
+    labels:
+      - 'feature'
+  default: patch
+categories:
+  - title: 'New Features in GMT $RESOLVED_VERSION'
+    label: 'new feature'
+  - title: 'New Common Options in GMT $RESOLVED_VERSION'
+    label: 'new common option'
+  - title: 'New Modules in GMT $RESOLVED_VERSION'
+    label: 'new module'
+  - title: 'New Core Module Features in GMT $RESOLVED_VERSION'
+    label: 'new core module feature'
+  - title: 'Supplement updates in GMT $RESOLVED_VERSION'
+    label: 'supplement update'
+  - title: 'Documentation updates in GMT $RESOLVED_VERSION'
+    label: 'documentation'
+  - title: 'Maintenance updates in GMT $RESOLVED_VERSION'
+    label: 'maintenance'
+include-labels:
+  - 'add-changelog'
+category-template: '### $TITLE'
+change-template: '* $TITLE ([#$NUMBER]($URL))'
+template: |
+  ## Release of GMT $RESOLVED_VERSION
+
+  $CHANGES

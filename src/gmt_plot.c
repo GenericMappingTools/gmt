@@ -2611,7 +2611,7 @@ GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char
 			if (fabs (angle) > 0.0) PSL_command (PSL, "currentpoint T %g R\n", angle); else PSL_command (PSL, "currentpoint T\n");
 			if (below) PSL_command (PSL, "0 %d PSL_LH sub neg M currentpoint T\n", (int)lrint (h * PSL->internal.y2iy));
 			/* I am somehow missing the label offset for y-axes so I need to account for it here in order to get correct result */
-			if (axis == GMT_Y) PSL_command (PSL, "0 %d M currentpoint T\n", (int)lrint (sgn[below]*GMT->current.setting.map_label_offset * PSL->internal.y2iy));
+			if (axis == GMT_Y) PSL_command (PSL, "0 %d M currentpoint T\n", (int)lrint (sgn[below]*GMT->current.setting.map_label_offset[GMT_Y] * PSL->internal.y2iy));
 		}
 		// PSL_command (PSL, "V currentpoint -2000 0 G 4000 0 D S U\n");	/* Debug line for base of label; keep for future debugging */
 		PSL_plotepsimage (PSL, x, y, w, h, PSL_BC, eps, &header);	/* Place the EPS plot */
@@ -2883,7 +2883,7 @@ GMT_LOCAL void gmtplot_map_annotate (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL,
 		/* May need to label radial axis */
 		struct GMT_PLOT_AXIS *A = &GMT->current.map.frame.axis[GMT_Y];
 		double x0, x1, y0, y1, xm, ym, line_angle, t_angle;
-		double off = GMT->current.setting.map_label_offset + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + MAX (0.0, GMT->current.setting.map_tick_length[GMT_PRIMARY]);
+		double off = GMT->current.setting.map_label_offset[GMT_Y] + MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + MAX (0.0, GMT->current.setting.map_tick_length[GMT_PRIMARY]);
 		unsigned int just, we_side[2] = {W_SIDE, E_SIDE}, def_just[2] = {PSL_TC, PSL_BC};
 		char *neg;
 		if (GMT->current.map.frame.side[we_side[0]] & GMT_AXIS_ANNOT) {
@@ -5628,15 +5628,28 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 	/* Finally do axis label */
 
 	if (A->label[0] && annotate && !gmt_M_axis_is_geo_strict (GMT, axis)) {
-		unsigned int far_ = !below, l_just;
+		unsigned int far_ = !below, l_just, L_axis = (axis == GMT_Z) ? GMT_X : axis;
 		double label_angle;
 		char *this_label = (far_ && A->secondary_label[0]) ? A->secondary_label : A->label;	/* Get primary or secondary axis label */
+
+      if (axis == GMT_Y && A->label_mode) {
+         l_just = (below) ? PSL_MR : PSL_ML;
+         label_angle = 0.0 + y_angle_add;
+      }
+      else {
+         double angle_add = (axis == GMT_X) ? x_angle_add : y_angle_add;
+         l_just = (axis == GMT_X) ? lx_just : ly_just;
+         label_angle = (horizontal ? 0.0 : 90.0) + angle_add;
+      }
 		if (!MM_set) PSL_command (PSL, "/MM {%s%sM} def\n", neg ? "neg " : "", (axis != GMT_X) ? "exch " : "");
 		form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 		PSL_command (PSL, "/PSL_LH ");	/* PSL_LH is the height of the label text based on height of letter M */
 		PSL_deftextdim (PSL, "-h", GMT->current.setting.font_label.size, "M");
 		PSL_command (PSL, "def\n");
-		PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", PSL_IZ (PSL, GMT->current.setting.map_label_offset), (neg == horizontal) ? "PSL_LH add " : "");
+      if (GMT->current.setting.map_label_mode[L_axis] == GMT_LABEL_AXIS) /* Base of label is a fixed distance from axis */
+         PSL_command (PSL, "/PSL_L_y %d %sdef\n", PSL_IZ (PSL, fabs (GMT->current.setting.map_label_offset[L_axis])), (neg == horizontal) ? "PSL_LH add " : "");
+      else
+         PSL_command (PSL, "/PSL_L_y PSL_A0_y PSL_A1_y mx %d add %sdef\n", PSL_IZ (PSL, GMT->current.setting.map_label_offset[L_axis]), (neg == horizontal) ? "PSL_LH add " : "");
 		/* Move to new anchor point for label */
 		if (angled && axis == GMT_X)	/* Add offset due to angled x-annotations */
 			PSL_command (PSL, "%d PSL_L_y PSL_slant_y add MM\n", PSL_IZ (PSL, 0.5 * length));
@@ -5644,15 +5657,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			PSL_command (PSL, "%d PSL_L_y PSL_slant_x add MM\n", PSL_IZ (PSL, 0.5 * length));
 		else
 			PSL_command (PSL, "%d PSL_L_y MM\n", PSL_IZ (PSL, 0.5 * length));
-		if (axis == GMT_Y && A->label_mode) {
-			l_just = (below) ? PSL_MR : PSL_ML;
-			label_angle = 0.0 + y_angle_add;
-		}
-		else {
-			double angle_add = (axis == GMT_X) ? x_angle_add : y_angle_add;
-			l_just = (axis == GMT_X) ? lx_just : ly_just;
-			label_angle = (horizontal ? 0.0 : 90.0) + angle_add;
-		}
 		gmtplot_map_label (GMT, 0.0, 0.0, this_label, label_angle, l_just, axis, below);
 	}
 	else
@@ -6816,8 +6820,8 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 			dim[YLO] = dist_to_annot + GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 			dim[YHI] = 0.0;	/* Normally nothing above the scale bar */
 			/* If label is above or below bar, add label offset and approximate label height to the space dim */
-			if (ms->do_label && ms->alignment == 'b') dim[YLO] += fabs (GMT->current.setting.map_label_offset) + l_height;
-			else if (ms->do_label && ms->alignment == 't') dim[YHI] += fabs (GMT->current.setting.map_label_offset) + l_height;
+			if (ms->do_label && ms->alignment == 'b') dim[YLO] += fabs (GMT->current.setting.map_label_offset[GMT_Y]) + l_height;
+			else if (ms->do_label && ms->alignment == 't') dim[YHI] += fabs (GMT->current.setting.map_label_offset[GMT_Y]) + l_height;
 			else if (ms->do_label && l_shift > dim[YHI]) dim[YHI] = l_shift;
 			/* Determine center of gravity for panel */
 			x_center = ms->refpoint->x + 0.5 * (dim[XHI] - dim[XLO]);
@@ -6862,12 +6866,12 @@ int gmt_draw_map_scale (struct GMT_CTRL *GMT, struct GMT_MAP_SCALE *ms) {
 					break;
 				case 't':	/* Top */
 					tx = ms->refpoint->x;
-					ty = ms->refpoint->y + fabs (GMT->current.setting.map_label_offset);
+					ty = ms->refpoint->y + fabs (GMT->current.setting.map_label_offset[GMT_Y]);
 					justify = PSL_BC;
 					break;
 				default:	/* Bottom */
 					tx = ms->refpoint->x;
-					ty = ms->refpoint->y - dist_to_annot - GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH - fabs (GMT->current.setting.map_label_offset);
+					ty = ms->refpoint->y - dist_to_annot - GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH - fabs (GMT->current.setting.map_label_offset[GMT_Y]);
 					justify = PSL_TC;
 					break;
 			}
@@ -8804,28 +8808,31 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			PSL_command (PSL, PSL_makecolor (PSL, GMT->current.setting.font_tag.fill.rgb));
 			PSL_command (PSL, " ");
 			PSL_setfont (PSL, GMT->current.setting.font_tag.id);
-			if (P->pen[0] || P->fill[0]) {	/* Must deal with textbox fill/outline */
+			if (P->pen[0] || P->fill[0] || P->shade[0]) {	/* Must deal with textbox fill/outline/shade */
+				/* All fills and pens have already gone through a syntax check in subplot -A */
 				int outline = 0;
 				struct GMT_FILL fill;
+				struct GMT_PEN pen;
+				gmt_M_memset (&pen, 1, struct GMT_PEN);
 				gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* No fill */
 				PSL_command (PSL, "FQ O0\n");	/* Ensure fill/pen have been reset */
-				if (P->pen[0]) {	/* Want to draw outline of tag box */
-					struct GMT_PEN pen;
-					gmt_M_memset (&pen, 1, struct GMT_PEN);
-					if (gmt_getpen (GMT, P->pen, &pen))
-						gmt_pen_syntax (GMT, 'w', NULL, "sets pen attributes:", 3);
+				if (P->shade[0] && !gmt_getfill (GMT, P->shade, &fill)) {  /* Want to paint an offset, shaded rectangle behind the tag box */
+					PSL_setfill (PSL, fill.rgb, 0);  /* Shade color */
+					PSL_plottextbox (PSL, plot_x+P->soff[GMT_X], plot_y+P->soff[GMT_Y], GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
+				}
+				if (P->pen[0] && !gmt_getpen (GMT, P->pen, &pen)) {	/* Want to draw the outline of the tag box */
 					gmt_setpen (GMT, &pen);
 					outline = 1;
 				}
-				if (P->fill[0] && gmt_getfill (GMT, P->fill, &fill))	/* Want to paint inside of tag box */
-					gmt_fill_syntax (GMT, 'g', NULL, " ");
-
-				PSL_setfill (PSL, fill.rgb, outline);	/* Box color */
-				PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
+				if (P->fill[0] && !gmt_getfill (GMT, P->fill, &fill)) {  /* Want to paint inside of tag box */
+					PSL_setfill (PSL, fill.rgb, outline);	/* Box color and possible outline */
+					PSL_plottextbox (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, P->clearance, 0);
+				}
 				form = gmt_setfont (GMT, &GMT->current.setting.font_tag);	/* Set the tag font */
+				/* Finally place the tag text in the box */
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, NULL, 0.0, justify, form);
 			}
-			else
+			else   /* Just place the tag text */
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
 			/* Because PSL_plot_completion is called at the end of the module, we must forget we used fonts here */
 			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
