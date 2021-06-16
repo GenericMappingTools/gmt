@@ -72,7 +72,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Only consider files you have permission to read [all files].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print Y if found and N if not found.  No path is returned.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the directory where a file is found [full path to file].\n");

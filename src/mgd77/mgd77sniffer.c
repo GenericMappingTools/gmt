@@ -383,7 +383,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t\talong-track detection of excessive slopes and comparison of cruise\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t\tdata with global bathymetry and gravity grids.");
 	GMT_Message (API, GMT_TIME_NONE, "\twhere <cruises> is one or more MGD77 legnames, e.g., 08010001 etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Apply scale factor and DC adjustment to specified data field. Allows adjustment of\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   cruise data prior to along-track analysis. CAUTION: data must be thoroughly examined\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   before applying these global data adjustments. May not be used for multiple cruises.\n");

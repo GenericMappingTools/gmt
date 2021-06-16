@@ -90,7 +90,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> contains records that must contain lon, lat, alt, time[, other cols].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   longitude and latitude is the geocentric position on the ellipsoid [but see -G].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   alt is the altitude in km positive above the ellipsoid.\n");

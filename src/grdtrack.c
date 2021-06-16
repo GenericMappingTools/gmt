@@ -175,7 +175,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -G+l<list> to pass a list of file names.\n");
 	gmt_img_syntax (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Repeat -G for as many grids as you wish to sample.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is an multicolumn ASCII file with (x, y) in the first two columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Controls how the input track in <table> is resampled when -C or -E are selected:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   f: Keep original points, but add intermediate points if needed [Default].\n");

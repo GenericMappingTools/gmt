@@ -88,7 +88,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -FC to recover the original MGD77 setting from the MGD77+ file [Default applies E77 corrections].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Convert to a file that is either (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   By default we will refuse to overwrite existing files.  Append +f to force an override this policy.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert from NGDC (*.h77, *.a77) to *.mgd77 format; no other options allowed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Give one or more names of h77-files, a77-files, or just cruise prefixes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Select high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision\n");

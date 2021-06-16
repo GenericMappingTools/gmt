@@ -110,7 +110,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   containing a C-format specifier for formatting a double (for the variable time).\n");
 	spotter_rot_usage (API, 'E');
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify a single finite rotation (in degrees) to be applied.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set the west/east/south/north bounds for the rotated grid [Default will\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   determine the natural extent of the rotated grid instead].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Write the rotated polygon or grid outline to <rotoutline> [stdout].\n");

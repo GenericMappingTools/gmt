@@ -199,7 +199,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Option (API, "J,R");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If UTM and -C are used then -R is optional (automatically set to match UTM zone)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Calculate azimuths from previous point in the input data with -Af. If <lon0>/<lat0>\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   is provided, then all azimuths are computed with respect to that point.\n");

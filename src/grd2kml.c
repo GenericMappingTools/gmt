@@ -152,7 +152,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t  converted to colors via the CPT [%s].\n", API->GMT->current.setting.cpt);
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets file name prefix for image directory and KML file. If the directory\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   already exist we will overwrite the files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Altitude mode of the image layer, choose among three modes:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     a Absolute altitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     g Altitude relative to sea surface or ground.\n");

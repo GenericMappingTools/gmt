@@ -154,7 +154,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\tGive xy[z][dh]file name or read stdin.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Only write profile if mean direction is within +/- <tolerance>\n");

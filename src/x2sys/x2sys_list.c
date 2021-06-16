@@ -127,7 +127,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-C <column> is the name of the data column whose crossovers we want.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<COEdbase> File with crossover error data base [stdin].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Return only crossovers whose distribution in time [or dist if no time]\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   are fairly symmetric about the mid-point. Specify max abs value for\n");

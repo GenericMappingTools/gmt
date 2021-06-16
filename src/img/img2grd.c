@@ -183,7 +183,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<world_image_filename> gives name of img file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set filename for the output grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify the region in decimal degrees or degrees:minutes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Set input img file bottom and top latitudes [%.3f/%.3f].\n", GMT_IMG_MINLAT, GMT_IMG_MAXLAT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no latitudes are given it is taken to mean %.3f/%.3f.\n", GMT_IMG_MINLAT_80, GMT_IMG_MAXLAT_80);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Without -D we automatically determine the extent from the file size.\n");

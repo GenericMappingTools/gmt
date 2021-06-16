@@ -115,7 +115,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Definition file for the track data set [<TAG>.%s].\n", X2SYS_FMT_EXT);
 	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: deprecated extension .%s will work but consider renaming the file)\n", X2SYS_FMT_EXT_OLD);
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Extension (suffix) for these data files\n");

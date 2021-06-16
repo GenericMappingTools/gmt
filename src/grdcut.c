@@ -110,7 +110,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Typically, the w/e/s/n you specify must be within the region of the input\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   grid.  If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon table that describes the grid subset\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to extracted (nodes between grid boundary and polygons will be set to NaN).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +c to crop the grid to the polygon bounding box [leave region as is].\n");

@@ -108,7 +108,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<agegrdfile> is a gridded data file in geographic coordinates with crustal ages.\n");
 	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   of the grid to work on [Default works on the entire grid].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename with the model predictions.\n");

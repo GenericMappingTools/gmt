@@ -70,7 +70,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Convert GMT4 .gmtdefaults4 to a %s file.\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   The original file is retained.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Modify the default settings based on the GMT system defaults.\n");

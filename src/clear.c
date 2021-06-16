@@ -50,7 +50,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   sessions  Deletes the user\'s sessions directory [%s].\n", API->session_dir);
 	GMT_Message (API, GMT_TIME_NONE, "\t   settings  Deletes a modern mode session\'s %s file.\n", GMT_SETTINGS_FILE);
 	GMT_Message (API, GMT_TIME_NONE, "\t   all       All of the above.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,;");
 
 	return (GMT_MODULE_USAGE);

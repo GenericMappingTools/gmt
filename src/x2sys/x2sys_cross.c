@@ -126,7 +126,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give list of file pairs that are ok to compare [Default is all combinations].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Print run time for each pair. Optionally append <fname> to save them in file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Control geographic coordinate conversions. By default we automatically convert\n");

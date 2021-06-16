@@ -101,7 +101,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<imagefile> is an EPS or raster image file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B");
 	gmt_refpoint_syntax (API->GMT, "D", "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Set width (and height) of image with +w<width>/[/<height>].  If <height> = 0\n");

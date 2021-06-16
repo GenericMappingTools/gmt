@@ -79,7 +79,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Read and assign header values from a file. Each input file row gives an exact\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   header_field_name, space or tab, and header value. Values are read according to\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   NGDC's MGD77 header format specification.\n\t\te.g.,\n\t\tSource_Institution Univ. of Hawaii\n");

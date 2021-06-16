@@ -109,7 +109,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 3 or more columns.  If no file(s) is given, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   First 4 columns must have lon, lat (or lat, lon, see -:), time, and angle (degrees).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Use opening angles as time.  Input is <lon> <lat> <angle> [<weight>] and -T refers to angles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   [Default expects <lon> <lat> <time> <angle> [<weight>] and -T refers to time].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute covariance matrix for each mean rotation.\n");

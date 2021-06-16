@@ -140,7 +140,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply -Nn for plain NN algorithm via GDAL\n");
 	GMT_Option (API, "R");
 	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Only consider points inside this search radius.");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
 	GMT_Option (API, "V");

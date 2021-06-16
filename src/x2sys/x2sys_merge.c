@@ -76,7 +76,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Give file with the new crossover error data base.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The new COEs will replace the old ones present in <main_COEdbase>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Result is printed to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);

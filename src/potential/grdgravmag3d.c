@@ -204,7 +204,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets body density in SI.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Passes file with locations where anomaly is going to be computed.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grdfile.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Specifies that z is positive down [Default positive up].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Gives layer thickness in m [Default = 500 m].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly (Can be used multiple times)\n");

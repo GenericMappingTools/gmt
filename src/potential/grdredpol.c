@@ -1034,7 +1034,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<anomgrid> is the input grdfile with the magnetic anomaly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets filename for output grid with the RTP solution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets<dec>/<dip> and uses this constant values in the RTP procedure.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Ei grid with the magnetization inclination [default: use IGRF].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Ed grid with the magnetization declination [default: use IGRF].\n");

@@ -101,7 +101,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Give multisegment file with abyssal hill lineaments [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Give step-length along great circles in km [5].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify typical angular error (in degrees) for (a)byssal hills or (f)racture zones [1].\n");

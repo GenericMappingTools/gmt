@@ -427,7 +427,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\ttopo_grd is the input grdfile with topography values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Filename for output netCDF grdfile with gravity [or geoid] values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute admittance curves based on a theoretical model.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append <n/wavelength/mean_depth/tbw> as specified below:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Total profile length in meters = <n> * <wavelength> (unless -Kx is set).\n");

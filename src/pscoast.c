@@ -197,7 +197,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,G");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_GSHHG_syntax (API->GMT, 'A');
 	GMT_Option (API, "B-");
 	gmt_fill_syntax (API->GMT, 'C', NULL, "Set separate color for lakes and river-lakes [Default is same as ocean].");

@@ -490,7 +490,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally add +a<angle>+f<font>+j<justify>+o<dx>[/<dy>] to change the label angle, font (size,fontname,color), justification and offset.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   fontsize < 0 : no label written; offset is from the limit of the beach ball.\n");
 	GMT_Option (API, "J-,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<,B-");
 	gmt_fill_syntax (API->GMT, 'E', NULL, "Set color used for extensive parts [Default is white].");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets various attributes of symbols depending on <mode>:\n");

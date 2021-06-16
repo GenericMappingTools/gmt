@@ -189,7 +189,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first job [0].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   We use any white-space as separators; use +W to strictly use TABs only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the batch_init.sh script [none].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all batch scripts.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Run just the indicated job number [0] for testing [run all].\n");

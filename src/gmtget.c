@@ -80,7 +80,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Download data from the selected GMT server [%s]\n", API->GMT->session.DATASERVER);
 	GMT_Message (API, GMT_TIME_NONE, "\t    Append one of the directories to download:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      cache: The entire contents of the cache directory.\n");

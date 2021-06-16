@@ -100,7 +100,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\n\t<ingrid> is a single grid file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of output grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "R");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Sa will set all data > high to the <above> value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Sb will set all data < low to the <below> value.\n");

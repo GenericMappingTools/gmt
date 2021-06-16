@@ -88,7 +88,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Terminates all clipping; optionally append how many clip levels to restore [all].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more polygon files.  If none, standard input is read.\n");
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting geographic points using great circle arcs, i.e., connect by straight lines,\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian data, use -Ax or -Ay to connect first in x, then y, or vice versa.\n");

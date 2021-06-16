@@ -1273,7 +1273,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file (s).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If more than one component is set via -C then <outgrid> must contain %%s to format component code.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	if (API->external)
 		GMT_Message (API, GMT_TIME_NONE, "\t-C List of comma-separated components to be written as grids. Choose from\n");
 	else

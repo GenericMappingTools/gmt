@@ -156,7 +156,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t      The <X> and <Y> given here will override the position determined by command line options.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If <pen> is given, it will override the pen from -W option for current SAC file only.\n");
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Read and plot seismograms in timewindow between <t0> and <t1> only. <t0> and <t1> are relative to a reference time specified by -T.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -T option is not specified, use the reference time (kzdate and kztime) defined in SAC header instead.\n");

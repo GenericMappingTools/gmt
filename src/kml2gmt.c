@@ -81,7 +81,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more Google Earth KML files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t  If no file(s) is given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<kmlfiles> is one or more KML files from Google Earth or similar.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Get Z from the ExtendData property (only single <SimpleData name=\"string\"> implemented so far).\n");

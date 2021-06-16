@@ -429,7 +429,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<topogrid> is data set to be plotted.\n");
 	GMT_Option (API, "J-Z");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert grid values to colors. Optionally, name a master cpt\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", API->GMT->current.setting.cpt);

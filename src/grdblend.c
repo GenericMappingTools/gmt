@@ -681,7 +681,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Only netCDF and native binary grid formats are directly supported;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   other grid formats will be converted via grdconvert when blending is complete.\n");
 	GMT_Option (API, "I,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Clobber modes; no blending takes places as output node value is determined by the mode:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     f: The first input grid determines the final value.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     l: The lowest input grid value determines the final value.\n");

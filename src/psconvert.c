@@ -537,7 +537,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t<psfile(s)> PostScript file(s) to be converted.\n");
 	if (API->external)
 		GMT_Message (API, GMT_TIME_NONE, "\tTo access the current internal GMT plot, specify <psfile> as \"=\".\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fade> (0-100) to fade entire plot to black (100%% fade)[no fading].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Use +g<color> to change the fade color [black].\n");

@@ -99,7 +99,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Use any adjustment splines per track to redistribute COEs between tracks\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   according to their relative weight [no adjustments].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Add segment headers with track names between separate file output [no added segment headers].\n");

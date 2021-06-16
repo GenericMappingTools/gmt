@@ -767,7 +767,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Nearest Neighbor (NN) Analysis. Compute minimum distances between NN point pairs.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit used for NN distance calculation.  Returns minimum distances and point IDs for pairs.\n");
