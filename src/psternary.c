@@ -486,7 +486,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 			PSL_plotline (PSL, &tri_x[2], &tri_y[2], 2, PSL_MOVE|PSL_STROKE);
 	}
 
-	L_off = 3.0 * GMT->current.setting.map_label_offset;	T_off = 2.0 * GMT->current.setting.map_title_offset;
+	L_off = 3.0 * GMT->current.setting.map_label_offset[GMT_X];	T_off = 2.0 * GMT->current.setting.map_title_offset;
 	if (GMT->current.map.frame.header[0]) {	/* Plot title */
 		PSL_comment (PSL, "Placing plot title\n");
 		gmt_map_title (GMT, tri_x[2], tri_y[2]+2.0*T_off);

@@ -387,6 +387,10 @@ enum GMT_enum_autolegend {
 	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2, GMT_LEGEND_LABEL_FIXED = 0,
 	GMT_LEGEND_LABEL_FORMAT = 1, GMT_LEGEND_LABEL_LIST = 2, GMT_LEGEND_LABEL_HEADER = 3};
 
+/*! Various mode for label positioning */
+enum GMT_enum_maplabel {
+	GMT_LABEL_ANNOT = 0, GMT_LABEL_AXIS = 1};
+
 /*! Various mode for custom symbols */
 enum GMT_enum_customsymb {
 	GMT_CUSTOM_DEF  = 1,

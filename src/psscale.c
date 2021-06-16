@@ -966,7 +966,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				if (!(flip & PSSCALE_FLIP_LABEL) && psscale_letter_hangs_down (GMT->current.map.frame.axis[GMT_X].label))
 					label_off += 0.3;	/* Add 30% hang below baseline */
 				label_off *= GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;	/* Scale to inches */
-				label_off += MAX (0.0, GMT->current.setting.map_label_offset);	/* Add offset */
+				label_off += MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]);	/* Add offset */
 			}
 			/* If a unit then add space on the right to deal with the unit */
 			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
@@ -1014,7 +1014,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			annot_off += hor_annot_width;
 			/* Increase width if there is a label */
 			if (GMT->current.map.frame.axis[GMT_X].label[0])
-				label_off = MAX (0.0, GMT->current.setting.map_label_offset) + GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
+				label_off = MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]) + GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
 			/* If a unit then consider if its width exceeds the bar width; then use half the excess to adjust center and width of box, and its height to adjust the height of box */
 			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
 				/* u_off is ~half-width of the label placed on top of the vertical bar, while v_off is the extra height needed to accommodate the label */
@@ -1071,11 +1071,11 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 	if (flip & PSSCALE_FLIP_LABEL) {	/* Place label on the opposite side */
 		Label_justify = PSL_BC;
-		y_label = width + GMT->current.setting.map_label_offset;
+		y_label = width + GMT->current.setting.map_label_offset[GMT_Y];
 	}
 	else {	/* Leave label on the default side */
 		Label_justify = PSL_TC;
-		y_label = -GMT->current.setting.map_label_offset;
+		y_label = -GMT->current.setting.map_label_offset[GMT_Y];
 	}
 
 	if (Ctrl->D.emode) {	/* Adjustment to triangle base coordinates so pen abuts perfectly with bar */
@@ -1185,7 +1185,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		}
 
 		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
-		label_off = annot_off + GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH] + GMT->current.setting.map_label_offset;
+		label_off = annot_off + GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH] + GMT->current.setting.map_label_offset[GMT_Y];
 		if (no_B_mode & PSSCALE_ANNOT_ANGLED) {
 			y_annot = y_base + dir * (((len > 0.0) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] * fabs (sind (Ctrl->S.angle)));
 			justify = l_justify = PSL_ML;
@@ -1514,7 +1514,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			hor_annot_width = GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Annotations are orthogonal */
 
 		annot_off = ((len > 0.0 && !center) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + hor_annot_width;
-		label_off = annot_off + GMT->current.setting.map_label_offset;
+		label_off = annot_off + GMT->current.setting.map_label_offset[GMT_Y];
 		if (use_labels || (flip & PSSCALE_FLIP_ANNOT) || Ctrl->Q.active) annot_off -= hor_annot_width;
 		if (no_B_mode & PSSCALE_ANNOT_ANGLED) {
 			y_annot = y_base + dir * (((len > 0.0) ? len : 0.0) + GMT->current.setting.map_annot_offset[GMT_PRIMARY] * cosd (Ctrl->S.angle));
