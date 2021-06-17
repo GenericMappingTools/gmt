@@ -41,7 +41,7 @@ From the Windows Subsystem for Linux Documentation:
 See `Windows Subsystem for Linux Documentation <https://docs.microsoft.com/en-us/windows/wsl/>`_ to get started.
 
 Once WSL is installed, choose a distribution (e.g. Debian) and follow the `install <https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md#ubuntudebian>`
-instructions or `build from source <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`.
+instructions or `build from source <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`_.
 
 MINGW|MSYS2 and GMT
 -------------------
