@@ -38,7 +38,7 @@ From the Windows Subsystem for Linux Documentation:
     -- including most command-line tools, utilities, and applications
     -- directly on Windows, unmodified, without the overhead of a traditional virtual machine or dual-boot setup.
 
-See `Windows Subsystem for Linux Documentation <https://docs.microsoft.com/en-us/windows/wsl/>` to get started.
+See `Windows Subsystem for Linux Documentation <https://docs.microsoft.com/en-us/windows/wsl/>`_ to get started.
 
 Once WSL is installed, choose a distribution (e.g. Debian) and follow the `install <https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md#ubuntudebian>`
 instructions or `build from source <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`.
