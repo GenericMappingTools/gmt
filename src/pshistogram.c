@@ -164,10 +164,18 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSHISTOGRAM_CTRL *C) {	/* De
 	gmt_M_free (GMT, C);
 }
 
+/* For some useful discussion regarding the next to functions, see the postings on this issue:
+ * https://github.com/GenericMappingTools/gmt/issues/5343
+ */
+
 GMT_LOCAL int64_t pshistogram_get_constant_bin (struct GMT_ARRAY *T, double x, int64_t dummy) {
 	/* Find the bin for this value of x when all bins have constant width.
 	 * If x falls outside our range then we return -1 or n
-	 * The left boundary array index == bin index. */
+	 * The left boundary array index == bin index.
+	 * One caveat for this approach is that if the data very often fall exactly on a bin
+	 * boundary then the rounding schemes will end up alternating every bin.  Of course,
+	 * in this case probably -F should be used.  To protect from such cases we only use
+	 * this function for large data set where speed may be important. */
 	int64_t bin;
 	gmt_M_unused (dummy);
 	if (x < T->min)
@@ -181,7 +189,10 @@ GMT_LOCAL int64_t pshistogram_get_constant_bin (struct GMT_ARRAY *T, double x, i
 
 GMT_LOCAL int64_t pshistogram_get_variable_bin (struct GMT_ARRAY *T, double x, int64_t last_bin) {
 	/* Find the bin for this value of x.  If x falls outside our range then
-	 * we return -1 or n.  The left boundary array index == bin index. */
+	 * we return -1 or n.  The left boundary array index == bin index.
+	 * We also use this function even if the bins are equidistant as the
+	 * approach will always round values landing on bin boundaries to the
+	 * same side (in contrast to pshistogram_get_constant_bin) */
 	int64_t bin = last_bin;
 	while (bin >= 0 && x < T->array[bin]) bin--;	/* Need a previous bin */
 	if (bin != last_bin) return bin;		/* Means we searched to the left and either found the bin or ran off and got -1 */
@@ -189,6 +200,8 @@ GMT_LOCAL int64_t pshistogram_get_variable_bin (struct GMT_ARRAY *T, double x, i
 	while (bin < (int64_t)T->n && x >= T->array[bin+1]) bin++;	/* Need a later bin */
 	return bin;	/* Either a valid bin or F->T.n (which is 1 larger than n_boxes) */
 }
+
+#define BIN_FASTER_IF_THIS_LARGE	1000000	/* If you bin a million points then bin rounding details won't matter */
 
 GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_INFO *F, double *data, double *weights, uint64_t n) {
 
@@ -201,7 +214,8 @@ GMT_LOCAL int pshistogram_fill_boxes (struct GMT_CTRL *GMT, struct PSHISTOGRAM_I
 	F->n_boxes = F->T->n - 1;	/* One less than the bin boundaries */
 	F->boxh = gmt_M_memory (GMT, NULL, F->n_boxes, double);
 	F->n_counted = 0;
-	pshistogram_get_bin = (F->T->var_inc) ? &pshistogram_get_variable_bin : &pshistogram_get_constant_bin;
+	/* Pic variable bin search unles not variable bounds and the data set is large */
+	pshistogram_get_bin = (F->T->var_inc || n < BIN_FASTER_IF_THIS_LARGE) ? &pshistogram_get_variable_bin : &pshistogram_get_constant_bin;
 
 	/* First fill boxes with counts  */
 
