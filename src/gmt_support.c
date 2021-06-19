@@ -17190,7 +17190,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return GMT_PARSE_ERROR;
 	}
 	/* 3. Check if we are working with absolute time.  This means there must be a T in both min or max arguments */
-	if (ns > 1 && (strchr (txt[GMT_X], 'T') || strchr (txt[GMT_Y], 'T'))) {	/* Gave absolute time limits */
+	if (ns >= 1 && (strchr (txt[GMT_X], 'T') || strchr (txt[GMT_Y], 'T'))) {	/* Gave absolute time limits */
 		T->temporal = true;
 		if (!(flags & GMT_ARRAY_TIME)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Calendar time not allowed for this module\n", option);
@@ -17224,6 +17224,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 			/* Check if unit is a variable increment */
 			T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
 		}
+		else	/* Set assumed time unit */
+			T->unit = GMT->current.setting.time_system.unit;
 	}
 	/* 4. Consider spatial distances */
 	if (has_inc && !T->temporal && strchr (GMT_LEN_UNITS "c", txt[ns][len])) {	/* Geospatial or Cartesian distances */
