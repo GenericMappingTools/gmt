@@ -7993,9 +7993,9 @@ void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	GMT_Usage (API, 1, "\n-%c<color>", option);
-	GMT_Usage (API, -2, "%s Specify <color> as one of: ", string);
+	GMT_Usage (API, 2, "%s Specify <color> as one of: ", string);
 	GMT_Usage (API, 3, "%s <gray> or <red>/<green>/<blue>, all in range 0-255. ", GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s <cyan>/<magenta>/<yellow>/<blackk> in range 0-100%%; ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <cyan>/<magenta>/<yellow>/<black> in range 0-100%%; ", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s <hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1; ", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Any valid color name.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
