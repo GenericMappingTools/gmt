@@ -20,7 +20,7 @@ Synopsis
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*]
-[ |-D|\ *sigma\_scale* ]
+[ |-D|\ *scale* ]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]

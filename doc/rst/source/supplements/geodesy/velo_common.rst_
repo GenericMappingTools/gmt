@@ -145,7 +145,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *sigma\_scale*
+**-D**\ *scale*
     Can be used to rescale the uncertainties of velocities (**-Se** and
     **-Sr**) and rotations (**-Sw**) [1].
 
