@@ -514,19 +514,6 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	if (reverse) {	/* Flip what is positive directions */
 		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
 	}
-	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
-		if (side[k] == 0) continue;	/* Did not want this axis drawn */
-		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
-		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, psternary_get_B_setting (boptions[k]));
-		gmt_init_B (GMT);
-		PSL_comment (PSL, "Draw axis %c with origin at %g, %g and rotation = %g\n", name[k], x_origin[k], y_origin[k], rot[k]);
-		PSL_setorigin (PSL, x_origin[k], y_origin[k], rot[k], PSL_FWD);
-		if ((error = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot %c axis\n", name[k]);
-			Return (API->error);
-		}
-		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
-	}
 
 	if (!Ctrl->S.active && (Ctrl->G.active || Ctrl->C.active)) {	/* Plot polygons before gridlines */
 		char vfile[GMT_VF_LEN] = {""};
@@ -566,6 +553,20 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
 	}
 	if (clip_set) PSL_endclipping (PSL, 1);
+
+	for (k = 0; k <= GMT_Z; k++) {	/* /* Plot the 3 axes for -B settings that have been stripped of gridline requests */
+		if (side[k] == 0) continue;	/* Did not want this axis drawn */
+		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
+		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, psternary_get_B_setting (boptions[k]));
+		gmt_init_B (GMT);
+		PSL_comment (PSL, "Draw axis %c with origin at %g, %g and rotation = %g\n", name[k], x_origin[k], y_origin[k], rot[k]);
+		PSL_setorigin (PSL, x_origin[k], y_origin[k], rot[k], PSL_FWD);
+		if ((error = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd))) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot %c axis\n", name[k]);
+			Return (API->error);
+		}
+		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
+	}
 
 	for (k = 0; k <= GMT_Z; k++) {
 		if (GMT_Free_Option (API, &boptions[k])) {
