@@ -389,9 +389,12 @@ GMT_LOCAL int psvelo_trace_cross (struct GMT_CTRL *GMT, double slon, double slat
 		vw = v_width;
 	}
 
-	dim[0] = x2, dim[1] = y2;
-	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = PSL_VEC_END | PSL_VEC_FILL;
+	dim[PSL_VEC_XTIP] = x2;
+	dim[PSL_VEC_YTIP] = y2;
+	dim[PSL_VEC_TAIL_WIDTH] = vw;
+	dim[PSL_VEC_HEAD_LENGTH] = hl;
+	dim[PSL_VEC_HEAD_WIDTH] = hw;
+	dim[PSL_VEC_HEAD_SHAPE] = vector_shape, dim[PSL_VEC_STATUS] = PSL_VEC_END | PSL_VEC_FILL;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* second, extensional arrow in opposite direction */
@@ -415,14 +418,17 @@ GMT_LOCAL int psvelo_trace_cross (struct GMT_CTRL *GMT, double slon, double slat
 		vw = v_width;
 	}
 
-	dim[0] = x2, dim[1] = y2;
-	dim[2] = vw, dim[3] = hl, dim[4] = hw;
+	dim[PSL_VEC_XTIP] = x2;
+	dim[PSL_VEC_YTIP] = y2;
+	dim[PSL_VEC_TAIL_WIDTH] = vw;
+	dim[PSL_VEC_HEAD_LENGTH] = hl;
+	dim[PSL_VEC_HEAD_WIDTH] = hw;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* compression component */
 	dx = eps2 * s;
 	dy = eps2 * c;
-	dim[6] = PSL_VEC_BEGIN | PSL_VEC_FILL;
+	dim[PSL_VEC_STATUS] = PSL_VEC_BEGIN | PSL_VEC_FILL;
 	psvelo_trace_arrow (GMT, slon, slat, dx, dy, sscale, &x1, &y1, &x2, &y2);
 
 	if (eps2 > 0.0) {
@@ -443,8 +449,11 @@ GMT_LOCAL int psvelo_trace_cross (struct GMT_CTRL *GMT, double slon, double slat
 		vw = v_width;
 	}
 
-	dim[0] = x2, dim[1] = y2;
-	dim[2] = vw, dim[3] = hl, dim[4] = hw;
+	dim[PSL_VEC_XTIP] = x2;
+	dim[PSL_VEC_YTIP] = y2;
+	dim[PSL_VEC_TAIL_WIDTH] = vw;
+	dim[PSL_VEC_HEAD_LENGTH] = hl;
+	dim[PSL_VEC_HEAD_WIDTH] = hw;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* second, compressional arrow in opposite direction */
@@ -470,8 +479,11 @@ GMT_LOCAL int psvelo_trace_cross (struct GMT_CTRL *GMT, double slon, double slat
 		vw = v_width;
 	}
 
-	dim[0] = x2, dim[1] = y2;
-	dim[2] = vw, dim[3] = hl, dim[4] = hw;
+	dim[PSL_VEC_XTIP] = x2;
+	dim[PSL_VEC_YTIP] = y2;
+	dim[PSL_VEC_TAIL_WIDTH] = vw;
+	dim[PSL_VEC_HEAD_LENGTH] = hl;
+	dim[PSL_VEC_HEAD_WIDTH] = hw;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	return 0;
@@ -1241,9 +1253,20 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					hl = s * Ctrl->A.S.v.h_length;
 					vw = s * Ctrl->A.S.v.v_width;
 					if (vw < (2.0/PSL_DOTS_PER_INCH)) vw = 2.0/PSL_DOTS_PER_INCH;	/* Minimum width set */
-					dim[0] = plot_vx, dim[1] = plot_vy;
-					dim[2] = vw, dim[3] = hl, dim[4] = hw;
-					dim[5] = Ctrl->A.S.v.v_shape;
+					//if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {
+					//	current_pen = Ctrl->A.S.v.pen;
+					//	if (Ctrl->H.active) {
+					//		double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+					//		gmt_scale_pen (GMT, &current_pen, scl);
+					//	}
+					//	gmt_setpen (GMT, &current_pen);
+					//}
+					dim[PSL_VEC_XTIP]        = plot_vx;
+					dim[PSL_VEC_YTIP]        = plot_vy;
+					dim[PSL_VEC_TAIL_WIDTH]  = vw;
+					dim[PSL_VEC_HEAD_LENGTH] = hl;
+					dim[PSL_VEC_HEAD_WIDTH]  = hw;
+					dim[PSL_VEC_HEAD_SHAPE]  = Ctrl->A.S.v.v_shape;
 					if (Ctrl->W.active) {
 						current_pen = Ctrl->W.pen;
 						if (Ctrl->H.active) {
@@ -1257,12 +1280,13 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 						psl_vector_v4 (PSL, plot_x, plot_y, dim, this_rgb, Ctrl->L.active);
 					}
 					else {
-						dim[6] = (double)Ctrl->A.S.v.status;
-						dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
-						dim[11] = (headpen_width > 0.0) ? headpen_width : 0.5 * Ctrl->W.pen.width;
-						if (Ctrl->A.S.v.status & PSL_VEC_FILL2)	/* Gave head fill color via +g */
+						dim[PSL_VEC_STATUS]          = (double)Ctrl->A.S.v.status;
+						dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)Ctrl->A.S.v.v_kind[0];
+						dim[PSL_VEC_HEAD_TYPE_END]   = (double)Ctrl->A.S.v.v_kind[1];
+						dim[PSL_VEC_HEAD_PENWIDTH]   = (headpen_width > 0.0) ? headpen_width : 0.5 * Ctrl->W.pen.width;
+						if (Ctrl->A.S.v.status & PSL_VEC_FILL2)
 							gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->W.active);
-						else if (set_g_fill)	/* Gave head fill color via -G */
+						else if (set_g_fill)
 							gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 						PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					}
