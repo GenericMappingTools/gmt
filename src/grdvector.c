@@ -552,9 +552,10 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 		col_0 = urint ((tmp - Grid[0]->header->wesn[XLO]) * HH->r_inc[GMT_X]);
 	}
 
-	dim[5] = Ctrl->Q.S.v.v_shape;	/* dim[5-8] do not change inside the loop */
-	dim[6] = (double)Ctrl->Q.S.v.status;
-	dim[7] = (double)Ctrl->Q.S.v.v_kind[0];	dim[8] = (double)Ctrl->Q.S.v.v_kind[1];
+	dim[PSL_VEC_HEAD_SHAPE]      = Ctrl->Q.S.v.v_shape;	/* head shape, type, and status do not change inside the loop */
+	dim[PSL_VEC_STATUS]          = (double)Ctrl->Q.S.v.status;
+	dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)Ctrl->Q.S.v.v_kind[0];
+	dim[PSL_VEC_HEAD_TYPE_END]   = (double)Ctrl->Q.S.v.v_kind[1];
 
 	if (Ctrl->Q.S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
 		PSL_defpen (PSL, "PSL_vecheadpen", Ctrl->Q.S.v.pen.width, Ctrl->Q.S.v.pen.style, Ctrl->Q.S.v.pen.offset, Ctrl->Q.S.v.pen.rgb);
@@ -722,13 +723,16 @@ EXTERN_MSC int GMT_grdvector (void *V_API, int mode, void *args) {
 					continue;
 				}
 				/* Must plot a vector head */
-				dim[0] = x2; dim[1] = y2;
-				dim[2] = Ctrl->Q.S.v.v_width;	dim[3] = Ctrl->Q.S.v.h_length;	dim[4] = Ctrl->Q.S.v.h_width;
-				dim[11] = headpen_width;	/* Possibly shrunk head pen width */
+				dim[PSL_VEC_XTIP]          = x2;
+				dim[PSL_VEC_YTIP]          = y2;
+				dim[PSL_VEC_TAIL_WIDTH]    = Ctrl->Q.S.v.v_width;
+				dim[PSL_VEC_HEAD_LENGTH]   = Ctrl->Q.S.v.h_length;
+				dim[PSL_VEC_HEAD_WIDTH]    = Ctrl->Q.S.v.h_width;
+				dim[PSL_VEC_HEAD_PENWIDTH] = headpen_width;	/* Possibly shrunk head pen width */
 				if (scaled_vec_length < Ctrl->Q.S.v.v_norm) {	/* Scale arrow attributes down with length */
 					f = scaled_vec_length / Ctrl->Q.S.v.v_norm;
 					for (k = 2; k <= 4; k++) dim[k] *= f;
-					dim[11] *= f;
+					dim[PSL_VEC_HEAD_PENWIDTH] *= f;
 				}
 				if (Ctrl->Q.S.symbol == GMT_SYMBOL_VECTOR_V4) {	/* Do the deprecated GMT4 vector polygon instead */
 					int v4_outline = Ctrl->W.active;

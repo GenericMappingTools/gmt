@@ -669,9 +669,13 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 			if (Ctrl->S2.vector) {
 				double dim[PSL_MAX_DIMS];
 				gmt_M_memset (dim, PSL_MAX_DIMS, double);
-				dim[0] = plot_x + Ctrl->S2.size*si; dim[1] = plot_y + Ctrl->S2.size*co;
-				dim[2] = Ctrl->S2.width; dim[3] = Ctrl->S2.length; dim[4] = Ctrl->S2.head;
-				dim[5] = Ctrl->S2.vector_shape; dim[6] = PSL_VEC_END | PSL_VEC_FILL;
+				dim[PSL_VEC_XTIP]        = plot_x + Ctrl->S2.size*si;
+				dim[PSL_VEC_YTIP]        = plot_y + Ctrl->S2.size*co;
+				dim[PSL_VEC_TAIL_WIDTH]  = Ctrl->S2.width;
+				dim[PSL_VEC_HEAD_LENGTH] = Ctrl->S2.length;
+				dim[PSL_VEC_HEAD_WIDTH]  = Ctrl->S2.head;
+				dim[PSL_VEC_HEAD_SHAPE]  = Ctrl->S2.vector_shape;
+				dim[PSL_VEC_STATUS]      = PSL_VEC_END | PSL_VEC_FILL;
 				if (Ctrl->S2.S.symbol == GMT_SYMBOL_VECTOR_V4)
 					psl_vector_v4 (PSL, plot_x - Ctrl->S2.size*si, plot_y - Ctrl->S2.size*co, dim, Ctrl->S2.fill.rgb, Ctrl->S2.outline);
 				else {	/* Modern vector */

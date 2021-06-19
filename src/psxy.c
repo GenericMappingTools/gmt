@@ -447,20 +447,25 @@ GMT_LOCAL void psxy_plot_end_vectors (struct GMT_CTRL *GMT, double *x, double *y
 		angle = d_atan2d (y[current[k]] - y[next[k]], x[current[k]] - x[next[k]]);
 		sincosd (angle, &s, &c);
 		L = (P->end[k].V->v.v_kind[1] == PSL_VEC_TERMINAL) ? 1e-3 : P->end[k].length;
-		P->end[k].V->v.v_width = (float)(P->end[k].V->v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* Set symbol pen width */
-		dim[0] = x[current[k]] + c * L; dim[1] = y[current[k]] + s * L;
-		dim[2] = P->end[k].V->v.v_width, dim[3] = P->end[k].V->v.h_length, dim[4] = P->end[k].V->v.h_width;
-		dim[5] = P->end[k].V->v.v_shape;
-		dim[6] = (double)P->end[k].V->v.status;
-		dim[7] = (double)P->end[k].V->v.v_kind[0];	dim[8]  = (double)P->end[k].V->v.v_kind[1];
-		dim[9] = (double)P->end[k].V->v.v_trim[0];	dim[10] = (double)P->end[k].V->v.v_trim[1];
+		P->end[k].V->v.v_width       = (float)(P->end[k].V->v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);	/* Set symbol pen width */
+		dim[PSL_VEC_XTIP]            = x[current[k]] + c * L;
+		dim[PSL_VEC_YTIP]            = y[current[k]] + s * L;
+		dim[PSL_VEC_TAIL_WIDTH]      = P->end[k].V->v.v_width;
+		dim[PSL_VEC_HEAD_LENGTH]     = P->end[k].V->v.h_length;
+		dim[PSL_VEC_HEAD_WIDTH]      = P->end[k].V->v.h_width;
+		dim[PSL_VEC_HEAD_SHAPE]      = P->end[k].V->v.v_shape;
+		dim[PSL_VEC_STATUS]          = (double)P->end[k].V->v.status;
+		dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)P->end[k].V->v.v_kind[0];
+		dim[PSL_VEC_HEAD_TYPE_END]   = (double)P->end[k].V->v.v_kind[1];
+		dim[PSL_VEC_TRIM_BEGIN]      = (double)P->end[k].V->v.v_trim[0];
+		dim[PSL_VEC_TRIM_END]        = (double)P->end[k].V->v.v_trim[1];
 		if (P->end[k].V->v.status & PSL_VEC_OUTLINE2) {	/* Gave specific head outline pen */
 			PSL_defpen (GMT->PSL, "PSL_vecheadpen", P->end[k].V->v.pen.width, P->end[k].V->v.pen.style, P->end[k].V->v.pen.offset, P->end[k].V->v.pen.rgb);
-			dim[11] = P->end[k].V->v.pen.width;
+			dim[PSL_VEC_HEAD_PENWIDTH] = P->end[k].V->v.pen.width;
 		}
 		else {	/* Set default based on line pen */
 			PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.5 * P->width, P->style, P->offset, P->rgb);
-			dim[11] = 0.5 * P->width;
+			dim[PSL_VEC_HEAD_PENWIDTH] = 0.5 * P->width;
 		}
 		gmt_setfill (GMT, &P->end[k].V->v.fill, (P->end[k].V->v.status & PSL_VEC_OUTLINE2) == PSL_VEC_OUTLINE2);
 		PSL_plotsymbol (GMT->PSL, x[current[k]], y[current[k]], dim, PSL_VECTOR);
@@ -2017,9 +2022,12 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						if (length < S.v.h_length && S.v.v_norm < 0.0)	/* No shrink requested but head length exceeds total vector length */
 							GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider using +n<norm>\n", n_total_read);
 						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-						dim[0] = x_2, dim[1] = y_2;
-						dim[2] = s * S.v.v_width, dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width;
-						if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
+						dim[PSL_VEC_XTIP]        = x_2;
+						dim[PSL_VEC_YTIP]        = y_2;
+						dim[PSL_VEC_TAIL_WIDTH]  = s * S.v.v_width;
+						dim[PSL_VEC_HEAD_LENGTH] = s * S.v.h_length;
+						dim[PSL_VEC_HEAD_WIDTH]  = s * S.v.h_width;
+						if (S.v.parsed_v4) {	 /* Parsed the old ways so plot the old ways... */
 							double *v4_rgb = NULL;
 							int v4_outline = Ctrl->W.active;
 							if (Ctrl->G.active)
@@ -2030,16 +2038,18 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 								v4_rgb = GMT->session.no_rgb;
 							if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
 							if (S.v.status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
-							dim[5] = GMT->current.setting.map_vector_shape;
-							dim[4] *= 0.5;	/* Since it was double in the parsing */
+							dim[PSL_VEC_HEAD_SHAPE] = GMT->current.setting.map_vector_shape;
+							dim[PSL_VEC_HEAD_WIDTH] *= 0.5;	/* Since it was double in the parsing */
 							psl_vector_v4 (PSL, xpos[item], plot_y, dim, v4_rgb, v4_outline);
 						}
 						else {
-							dim[5] = S.v.v_shape;
-							dim[6] = (double)S.v.status;
-							dim[7] = (double)S.v.v_kind[0];	dim[8] = (double)S.v.v_kind[1];
-							dim[9] = (double)S.v.v_trim[0];	dim[10] = (double)S.v.v_trim[1];
-							dim[11] = s * headpen_width;	/* Possibly shrunk head pen width */
+							dim[PSL_VEC_HEAD_SHAPE]      = S.v.v_shape;
+							dim[PSL_VEC_STATUS]          = (double)S.v.status;
+							dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)S.v.v_kind[0];
+							dim[PSL_VEC_HEAD_TYPE_END]   = (double)S.v.v_kind[1];
+							dim[PSL_VEC_TRIM_BEGIN]      = (double)S.v.v_trim[0];
+							dim[PSL_VEC_TRIM_END]        = (double)S.v.v_trim[1];
+							dim[PSL_VEC_HEAD_PENWIDTH]   = s * headpen_width;	/* Possibly shrunk head pen width */
 							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, PSL_VECTOR);
 						}
 						break;
@@ -2063,21 +2073,25 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 					case PSL_MARC:
 						gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
 						S.v.v_width = (float)(factor * current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-						dim[0] = factor * in[ex1+S.read_size];
-						dim[1] = in[ex2+S.read_size];
-						dim[2] = in[ex3+S.read_size];
-						length = fabs (dim[2]-dim[1]);	/* Arc length in degrees */
+						dim[PSL_MATHARC_RADIUS] = factor * in[ex1+S.read_size];
+						dim[PSL_MATHARC_ANGLE_BEGIN] = in[ex2+S.read_size];
+						dim[PSL_MATHARC_ANGLE_END]   = in[ex3+S.read_size];
+						length = fabs (dim[PSL_MATHARC_ANGLE_END]-dim[PSL_MATHARC_ANGLE_BEGIN]);	/* Arc length in degrees */
 						if (gmt_M_is_dnan (length)) {
 							GMT_Report (API, GMT_MSG_WARNING, "Math angle arc length = NaN near line %d. Skipped\n", n_total_read);
 							continue;
 						}
 						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-						dim[3] = s * S.v.h_length, dim[4] = s * S.v.h_width, dim[5] = s * S.v.v_width;
-						dim[6] = S.v.v_shape;
-						dim[7] = (double)S.v.status;
-						dim[8] = (double)S.v.v_kind[0];	dim[9] = (double)S.v.v_kind[1];
-						dim[10] = (double)S.v.v_trim[0];	dim[11] = (double)S.v.v_trim[1];
-						dim[12] = s * headpen_width;	/* Possibly shrunk head pen width */
+						dim[PSL_MATHARC_HEAD_LENGTH]     = s * S.v.h_length;
+						dim[PSL_MATHARC_HEAD_WIDTH]      = s * S.v.h_width;
+						dim[PSL_MATHARC_ARC_PENWIDTH]    = s * S.v.v_width;
+						dim[PSL_MATHARC_HEAD_SHAPE]      = S.v.v_shape;
+						dim[PSL_MATHARC_STATUS]          = (double)S.v.status;
+						dim[PSL_MATHARC_HEAD_TYPE_BEGIN] = (double)S.v.v_kind[0];
+						dim[PSL_MATHARC_HEAD_TYPE_END]   = (double)S.v.v_kind[1];
+						dim[PSL_MATHARC_TRIM_BEGIN]      = (double)S.v.v_trim[0];
+						dim[PSL_MATHARC_TRIM_END]        = (double)S.v.v_trim[1];
+						dim[PSL_MATHARC_HEAD_PENWIDTH]   = s * headpen_width;	/* Possibly shrunk head pen width */
 						PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						break;
 					case PSL_WEDGE:
@@ -2129,14 +2143,14 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						if (S.w_active)	/* Geo-wedge */
 							gmt_geo_wedge (GMT, in[GMT_X], in[GMT_Y], S.w_radius_i, dim[0], S.w_dr, dim[1], dim[2], S.w_da, S.w_type, fill_active || get_rgb, outline_active);
 						else {	/* Cartesian wedge */
-							dim[0] *= 0.5;	/* Change from diameter to radius */
-							dim[3] = S.w_type;
-							dim[4] = 0.5 * S.w_radius_i;	/* In case there is an inner diameter */
-							dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
-							dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
-							dim[7] = 0.0;	/* Reset */
-							if (fill_active || get_rgb) dim[7] = 1;	/* Lay down filled wedge */
-							if (outline_active) dim[7] += 2;	/* Draw wedge outline */
+							dim[PSL_WEDGE_RADIUS_O] *= 0.5;	/* Change from diameter to radius */
+							dim[PSL_WEDGE_STATUS]   = S.w_type;
+							dim[PSL_WEDGE_RADIUS_I] = 0.5 * S.w_radius_i;	/* In case there is an inner diameter */
+							dim[PSL_WEDGE_DR]       = S.w_dr;	/* In case there is a request for radially spaced arcs */
+							dim[PSL_WEDGE_DA]       = S.w_da;	/* In case there is a request for angularly spaced radial lines */
+							dim[PSL_WEDGE_ACTION]   = 0.0;	/* Reset */
+							if (fill_active || get_rgb) dim[PSL_WEDGE_ACTION] = 1;	/* Lay down filled wedge */
+							if (outline_active) dim[PSL_WEDGE_ACTION] += 2;	/* Draw wedge outline */
 							PSL_plotsymbol (PSL, xpos[item], plot_y, dim, S.symbol);
 						}
 						break;
