@@ -113,6 +113,20 @@ enum PSL_enum_vecattr {
 	PSL_VEC_COMPONENTS	= 1048576,	/* Not yet needed in postscriptlight: Got vector dx, dy Cartesian components */
 	PSL_VEC_SCALE		= 2097152};	/* Not yet needed in postscriptlight: If not set we determine the required inch-to-degree scale */
 
+enum PSL_enum_vecdim {	/* Indices into the dim[] array passed to psl_vector */
+	PSL_VEC_XTIP 		= 0,	/* x-coordinate of tip of vector in inches */
+	PSL_VEC_YTIP 		= 1,	/* y-coordinate of tip of vector in inches */
+	PSL_VEC_TAIL_WIDTH	= 2,	/* Width of tail stem (pen width) in inches */
+	PSL_VEC_HEAD_LENGTH	= 3,	/* Length of the vector head in inches */
+	PSL_VEC_HEAD_WIDTH	= 4,	/* Width of the vector head in inches */
+	PSL_VEC_HEAD_SHAPE	= 5,	/* Shape (0-2) of the vector head */
+	PSL_VEC_STATUS		= 6,	/* Sum of all vector bit flags */
+	PSL_VEC_HEAD_TYPE_B	= 7,	/* Type of vector head at beginning of vector */
+	PSL_VEC_HEAD_TYPE_E	= 8,	/* Type of vector head at end of vector */
+	PSL_VEC_TRIM_B		= 9,	/* Amount of line trim at beginning of vector in inches*/
+	PSL_VEC_TRIM_E		= 10,	/* Amount of line trim at end of vector in inches*/
+	PSL_VEC_HEAD_PEN	= 11};	/* Pen width of vector head outline */
+
 /* PSL macros for dealing with vector attributes */
 
 #define PSL_vec_justify(status) ((status>>6)&3)			/* Return justification as 0-3 */
