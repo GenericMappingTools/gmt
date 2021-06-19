@@ -1,6 +1,6 @@
 **-I**\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]]
     *x_inc* [and optionally *y_inc*] is the grid spacing. **Geographical
-    (degrees) coordinates**: Optionally, append a increment unit. Choose among
+    (degrees) coordinates**: Optionally, append an increment unit. Choose among
     **m** to indicate arc minutes or **s** to indicate arc seconds. If one
     of the units **e**, **f**, **k**, **M**, **n** or **u** is appended
     instead, the increment is assumed to be given in meter, foot, km, Mile,
