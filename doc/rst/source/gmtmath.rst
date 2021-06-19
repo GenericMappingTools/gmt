@@ -14,9 +14,11 @@ Synopsis
 
 **gmt math** [ |-A|\ *t_f(t)*\ [**+e**]\ [**+r**]\ [**+s**\|\ **w**] ]
 [ |-C|\ *cols* ]
-[ |-E|\ *eigen* ] [ |-I| ]
+[ |-E|\ *eigen* ]
+[ |-I| ]
 [ |-N|\ *n\_col*\ [/*t_col*] ]
-[ |-Q| ] [ |-S|\ [**f**\|\ **l**] ]
+[ |-Q|\ [**c**\|\ **i**\|\ **p**\|\ **n**] ]
+[ |-S|\ [**f**\|\ **l**] ]
 [ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
@@ -123,10 +125,13 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**
+**-Q**\ [**c**\|\ **i**\|\ **p**\|\ **n**]
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
-    In this mode, constants may have plot units (i.e., c, i, p) and if so the final
-    answer will be reported in the unit set by :term:`PROJ_LENGTH_UNIT`.
+    In this mode, constants may have dimensional units (i.e., **c**, **i**, or **p**),
+    and will be converted to internal inches before computing. If one or more constants
+    with units are encountered then the final answer will be reported in the unit set by
+    :term:`PROJ_LENGTH_UNIT`, unless overridden by appending another unit. Alternatively,
+    append **n** for a non-dimensional result, meaning no unit conversion during output.
 
 .. _-S:
 
@@ -728,6 +733,12 @@ To add two plot dimensions of different units, we can run
    ::
 
     length=`gmt math -Q 15c 2i SUB =`
+
+To compute the ratio of two plot dimensions of different units, we select *non-dimensional* output and run
+
+   ::
+
+    ratio=`gmt math -Qn 15c 2i DIV =`
 
 To take the square root of the content of the second data column being
 piped through **gmtmath** by process1 and pipe it through a 3rd process, use

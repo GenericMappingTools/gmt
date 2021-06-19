@@ -49,6 +49,7 @@ EXTERN_MSC int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *i
 
 /* gmt_init.c: */
 
+EXTERN_MSC int gmt_get_dim_unit (struct GMT_CTRL *GMT, char c);
 EXTERN_MSC void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update);
 EXTERN_MSC void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool conf_update);
 EXTERN_MSC bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item);

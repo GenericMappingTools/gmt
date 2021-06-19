@@ -111,8 +111,9 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		uint64_t ncol, tcol;
 	} N;
-	struct GMTMATH_Q {	/* -Q */
+	struct GMTMATH_Q {	/* -Q[c|i|p|n] */
 		bool active;
+		int unit;
 	} Q;
 	struct GMTMATH_S {	/* -S[f|l] */
 		bool active;
@@ -160,6 +161,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.cols = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, bool);
 	C->E.eigen = 1e-7;	/* Default cutoff of small eigenvalues */
 	C->N.ncol = 2;
+	C->Q.unit = GMT->current.setting.proj_length_unit;	/* Default output unit conversion for -Q */
 
 	return (C);
 }
@@ -470,7 +472,7 @@ GMT_LOCAL bool gmtmath_same_domain (struct GMT_DATASET *A, uint64_t t_col, struc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n", name);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q[%s|n]] [-S[f|l]]\n", name, GMT_DIM_UNITS_DISPLAY);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<min>/<max>/<inc>[+b|i|l|n]] | -T<file|list>] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] A B op C op ... = [outfile]\n\n",
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
@@ -717,6 +719,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"\t   If input files are given, -N will add extra columns initialized to zero, if needed.\n"
 		"\t-Q Quick scalar calculator (Shorthand for -Ca -N1/0 -T0/0/1).\n"
 		"\t   Allows constants to have plot units (i.e., %s); if so the answer is converted using PROJ_LENGTH_UNIT.\n"
+		"\t   Optionally append another unit or n for no unit conversion on output.\n"
 		"\t-S Only write first row upon completion of calculations [write all rows].\n"
 		"\t   Optionally, append l for last row or f for first row [Default].\n"
 		"\t-T Set domain from <min> to <max> in steps of <inc>. Append +n to <inc> if number of points was given instead.\n"
@@ -826,6 +829,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'Q':	/* Quick for -Ca -N1/0 -T0/0/1 */
 				Ctrl->Q.active = true;
+				if (opt->arg[0] == 'n')	/* Want no unit conversion on output */
+					Ctrl->Q.unit = GMT_INCH;	/* We do this which will convert from inch to inch, i.e., no change */
+				else if (opt->arg[0] && strchr (GMT_DIM_UNITS, opt->arg[0]))	/* Want a specific unit conversion from inch to this unit on output */
+					Ctrl->Q.unit = gmt_get_dim_unit (GMT, opt->arg[0]);
+					/* else: Default GMT unit on output */
 				break;
 			case 'S':	/* Only want one row (first or last) */
 				Ctrl->S.active = true;
@@ -6802,8 +6810,8 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 			template_used = true;
 		}
 		DH = gmt_get_DD_hidden (R);
-		if (dimension && Ctrl->Q.active) {	/* Encountered dimensioned items on the command line, must return in current units */
-			R->table[0]->segment[0]->data[0][0] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+		if (dimension && Ctrl->Q.active) {	/* Encountered dimensioned items on the command line, and want return in selected units */
+			R->table[0]->segment[0]->data[0][0] *= GMT->session.u2u[GMT_INCH][Ctrl->Q.unit];
 		}
 		if (place_t_col && Ctrl->N.tcol < R->n_columns) {
 			gmtmath_load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */

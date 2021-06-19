@@ -5548,9 +5548,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	return (error > 0);
 }
 
-/*! Converts c, i, and p into 0,1,3 */
-GMT_LOCAL int gmtinit_get_unit (struct GMT_CTRL *GMT, char c) {
-
+/*! Converts c, i, and p into GMT_CM (0),GMT_INCH (1), or GMT_PT (3) */
+int gmt_get_dim_unit (struct GMT_CTRL *GMT, char c) {
 	int i;
 	switch ((int)c) {
 		case 'c':	/* cm */
@@ -5565,13 +5564,13 @@ GMT_LOCAL int gmtinit_get_unit (struct GMT_CTRL *GMT, char c) {
 				i = GMT_M;
 			}
 			else	/* error */
-				i = -1;
+				i = GMT_NOTSET;
 			break;
 		case 'p':	/* point */
 			i = GMT_PT;
 			break;
 		default:	/* error */
-			i = -1;
+			i = GMT_NOTSET;
 			break;
 	}
 	return (i);
@@ -15504,7 +15503,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
-				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
+				j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
 				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
 				if (symbol == '=') {	/* Since norm distance is in km we convert to spherical degrees */
 					if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS2, p[len-1]) && p[len-1] != 'k') {
@@ -15757,7 +15756,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			if ((j = gmtinit_get_unit (GMT, text[k])) < 0) decode_error++; else { p->u = j; p->u_set = true;}
+			if ((j = gmt_get_dim_unit (GMT, text[k])) < 0) decode_error++; else { p->u = j; p->u_set = true;}
 			col_off++;
 			if (cmd) p->read_size_cmd = true;
 		}
@@ -15779,7 +15778,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		if (text[1]) {	/* Gave unit information */
-			if ((j = gmtinit_get_unit (GMT, text[1])) < 0)
+			if ((j = gmt_get_dim_unit (GMT, text[1])) < 0)
 				decode_error++;
 			else {
 				p->u = j; p->u_set = true;
@@ -16421,7 +16420,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				for (j = one; text[j] && text[j] != 'n'; j++);
 				len = (int)strlen(text) - 1;
 				if (text[j] == 'n') {	/* Normalize option used */
-					k = gmtinit_get_unit (GMT, text[len]);
+					k = gmt_get_dim_unit (GMT, text[len]);
 					p->v.v_norm = (float)atof (&text[j+1]);
 					if (k >= GMT_CM)	/* Convert length from given units to inch */
 						p->v.v_norm *= GMT->session.u2u[k][GMT_INCH];
@@ -16441,7 +16440,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					 */
 
 					if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
-						k = gmtinit_get_unit (GMT, text[len]);
+						k = gmt_get_dim_unit (GMT, text[len]);
 						if (k >= 0) { p->u = k; p->u_set = true;}
 						text[len] = 0;
 					}
@@ -16692,7 +16691,7 @@ unsigned int gmt_check_scalingopt (struct GMT_CTRL *GMT, char option, char unit,
 int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit) {
 	int k;
 
-	if ((k = gmtinit_get_unit (GMT, unit)) < 0) {
+	if ((k = gmt_get_dim_unit (GMT, unit)) < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad plot measure selected (%c); use c, i, or p.\n", unit);
 		return (GMT_MAP_BAD_MEASURE_UNIT);
 	}
