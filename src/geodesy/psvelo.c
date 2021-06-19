@@ -665,7 +665,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol>[<scale>][</args>][+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<scale>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol>[<scale>][</args>][+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W[<pen>][+c[f|l]]] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -679,7 +679,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on vector magnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -W and -Z.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <sigscale> (Se and Sw only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <scale> (for -Se and -Sw options only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty ellipses and wedges [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -L and -Z.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern for symbol fill [no fill].");
@@ -771,9 +771,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
-			case 'D':	/* Rescale Sigmas */
+			case 'D':	/* Rescale sigmas */
 				Ctrl->D.active = true;
-				sscanf (opt->arg, "%lf",&Ctrl->D.scale);
+				Ctrl->D.scale = atof (opt->arg);
 				break;
 			case 'E':	/* Set color for error ellipse  */
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
@@ -1024,7 +1024,8 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
-	if (Ctrl->A.S.symbol == PSL_VECTOR) Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+	//if (Ctrl->A.S.symbol == PSL_VECTOR) Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+	if (Ctrl->A.S.symbol == PSL_VECTOR) Ctrl->A.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;	/* Deal with -: */
 
@@ -1238,7 +1239,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
 					hw = s * Ctrl->A.S.v.h_width;
 					hl = s * Ctrl->A.S.v.h_length;
-					vw = s * Ctrl->W.pen.width / PSL_POINTS_PER_INCH;
+					vw = s * Ctrl->A.S.v.v_width;
 					if (vw < (2.0/PSL_DOTS_PER_INCH)) vw = 2.0/PSL_DOTS_PER_INCH;	/* Minimum width set */
 					dim[0] = plot_vx, dim[1] = plot_vy;
 					dim[2] = vw, dim[3] = hl, dim[4] = hw;
