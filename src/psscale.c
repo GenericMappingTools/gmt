@@ -656,23 +656,25 @@ GMT_LOCAL void psscale_plot_cycle (struct GMT_CTRL *GMT, double x, double y, dou
 	gmt_init_fill (GMT, &head, pen.rgb[0], pen.rgb[1], pen.rgb[2]);	/* Default fill for points, if needed */
 	gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
 	gmt_M_memset (vdim, PSL_MAX_DIMS, double);
-	circum = 2.0 * M_PI * width;		/* Circumference of symbol in inches */
+	circum = 2.0 * M_PI * width;	/* Circumference of symbol in inches */
 	p_width = (float)(s * pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 	pen.width = p_width * GMT->session.u2u[GMT_INCH][GMT_PT];
-	vdim[0] = width;					/* Circular symbol radius is 0.45 of bar width */
-	vdim[1] = 50.0;	vdim[2] = 210.0;	/* Angular start and stop for one arrow */
-	vdim[3] = circum / 6.0;				/* Head-length is 1/6 of circumference */
-	vdim[4] = vdim[3] * tand (25.0);	/* Head width assumes 25 degree apex */
-	vdim[5] = p_width;					/* Passing in pen width */
-	vdim[6] = 0.75;						/* Vector shape */
-	vdim[7] = (double)(PSL_VEC_END|PSL_VEC_FILL);
-	vdim[9] = (double)PSL_VEC_ARROW;
+	vdim[PSL_MATHARC_RADIUS] = width;	/* Circular symbol radius is 0.45 of bar width */
+	vdim[PSL_MATHARC_ANGLE_BEGIN] = 50.0;	/* Angular start and stop for one arrow */
+	vdim[PSL_MATHARC_ANGLE_END]   = 210.0;
+	vdim[PSL_MATHARC_HEAD_LENGTH] = circum / 6.0;	/* Head-length is 1/6 of circumference */
+	vdim[PSL_MATHARC_HEAD_WIDTH] = vdim[PSL_MATHARC_HEAD_LENGTH] * tand (25.0);	/* Head width assumes 25 degree apex */
+	vdim[PSL_MATHARC_ARC_PENWIDTH] = p_width;	/* Passing in pen width */
+	vdim[PSL_MATHARC_HEAD_SHAPE] = 0.75;		/* Vector shape */
+	vdim[PSL_MATHARC_STATUS] = (double)(PSL_VEC_END|PSL_VEC_FILL);
+	vdim[PSL_MATHARC_HEAD_TYPE_END] = (double)PSL_VEC_ARROW;
 	gmt_setfill (GMT, &head, 0);
 	gmt_setpen (GMT, &pen);
 	PSL_defpen (GMT->PSL, "PSL_vecheadpen", 0.0, "", 0, head.rgb);
 	x += 0.15 * vdim[3];	/* Shift center to account for the width of the circular arrow */
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
-	vdim[1] = 230.0;	vdim[2] = 390.0;	/* Angular start and stop for the other circular arrow */
+	vdim[PSL_MATHARC_ANGLE_BEGIN] = 230.0;	/* Angular start and stop for the other circular arrow */
+	vdim[PSL_MATHARC_ANGLE_END]   = 390.0;
 	PSL_plotsymbol (GMT->PSL, x, y, vdim, PSL_MARC);
 }
 
@@ -685,8 +687,8 @@ GMT_LOCAL unsigned int psscale_cpt_transparency (struct GMT_CTRL *GMT, struct GM
 	unsigned int k, status = 0;
 	for (k = 0; k < P->n_colors; k++) {
 		if (P->data[k].rgb_low[3] > 0.0 || P->data[k].rgb_high[3] > 0.0) status |= 1;	/* Transparency detected */
-		if (k && !doubleAlmostEqualZero (P->data[k].rgb_low[3], P->data[k-1].rgb_low[3]))   status |= 2;	/* Unequal transparencies between slices */
-		if (k && !doubleAlmostEqualZero (P->data[k].rgb_high[3], P->data[k-1].rgb_high[3])) status |= 2;	/* Unequal transparencies between slices */
+		if (k && !doubleAlmostEqualZero (P->data[k].rgb_low[3], P->data[k-1].rgb_low[3]))     status |= 2;	/* Unequal transparencies between slices */
+		if (k && !doubleAlmostEqualZero (P->data[k].rgb_high[3], P->data[k-1].rgb_high[3]))   status |= 2;	/* Unequal transparencies between slices */
 		if (status && !doubleAlmostEqualZero (P->data[k].rgb_low[3], P->data[k].rgb_high[3])) status |= 4;	/* Unequal transparencies within slice */
 	}
 	return (status);
