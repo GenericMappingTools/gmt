@@ -934,8 +934,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->Z.item == PSVELO_E_FILL && Ctrl->E.active, "Options -C -Z+e cannot be combined with -E.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->Z.item == PSVELO_G_FILL && Ctrl->G.active, "Options -C -Z cannot be combined with -G.\n");
 
-	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W  */
-	if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2 && Ctrl->W.active) gmt_M_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
+	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W if -A was not set */
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -1253,14 +1252,14 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					hl = s * Ctrl->A.S.v.h_length;
 					vw = s * Ctrl->A.S.v.v_width;
 					if (vw < (2.0/PSL_DOTS_PER_INCH)) vw = 2.0/PSL_DOTS_PER_INCH;	/* Minimum width set */
-					//if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {
-					//	current_pen = Ctrl->A.S.v.pen;
-					//	if (Ctrl->H.active) {
-					//		double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
-					//		gmt_scale_pen (GMT, &current_pen, scl);
-					//	}
-					//	gmt_setpen (GMT, &current_pen);
-					//}
+					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {
+						current_pen = Ctrl->A.S.v.pen;
+						if (Ctrl->H.active) {
+							double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
+							gmt_scale_pen (GMT, &current_pen, scl);
+						}
+						gmt_setpen (GMT, &current_pen);
+					}
 					dim[PSL_VEC_XTIP]        = plot_vx;
 					dim[PSL_VEC_YTIP]        = plot_vy;
 					dim[PSL_VEC_TAIL_WIDTH]  = vw;
