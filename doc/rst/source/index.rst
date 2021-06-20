@@ -43,6 +43,7 @@ Quick links
         :caption: Getting started
 
         gallery
+        examples/index
         animations
         tutorial
 
