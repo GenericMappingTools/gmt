@@ -7571,14 +7571,15 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
-	gmt_message (GMT, "\t-%c Specify a colortable [Default is %s]:\n", option, GMT->current.setting.cpt);
-	gmt_message (GMT, "\t   [Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]\n");
-	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
-	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "\t   %s\n", GMT_CPT_master[k]);
-	gmt_message (GMT, "\t   ---------------------------------------------------------------------------------------\n");
-	gmt_message (GMT, "\t   [For more, visit soliton.vm.bytemark.co.uk/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]\n");
-	gmt_message (GMT, "\t   Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear\n");
-	gmt_message (GMT, "\t   continuous CPT from those colors automatically.\n");
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, 1, "-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
+	GMT_Usage (API, 2, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
+	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "     %s\n", GMT_CPT_master[k]);
+	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
+	GMT_Usage (API, 2, "[For more, visit soliton.vm.bytemark.co.uk/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]. "
+		"Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear "
+		"continuous CPT from those colors automatically.");
 
 	return (GMT_NOERROR);
 }
@@ -14143,6 +14144,7 @@ void gmt_list_custom_symbols (struct GMT_CTRL *GMT) {
 
 	FILE *fp = NULL;
 	char list[GMT_LEN256] = {""}, buffer[GMT_BUFSIZ] = {""};
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	/* Open the list in $GMT->session.SHAREDIR */
 
@@ -14152,11 +14154,12 @@ void gmt_list_custom_symbols (struct GMT_CTRL *GMT) {
 		return;
 	}
 
-	gmt_message (GMT, "\t     Available custom symbols (See Appendix N):\n");
-	gmt_message (GMT, "\t     ---------------------------------------------------------\n");
-	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0)) gmt_message (GMT, "\t     %s", buffer);
+	GMT_Usage (API, 3, "Available custom symbols (See Appendix N):");
+	gmt_message (GMT, "       ---------------------------------------------------------\n");
+	while (fgets (buffer, GMT_BUFSIZ, fp)) if (!(buffer[0] == '#' || buffer[0] == 0))
+		gmt_message (GMT, "       %s", buffer);
 	fclose (fp);
-	gmt_message (GMT, "\t     ---------------------------------------------------------\n");
+	gmt_message (GMT, "       ---------------------------------------------------------\n");
 }
 
 /*! . */
@@ -17187,7 +17190,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return GMT_PARSE_ERROR;
 	}
 	/* 3. Check if we are working with absolute time.  This means there must be a T in both min or max arguments */
-	if (ns > 1 && (strchr (txt[GMT_X], 'T') || strchr (txt[GMT_Y], 'T'))) {	/* Gave absolute time limits */
+	if (ns >= 1 && (strchr (txt[GMT_X], 'T') || strchr (txt[GMT_Y], 'T'))) {	/* Gave absolute time limits */
 		T->temporal = true;
 		if (!(flags & GMT_ARRAY_TIME)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Calendar time not allowed for this module\n", option);
@@ -17221,6 +17224,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 			/* Check if unit is a variable increment */
 			T->vartime = (strchr (GMT_TIME_VAR_UNITS, T->unit) != NULL);
 		}
+		else	/* Set assumed time unit */
+			T->unit = GMT->current.setting.time_system.unit;
 	}
 	/* 4. Consider spatial distances */
 	if (has_inc && !T->temporal && strchr (GMT_LEN_UNITS "c", txt[ns][len])) {	/* Geospatial or Cartesian distances */

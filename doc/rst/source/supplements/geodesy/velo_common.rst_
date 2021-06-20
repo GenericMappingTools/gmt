@@ -42,6 +42,7 @@ Required Arguments
         The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
         The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
         and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
+        **Note**: If *confidence* is nonzero and neither **-L** nor **-E** are set then we use **-W** (or default) to draw ellipse outlines.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -75,6 +76,7 @@ Required Arguments
         The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
         The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
         and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
+        **Note**: If *confidence* is nonzero and neither **-L** nor **-E** are set then we use **-W** (or default) to draw ellipse outlines.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -143,9 +145,9 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *Sigma\_scale*
-    can be used to rescale the uncertainties of velocities (**-Se** and
-    **-Sr**) and rotations (**-Sw**). Can be combined with the *confidence* variable.
+**-D**\ *scale*
+    Can be used to rescale the uncertainties of velocities (**-Se** and
+    **-Sr**) and rotations (**-Sw**) [1].
 
 .. _-E:
 

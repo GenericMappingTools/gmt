@@ -123,7 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Write already-closed polygons to a separate <closedfile> [gmtconnect_closed.txt],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   with the remaining open segments written separately to stdout.\n");
@@ -135,7 +135,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-L Write link information (seg id, begin/end nearest seg id, end, and distance) to file [gmtconnect_link.txt].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Link output excludes duplicates and segments already forming a closed polygon.\n");
 	GMT_Option (API, "V");
-	gmt_dist_syntax (API->GMT, 'T', "Set minimum <dist> to determine if a segment is closed [0].");
+	gmt_dist_syntax (API->GMT, "T[" GMT_DIST_OPT "[+s<sdist>]", "Set minimum <dist> to determine if a segment is closed [0].");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If two lines have endpoints closer than <dist> then they will be joined.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +s<sdist> which adds the requirement that the second closest\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <sdist> to connect (use same units as for <dist>).\n");

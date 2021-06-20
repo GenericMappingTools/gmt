@@ -90,7 +90,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   When program is 'dem' append +m<method> (pick one of hillshade, color-relief, \n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   slope, TRI, TPI or roughness) and, for color-relief, +c<cpt_name>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid or image file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F List of GDAL options for the selected program in -A wrapped in double quotes.\n");
 	GMT_Option  (API, "I");
 	GMT_Message (API, GMT_TIME_NONE, "\t-M Read and write with GDAL. Use +r to only read or +w to write.\n");

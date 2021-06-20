@@ -139,6 +139,7 @@ struct GMTAPI_CTRL {
 	unsigned int n_cores;			/* Number of available cores on this system */
 	unsigned int verbose;			/* Used until GMT is set up */
 	unsigned int n_tmp_headers;		/* Number of temporarily held table headers */
+	unsigned int terminal_width;	/* Width of the terminal */
 	bool registered[2];			/* true if at least one source/destination has been registered (in and out) */
 	bool io_enabled[2];			/* true if access has been allowed (in and out) */
 	bool module_input;			/* true when we are about to read inputs to the module (command line) */

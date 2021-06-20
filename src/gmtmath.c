@@ -699,7 +699,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"\tTROW                = table with row numbers 0, 1, ..., N-1.\n"
 		"\n\tUse macros for frequently used long expressions; see the gmtmath man page.\n"
 		"\tStore stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.\n"
-		"\n\tOPTIONS:\n\n"
+		"\n  OPTIONAL ARGUMENTS:\n\n"
 		"\t-A Set up and solve a linear system A x = b, and return vector x.\n"
 		"\t   Requires -N and initializes extended matrix [A | b] from <ftable> holding t and f(t) only.\n"
 		"\t   t goes into column <t_col> while f(t) goes into column <n_col> - 1 (i.e., r.h.s. vector b).\n"

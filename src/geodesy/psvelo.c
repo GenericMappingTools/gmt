@@ -389,9 +389,12 @@ GMT_LOCAL int psvelo_trace_cross (struct GMT_CTRL *GMT, double slon, double slat
 		vw = v_width;
 	}
 
-	dim[0] = x2, dim[1] = y2;
-	dim[2] = vw, dim[3] = hl, dim[4] = hw;
-	dim[5] = vector_shape, dim[6] = PSL_VEC_END | PSL_VEC_FILL;
+	dim[PSL_VEC_XTIP] = x2;
+	dim[PSL_VEC_YTIP] = y2;
+	dim[PSL_VEC_TAIL_WIDTH] = vw;
+	dim[PSL_VEC_HEAD_LENGTH] = hl;
+	dim[PSL_VEC_HEAD_WIDTH] = hw;
+	dim[PSL_VEC_HEAD_SHAPE] = vector_shape, dim[PSL_VEC_STATUS] = PSL_VEC_END | PSL_VEC_FILL;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* second, extensional arrow in opposite direction */
@@ -415,14 +418,17 @@ GMT_LOCAL int psvelo_trace_cross (struct GMT_CTRL *GMT, double slon, double slat
 		vw = v_width;
 	}
 
-	dim[0] = x2, dim[1] = y2;
-	dim[2] = vw, dim[3] = hl, dim[4] = hw;
+	dim[PSL_VEC_XTIP] = x2;
+	dim[PSL_VEC_YTIP] = y2;
+	dim[PSL_VEC_TAIL_WIDTH] = vw;
+	dim[PSL_VEC_HEAD_LENGTH] = hl;
+	dim[PSL_VEC_HEAD_WIDTH] = hw;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* compression component */
 	dx = eps2 * s;
 	dy = eps2 * c;
-	dim[6] = PSL_VEC_BEGIN | PSL_VEC_FILL;
+	dim[PSL_VEC_STATUS] = PSL_VEC_BEGIN | PSL_VEC_FILL;
 	psvelo_trace_arrow (GMT, slon, slat, dx, dy, sscale, &x1, &y1, &x2, &y2);
 
 	if (eps2 > 0.0) {
@@ -443,8 +449,11 @@ GMT_LOCAL int psvelo_trace_cross (struct GMT_CTRL *GMT, double slon, double slat
 		vw = v_width;
 	}
 
-	dim[0] = x2, dim[1] = y2;
-	dim[2] = vw, dim[3] = hl, dim[4] = hw;
+	dim[PSL_VEC_XTIP] = x2;
+	dim[PSL_VEC_YTIP] = y2;
+	dim[PSL_VEC_TAIL_WIDTH] = vw;
+	dim[PSL_VEC_HEAD_LENGTH] = hl;
+	dim[PSL_VEC_HEAD_WIDTH] = hw;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	/* second, compressional arrow in opposite direction */
@@ -470,8 +479,11 @@ GMT_LOCAL int psvelo_trace_cross (struct GMT_CTRL *GMT, double slon, double slat
 		vw = v_width;
 	}
 
-	dim[0] = x2, dim[1] = y2;
-	dim[2] = vw, dim[3] = hl, dim[4] = hw;
+	dim[PSL_VEC_XTIP] = x2;
+	dim[PSL_VEC_YTIP] = y2;
+	dim[PSL_VEC_TAIL_WIDTH] = vw;
+	dim[PSL_VEC_HEAD_LENGTH] = hl;
+	dim[PSL_VEC_HEAD_WIDTH] = hw;
 	PSL_plotsymbol (GMT->PSL, x1, y1, dim, PSL_VECTOR);
 
 	return 0;
@@ -665,21 +677,21 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A<vecpar>] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<sigscale>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol>[<scale>][</args>][+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-C<cpt>] [-D<scale>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L[<pen>][+c[f|l]]] [-N] %s%s[-S<symbol>[<scale>][</args>][+f<font>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-V] [-W[<pen>][+c[f|l]]] [%s] [%s]\n", GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[-Z[m|e|n|u][+e] %s[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<,B-");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify arrow head attributes:\n");
-	gmt_vector_syntax (API->GMT, 15);
+	gmt_vector_syntax (API->GMT, 15, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is %gp+gblack+p1p\n", VECTOR_HEAD_LENGTH);
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign colors based on vector magnitude.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -W and -Z.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <sigscale> (Se and Sw only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-D Multiply uncertainties by <scale> (for -Se and -Sw options only).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Set color used for uncertainty ellipses and wedges [no fill].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For other coloring options, see -L and -Z.\n");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern for symbol fill [no fill].");
@@ -771,9 +783,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
-			case 'D':	/* Rescale Sigmas */
+			case 'D':	/* Rescale sigmas */
 				Ctrl->D.active = true;
-				sscanf (opt->arg, "%lf",&Ctrl->D.scale);
+				Ctrl->D.scale = atof (opt->arg);
 				break;
 			case 'E':	/* Set color for error ellipse  */
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
@@ -922,8 +934,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->Z.item == PSVELO_E_FILL && Ctrl->E.active, "Options -C -Z+e cannot be combined with -E.\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->Z.item == PSVELO_G_FILL && Ctrl->G.active, "Options -C -Z cannot be combined with -G.\n");
 
-	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W  */
-	if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2 && Ctrl->W.active) gmt_M_rgb_copy (Ctrl->A.S.v.pen.rgb, Ctrl->W.pen.rgb);	/* Set vector pen color from -W but not thickness */
+	if (!got_A && Ctrl->W.active) Ctrl->A.S.v.pen = Ctrl->W.pen;	/* Set vector pen to that given by -W if -A was not set */
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
 
@@ -1004,7 +1015,9 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		Ctrl->I.active = false;	/* So we don't do this again */
 	}
 	i_value = Ctrl->I.value;	/* May be replaced in the loop if variable intensity was given */
-	if (!Ctrl->L.error_pen)	/* Duplicate -W to -L */
+	if (Ctrl->S.symbol == CINE && Ctrl->S.confidence > 0.0 && !(Ctrl->E.active || Ctrl->L.active))
+		Ctrl->L.active = true;	/* If confidence is > 0 but neither -E or -L is set then we turn on -L to pick up -W pen (below) */
+	if (Ctrl->L.active && !Ctrl->L.error_pen)	/* Duplicate -W to -L */
 		gmt_M_memcpy (&Ctrl->L.pen, &Ctrl->W.pen, 1, struct GMT_PEN);
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
@@ -1015,13 +1028,14 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	gmt_plotcanvas (GMT);	/* Fill canvas if requested */
 	gmt_map_basemap (GMT);	/* Basemap before data */
 
+	gmt_M_memset (&current_pen, 1, struct GMT_PEN);
 	gmt_M_memset (dim, PSL_MAX_DIMS, double);
 	gmt_setpen (GMT, &Ctrl->W.pen);
 	PSL_setfont (PSL, GMT->current.setting.font_annot[GMT_PRIMARY].id);
 
 	if (!Ctrl->N.active) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 	gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
-	if (Ctrl->A.S.symbol == PSL_VECTOR) Ctrl->A.S.v.v_width = (float)(Ctrl->A.S.v.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
+	if (Ctrl->A.S.symbol == PSL_VECTOR) Ctrl->A.S.v.v_width = (float)(Ctrl->W.pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
 
 	ix = (GMT->current.setting.io_lonlat_toggle[0]);	iy = 1 - ix;	/* Deal with -: */
 
@@ -1077,7 +1091,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	if (Ctrl->S.symbol == CINE || Ctrl->S.symbol == CROSS) {
 		if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
 			PSL_defpen (PSL, "PSL_vecheadpen", Ctrl->A.S.v.pen.width, Ctrl->A.S.v.pen.style, Ctrl->A.S.v.pen.offset, Ctrl->A.S.v.pen.rgb);
-			headpen_width = 0.5*Ctrl->A.S.v.pen.width;
+			headpen_width = 0.5 * Ctrl->A.S.v.pen.width;
 		}
 		else {	/* Reset to default pen */
 			if (Ctrl->W.active) {	/* Vector head outline pen default is half that of stem pen */
@@ -1189,7 +1203,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		gmt_init_vector_param (GMT, &Ctrl->A.S, true, Ctrl->W.active, &Ctrl->W.pen, Ctrl->G.active, &Ctrl->G.fill);
 
 		if (GMT->common.t.variable) {	/* Update the transparency for current symbol (or -t was given) */
-			double transp[2] = {0.0, 0.0};	/* None selected */
+			double transp[2] = {0.0, 0.0};
 			if (GMT->common.t.n_transparencies == 2) {	/* Requested two separate values to be read from file */
 				transp[GMT_FILL_TRANSP] = 0.01 * in[tcol_f];
 				transp[GMT_PEN_TRANSP]  = 0.01 * in[tcol_s];
@@ -1215,8 +1229,8 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 				plot_vector = (hypot (vxy[0], vxy[1]) < 1.e-8) ? false : true;
 				psvelo_trace_arrow (GMT, in[GMT_X], in[GMT_Y], vxy[0], vxy[1], size, &plot_x, &plot_y, &plot_vx, &plot_vy);
 				psvelo_get_trans (GMT, in[GMT_X], in[GMT_Y], &t11, &t12, &t21, &t22);
-				if (plot_ellipse) {
-					if (Ctrl->L.active) {
+				if (plot_ellipse) {	/* Optionally fill [-E] and optionally outline [-L] the error ellipse */
+					if (Ctrl->L.active) {	/* Draw ellipse outline */
 						current_pen = Ctrl->L.pen;
 						if (Ctrl->H.active) {
 							double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
@@ -1224,22 +1238,19 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 						}
 						gmt_setpen (GMT, &current_pen);
 					}
-					if (Ctrl->E.active)
-						psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, size,
-							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->E.fill, Ctrl->L.active);
-					else
-						psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, size,
-							t11,t12,t21,t22, Ctrl->E.active, &Ctrl->G.fill, Ctrl->L.active);
+					/* Draw the ellipse */
+					psvelo_paint_ellipse (GMT, plot_vx, plot_vy, direction, great_axis, small_axis, size,
+						t11, t12, t21, t22, Ctrl->E.active, &Ctrl->E.fill, Ctrl->L.active);
 				}
-				if (plot_vector) {	/* verify that vector length is not ridiculously small */
+				if (plot_vector) {	/* Verify that vector length is not ridiculously small */
 					length = hypot (plot_x-plot_vx, plot_y-plot_vy);	/* Length of arrow */
 					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0)	/* No shrink requested yet head length exceeds total vector length */
-						GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+						GMT_Report (API, GMT_MSG_WARNING, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
 					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
 					hw = s * Ctrl->A.S.v.h_width;
 					hl = s * Ctrl->A.S.v.h_length;
 					vw = s * Ctrl->A.S.v.v_width;
-					if (vw < 2.0/PSL_DOTS_PER_INCH) vw = 2.0/PSL_DOTS_PER_INCH;	/* Minimum width set */
+					if (vw < (2.0/PSL_DOTS_PER_INCH)) vw = 2.0/PSL_DOTS_PER_INCH;	/* Minimum width set */
 					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {
 						current_pen = Ctrl->A.S.v.pen;
 						if (Ctrl->H.active) {
@@ -1248,11 +1259,14 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 						}
 						gmt_setpen (GMT, &current_pen);
 					}
-					dim[0] = plot_vx, dim[1] = plot_vy;
-					dim[2] = vw, dim[3] = hl, dim[4] = hw;
-					dim[5] = Ctrl->A.S.v.v_shape;
-					if (Ctrl->L.active) {
-						current_pen = Ctrl->L.pen;
+					dim[PSL_VEC_XTIP]        = plot_vx;
+					dim[PSL_VEC_YTIP]        = plot_vy;
+					dim[PSL_VEC_TAIL_WIDTH]  = vw;
+					dim[PSL_VEC_HEAD_LENGTH] = hl;
+					dim[PSL_VEC_HEAD_WIDTH]  = hw;
+					dim[PSL_VEC_HEAD_SHAPE]  = Ctrl->A.S.v.v_shape;
+					if (Ctrl->W.active) {
+						current_pen = Ctrl->W.pen;
 						if (Ctrl->H.active) {
 							double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 							gmt_scale_pen (GMT, &current_pen, scl);
@@ -1264,24 +1278,16 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 						psl_vector_v4 (PSL, plot_x, plot_y, dim, this_rgb, Ctrl->L.active);
 					}
 					else {
-						dim[6] = (double)Ctrl->A.S.v.status;
-						dim[7] = (double)Ctrl->A.S.v.v_kind[0];	dim[8] = (double)Ctrl->A.S.v.v_kind[1];
-						dim[11] = (headpen_width > 0.0) ? headpen_width : 0.5 * Ctrl->W.pen.width;
+						dim[PSL_VEC_STATUS]          = (double)Ctrl->A.S.v.status;
+						dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)Ctrl->A.S.v.v_kind[0];
+						dim[PSL_VEC_HEAD_TYPE_END]   = (double)Ctrl->A.S.v.v_kind[1];
+						dim[PSL_VEC_HEAD_PENWIDTH]   = (headpen_width > 0.0) ? headpen_width : 0.5 * Ctrl->W.pen.width;
 						if (Ctrl->A.S.v.status & PSL_VEC_FILL2)
-							gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->L.active);
+							gmt_setfill (GMT, &Ctrl->A.S.v.fill, Ctrl->W.active);
 						else if (set_g_fill)
-							gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->L.active);
+							gmt_setfill (GMT, &Ctrl->G.fill, Ctrl->W.active);
 						PSL_plotsymbol (PSL, plot_x, plot_y, dim, PSL_VECTOR);
 					}
-					if (Ctrl->A.S.v.status & PSL_VEC_OUTLINE2) {
-						current_pen = Ctrl->W.pen;
-						if (Ctrl->H.active) {
-							double scl = (Ctrl->H.mode == PSVELO_READ_SCALE) ? in[xcol] : Ctrl->H.value;
-							gmt_scale_pen (GMT, &current_pen, scl);
-						}
-						gmt_setpen (GMT, &current_pen);
-					}
-
 					justify = ((plot_vx - plot_x) > 0.0) ? PSL_MR : PSL_ML;
 					if (Ctrl->S.font.size > 0.0 && station_name && station_name[0])	/* 1 inch = 2.54 cm */
 						PSL_plottext (PSL, plot_x + (PSL_MC - justify) / 25.4 , plot_y, Ctrl->S.font.size, station_name, ANGLE, justify, FORM);
@@ -1293,7 +1299,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					PSL_plotsymbol (PSL, plot_x, plot_y, &ssize, PSL_CIRCLE);
 					justify = PSL_TC;
 					if (Ctrl->S.font.size > 0.0 && station_name && station_name[0])	/* Place station name */
-						PSL_plottext (PSL, plot_x, plot_y - 1. / 25.4, Ctrl->S.font.size, station_name, ANGLE, justify, FORM);
+						PSL_plottext (PSL, plot_x, plot_y - 1.0 / 25.4, Ctrl->S.font.size, station_name, ANGLE, justify, FORM);
 				}
 				break;
 			case ANISO:
@@ -1331,7 +1337,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	}
 
 	if (GMT->common.t.variable) {	/* Reset the transparencies */
-		double transp[2] = {0.0, 0.0};	/* None selected */
+		double transp[2] = {0.0, 0.0};
 		PSL_settransparencies (PSL, transp);
 	}
 
