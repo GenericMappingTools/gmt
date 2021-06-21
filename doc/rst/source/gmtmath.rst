@@ -128,10 +128,11 @@ Optional Arguments
 **-Q**\ [**c**\|\ **i**\|\ **p**\|\ **n**]
     Quick mode for scalar calculation. Shorthand for **-Ca** **-N**\ 1/0  **-T**\ 0/0/1.
     In this mode, constants may have dimensional units (i.e., **c**, **i**, or **p**),
-    and will be converted to internal inches before computing. If one or more constants
+    and will be converted to internal *inches* before computing. If one or more constants
     with units are encountered then the final answer will be reported in the unit set by
     :term:`PROJ_LENGTH_UNIT`, unless overridden by appending another unit. Alternatively,
     append **n** for a non-dimensional result, meaning no unit conversion during output.
+    To avoid any unit conversion on input, just do not use units.
 
 .. _-S:
 
