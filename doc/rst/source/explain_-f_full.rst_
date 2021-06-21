@@ -17,7 +17,8 @@ consecutive columns have the same format you may specify a range of columns rath
 must be given in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if not specified.  For example, if our
 input file has geographic coordinates (latitude, longitude) with absolute calendar coordinates in the columns 3 and 4,
 we would specify **fi**\ 0\ **y**,1\ **x**,3:4\ **T**. All other columns are assumed to have the default (floating
-point) format and need not be set individually.
+point) format and need not be set individually. **Note**: You can also indicate that all items from the given column
+and to the end of the record should be considered *trailing text* by giving the code **s** (for string).
 
 The shorthand **-f**\ [**i**\|\ **o**]\ **g** means **-f**\ [**i**\|\ **o**]0x,1y (i.e., geographic coordinates). A
 special use of **-f** is to select **-fp**\ [*unit*], which *requires* **-J** and lets you use *projected* map

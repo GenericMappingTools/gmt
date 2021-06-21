@@ -1407,7 +1407,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 		for (c = 0; p[c] && strchr ("0123456789-:", p[c]); c++);	/* Wind to position after the column or column range */
 		d = dir;
-		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, or f. */
+		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, f, d or s. */
 			case 'T':	/* Absolute calendar time */
 				code = GMT_IS_ABSTIME;
 				break;
@@ -1425,6 +1425,9 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 				break;
 			case 'd':	/* Length dimension (with possible unit) */
 				code = GMT_IS_DIMENSION;
+				break;
+			case 's':	/* This must be start of trailing text */
+				code = GMT_IS_STRING;
 				break;
 			default:	/* No suffix, consider it an error */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Malformed -f argument [%s]\n", arg);
@@ -7496,6 +7499,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Give one or more columns (or column ranges) separated by commas. "
 				"Append T (Calendar format), t (time relative to TIME_EPOCH), "
 				"f (floating point), x (longitude), or y (latitude) to each item. "
+				"You may also use s (string) to indicate the start column of trailing text. "
 				"Note: -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates), "
 				"-f[i|o]c means -f[i|o]0-1f (Cartesian coordinates) while "
 				"-fp[<unit>] means input x,y are in projected coordinates.");
