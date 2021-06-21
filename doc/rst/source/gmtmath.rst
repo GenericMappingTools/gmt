@@ -724,6 +724,18 @@ then clearly relative time formatting is required, while if you are computing ne
 by, say, adding an interval to absolute times then you will need to use **-fo** to set
 the output format for such columns to absolute time.
 
+Scalar math with units
+----------------------
+
+If you use **-Q** to do simple calculations, please note that the support for dimensional units is
+limited to converting a number ending in c, i, or p to internal inches.  Thus, while you can run
+gmt -Qc 1c 1c MUL =, you may be surprised that the output area is not 1 cm squared.  The reason is
+that **gmt math** cannot keep track of what unit any particular item on the stack might be so it will
+assume it is internally in inches and then scale the final output to cm.  In this particular case,
+the unit is in inches squared and scaling by 2.54 once will give 0.3937 inch times cm as the unit.
+Thus, conversions only work for linear unit calculations, such as gmt math -Qp 1c 0.5i ADD =, which
+will return the result as 64.34 points.
+
 Examples
 --------
 
