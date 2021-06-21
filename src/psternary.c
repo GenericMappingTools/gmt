@@ -554,7 +554,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	}
 	if (clip_set) PSL_endclipping (PSL, 1);
 
-	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
+	for (k = 0; k <= GMT_Z; k++) {	/* /* Plot the 3 axes for -B settings that have been stripped of gridline requests */
 		if (side[k] == 0) continue;	/* Did not want this axis drawn */
 		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
 		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, psternary_get_B_setting (boptions[k]));
