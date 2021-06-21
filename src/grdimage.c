@@ -1415,12 +1415,36 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		double *region = (got_data_tiles) ? header_work->wesn : wesn;	/* Region to pass to grdgradient */
 		struct GMT_GRID *I_data = NULL;
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid %s\n", (Ctrl->I.file) ? Ctrl->I.file : data_grd);
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_grd))
 			Return (API->error);
 		if (Ctrl->I.file) {	/* Gave a file to derive from. In case it is a tiled grid we read it in here */
-			if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->I.file, NULL)) == NULL)	/* Get grid data */
+			if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->I.file, NULL)) == NULL)	/* Get grid data header*/
+				Return (API->error);
+			/* If dimensions don't match the data grid we must resample this secondary z-grid */
+			if (Grid_orig && (I_data->header->n_columns != Grid_orig->header->n_columns || I_data->header->n_rows != Grid_orig->header->n_rows)) {
+				char int_z_grd[GMT_VF_LEN] = {""}, *res = "gp";
+				if (I_data->header->wesn[XLO] > region[XLO] || I_data->header->wesn[XHI] < region[XHI] || I_data->header->wesn[YLO] > region[YLO] || I_data->header->wesn[YHI] < region[YHI]) {
+					GMT_Report (API, GMT_MSG_ERROR, "Your secondary data grid given via -I does not cover the same area as the primary grid - aborting\n");
+					Return (GMT_GRDIO_DOMAIN_VIOLATION);
+				}
+				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_z_grd))
+					Return (API->error);
+				sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -I%.16g/%.16g -r%c -G%s --GMT_HISTORY=readonly ",
+					Ctrl->I.file, region[XLO], region[XHI], region[YLO], region[YHI], Grid_orig->header->inc[GMT_X], Grid_orig->header->inc[GMT_Y], res[Grid_orig->header->registration], int_z_grd);
+				/* Call the grdsample module */
+				GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdsample with args %s\n", cmd);
+				if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd))
+					Return (API->error);
+				/* Destroy the header we read so we can get the revised on from grdsample */
+				if (GMT_Destroy_Data (API, &I_data) != GMT_NOERROR)
+					Return (API->error);
+				/* Obtain the resampled data from the virtual file */
+				if ((I_data = GMT_Read_VirtualFile (API, int_z_grd)) == NULL)
+					Return (API->error);
+			}
+			else if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, I_data)) == NULL)	/* Get grid data */
 				Return (API->error);
 			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, I_data, int4_grd))
 				Return (API->error);
