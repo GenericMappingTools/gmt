@@ -739,7 +739,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 
 	unsigned int n_errors = 0, n_set;
 	int n;
-	bool got_A = false;
+	bool got_A = false, got_shape = false;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
@@ -777,6 +777,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 						n_errors += gmt_parse_vector (GMT, symbol, txt_b, &Ctrl->A.S);
 					}
 					Ctrl->A.S.symbol = PSL_VECTOR;
+					if (strstr (opt->arg, "+h")) got_shape = true;	/* User specified vector head shape */
 				}
 				break;
 			case 'C':	/* Select CPT for coloring */
@@ -923,6 +924,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 		}
 	}
 
+	if (Ctrl->S.symbol == CROSS && !got_shape) Ctrl->A.S.v.v_shape = 0.1;	/* Traditional default cross vector shape if none given */
 	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
 
         /* Only one allowed */
@@ -1320,7 +1322,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 					gmt_scale_pen (GMT, &current_pen, scl);
 				}
 				psvelo_trace_cross (GMT, in[GMT_X],in[GMT_Y],eps1,eps2,theta,size,Ctrl->A.S.v.v_width,Ctrl->A.S.v.h_length,
-					Ctrl->A.S.v.h_width,0.1,Ctrl->L.active,&(current_pen));
+					Ctrl->A.S.v.h_width,Ctrl->A.S.v.v_shape,Ctrl->L.active,&(current_pen));
 				break;
 			case WEDGE:
 				PSL_comment (PSL, "begin wedge number %li", n_rec);
