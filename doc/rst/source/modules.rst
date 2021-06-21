@@ -233,10 +233,10 @@ Core Modules
     - :doc:`grdconvert`
     - :doc:`grdcut`
     - :doc:`grdedit`
-    - :doc:`grdgdal`
     - :doc:`grdfft`
     - :doc:`grdfill`
     - :doc:`grdfilter`
+    - :doc:`grdgdal`
     - :doc:`grdgradient`
     - :doc:`grdhisteq`
     - :doc:`grdimage`
