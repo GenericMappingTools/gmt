@@ -1426,7 +1426,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 			case 'd':	/* Length dimension (with possible unit) */
 				code = GMT_IS_DIMENSION;
 				break;
-			case 's':	/* This must be start of training text */
+			case 's':	/* This must be start of trailing text */
 				code = GMT_IS_STRING;
 				break;
 			default:	/* No suffix, consider it an error */
