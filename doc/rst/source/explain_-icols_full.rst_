@@ -20,6 +20,8 @@ one of the following modifiers to any column or column range to transform the in
 - **+o** to add the given *offset* to the input values [default is 0].
 
 To read from a given column until the end of the record, leave off *stop* when specifying the column range. Normally,
-any trailing text is read but when **-i** is used you must explicitly add the column **t** to retain the text. To only
-ingest a single word from the trailing text, append the word number (first word is 0).  Finally, **-in** will simply
-read the numerical input and skip any trailing text.
+any trailing text will be read but when **-i** is used to specify specific input columns you must explicitly append the
+"column" **t** to retain the trailing text internally. To only ingest a single word from the trailing text, append
+the word number (first word is 0).  If your trailing text columns start with a valid number and you want to ensure
+the content from column *col* to the end of the record will be considered trailing text, use **-f**\ *col*\ **s**.
+Finally, **-in** will simply read the numerical input and skip any trailing text.
