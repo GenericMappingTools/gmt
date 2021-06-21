@@ -1426,7 +1426,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			if (Grid_orig && (I_data->header->n_columns != Grid_orig->header->n_columns || I_data->header->n_rows != Grid_orig->header->n_rows)) {
 				char int_z_grd[GMT_VF_LEN] = {""}, *res = "gp";
 				if (I_data->header->wesn[XLO] > region[XLO] || I_data->header->wesn[XHI] < region[XHI] || I_data->header->wesn[YLO] > region[YLO] || I_data->header->wesn[YHI] < region[YHI]) {
-					GMT_Report (API, GMT_MSG_ERROR, "Your secondary data grid given vie -A does not cover the same area as the primary grid - aborting\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Your secondary data grid given via -I does not cover the same area as the primary grid - aborting\n");
 					Return (GMT_GRDIO_DOMAIN_VIOLATION);
 				}
 				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_z_grd))
