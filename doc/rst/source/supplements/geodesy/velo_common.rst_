@@ -10,6 +10,13 @@ rotational wedges and their uncertainties, anisotropy bars,
 or strain crosses.  Symbol fills or their outlines may be colored
 based on constant parameters or via color lookup tables.
 
+.. figure:: /_images/GMT_velo.*
+   :width: 400 px
+   :align: center
+
+   You can make four different geodetic symbols: Rotational wedges,
+   velocity error ellipses with vector, anisotropy bars, and strain crosses.
+
 Required Arguments
 ------------------
 
