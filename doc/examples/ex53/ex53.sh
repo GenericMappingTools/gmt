@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# GMT_DISABLE_TEST
 #               GMT EXAMPLE 53
 #
 # Purpose:      Illustrate subplot with loops
