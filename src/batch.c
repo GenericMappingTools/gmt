@@ -114,7 +114,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = gmt_M_memory (GMT, NULL, 1, struct BATCH_CTRL);
 	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
-	strcpy (C->T.sep, " \t");	/* White space */
+	strcpy (C->T.sep, "\t ");	/* Any white space */
 	return (C);
 }
 
@@ -174,7 +174,7 @@ GMT_LOCAL int batch_delete_scripts (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctr
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W] "
+	GMT_Usage (API, 0, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>|W] "
 		"[-I<includefile>] [-M[<job>]] [-Q[s]] [-Sb<postflight>] [-Sf<preflight>] "
 		"[%s] [-W[<workdir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
@@ -185,14 +185,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "The main GMT modern script that completes a single job.");
 	GMT_Usage (API, 1, "\n-N<prefix>");
 	GMT_Usage (API, -2, "Set the <prefix> used for batch files and directory names.");
-	GMT_Usage (API, 1, "\n-T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]");
+	GMT_Usage (API, 1, "\n-T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>|W]");
 	GMT_Usage (API, -2, "Set number of jobs, create parameters from <min>/<max>/<inc>[+n] or give file with job-specific information. "
 		"If <timefile> does not exist it must be created by the preflight script given via -Sf.");
 	GMT_Usage (API, 3, "+p Set number of digits used in creating the job tags [automatic].");
 	GMT_Usage (API, 3, "+n Indicate that <inc> in <min>/<max>/<inc> is in fact number of jobs instead.");
 	GMT_Usage (API, 3, "+s Append <first> to change the value of the first job [0].");
 	GMT_Usage (API, 3, "+w Let trailing text in <timefile> be split into individual word variables. "
-		"We use any white-space as separators; use +W to strictly use TABs only.");
+		"We use space or TAB as separators; append <str> to set custom characters as separators instead.");
+	GMT_Usage (API, 3, "+W Same as +w but only use TAB as separator.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-I<includefile>");
 	GMT_Usage (API, -2, "Specify a script file to be inserted into the batch_init.sh script [none]. "
@@ -213,7 +214,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Specify <workdir> where temporary files will be built [<workdir> = <prefix> set by -N]. "
 		"If <workdir> is not given we create one in the system temp directory named <prefix> (from -N).");
 	GMT_Usage (API, 1, "\n-Z");
-	GMT_Usage (API, -2, "Erase input scripts (<mainscript> and any files via -I, -S [leave input scripts alone].");
+	GMT_Usage (API, -2, "Erase input scripts (<mainscript> and any files via -I, -S) [leave input scripts alone]. Not compatible with -Q.");
 	GMT_Option (API, "f");
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
 	GMT_Usage (API, 1, "\n-x[[-]<n>]");
@@ -306,6 +307,10 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 									strncpy (Ctrl->T.sep, W, GMT_LEN8-1);
 									gmt_M_str_free (W);
 								}
+								break;
+							case 'W':	/* Split trailing text into words using only TABs. */
+								Ctrl->T.split = true;
+								Ctrl->T.sep[1] = '\0';	/* Truncate the space character in the list to only have TAB */
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
