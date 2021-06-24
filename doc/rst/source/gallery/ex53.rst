@@ -34,8 +34,7 @@ center of each map.
 .. literalinclude:: /_verbatim/ex53.txt
    :language: bash
 
-.. figure:: /_images/ex53.*
-   :width: 500 px
-   :align: center
+.. image:: https://user-images.githubusercontent.com/14077947/123172626-62ca6880-d44b-11eb-8d91-21e448930460.png
+   :width: 80%
 
    Building subplots and using per-country shading.
