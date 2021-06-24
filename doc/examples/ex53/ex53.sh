@@ -6,7 +6,7 @@
 # GMT modules:  makecpt, subplot, set, plot, grdimage, clip, coast
 #
 
-gmt begin ex53
+gmt begin ex53 png
 	gmt set PROJ_ELLIPSOID Sphere MAP_ANNOT_OBLIQUE lon_horizontal,lat_parallel,tick_normal FONT_TAG 10p
 	gmt makecpt -Cterra
 	data=$(gmt which -G @Top12Cities.txt)
