@@ -684,6 +684,7 @@ GMT_LOCAL unsigned int psscale_cpt_transparency (struct GMT_CTRL *GMT, struct GM
 	 * Bit 2 means different slices have different transparencies
 	 * Bit 3 means at least one slice has different transparencies within it
 	 */
+	gmt_M_unused(GMT);
 	unsigned int k, status = 0;
 	for (k = 0; k < P->n_colors; k++) {
 		if (P->data[k].rgb_low[3] > 0.0 || P->data[k].rgb_high[3] > 0.0) status |= 1;	/* Transparency detected */

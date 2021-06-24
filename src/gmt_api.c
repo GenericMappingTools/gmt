@@ -8680,6 +8680,7 @@ GMT_LOCAL bool gmtapi_matrix_data_conforms_to_dataset (struct GMT_MATRIX *M) {
 }
 
 GMT_LOCAL bool gmtapi_vector_data_conforms_to_dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *V, enum GMT_enum_type type) {
+	gmt_M_unused(API);
 	/* Check if the vector data arrays matches the form of a GMT dataset (columns of doubles) */
 	if (type != GMT_DOUBLE) {	/* Only doubles can be passed or memcpy directly */
 		if (V->n_columns == 0) return (false);	/* Having nothing yet means we must duplicate */
@@ -9613,7 +9614,7 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
             col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
             ij = API->current_get_M_index (S->rec, col_pos, M->dim);
             API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
-            col++;           
+            col++;
             while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
                 /* This input column is requested more than once */
                 col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
@@ -9678,7 +9679,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
             col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
             API->current_get_V_val[col_pos] (&(V->data[col_pos]), S->rec, &(GMT->current.io.curr_rec[col]));
             GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], GMT->current.io.curr_rec[col]);
-           col++;           
+           col++;
             while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
                 /* This input column is requested more than once */
                 col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
@@ -14993,7 +14994,7 @@ int GMT_Put_Matrix (void *V_API, struct GMT_MATRIX *M, unsigned int type, int pa
 	MH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
 	MH->pad = pad;	/* Placing the pad argument here */
 	if ((item = gmtapi_get_item (API, GMT_IS_GRID, M)) != GMT_NOTSET)	/* Found in list, update type here as well */
-		API->object[item]->type = type;	
+		API->object[item]->type = type;
 
 	return GMT_NOERROR;
 }
