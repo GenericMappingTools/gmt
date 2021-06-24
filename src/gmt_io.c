@@ -232,7 +232,7 @@ static inline bool gmtio_outside_in_row_range (struct GMT_CTRL *GMT, int64_t row
 
 /*! . */
 static inline bool gmtio_outside_out_row_range (struct GMT_CTRL *GMT, int64_t row) {
-	/* Returns true of this row should be skipped according to -qo[~]<rows>,...[+a|s] */
+	/* Returns true if this row should be skipped according to -qo[~]<rows>,...[+a|s] */
 	bool pass;
 	if (GMT->common.q.mode != GMT_RANGE_ROW_OUT) return false;	/* -qo<rows> not active */
 	pass = GMT->common.q.inverse[GMT_OUT];
@@ -247,7 +247,7 @@ static inline bool gmtio_outside_out_row_range (struct GMT_CTRL *GMT, int64_t ro
 
 /*! . */
 static inline bool gmtio_outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
-	/* Returns true of this row should be skipped according to -qi[~]<rangevalues>,...+c<col> */
+	/* Returns true if this row should be skipped according to -qi[~]<rangevalues>,...+c<col> */
 	bool pass;
 	if (GMT->common.q.mode != GMT_RANGE_DATA_IN) return false;	/* -qi<data> not active */
 	pass = GMT->common.q.inverse[GMT_IN];
