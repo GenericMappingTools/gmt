@@ -145,7 +145,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*]
+**-M**\ **i**\|\ **s**\|\ **t**\ *val1*\ [**+c**\ *val2*]
     Modify the initial **i**\ ntensity of the color, **s**\ ize of the symbol, or its **t**\ ransparency during
     the *rise* interval [Defaults are 1, 1, and 100, respectively].  Option **-M** is repeatable for the different attributes.
     Optionally, for finite-duration events you may append **+c** to set the corresponding terminal value
