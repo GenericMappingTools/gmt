@@ -6063,7 +6063,7 @@ uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***li
 	uint64_t k = 0, n = 0;
 	size_t n_alloc = GMT_SMALL_CHUNK;
 	char **p = NULL, **file = NULL;
-	if ((p = gmtlib_get_dir_list (GMT, ".", NULL)) == NULL) return 0;
+	if ((p = gmt_get_dir_list (GMT, ".", NULL)) == NULL) return 0;
 
 	file = gmt_M_memory (GMT, NULL, n_alloc, char *);
 
@@ -6077,7 +6077,7 @@ uint64_t gmtlib_glob_list (struct GMT_CTRL *GMT, const char *pattern, char ***li
 		}
 		k++;
 	}
-	gmtlib_free_dir_list (GMT, &p);
+	gmt_free_dir_list (GMT, &p);
 	if (n < n_alloc) file = gmt_M_memory (GMT, file, n, char *);
 	*list = file;
 	return n;
@@ -17762,7 +17762,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 	FILE *fp = NULL;
 	struct GMT_MODULEINFO *M = NULL;
 
-	if ((C = gmtlib_get_dir_list (API->GMT, ".", ".c")) == NULL) {
+	if ((C = gmt_get_dir_list (API->GMT, ".", ".c")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "No C files found in current directory\n");
 		return GMT_RUNTIME_ERROR;
 	}
@@ -17871,7 +17871,7 @@ int gmt_write_glue_function (struct GMTAPI_CTRL *API, char* library) {
 
 CROAK:	/* We are done or premature return due to error */
 
-	gmtlib_free_dir_list (API->GMT, &C);
+	gmt_free_dir_list (API->GMT, &C);
 	for (k = 0; k < n; k++) {
 		gmt_M_str_free (M[k].mname);
 		gmt_M_str_free (M[k].cname);
@@ -18115,7 +18115,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead: %s", start);
 				else if (strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
 					prev = p - 1;	/* Get previous character */
-					if (prev < start || prev[0] != '$')
+					if ((prev < start || prev[0] != '$') && strchr (p, '\"') == NULL)	/* Appears to be (....) but not inside double-quotes */
 						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
 				}
 			}
