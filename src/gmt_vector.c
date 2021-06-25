@@ -340,6 +340,61 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartonly (struct GMT_CTRL *GMT, double 
 	return (n_new);
 }
 
+GMT_LOCAL uint64_t gmtvector_fix_up_path_polar (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode) {
+	/* Takes pointers to a list of <n> theta/r pairs (in user units) and adds
+	 * auxiliary points if the distance between two given points exceeds
+	 * <step> units.
+	 * If mode=0: returns points along a straight line
+	 * If mode=1: staircase; first follows r, then theta
+	 * If mode=2: staircase; first follows theta, then r
+	 * Returns the new number of points (original plus auxiliary).
+	 */
+
+	uint64_t i, j, n_new, n_step = 0;
+	double *x = NULL, *y = NULL, c;
+
+	if (mode == GMT_STAIRS_OFF) return n;	/* Nothing to do */
+
+	x = *a_x;	y = *a_y;
+
+	gmt_prep_tmp_arrays (GMT, GMT_NOTSET, 1, 2);	/* Init or reallocate tmp vectors */
+	GMT->hidden.mem_coord[GMT_X][0] = x[0];	GMT->hidden.mem_coord[GMT_Y][0] = y[0];	n_new = 1;
+	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
+
+	for (i = 1; i < n; i++) {
+		if (mode == GMT_STAIRS_X) {	/* First follow theta, then r */
+			n_step = lrint (fabs (x[i] - x[i-1]) / step);
+			for (j = 1; j <= n_step; j++) {
+				c = j / (double)n_step;
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1];
+				n_new++;
+			}
+			GMT->hidden.mem_coord[GMT_X][n_new] = x[i];	GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];	n_new++;
+		}
+		else if (mode == GMT_STAIRS_Y) {	/* First follow r, then theta */
+			GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1];	GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];	n_new++;
+			n_step = lrint (fabs (x[i] - x[i-1]) / step);
+			for (j = 1; j <= n_step; j++) {
+				c = j / (double)n_step;
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];
+				n_new++;
+			}
+		}
+		gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+	}
+
+	/* Destroy old allocated memory and put the new one in place */
+	gmt_M_free (GMT, x);	gmt_M_free (GMT, y);
+	*a_x = gmtlib_assign_vector (GMT, n_new, GMT_X);
+	*a_y = gmtlib_assign_vector (GMT, n_new, GMT_Y);
+
+	return (n_new);
+}
+
 GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode) {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
@@ -1428,6 +1483,8 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i, boost, f_lat_a, f_lat_b;
+
+	if (GMT->current.proj.projection_GMT == GMT_POLAR) return (gmtvector_fix_up_path_polar (GMT, a_lon, a_lat, n, 1.0, mode));	/* r-theta stepping */
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) return (gmtvector_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
 

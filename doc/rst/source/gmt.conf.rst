@@ -785,10 +785,20 @@ MAP Parameters
         [default is :doc:`theme dependent <theme-settings>`]. Choose **auto** for
         :ref:`automatic scaling with plot size <auto-scaling>`.
 
+    **MAP_LABEL_MODE**
+        Determines from where the label offset is measured: Choose **annot**
+        to mean the distance from the end of the annotation or **axis**
+        to mean the distance from the axis.  To set separate modes for the
+        *x* and *y* axes, separate modes by a slash [default is **annot/annot**]. Choose
+        **axis** if you need to align multiple axes labels across many rows or columns.
+
     **MAP_LABEL_OFFSET**
         Distance from base of axis annotations to the top of the axis label
         [default is :doc:`theme dependent <theme-settings>`]. Choose **auto**
-        for :ref:`automatic scaling with plot size <auto-scaling>`.
+        for :ref:`automatic scaling with plot size <auto-scaling>`. To
+        set different offsets for the *x* and *y* axes, separate distances
+        by a slash (e.g., **8p/12p** for 8p offset for the x-axis and 12p
+        offset for the y-axis)
 
     **MAP_LINE_STEP**
         Determines the maximum length (> 0) of individual straight

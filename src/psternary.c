@@ -30,11 +30,15 @@
 #define THIS_MODULE_MODERN_NAME	"ternary"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
-#define THIS_MODULE_KEYS	"<D{,>X},>DM,C-("
+#define THIS_MODULE_KEYS	"<D{,>X},>DM,CC("
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy"
 
 struct PSTERNARY_CTRL {
+	struct PSTERNARY_Out {	/* -> */
+		bool active;
+		char *file;
+	} Out;
 	struct PSTERNARY_A {	/* -A[-][labelinfo] NOT IMPLEMENTED YET */
 		bool active;
 		char *string;	/* Since we will simply pass this on to pscontour */
@@ -85,6 +89,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->Out.file);
 	gmt_M_str_free (C->A.string);
 	gmt_M_str_free (C->C.string);
 	gmt_M_str_free (C->G.string);
@@ -108,7 +113,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data sets.  If none, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-B Specify axis annotations for the three axis a, b, c with separate\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   -Ba<args> -Bb<args> -Bc<args> or a single -B<args> for all axes.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign symbol colors based on z-value in 3rd column (with -S), or\n");
@@ -142,7 +147,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0, ni_files = 0, no_files = 0;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
@@ -151,7 +156,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSTERNARY_CTRL *Ctrl, struct GMT_
 
 			case '<':	/* Input files */
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
-				n_files++;
+				ni_files++;
+				break;
+			case '>':	/* Got named output file */
+				if (no_files++ > 0) { n_errors++; continue; }
+				Ctrl->Out.active = true;
+				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -410,7 +421,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	gmt_set_dataset_minmax (GMT, D);		/* Update column stats */
 
 	if (Ctrl->M.active) {	/* Just print the converted data and exit */
-		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, NULL, D) != GMT_NOERROR) {
+		if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_WRITE_NORMAL, NULL, Ctrl->Out.file, D) != GMT_NOERROR) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to write x,y file to stdout\n");
 			Return (API->error);
 		}
@@ -475,7 +486,7 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 			PSL_plotline (PSL, &tri_x[2], &tri_y[2], 2, PSL_MOVE|PSL_STROKE);
 	}
 
-	L_off = 3.0 * GMT->current.setting.map_label_offset;	T_off = 2.0 * GMT->current.setting.map_title_offset;
+	L_off = 3.0 * GMT->current.setting.map_label_offset[GMT_X];	T_off = 2.0 * GMT->current.setting.map_title_offset;
 	if (GMT->current.map.frame.header[0]) {	/* Plot title */
 		PSL_comment (PSL, "Placing plot title\n");
 		gmt_map_title (GMT, tri_x[2], tri_y[2]+2.0*T_off);
@@ -502,19 +513,6 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	x_origin[2] = 0.75 * width;	y_origin[2] = -0.5 * height;	rot[2] = 60.0;	sign[2] = -1;	side[2] = GMT->current.map.frame.side[W_SIDE]; cmode[2] = 'N';	/* W_SIDE settings */
 	if (reverse) {	/* Flip what is positive directions */
 		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
-	}
-	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
-		if (side[k] == 0) continue;	/* Did not want this axis drawn */
-		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
-		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, psternary_get_B_setting (boptions[k]));
-		gmt_init_B (GMT);
-		PSL_comment (PSL, "Draw axis %c with origin at %g, %g and rotation = %g\n", name[k], x_origin[k], y_origin[k], rot[k]);
-		PSL_setorigin (PSL, x_origin[k], y_origin[k], rot[k], PSL_FWD);
-		if ((error = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot %c axis\n", name[k]);
-			Return (API->error);
-		}
-		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
 	}
 
 	if (!Ctrl->S.active && (Ctrl->G.active || Ctrl->C.active)) {	/* Plot polygons before gridlines */
@@ -555,6 +553,20 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
 	}
 	if (clip_set) PSL_endclipping (PSL, 1);
+
+	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
+		if (side[k] == 0) continue;	/* Did not want this axis drawn */
+		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
+		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, psternary_get_B_setting (boptions[k]));
+		gmt_init_B (GMT);
+		PSL_comment (PSL, "Draw axis %c with origin at %g, %g and rotation = %g\n", name[k], x_origin[k], y_origin[k], rot[k]);
+		PSL_setorigin (PSL, x_origin[k], y_origin[k], rot[k], PSL_FWD);
+		if ((error = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd))) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot %c axis\n", name[k]);
+			Return (API->error);
+		}
+		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
+	}
 
 	for (k = 0; k <= GMT_Z; k++) {
 		if (GMT_Free_Option (API, &boptions[k])) {

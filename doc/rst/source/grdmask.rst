@@ -15,7 +15,7 @@ Synopsis
 **gmt grdmask** *table* |-G|\ *mask_grd_file*
 |SYN_OPT-I|
 |SYN_OPT-R|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
 [ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -86,7 +86,9 @@ Optional Arguments
     then parallels. Or append **p** to first follow parallels, then meridians.
     For Cartesian data, points are simply connected, unless you append
     **x** or **y** to construct stair-case paths whose first move is along
-    *x* or *y*, respectively.
+    *x* or *y*, respectively.  If your Cartesian data are polar (*theta*, *r*), append
+    **t** or **r** to construct stair-case paths whose first move is along
+    *theta* or *r*, respectively.
 
 .. _-N:
 

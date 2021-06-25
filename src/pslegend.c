@@ -116,7 +116,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The remaining arguments are optional:\n");
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LEGEND, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   +l sets the line <spacing> factor in units of the current annotation font size [1.1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Option (API, "B-");
@@ -681,7 +681,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							/* Default assumes label is added on top */
 							just = 't';
 							gave_label = true;
-							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
+							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset[GMT_Y]);
 							if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 								just = string[0];
 							else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate alignment */
@@ -1270,7 +1270,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							just = 't';
 							gave_label = true;
 							row_height = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
-							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
+							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset[GMT_Y]);
 							if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 								just = string[0];
 							else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate alignment */

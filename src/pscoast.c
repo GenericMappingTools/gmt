@@ -197,7 +197,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Option (API, "J-Z,G");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_GSHHG_syntax (API->GMT, 'A');
 	GMT_Option (API, "B-");
 	gmt_fill_syntax (API->GMT, 'C', NULL, "Set separate color for lakes and river-lakes [Default is same as ocean].");
@@ -251,7 +251,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-Q Terminate previously set clip-paths.\n");
 	gmt_fill_syntax (API->GMT, 'S', NULL, "Paint of clip \"wet\" areas.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   6) Leave off <fill> to issue clip paths for water areas.\n");
-	gmt_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose at specified reference point.");
+	gmt_maprose_syntax (API->GMT, 'd', "Draw a north-pointing directional map rose at specified reference point.");
+	gmt_maprose_syntax (API->GMT, 'm', "Draw a north-pointing magnetic map rose at specified reference point.");
 	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw shorelines.  Append pen [Default for all levels: %s].", 0);
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set custom pens below.  Repeat the -W option as many times as needed.\n");
@@ -1172,8 +1173,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		GMT->current.map.coastline = false;
 	}
 
-	if ((Ctrl->E.info.mode & (GMT_DCW_LIST-1)) > GMT_DCW_REGION)	/* Avoid having GMT_DCW_ZHEADER be included in check */
-		(void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : GMT_DCW_PLOT);
+	if ((Ctrl->E.info.mode & (GMT_DCW_LIST-1)) > GMT_DCW_REGION) {	/* Avoid having GMT_DCW_ZHEADER be included in check */
+		unsigned int mode = (Ctrl->E.info.mode & (GMT_DCW_CLIP_IN|GMT_DCW_CLIP_OUT)) ? Ctrl->E.info.mode : GMT_DCW_PLOT;
+		(void)gmt_DCW_operation (GMT, &Ctrl->E.info, NULL, Ctrl->M.active ? GMT_DCW_DUMP : mode);
+	}
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 2);	/* End clippath */
 

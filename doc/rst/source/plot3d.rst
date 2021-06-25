@@ -15,7 +15,7 @@ Synopsis
 **gmt plot3d** [ *table* ] |-J|\ *parameters*
 |-Jz|\ \|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy*\ [/*dz*] ]

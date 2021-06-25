@@ -577,7 +577,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");

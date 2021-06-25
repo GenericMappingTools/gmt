@@ -153,7 +153,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-G Give name of output file (if -N) or a gridfile name template that must.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   contain the format specifier \"%%s\" which will be replaced with u or v.\n");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0].\n");

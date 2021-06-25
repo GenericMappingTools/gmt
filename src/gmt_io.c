@@ -232,7 +232,7 @@ static inline bool gmtio_outside_in_row_range (struct GMT_CTRL *GMT, int64_t row
 
 /*! . */
 static inline bool gmtio_outside_out_row_range (struct GMT_CTRL *GMT, int64_t row) {
-	/* Returns true of this row should be skipped according to -qo[~]<rows>,...[+a|s] */
+	/* Returns true if this row should be skipped according to -qo[~]<rows>,...[+a|s] */
 	bool pass;
 	if (GMT->common.q.mode != GMT_RANGE_ROW_OUT) return false;	/* -qo<rows> not active */
 	pass = GMT->common.q.inverse[GMT_OUT];
@@ -247,7 +247,7 @@ static inline bool gmtio_outside_out_row_range (struct GMT_CTRL *GMT, int64_t ro
 
 /*! . */
 static inline bool gmtio_outside_in_data_range (struct GMT_CTRL *GMT, unsigned int col) {
-	/* Returns true of this row should be skipped according to -qi[~]<rangevalues>,...+c<col> */
+	/* Returns true if this row should be skipped according to -qi[~]<rangevalues>,...+c<col> */
 	bool pass;
 	if (GMT->common.q.mode != GMT_RANGE_DATA_IN) return false;	/* -qi<data> not active */
 	pass = GMT->common.q.inverse[GMT_IN];
@@ -3261,7 +3261,7 @@ bool gmtlib_maybe_abstime (struct GMT_CTRL *GMT, char *txt, bool *no_T) {
 	return false;
 }
 
-GMT_LOCAL unsigned int gmtio_physical_coltype (struct GMT_CTRL *GMT, unsigned int col) {
+GMT_LOCAL enum gmt_col_enum gmtio_physical_coltype (struct GMT_CTRL *GMT, unsigned int col) {
 	/* The users's -f settings apply to the logical columns and these are the same as
 	 * the physical columns except when -i is used.  This function takes the physical
 	 * column (we are scanning across the physical record) and returns the corresponding
@@ -3318,8 +3318,9 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	 * (which is what we are handling here) a huge variety of datetime strings are possible via
 	 * the FORMAT_DATE_IN, FORMAT_CLOCK_IN settings.
 	 */
-	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, phys_col_type, *type = NULL;
+	unsigned int ret_val = GMT_READ_DATA, pos = 0, col = 0, k, *type = NULL;
 	int got;
+	enum gmt_col_enum phys_col_type;
 	bool found_text = false, no_T = false;
 	char token[GMT_BUFSIZ], message[GMT_BUFSIZ] = {""};
 	double value;
@@ -3328,21 +3329,27 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 	type = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, unsigned int);
 	*tpos = pos;
 	while (!found_text && (gmt_strtok (record, GMT->current.io.scan_separators, &pos, token))) {
-		phys_col_type = gmtio_physical_coltype (GMT, col);
-		if (phys_col_type == GMT_IS_ABSTIME || gmtlib_maybe_abstime (GMT, token, &no_T)) {	/* Might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
-			got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
+		if ((phys_col_type = gmt_get_column_type (GMT, GMT_IN, col)) == GMT_IS_STRING) {	/* Explicit start of trailing text via -f<col>s */
+			found_text = true;	/* We stop right here, return flag as nan and hence n_columns will be col. */
+			got = GMT_IS_NAN;
 		}
-		else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
-			got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, false, &value);
-		if (got == GMT_IS_NAN) {	/* Parsing failed, which means we found our first non-number; but it could also be a valid NaN */
-			gmt_str_tolower (token);
-			if (strncmp (token, "nan", 3U))
-				found_text = true;
-			else
-				type[col++] = got = GMT_IS_FLOAT;
+		else {	/* Auto-guess from examining the token */
+			phys_col_type = gmtio_physical_coltype (GMT, col);
+			if (phys_col_type == GMT_IS_ABSTIME || gmtlib_maybe_abstime (GMT, token, &no_T)) {	/* Might be ISO Absolute time; if not we got junk (and got -> GMT_IS_NAN) */
+				got = gmt_scanf (GMT, token, GMT_IS_ABSTIME, &value);
+			}
+			else	/* Let gmt_scanf_arg figure it out for us by passing UNKNOWN since ABSTIME has been dealt above */
+				got = gmt_scanf_arg (GMT, token, GMT_IS_UNKNOWN, false, &value);
+			if (got == GMT_IS_NAN) {	/* Parsing failed, which means we found our first non-number; but it could also be a valid NaN */
+				gmt_str_tolower (token);
+				if (strncmp (token, "nan", 3U))
+					found_text = true;
+				else
+					type[col++] = got = GMT_IS_FLOAT;
+			}
+			else	/* A successful numerical parsing */
+					type[col++] = got;
 		}
-		else	/* A successful numerical parsing */
-				type[col++] = got;
 		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) && col <= 50) {	/* Tell user how we interpreted their first record, but not for excessively long records */
 			k = gmtio_get_type_name_index (got);
 			if (col>1) strcat (message, ",");

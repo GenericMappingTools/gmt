@@ -110,7 +110,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Typically, the w/e/s/n you specify must be within the region of the input\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   grid.  If in doubt, run grdinfo first and check range of old file.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon table that describes the grid subset\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   to extracted (nodes between grid boundary and polygons will be set to NaN).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t     Append +c to crop the grid to the polygon bounding box [leave region as is].\n");
@@ -120,7 +120,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to initialize nodes outside current region [Default is NaN].\n");
 	GMT_Option (API, "V");
-	gmt_dist_syntax (API->GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
+	gmt_dist_syntax (API->GMT, "S<lon>/<lat>/<radius>[+n]", "Specify an origin and radius to find the corresponding rectangular area.");
 	GMT_Message (API, GMT_TIME_NONE, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to set all nodes in the subset outside the circle to NaN.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify an optional range and determine the corresponding rectangular region\n");

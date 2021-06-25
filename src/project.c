@@ -324,7 +324,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+c|h]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>/<minor>/<azimuth>[+e|n]]\n", GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>[unit][/<minor>/<azimuth>][+e|n]]\n", GMT_V_OPT);
 	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -343,7 +343,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   In a Cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the location of the center to be <ox>/<oy>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Force the location of the Discontinuity in the r coordinate;\n");
@@ -377,12 +377,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in the <azimuth> direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes (in km if geographic) and azimuth\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of major axis. Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes and the azimuth of the major axis\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n instead if -G specifies the number of unique perimeter points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a degenerate ellipse, i.e., circle, just append the single argument the <diameter> instead.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   For a degenerate ellipse, i.e., circle, you may just give <major> only as the <diameter>.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), d (arc degree),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m (arc minute), or s (arc second) [k]; we assume -G is in the same units (unless +n is used).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   m (arc minute), or s (arc second) to <major> [k]; we assume -G is in the same units (unless +n is used).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian ellipses, add -N and provide <direction> (CCW from horizontal) instead of <azimuth>.\n");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,o,q,s,:,.");
 
@@ -398,7 +398,7 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 
 	unsigned int n_errors = 0, j, k, pos;
 	size_t len;
-	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *ce = NULL, *ch = NULL, *c = NULL;
+	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *ce = NULL, *ch = NULL, *c = NULL, dummy;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -540,8 +540,16 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					ce[0] = '\0';	/* Chop off +n */
 				}
 				if (strchr (opt->arg, '/')) {	/* Ellipse setting */
-					k = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Z.major, &Ctrl->Z.minor, &Ctrl->Z.azimuth);
+					k = sscanf (opt->arg, "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->Z.azimuth);
 					if (k == 3) {	/* Ellipse, check that major >= minor */
+						if (Ctrl->N.active) {
+							Ctrl->Z.major = atof (txt_a);
+							Ctrl->Z.minor = atof (txt_b);
+						}
+						else {	/* Watch out for units and convert to km */
+							Ctrl->Z.mode = gmt_get_distance (GMT, txt_a, &(Ctrl->Z.major), &(Ctrl->Z.unit));
+							(void) gmt_get_distance (GMT, txt_b, &(Ctrl->Z.minor), &dummy);
+						}
 						if (Ctrl->Z.major < Ctrl->Z.minor) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Major axis must be equal to or larger than the minor axis\n");
 							n_errors++;
@@ -551,7 +559,7 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 						if (Ctrl->N.active)
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/direction>[+e|n] or -Z<diameter>[+e|n]\n");
 						else
-							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major/minor/azimuth>[+e|n] or -Z<diameter>[+e|n]\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Expected -Z<major[unit]/minor/azimuth>[+e|n] or -Z<diameter>[unit][+e|n]\n");
 						n_errors++;
 					}
 				}
@@ -940,7 +948,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		/* We need to find r,s  */
 
 		if (Ctrl->Z.active) {
-			uint64_t ne = P.n_used;
+			uint64_t ne = P.n_used - 1;
 			if (Ctrl->N.active) {	/* Cartesian ellipse */
 				double r, ca, sa, d_azim = TWO_PI / ne, e2 = 1.0 - pow (Ctrl->Z.minor/Ctrl->Z.major, 2.0);
 				sincosd (Ctrl->Z.azimuth - 90.0, &sin_theta, &cos_theta);
@@ -958,7 +966,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				z_header = strdup ("Testing Cartesian ellipse");
 			}
 			else {	/* Geographic ellipse */
-				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne-1);
+				struct GMT_DATASEGMENT *S = gmt_get_geo_ellipse (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->Z.major, Ctrl->Z.minor, Ctrl->Z.azimuth, ne);
 				for (rec = 0; rec < P.n_used; rec++) {
 					p_data[rec].a[4] = S->data[GMT_X][rec];
 					p_data[rec].a[5] = S->data[GMT_Y][rec];

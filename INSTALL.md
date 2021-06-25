@@ -22,6 +22,7 @@ for compiling GMT source package (either stable release or development version).
   * [RHEL/CentOS](#rhelcentos)
   * [Ubuntu/Debian](#ubuntudebian)
   * [ArchLinux](#archlinux)
+  * [Gentoo](#gentoo)
 - [Cross Platform Install Instructions](#cross-platform-install-instructions)
   * [Install via conda](#install-via-conda)
 - [FreeBSD](#freebsd)
@@ -38,6 +39,15 @@ The installers come with GDAL, FFmpeg, and Ghostscript pre-installed.
 In addition to the GMT installer, you also need to download and install
 [GraphicsMagick](http://www.graphicsmagick.org/) if you want to create
 animated GIFs.
+
+
+**NOTE:**
+There are several options for using [GMT on non-UNIX systems](https://docs.generic-mapping-tools.org/latest/cookbook/non-unix-platforms.html)
+such as Windows, including [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/),
+MinGW/MSYS2, Cygwin, or DOS batch scripts. The last option will not provide you
+with any UNIX tools so you will be limited to what you can do with DOS batch files.
+One simple option for accessing a UNIX style bash terminal is *Git for Windows*,
+which can be downloaded from [their official website](https://gitforwindows.org/).
 
 **NOTE:**
 At the installation step, you may get the warning message:
@@ -187,6 +197,14 @@ Install other GMT dependencies (some are optional) via:
 
 ArchLinux official repository doesn't provide GMT packages, but AUR (ArchLinux User Repository) does.
 You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericMappingTools/gmt/wiki/Install-latest-GMT-on-ArchLinux) in the wiki.
+
+### Gentoo
+
+**NOTE:** This may provide old GMT versions. Consider [building from source](BUILDING.md).
+
+Install GMT via:
+
+    sudo emerge gmt
 
 ## Cross Platform Install Instructions
 
