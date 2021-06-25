@@ -194,7 +194,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-C<cpt>");
 	GMT_Usage (API, -2, "Give <cpt> and obtain symbol color via z-value in 3rd data column.");
 	GMT_Usage (API, 1, "\n-D[j|J]<dx>[/<dy>][+v[<pen>]");
-	GMT_Usage (API, -2, "Add <add_x>,<add_y> to the event text origin AFTER projecting with -J [0/0]. "
+	GMT_Usage (API, -2, "Add <dx>,<dy> to the event text origin AFTER projecting with -J [0/0]. "
 		"Use -Dj to move text origin away from point (direction determined by text's justification). "
 		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). "
 		"Append +v[<pen>] to draw line from text to original point.  If <add_y> is not given it equals <add_x>.");
