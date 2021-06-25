@@ -177,7 +177,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"By default, all color changes are annotated (but see -B).  To annotate a subset, add an extra column "
 		"to the CPT with a L, U, or B to annotate Lower, Upper, or Both color segment boundaries. "
 		"If a categorical CPT is given then -Li is set automatically.");
-	GMT_Usage (API, 1, "\n-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s[+r]]");
+	GMT_Usage (API, 1, "\n-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+m[a|c|l|u]][+n[<txt>]]%s[+r]]");
 	GMT_Usage (API, -2, "Specify position and dimensions of the scale bar [JBC]. ");
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_COLORBAR, 3);
 	//gmt_refpoint_syntax (API->GMT, "  ", "  Specify position and dimensions of the scale bar [JBC].", GMT_ANCHOR_COLORBAR, 1);
