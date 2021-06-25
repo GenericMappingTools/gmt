@@ -757,7 +757,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][[+s<sfact>]] [-E+n|p] "
-		"[-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
+		"[-F[l]] [-I[i|e]] [-L%s/<noise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
 		"[-Sb<width>|h|i|j|s|u] [-T[<cpol>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -798,9 +798,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "e: Compute external crossings only [Default is both].");
 	GMT_Usage (API, 3, "i: Compute internal crossings only [Default is both].");
 	GMT_Usage (API, -2, "Use uppercase E or I to consider all segments within the same table as one entity [separate].");
-	GMT_Usage (API, 1, "\n-L%s/<pnoise>/<offset>", GMT_DIST_OPT);
+	GMT_Usage (API, 1, "\n-L%s/<noise>/<offset>", GMT_DIST_OPT);
 	GMT_Usage (API, -2, "Remove tile Lines.  These are superfluous lines along the -R border. "
-		"Append <gap_dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].");
+		"Append <dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].");
 	GMT_Usage (API, 1, "\n-N<pfile>[+a][+p<ID>][+r][+z]");
 	GMT_Usage (API, -2, "Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:");
 	GMT_Usage (API, 3, "%s If OGR/GMT polygons, get polygon ID via -a for Z column, else", GMT_LINE_BULLET);
