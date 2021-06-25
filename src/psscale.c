@@ -199,7 +199,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-G<zlo>/<zhi>");
 	GMT_Usage (API, -2, "Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>. "
 		"To accept one of the incoming limits, set that limit to NaN.");
-	GMT_Usage (API, 1, "\n-I[<max_intens>|<low_i>/<high_i>");
+	GMT_Usage (API, 1, "\n-I[<max_intens>|<low_i>/<high_i>]");
 	GMT_Usage (API, -2, "Add illumination for +-<max_intens> or <low_i> to <high_i> [-1.0/1.0]. "
 		"Alternatively, specify <lower>/<upper> intensity values.");
 	GMT_Option (API, "J-Z,K");
