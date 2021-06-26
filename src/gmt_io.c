@@ -8146,7 +8146,6 @@ struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 	 *	(# of segments, # of rows/segment) because tables will be pasted horizontally and not vertically.
 	 * mode may also have bitflag GMT_ALLOC_VIA_ICOLS which then complicates the duplication by having to go via -i
 	 */
-	bool slow_duplicate = false;
 	unsigned int hdr, smode;
 	size_t len;
 	uint64_t nr, tbl, seg, n_seg, seg_in_tbl;
@@ -8252,15 +8251,12 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 		/* Cannot copy segments but must go via -i */
 		D = gmt_alloc_dataset (GMT, Din, 0, GMT->common.i.n_cols, mode);
 		gmtio_duplicate_dataset_cols (GMT, Din, D);
+		if (geometry)
+			*geometry = D->geometry;
 		return (D);
 	}
-
+	/* Regular duplication */
 	D = gmt_alloc_dataset (GMT, Din, 0, Din->n_columns, mode);
-	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
-		/* Cannot copy segments but must go via -i */
-		gmtio_duplicate_dataset_cols (GMT, Din, D);
-		return (D);
-	}
 	gmt_M_memcpy (D->min, Din->min, Din->n_columns, double);
 	gmt_M_memcpy (D->max, Din->max, Din->n_columns, double);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
