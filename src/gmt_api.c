@@ -1320,29 +1320,34 @@ GMT_LOCAL double gmtapi_select_record_value (struct GMT_CTRL *GMT, double *recor
 	return (val);
 }
 
-GMT_LOCAL unsigned int gmtapi_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col) {
-	/* Return the next column to be selected on input */
-	unsigned int col_pos;
-	if (GMT->common.i.select)	/* -i has selected some columns */
-		col_pos = GMT->current.io.col[GMT_IN][col].col; /* Which data column to pick */
-#if 0
-	else if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col < GMT_Z)	/* Worry about -: for lon,lat */
-		col_pos = 1 - col;	/* Read lat/lon instead of lon/lat */
-#endif
+unsigned int gmtlib_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col, unsigned int *col_pos_in) {
+    /* If -i is not active then we simply return col_pos_out = col_pos_in = col.  Done!
+     *
+     * With -i, we must return correct value for both the in and out column positions based on the info in the structure.
+     * Here, col is a loop variable that goes from 0 to number of desired output columns.  However, that col number
+     * is likely neither the input(col) we wish to get nor the output(col) where we want to place it in the output array.
+     * Instead, we set these two different columns via col_pos_in and col_pos_out so that output(col_pos_out) = input(col_pos_in).
+     * col_pos_out will uniquely touch the same values as col loops over, but col_pos_in may be outside that range
+     * and even have repeated column values (e.g., due to -i0,1,2,2+s5). */
+	unsigned int col_pos_out;
+	if (GMT->common.i.select) {	/* -i has selected some columns */
+        *col_pos_in = GMT->current.io.col[GMT_IN][col].col;   /* Which data column to take the value from input */
+        col_pos_out = GMT->current.io.col[GMT_IN][col].order; /* Which data column to place it on output */
+    }
 	else
-		col_pos = col;	/* Just goto that column */
-	return (col_pos);
+		col_pos_out = *col_pos_in = col;	/* They are all the same */
+	return (col_pos_out);
 }
 
 /*! . */
-GMT_LOCAL double gmtapi_get_record_value (struct GMT_CTRL *GMT, double *record, uint64_t col, uint64_t n_colums) {
+GMT_LOCAL double gmtapi_get_record_value (struct GMT_CTRL *GMT, double *record, uint64_t col, uint64_t n_colums, unsigned int *col_pos_out) {
 	/* For binary input of data record via external matrix, we must select correct col entry and possibly make adjustments */
 	double val;
-	unsigned int col_pos;
-	col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-	val = (col_pos >= n_colums) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], record[col_pos]);	/* If we request a column beyond length of array, return NaN */
+	unsigned int col_pos_in;
+	*col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+	val = (*col_pos_out >= n_colums) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], record[col_pos_in]);	/* If we request a column beyond length of array, return NaN */
 	if (GMT->common.d.active[GMT_IN] && gmt_M_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_IN];	/* Write this value instead of NaNs */
-	if (gmt_M_is_type (GMT, GMT_IN, col_pos, GMT_IS_LON)) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
+	if (gmt_M_is_type (GMT, GMT_IN, *col_pos_out, GMT_IS_LON)) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
 	return (val);
 }
 
@@ -3512,7 +3517,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	 */
 
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
-	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode, type = GMT_READ_DATA;
+	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode, type = GMT_READ_DATA, col_pos_out;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
 	bool via = false, got_data = false, check_col_switch = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
@@ -3634,7 +3639,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table from GMT_DATASET memory location\n");
 				check_col_switch = true;
-				D_obj = gmt_duplicate_dataset (GMT, Din_obj, GMT_ALLOC_NORMAL, NULL);
+				D_obj = gmt_duplicate_dataset (GMT, Din_obj, GMT_ALLOC_NORMAL|GMT_ALLOC_VIA_ICOLS, NULL);
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
 				if ((new_item = gmtlib_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
 					return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
@@ -3705,8 +3710,10 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 						}
 					}
 					else {	/* Found a data record */
-						for (col = 0; col < n_columns; col++)	/* Place the record into the dataset segment structure */
-							S->data[col][n_records] = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, M_obj->n_columns);
+						for (col = 0; col < n_columns; col++) {	/* Place the record into the dataset segment structure */
+                            double val = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, M_obj->n_columns, &col_pos_out);
+                            S->data[col_pos_out][n_records] = val;
+                        }
 						got_data = true;	/* No longer before first data record */
 						if (smode) S->text[n_records] = strdup (M_obj->text[row]);
 						n_records++;	/* Update count of records in current segment */
@@ -3773,8 +3780,10 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 						}
 					}
 					else {	/* Data record */
-						for (col = 0; col < n_columns; col++)	/* Place the record into the structure */
-							S->data[col][n_records] = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, V_obj->n_columns);
+						for (col = 0; col < n_columns; col++) {	/* Place the record into the structure */
+                            double val = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, V_obj->n_columns, &col_pos_out);
+                            S->data[col_pos_out][n_records] = val;
+                        }
 						if (smode) S->text[n_records] = strdup (V_obj->text[row]);
 						got_data = true;
 						n_records++;
@@ -4027,7 +4036,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qo is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table to GMT_DATASET memory location\n");
 			D_copy = gmt_duplicate_dataset (GMT, D_obj, GMT_ALLOC_NORMAL, NULL);
-			gmtlib_change_dataset (GMT, D_copy);	/* Deal with any -o settings */
+			gmtlib_change_out_dataset (GMT, D_copy);	/* Deal with any -o settings */
 			gmtapi_switch_cols (GMT, D_copy, GMT_OUT);	/* Deals with -:, if it was selected */
 			S_obj->resource = D_copy;	/* Set resource pointer from object to this dataset */
 			break;
@@ -4037,7 +4046,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			if (GMT->common.q.mode == GMT_RANGE_ROW_OUT || GMT->common.q.mode == GMT_RANGE_DATA_OUT)
 				GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qo is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table to GMT_DATASET memory location\n");
-			gmtlib_change_dataset (GMT, D_obj);	/* Deal with any -o settings */
+			gmtlib_change_out_dataset (GMT, D_obj);	/* Deal with any -o settings */
 			gmtapi_switch_cols (GMT, D_obj, GMT_OUT);	/* Deals with -:, if it was selected */
 			S_obj->resource = D_obj;		/* Set resource pointer from object to this dataset */
 			DH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
@@ -8726,10 +8735,14 @@ GMT_LOCAL void gmtapi_maybe_change_method_to_duplicate (struct GMTAPI_CTRL *API,
 		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
 		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as vectors are not compatible with a GMT grid\n");
 	}
-	else if (S_obj->actual_family == GMT_IS_VECTOR && S_obj->family == GMT_IS_DATASET && !gmtapi_vector_data_conforms_to_dataset (API, S_obj->resource, S_obj->type)) {
-		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input vectors are not compatible with a GMT dataset\n");
-	}
+    else if (S_obj->actual_family == GMT_IS_VECTOR && S_obj->family == GMT_IS_DATASET && !gmtapi_vector_data_conforms_to_dataset (API, S_obj->resource, S_obj->type)) {
+        S_obj->method = GMT_IS_DUPLICATE;   /* Must duplicate this resource */
+        GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input vectors are not compatible with a GMT dataset\n");
+    }
+    else if (S_obj->actual_family == GMT_IS_DATASET && S_obj->family == GMT_IS_DATASET && API->GMT->common.i.select) {
+        S_obj->method = GMT_IS_DUPLICATE;   /* Must duplicate this resource */
+        GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input dataset needs to be operated on to become output GMT dataset\n");
+    }
 }
 
  /*! . */
@@ -9603,24 +9616,17 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 	}
 	else {	/* Read from the current resource */
 		struct GMT_MATRIX *M = API->current_get_M;
-		uint64_t col, ij, n_use, col_pos;
+        unsigned int col, n_use, col_pos_out, col_pos_in;
+        uint64_t ij;
 		int status;
 		S->status = GMT_IS_USING;				/* Mark as being read */
 		n_use = gmtapi_n_cols_needed_for_gaps (GMT, S->n_columns);
 		gmtapi_update_prev_rec (GMT, n_use);
 
-		col = 0;
-		while (col < API->current_get_n_columns) {
-			col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-			ij = API->current_get_M_index (S->rec, col_pos, M->dim);
-			API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
-			col++;
-			while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
-				/* This input column is requested more than once */
-				col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
-				API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
-				col++;
-			}
+		for (col = 0; col < API->current_get_n_columns; col++) {
+			col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+			ij = API->current_get_M_index (S->rec, col_pos_in, M->dim);
+			API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col_pos_out]));
 		}
 		S->rec++;
 		if ((status = gmtapi_bin_input_memory (GMT, S->n_columns, n_use)) < 0) {	/* Process the data record */
@@ -9668,25 +9674,16 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 	}
 	else {	/* Read from this resource */
 		struct GMT_VECTOR *V = API->current_get_V;
-		uint64_t n_use, col_pos;
+		unsigned int n_use, col_pos_out, col_pos_in;
 		int status;
 		S->status = GMT_IS_USING;				/* Mark as being read */
 		n_use = gmtapi_n_cols_needed_for_gaps (GMT, S->n_columns);
 		gmtapi_update_prev_rec (GMT, n_use);
 
-		col = 0;
-		while (col < API->current_get_n_columns) {
-			col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-			API->current_get_V_val[col_pos] (&(V->data[col_pos]), S->rec, &(GMT->current.io.curr_rec[col]));
-			GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], GMT->current.io.curr_rec[col]);
-			col++;
-			while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
-				/* This input column is requested more than once */
-				col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
-				API->current_get_V_val[col_pos] (&(V->data[col_pos]), S->rec, &(GMT->current.io.curr_rec[col]));
-				GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], GMT->current.io.curr_rec[col]);
-				col++;
-			}
+		for (col = 0; col < API->current_get_n_columns; col++) {
+			col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+			API->current_get_V_val[col_pos_in] (&(V->data[col_pos_in]), S->rec, &(GMT->current.io.curr_rec[col_pos_out]));
+			GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[col_pos_out]);
 		}
 
 		S->rec++;
@@ -9712,15 +9709,15 @@ GMT_LOCAL struct GMT_RECORD * gmtapi_get_record_dataset (struct GMTAPI_CTRL *API
 	struct GMT_DATASET *D = API->current_get_D_set;	/* Get the current dataset */
 	struct GMT_RECORD *record = NULL;
 	int64_t *count = GMT->current.io.curr_pos[GMT_IN];	/* Shorthand used below */
-	uint64_t col, col_pos;
+	unsigned int col, col_pos_in, col_pos_out;
 	int status = gmtapi_wind_to_next_datarecord (count, D, mode);	/* Get current record status and wind counters if needed */
 
 	switch (status) {
 		case GMT_IO_DATA_RECORD:	/* Got a data record */
 			S->status = GMT_IS_USING;		/* Mark this resource as currently being read */
 			for (col = 0; col < API->current_get_n_columns; col++) {	/* Copy from row to curr_rec */
-				col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-				GMT->current.io.curr_rec[col] = D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[col_pos][count[GMT_ROW]];
+				col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+				GMT->current.io.curr_rec[col_pos_out] = D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[col_pos_in][count[GMT_ROW]];
 			}
 			if (D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text && D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]])
 				strncpy (GMT->current.io.curr_trailing_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
