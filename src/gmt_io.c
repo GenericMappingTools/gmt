@@ -8232,11 +8232,11 @@ GMT_LOCAL void gmtio_duplicate_dataset_cols (struct GMT_CTRL *GMT, struct GMT_DA
 				col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
 				if (GMT->current.io.col[GMT_IN][col].convert) {	/* Cannot do a straight copy */
 					for (row = 0; row < Sin->n_rows; row++) {
-						S->data[col_pos_out][row] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], S->data[col_pos_in][row]);
+						S->data[col_pos_out][row] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], Sin->data[col_pos_in][row]);
 					}
 				}
 				else	/* Can copy the lot */
-					gmt_M_memcpy (S->data[col_pos_out], S->data[col_pos_in], Sin->n_rows, double);
+					gmt_M_memcpy (S->data[col_pos_out], Sin->data[col_pos_in], Sin->n_rows, double);
 			}
 		}
 	}
@@ -8245,8 +8245,16 @@ GMT_LOCAL void gmtio_duplicate_dataset_cols (struct GMT_CTRL *GMT, struct GMT_DA
 /*! . */
 struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry) {
 	/* Make an exact replica, return geometry if not NULL */
-	uint64_t tbl, seg;
+	uint64_t tbl, seg, n_columns;
 	struct GMT_DATASET *D = NULL;
+
+	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
+		/* Cannot copy segments but must go via -i */
+		D = gmt_alloc_dataset (GMT, Din, 0, GMT->common.i.n_cols, mode);
+		gmtio_duplicate_dataset_cols (GMT, Din, D);
+		return (D);
+	}
+
 	D = gmt_alloc_dataset (GMT, Din, 0, Din->n_columns, mode);
 	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
 		/* Cannot copy segments but must go via -i */
