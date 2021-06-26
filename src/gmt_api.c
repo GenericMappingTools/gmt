@@ -3711,9 +3711,9 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 					}
 					else {	/* Found a data record */
 						for (col = 0; col < n_columns; col++) {	/* Place the record into the dataset segment structure */
-                            double val = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, M_obj->n_columns, &col_pos_out);
-                            S->data[col_pos_out][n_records] = val;
-                        }
+							double val = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, M_obj->n_columns, &col_pos_out);
+							S->data[col_pos_out][n_records] = val;
+						}
 						got_data = true;	/* No longer before first data record */
 						if (smode) S->text[n_records] = strdup (M_obj->text[row]);
 						n_records++;	/* Update count of records in current segment */
@@ -3781,9 +3781,9 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 					}
 					else {	/* Data record */
 						for (col = 0; col < n_columns; col++) {	/* Place the record into the structure */
-                            double val = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, V_obj->n_columns, &col_pos_out);
-                            S->data[col_pos_out][n_records] = val;
-                        }
+							double val = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, V_obj->n_columns, &col_pos_out);
+							S->data[col_pos_out][n_records] = val;
+						}
 						if (smode) S->text[n_records] = strdup (V_obj->text[row]);
 						got_data = true;
 						n_records++;
@@ -3806,7 +3806,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				update = via = true;
 				break;
 
-		 	case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
+			case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 				if ((V_obj = S_obj->resource) == NULL) {
 					gmt_M_free (GMT, D_obj);	return_null (API, GMT_PTR_IS_NULL);
 				}
@@ -9616,8 +9616,8 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 	}
 	else {	/* Read from the current resource */
 		struct GMT_MATRIX *M = API->current_get_M;
-        unsigned int col, n_use, col_pos_out, col_pos_in;
-        uint64_t ij;
+		unsigned int col, n_use, col_pos_out, col_pos_in;
+		uint64_t ij;
 		int status;
 		S->status = GMT_IS_USING;				/* Mark as being read */
 		n_use = gmtapi_n_cols_needed_for_gaps (GMT, S->n_columns);
