@@ -9683,7 +9683,7 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 		for (col = 0; col < API->current_get_n_columns; col++) {
 			col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
 			API->current_get_V_val[col_pos_in] (&(V->data[col_pos_in]), S->rec, &(GMT->current.io.curr_rec[col_pos_out]));
-			GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[col_pos_out]);
+			GMT->current.io.curr_rec[col_pos_out] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[col_pos_out]);
 		}
 
 		S->rec++;
