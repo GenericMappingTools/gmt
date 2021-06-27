@@ -8144,6 +8144,7 @@ struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 	 * mode = GMT_ALLOC_VERTICAL means we concatenate all the tables in Din into a single table for Dout
 	 * mode = GMT_ALLOC_HORIZONTAL means we base the Dout size only on the first Din table
 	 *	(# of segments, # of rows/segment) because tables will be pasted horizontally and not vertically.
+	 * mode may also have bitflag GMT_ALLOC_VIA_ICOLS which then complicates the duplication by having to go via -i
 	 */
 	unsigned int hdr, smode;
 	size_t len;
@@ -8153,6 +8154,8 @@ struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 	struct GMT_DATATABLE *T = NULL;
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 
+	if (mode & GMT_ALLOC_VIA_ICOLS)	/* Not used here but in gmt_duplicate_dataset */
+		mode -= GMT_ALLOC_VIA_ICOLS;
 	D->n_columns = (n_columns) ? n_columns : Din->n_columns;
 	D->geometry = Din->geometry;
 	D->type = Din->type;
@@ -8214,11 +8217,45 @@ struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET
 	return (D);
 }
 
+GMT_LOCAL void gmtio_duplicate_dataset_cols (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, struct GMT_DATASET *D) {
+	/* D has required dimensions but we need to use -i to populate with data from Din */
+	uint64_t tbl, seg, col, row;
+	unsigned int col_pos_out, col_pos_in;
+	struct GMT_DATASEGMENT *S, *Sin;
+
+	for (tbl = 0; tbl < Din->n_tables; tbl++) {
+		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
+			Sin = Din->table[tbl]->segment[seg];
+			S = D->table[tbl]->segment[seg];
+			for (col = 0; col < S->n_columns; col++) {	/* Dummy loop over the number of output columns but not their order */
+				col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+				if (GMT->current.io.col[GMT_IN][col].convert) {	/* Cannot do a straight copy */
+					for (row = 0; row < Sin->n_rows; row++) {
+						S->data[col_pos_out][row] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], Sin->data[col_pos_in][row]);
+					}
+				}
+				else	/* Can copy the lot */
+					gmt_M_memcpy (S->data[col_pos_out], Sin->data[col_pos_in], Sin->n_rows, double);
+			}
+		}
+	}
+}
+
 /*! . */
 struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry) {
 	/* Make an exact replica, return geometry if not NULL */
-	uint64_t tbl, seg;
+	uint64_t tbl, seg, n_columns;
 	struct GMT_DATASET *D = NULL;
+
+	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
+		/* Cannot copy segments but must go via -i */
+		D = gmt_alloc_dataset (GMT, Din, 0, GMT->common.i.n_cols, mode);
+		gmtio_duplicate_dataset_cols (GMT, Din, D);
+		if (geometry)
+			*geometry = D->geometry;
+		return (D);
+	}
+	/* Regular duplication */
 	D = gmt_alloc_dataset (GMT, Din, 0, Din->n_columns, mode);
 	gmt_M_memcpy (D->min, Din->min, Din->n_columns, double);
 	gmt_M_memcpy (D->max, Din->max, Din->n_columns, double);
@@ -8235,7 +8272,7 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 	return (D);
 }
 
-void gmtlib_change_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
+void gmtlib_change_out_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D) {
 	/* Given the -o option, rearrange the columns of the dataset.
 	 * This is needed by the API when returning a dataset by reference
 	 * as the normal -o path for printing is not taken. */
