@@ -42,7 +42,7 @@
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
 #define THIS_MODULE_NEEDS	"r"
-#define THIS_MODULE_OPTIONS "-:RVabdefghinrs" GMT_OPT("F") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:RVabdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
 
 /* Some local macros to simplify coding */
 /*! Loop over all nodes including the pad */
@@ -168,8 +168,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [%s] [-D<resolution>[+f] [%s] [-M] [-N] [-S] [%s] [%s] [%s] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] %s [%s] A B op C op D op ... = <outgrid>\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
-		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		"[%s] [%s] [%s] [%s] [%s] [%s] %s A B op C op D op ... = <outgrid>\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
+		GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -456,7 +456,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"ADD, AND, MAD, LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR. "
 		"Note: Select -S after you have placed all items of interest on the stack.");
 	GMT_Option (API, "V");
-	GMT_Option (API, "a,bi2,di,e,f,g,h,i");
+	GMT_Option (API, "a,bi2,di,f,g,h,i");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Note: Only applies to the input files for operators LDIST, PDIST, POINT and INSIDE.");
 	GMT_Option (API, "n,r,s,x,.");
 
