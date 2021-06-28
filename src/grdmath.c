@@ -173,7 +173,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Usage (API, 1, "<operands>");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n= <outgrid>");
+	GMT_Usage (API, -2, "Writes the current top of the stack to the named file and pops it off the stack. "
+		"Can be used more than once.");
+	GMT_Usage (API, 1, "\n<operands>");
 	GMT_Usage (API, -2, "A, B, etc. are grid files, constants, or symbols (see below). "
 		"The stack can hold up to %d entries (given enough memory).", GRDMATH_STACK_SIZE);
 	GMT_Usage (API, 1, "\n<operators>");
@@ -523,7 +527,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 	}
 
 	if (missing_equal) {
-		GMT_Report (API, GMT_MSG_ERROR, "Usage is <operations> = [outfile]\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Usage is <operations> = <outgrid>\n");
 		n_errors++;
 	}
 	if (GMT->common.R.active[ISET] && (GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0)) {
