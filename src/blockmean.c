@@ -95,7 +95,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If -E+p is used it implies -Wi+s and s becomes the propagated error of the weighted mean z. "
 		"Use -E+P to instead obtain the propagated error on the simple mean z.");
 	if (!API->external) {
-		GMT_Usage (API, 1, "\n-G<grdfile>>");
+		GMT_Usage (API, 1, "\n-G<grdfile>");
 		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to stdout. "
 			"If more than one field is set via -A then <grdfile> must contain %%s to format field code.");
 	}
