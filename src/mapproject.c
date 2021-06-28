@@ -191,7 +191,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[e|d]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[g|h|j|n|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[g|h|j|n|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
