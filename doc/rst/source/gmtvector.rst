@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt vector** [ *tables* ]
+**gmt vector** [ *table* ]
 [ |-A|\ **m**\ [*conf*]\|\ *vector* ]
 [ |-C|\ [**i**\|\ **o**] ]
 [ |-E| ]
@@ -41,7 +41,7 @@ Description
 
 **vector** reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
 [or (lat,lon); see **-:**] coordinates from the first 2-3 columns on
-standard input [or one or more *tables*]. If **-fg** is selected and only two items
+standard input [or one or more tables]. If **-fg** is selected and only two items
 are read (i.e., lon, lat) then these coordinates are converted to
 Cartesian three-vectors on the unit sphere. Otherwise we expect (r,
 theta) unless **-Ci** is in effect. If no file is found we expect a
@@ -70,9 +70,9 @@ Optional Arguments
 .. _-A:
 
 **-A**\ **m**\ [*conf*]\|\ *vector*
-    Specify a single, primary vector instead of reading *tables*; see
-    *tables* for possible vector formats. Alternatively, append **m**
-    to read *tables* and set the single, primary vector to be the mean
+    Specify a single, primary vector instead of reading data table(s); see
+    *table* for possible vector formats. Alternatively, append **m**
+    to read *table* and set the single, primary vector to be the mean
     resultant vector first. We also compute the confidence ellipse for
     the mean vector (azimuth of major axis, major axis, and minor axis;
     for geographic data the axes will be reported in km). You may
