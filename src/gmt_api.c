@@ -13514,16 +13514,21 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 
 GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *fp, const char *in_line) {
 	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
-	bool keep_same_indent = (level < 0);
+	bool keep_same_indent = (level < 0), go = true;
 	int width, k, j, next_level, current_width = 0;
-	static int gmtapi_indent[7] = {0, 2, 5, 7, 10, 13, 15};
+	static int gmtapi_indent[8] = {0, 2, 5, 7, 10, 13, 15, 0}; /* Last one is for custom negative values exceeding 6 */
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
 	char message[GMT_MSGSIZ] = {""};
 
 	/* Start with any fixed indent */
 	level = abs (level);	/* In case it was negative */
+    if (level > 6) {    /* Place custom level in last entry.  This is to help g**math issue wrapped operator messages */
+        gmtapi_indent[7] = level;
+        level = 7;
+        go = false;   /* Already indented and ready to go */
+    }
 	next_level = (keep_same_indent) ? level : level + 1;	/* Do we indent when we wrap or not */
-	for (j = 0; j < gmtapi_indent[level]; j++) strcat (message, " ");	/* Starting spaces */
+	for (j = 0; go && j < gmtapi_indent[level]; j++) strcat (message, " ");	/* Starting spaces */
 	current_width = gmtapi_indent[level];
 	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
 		width = (W[k+1].space) ? API->terminal_width : API->terminal_width - 1;	/* May need one space for ellipsis at end */
