@@ -33,6 +33,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [*workdir*] ]
 [ |-Z|\ [**s**] ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -285,6 +286,9 @@ Optional Arguments
     the temporary script files, parameter files, and layer *PostScript* files are all removed (but see **-Q**)].
     If your *mainscript* and all input scripts via **-E**, **-I**, and **-S** should be deleted as well then
     append **s**.
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
 
 .. _-cores:
 

@@ -466,9 +466,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append s to also delete all input scripts (mainscript and any files via -E, -I, -S).");
 	GMT_Option (API, "f");
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
-	GMT_Usage (API, -2, "Limit the number of cores used in frame generation [Default uses all cores = %d]." , API->n_cores);
-	GMT_Usage (API, 3, "x<n>  Select <n> cores (up to all available).");
-	GMT_Usage (API, 3, "-x-<n> Select (all - <n>) cores (or at least 1).");
+	GMT_Usage (API, 1, "\n-x[[-]<n>]");
+	GMT_Usage (API, -2, "Limit the number of cores used in frame generation [Default uses all %d cores]. "
+		"If <n> is negative then we select (%d - <n>) cores (or at least 1).", API->n_cores, API->n_cores);
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);

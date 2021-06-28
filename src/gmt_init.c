@@ -6940,6 +6940,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = GMT_VERBOSE_CODES;
+	int cores = 0;
 	double s;
 	unsigned int k;
 	size_t s_length;
@@ -7378,7 +7379,6 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			break;
 
 		case 'x':	/* Just linear -Jx|X allowed for this program */
-
 			GMT_Usage (API, 1, "\n-Jx|X<scl>|<height>[d|l|p<power>|t|T][/<scl>|<height>[d|l|p<power>|t|T]]");
 			GMT_Usage (API, -2, "Scaling for linear projection.  Scale in %s/units (or width in %s). "
 				"Use / to specify separate x/y scaling. If -JX is used then give axes lengths in %s rather than scales.",
@@ -7388,10 +7388,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 #ifdef GMT_MP_ENABLED
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
+			cores = gmtlib_get_num_processors();
 			GMT_Usage (API, 1, "\n%s.", GMT_x_OPT);
-			GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms. Default uses all available cores [%d].", gmtlib_get_num_processors());
-			GMT_Usage (API, 2, "-x<n>  Select <n> cores (up to all available).");
-			GMT_Usage (API, 2, "-x-<n> Select (all - <n>) cores (or at least 1).");
+			GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms [Default uses all %d cores]. "
+				"If <n> is negative then we select (%d - <n>) cores (or at least 1).", cores, cores);
 			break;
 #endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
