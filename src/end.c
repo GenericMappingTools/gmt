@@ -41,7 +41,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tshow Display each figure in the default viewer.\n");
+	GMT_Usage (API, 1, "\nshow");
+	GMT_Usage (API, -2, "Display each figure in the default viewer.");
 	GMT_Option (API, "V,;");
 
 	return (GMT_MODULE_USAGE);
