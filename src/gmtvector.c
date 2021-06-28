@@ -142,7 +142,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "b: Find the bisector great circle pole(s) for input and secondary vector (see -S).");
 	GMT_Usage (API, 3, "d: Compute dot-product(s) with secondary vector (see -S).");
 	GMT_Usage (API, 3, "D: Same as -Td, but returns the angles in degrees between the vectors.");
-	GMT_Usage (API, 3, "p: Find pole to great circle with <<azim>> azimuth trend at input vector location.");
+	GMT_Usage (API, 3, "p: Find pole to great circle with <azim> azimuth trend at input vector location.");
 	GMT_Usage (API, 3, "s: Find the sum of the secondary vector (see -S) and the input vector(s).");
 	GMT_Usage (API, 3, "r: Rotate the input vectors. Depending on your input (2-D or 3-D), append "
 		"<angle> or <plon/plat/angle>, respectively, to define the rotation.");
