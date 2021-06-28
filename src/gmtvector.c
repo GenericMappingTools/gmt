@@ -136,7 +136,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-N Normalize the transformed vectors (only affects -Co output).");
 	GMT_Usage (API, 1, "\n-S<vector>");
 	GMT_Usage (API, -2, "The secondary vector (if needed by -T), given as lon/lat, r/theta, or x/y[/z].");
-	GMT_Usage (API, 1, "\n-Ta|b|d|D|p<<azim>>|r<rot>|R|s|t[<azim>/<dist>]|x");
+	GMT_Usage (API, 1, "\n-Ta|b|d|D|p<azim>|r<angle>|R|s|t[<azim>/<dist>]|x");
 	GMT_Usage (API, -2, "Specify the desired transformation of the input data:");
 	GMT_Usage (API, 3, "a: Average of the primary and secondary vector (see -S).");
 	GMT_Usage (API, 3, "b: Find the bisector great circle pole(s) for input and secondary vector (see -S).");
