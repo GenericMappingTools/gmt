@@ -293,7 +293,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+f Format the elapsed time using the ISO 8601 convention. "
 		"The FORMAT_CLOCK_OUT setting is used to determine the ss.xxx format.");
 	GMT_Usage (API, 3, "+t Set epoch to get absolute time along track.");
-	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,j,o,p,q,s,:,.");
+	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,j,o,p,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
