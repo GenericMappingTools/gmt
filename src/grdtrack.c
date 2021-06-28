@@ -257,7 +257,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: -T can only be used with a single non-IMG grid and is incompatible with -A, -C, -D, -E, -S.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-Z Only output z-values [Default gives all columns].");
-	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,j,n,o,q,s,w,:,.");
+	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,j,n,o,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
