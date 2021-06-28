@@ -114,7 +114,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append +s to read standard deviations s instead and compute w = 1/s^2.");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 3 columns (or 4 if -W[+s] is set), or 2 for -Sn.");
-	GMT_Option (API, "bo,d,e,f,h,i,o,q,r,:,w,.");
+	GMT_Option (API, "bo,d,e,f,h,i,o,q,r,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
