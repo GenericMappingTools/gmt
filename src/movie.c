@@ -453,7 +453,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"files needed by <mainscript> and/or build a static background plot layer. "
 		"If a plot is generated then the script must be in GMT modern mode. "
 		"Alternatively, give PostScript file of correct canvas size that will be the background.");
-	GMT_Usage (API, 1, "\n-Sb<foreground>");
+	GMT_Usage (API, 1, "\n-Sf<foreground>");
 	GMT_Usage (API, -2, "Append name of foreground GMT modern mode script which will "
 		"build a static foreground plot overlay appended to all frames. "
 		"Alternatively, give PostScript file of correct canvas size that will be the foreground.");
