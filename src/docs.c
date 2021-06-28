@@ -49,7 +49,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<module-name>");
 	GMT_Usage (API, -2, "One of the core or supplemental modules, or one of "
 		"api, colors, cookbook, data, gallery, gmt, home, settings, and tutorial. "
-		"Also acceptable are forum (GMT Discourse Forum) and [web]site (GMT Main Website).");
+		"Also acceptable are forum (GMT Discourse Forum) and web[site] (GMT Main Website).");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-Q");
