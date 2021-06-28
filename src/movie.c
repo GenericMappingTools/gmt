@@ -359,7 +359,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-N<prefix>");
 	GMT_Usage (API, -2, "Set the <prefix> used for movie files and directory names. "
 		"The directory cannot already exist; see -Z to remove such directories at the end.");
-	GMT_Usage (API, 1, "\n-T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>|W]]");
+	GMT_Usage (API, 1, "\n-T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W]");
 	GMT_Usage (API, -2, "Set number of frames, create times from <min>/<max>/<inc>[+n] or give file with frame-specific information. "
 		"If <min>/<max>/<inc> is used then +n is used to indicate that <inc> is in fact number of frames instead. "
 		"If <timefile> does not exist it must be created by the background script given via -Sb.");
