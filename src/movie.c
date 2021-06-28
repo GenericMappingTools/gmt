@@ -389,7 +389,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s webm: Convert PNG frames into an WebM movie", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s none: Make no PNG frames; requires -M", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Two modifiers are available as well:");
-	GMT_Usage (API, 3, "+t Build transparent images [opaque.");
+	GMT_Usage (API, 3, "+t Build transparent images [opaque].");
 	GMT_Usage (API, 3, "+o Append custom encoding options (in quotes) for mp4 or webm [none].");
 	GMT_Usage (API, -2, "[Default is no video products; just create the PNG frames].");
 	GMT_Usage (API, 1, "\n-G[<fill>][+p<pen>]");
