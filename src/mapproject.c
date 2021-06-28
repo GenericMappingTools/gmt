@@ -199,14 +199,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, -2, "Note: On output, selected items will be pasted at the end of the input record. "
+		"For optional items the order is -A before -G before -L before -Z, if any of these options are used.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
 	GMT_Option (API, "J,R");
 	GMT_Usage (API, -2, "Note: If UTM and -C are used then -R is optional (automatically set to match UTM zone).");
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Option (API, "<");
-	GMT_Usage (API, -2, "Note: On output, selected items will be pasted at the end of the input record. "
-		"For optional items the order is A before G before L before Z, if any of these options are used.");
 	GMT_Usage (API, 1, "\n-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]");
 	GMT_Usage (API, -2, "Calculate azimuths from previous point in the input data with -Af. If <lon0>/<lat0> "
 		"is provided, then all azimuths are computed with respect to that point. Select directive:");
@@ -262,7 +262,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "g: Geocentric [Default].");
 	GMT_Usage (API, 3, "m: Meridional.");
 	GMT_Usage (API, 1, "\n-Q[d|e]");
-	GMT_Usage (API, -2, "List all projection parameters and stop.  Optionally, select a subset:")
+	GMT_Usage (API, -2, "List all projection parameters and stop.  Optionally, select a subset:");
 	GMT_Usage (API, 3, "d: Show datum parameters only.");
 	GMT_Usage (API, 3, "e: Show ellipsoid parameters only.");
 	GMT_Usage (API, 1, "\n-S Suppress points outside region.");
