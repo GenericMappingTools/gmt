@@ -268,17 +268,20 @@ int main (int argc, char *argv[]) {
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
 				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], name, comment[type]);
-				switch (type) {
-					case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
-					case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
-					case 2: printf ("REM Set a unique session name:\n");	/* Can't use $$ so output the PPID of this process */
-						printf ("set GMT_SESSION_NAME=%s\n", api_ctrl->session_name);
-						break;
+				if (strstr (argv[arg_n], "classic") == NULL) { /* Do not include modern mode output if classic */
+					switch (type) {
+						case 0: printf ("export GMT_SESSION_NAME=$$	# Set a unique session name\n"); break;
+						case 1: printf ("setenv GMT_SESSION_NAME $$	# Set a unique session name\n"); break;
+						case 2: printf ("REM Set a unique session name:\n");	/* Can't use $$ so output the PPID of this process */
+							printf ("set GMT_SESSION_NAME=%s\n", api_ctrl->session_name);
+							break;
+					}
+					printf ("gmt begin figurename\n\t%s Place modern session commands here\ngmt end show\n", comment[type]);
 				}
-				printf ("gmt begin figurename\n\t%s Place modern session commands here\ngmt end show\n", comment[type]);
 				gmt_M_str_free (name);
 				status = GMT_NOERROR;
 			}
+
 			/* print new glue C code for supplement */
 			else if (!strncmp (argv[arg_n], "--new-glue", 10U)) {
 				char *s = strstr (argv[arg_n], "=");	if (s) s++;	/* Skip the equal */
@@ -340,25 +343,26 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "usage: %s [options]\n", PROGRAM_NAME);
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "options:\n");
-			fprintf (stderr, "  --help              List descriptions of available GMT modules.\n");
-			fprintf (stderr, "  --new-script[=L]    Write GMT modern mode script template to stdout.\n");
-			fprintf (stderr, "                      Optionally specify bash|csh|batch [Default is current shell].\n");
-			fprintf (stderr, "  --new-glue=name     Write C code for external supplements to glue them to GMT.\n");
-			fprintf (stderr, "  --show-bindir       Show directory with GMT executables.\n");
-			fprintf (stderr, "  --show-citation     Show the most recent citation for GMT.\n");
-			fprintf (stderr, "  --show-classic      Show all classic module names.\n");
-			fprintf (stderr, "  --show-classic-core Show all classic module names (core only).\n");
-			fprintf (stderr, "  --show-cores        Show number of available cores.\n");
-			fprintf (stderr, "  --show-datadir      Show directory/ies with user data.\n");
-			fprintf (stderr, "  --show-dataserver   Show URL of the remote GMT data server.\n");
-			fprintf (stderr, "  --show-doi          Show the DOI for the current release.\n");
-			fprintf (stderr, "  --show-library      Show path of the shared GMT library.\n");
-			fprintf (stderr, "  --show-modules      Show all modern module names.\n");
-			fprintf (stderr, "  --show-modules-core Show all modern module names (core only).\n");
-			fprintf (stderr, "  --show-plugindir    Show directory for plug-ins.\n");
-			fprintf (stderr, "  --show-sharedir     Show directory for shared GMT resources.\n");
-			fprintf (stderr, "  --show-userdir      Show full path of user's ~/.gmt dir\n");
-			fprintf (stderr, "  --version           Print GMT version number.\n\n");
+			fprintf (stderr, "  --help                   List descriptions of available GMT modules.\n");
+			fprintf (stderr, "  --new-script[=L]         Write GMT modern mode script template to stdout.\n");
+			fprintf (stderr, "  --new-script-classic[=L] Write GMT classic mode script template to stdout.\n");
+			fprintf (stderr, "                           Optionally specify bash|csh|batch [Default is current shell].\n");
+			fprintf (stderr, "  --new-glue=name          Write C code for external supplements to glue them to GMT.\n");
+			fprintf (stderr, "  --show-bindir            Show directory with GMT executables.\n");
+			fprintf (stderr, "  --show-citation          Show the most recent citation for GMT.\n");
+			fprintf (stderr, "  --show-classic           Show all classic module names.\n");
+			fprintf (stderr, "  --show-classic-core      Show all classic module names (core only).\n");
+			fprintf (stderr, "  --show-cores             Show number of available cores.\n");
+			fprintf (stderr, "  --show-datadir           Show directory/ies with user data.\n");
+			fprintf (stderr, "  --show-dataserver        Show URL of the remote GMT data server.\n");
+			fprintf (stderr, "  --show-doi               Show the DOI for the current release.\n");
+			fprintf (stderr, "  --show-library           Show path of the shared GMT library.\n");
+			fprintf (stderr, "  --show-modules           Show all modern module names.\n");
+			fprintf (stderr, "  --show-modules-core      Show all modern module names (core only).\n");
+			fprintf (stderr, "  --show-plugindir         Show directory for plug-ins.\n");
+			fprintf (stderr, "  --show-sharedir          Show directory for shared GMT resources.\n");
+			fprintf (stderr, "  --show-userdir           Show full path of user's ~/.gmt dir\n");
+			fprintf (stderr, "  --version                Print GMT version number.\n\n");
 			fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
 			status = GMT_NOERROR;
 		}

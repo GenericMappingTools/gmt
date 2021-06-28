@@ -79,6 +79,11 @@ If no module is given then several other options are available:
     scripting language among *bash*, *csh*, or *batch*.  Default is the main shell
     closest to your current shell (e.g., bash for zsh, csh for tcsh).
 
+**--new-script-classic**\ [=\ *L*]
+    Write a GMT classic mode script template to stdout. Optionally append the desired
+    scripting language among *bash*, *csh*, or *batch*.  Default is the main shell
+    closest to your current shell (e.g., bash for zsh, csh for tcsh).
+
 **--new-glue**\ =\ *name*
     Write the C code glue needed when building third-party supplements as shared
     libraries.  The *name* is the name of the shared library. Run **gmt** in the directory
