@@ -261,10 +261,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "c: Conformal.");
 	GMT_Usage (API, 3, "g: Geocentric [Default].");
 	GMT_Usage (API, 3, "m: Meridional.");
-	GMT_Usage (API, 1, "\n-Q[e|d]");
-	GMT_Usage (API, -2, "List all projection parameters and stop.  Optionally, select a subset:");
-	GMT_Usage (API, 3, "e: Show ellipsoid parameters only.");
+	GMT_Usage (API, 1, "\n-Q[d|e]");
+	GMT_Usage (API, -2, "List all projection parameters and stop.  Optionally, select a subset:")
 	GMT_Usage (API, 3, "d: Show datum parameters only.");
+	GMT_Usage (API, 3, "e: Show ellipsoid parameters only.");
 	GMT_Usage (API, 1, "\n-S Suppress points outside region.");
 	GMT_Usage (API, 1, "\n-T[h]<from>[/<to>]");
 	GMT_Usage (API, -2, "Perform coordinate transformation from datum <from> to datum <to>. "
