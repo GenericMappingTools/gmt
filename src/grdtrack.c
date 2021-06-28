@@ -231,7 +231,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+r Use the track d = 0 to get the rms about this line instead.");
 	GMT_Usage (API, 3, "+z Set the detection level for left or right ends [0].");
 	GMT_Usage (API, 1, "\n-N Do NOT skip points outside the grid domain [Default only returns points inside domain].");
-	GMT_Option (API, "R,V");
+	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S[a|l|L|m|p|u|U][+a][+c][+d][+r][+s[<file>]]");
 	GMT_Usage (API, -2, "In conjunction with -C, compute a single stacked profile from all profiles across each segment. "
 		"Append which method should be used when performing the stacking:");
