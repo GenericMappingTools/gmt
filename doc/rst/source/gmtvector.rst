@@ -12,10 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt vector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ]
+**gmt vector** [ *tables* ]
+[ |-A|\ **m**\ [*conf*]\|\ *vector* ]
 [ |-C|\ [**i**\|\ **o**] ]
-[ |-E| ] [ |-N| ] [ |-S|\ *vector* ]
-[ |-T|\ **a**\|\ **d**\|\ **D**\|\ **p**\ *az*\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x** ]
+[ |-E| ]
+[ |-N| ]
+[ |-S|\ *vector* ]
+[ |-T|\ **a**\|\ **d**\|\ **D**\|\ **p**\ *azim*\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -105,12 +108,12 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *az*\|\ **s**\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x**
+**-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *azim*\|\ **s**\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x**
     Specify the vector transformation of interest. Append **a** for
     average, **b** for the pole of the two points bisector, **d** for
     dot product (use **D** to get angle in degrees between the two
-    vectors), **p**\ *az* for the pole to the great circle specified by
-    input vector and the circle's *az* (no second vector used), **s** for vector sum,
+    vectors), **p**\ *azim* for the pole to the great circle specified by
+    input vector and the circle's *azim* (no second vector used), **s** for vector sum,
     **r**\ *par* for vector rotation (here, *par* is a single
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
     pole and angle), **R** will instead rotate the fixed secondary vector
