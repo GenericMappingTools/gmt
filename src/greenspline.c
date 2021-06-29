@@ -228,7 +228,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[%%][+f<file>][+m|M]] "
-		"[-D<information>] [-E[<misfitfile>] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q<az>] "
+		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q<az>] "
 		"[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
 		"[%s] [-W[w]] [-Z0-5] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
