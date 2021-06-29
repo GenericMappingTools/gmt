@@ -13,16 +13,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt contour** [ *table* ] |-J|\ *parameters*
+**gmt contour** [ *table* ]
+|-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours* ]
-[ |-D|\ [*template*] ] [ |-E|\ *indexfile* ]
+[ |-D|\ [*template*] ]
+[ |-E|\ *indexfile* ]
 [ |-G|\ [**d**\|\ **f**\|\ **n**\|\ **l**\|\ **L**\|\ **x**\|\ **X**]\ *params* ]
-[ |-I| ] [ |-J|\ **z**\|\ **Z**\ *parameters* ]
-[ |-L|\ *pen* ] [ |-N| ]
-[ |-Q|\ [*cut*][**+z**] ]
+[ |-I| ]
+[ |-J|\ **z**\|\ **Z**\ *parameters* ]
+[ |-L|\ *pen* ]
+[ |-N| ]
+[ |-Q|\ [*n*][**+z**] ]
 [ |-S|\ [*p*\|\ *t*] ]
 [ |-T|\ [**h**\|\ **l**][**+a**][**+d**\ *gap*\ [/*length*]][**+l**\ [*labels*]] ]
 [ |SYN_OPT-U| ]
@@ -33,6 +37,7 @@ Synopsis
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-l| ]
