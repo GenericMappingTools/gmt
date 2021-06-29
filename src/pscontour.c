@@ -395,7 +395,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "<");
 	GMT_Option (API, "J-Z,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A[n|<contours>][<labelinfo>");
+	GMT_Usage (API, 1, "\n-A[n|<contours>][<labelinfo>]");
 	GMT_Usage (API, -2, "Annotation label information. [Default is no annotated contours]. "
 		"Give annotation interval or comma-separated list of contours "
 		"(for single contour append comma to be seen as list). "
