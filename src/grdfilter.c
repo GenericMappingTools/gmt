@@ -608,8 +608,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Choose between convolution-type filters which differ in how weights are assigned "
 		"and geospatial filters that seek to return a representative value. "
 		"Append +h to select high-pass filtering [Default is low-pass filtering]. "
-		"Filters are isotropic.  For rectangular filtering append /<width2> (requires -Dp|0). "
-		"Convolution filters:");
+		"Filters are isotropic.  For rectangular filtering append /<width2> (requires -Dp|0).");
+	GMT_Usage (API, -2, "Convolution filters:");
 	GMT_Usage (API, 3, "b: Boxcar : a simple averaging of all points inside filter domain.");
 	GMT_Usage (API, 3, "c: Cosine arch : a weighted averaging with cosine arc weights.");
 	GMT_Usage (API, 3, "g: Gaussian : weighted averaging with Gaussian weights.");
