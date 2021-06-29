@@ -44,19 +44,23 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\nDeletes the specified item.  Choose one of these targets:");
 	GMT_Usage (API, 2, "cache");
-	GMT_Usage (API, -4, "Deletes the user\'s cache directory [%s].", API->GMT->session.CACHEDIR);
+	GMT_Usage (API, -4, "Deletes the user\'s cache directory:");
+	GMT_Usage (API, -4, "[%s]", API->GMT->session.CACHEDIR);
 	GMT_Usage (API, 2, "data");
-	GMT_Usage (API, -4, "Deletes the user\'s data download directory [%s/server].", API->GMT->session.USERDIR);
+	GMT_Usage (API, -4, "Deletes the user\'s data download directory:");
+	GMT_Usage (API, -4, "[%s/server]", API->GMT->session.USERDIR);
 	GMT_Usage (API, -4, "Append =<planet> to limit removal to such data for a specific <planet> [all].");
 	GMT_Usage (API, 2, "geography");
-	GMT_Usage (API, -4, "Deletes the user\'s geography directory (gshhg, dcw) [%s/geography].", API->GMT->session.USERDIR);
+	GMT_Usage (API, -4, "Deletes the user\'s geography directory (gshhg, dcw):");
+	GMT_Usage (API, -4, "[%s/geography]", API->GMT->session.USERDIR);
 	GMT_Usage (API, -4, "Append =<name> to limit removal to such data for gshhg or dcw only [all].");
 	GMT_Usage (API, 2, "sessions");
-	GMT_Usage (API, -4, "Deletes the user\'s sessions directory [%s].", API->session_dir);
+	GMT_Usage (API, -4, "Deletes the user\'s sessions directory:");
+	GMT_Usage (API, -4, "[%s]", API->session_dir);
 	GMT_Usage (API, 2, "settings");
 	GMT_Usage (API, -4, "Deletes a modern mode session\'s %s file.", GMT_SETTINGS_FILE);
 	GMT_Usage (API, 2, "all");
-	GMT_Usage (API, -4, "All of the above.\n");
+	GMT_Usage (API, -4, "All of the above.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,;");
 
