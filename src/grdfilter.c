@@ -72,7 +72,7 @@ struct GRDFILTER_CTRL {
 		bool active;
 		int mode;	/* -1 to 5 */
 	} D;
-	struct GRDFILTER_F {	/* <type>[-]<filter_width>[/<width2>][<mode>] */
+	struct GRDFILTER_F {	/* <type>[-]<width>[/<width2>][<mode>] */
 		bool active;
 		bool highpass;
 		bool custom;
@@ -584,7 +584,7 @@ GMT_LOCAL struct GMT_GRID *init_area_weights (struct GMT_CTRL *GMT, struct GMT_G
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> -D<flag> -F<type><filter_width>[/<width2>][<modifiers>] -G<outgrid> "
+	GMT_Usage (API, 0, "usage: %s <ingrid> -D<flag> -F<type><width>[/<width2>][<modifiers>] -G<outgrid> "
 		"[%s] [-Ni|p|r] [%s] [-T] [%s] [%s] [%s]%s[%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -593,17 +593,17 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<ingrid> is the input grid file to be filtered.");
 	GMT_Usage (API, 1, "\n-D<flag>]");
 	GMT_Usage (API, -2, "Distance flag determines how grid (x,y) maps into distance units of filter width as follows, first for Cartesian data:");
-	GMT_Usage (API, 3, "p: grid x,y with <filter_width> in pixels (must be an odd number), Cartesian distances.");
-	GMT_Usage (API, 3, "0: grid x,y same units as <filter_width>, Cartesian distances.");
+	GMT_Usage (API, 3, "p: grid x,y with <width> in pixels (must be an odd number), Cartesian distances.");
+	GMT_Usage (API, 3, "0: grid x,y same units as <width>, Cartesian distances.");
 	GMT_Usage (API, -2, "Geographic (lon,lat) Data:");
-	GMT_Usage (API, 3, "1: grid x,y in degrees, <filter_width> in km, Cartesian distances.");
-	GMT_Usage (API, 3, "2: grid x,y in degrees, <filter_width> in km, x scaled by cos(middle y), Cartesian distances.");
+	GMT_Usage (API, 3, "1: grid x,y in degrees, <width> in km, Cartesian distances.");
+	GMT_Usage (API, 3, "2: grid x,y in degrees, <width> in km, x scaled by cos(middle y), Cartesian distances.");
 	GMT_Usage (API, -2, "The options above are faster; they allow weight matrix to be computed only once. "
 		"Next three options are slower; weights must be recomputed for each scan line.:");
-	GMT_Usage (API, 3, "3: grid x,y in degrees, <filter_width> in km, x scale varies as cos(y), Cartesian distances.");
-	GMT_Usage (API, 3, "4: grid x,y in degrees, <filter_width> in km, spherical distances.");
-	GMT_Usage (API, 3, "5: grid x,y in Mercator units (-Jm1), <filter_width> in km, spherical distances.");
-	GMT_Usage (API, 1, "\n-F<type><filter_width>[/<width2>][<modifiers>]");
+	GMT_Usage (API, 3, "3: grid x,y in degrees, <width> in km, x scale varies as cos(y), Cartesian distances.");
+	GMT_Usage (API, 3, "4: grid x,y in degrees, <width> in km, spherical distances.");
+	GMT_Usage (API, 3, "5: grid x,y in Mercator units (-Jm1), <width> in km, spherical distances.");
+	GMT_Usage (API, 1, "\n-F<type><width>[/<width2>][<modifiers>]");
 	GMT_Usage (API, -2, "Set the low-pass filter type and full diameter (6 sigma) filter-width. "
 		"Choose between convolution-type filters which differ in how weights are assigned "
 		"and geospatial filters that seek to return a representative value. "
