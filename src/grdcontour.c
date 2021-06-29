@@ -180,7 +180,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "<grid> is the grid file to be contoured.\n");
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A[n|[+]<int>|<list>][<labelinfo>");
+	GMT_Usage (API, 1, "\n-A[n|[+]<int>|<list>][<labelinfo>]");
 	GMT_Usage (API, -2, "Annotation label settings [Default is no annotated contours]. "
 		"Give annotation interval or comma-separated list of contours "
 		"(for single contour append comma to be seen as list). "
