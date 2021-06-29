@@ -199,8 +199,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set filter type.  Choose from convolution and non-convolution filters "
 		"and append filter <width> in same units as time column. "
 		"If <width> is a file (and <type> is not f) it must have a time-series of filter widths. "
-		"Append +h select high-pass filtering [Default is low-pass filtering]. "
-		"Convolution filters:");
+		"Append +h select high-pass filtering [Default is low-pass filtering].");
+	GMT_Usage (API, -2, "Convolution filters:");
 	GMT_Usage (API, 3, "b: Boxcar : Weights are equal.");
 	GMT_Usage (API, 3, "c: Cosine arch : Weights given by cosine arch.");
 	GMT_Usage (API, 3, "g: Gaussian : Weights given by Gaussian function.");
