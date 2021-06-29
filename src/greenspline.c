@@ -269,7 +269,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"template containing an integer C formatting specifier (e.g., %%d).");
 	GMT_Usage (API, 3, "+M Same, but for cumulative results.");
 	gmt_grdcube_info_syntax (API->GMT, 'D');
-	GMT_Usage (API, 1, "\n-E[<misfitfile>");
+	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
 	GMT_Usage (API, -2, "Evaluate solution at input locations and report misfit statistics. "
 		"Append a filename to save all data with two extra columns for model and misfit.");
 	GMT_Usage (API, 1, "\nI<dx>[/<dy>[/<dz>]]");
