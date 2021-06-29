@@ -82,9 +82,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Option (API, "<");
 	GMT_Usage (API, 1, "\n-A<fields>");
 	GMT_Usage (API, -2, "List of fields to be written as individual grids%s. Choose from "
 		"z, s, l, h, and w. s|l|h requires -E; w requires -W[o] [Default is z only].", extra2[API->external]);
@@ -96,7 +96,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -E+P to instead obtain the propagated error on the simple mean z.");
 	if (!API->external) {
 		GMT_Usage (API, 1, "\n-G<grdfile>");
-		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to stdout. "
+		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to standard output. "
 			"If more than one field is set via -A then <grdfile> must contain %%s to format field code.");
 	}
 	GMT_Usage (API, 1, "\n-S[m|n|s|w]");
@@ -108,8 +108,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W[i|o][+s]");
 	GMT_Usage (API, -2, "Perform weighted calculations [no weights]. Optionally set weight directive:");
-	GMT_Usage (API, 3, "i: Read 4 cols (x,y,z,w) but write only (x,y,z[,s,l,h]) output.");
-	GMT_Usage (API, 3, "o: Read 3 cols (x,y,z) but write sum (x,y,z[,s,l,h],w) output.");
+	GMT_Usage (API, 3, "i: Read 4 cols (x,y,z,w) but skip w on output.");
+	GMT_Usage (API, 3, "o: Read 3 cols (x,y,z) but include weight sum on output.");
 	GMT_Usage (API, -2, "Default selects both weighted input and output. "
 		"Append +s to read standard deviations s instead and compute w = 1/s^2.");
 	GMT_Option (API, "a,bi");
