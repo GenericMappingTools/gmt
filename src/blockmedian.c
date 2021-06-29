@@ -80,7 +80,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-C Output center of block as location [Default is (median x, median y), but see -Q].");
 	GMT_Usage (API, 1, "\n-E[b|r|s[+l|h]]");
 	GMT_Usage (API, -2, "Extend output with L1 scale (s=MAD), low (l), and high (h) value per block, i.e., "
-		"output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w. Alternative, append a directive:");
+		"output (x,y,z,s,l,h[,w]) [Default outputs (x,y,z[,w])]; see -W regarding w. Alternatively, append a directive:");
 	GMT_Usage (API, 3, "b: Write box-and-whisker output (x,y,z,l,25%%q,75%%q,h[,w]).");
 	GMT_Usage (API, 3, "r: Write record number of the median value per block.");
 	GMT_Usage (API, 3, "s: Write an unsigned integer source id (sid) taken from the x,y,z[,w],sid input. "
