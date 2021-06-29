@@ -2016,6 +2016,7 @@ GMT_LOCAL void gmtgrdio_grdcube_info_syntax (struct GMT_CTRL *GMT, char option, 
 	GMT_Usage (API, 3, "+y Append y-dimension unit <name>, or leave blank to reset.");
 	if (dim > 2) GMT_Usage (API, 3, "+z Append z-dimension unit <name>, or leave blank to reset.");
 	GMT_Usage (API, 3, "+d Append %s data unit <name>, or leave blank to reset.", type[k]);
+	GMT_Usage (API, 3, "+n Append a value to represent missing data.", type[k]);
 	GMT_Usage (API, 3, "+t Append %s <title>, or leave blank to reset.", type[k]);
 	GMT_Usage (API, 3, "+r Append %s <remark>, or leave blank to reset.", type[k]);
 	GMT_Usage (API, 3, "+s Append data <scale>.");
