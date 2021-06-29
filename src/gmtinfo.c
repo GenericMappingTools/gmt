@@ -126,49 +126,51 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..][+e|r|R<incs>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] "
+		"[-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..][+e|r|R<incs>]] [-L] [-S[x][y]] [-T<dz>[+c<col>]] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]",
+		name, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Select reports for (a)ll [Default], per (t)able, or per (s)egment.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Format the min and max into separate columns; -o may be used to limit output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Modifies results obtained by -I by shifting the region to better align with\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the data center.  Optionally, append granularity for this shift [exact].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   means we operate instead on the absolute values of the data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Return various counts of tables, segments, headers, and records, depending on mode:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i: One record with the number of tables, segments, data records, headers, and overall records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t: Tables:  Same as D but the counts resets per table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least two columns).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To override this behavior, use -Ip<dx>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ib to report the bounding box polygon for the data files (or segments; see -A).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to round region to these multiples; use +R to extend region by those increments instead,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Determine limiting region. With -I it rounds inward so bounds are within data range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A to find the limiting common bounds of all segments or tables.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra space for error bars. Useful together with -I.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column; append +c<col> to use another column.\n");
+	GMT_Usage (API, 1, "\n-A Select reports for (a)ll [Default], per (t)able, or per (s)egment.");
+	GMT_Usage (API, 1, "\n-C Format the min and max into separate columns; -o may be used to limit output.");
+	GMT_Usage (API, 1, "\n-D Modifies results obtained by -I by shifting the region to better align with "
+		"the data center.  Optionally, append granularity for this shift [exact].");
+	GMT_Usage (API, 1, "\n-E Return the record with extreme value in specified column <col> [last column]. "
+		"Specify l or h for min or max value, respectively. Upper case L or H "
+		"means we operate instead on the absolute values of the data.");
+	GMT_Usage (API, 1, "\n-F Return various counts of tables, segments, headers, and records, depending on mode:");
+	GMT_Usage (API, 3, "i: One record with the number of tables, segments, data records, headers, and overall records.");
+	GMT_Usage (API, 3, "d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.");
+	GMT_Usage (API, 3, "t: Tables:  Same as D but the counts resets per table.");
+	GMT_Usage (API, 1, "\n-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least two columns). "
+		"Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples). "
+		"If -C is set then no -R string is issued.  Instead, the number of increments "
+		"given determines how many columns are rounded off to the nearest multiple. "
+		"If only one increment is given we also use it for the second column (for backwards compatibility). "
+		"To override this behavior, use -Ip<dx>. "
+		"If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift] "
+		"and allow -r to change from gridline-registration to pixel-registration. "
+		"Use -Ib to report the bounding box polygon for the data files (or segments; see -A). "
+		"Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs. "
+		"Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface. "
+		"Append +r to modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
+		"to round region to these multiples; use +R to extend region by those increments instead, "
+		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
+	GMT_Usage (API, 1, "\n-L Determine limiting region. With -I it rounds inward so bounds are within data range. "
+		"Use -A to find the limiting common bounds of all segments or tables.");
+	GMT_Usage (API, 1, "\n-S Add extra space for error bars. Useful together with -I.");
+	GMT_Usage (API, 3, "-Sx: Leaves space for horizontal error bar using value in third (2) column.");
+	GMT_Usage (API, 3, "-Sy: Leaves space for vertical error bar using value in third (2) column.");
+	GMT_Usage (API, 3, "-S or -Sxy: Leaves space for both error bars using values in third&fourth (2&3) columns.");
+	GMT_Usage (API, 1, "\n-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz. "
+		"Calculations are based on the first (0) column; append +c<col> to use another column.");
 	GMT_Option (API, "V,a");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Reports the names and data types of the aspatial fields.\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, 1, "Reports the names and data types of the aspatial fields.\n");
 	GMT_Option (API, "bi2,d,e,f,g,h,i,o,qi,r,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
