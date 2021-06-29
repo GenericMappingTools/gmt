@@ -7887,8 +7887,8 @@ void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 	GMT_Usage (API, -2, "Specify increment(s) and optionally append units or modifiers. "
 		"For geographic regions in degrees you can optionally append units from this list: "
 		"(d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.");
-	GMT_Usage (API, 1, "+e Adjust the region to fit increments [Adjust increment to fit domain].");
-	GMT_Usage (API, 1, "+n Increment specifies the number of nodes instead. Then, the actual increments "
+	GMT_Usage (API, 3, "+e Adjust the region to fit increments [Adjust increment to fit domain].");
+	GMT_Usage (API, 3, "+n Increment specifies the number of nodes instead. Then, the actual increments "
 		"are calculated from the given domain and node-registration settings (see Appendix B for details).");
 	GMT_Usage (API, -2, "Note: If -R<grdfile> was used then -%c "
 		"(and -R and maybe -r) have been set; use -%c to override those increments.", option, option);
