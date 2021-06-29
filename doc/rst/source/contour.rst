@@ -43,6 +43,7 @@ Synopsis
 [ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
