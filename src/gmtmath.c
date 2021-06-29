@@ -478,7 +478,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Usage (API, 1, "<operands>");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n= <outfile>");
+	GMT_Usage (API, -2, "Writes the final stack result to the named file and pops it off the stack. "
+		"If no file is named then we write to standard output.");
+	GMT_Usage (API, 1, "\n<operands>");
 	GMT_Usage (API, -2, "A, B, etc. are table files, constants, or symbols (see below). "
 		"To read from standard input, give filename as STDIN (which can appear more than once). "
 		"The stack can hold up to %d entries (given enough memory).", GMTMATH_STACK_SIZE);
@@ -487,8 +491,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"The operator names, the number of input and output arguments, and operation:\n");
 	/* Should we add an operator that has more characters that these, then the -20 will need to increase */
 	GMT_Message (API, GMT_TIME_NONE,
-		"     Name     #args Returns\n"
-		"     ----------------------\n");
+		"     Name     #args  Returns\n"
+		"     -----------------------\n");
 	GMT_Message (API, GMT_TIME_NONE, "     ABS        1 1  ");	GMT_Usage (API, -21, "abs (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOS       1 1  ");	GMT_Usage (API, -21, "acos (A)"); 
 	GMT_Message (API, GMT_TIME_NONE, "     ACOSH      1 1  ");	GMT_Usage (API, -21, "acosh (A)"); 
