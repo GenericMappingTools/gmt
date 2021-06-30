@@ -26,6 +26,7 @@ Synopsis
 [ |-W|\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-n| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -158,6 +159,8 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. include:: explain_-n.rst_
 
 Quadtree building
 -----------------
