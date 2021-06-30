@@ -7871,6 +7871,17 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	}
 }
 
+void gmt_innercont_syntax (struct GMT_CTRL *GMT) {
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, -2, "Embellish innermost, closed contours with ticks pointing in the downward direction. "
+ 		"User may specify to tick only highs (-Th) or lows (-Tl) [-T implies both extrema].");
+ 	GMT_Usage (API, 3, "+a Tick all closed contours.");
+ 	GMT_Usage (API, 3, "+d Append <spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].",
+ 		GMT_TICKED_SPACING, GMT_TICKED_LENGTH);
+ 	GMT_Usage (API, 3, "+l Append two characters (e.g., LH) or two comma-separated strings (e.g., \"low,high\") "
+ 		"to place labels at the center of local lows and highs [-+].");
+}
+
 /*! Widely used in most programs that need grid increments to be set */
 /*!
 	\param GMT ...
