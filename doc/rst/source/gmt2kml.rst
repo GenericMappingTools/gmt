@@ -207,7 +207,7 @@ Optional Arguments
     centered on the selected azimuth [0] where positive anomalies
     will plot.  If outside then switch by 180 degrees.  Alternatively,
     use **-Qi** to set a fixed *azimuth* with no further variation.
-    Scaling is also required via **Qs**\ *scale*.
+    Scaling is also required via **-Qs**\ *scale*.
     Set a wiggle scale in *z*-data units per the user's units (given
     via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
     is then inverted to yield degrees per user z-unit and used to
@@ -259,7 +259,7 @@ Optional Arguments
     **+a**\ *alt\_min/alt\_max* to specify limits on visibility based on
     altitude. Append **+f**\ *fade\_min/fade\_max* to fade in and out
     over a ramp [abrupt]. Append **+l**\ *lod\_min/lod\_max* to specify limits on
-    visibility based on Level Of Detail, where *lod\_max* == -1 means it
+    visibility based on Level Of Detail, where a *lod\_max* of -1 means it
     is visible to infinite size. Append **+o** to open a older or document
     in the sidebar when loaded [closed]. Append **+v** to make a feature
     *not* visible when loaded [visible].
