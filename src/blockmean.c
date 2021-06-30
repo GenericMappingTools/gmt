@@ -109,7 +109,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-W[i|o][+s]");
 	GMT_Usage (API, -2, "Perform weighted calculations [no weights]. Optionally set weight directive:");
 	GMT_Usage (API, 3, "i: Read 4 cols (x,y,z,w) but skip w on output.");
-	GMT_Usage (API, 3, "o: Read 3 cols (x,y,z) but include weight sum on output.");
+	GMT_Usage (API, 3, "o: Read 3 cols (x,y,z) but include weight sum (i.e., counts) on output.");
 	GMT_Usage (API, -2, "Default selects both weighted input and output. "
 		"Append +s to read standard deviations s instead and compute w = 1/s^2.");
 	GMT_Option (API, "a,bi");
