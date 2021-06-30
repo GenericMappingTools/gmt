@@ -7486,7 +7486,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
 
-			GMT_Usage (API, 1, "%s\n", GMT_do_OPT);
+			GMT_Usage (API, 1, "\n%s", GMT_do_OPT);
 			GMT_Usage (API, -2, "Replace any NaNs in output data with <nodata>.\n");
 			break;
 
@@ -7828,50 +7828,58 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	gap = (GMT->current.setting.proj_length_unit == GMT_CM) ? 10.0 / 2.54 : 4.0;
 	gap *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 
-	GMT_Usage (API, indent, "d<dist>[%s] or D<dist>[%s]  [Default is d%g%c].",
-		GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
-	GMT_Usage (API, indent+1, "d: Give distance between %ss with specified map unit in %s.", feature[kind], GMT_DIM_UNITS_DISPLAY);
-	GMT_Usage (API, indent+1, "D: Specify geographic distance between %ss in %s. "
-		"The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].", feature[kind], GMT_LEN_UNITS_DISPLAY, type[kind]);
-	GMT_Usage (API, indent+1, "f<file>: Read file <file> and place %ss at locations "
-		"that match individual points along the %ss.", feature[kind], type[kind]);
+	GMT_Usage (API, indent+1, "d: Append distance <dist> between %ss with specified map unit in %s  [Default is d%g%c]. "
+		"The first %s will appear at <frac>*<dist>; change this by appending /<frac> [0.25].",
+			feature[kind], GMT_DIM_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0], feature[kind]);
+	GMT_Usage (API, indent+1, "D: Same as +d, but append geographic distance between %ss with specified unit in %s.", feature[kind], GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, indent+1, "f: Append <file> with locations of individual points along the %ss where %ss should be placed.", type[kind], feature[kind]);
 	if (kind == 0) {
-		GMT_Usage (API, indent+1, "l|L<line1>[,<line2>,...]: Give start and stop coordinates for "
+		GMT_Usage (API, indent+1, "l: Append <line1>[,<line2>,...] to set coordinates for "
 		"straight line segments; %ss will be placed where these "
 		"lines intersect %ss.  The format of each <line> "
-		"is <start>/<stop>, where <start> or <stop> is <lon/lat> or a "
-		"2-character XY key that uses the standard text justification codes "
+		"is <start>/<stop>, where <start> or <stop> is either <lon/lat> or a "
+		"2-character key that uses the standard text justification codes "
 		"to specify a point on the map as [LCR][BMT]. In addition, you can use Z-, Z+ "
 		"to mean the global minimum and maximum locations in the grid.", feature[kind], type[kind]);
 	}
 	else {
-		GMT_Usage (API, indent+1, "l|L<line1>[,<line2>,...]: Give start and stop coordinates for "
+		GMT_Usage (API, indent+1, "l: Append <line1>[,<line2>,...] to set start and stop coordinates for "
 		"straight line segments; %ss will be placed where these "
 		"lines intersect %ss.  The format of each <line> "
-		"is <start>/<stop>, where <start> or <stop> is <lon/lat> or a "
-		"2-character XY key that uses the standard text justification codes "
+		"is <start>/<stop>, where <start> or <stop> is either <lon/lat> or a "
+		"2-character key that uses the standard text justification codes "
 		"to specify a point on the map as [LCR][BMT].", feature[kind], type[kind]);
 	}
-	GMT_Usage (API, indent+1, "L: Let point pairs define great circles [Straight lines]. ");
-	GMT_Usage (API, indent+1, "n|N<n_%s>: Set number of equidistant %ss per %s. "
-		"N: Start %s exactly at the start of %s, "
-		"[Default centers the %ss on the %s]. "
-		"N-1: Place a single %s at start of the %s. "
-		"N+1: Place a single %s at the end of the %s. "
-		"Append /<min_dist> to enforce a minimum spacing between "
-		"consecutive %ss [0].", feature[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind],
-			type[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind]);
+	GMT_Usage (API, indent+1, "L: Same as +l, but the point pairs define great circles instead of straight lines.");
+	GMT_Usage (API, indent+1, "n: Append number of centered equidistant %ss per %s. "
+		"Optionally, append /<min_dist> to enforce a minimum spacing between consecutive %ss [0].", feature[kind], type[kind], feature[kind]);
+	GMT_Usage (API, indent+1, "N: Same as +n, but start %s exactly at the start of %s. "
+		"Special cases: N-1 will place a single %s at start of the %s, while "
+		"N+1 will place a single %s at the end of the %s.",
+			feature[kind], type[kind], feature[kind], type[kind], feature[kind], type[kind]);
 	if (kind == 1) {
-		GMT_Usage (API, indent+1, "s|S<n_%s>: Set number of equidistant %s per segmented %s. "
-			"Similar to n|N but splits input lines to series of 2-point segments first.", feature[kind], feature[kind], type[kind]);
+		GMT_Usage (API, indent+1, "s: Append number of equidistant %ss per segmented %s. "
+			"Similar to +n, but splits input lines into a series of 2-point segments first.", feature[kind], type[kind]);
+		GMT_Usage (API, indent+1, "S: Same as +s, but with %s placement as described for +N.", feature[kind]);
 	}
-	GMT_Usage (API, indent+1, "x|X<file>: Read the multi-segment file <file> and places "
-		"settings at intersections between %ss and lines in "
-		"<file>.  Use uppercase X to resample the lines first.", feature[kind], type[kind]);
+	GMT_Usage (API, indent+1, "x: Append name of a multi-segment <file> and place "
+		"%ss at intersections between %ss and lines in <file>.", feature[kind], type[kind]);
+	GMT_Usage (API, indent+1, "X: Same as +x, but will resample the lines first.");
 	if (kind < 2) {
-		GMT_Usage (API, indent+1, "For all placement selections, append +r<radius> to specify minimum "
+		GMT_Usage (API, -indent, "For all placement selections, append +r<radius> to specify minimum "
 			"radial separation between labels [0].");
 	}
+}
+
+void gmt_innercont_syntax (struct GMT_CTRL *GMT) {
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, -2, "Embellish innermost, closed contours with ticks pointing in the downward direction. "
+ 		"User may specify to tick only highs (-Th) or lows (-Tl) [-T implies both extrema].");
+ 	GMT_Usage (API, 3, "+a Tick all closed contours.");
+ 	GMT_Usage (API, 3, "+d Append <spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].",
+ 		GMT_TICKED_SPACING, GMT_TICKED_LENGTH);
+ 	GMT_Usage (API, 3, "+l Append two characters (e.g., LH) or two comma-separated strings (e.g., \"low,high\") "
+ 		"to place labels at the center of local lows and highs [-+].");
 }
 
 /*! Widely used in most programs that need grid increments to be set */
