@@ -142,8 +142,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "c: Small-circle pole location and colatitude.");
 	GMT_Usage (API, -2, "If -L3 is used we repeat the output for m|n|s|c (if selected).");
 	GMT_Usage (API, 1, "\n-S[<lat>]");
-	GMT_Usage (API, -2, "Attempt to fit a small circle rather than a great circle.");
-	GMT_Usage (API, -2, "Optionally append the oblique latitude <lat> of the small circle you want to fit.");
+	GMT_Usage (API, -2, "Attempt to fit a small circle rather than a great circle. "
+		"Optionally append the oblique latitude <lat> of the small circle you want to fit.");
 	GMT_Option (API, "V,a,bi,di,e,f,g,h,i,o,q,:,.");
 
 	return (GMT_MODULE_USAGE);
