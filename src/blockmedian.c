@@ -94,7 +94,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-T<q>");
 	GMT_Usage (API, -2, "Set quantile (0 < q < 1) to report [Default is 0.5 which is the median of z].");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[i][o][+s]");
+	GMT_Usage (API, 1, "\n-W[i|o][+s]");
 	GMT_Usage (API, -2, "Perform weighted calculations [no weights]. Optionally set weight directive:");
 	GMT_Usage (API, 3, "i: Read 4 cols (x,y,z,w) but skip w on output.");
 	GMT_Usage (API, 3, "o: Read 3 cols (x,y,z) but include weight sum (i.e., counts) on output.");
