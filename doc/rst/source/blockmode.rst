@@ -17,8 +17,8 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-D|\ [*width*]\ [**+c**][**+a**\|\ **+l**\|\ **+h** ]
-[ |-E|\ **r**\|\ **s**\ [**+l**\|\ **h**] ]
+[ |-D|\ [*width*]\ [**+c**][**+a**\|\ **l**\|\ **h** ]]
+[ |-E|\ [**r**\|\ **s**\ [**+l**\|\ **h**]] ]
 [ |-G|\ [*grdfile*] ]
 [ |-Q| ]
 [ |SYN_OPT-V| ]
@@ -113,6 +113,7 @@ Optional Arguments
     block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
+
 **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the modal value. If
