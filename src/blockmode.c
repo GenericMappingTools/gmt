@@ -89,7 +89,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"z, s, l, h, and w. s|l|h requires -E; w requires -W[o]. "
 		"Cannot be used with -Er|s [Default is z only].", extra2[API->external]);
 	GMT_Usage (API, 1, "\n-C Output center of block and mode z-value [Default is mode location (but see -Q)].");
-	GMT_Usage (API, 1, "\n-D<width>[+c][+l|h]");
+	GMT_Usage (API, 1, "\n-D[<width>][+c][+a|l|h]");
 	GMT_Usage (API, -2, "Compute modes via binning [Default computes modes as the Least Median of Squares (LMS) estimate]. "
 		"Set bin <width> and optionally append +c to center bins. Note: If your data are integers and <width> is not given then we default "
 		"to -D1+c+l. Cannot be combined with -E and implicitly sets -Q. If there are multiple modes:");
