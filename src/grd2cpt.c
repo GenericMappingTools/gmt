@@ -184,7 +184,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>. "
 		"To accept one of the incoming limits, set that limit to NaN.");
 	if (API->GMT->current.setting.run_mode == GMT_MODERN)
-		GMT_Usage (API, 1, "\n-H Also write CPT to standard output [Default just saves as current CPT].");
+	GMT_Usage (API, 1, "\n-H Also write CPT to standard output [Default just saves as current CPT].");
 	GMT_Usage (API, 1, "\n-I[c][z]");
 	GMT_Usage (API, -2, "Invert sense of CPT in one or two ways:");
 	GMT_Usage (API, 3, "c: Invert sense of color table as well as back- and foreground color [Default].");
