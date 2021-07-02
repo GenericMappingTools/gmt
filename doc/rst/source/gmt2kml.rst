@@ -225,7 +225,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **c**\|\ **n**\ *scale*]
+**-S**\ **c**\|\ **n**\ *scale*
     Scale icons or labels. Here, **-Sc** sets a scale for the symbol
     icon, whereas **-Sn** sets a scale for the name labels [1 for both].
 
