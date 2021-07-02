@@ -202,7 +202,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E[+e][+s]] "
 		"[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...] [-N<col>|t|<template>|<name>] [-O] "
-		"[-Qa|i|s<arg>] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>] [-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] "
+		"[-Qa|i|s<arg>] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>] [-T<title>[/<foldername>]] [%s] [-W[<pen>][<attr>]] "
 		"[-Z[+a<alt_min>/<alt_max>][+f<minfade>/<maxfade>][+l<minLOD>/<maxLOD>][+o][+v]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT,
 		GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
