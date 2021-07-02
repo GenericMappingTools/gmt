@@ -136,9 +136,6 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-f| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-g.rst_
-
 .. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
