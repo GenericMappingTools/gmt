@@ -8164,7 +8164,7 @@ void gmt_dist_syntax (struct GMT_CTRL *GMT, char *option, char *string) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option[0]);
 	GMT_Usage (API, 1, "\n-%s", option);
-	GMT_Usage (API, -2, "%s"
+	GMT_Usage (API, -2, "%s "
 		"Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), "
 		"d (arc degree), m (arc minute), or s (arc second) [%c]. "
 		"Spherical distances are based on great-circle calculations; "
