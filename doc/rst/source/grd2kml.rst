@@ -13,6 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grd2kml** *grid*
+|-N|\ *prefix*
 [ |-A|\ **a**\|\ **g**\|\ **s**\ [*altitude*] ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *URL* ]
@@ -20,7 +21,6 @@ Synopsis
 [ |-H|\ *factor* ]
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
-[ |-N|\ *prefix* ]
 [ |-S|\ [*extra*] ]
 [ |-T|\ *title* ]
 [ |-W|\ *cfile*\|\ *pen*\ [**+s**\ *scale*/*limit*] ]
@@ -53,6 +53,12 @@ Required Arguments
 
 *grid*
     A 2-D gridded data set (see :ref:`Grid File Formats <grd_inout_full>`).
+
+.. _-N:
+
+**-N**\ *prefix*
+    Sets a unique name prefixed used for the top-level KML filename *and* the
+    directory where all referenced KML files and raster images will be written [GMT_Quadtree].
 
 Optional Arguments
 ------------------
@@ -119,12 +125,6 @@ Optional Arguments
     is radix 2.  Typical values are 256 or 512 [256].  **Note**: For global
     grids (here meaning 360-degree longitude range), we will select a
     *tilesize* of 360 if **-L** is not specified.
-
-.. _-N:
-
-**-N**\ *prefix*
-    Sets a unique name prefixed used for the top-level KML filename *and* the
-    directory where all referenced KML files and raster images will be written [GMT_Quadtree].
 
 .. _-S:
 
