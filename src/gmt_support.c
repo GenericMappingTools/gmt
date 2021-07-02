@@ -7572,7 +7572,7 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, 1, "-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
+	GMT_Usage (API, 1, "\n-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
 	GMT_Usage (API, 2, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
 	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
 	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "     %s\n", GMT_CPT_master[k]);
