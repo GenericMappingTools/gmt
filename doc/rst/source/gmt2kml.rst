@@ -31,10 +31,12 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
 [ |-Z|\ [**+a**\ *alt_min/alt_max*]\ [**+f**\ *minfade/maxfade*]\ [**+l**\ *minLOD/maxLOD*]\ [**+o**][**+v**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
@@ -263,6 +265,8 @@ Optional Arguments
     is visible to infinite size. Append **+o** to open a older or document
     in the sidebar when loaded [closed]. Append **+v** to make a feature
     *not* visible when loaded [visible].
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 or more input columns, depending on settings].
 .. include:: explain_-bi.rst_
