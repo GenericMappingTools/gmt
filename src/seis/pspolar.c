@@ -579,6 +579,9 @@ EXTERN_MSC int GMT_pspolar (void *V_API, int mode, void *args) {
 				break;
 		}
 
+		if (gmt_M_is_dnan (In->data[GMT_X]) || gmt_M_is_dnan (In->data[GMT_Y]))	/* Probably a non-recognized header since we got NaNs */
+			continue;
+
 		/* Data record to process */
 
 		if (Ctrl->H2.active) {
