@@ -1117,6 +1117,9 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
+		if (gmt_M_is_dnan (In->data[GMT_X]) || gmt_M_is_dnan (In->data[GMT_Y]))	/* Probably a non-recognized header since we got NaNs */
+			continue;
+
 		in = In->data;
 		station_name = In->text;
 
