@@ -3358,6 +3358,10 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		}
 		*tpos = pos;
 	}
+	if (found_text && col == 0) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
+		gmt_M_free (GMT, type);
+		return GMT_NOT_OUTPUT_OBJECT;
+	}
 	*n_columns = col;	/* Pass back the numerical column count */
 	if (GMT->common.i.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
 		gmtlib_reparse_i_option (GMT, col);
@@ -3585,8 +3589,10 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 
 		if (GMT->current.io.first_rec) {	/* Learn from the 1st record what we can about the type of data record this is */
 			unsigned int type;
-			if ((type = gmtio_examine_current_record (GMT, line, &start_of_text, &n_cols_this_record)) == GMT_NOT_OUTPUT_OBJECT)
+			if ((type = gmtio_examine_current_record (GMT, line, &start_of_text, &n_cols_this_record)) == GMT_NOT_OUTPUT_OBJECT) {
+				GMT->current.io.status = GMT_IO_TABLE_HEADER;
 				return NULL;
+			}
 			else
 				GMT->current.io.record_type[GMT_IN] = type;
 			if (GMT->current.io.variable_in_columns) {	/* Never finalize # of fields since it can change from rec to rec */
