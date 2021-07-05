@@ -479,6 +479,8 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *
 	struct GMT_OPTION *opt, *head = NULL;
 	struct B_PRIORITY *priority = NULL; /* Worst case is -Bpx, -Bsx, ... */
 
+	if (options == NULL) return NULL;	/* Nothing to do */
+
 	for (np = 0, opt = options; opt; opt = opt->next, np++);	/* Count the options */
 	priority = gmt_M_memory (GMT, NULL, np, struct B_PRIORITY);
 
