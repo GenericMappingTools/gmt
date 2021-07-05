@@ -9738,6 +9738,8 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 		}
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given view angle = %g, set MAP_FRAME_AXES = %s\n", az, axes);
 	}
+	else if (!strncmp (GMT->init.module_name, "psternary", 9U))	/* Make exception for ternary diagrams since S,E,W are the three sides of triangle */
+		strcpy (axes, "WEStZ");
 	else	/* Default modern mode setting */
 		strcpy (axes, "WrStZ");
 	gmtlib_setparameter (GMT, "MAP_FRAME_AXES", axes, conf_update);
