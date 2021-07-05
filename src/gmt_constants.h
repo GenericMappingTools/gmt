@@ -263,6 +263,10 @@ enum GMT_time_period {
 #define GMT_CPT_INDEX_LBL		0	/* Index into hidden alloc_mode_text[] for labels */
 #define GMT_CPT_INDEX_KEY		1	/* Index into hidden alloc_mode_text[] for keys */
 
+/* Ticked contour settings */
+#define GMT_TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
+#define GMT_TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
+
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
 /* Default color list (or cpt) for automatic, sequential color choices */

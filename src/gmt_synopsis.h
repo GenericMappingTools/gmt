@@ -88,7 +88,7 @@
 
 /* Argument to *contour programs */
 
-#define GMT_CONTG	"-G[d|f|n|l|L|x|X]<args>"
+#define GMT_CONTG	"-G[d|f|l|L|n|x|X]<args>"
 #define GMT_CONTT	"-T[h|l][+a][+d<gap>[c|i|p][/<length>[c|i|p]]][+l[<labels>]]"
 
 /* Arguments for psxy[z] polygon-creating option */
@@ -129,7 +129,7 @@
 #else
 #define GMT_n_OPT	"-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>]"
 #endif
-#define GMT_o_OPT	"-o<cols>[,...][t[<word>]]"
+#define GMT_o_OPT	"-o<cols>[,...][,t[<word>]]"
 #define GMT_q_OPT	"-q[i|o][~]<rows>[,...][+c<col>][+a|f|s]"
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r[g|p]"

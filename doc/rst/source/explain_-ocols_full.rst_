@@ -14,8 +14,9 @@ separated by commas [Default writes all columns in order, starting with the firs
 be repeated. The chosen data columns will be used as given and columns not listed will be skipped. To write from a given
 column until the end of the record, leave off *stop* when specifying the column range.
 
-Normally, any trailing text in the internal records will be written but when **-o** is used you must explicitly add
-the column **t**. To only output a single word from the trailing text, append the word number (first word is 0).
+Normally, any trailing text in the internal records will be included in the output, but when **-o** is used to specify
+specific columns you must explicitly append the extra "column" **t** to include the trailing text on output. To only select
+a single word from the trailing text, append the word number (first word is 0).
 Finally, **-on** will simply write the numerical output only and skip any trailing text, while **-ot** will only output
 the trailing text (or selected word). **Note**: If **-i** is also used then columns given to **-o** correspond to the
-order *after* the **-i** selection and not the columns in the original record.
+order *after* the **-i** selection has taken place and *not* the columns in the original record.

@@ -281,7 +281,8 @@ enum GMT_enum_alloc {
 	GMT_ALLOC_INTERNALLY = 1,	/* Allocated by GMT: We may reallocate as needed and free when no longer needed */
 	GMT_ALLOC_NORMAL = 0,		/* Normal allocation of new dataset based on shape of input dataset */
 	GMT_ALLOC_VERTICAL = 4,		/* Allocate a single table for data set to hold all input tables by vertical concatenation */
-	GMT_ALLOC_HORIZONTAL = 8	/* Allocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
+	GMT_ALLOC_HORIZONTAL = 8,	/* Allocate a single table for data set to hold all input tables by horizontal (paste) concatenations */
+	GMT_ALLOC_VIA_ICOLS = 16	/* Follow -i settings when doing the duplication */
 };
 
 enum GMT_enum_duplicate {

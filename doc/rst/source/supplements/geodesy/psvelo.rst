@@ -12,12 +12,15 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt psvelo** [ *table* ] |-J|\ *parameters*
+**gmt psvelo**
+[ *table* ]
+|-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][/*args*][**+f**\ *font*]
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*]
+[ |-D|\ *scale* ]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]

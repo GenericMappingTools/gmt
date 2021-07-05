@@ -167,79 +167,93 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -S<symbol>[<size>]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T<now> [-Ar[<dpu>[c|i]]|s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]] [-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] [-G<fill>] [-H<labelinfo>] [-L[t|<length>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Mi|s|t<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-W[<pen>] [-Z\"<command>\"] [%s] [%s]\n", GMT_V_OPT, GMT_b_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
+		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
+		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>] [%s] [%s] [-Z\"<command>\"] "
+		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT,
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify the time for preparing events.\n");
+	GMT_Usage (API, 1, "\n-T<now>");
+	GMT_Usage (API, -2, "Specify the time for preparing events.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Record format: lon lat [z] [size] time [length|time2].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Select plotting of lines or polygons when no -S is given.  Choose input mode:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append r to read records for lines with time in column 3.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append <dpu> to convert your line records into dense point records that can be plotted as circles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     The resampled line will be written to stdout (requires options -R -J, optionally -C).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     The <dpu> must be the same as the intended <dpu> for the movie frames.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s]\n", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to read whole segments (lines or polygons) with no time column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Time is set via segment header -T<start>, -T<start>,<end>, or -T<start>,<duration (see -L).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Give <cpt> and obtain symbol color via z-value in 3rd data column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the event text origin AFTER projecting with -J [0/0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v[<pen>] to draw line from text to original point.  If <add_y> is not given it equals <add_x>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set offset, rise, plateau, decay, and fade intervals for symbols (-Es [Default])\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or offset, rise,, and fade intervals for text (-Et):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +o<dt> offsets event start and end times by <dt> [no offset].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +O<dt> to only offset event start time and leave end time alone.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +r<dt> sets the rise-time before the event start time [no rise time].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +p<dt> sets the length of the plateau after event happens [no plateau].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +d<dt> sets the decay-time after the plateau [no decay].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +f<dt> sets the fade-time after the event ends [no fade time].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +l<dt> sets alternative label duration [same as symbol].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify values for text attributes that apply to all text records:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +a<angle> specifies the baseline angle for all text [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +A to force text-baselines in the -90/+90 range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +f<fontinfo> sets the size, font, and optionally the text color [%s].\n",
+	GMT_Usage (API, -2, "Record format: lon lat [z] [size] time [length|time2].");
+	GMT_Usage (API, 1, "\n-Ar[<dpu>[c|i]]|s");
+	GMT_Usage (API, -2, "Select plotting of lines or polygons when no -S is given.  Choose input mode:");
+	GMT_Usage (API, 3, "r: Read records for lines with time in column 3. "
+		"Append <dpu> to convert your line records into dense point records that can be plotted as circles. "
+		"The resampled line will be written to stdout (requires options -R -J, optionally -C). "
+		"The <dpu> must be the same as the intended <dpu> for the movie frames. "
+		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Usage (API, 3, "s: Read whole segments (lines or polygons) with no time column. n"
+		"Time is set via segment header -T<start>, -T<start>,<end>, or -T<start>,<duration (see -L).");
+	GMT_Usage (API, 1, "\n-C<cpt>");
+	GMT_Usage (API, -2, "Give <cpt> and obtain symbol color via z-value in 3rd data column.");
+	GMT_Usage (API, 1, "\n-D[j|J]<dx>[/<dy>][+v[<pen>]");
+	GMT_Usage (API, -2, "Add <dx>,<dy> to the event text origin AFTER projecting with -J [0/0]. "
+		"Use -Dj to move text origin away from point (direction determined by text's justification). "
+		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). "
+		"Append +v[<pen>] to draw line from text to original point.  If <add_y> is not given it equals <add_x>.");
+	GMT_Usage (API, 1, "\n-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]");
+	GMT_Usage (API, -2, "Set offset, rise, plateau, decay, and fade intervals for symbols (-Es [Default]) "
+		"or offset, rise, and fade intervals for text (-Et):");
+	GMT_Usage (API, 3, "+o Offsets event start and end times by <dt> [no offset]. "
+		"Use +O<dt> to only offset event start time and leave end time alone.");
+	GMT_Usage (API, 3, "+r Set the rise-time to <dt> before the event start time [no rise time].");
+	GMT_Usage (API, 3, "+p set the length <dt> of the plateau after event happens [no plateau].");
+	GMT_Usage (API, 3, "+d set the decay-time <dt> after the plateau [no decay].");
+	GMT_Usage (API, 3, "+f set the fade-time <dt> after the event ends [no fade time].");
+	GMT_Usage (API, 3, "+l set alternative label duration <dt> [same as symbol duration].");
+	GMT_Usage (API, 1, "\n-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]");
+	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
+	GMT_Usage (API, 3, "+a Specify baseline angle for all text [0]. "
+		"Use +A to force text-baselines in the -90/+90 range.");
+	GMT_Usage (API, 3, "+f Set annotation font attributes [%s].",
 		gmt_putfont (API->GMT, &API->GMT->current.setting.font_annot[GMT_PRIMARY]));
-	GMT_Message (API, GMT_TIME_NONE, "\t   +j<justify> sets text justification relative to given (x,y) coordinate.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Normally, the text is read from the data records.  Alternative ways to provide text:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (requires -C) via format <fmt> [FORMAT_FLOAT_MAP].\n");
+	GMT_Usage (API, 3, "+j Set text justification relative to given (x,y) coordinate. "
+		"Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].");
+	GMT_Usage (API, -2, "Normally, the text is read from the data records.  Alternative ways to provide text:");
+	GMT_Usage (API, 3, "+r Use the current record number, optionally append <first> [0].");
+	GMT_Usage (API, 3, "+z Use formatted input z values (requires -C), optionally  append format <fmt> [FORMAT_FLOAT_MAP].");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify a fixed symbol fill [no fill].");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Control attributes of optional label bounding box fill, outline, clearance, shade, and box shape [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between label and surrounding box [%d%% of font size].\n", GMT_TEXT_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<fill> to set the fill for the text box [no fill].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to set the pen [%s] and draw the outline of the text box [no outline].\n", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to select rounded rectangular box shape [straight].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the text box [%gp/%gp/gray50].\n", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set finite length of events, otherwise we assume they are all infinite.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no arg we read lengths from file; append t for reading end times instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -L0 is given the event only lasts one frame.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside and plot repeating symbols].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Append i for intensity, s for size, or t for transparency; repeatable.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to use during rise, plateau, or decay phases.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to set a separate terminal value for the coda [no coda].\n");
-	GMT_Option (API, "K,O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Save intermediate events symbol and labels files; append file prefix [temporary files deleted].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Append symbol code and optionally <size>.  If no size we read it from the data file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default plots lines or polygons; see -A for further instructions.\n");
-	GMT_Option (API, "V");
+	GMT_Usage (API, 1, "\n-H[+c<dx>/<dy>][+g<fill>][+p[<pen>]][+r][+s[[<dx>/<dy>/][<shade>]]]");
+	GMT_Usage (API, -2, "Control attributes of optional label bounding box fill, outline, clearance, shade, and box shape [none]:");
+	GMT_Usage (API, 3, "+c Set clearance between label and surrounding box [%d%% of font size].", GMT_TEXT_CLEARANCE);
+	GMT_Usage (API, 3, "+g Set fill for the text box [no fill].");
+	GMT_Usage (API, 3, "+p Draw outline of the text box [no outline], optionally append pen [%s].", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, 3, "+r Select rounded rectangular box shape [straight].");
+	GMT_Usage (API, 3, "+s Plot a shadow behind the text box, optionally append offsets and shade [%gp/%gp/gray50].", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+	GMT_Option (API, "K");
+	GMT_Usage (API, 1, "\n-L[t|<length>]");
+	GMT_Usage (API, -2, "Set finite length of events, otherwise we assume they are all infinite. "
+		"If no arg we read lengths from file; append t for reading end times instead. "
+		"If -L0 is given the event only lasts one frame.");
+	GMT_Usage (API, 1, "\n-Mi|s|t<val1>[+c<val2]");
+	GMT_Usage (API, -2, "Append i for intensity, s for size, or t for transparency; repeatable. "
+		"Append value to use during rise, plateau, or decay phases. "
+		"Append +c to set a separate terminal value for the coda [no coda].");
+	GMT_Usage (API, 1, "\n-N[c|r]");
+	GMT_Usage (API, -2, "Do not skip or clip symbols that fall outside the map border [clipping is on]. "
+		"Use -Nr to turn off clipping and plot repeating symbols for periodic maps. "
+		"Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps "
+		"[Default will clip or skip symbols that fall outside and plot repeating symbols].");
+	GMT_Option (API, "O,P");
+	GMT_Usage (API, 1, "\n-Q<prefix>");
+	GMT_Usage (API, -2, "Save intermediate events symbol and labels files; append file prefix [temporary files deleted].");
+	GMT_Usage (API, 1, "\n-S<symbol>[<size>]");
+	GMT_Usage (API, -2, "Append symbol code and optionally <size>.  If no size we read it from the data file. "
+		"Default plots lines or polygons; see -A for further instructions.");
+	GMT_Option (API, "U,V");
 	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", 0);
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Append core external <command> and required options that must include -S<format><size>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The quoted <command> must start with [ps]coupe, [ps]meca, or [ps]velo.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: The <command> cannot contain options -C, -G, -I, -J, -N, -R, -W, -t).\n");
+	GMT_Usage (API, 1, "\n-Z\"<command>\"");
+	GMT_Usage (API, -2, "Append core external <command> and required options that must include -S<format><size>. "
+		"The quoted <command> must start with [ps]coupe, [ps]meca, or [ps]velo. "
+		"(Note: The <command> cannot contain options -C, -G, -I, -J, -N, -R, -W, -t).");
 	GMT_Option (API, "bi2,c,di,e,f,h,i,p,qi,w,:,.");
 
 	return (GMT_MODULE_USAGE);

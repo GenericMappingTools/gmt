@@ -115,6 +115,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   R: Same, but adjust given spacing to fit the track length exactly.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to skip records that has no increase in <time_col> value [no skipping].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to compute distances along rhumblines (loxodromes) [no].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +l uses spherical calculations - cannot be combined with -je.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the interpolation mode.  Choose from:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
@@ -203,7 +204,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				if (strstr (opt->arg, "+d")) Ctrl->A.delete = true;
-				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;
+				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;		/* Note: spherical only */
 				break;
 			case 'F':
 				Ctrl->F.active = true;
@@ -313,11 +314,14 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_NOMINMAX | GMT_ARRAY_UNIQUE, Ctrl->N.col);
 	}
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.loxo && GMT->common.j.mode == GMT_GEODESIC,
+	                                   "Option -A+l: Requires spherical calculations so -je cannot be used\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && s_arg, "Specify only one of -N and -S\n");
 	n_errors += gmt_check_binary_io (GMT, (Ctrl->N.col >= 2) ? Ctrl->N.col + 1 : 2);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->F.type > 2, "Option -F: Only 1st or 2nd derivatives may be requested\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->F.mode != GMT_SPLINE_SMOOTH, "Option -W: Only available with -Fs<p>\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->F.mode != GMT_SPLINE_SMOOTH,
+	                                   "Option -W: Only available with -Fs<p>\n");
 
 	if (Ctrl->F.mode == GMT_SPLINE_SMOOTH && gmt_M_is_zero (Ctrl->F.fit))	/* Convenience check so -Fs0 is the same as -Fc. Place this hear to allow -W (which will be ignore) */
 		Ctrl->F.mode = GMT_SPLINE_CUBIC;

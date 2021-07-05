@@ -2008,17 +2008,20 @@ GMT_LOCAL void gmtgrdio_grdcube_info_syntax (struct GMT_CTRL *GMT, char option, 
 	static char *type[3] = {"grid", "cube", "grid or cube"};
 	static char *vname[3] = {"z", "cube", "z or cube"};
 	unsigned int k = dim - 2;
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t-%c Append %s header information as one string composed of one or\n", option, type[k]);
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t   more modifiers; items not listed will remain unchanged:\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +x[<name>]   Sets the x-dimension unit name; leave blank to reset\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +y[<name>]   Sets the y-dimension unit name; leave blank to reset\n");
-	if (dim > 2) GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +z[<name>]   Sets the z-dimension unit name; leave blank to reset\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +d[<name>]   Sets the %s data unit name; leave blank to reset\n", type[k]);
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +t[<title>]  Sets the %s title;  leave blank to reset\n", type[k]);
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +r[<remark>] Sets the %s remark; leave blank to reset\n", type[k]);
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +s<scale>    Sets the data-scale\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +o<offset>   Sets the data-offset\n");
-	GMT_Message (GMT->parent, GMT_TIME_NONE, "\t     +v<varname>  Names the netCDF data variable (if netCDF format) [%s]\n", vname[k]);
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, 1, "\n-%c<information>", option);
+	GMT_Usage (API, -2, "Append %s header information as one string composed of one or "
+		"more modifiers; items not listed will remain unchanged:", type[k]);
+	GMT_Usage (API, 3, "+x Append x-dimension unit <name>, or leave blank to reset.");
+	GMT_Usage (API, 3, "+y Append y-dimension unit <name>, or leave blank to reset.");
+	if (dim > 2) GMT_Usage (API, 3, "+z Append z-dimension unit <name>, or leave blank to reset.");
+	GMT_Usage (API, 3, "+d Append %s data unit <name>, or leave blank to reset.", type[k]);
+	GMT_Usage (API, 3, "+n Append a value to represent missing data.", type[k]);
+	GMT_Usage (API, 3, "+t Append %s <title>, or leave blank to reset.", type[k]);
+	GMT_Usage (API, 3, "+r Append %s <remark>, or leave blank to reset.", type[k]);
+	GMT_Usage (API, 3, "+s Append data <scale>.");
+	GMT_Usage (API, 3, "+o Append data <offset>.");
+	GMT_Usage (API, 3, "+v Append netCDF data variable <name> (if netCDF format) [%s].", vname[k]);
 }
 
 void gmt_grd_info_syntax (struct GMT_CTRL *GMT, char option) {

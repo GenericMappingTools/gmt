@@ -1420,22 +1420,25 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							x_2 -= dx;		y_2 -= dy;
 						}
 					}
-					data[n].dim[0] = x_2, data[n].dim[1] = y_2;
+					data[n].dim[PSL_VEC_XTIP] = x_2;
+					data[n].dim[PSL_VEC_YTIP] = y_2;
 					s = (data[n].dim[1] < S.v.v_norm) ? data[n].dim[1] / S.v.v_norm : 1.0;
-					data[n].dim[2] = s * S.v.v_width;
-					data[n].dim[3] = s * S.v.h_length;
-					data[n].dim[4] = s * S.v.h_width;
+					data[n].dim[PSL_VEC_TAIL_WIDTH]  = s * S.v.v_width;
+					data[n].dim[PSL_VEC_HEAD_LENGTH] = s * S.v.h_length;
+					data[n].dim[PSL_VEC_HEAD_WIDTH]  = s * S.v.h_width;
 					if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
-						data[n].dim[4] *= 0.5;	/* Since it was double in the parsing */
+						data[n].dim[PSL_VEC_HEAD_WIDTH] *= 0.5;	/* Since it was double in the parsing */
 						data[n].symbol = GMT_SYMBOL_VECTOR_V4;
-						data[n].dim[5] = GMT->current.setting.map_vector_shape;
+						data[n].dim[PSL_VEC_HEAD_SHAPE] = GMT->current.setting.map_vector_shape;
 					}
 					else {
-						data[n].dim[5] = S.v.v_shape;
-						data[n].dim[6] = (double)S.v.status;
-						data[n].dim[7] = (double)S.v.v_kind[0];	data[n].dim[8] = (double)S.v.v_kind[1];
-						data[n].dim[9] = (double)S.v.v_trim[0];	data[n].dim[10] = (double)S.v.v_trim[1];
-						data[n].dim[11] = s * data[n].h.width;	/* Possibly shrunk head pen width */
+						data[n].dim[PSL_VEC_HEAD_SHAPE]      = S.v.v_shape;
+						data[n].dim[PSL_VEC_STATUS]          = (double)S.v.status;
+						data[n].dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)S.v.v_kind[0];
+						data[n].dim[PSL_VEC_HEAD_TYPE_END]   = (double)S.v.v_kind[1];
+						data[n].dim[PSL_VEC_TRIM_BEGIN]      = (double)S.v.v_trim[0];
+						data[n].dim[PSL_VEC_TRIM_END]        = (double)S.v.v_trim[1];
+						data[n].dim[PSL_VEC_HEAD_PENWIDTH]   = s * data[n].h.width;	/* Possibly shrunk head pen width */
 					}
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
@@ -1461,23 +1464,25 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				case PSL_MARC:
 					gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
 					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					data[n].dim[0] = in[ex1+S.read_size];	/* Radius */
-					data[n].dim[1] = in[ex2+S.read_size];	/* Start direction in degrees */
-					data[n].dim[2] = in[ex3+S.read_size];	/* Stop direction in degrees */
-					length = fabs (data[n].dim[2]-data[n].dim[1]);	/* Arc length in degrees */
+					data[n].dim[PSL_MATHARC_RADIUS]      = in[ex1+S.read_size];	/* Radius */
+					data[n].dim[PSL_MATHARC_ANGLE_BEGIN] = in[ex2+S.read_size];	/* Start direction in degrees */
+					data[n].dim[PSL_MATHARC_ANGLE_END]   = in[ex3+S.read_size];	/* Stop direction in degrees */
+					length = fabs (data[n].dim[PSL_MATHARC_ANGLE_END]-data[n].dim[PSL_MATHARC_ANGLE_BEGIN]);	/* Arc length in degrees */
 					if (gmt_M_is_dnan (length)) {
 						GMT_Report (API, GMT_MSG_WARNING, "Math angle arc length = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-					data[n].dim[3] = s * S.v.h_length;	/* Length of (shrunk) vector head */
-					data[n].dim[4] = s * S.v.h_width;	/* Width of (shrunk) vector head */
-					data[n].dim[5] = s * S.v.v_width;	/* Thickness of (shrunk) vector */
-					data[n].dim[6] = S.v.v_shape;
-					data[n].dim[7] = (double)S.v.status;	/* Vector tributes */
-					data[n].dim[8] = (double)S.v.v_kind[0];	data[n].dim[9] = (double)S.v.v_kind[1];
-					data[n].dim[10] = (double)S.v.v_trim[0];	data[n].dim[11] = (double)S.v.v_trim[1];
-					data[n].dim[12] = s * data[n].h.width;	/* Possibly shrunk head pen width */
+					data[n].dim[PSL_MATHARC_HEAD_LENGTH]     = s * S.v.h_length;	/* Length of (shrunk) vector head */
+					data[n].dim[PSL_MATHARC_HEAD_WIDTH]      = s * S.v.h_width;	/* Width of (shrunk) vector head */
+					data[n].dim[PSL_MATHARC_ARC_PENWIDTH]    = s * S.v.v_width;	/* Thickness of (shrunk) vector */
+					data[n].dim[PSL_MATHARC_HEAD_SHAPE]      = S.v.v_shape;
+					data[n].dim[PSL_MATHARC_STATUS]          = (double)S.v.status;	/* Vector tributes */
+					data[n].dim[PSL_MATHARC_HEAD_TYPE_BEGIN] = (double)S.v.v_kind[0];
+					data[n].dim[PSL_MATHARC_HEAD_TYPE_END]   = (double)S.v.v_kind[1];
+					data[n].dim[PSL_MATHARC_TRIM_BEGIN]      = (double)S.v.v_trim[0];
+					data[n].dim[PSL_MATHARC_TRIM_END]        = (double)S.v.v_trim[1];
+					data[n].dim[PSL_MATHARC_HEAD_PENWIDTH]   = s * data[n].h.width;	/* Possibly shrunk head pen width */
 					break;
 				case PSL_WEDGE:
 					col = ex1+S.read_size;
@@ -1486,25 +1491,25 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_WARNING, "Wedge outer diameter = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 						}
-						data[n].dim[0] = in[col++];
+						data[n].dim[PSL_WEDGE_RADIUS_O] = in[col++];
 					}
 					else	/* Set during -S parsing */
-						data[n].dim[0] = S.w_radius;
+						data[n].dim[PSL_WEDGE_RADIUS_O] = S.w_radius;
 					if (S.w_get_a) {	/* Must read from file */
 						if (gmt_M_is_dnan (in[col])) {
 							GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 						}
-						data[n].dim[1] = in[col++];
+						data[n].dim[PSL_WEDGE_ANGLE_BEGIN] = in[col++];
 						if (gmt_M_is_dnan (in[col])) {
 							GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 						}
-						data[n].dim[2] = in[col++];
+						data[n].dim[PSL_WEDGE_ANGLE_END] = in[col++];
 					}
 					else {	/* Angles were set during -S parsing */
-						data[n].dim[1] = S.size_x;
-						data[n].dim[2] = S.size_y;
+						data[n].dim[PSL_WEDGE_ANGLE_BEGIN] = S.size_x;
+						data[n].dim[PSL_WEDGE_ANGLE_END]   = S.size_y;
 					}
 					if (S.w_get_di) {	/* Must read from file else it was set during -S parsing */
 						if (gmt_M_is_dnan (in[col])) {
@@ -1516,26 +1521,26 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.convert_angles) {
 						if (gmt_M_is_cartesian (GMT, GMT_IN)) {
 							/* Note that the direction of the arc gets swapped when converting from azimuth */
-							data[n].dim[2] = 90.0 - data[n].dim[2];
-							data[n].dim[1] = 90.0 - data[n].dim[1];
+							data[n].dim[PSL_WEDGE_ANGLE_END]   = 90.0 - data[n].dim[PSL_WEDGE_ANGLE_END];
+							data[n].dim[PSL_WEDGE_ANGLE_BEGIN] = 90.0 - data[n].dim[PSL_WEDGE_ANGLE_BEGIN];
 						}
 						else {
-							data[n].dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[2]);
-							data[n].dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[1]);
+							data[n].dim[PSL_WEDGE_ANGLE_END] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[PSL_WEDGE_ANGLE_END]);
+							data[n].dim[PSL_WEDGE_ANGLE_BEGIN] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[PSL_WEDGE_ANGLE_BEGIN]);
 						}
 						gmt_M_double_swap (data[n].dim[1], data[n].dim[2]);	/* Must switch the order of the angles */
 					}
 					/* Load up the rest of the settings */
-					data[n].dim[3] = S.w_type;
-					data[n].dim[4] = S.w_radius_i;
-					data[n].dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
-					data[n].dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
-					data[n].dim[7] = 0.0;	/* Reset */
-					if (fill_active || get_rgb) data[n].dim[7] = 1;	/* Lay down filled wedge */
-					if (outline_active) data[n].dim[7] += 2;	/* Draw wedge outline */
+					data[n].dim[PSL_WEDGE_STATUS]   = S.w_type;
+					data[n].dim[PSL_WEDGE_RADIUS_I] = S.w_radius_i;
+					data[n].dim[PSL_WEDGE_DR]       = S.w_dr;	/* In case there is a request for radially spaced arcs */
+					data[n].dim[PSL_WEDGE_DA]       = S.w_da;	/* In case there is a request for angularly spaced radial lines */
+					data[n].dim[PSL_WEDGE_ACTION]   = 0.0;	/* Reset */
+					if (fill_active || get_rgb) data[n].dim[PSL_WEDGE_ACTION] = 1;	/* Lay down filled wedge */
+					if (outline_active) data[n].dim[PSL_WEDGE_ACTION] += 2;	/* Draw wedge outline */
 					if (!S.w_active) {	/* Not geowedge so scale to radii */
-						data[n].dim[0] *= 0.5;
-						data[n].dim[4] *= 0.5;
+						data[n].dim[PSL_WEDGE_RADIUS_O] *= 0.5;
+						data[n].dim[PSL_WEDGE_RADIUS_I] *= 0.5;
 					}
 					break;
 				case GMT_SYMBOL_CUSTOM:
@@ -1771,7 +1776,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						else
 							v4_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
-						v4_status = lrint (data[n].dim[6]);
+						v4_status = lrint (data[n].dim[PSL_VEC_STATUS]);
 						if (v4_status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						psl_vector_v4 (PSL, xpos[item], data[i].y, data[i].dim, v4_rgb, v4_outline);
@@ -1790,9 +1795,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					case PSL_WEDGE:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						if (S.w_active)	{	/* Geo-wedge */
-							unsigned int status = lrint (data[i].dim[3]);
+							unsigned int status = lrint (data[i].dim[PSL_WEDGE_STATUS]);
 							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
-							gmt_geo_wedge (GMT, dx, dy, data[n].dim[4], S.w_radius, data[n].dim[5], data[i].dim[1], data[i].dim[2], data[n].dim[6], status, fill_active || get_rgb, outline_active);
+							gmt_geo_wedge (GMT, dx, dy, data[n].dim[PSL_WEDGE_RADIUS_I], S.w_radius, data[n].dim[PSL_WEDGE_DR], data[i].dim[PSL_WEDGE_ANGLE_BEGIN],
+								data[i].dim[PSL_WEDGE_ANGLE_END], data[n].dim[PSL_WEDGE_DA], status, fill_active || get_rgb, outline_active);
 						}
 						else
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);

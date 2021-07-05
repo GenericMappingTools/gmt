@@ -360,8 +360,8 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-userdir      Show full path of user's ~/.gmt dir\n");
 			fprintf (stderr, "  --version           Print GMT version number.\n\n");
 			fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
+			status = GMT_NOERROR;
 		}
-		status = GMT_RUNTIME_ERROR;
 	} /* status == GMT_NOT_A_VALID_OPTION */
 
 	gmt_M_str_free (progname); /* Was already dereferenced in gmt_chop_ext, so no NULL check needed */

@@ -1407,7 +1407,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
 		for (c = 0; p[c] && strchr ("0123456789-:", p[c]); c++);	/* Wind to position after the column or column range */
 		d = dir;
-		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, or f. */
+		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, f, d or s. */
 			case 'T':	/* Absolute calendar time */
 				code = GMT_IS_ABSTIME;
 				break;
@@ -1425,6 +1425,9 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 				break;
 			case 'd':	/* Length dimension (with possible unit) */
 				code = GMT_IS_DIMENSION;
+				break;
+			case 's':	/* This must be start of trailing text */
+				code = GMT_IS_STRING;
 				break;
 			default:	/* No suffix, consider it an error */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Malformed -f argument [%s]\n", arg);
@@ -5548,9 +5551,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	return (error > 0);
 }
 
-/*! Converts c, i, and p into 0,1,3 */
-GMT_LOCAL int gmtinit_get_unit (struct GMT_CTRL *GMT, char c) {
-
+/*! Converts c, i, and p into GMT_CM (0),GMT_INCH (1), or GMT_PT (3) */
+int gmt_get_dim_unit (struct GMT_CTRL *GMT, char c) {
 	int i;
 	switch ((int)c) {
 		case 'c':	/* cm */
@@ -5565,13 +5567,13 @@ GMT_LOCAL int gmtinit_get_unit (struct GMT_CTRL *GMT, char c) {
 				i = GMT_M;
 			}
 			else	/* error */
-				i = -1;
+				i = GMT_NOTSET;
 			break;
 		case 'p':	/* point */
 			i = GMT_PT;
 			break;
 		default:	/* error */
-			i = -1;
+			i = GMT_NOTSET;
 			break;
 	}
 	return (i);
@@ -6938,6 +6940,7 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = GMT_VERBOSE_CODES;
+	int cores = 0;
 	double s;
 	unsigned int k;
 	size_t s_length;
@@ -7376,7 +7379,6 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			break;
 
 		case 'x':	/* Just linear -Jx|X allowed for this program */
-
 			GMT_Usage (API, 1, "\n-Jx|X<scl>|<height>[d|l|p<power>|t|T][/<scl>|<height>[d|l|p<power>|t|T]]");
 			GMT_Usage (API, -2, "Scaling for linear projection.  Scale in %s/units (or width in %s). "
 				"Use / to specify separate x/y scaling. If -JX is used then give axes lengths in %s rather than scales.",
@@ -7386,10 +7388,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 #ifdef GMT_MP_ENABLED
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
+			cores = gmtlib_get_num_processors();
 			GMT_Usage (API, 1, "\n%s.", GMT_x_OPT);
-			GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms. Default uses all available cores [%d].", gmtlib_get_num_processors());
-			GMT_Usage (API, 2, "-x<n>  Select <n> cores (up to all available).");
-			GMT_Usage (API, 2, "-x-<n> Select (all - <n>) cores (or at least 1).");
+			GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms [Default uses all %d cores]. "
+				"If <n> is negative then we select (%d - <n>) cores (or at least 1).", cores, cores);
 			break;
 #endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
@@ -7484,7 +7486,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
 
-			GMT_Usage (API, 1, "%s\n", GMT_do_OPT);
+			GMT_Usage (API, 1, "\n%s", GMT_do_OPT);
 			GMT_Usage (API, -2, "Replace any NaNs in output data with <nodata>.\n");
 			break;
 
@@ -7496,6 +7498,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Give one or more columns (or column ranges) separated by commas. "
 				"Append T (Calendar format), t (time relative to TIME_EPOCH), "
 				"f (floating point), x (longitude), or y (latitude) to each item. "
+				"You may also use s (string) to indicate the start column of trailing text. "
 				"Note: -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates), "
 				"-f[i|o]c means -f[i|o]0-1f (Cartesian coordinates) while "
 				"-fp[<unit>] means input x,y are in projected coordinates.");
@@ -7737,8 +7740,8 @@ void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
 		"S to skip anything BUT Antarctica (all data north of %dS) [use all data]. ",
 			abs(GSHHS_ANTARCTICA_LIMIT), abs(GSHHS_ANTARCTICA_LIMIT));
 		GMT_Usage (API, 3, "+l Only get lakes from level 2 [riverlakes and lakes].");
-		GMT_Usage (API, 3, "+r Only get riverlakes from level 2  [riverlakes and lakes]");
 		GMT_Usage (API, 3, "+p Exclude features whose size is < <percent>%% of the full-resolution feature [use all features].");
+		GMT_Usage (API, 3, "+r Only get riverlakes from level 2  [riverlakes and lakes]");
 }
 
 /*! Contour/line specifications in *contour and psxy[z] */
@@ -7825,50 +7828,58 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	gap = (GMT->current.setting.proj_length_unit == GMT_CM) ? 10.0 / 2.54 : 4.0;
 	gap *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 
-	GMT_Usage (API, indent, "d<dist>[%s] or D<dist>[%s]  [Default is d%g%c].",
-		GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
-	GMT_Usage (API, indent+1, "d: Give distance between %ss with specified map unit in %s.", feature[kind], GMT_DIM_UNITS_DISPLAY);
-	GMT_Usage (API, indent+1, "D: Specify geographic distance between %ss in %s. "
-		"The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].", feature[kind], GMT_LEN_UNITS_DISPLAY, type[kind]);
-	GMT_Usage (API, indent+1, "f<file>: Read file <file> and place %ss at locations "
-		"that match individual points along the %ss.", feature[kind], type[kind]);
+	GMT_Usage (API, indent+1, "d: Append distance <dist> between %ss with specified map unit in %s  [Default is d%g%c]. "
+		"The first %s will appear at <frac>*<dist>; change this by appending /<frac> [0.25].",
+			feature[kind], GMT_DIM_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0], feature[kind]);
+	GMT_Usage (API, indent+1, "D: Same as +d, but append geographic distance between %ss with specified unit in %s.", feature[kind], GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, indent+1, "f: Append <file> with locations of individual points along the %ss where %ss should be placed.", type[kind], feature[kind]);
 	if (kind == 0) {
-		GMT_Usage (API, indent+1, "l|L<line1>[,<line2>,...]: Give start and stop coordinates for "
+		GMT_Usage (API, indent+1, "l: Append <line1>[,<line2>,...] to set coordinates for "
 		"straight line segments; %ss will be placed where these "
 		"lines intersect %ss.  The format of each <line> "
-		"is <start>/<stop>, where <start> or <stop> is <lon/lat> or a "
-		"2-character XY key that uses the standard text justification codes "
+		"is <start>/<stop>, where <start> or <stop> is either <lon/lat> or a "
+		"2-character key that uses the standard text justification codes "
 		"to specify a point on the map as [LCR][BMT]. In addition, you can use Z-, Z+ "
 		"to mean the global minimum and maximum locations in the grid.", feature[kind], type[kind]);
 	}
 	else {
-		GMT_Usage (API, indent+1, "l|L<line1>[,<line2>,...]: Give start and stop coordinates for "
+		GMT_Usage (API, indent+1, "l: Append <line1>[,<line2>,...] to set start and stop coordinates for "
 		"straight line segments; %ss will be placed where these "
 		"lines intersect %ss.  The format of each <line> "
-		"is <start>/<stop>, where <start> or <stop> is <lon/lat> or a "
-		"2-character XY key that uses the standard text justification codes "
+		"is <start>/<stop>, where <start> or <stop> is either <lon/lat> or a "
+		"2-character key that uses the standard text justification codes "
 		"to specify a point on the map as [LCR][BMT].", feature[kind], type[kind]);
 	}
-	GMT_Usage (API, indent+1, "L: Let point pairs define great circles [Straight lines]. ");
-	GMT_Usage (API, indent+1, "n|N<n_%s>: Set number of equidistant %ss per %s. "
-		"N: Start %s exactly at the start of %s, "
-		"[Default centers the %ss on the %s]. "
-		"N-1: Place a single %s at start of the %s. "
-		"N+1: Place a single %s at the end of the %s. "
-		"Append /<min_dist> to enforce a minimum spacing between "
-		"consecutive %ss [0].", feature[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind],
-			type[kind], feature[kind], type[kind], feature[kind], type[kind], feature[kind]);
+	GMT_Usage (API, indent+1, "L: Same as +l, but the point pairs define great circles instead of straight lines.");
+	GMT_Usage (API, indent+1, "n: Append number of centered equidistant %ss per %s. "
+		"Optionally, append /<min_dist> to enforce a minimum spacing between consecutive %ss [0].", feature[kind], type[kind], feature[kind]);
+	GMT_Usage (API, indent+1, "N: Same as +n, but start %s exactly at the start of %s. "
+		"Special cases: N-1 will place a single %s at start of the %s, while "
+		"N+1 will place a single %s at the end of the %s.",
+			feature[kind], type[kind], feature[kind], type[kind], feature[kind], type[kind]);
 	if (kind == 1) {
-		GMT_Usage (API, indent+1, "s|S<n_%s>: Set number of equidistant %s per segmented %s. "
-			"Similar to n|N but splits input lines to series of 2-point segments first.", feature[kind], feature[kind], type[kind]);
+		GMT_Usage (API, indent+1, "s: Append number of equidistant %ss per segmented %s. "
+			"Similar to +n, but splits input lines into a series of 2-point segments first.", feature[kind], type[kind]);
+		GMT_Usage (API, indent+1, "S: Same as +s, but with %s placement as described for +N.", feature[kind]);
 	}
-	GMT_Usage (API, indent+1, "x|X<file>: Read the multi-segment file <file> and places "
-		"settings at intersections between %ss and lines in "
-		"<file>.  Use uppercase X to resample the lines first.", feature[kind], type[kind]);
+	GMT_Usage (API, indent+1, "x: Append name of a multi-segment <file> and place "
+		"%ss at intersections between %ss and lines in <file>.", feature[kind], type[kind]);
+	GMT_Usage (API, indent+1, "X: Same as +x, but will resample the lines first.");
 	if (kind < 2) {
-		GMT_Usage (API, indent+1, "For all placement selections, append +r<radius> to specify minimum "
+		GMT_Usage (API, -indent, "For all placement selections, append +r<radius> to specify minimum "
 			"radial separation between labels [0].");
 	}
+}
+
+void gmt_innercont_syntax (struct GMT_CTRL *GMT) {
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, -2, "Embellish innermost, closed contours with ticks pointing in the downward direction. "
+ 		"User may specify to tick only highs (-Th) or lows (-Tl) [-T implies both extrema].");
+ 	GMT_Usage (API, 3, "+a Tick all closed contours.");
+ 	GMT_Usage (API, 3, "+d Append <spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].",
+ 		GMT_TICKED_SPACING, GMT_TICKED_LENGTH);
+ 	GMT_Usage (API, 3, "+l Append two characters (e.g., LH) or two comma-separated strings (e.g., \"low,high\") "
+ 		"to place labels at the center of local lows and highs [-+].");
 }
 
 /*! Widely used in most programs that need grid increments to be set */
@@ -7884,8 +7895,8 @@ void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 	GMT_Usage (API, -2, "Specify increment(s) and optionally append units or modifiers. "
 		"For geographic regions in degrees you can optionally append units from this list: "
 		"(d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.");
-	GMT_Usage (API, 1, "+e Adjust the region to fit increments [Adjust increment to fit domain].");
-	GMT_Usage (API, 1, "+n Increment specifies the number of nodes instead. Then, the actual increments "
+	GMT_Usage (API, 3, "+e Adjust the region to fit increments [Adjust increment to fit domain].");
+	GMT_Usage (API, 3, "+n Increment specifies the number of nodes instead. Then, the actual increments "
 		"are calculated from the given domain and node-registration settings (see Appendix B for details).");
 	GMT_Usage (API, -2, "Note: If -R<grdfile> was used then -%c "
 		"(and -R and maybe -r) have been set; use -%c to override those increments.", option, option);
@@ -7993,9 +8004,9 @@ void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	GMT_Usage (API, 1, "\n-%c<color>", option);
-	GMT_Usage (API, -2, "%s Specify <color> as one of: ", string);
-	GMT_Usage (API, 3, "%s <gray> or <red>/<green>/<blue>, all in range 0-255. ", GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s <cyan>/<magenta>/<yellow>/<blackk> in range 0-100%%; ", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "%s Specify <color> as one of: ", string);
+	GMT_Usage (API, 3, "%s <gray> or <red>/<green>/<blue>, all in range 0-255; ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <cyan>/<magenta>/<yellow>/<black> in range 0-100%%; ", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s <hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1; ", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Any valid color name.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
@@ -8153,7 +8164,7 @@ void gmt_dist_syntax (struct GMT_CTRL *GMT, char *option, char *string) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option[0]);
 	GMT_Usage (API, 1, "\n-%s", option);
-	GMT_Usage (API, -2, "%s"
+	GMT_Usage (API, -2, "%s "
 		"Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), "
 		"d (arc degree), m (arc minute), or s (arc second) [%c]. "
 		"Spherical distances are based on great-circle calculations; "
@@ -9727,6 +9738,8 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 		}
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given view angle = %g, set MAP_FRAME_AXES = %s\n", az, axes);
 	}
+	else if (!strncmp (GMT->init.module_name, "psternary", 9U))	/* Make exception for ternary diagrams since S,E,W are the three sides of triangle */
+		strcpy (axes, "WEStZ");
 	else	/* Default modern mode setting */
 		strcpy (axes, "WrStZ");
 	gmtlib_setparameter (GMT, "MAP_FRAME_AXES", axes, conf_update);
@@ -15504,7 +15517,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
-				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
+				j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
 				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
 				if (symbol == '=') {	/* Since norm distance is in km we convert to spherical degrees */
 					if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS2, p[len-1]) && p[len-1] != 'k') {
@@ -15757,7 +15770,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			if ((j = gmtinit_get_unit (GMT, text[k])) < 0) decode_error++; else { p->u = j; p->u_set = true;}
+			if ((j = gmt_get_dim_unit (GMT, text[k])) < 0) decode_error++; else { p->u = j; p->u_set = true;}
 			col_off++;
 			if (cmd) p->read_size_cmd = true;
 		}
@@ -15779,7 +15792,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		if (text[1]) {	/* Gave unit information */
-			if ((j = gmtinit_get_unit (GMT, text[1])) < 0)
+			if ((j = gmt_get_dim_unit (GMT, text[1])) < 0)
 				decode_error++;
 			else {
 				p->u = j; p->u_set = true;
@@ -16421,7 +16434,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				for (j = one; text[j] && text[j] != 'n'; j++);
 				len = (int)strlen(text) - 1;
 				if (text[j] == 'n') {	/* Normalize option used */
-					k = gmtinit_get_unit (GMT, text[len]);
+					k = gmt_get_dim_unit (GMT, text[len]);
 					p->v.v_norm = (float)atof (&text[j+1]);
 					if (k >= GMT_CM)	/* Convert length from given units to inch */
 						p->v.v_norm *= GMT->session.u2u[k][GMT_INCH];
@@ -16441,7 +16454,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					 */
 
 					if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
-						k = gmtinit_get_unit (GMT, text[len]);
+						k = gmt_get_dim_unit (GMT, text[len]);
 						if (k >= 0) { p->u = k; p->u_set = true;}
 						text[len] = 0;
 					}
@@ -16692,7 +16705,7 @@ unsigned int gmt_check_scalingopt (struct GMT_CTRL *GMT, char option, char unit,
 int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit) {
 	int k;
 
-	if ((k = gmtinit_get_unit (GMT, unit)) < 0) {
+	if ((k = gmt_get_dim_unit (GMT, unit)) < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad plot measure selected (%c); use c, i, or p.\n", unit);
 		return (GMT_MAP_BAD_MEASURE_UNIT);
 	}
