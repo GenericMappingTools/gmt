@@ -144,7 +144,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-EL|l|H|h[<col>] Return the record with extreme value in specified column <col> [last column]. "
 		"Specify l or h for min or max value, respectively. Upper case L or H "
 		"means we operate instead on the absolute values of the data.");
-	GMT_Usage (API, 1, "\n-F Return various counts of tables, segments, headers, and records, depending on mode:");
+	GMT_Usage (API, 1, "\n-Fi|d|t Return various counts of tables, segments, headers, and records, depending on mode:");
 	GMT_Usage (API, 3, "i: One record with the number of tables, segments, data records, headers, and overall records.");
 	GMT_Usage (API, 3, "d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.");
 	GMT_Usage (API, 3, "t: Tables:  Same as D but the counts resets per table.");
