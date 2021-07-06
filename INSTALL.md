@@ -77,7 +77,7 @@ your search path for executables. For that, just run GMT-6.x.x.app once and foll
 the instructions at the end of the GMT splash screen.
 
 **Note**: The installers are always built for the latest macOS version only. The
-table below details macOS compatibility requirements for the bundle.The arm64
+table below lists macOS compatibility requirements for the bundle. The arm64
 version requires a computer with the M1 Apple Silicon chip.
 
 | **GMT Version** | **Minimum MacOS** |
