@@ -141,6 +141,6 @@
 
 /*! Macro for tools that need to specify FFT information (prepend option flag, e.g., -N and put GMT_FFT_OPT inside [] ) */
 
-#define GMT_FFT_OPT "[f|s|<n_columns>/<n_rows>][+a|d|l][+e|m|n][+t<width>][+v][+w<suffix>][+z[p]]"
+#define GMT_FFT_OPT "[a|f|m|r|s|<n_columns>/<n_rows>][+a|d|h|l][+e|m|n][+t<width>][+v][+w<suffix>][+z[p]]"
 
 #endif /* GMT_SYNOPSIS_H */
