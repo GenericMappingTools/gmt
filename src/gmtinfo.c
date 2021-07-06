@@ -168,7 +168,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "-Sx: Leaves space for horizontal error bar using value in third (2) column.");
 	GMT_Usage (API, 3, "-Sy: Leaves space for vertical error bar using value in third (2) column.");
 	GMT_Usage (API, 3, "-S or -Sxy: Leaves space for both error bars using values in third&fourth (2&3) columns.");
-	GMT_Usage (API, 1, "\n-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz. "
+	GMT_Usage (API, 1, "\n-T<dz>[+c<col>] Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz. "
 		"Calculations are based on the first (0) column; append +c<col> to use another column.");
 	GMT_Option (API, "V,a");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Reports the names and data types of the aspatial fields.\n");
