@@ -151,7 +151,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A[<min>/<max>/<inc>][+f[n|p]]");
 	GMT_Usage (API, -2, "Examine misfit E as function of line slope; give angle range and increment [-90/+90/1]. "
 		"Option -F is not required as no model will be returned; instead we return "
