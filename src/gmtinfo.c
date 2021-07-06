@@ -134,8 +134,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A Select reports for (a)ll [Default], per (t)able, or per (s)egment.");
 	GMT_Usage (API, 1, "\n-C Format the min and max into separate columns; -o may be used to limit output.");
 	GMT_Usage (API, 1, "\n-D Modifies results obtained by -I by shifting the region to better align with "
