@@ -142,7 +142,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Q<listfile>");
 	GMT_Usage (API, -2, "Used with -D to write names of files to a list.  Optionally give listfile name [gmtconnect_list.txt]. "
 		"Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).");
-	gmt_dist_syntax (API->GMT, "T[" GMT_DIST_OPT "[+s<sdist>]", "Set minimum <dist> to determine if a segment is closed [0].");
+	gmt_dist_syntax (API->GMT, "T[" GMT_DIST_OPT "[+s<sdist>]]", "Set minimum <dist> to determine if a segment is closed [0].");
 	GMT_Usage (API, -2, "If two lines have endpoints closer than <dist> then they will be joined. "
 		"Optionally, append +s<sdist> which adds the requirement that the second closest "
 		"match must exceed <sdist> to connect (use same units as for <dist>). "
