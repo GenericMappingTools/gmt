@@ -65,7 +65,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSET_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [-C | -D[s|u] | -G<defaultsfile>] [-[" GMT_SHORTHAND_OPTIONS "]<value>] PARAMETER1 value1 PARAMETER2 value2 PARAMETER3 value3 ...\n", name);
+	GMT_Usage (API, 0, "usage: %s [-C | -D[s|u] | -G<defaultsfile>] [-[" GMT_SHORTHAND_OPTIONS "]<value>] [%s] PARAMETER1 value1 PARAMETER2 value2 PARAMETER3 value3 ...\n", name, GMT_V_OPT);
 	GMT_Usage (API, 1, "Give pairs of PARAMETER value to change these settings.  For available PARAMETERS, see %s documentation.", GMT_SETTINGS_FILE);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -87,6 +87,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-%s", GMT_SHORTHAND_OPTIONS);
 	GMT_Usage (API, -2, "Any of these options can be used to set "
 		"the expansion of any of these shorthand options.");
+	GMT_Option (API, "V");
 
 	return (GMT_MODULE_USAGE);
 }

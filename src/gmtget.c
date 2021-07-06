@@ -75,7 +75,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGET_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [-D<download>] [-G<defaultsfile>] [-I<inc>] [-L] [-N] [-Q] [PARAMETER1 PARAMETER2 PARAMETER3 ...] [%s]\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s [-D<download>] [-G<defaultsfile>] [-I<inc>] [-L] [-N] [-Q] [%s] [PARAMETER1 PARAMETER2 PARAMETER3 ...]\n", name, GMT_V_OPT);
 	GMT_Usage (API, 1, "Note: For available PARAMETERS, see %s documentation", GMT_SETTINGS_FILE);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -98,7 +98,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-L Write one parameter value per line [Default writes all on one line].");
 	GMT_Usage (API, 1, "\n-N Do NOT convert grids downloaded with -D to netCDF but leave as JP2.");
 	GMT_Usage (API, 1, "\n-Q In conjunction with -D, will list but not download the selected data.");
-	GMT_Option (API, "V,.");
+	GMT_Option (API, "V");
 
 	return (GMT_MODULE_USAGE);
 }
