@@ -139,6 +139,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Output file for results from -A or -D.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<azim>[/<azim2>]");
 	GMT_Usage (API, -2, "Set azimuth (0-360 CW from North (+y)) for directional derivatives. "
@@ -153,23 +155,21 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]");
 	GMT_Usage (API, -2, "Compute Lambertian radiance appropriate to use with grdimage|grdview. "
 		"Provide the azimuth and elevation of the light vector. "
-		"Append any of these modifiers that control the reflectance properties of the surface:");
+		"Optionally, append modifiers to further control the reflectance properties of the surface:");
 	GMT_Usage (API, 3, "+a Set the <ambient> light value [0.55].");
-	GMT_Usage (API, 3, "+d Set the <diffuse>] light value [0.6].");
-	GMT_Usage (API, 3, "+p Set <specular>] value [0.4].");
-	GMT_Usage (API, 3, "+s Set <shine>] value [10].\n");
+	GMT_Usage (API, 3, "+d Set the <diffuse> light value [0.6].");
+	GMT_Usage (API, 3, "+p Set <specular> value [0.4].");
+	GMT_Usage (API, 3, "+s Set <shine> value [10].");
 	GMT_Usage (API, -2, "Directives s|p|m can simplify the setup:");
 	GMT_Usage (API, 3, "s: Simpler Lambertian algorithm (only requires azimuth and elevation).");
 	GMT_Usage (API, 3, "p: Peucker piecewise linear approximation (simpler but faster algorithm).");
 	GMT_Usage (API, 3, "m: Similar to ESRI's 'hillshade' but faster. Note: azimuth and elevation are hardwired to 315 and 45 degrees; "
 		"if you provide other values they will be ignored.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Output file for results from -A or -D.");
 	GMT_Usage (API, 1, "\n-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]");
 	GMT_Usage (API, -2, "Normalize gradients so that max |grad| = <amp> [1.0]. Optional directives:");
 	GMT_Usage (API, 3, "t: Make atan transform, then scale to <amp> [1.0].");
 	GMT_Usage (API, 3, "e: Make exp  transform, then scale to <amp> [1.0].");
-	GMT_Usage (API, -2, "Several modifiers can be used to affect the final result:\n");
+	GMT_Usage (API, -2, "Several modifiers can be used to affect the final result:");
 	GMT_Usage (API, 3, "+a Add <ambient> light [0].");
 	GMT_Usage (API, 3, "+o Offset gradients by <offset> [Default estimates <offset> from the data].");
 	GMT_Usage (API, 3, "+s Normalize gradients by <sigma> [Default estimates <sigma> from the data].");

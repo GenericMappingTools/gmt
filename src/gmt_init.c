@@ -7560,8 +7560,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
 			GMT_Usage (API, 1, "\n%s", GMT_n_OPT);
-			GMT_Usage (API, -2, "Specify the grid interpolation mode: "
-				"b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor [Default is bicubic]. Optional modifiers:");
+			GMT_Usage (API, -2, "Specify a grid interpolation directive:");
+			GMT_Usage (API, 3, "b: B-spline.");
+			GMT_Usage (API, 3, "c: Bicubic spline [Default].");
+			GMT_Usage (API, 3, "l: Bilinear spline.");
+			GMT_Usage (API, 3, "n: Nearest-neighbor value, i.e., no spline at all.");
+			GMT_Usage (API, -2, "Optional modifiers:");
 #ifdef DEBUG
 				GMT_Usage (API, 3, "+A Save the anti-aliasing counter to nz_grd_counter.grd for debugging.");
 #endif
