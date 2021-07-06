@@ -536,7 +536,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		while (wesn_new[XLO] > G->header->wesn[XHI]) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
 		wesn_new[YLO] = wesn_new[YHI] = Ctrl->S.lat;
 		/* First adjust the S and N boundaries */
-		radius = R2D * (Ctrl->S.radius / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.mean_radius;	/* Approximate radius in degrees */
+		if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got arc distance */
+			radius = (Ctrl->S.radius / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Radius in degrees */
+		else
+			radius = R2D * (Ctrl->S.radius / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.mean_radius;	/* Approximate radius in degrees */
 		wesn_new[YLO] -= radius;	/* Approximate south limit in degrees */
 		if (wesn_new[YLO] <= G->header->wesn[YLO]) {	/* Way south, reset to grid S limit */
 			wesn_new[YLO] = G->header->wesn[YLO];
