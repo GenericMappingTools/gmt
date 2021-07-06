@@ -475,7 +475,7 @@ GMT_LOCAL int gmtparse_compare_B (const void *p1, const void *p2) {
 GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	bool do_sort = false;
 	char *c = NULL;
-	unsigned int np, k, j, this_priority;
+	unsigned int np, n_B = 0, k, j, this_priority;
 	struct GMT_OPTION *opt, *head = NULL;
 	struct B_PRIORITY *priority = NULL; /* Worst case is -Bpx, -Bsx, ... */
 
@@ -487,6 +487,7 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *
 	for (opt = options, k = 0; opt; opt = opt->next, k++) {
 		priority[k].opt = opt;
 		if (opt->option != 'B') continue;	/* Only look at -B options here */
+		n_B++;
 		if (gmtlib_B_is_frame (GMT, opt->arg)) {	/* Do a special check for -Bs which could be confused with secondary annotations */
 			if (opt->arg[0] == 's' && opt->arg[1] == '\0')	/* Place -Bs at the end */
 				this_priority = 3;
@@ -506,6 +507,7 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *
 		priority[k].level = this_priority;
 	}
 	for (k = 1; k < np; k++) if (priority[k].level < priority[k-1].level) do_sort = true;
+	if (n_B <= 1) do_sort = false;	/* No point sorting on -B if only one such option */
 	if (do_sort) mergesort (priority, np, sizeof (struct B_PRIORITY), gmtparse_compare_B);
 	/* Rebuild options links */
 	head = opt = GMT_Make_Option (GMT->parent, priority[0].opt->option, priority[0].opt->arg);
@@ -517,9 +519,9 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *
 
 	if (do_sort) {
 		char *cmd = GMT_Create_Cmd (GMT->parent, head);
-		fprintf (stderr, "new options: %s\n", cmd);
-		GMT_Destroy_Cmd (GMT->parent, &cmd);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT_Parse_Options: Interval-setting -B options were reordered to appear before axis and frame -B options to ensure proper parsing.\n");
+		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "GMT_Parse_Options: New option order: %s\n", cmd);
+		GMT_Destroy_Cmd (GMT->parent, &cmd);
 	}
 	return (head);
 }
