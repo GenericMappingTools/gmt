@@ -129,11 +129,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Usage (API, 1, "\n-G");
-	GMT_Usage (API, -2, "Name of output grid.");
-	GMT_Option (API, "I");
-	GMT_Usage (API, 1, "\n-C");
-	GMT_Usage (API, -2, "Specify the statistic of data we should report per bin.  Choose from:");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Usage (API, 1, "\n-C Specify the statistic of data we should report per bin.  Choose from:");
 	GMT_Usage (API, -3, "a: The mean (average)");
 	GMT_Usage (API, -3, "d: The median absolute deviation (MAD)");
 	GMT_Usage (API, -3, "g: The full data range (max-min)");
@@ -150,22 +148,19 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "u: The maximum (upper)");
 	GMT_Usage (API, -3, "U: The maximum of all negative values");
 	GMT_Usage (API, -3, "z: The sum");
+	GMT_Usage (API, 1, "\n-G Name of output grid.");
+	GMT_Option (API, "I");
 	GMT_Option (API, "R");
 	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Compute statistics using points inside this search radius.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Option (API, "<");
-	GMT_Usage (API, 1, "\n-E");
-	GMT_Usage (API, -2, "Value to use for empty bins [Default is NaN].");
-	GMT_Usage (API, 1, "\n-N");
-	GMT_Usage (API, -2, "Normalize the output by the area of the bins [no normalization].");
-	GMT_Usage (API, 1, "\n-T");
-	GMT_Usage (API, -2, "Use area-covering tiling to set up non-overlapping bins. Choose binning scheme:");
+	GMT_Usage (API, 1, "\n-E Value to use for empty bins [Default is NaN].");
+	GMT_Usage (API, 1, "\n-N Normalize the output by the area of the bins [no normalization].");
+	GMT_Usage (API, 1, "\n-T Use area-covering tiling to set up non-overlapping bins. Choose binning scheme:");
 	GMT_Usage (API, -3, "h hexagonal binning, write non-equidistant table to standard output (or file named in -G).");
 	GMT_Usage (API, -3, "r rectangular binning, writes equidistant grid (named via -G) [Default].");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W");
-	GMT_Usage (API, -2, "Input <table> has observation weights in 4th column. We then compute the weighted version of "
-			"selection in -C. Append +s to read standard deviations s instead and compute weight = 1/s.");
+	GMT_Usage (API, 1, "\n-W Input <table> has observation weights in 4th column. We then compute the weighted version "
+			"of selection in -C. Append +s to read standard deviations s instead and compute weight = 1/s.");
 	GMT_Option (API, "a,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.");
 	GMT_Option (API, "di,e,f,h,i");
