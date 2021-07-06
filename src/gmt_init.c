@@ -18587,6 +18587,18 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (S->size_x > 0.0 && S->size_y > 0.0 && S->symbol == PSL_RECT)
 			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		else if (S->symbol == 'q') {	/* Quoted line [Experimental] */
+			char scode[GMT_LEN64] = {""};
+			sprintf (scode, "qn1:+ltext");
+			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}
+		else if (S->symbol == '~') {	/* Decorated line [Experimental] */
+			char scode[GMT_LEN64] = {""};
+			sprintf (scode, "~n1:+s%s%s", S->D.symbol_code, S->D.size);
+			if (S->D.pen[0])  strcat (scode, "+p"), strcat (scode, S->D.pen);
+			if (S->D.fill[0]) strcat (scode, "+g"), strcat (scode, S->D.fill);
+			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}
 		else
 			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}

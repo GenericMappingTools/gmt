@@ -329,6 +329,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
 	 * Note: The x,y are projected coordinates in inches, hence our -R -J choice below. */
 	unsigned int type = 0, pos = 0;
+	bool l_active = GMT->common.l.active;
 	size_t len;
 	char string[GMT_VF_LEN] = {""}, buffer[GMT_BUFSIZ] = {""}, tmp_file[PATH_MAX] = {""}, kode[2] = {'K', 'k'};
 	char name[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, *symbol_code = G->symbol_code;
@@ -337,6 +338,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	if (D->n_records == 0)	/* No symbols to plot */
 		return GMT_NOERROR;
 
+	GMT->common.l.active = false;	/* Since this call to psxy is not meant to do -l anyway */
 	/* Here we have symbols.  Open up a virtual input file for the call to psxy */
 	if (GMT_Open_VirtualFile (GMT->parent, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, D, string) != GMT_NOERROR)
 		return (GMT->parent->error);
@@ -425,6 +427,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		if (!decorate_custom && gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file: %s\n", tmp_file);
 	}
+	GMT->common.l.active = l_active;	/* Reset in case it was set */
 
 	return GMT_NOERROR;
 }
@@ -2316,8 +2319,9 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				else	/* For specified line, width, color we can do an auto-legend entry under modern mode */
 					gmt_add_legend_item (API, &S, false, NULL, Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
 			}
-			else
-				GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for selected feature. Option -l ignored.\n");
+			else	/* Decorated or quoted lines */
+				gmt_add_legend_item (API, &S, Ctrl->G.active, &(Ctrl->G.fill), Ctrl->W.active, &(Ctrl->W.pen), &(GMT->common.l.item));
+				//GMT_Report (API, GMT_MSG_WARNING, "Cannot use auto-legend -l for selected feature. Option -l ignored.\n");
 		}
 
 		if (Ctrl->W.cpt_effect && Ctrl->W.pen.cptmode & 2) polygon = true;
