@@ -520,7 +520,7 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *
 	if (do_sort) {
 		char *cmd = GMT_Create_Cmd (GMT->parent, head);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT_Parse_Options: Interval-setting -B options were reordered to appear before axis and frame -B options to ensure proper parsing.\n");
-		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "GMT_Parse_Options: New option order: %s\n", cmd);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT_Parse_Options: New option order: %s\n", cmd);
 		GMT_Destroy_Cmd (GMT->parent, &cmd);
 	}
 	return (head);
