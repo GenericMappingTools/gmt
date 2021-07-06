@@ -225,7 +225,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "l: Plot \"The Generic Mapping Tools\" [Default].");
 	GMT_Usage (API, 3, "u: Plot the URL for the GMT homepage.");
 	GMT_Usage (API, 3, "n: Skip label entirely.");
-	GMT_Option (API, "U,V,X,c,f,t,.");
+	GMT_Option (API, "U,V,X,c,t,.");
 
 	return (GMT_MODULE_USAGE);
 }
