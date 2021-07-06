@@ -138,7 +138,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
+	GMT_Usage (API, 1, "\n<ingrid> is name of input grid file.");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Output file for results from -A or -D.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
