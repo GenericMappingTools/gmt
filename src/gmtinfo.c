@@ -141,7 +141,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-C Format the min and max into separate columns; -o may be used to limit output.");
 	GMT_Usage (API, 1, "\n-D Modifies results obtained by -I by shifting the region to better align with "
 		"the data center.  Optionally, append granularity for this shift [exact].");
-	GMT_Usage (API, 1, "\n-E Return the record with extreme value in specified column <col> [last column]. "
+	GMT_Usage (API, 1, "\n-EL|l|H|h[<col>] Return the record with extreme value in specified column <col> [last column]. "
 		"Specify l or h for min or max value, respectively. Upper case L or H "
 		"means we operate instead on the absolute values of the data.");
 	GMT_Usage (API, 1, "\n-F Return various counts of tables, segments, headers, and records, depending on mode:");
