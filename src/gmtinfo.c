@@ -148,7 +148,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "i: One record with the number of tables, segments, data records, headers, and overall records.");
 	GMT_Usage (API, 3, "d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.");
 	GMT_Usage (API, 3, "t: Tables:  Same as D but the counts resets per table.");
-	GMT_Usage (API, 1, "\n-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least two columns). "
+	GMT_Usage (API, 1, "\n-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>] Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least two columns). "
 		"Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples). "
 		"If -C is set then no -R string is issued.  Instead, the number of increments "
 		"given determines how many columns are rounded off to the nearest multiple. "
