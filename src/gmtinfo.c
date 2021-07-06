@@ -164,7 +164,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
 	GMT_Usage (API, 1, "\n-L Determine limiting region. With -I it rounds inward so bounds are within data range. "
 		"Use -A to find the limiting common bounds of all segments or tables.");
-	GMT_Usage (API, 1, "\n-S Add extra space for error bars. Useful together with -I.");
+	GMT_Usage (API, 1, "\n-S[x][y] Add extra space for error bars. Useful together with -I.");
 	GMT_Usage (API, 3, "-Sx: Leaves space for horizontal error bar using value in third (2) column.");
 	GMT_Usage (API, 3, "-Sy: Leaves space for vertical error bar using value in third (2) column.");
 	GMT_Usage (API, 3, "-S or -Sxy: Leaves space for both error bars using values in third&fourth (2&3) columns.");
