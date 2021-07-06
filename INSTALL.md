@@ -76,8 +76,16 @@ If you like, you can add the GMT programs contained in the application bundle to
 your search path for executables. For that, just run GMT-6.x.x.app once and follow
 the instructions at the end of the GMT splash screen.
 
-**Note**: The installers are always built for the latest macOS version only,
-and work for macOS Sierra (10.12) or higher; the arm64 version requires a computer with the M1 Apple Silicon chip.
+**Note**: The installers are always built for the latest macOS version only. The
+table below lists macOS compatibility requirements for the bundle. The arm64
+version requires a computer with the M1 Apple Silicon chip.
+
+| **GMT Version** | **Minimum MacOS** |
+|-------------|-------------|
+| 6.2         | macOS 11    |
+| 6.1         | macOS 10.12 |
+| 6.0         | macOS 10.12 |
+| 5.4         | macOS 10.12 |
 
 ### Install via Homebrew
 
@@ -121,8 +129,8 @@ Install [MacPorts](https://www.macports.org) and then the required ports in this
 Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
 enabled with the `+fftw3` and `+openmp` flags.
 
-GMT is installed in `/opt/local/lib/gmt6`. To use GMT in command line or scripts, 
-you need to add `/opt/local/lib/gmt6/bin` to your `PATH`. 
+GMT is installed in `/opt/local/lib/gmt6`. To use GMT in command line or scripts,
+you need to add `/opt/local/lib/gmt6/bin` to your `PATH`.
 
 You also need to install other GMT run-time dependencies separately:
 
