@@ -171,7 +171,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz. "
 		"Calculations are based on the first (0) column; append +c<col> to use another column.");
 	GMT_Option (API, "V,a");
-	if (gmt_M_showusage (API)) GMT_Usage (API, 1, "Reports the names and data types of the aspatial fields.\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Reports the names and data types of the aspatial fields.\n");
 	GMT_Option (API, "bi2,d,e,f,g,h,i,o,qi,r,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
