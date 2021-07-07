@@ -118,15 +118,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_GSHHG_syntax (API->GMT, 'A');
-	GMT_Usage (API, 1, "\n-D<resolution>[+f]");
-	GMT_Usage (API, -2, "Choose one of the following resolutions:");
-	GMT_Usage (API, -3, "a - Auto: select best resolution given selected region.");
-	GMT_Usage (API, -3, "f - Full resolution (may be very slow for large regions).");
-	GMT_Usage (API, -3, "h - High resolution (may be slow for large regions).");
-	GMT_Usage (API, -3, "i - Intermediate resolution.");
-	GMT_Usage (API, -3, "l - Low resolution [Default].");
-	GMT_Usage (API, -3, "c - Crude resolution, for tasks that need crude continent outlines only.");
-	GMT_Usage (API, -2, "Append +f to use a lower resolution should the chosen one not be available [abort].");
+	gmt_GSHHG_resolution_syntax (API->GMT, 'D', "Alternatively, choose (a)uto to automatically select the best "
+		"resolution given the chosen region.");
 	GMT_Usage (API, 1, "\n-E[<bordervalues>]");
 	GMT_Usage (API, -2, "Indicate that nodes exactly on a polygon boundary are outside [inside]. Optionally append "
 		"<border> or <cborder>/<lborder>/<iborder>/<pborder>. We will then trace lines through the grid and reset the "

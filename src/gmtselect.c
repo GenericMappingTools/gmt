@@ -199,14 +199,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"For a single point you can instead specify <lon>/<lat>+d[unit]. "
 		"Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Usage (API, 1, "\n-D<resolution>[+f]");
-	GMT_Usage (API, -2, "Choose one of the following resolutions (ignored unless -N is set):");
-	GMT_Usage (API, 3, "f: Full resolution (may be very slow for large regions).");
-	GMT_Usage (API, 3, "h: High resolution (may be slow for large regions).");
-	GMT_Usage (API, 3, "i: Intermediate resolution.");
-	GMT_Usage (API, 3, "l: Low resolution [Default].");
-	GMT_Usage (API, 3, "c: Crude resolution, for tasks that need crude continent outlines only.");
-	GMT_Usage (API, -2, "Append +f to use a lower resolution should the chosen one not be available [abort].");
+	gmt_GSHHG_resolution_syntax (API->GMT, 'D', "Ignored unless -N is set.");
 	GMT_Usage (API, 1, "\n-E[f][n]");
 	GMT_Usage (API, -2, "Indicate if points exactly on a polygon boundary are inside [Default] or outside. "
 		"Append f and/or n to modify the -F option or -N option, respectively, "
