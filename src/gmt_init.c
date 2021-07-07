@@ -7491,7 +7491,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
 
 			GMT_Usage (API, 1, "\n%s", GMT_do_OPT);
-			GMT_Usage (API, -2, "Replace any NaNs in output data with <nodata>.\n");
+			GMT_Usage (API, -2, "Replace any NaNs in output data with <nodata>.");
 			break;
 
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
