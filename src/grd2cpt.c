@@ -172,19 +172,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Instead, append +c to use the cumulative density function (cdf) to set color bounds. "
 		"Append +f<file> to save the CDF table to a file.");
 	GMT_Usage (API, 1, "\n-F[R|r|h|c][+c[<label>]]");
-	GMT_Usage (API, -2, "Select the color model for output (R for r/g/b or grayscale or colorname, "
-		"r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]. "
-		"Append +c[label>] to output a discrete CPT in categorical CPT format. "
-		"The <label>, if present, sets the labels for each category. It may be a "
-		"comma-separated list of category names, or <start>[-], where we automatically build "
-		"labels from <start> (a letter or an integer). Append - to build ranges <start>-<start+1>. "
-		"If number of categories is 12 and label is M then we auto-create month name labels, and "
-		"if it is 7 and label is D then we auto-create weekday name labels.");
+	GMT_Usage (API, -2, "Select the color model for output [Default uses the input model]:");
+	GMT_Usage (API, 3, "R: Output r/g/b or grayscale or colorname.");
+	GMT_Usage (API, 3, "r: Output r/g/b only.");
+	GMT_Usage (API, 3, "h: Output h-s-v.");
+	GMT_Usage (API, 3, "c: Output c/m/y/k.");
+	GMT_Usage (API, -2, "One modifier controls generation of categorical labels:");
+	GMT_Usage (API, 3, "+c Output a discrete CPT in categorical CPT format. "
+		"The <label>, if appended, sets the labels for each category. It may be a "
+		"comma-separated list of category names, or <start>[-] where we automatically build "
+		"labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.");
 	GMT_Usage (API, 1, "\n-G<zlo>/<zhi>");
 	GMT_Usage (API, -2, "Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>. "
 		"To accept one of the incoming limits, set that limit to NaN.");
-	if (API->GMT->current.setting.run_mode == GMT_MODERN)
-	GMT_Usage (API, 1, "\n-H Also write CPT to standard output [Default just saves as current CPT].");
+	GMT_Usage (API, 1, "\n-H Modern mode only: Also write CPT to stdout [Default just saves as current CPT].");
 	GMT_Usage (API, 1, "\n-I[c][z]");
 	GMT_Usage (API, -2, "Invert sense of CPT in one or two ways:");
 	GMT_Usage (API, 3, "c: Invert sense of color table as well as back- and foreground color [Default].");
