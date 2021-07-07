@@ -73,11 +73,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-
 	GMT_Usage (API, 1, "\n<files> One or more file names of any data type (grids, tables, etc.).");
-
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-
 	GMT_Usage (API, 1, "\n-A Only consider files you have permission to read [all files].");
 	GMT_Usage (API, 1, "\n-C Print Y if found and N if not found.  No path is returned.");
 	GMT_Usage (API, 1, "\n-D Print the directory where a file is found [full path to file].");
