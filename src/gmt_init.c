@@ -44,6 +44,7 @@
  *	gmtlib_setparameter		Sets a default value given keyword,value-pair\n
  *	gmtlib_getparameter
  *	gmt_GSHHG_syntax
+ *  gmt_GSHHG_resolution_syntax
  *	gmt_label_syntax
  *	gmt_cont_syntax
  *	gmt_inc_syntax
@@ -2503,7 +2504,7 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 		if (GMT->current.io.cycle_col < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Cannot give negative (or missing) column number (%s)\n", arg);
 			c[2] = '+';	/* Restore modifier before we return */
-			return (GMT_PARSE_ERROR);			
+			return (GMT_PARSE_ERROR);
 		}
 	}
 	else	/* Default column is the first (x) */
@@ -7075,7 +7076,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -2, "When the central meridian (lon0) is optional and omitted, the center of the "
 				"longitude range set by -R is used. The default standard parallel is the equator. "
 				"Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given. Available projections:");
-	
+
 			GMT_Usage (API, 2, "-Ja|A<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Lambert Azimuthal Equal Area). "
 				"<lon0>/<lat0> is the center of the projection, and "
 				"<horizon> is max distance from center of the projection (<= 180, default 90). "
@@ -7385,7 +7386,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -2, "Scaling for linear projection.  Scale in %s/units (or width in %s). "
 				"Use / to specify separate x/y scaling. If -JX is used then give axes lengths in %s rather than scales.",
 				GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit],
-				GMT->session.unit_name[GMT->current.setting.proj_length_unit]); 
+				GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
 #ifdef GMT_MP_ENABLED
@@ -7749,6 +7750,25 @@ void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
 		GMT_Usage (API, 3, "+l Only get lakes from level 2 [riverlakes and lakes].");
 		GMT_Usage (API, 3, "+p Exclude features whose size is < <percent>%% of the full-resolution feature [use all features].");
 		GMT_Usage (API, 3, "+r Only get riverlakes from level 2  [riverlakes and lakes]");
+}
+
+/*! GSHHG resolution specification */
+/*! .
+	\param GMT ...
+	\param option ...
+	\param string ...
+*/
+void gmt_GSHHG_resolution_syntax  (struct GMT_CTRL *GMT, char option, char *string) {
+	struct GMTAPI_CTRL *API = GMT->parent;
+	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
+	GMT_Usage (API, 1, "\n-%c<resolution>[+f]", option);
+	GMT_Usage (API, -2, "Choose one of the following resolutions:");
+	GMT_Usage (API, 3, "f: Full resolution (may be very slow for large regions).");
+	GMT_Usage (API, 3, "h: High resolution (may be slow for large regions).");
+	GMT_Usage (API, 3, "i: Intermediate resolution.");
+	GMT_Usage (API, 3, "l: Low resolution [Default].");
+	GMT_Usage (API, 3, "c: Crude resolution, for tasks that need crude continent outlines only.");
+	GMT_Usage (API, -2, "Append +f to use a lower resolution should the chosen one not be available [abort]. %s", string);
 }
 
 /*! Contour/line specifications in *contour and psxy[z] */
@@ -14318,7 +14338,7 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 			sprintf (newarg, "%s?", arg);
 		else {
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
-			return false;		
+			return false;
 		}
 	}
 	else if ((strchr ("pP", arg[0]) && !strncmp (&arg[1], "oly", 3U)) || strchr ("hHiIjJkKmMnNqQrRvVwWyYuU", arg[0])) {	/* These may or may not have a trailing slash */
@@ -14330,7 +14350,7 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 				sprintf (newarg, "%s?", arg);
 			else {
 				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
-				return false;		
+				return false;
 			}
 		}
 	}
