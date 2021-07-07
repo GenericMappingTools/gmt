@@ -119,9 +119,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile> [%s] "
-				"[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]] "
-				"[-Fl|a|c|n[+1|2]] [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
-				"[-Z[<levels>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]] "
+		"[-Fl|a|c|n[+1|2]] [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
+		"[-Z[<levels>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 			name,  GMT_GRDEDIT3D, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 			GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -130,19 +130,19 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 
 	GMT_Usage (API, 1, "\n<cube> is the name of the input 3D netCDF data cube. However, with -Z we instead expect a "
-			"series of 2-D grids.");
+		"series of 2-D grids.");
 	GMT_Usage (API, 1, "\n-G<outfile>");
 	GMT_Usage (API, -2, "Specify a single output file name (or a filename format template; also see -S) To write a "
-			"series of 2-D grids instead of a cube, include a floating-point C-format statement in <outfile> set via "
-			"-G for embedding the level in the file name.");
+		"series of 2-D grids instead of a cube, include a floating-point C-format statement in <outfile> set via "
+		"-G for embedding the level in the file name.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_cube_info_syntax (API->GMT, 'D');
 	GMT_Usage (API, 1, "\n-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]");
 	GMT_Usage (API, -2, "Set up a single cross-section based on <file> or on the given <line1>[,<line2>,...]. Give "
-			"start and stop coordinates for each line segment.  The format of each <line> is <start>/<stop>, where "
-			"<start> or <stop> are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>. Append +i<inc> to set the "
-			"sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)] Instead of <start/stop>, give <origin> "
-			"and append +a|o|l|n|r as required:");
+		"start and stop coordinates for each line segment.  The format of each <line> is <start>/<stop>, where "
+		"<start> or <stop> are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>. Append +i<inc> to set the "
+		"sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)] Instead of <start/stop>, give <origin> "
+		"and append +a|o|l|n|r as required:");
 	GMT_Usage (API, -3, "+a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.");
 	GMT_Usage (API, -3, "+g uses gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].");
 	GMT_Usage (API, -3, "+o<az> is like +a but centers profile on <origin>. Add +l<length>.");
@@ -151,7 +151,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "+n<np> sets the number of output points and computes <inc> from <length>.");
 	GMT_Usage (API, -3, "+x follows a loxodrome (rhumbline) [great circle].");
 	GMT_Usage (API, -2, "Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option, so "
-			"mixing of units is not allowed [Default unit is km, if grid is geographic].");
+		"mixing of units is not allowed [Default unit is km, if grid is geographic].");
 	GMT_Usage (API, 1, "\n-Fl|a|c|n][+1|2]");
 	GMT_Usage (API, -2, "Set the grid interpolation mode.  Choose from:");
 	GMT_Usage (API, -3, "l: Linear interpolation.");
@@ -159,17 +159,17 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "c: Cubic spline interpolation.");
 	GMT_Usage (API, -3, "n: No interpolation (nearest point).");
 	GMT_Usage (API, -2, "Optionally, append +1 for 1st derivative or +2 for 2nd derivative. [Default is -F%c].",
-			type[API->GMT->current.setting.interpolant]);
+		type[API->GMT->current.setting.interpolant]);
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<x>/<y>|<table>[+h<header>]");
 	GMT_Usage (API, -2, "Give a fixed point for across-stack sampling [Default] or interpolation [with -T]. For "
-			"multiple points, give a <table> of points instead (one point per record). Output is a multi-segment table "
-			"written to stdout unless -G is used to set a file name. To write each series to separate files, let "
-			"-G<outfile> contain a C-format integer specifier (e.g, %%d) for embedding the running point number. "
-			"Append a fixed header via +h<header> [trailing text per record in <table>].");
+		"multiple points, give a <table> of points instead (one point per record). Output is a multi-segment table "
+		"written to stdout unless -G is used to set a file name. To write each series to separate files, let "
+		"-G<outfile> contain a C-format integer specifier (e.g, %%d) for embedding the running point number. "
+		"Append a fixed header via +h<header> [trailing text per record in <table>].");
 	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n]");
 	GMT_Usage (API, -2, "Interpolate the 3-D grid at given levels across the 3rd dimension. Make evenly spaced output "
-			"level steps from <min> to <max> by <inc>.");
+		"level steps from <min> to <max> by <inc>.");
 	GMT_Usage (API, -3, "Append +n to indicate <inc> is the number of levels to produce over the range instead.");
 	GMT_Usage (API, -3, "Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
 	GMT_Usage (API, -3, "Alternatively, give a file with output levels in the first column, or a comma-separated list.");
@@ -177,8 +177,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-Z[<levels>]");
 	GMT_Usage (API, -2, "Read or write 2-D grids that make up a virtual 3-D data cube. To read a series of 2-D grids, "
-			"give -Z<levels>, where <levels> for each grid is set via <min>/<max>/<inc>, <zfile>, or a comma-separated "
-			"list. No argument means let levels be 0, 1, 2, ...");
+		"give -Z<levels>, where <levels> for each grid is set via <min>/<max>/<inc>, <zfile>, or a comma-separated "
+		"list. No argument means let levels be 0, 1, 2, ...");
 	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,n,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
