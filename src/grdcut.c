@@ -146,7 +146,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	bool F_or_R;
+	bool F_or_R_or_J;
 	unsigned int n_errors = 0, k, n_files = 0;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -255,8 +255,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && Ctrl->F.crop, "Option -F: Modifier +c cannot be used with -R\n");
-	F_or_R = GMT->common.R.active[RSET] | Ctrl->F.active;
-	n_errors += gmt_M_check_condition (GMT, (F_or_R + Ctrl->S.active + Ctrl->Z.active) != 1,
+	F_or_R_or_J = GMT->common.R.active[RSET] | Ctrl->F.active | GMT->common.J.active;
+	n_errors += gmt_M_check_condition (GMT, (F_or_R_or_J + Ctrl->S.active + Ctrl->Z.active) != 1,
 	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
@@ -300,9 +300,13 @@ GMT_LOCAL unsigned int grdcut_count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID 
 	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
 }
 
-GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], double inc[]) {
-	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Default is to take the -R as given */
-	if (GMT->common.R.oblique == false || GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
+GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *h) {
+	/* Se;ect a subset either via -R or combination or -R -J typically for non-rectangular projections */
+	double *inc = h->inc;
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double); /* Default is to take the -R if given */
+	if (GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
+	if (!GMT->common.R.active[RSET])	/* Need a -R with -J if no -R given */
+		gmt_M_memcpy (wesn, h->wesn, 4, double);
 
 	/* Here we got an oblique area and a projection; find the corresponding rectangular -R that covers this oblique area */
 
@@ -656,7 +660,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
-		if (grdcut_set_rectangular_subregion (GMT, wesn_new, G->header->inc)) {
+		if (grdcut_set_rectangular_subregion (GMT, wesn_new, G->header)) {
 			Return (API->error);	/* Get header only */
 		}
 	}
