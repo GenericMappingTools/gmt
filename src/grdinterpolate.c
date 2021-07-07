@@ -167,18 +167,20 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"written to stdout unless -G is used to set a file name. To write each series to separate files, let "
 		"-G<outfile> contain a C-format integer specifier (e.g, %%d) for embedding the running point number. "
 		"Append a fixed header via +h<header> [trailing text per record in <table>].");
-	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n]");
-	GMT_Usage (API, -2, "Interpolate the 3-D grid at given levels across the 3rd dimension. Make evenly spaced output "
-		"level steps from <min> to <max> by <inc>.");
-	GMT_Usage (API, -3, "Append +n to indicate <inc> is the number of levels to produce over the range instead.");
-	GMT_Usage (API, -3, "Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
-	GMT_Usage (API, -3, "Alternatively, give a file with output levels in the first column, or a comma-separated list.");
-	GMT_Usage (API, -2, "Note: If -Z and no -T, -E, -S then we simply write the stack as a 3-D data cube.");
+	GMT_Usage (API, 1, "\n-T[<file>|<list>|<min>/<max>/<inc>[+b|i|l|n]]");
+		GMT_Usage (API, -2, "Interpolate the 3-D grid at given levels across the 3rd dimension. Make evenly spaced output "
+		"level steps from <min> to <max> by <inc>. Control setup via modifiers:");
+	GMT_Usage (API, 3, "+b Select log2 spacing in <inc>");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, 3, "+l Select log10 spacing via <inc> = 1,2,3.");
+	GMT_Usage (API, 3, "+n Let <inc> mean the number of points instead. of increment");
+	GMT_Usage (API, -2, "Alternatively, give a <file> with output times in the first column, or a comma-separated <list>.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-Z[<levels>]");
 	GMT_Usage (API, -2, "Read or write 2-D grids that make up a virtual 3-D data cube. To read a series of 2-D grids, "
 		"give -Z<levels>, where <levels> for each grid is set via <min>/<max>/<inc>, <zfile>, or a comma-separated "
 		"list. No argument means let levels be 0, 1, 2, ...");
+	GMT_Usage (API, -2, "Note: If -Z and no -T, -E, -S then we simply write the stack as a 3-D data cube.");
 	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,n,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
