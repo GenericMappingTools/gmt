@@ -131,7 +131,12 @@ Optional Arguments
     category names (you can skip a category by not giving a name), or give
     *start*[-], where we automatically build monotonically increasing labels
     from *start* (a single letter or an integer). Append - to build ranges
-    *start*-*start+1* instead.
+    *start*-*start+1* instead.  **Note**: If **+cM** is given and the number
+    of categories is 12, then we automatically create a list of month names.
+    Likewise, if **+cD** is given and the number of categories is 7 then we
+    make a list of weekday names.  The format of these labels will depend on the
+    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
+    :term:`TIME_WEEK_START` settings.
 
 .. _-G:
 
@@ -163,7 +168,8 @@ Optional Arguments
 
 **-L**\ *minlimit/maxlimit*
     Limit range of CPT to *minlimit/maxlimit*, and don't count data
-    outside this range when estimating CDF(Z). [Default uses min and max of data.]
+    outside this range when estimating CDF(Z). To set only one limit,
+    specify the other limit as "-" [Default uses min and max of data.]
 
 .. _-M:
 

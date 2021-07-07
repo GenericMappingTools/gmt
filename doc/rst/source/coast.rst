@@ -80,6 +80,11 @@ in your analysis, try::
 
     gmt coast -RIS -Dh -W -M > iceland.txt
 
+To lay down a clip path around France that will clip your later plotting
+until you end the clipping with clip -C, try::
+
+    gmt coast -R-10/10/40/52 -JM15c -E+c
+
 **coast** will first look for coastline files in directory
 **$GMT_SHAREDIR**/coast If the desired file is not found, it will look
 for the file **$GMT_SHAREDIR**/coastline.conf. This file may contain

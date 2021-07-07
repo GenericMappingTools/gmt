@@ -15,7 +15,7 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
+|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
@@ -25,7 +25,7 @@ Synopsis
 [ |-I|\ *includefile* ]
 [ |-K|\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
 [ |-L|\ *labelinfo* ]
-[ |-M|\ [*frame*],[*format*] ]
+[ |-M|\ [*frame*],[*format*][**+r**\ *dpu*] ]
 [ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
 [ |-Sb|\ *background* ]
@@ -33,6 +33,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [*workdir*] ]
 [ |-Z|\ [**s**] ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -91,16 +92,16 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
+**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
     Either specify how many image frames to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
     string into individual words that can be accessed via variables **MOVIE_WORD0**, **MOVIE_WORD1**,
-    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
-    as the valid separator(s).  The number of records equals
-    the number of frames. Note that the *background* script is allowed to create *timefile*,
+    etc. By default we look for either tabs or spaces to separate words.  Append *str* to select other character(s)
+    as the valid separator(s) instead. To just use TAB as the only valid separator use **+W** instead.
+    The number of records equals the number of frames. Note that the *background* script is allowed to create *timefile*,
     hence we check for its existence both before *and* after the background script has completed.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
     number via **+s**\ *first*.  **Note**: All frames are still included; this modifier only affects
@@ -218,11 +219,12 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*]
+**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*]
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can one of the
     graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].  Instead of a frame number
-    we also recognize the codes **f**\ irst, **m**\ iddle, and **l**\ ast frame.
+    we also recognize the codes **f**\ irst, **m**\ iddle, and **l**\ ast frame. **Note**: For raster frame formats
+    you may optionally specify the *dpu* of that frame via the **+r** modifier [same dpu as the movie frames].
 
 .. _-P:
 
@@ -284,6 +286,9 @@ Optional Arguments
     the temporary script files, parameter files, and layer *PostScript* files are all removed (but see **-Q**)].
     If your *mainscript* and all input scripts via **-E**, **-I**, and **-S** should be deleted as well then
     append **s**.
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
 
 .. _-cores:
 

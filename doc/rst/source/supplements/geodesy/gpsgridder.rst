@@ -14,13 +14,13 @@ Synopsis
 
 **gmt gpsgridder** [ *table* ]
 |-G|\ *outfile*
-[ |SYN_OPT-I| ]
-[ |SYN_OPT-R| ]
 [ |-C|\ [**n**]\ *value*\ [**+f**\ *file*] ]
 [ |-E|\ [*misfitfile*] ]
 [ |-F|\ [**d**\|\ **f**]\ *fudge* ]
+[ |SYN_OPT-I| ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
+[ |SYN_OPT-R| ]
 [ |-S|\ *nu* ]
 [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]

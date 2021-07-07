@@ -116,7 +116,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   The remaining arguments are optional:\n");
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LEGEND, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\t   +l sets the line <spacing> factor in units of the current annotation font size [1.1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Option (API, "B-");
@@ -428,9 +428,10 @@ GMT_LOCAL bool pslegend_new_fontsyntax (struct GMT_CTRL *GMT, char *word1, char 
 #define SYM 	0
 #define FRONT	1
 #define QLINE	2
-#define TXT	3
-#define PAR	4
-#define N_DAT	5
+#define DLINE	3
+#define TXT	4
+#define PAR	5
+#define N_DAT	6
 
 #define INFO_HIDDEN	0
 #define INFO_GIVEN	1
@@ -442,7 +443,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0, max_cols = 0;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false, use[2] = {false, true};
 	bool drawn = false, b_cpt = false, C_is_active = false, do_width = false, in_PS_ok = true, got_line = false;
-	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0, n_symbols = 0, n_par_lines = 0, n_par_total = 0, krow[N_DAT], n_records = 0;
+	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0, n_decorated_lines = 0, n_symbols = 0, n_par_lines = 0, n_par_total = 0, krow[N_DAT], n_records = 0;
 	int64_t n_para = -1;
 	size_t n_char = 0;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, txt_d[GMT_LEN256] = {""};
@@ -681,7 +682,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							/* Default assumes label is added on top */
 							just = 't';
 							gave_label = true;
-							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
+							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset[GMT_Y]);
 							if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 								just = string[0];
 							else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate alignment */
@@ -886,11 +887,11 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		PSL_comment (PSL, "Determine largest possible width\n");
 		PSL_command (PSL, "/PSL_tmp_w PSL_tmp_w PSL_legend_label_width add def\n");
 		PSL_command (PSL, "/PSL_legend_box_width PSL_tmp_w PSL_legend_string_width gt { PSL_tmp_w } { PSL_legend_string_width} ifelse PSL_legend_clear_x add def\n");
-		gmt_M_free (GMT, legend_item);
 	}
 	else {	/* Hardwired width */
 		PSL_defunits (PSL, "PSL_legend_box_width", Ctrl->D.dim[GMT_X]);
 	}
+	if (legend_item) gmt_M_free (GMT, legend_item);
 	PSL_defunits (PSL, "PSL_legend_box_height", Ctrl->D.dim[GMT_Y]);
 
 	gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
@@ -1270,7 +1271,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							just = 't';
 							gave_label = true;
 							row_height = GMT->current.setting.map_scale_height + FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH + GMT->current.setting.map_annot_offset[GMT_PRIMARY];
-							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset);
+							d_off = FONT_HEIGHT_LABEL * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH + fabs(GMT->current.setting.map_label_offset[GMT_Y]);
 							if ((txt_d[0] == 'f' || txt_d[0] == 'p') && gmt_get_modifier (txt_c, 'j', string))	/* Specified alternate justification old-style */
 								just = string[0];
 							else if (gmt_get_modifier (txt_c, 'a', string))	/* Specified alternate alignment */
@@ -1430,7 +1431,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								off_tt = gmt_M_to_inch (GMT, txt_b);
 							d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */
 							row_base_y += half_line_spacing;	/* Move to center of box */
-							if (symbol[0] == '-' && !strcmp (size, "-")) sprintf (size, "%gi", def_size);	/* If no size given then we must pick what we learned above */
+							if (strchr ("-~q", symbol[0]) && !strcmp (size, "-")) sprintf (size, "%gi", def_size);	/* If no size given then we must pick what we learned above */
 							if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
 								double length, tlen, gap;
 								int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
@@ -1474,7 +1475,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 									return (API->error);
 								}
 							}
-							else if (symbol[0] == 'q' || symbol[0] == '~') {	/* Quoted and decorated line is different, must plot as a line segment */
+							else if (symbol[0] == 'q') {	/* Quoted line is different, must plot as a line segment */
 								double length = Ctrl->S.scale * gmt_M_to_inch (GMT, size);	/* The length of the line */;
 
 								if ((D[QLINE] = pslegend_get_dataset_pointer (API, D[QLINE], GMT_IS_LINE, 64U, 2U, 2U, false)) == NULL) return (API->error);
@@ -1492,7 +1493,29 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								D[QLINE]->n_records += 2;
 								n_quoted_lines++;
 								if (n_quoted_lines == GMT_SMALL_CHUNK) {
-									GMT_Report (API, GMT_MSG_ERROR, "Can handle max %d quoted/decorated lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
+									GMT_Report (API, GMT_MSG_ERROR, "Can handle max %d quoted lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
+									return (API->error);
+								}
+							}
+							else if (symbol[0] == '~') {	/* Decorated line is different, must plot as a line segment */
+								double length = Ctrl->S.scale * gmt_M_to_inch (GMT, size);	/* The length of the line */;
+
+								if ((D[DLINE] = pslegend_get_dataset_pointer (API, D[DLINE], GMT_IS_LINE, 64U, 2U, 2U, false)) == NULL) return (API->error);
+								x = 0.5 * length;
+								/* Place pen and fill colors in segment header */
+								sprintf (buffer, "-S%s", symbol);
+								if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
+								S[DLINE] = pslegend_get_segment (D, DLINE, n_decorated_lines);	/* Next decorated line segment */
+								S[DLINE]->header = strdup (buffer);
+								GMT_Report (API, GMT_MSG_DEBUG, "DLINE: %s\n", buffer);
+								/* Set begin and end coordinates of the line segment */
+								S[DLINE]->data[GMT_X][0] = x_off + off_ss-x;	S[DLINE]->data[GMT_Y][0] = row_base_y;
+								S[DLINE]->data[GMT_X][1] = x_off + off_ss+x;	S[DLINE]->data[GMT_Y][1] = row_base_y;
+								S[DLINE]->n_rows = 2;
+								D[DLINE]->n_records += 2;
+								n_decorated_lines++;
+								if (n_decorated_lines == GMT_SMALL_CHUNK) {
+									GMT_Report (API, GMT_MSG_ERROR, "Can handle max %d decorated lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
 									return (API->error);
 								}
 							}
@@ -1812,7 +1835,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -Sqn1 %s --GMT_HISTORY=readonly", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
 		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: QLINE: gmt %s %s\n", plot_points[ID], buffer);
-		if (GMT_Call_Module (API, plot_points[ID], GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the fronts */
+		if (GMT_Call_Module (API, plot_points[ID], GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the quoted lines */
 			Return (API->error);
 		}
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
@@ -1826,6 +1849,29 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		}
 #endif
 		D[QLINE]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
+	}
+	if (D[DLINE]) {
+		/* Create option list, register D[DLINE] as input source */
+		D[DLINE]->table[0]->n_segments = n_decorated_lines;	/* Set correct number of lines */
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D[DLINE], string) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		sprintf (buffer, "-R0/%g/0/%g -Jx1i -O -K -N -S~n1:+sc0.1 %s --GMT_HISTORY=readonly", GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI], string);
+		GMT_Report (API, GMT_MSG_DEBUG, "RUNNING: DLINE: gmt %s %s\n", plot_points[ID], buffer);
+		if (GMT_Call_Module (API, plot_points[ID], GMT_MODULE_CMD, buffer) != GMT_NOERROR) {	/* Plot the decorated lines */
+			Return (API->error);
+		}
+		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
+			Return (API->error);
+		}
+#ifdef DEBUG
+		if (Ctrl->DBG.active) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_dline.txt", D[DLINE]) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+#endif
+		D[DLINE]->table[0]->n_segments = GMT_SMALL_CHUNK;	/* Reset to allocation limit */
 	}
 	if (D[SYM]) {
 		D[SYM]->table[0]->n_segments = n_symbols;	/* Set correct number of segments */

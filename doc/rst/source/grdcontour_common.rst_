@@ -126,8 +126,8 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*cut*][**+z**]
-    Do not draw contours with less than *cut* number of points [Draw all contours].
+**-Q**\ [*n*][**+z**]
+    Do not draw contours with less than *n* number of points [Draw all contours].
     Alternatively, give instead a minimum contour length in distance units
     (see `Units`_ for available units and how distances are computed),
     including **c** (Cartesian distances using user coordinates) or **C** for plot
@@ -197,7 +197,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ [**+s**\ *factor*][**+o**\ *shift*][**+p**]
+**-Z**\ [**+o**\ *shift*][**+p**][**+s**\ *factor*]
     Use to subtract *shift* from the data and multiply the results by
     *factor* before contouring starts [1/0]. (Numbers in **-A**, **-C**,
     **-L** refer to values after this scaling has occurred.) Append

@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt dimfilter** *ingrid*
-|-D|\ *distance_flag*
+|-D|\ *0-4*
 |-F|\ **x**\ *width*\ [*modifier*]
 |-G|\ *outgrid*
 |-N|\ **x**\ *sectors*\ [*modifier*]
@@ -56,10 +56,10 @@ Required Arguments
 
 .. _-D:
 
-**-D**\ *distance\_flag*
-    Distance *flag* tells how grid (x,y) relates to filter *width*, as follows:
+**-D**\ *0-4*
+    Distance *flag* determines how grid (x,y) relates to filter *width*, as follows:
 
-    *flag* = 0: grid (x,y) same units as *width*, Cartesian distances.
+    *flag* = 0: grid (x,y) in same units as *width*, Cartesian distances.
     *flag* = 1: grid (x,y) in degrees, *width* in kilometers, Cartesian distances.
     *flag* = 2: grid (x,y) in degrees, *width* in km, dx scaled by
     cos(middle y), Cartesian distances.
@@ -76,7 +76,7 @@ Required Arguments
 
 .. _-F:
 
-**-F**\ **x**\ *width*\ [*modifier*]
+**-F**\ **x**\ *width*\ [**+l**\|\ **u**]
     Sets the primary filter type. Choose among convolution and
     non-convolution filters. Append the filter code **x** followed by the full
     diameter *width*. Available convolution filters are:
@@ -98,7 +98,7 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ **x**\ *sectors*\ [*modifier*]
+**-N**\ **x**\ *sectors*\ [**+l**\|\ **u**]
     Sets the secondary filter type **x** and the number of bow-tie sectors.
     *sectors* must be integer and larger than 0. When *sectors* is
     set to 1, the secondary filter is not effective. Available secondary

@@ -170,7 +170,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Option (API, "J-,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotate legs when they enter the grid. Append c for cruise ID [Default is file prefix];\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   <size> is optional text size in points [9].  The font used is controlled by FONT_LABEL.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +i<inc> to place label every <inc> units apart, where unit may be\n");

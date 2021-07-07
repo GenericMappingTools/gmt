@@ -103,39 +103,45 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A] [-C] [%s]\n", name, GMT_GRDEDIT2D);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|e|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] [-N<table>] [%s] [-S] [-T]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid> [-A] [-C] [%s] [-E[a|e|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] "
+		"[-N<table>] [%s] [-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_GRDEDIT2D,
+		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is file to be modified.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Remove the command history from the header.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grid> is file to be modified.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Adjust dx/dy to be compatible with the file domain (or new -R).");
+	GMT_Usage (API, 1, "\n-C Remove the command history from the header.");
 	gmt_grd_info_syntax (API->GMT, 'D');
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose or rotate the entire grid (this may exchange x and y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  a Rotate grid around 180 degrees.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  e Exchange x(lon) and y(lat).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  h Flip grid left-to-right (as grdmath FLIPLR).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  l Rotate grid 90 degrees left (counter-clockwise).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  r Rotate grid 90 degrees right (clockwise).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  t Transpose grid [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  v Flip grid top-to-bottom (as grdmath FLIPUD).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify new output grid file [Default updates given grid file].\n");
+	GMT_Usage (API, 1, "\n-E[a|e|h|l|r|t|v]");
+	GMT_Usage (API, -2, "Transform the entire grid (this may exchange x and y). Append operation:");
+	GMT_Usage (API, 3, "a: Flip grid horizontally and vertically (h + v).");
+	GMT_Usage (API, 3, "e: Exchange x(lon) and y(lat).");
+	GMT_Usage (API, 3, "h: Flip grid left-to-right (as grdmath FLIPLR).");
+	GMT_Usage (API, 3, "l: Rotate grid 90 degrees left (counter-clockwise).");
+	GMT_Usage (API, 3, "r: Rotate grid 90 degrees right (clockwise).");
+	GMT_Usage (API, 3, "t: Transpose grid [Default].");
+	GMT_Usage (API, 3, "v: Flip grid top-to-bottom (as grdmath FLIPUD).");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Specify new output grid file [Default updates given grid file].");
 	GMT_Option (API, "J");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Shift the grid\'s longitude range (geographic grids only):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -L+n Adjust <west>/<east> so <east> <= 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -L+p Adjust <west>/<east> so <west> >= 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default adjusts <west>/<east> so <west> >= -180 or <east> <= +180\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
+	GMT_Usage (API, 1, "\n-L[+n|p]");
+	GMT_Usage (API, -2, "Shift the grid\'s longitude range (geographic grids only):");
+	GMT_Usage (API, 3, "+n Adjust <west>/<east> so <east> <= 0.");
+	GMT_Usage (API, 3, "+p Adjust <west>/<east> so <west> >= 0.");
+	GMT_Usage (API, -2, "Default adjusts <west>/<east> so <west> >= -180 or <east> <= +180.");
+	GMT_Usage (API, 1, "\n-N<table>");
+	GMT_Usage (API, -2, "Give <table> with new xyz values to replace the corresponding, existing grid nodes.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S For global grids of 360 degree longitude range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Will rotate entire grid to coincide with new borders in -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle header from grid-line to pixel-registered grid or vice versa.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and expands  -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   No grid values will be changed (a non-destructive change to the grid).\n");
+	GMT_Usage (API, 1, "\n-S For global grids of 360 degree longitude range: "
+		"Will rotate entire grid in longitude to coincide with new borders in -R.");
+	GMT_Usage (API, 1, "\n-T Toggle header from grid-line to pixel-registered grid or vice versa. "
+		"Note: This shrinks the grid region by 0.5*{dx,dy} going from pixel to grid-line registration "
+		"and expands it by 0.5*{dx,dy} going from grid-line to pixel registration. "
+		"No grid values will be changed (it is a non-destructive change to the grid).");
 	GMT_Option (API, "V,bi3,di,e,f,h,i,w,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -444,7 +450,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 
 		switch (Ctrl->E.mode) {
 			case 'a': /* Rotate grid around 180 degrees */
-				GMT_Report (API, GMT_MSG_INFORMATION, "Rotate grid around 180 degrees\n");
+				GMT_Report (API, GMT_MSG_INFORMATION, "Flip grid horizontally and vertically\n");
 				break;
 			case 'e': /* Exchange lon and lat */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Exchange x|longitude and y|latitude\n");

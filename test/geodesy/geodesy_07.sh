@@ -38,6 +38,7 @@ gmt begin -C geodesy_07 ps
 		gmt velo GPS_test.txt -A10p+e+a40+n6k+h0.5+p -Se0.50/0+f0 -C -W1.5p+c -c
 		gmt velo GPS_test.txt -A10p+e+a40+n6k+h0.5+p -Se0.50/0.95+f0 -D10 -C -W1.5p+c -c
 		gmt velo GPS_test.txt -A10p+e+a40+n6k+h0.5+p -Se0.50/0.95+f0 -D10 -C -W1.5p+c -L0.25p -Elightgray -c
+		# Plot vectors a 2nd time so they all overlay all the ellipses
 		gmt velo GPS_test.txt -A10p+e+a40+n6k+h0.5+p -Se0.50/0.0+f0 -D10 -C -W1.5p+c
 		gmt velo GPS_test.txt -A10p+e+a40+n6k+h0.5+p -Se0.50/0.95+f0 -D10 -C -W1.5p+c -L0.25p+c -c -Zn
 	gmt subplot end

@@ -261,7 +261,7 @@ static inline struct MEMORY_ITEM *gmtmemory_treedelete (struct MEMORY_ITEM *t, v
 }
 
 static inline void gmtmemory_treedestroy (struct MEMORY_ITEM **t) {
-	/* Remves all items from the tree rooted at t. */
+	/* Removes all items from the tree rooted at t. */
 	struct MEMORY_ITEM *x = *t;
 	if (x != NULL) {
 		gmtmemory_treedestroy (&x->l);

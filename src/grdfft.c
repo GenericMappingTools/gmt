@@ -569,47 +569,55 @@ GMT_LOCAL bool grdfft_parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_inf
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [<ingrid2>] [-G<outgrid>|<table>] [-A<azimuth>] [-C<zlevel>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D[<scale>|g]] [-E[r|x|y][+w[k]][+n]] [-F[r|x|y]<parameters>] [-I[<scale>|g]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-Q] [-S<scale>]\n", GMT_FFT_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-fg] [%s] [%s]\n\n", GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> [<ingrid2>] [-A<azimuth>] [-C<zlevel>] [-D[<scale>|g]] "
+		"[-E[r|x|y][+w[k]][+n]] [-F[r|x|y]<parameters>] [-G<outgrid>|<table>] [-I[<scale>|g]] [-N%s] [-Q] "
+		"[-S<scale>|d] [%s] [-fg] [%s] [%s]\n", name, GMT_FFT_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Take azimuthal derivative along line <azimuth> degrees CW from North.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Continue field upward (+) or downward (-) to <zlevel> (meters).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Differentiate, i.e., multiply by kr [ * scale].  Use -Dg to get mGal from m].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Estimate spEctrum in the radial r [Default], x, or y-direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Given one grid X, write f, Xpower[f] to output file (see -G) or stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Given two grids X and Y, write f, Xpower[f], Ypower[f], coherent power[f],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   noise power[f], phase[f], admittance[f], gain[f], coherency[f].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Each quantity is followed by a column of 1 std dev. error estimates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give +w to write wavelength instead of frequency; append k to report\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   wavelength in km (geographic grids only) [m].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to yield mean power instead of total power per frequency.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter r [x] [y] freq according to one of three kinds of filter specifications:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a) Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      frequencies outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F-/-/500/100 is a low-pass filter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   b) Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Replace wavelength by - to skip, e.g., -F300/- is a high-pass Gaussian filter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c) Butterworth band-pass: Append two cut-off wavelengths and order, i.e., <lo>/<hi>/<order>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      where filter amplitudes are 0.707.  Replace wavelength by - to skip, e.g.,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      try -F300/-/2 for a high-pass 2nd-order Butterworth filter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output netCDF grid file OR 1-D data table (see -E).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optional for -E (spectrum written to stdout); required otherwise.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Integrate, i.e., divide by kr [ * scale].  Use -Ig to get m from mGal].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<azimuth>");
+	GMT_Usage (API, -2, "Take azimuthal derivative along line <azimuth> degrees CW from North.");
+	GMT_Usage (API, 1, "\n-C<zlevel>");
+	GMT_Usage (API, -2, "Continue field upward (+) or downward (-) to <zlevel> (meters). ");
+	GMT_Usage (API, 1, "\n-D[<scale>|g]");
+	GMT_Usage (API, -2, "Differentiate, i.e., multiply by kr [ and optionally by <scale>].  Use -Dg to get mGal from m].");
+	GMT_Usage (API, 1, "\n-E[r|x|y][+w[k]][+n]");
+	GMT_Usage (API, -2, "Estimate spEctrum in the radial r [Default], x, or y-direction. "
+		"Given one grid X, write f, Xpower[f] to output file (see -G) or standard output. "
+		"Given two grids X and Y, write f, Xpower[f], Ypower[f], coherent power[f], "
+		"noise power[f], phase[f], admittance[f], gain[f], coherency[f]. "
+		"Each quantity is followed by a column of 1 std dev. error estimates.");
+	GMT_Usage (API, 3, "+w Write wavelength instead of frequency; append k to report "
+		"wavelength in km (geographic grids only) [m].");
+	GMT_Usage (API, 3, "+n Yield mean power instead of total power per frequency.");
+	GMT_Usage (API, 1, "\n-F[r|x|y]<parameters>");
+	GMT_Usage (API, -2, "Filter r [x] [y] frequencies according to one of three kinds of filter specifications:");
+	GMT_Usage (API, 3, "%s Cosine band-pass: Append four wavelengths <lc>/<lp>/<hp>/<hc>. "
+		"frequencies outside <lc>/<hc> are cut; inside <lp>/<hp> are passed, rest are tapered. "
+		"Replace wavelength by - to skip, e.g., -F-/-/500/100 is a low-pass filter.\n", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Gaussian band-pass: Append two wavelengths <lo>/<hi> where filter amplitudes = 0.5. "
+		"Replace wavelength by - to skip, e.g., -F300/- is a high-pass Gaussian filter.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Butterworth band-pass: Append two cut-off wavelengths and order, i.e., <lo>/<hi>/<order> "
+		"where filter amplitudes are 0.707.  Replace wavelength by - to skip, e.g., "
+		"try -F300/-/2 for a high-pass 2nd-order Butterworth filter.", GMT_LINE_BULLET);
+	GMT_Usage (API, 1, "\n-G<outgrid>|<table>");
+	GMT_Usage (API, -2, "Filename for output grid file OR 1-D data table (see -E). "
+		"Note: Optional for -E (spectrum written to standard output); required otherwise.");
+	GMT_Usage (API, 1, "\n-I[<scale>|g]");
+	GMT_Usage (API, -2, "Integrate, i.e., divide by kr [ and optionally by scale].  Use -Ig to get m from mGal].");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Perform no operations, just do forward FFF and write output if selected in -N.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S multiply field by scale after inverse FFT [1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Sd to convert deflection of vertical to micro-radians.\n");
+	GMT_Usage (API, 1, "\n-Q Perform no operations, just do forward FFF and write output if selected in -N.");
+	GMT_Usage (API, 1, "\n-S<scale>|d");
+	GMT_Usage (API, -2, "Multiply field by <scale> after inverse FFT [1.0]. "
+		"Alternatively, append d to convert deflection of vertical to micro-radians.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-ho Write header record for spectral estimates (requires -E) [no header].\n");
+	GMT_Usage (API, 1, "\n-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.");
+	GMT_Usage (API, 1, "\n-ho Write header record for spectral estimates (requires -E) [no header].");
 	GMT_Option (API, ".");
-	GMT_Message (API, GMT_TIME_NONE, "\tList operations in the order desired for execution.\n");
+	GMT_Usage (API, 1, "\nNote: List operations in the order desired for execution.");
 
 	return (GMT_MODULE_USAGE);
 }

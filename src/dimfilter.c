@@ -260,47 +260,58 @@ static char *dimtemplate =
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -D<distance_flag> -F<type><filter_width>[<modifier>] -G<outgrid> -N<type><n_sectors>[<modifier>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-L] [-Q] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> -D0-4 -F<type><width>[+l|u] -G<outgrid> "
+		"-N<type><n_sectors>[+l|u] [%s] [-L] [-Q] [%s] [-T] [%s] [%s] [%s] [%s]\n", name,
+		GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is grid to be filtered.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tDistance flag determines how grid (x,y) maps into distance units of filter width as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D0 grid x,y same units as <filter_width>, cartesian Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D1 grid x,y in degrees, <filter_width> in km, cartesian Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D2 grid x,y in degrees, <filter_width> in km, x_scaled by cos(middle y), cartesian Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   These first three options are faster; they allow weight matrix to be computed only once.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Next two options are slower; weights must be recomputed for each scan line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D3 grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), cartesian Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D4 grid x,y in degrees, <filter_width> in km, spherical Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets the primary filter type and full (6 sigma) filter-width  Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (b)oxcar, (c)osine arch, (g)aussian, (m)edian filters\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or p(maximum likelihood Probability estimator -- a mode estimator):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +l to return the lowest mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +u to return the uppermost mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets output name for filtered grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets the secondary filter type and the number of sectors.  Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator). If using p:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +l to return the lowest mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +u to return the uppermost mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is the grid to be filtered.");
+	GMT_Usage (API, 1, "\n-D0-4");
+	GMT_Usage (API, -2, "Distance flag determines how grid (x,y) maps into distance units of filter width as follows:");
+	GMT_Usage (API, 3, "0: grid x,y same units as <filter_width>, Cartesian distances.");
+	GMT_Usage (API, 3, "1: grid x,y in degrees, <filter_width> in km, Cartesian distances.");
+	GMT_Usage (API, 3, "2: grid x,y in degrees, <filter_width> in km, x scaled by cos(middle y), Cartesian distances.");
+	GMT_Usage (API, -2, "These first three methods are faster; they allow weight matrix to be computed only once. "
+		"Next two options are slower; weights must be recomputed for each scan line:");
+	GMT_Usage (API, 3, "3: grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), Cartesian distances.");
+	GMT_Usage (API, 3, "4: grid x,y in degrees, <filter_width> in km, spherical Distances.");
+	GMT_Usage (API, 1, "\n-F<type><width>[+l|u]");
+	GMT_Usage (API, -2, "Set the primary filter <type> and full (6 sigma) filter <width>. Choose from:");
+	GMT_Usage (API, 3, "b: Boxcar filter.");
+	GMT_Usage (API, 3, "c: Cosine arch filter.");
+	GMT_Usage (API, 3, "g: Gaussian filter.");
+	GMT_Usage (API, 3, "m: Median filter.");
+	GMT_Usage (API, 3, "p: Maximum likelihood Probability estimator -- a mode filter.");
+	GMT_Usage (API, 4, "+l Return the lowest mode if multiple modes are found [return average].");
+	GMT_Usage (API, 4, "+u Return the uppermost mode if multiple modes are found [return average].");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Set output name for filtered grid.");
+	GMT_Usage (API, 1, "\n-N<type><n_sectors>[+l|u]");
+	GMT_Usage (API, -2, "Set the secondary filter type and the number of sectors.  Choose from:");
+	GMT_Usage (API, 3, "l: Lowest value from all sectors.");
+	GMT_Usage (API, 3, "u: Uppermost value from all sectors.");
+	GMT_Usage (API, 3, "a: Average value from all sectors.");
+	GMT_Usage (API, 3, "m: Median value from all sectors.");
+	GMT_Usage (API, 3, "p: Mode value from all sectors.");
+	GMT_Usage (API, 4, "+l Return the lowest mode if multiple modes are found [return average].");
+	GMT_Usage (API, 4, "+u Return the uppermost mode if multiple modes are found [return average].");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 #ifdef OBSOLETE
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Remove local planar trend from data, apply filter, then add back trend at filtered value.\n");
+	GMT_Usage (API, 1, "\n-E Remove local planar trend from data, apply filter, then add back trend at filtered value.");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Sets new Increment of output grid; enter xinc, optionally xinc/yinc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is yinc = xinc.  Append an m [or s] to xinc or yinc to indicate minutes [or seconds];\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Write dim.template.sh to stdout and stop; no other options allowed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select error analysis mode; see documentation for how to prepare for using this option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R Sets new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
+	GMT_Option (API, "I");
+	GMT_Usage (API, -2, "Note: If the output increment(s) are NOT integer multiples of the input ones, filtering will be considerably slower.");
+	GMT_Usage (API, 1, "\n-L Write bash script dim.template.sh to standard output and stop; no other options allowed.");
+	GMT_Usage (API, 1, "\n-Q Select error analysis mode; see documentation for how to prepare for using this option.");
+	GMT_Option (API, "R");
 #ifdef OBSOLETE
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets output name for standard error grdfile and implies that we will compute a 2nd grid with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a statistical measure of deviations from the average value.  For the convolution filters this\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   yields the standard deviation while for the median/mode filters we use MAD.\n");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration].\n");
+	GMT_Usage (API, 1, "\n-T Toggles between grid and pixel registration for output grid [Default is same as input registration].");
 	GMT_Option (API, "V,f,h,.");
 
 	return (GMT_MODULE_USAGE);

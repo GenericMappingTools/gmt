@@ -151,8 +151,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   U: The maximum of all negative values\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   z: The sum\n");
 	GMT_Option (API, "R");
-	gmt_dist_syntax (API->GMT, 'S', "Compute statistics using points inside this search radius.");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Compute statistics using points inside this search radius.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty bins [Default is NaN].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize the output by the area of the bins [no normalization].\n");

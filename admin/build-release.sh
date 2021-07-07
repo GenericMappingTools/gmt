@@ -110,12 +110,12 @@ else
 	echo "build-release.sh: Ghostscript version $G_ver failed the test - install another gs" >&2
 	exit 1
 fi
+trap abort_build SIGINT
 # 1. Set basic ConfigUser.cmake file for a release build
 if [ -f cmake/ConfigUser.cmake ]; then
 	cp cmake/ConfigUser.cmake cmake/ConfigUser.cmake.orig
 fi
 cp -f admin/ConfigReleaseBuild.cmake cmake/ConfigUser.cmake
-trap abort_build SIGINT
 # 2a. Make build dir and configure it
 rm -rf build
 mkdir build

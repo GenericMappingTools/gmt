@@ -207,24 +207,25 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D%s[+w<width>]%s]\n", name, GMT_XYANCHOR, GMT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n\t[%s] %s%s%s[%s]\n", GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[l|n|u]] [%s] [%s]\n\t[%s] [%s] %s[%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [-D%s[+w<width>]%s] [-F%s] [%s] "
+		"%s%s%s[%s] [-S[l|n|u]] [%s] [%s] [%s] [%s] %s[%s] [%s]\n",
+		name, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT,
+		API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	gmt_refpoint_syntax (API->GMT, "D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position of the GMT logo [0/0].", GMT_ANCHOR_LOGO, 1);
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LOGO, 2);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +w<width> to set the width of the GMT logo. [144p]\n");
+	GMT_Usage (API, 3, "+w Set the <width> of the GMT logo. [144p]");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the GMT logo.", 0);
 	GMT_Option (API, "J-Z,K,O,P,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Control text label plotted beneath the logo:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append l to plot \"The Generic Mapping Tools\" [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to plot the URL for GMT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to skip label entirely.\n");
-	GMT_Option (API, "U,V");
-	GMT_Option (API, "X,c,f,t,.");
+	GMT_Usage (API, 1, "\n-S[l|n|u]");
+	GMT_Usage (API, -2, "Select the text label plotted beneath the logo via these directives:");
+	GMT_Usage (API, 3, "l: Plot \"The Generic Mapping Tools\" [Default].");
+	GMT_Usage (API, 3, "u: Plot the URL for the GMT homepage.");
+	GMT_Usage (API, 3, "n: Skip label entirely.");
+	GMT_Option (API, "U,V,X,c,t,.");
 
 	return (GMT_MODULE_USAGE);
 }

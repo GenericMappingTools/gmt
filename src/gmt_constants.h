@@ -190,6 +190,7 @@ enum GMT_time_period {
 #define GMT_DIM_UNITS	"cip"		/* Plot dimensions in cm, inch, or point */
 #define GMT_LEN_UNITS2	"efkMnu"	/* Distances in meter, foot, survey foot, km, Mile, nautical mile */
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
+#define GMT_ARC_UNITS	"dms"		/* Distances in arc-{degree,minute,second}t */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
 #define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */
@@ -262,6 +263,10 @@ enum GMT_time_period {
 #define GMT_CPT_INDEX_LBL		0	/* Index into hidden alloc_mode_text[] for labels */
 #define GMT_CPT_INDEX_KEY		1	/* Index into hidden alloc_mode_text[] for keys */
 
+/* Ticked contour settings */
+#define GMT_TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
+#define GMT_TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
+
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
 /* Default color list (or cpt) for automatic, sequential color choices */
@@ -312,6 +317,12 @@ enum GMT_time_period {
  * +U<unit> converts z-values from meter to given unit
  */
 #define GMT_CPTFILE_MODIFIERS "hiuU"
+
+/* Settings for usage message indents and break/continue characters */
+
+#define GMT_LINE_BREAK	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
+#define GMT_LINE_CONT	"\xe2\x80\xa6"	/* Ellipsis for continue symbol in UTF-8 */
+#define GMT_LINE_BULLET "\xe2\x80\xa2"	/* Bullet glyph */
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {
@@ -385,6 +396,10 @@ enum GMT_enum_autolegend {
 	GMT_LEGEND_PEN_D  = 0, GMT_LEGEND_PEN_V  = 1, GMT_LEGEND_PEN_P  = 2,
 	GMT_LEGEND_DRAW_D = 1, GMT_LEGEND_DRAW_V = 2, GMT_LEGEND_LABEL_FIXED = 0,
 	GMT_LEGEND_LABEL_FORMAT = 1, GMT_LEGEND_LABEL_LIST = 2, GMT_LEGEND_LABEL_HEADER = 3};
+
+/*! Various mode for label positioning */
+enum GMT_enum_maplabel {
+	GMT_LABEL_ANNOT = 0, GMT_LABEL_AXIS = 1};
 
 /*! Various mode for custom symbols */
 enum GMT_enum_customsymb {

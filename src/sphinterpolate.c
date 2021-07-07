@@ -97,38 +97,42 @@ GMT_LOCAL int sphinterpolate_get_args (struct GMT_CTRL *GMT, char *arg, double p
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s [-D[<east>]]\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q<mode>][<args>] [%s] [-T] [%s] [-Z] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 1, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n");
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s [-D[<east>]] [-Q<mode>[<args>]] [%s] [-T] [%s] "
+		"[-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for the final gridded solution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Usage (API, 1, "\n-G<grdfile>");
+	GMT_Usage (API, -2, "Specify file name for output grid file.");
 	GMT_Option (API, "I");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete exact duplicate points [Default deletes no duplicates except at poles].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <east> to exclude points with this particular longitude as repeating west.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [-D with no arg does a full comprehensive duplicate check - this may be very slow].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Compute tension factors to achieve the following [Default is no tension]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p: Piecewise linear interpolation ; no tension [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l: Smooth interpolation with local gradient estimates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g: Smooth interpolation with global gradient estimates and tension.  Optionally append <N>/<M>/<U>:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <M> = Number of Gauss-Seidel iterations when determining gradients [10],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <U> = Maximum change in a gradient at the last iteration [0.01].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s: Smoothing.  Optionally append <E>/<U>/<N>, where\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <E> = Expected squared error in a typical (scaled) data value [0.01],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <U> = Upper bound on  weighted sum of squares of deviations from data [npoints],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D[<east>]");
+	GMT_Usage (API, -2, "Delete exact duplicate points [Default deletes no duplicates except at poles]. "
+		"Optionally, append <east> to exclude points with this particular longitude as repeating west "
+		"[-D with no arg does a full comprehensive duplicate check - this may be very slow].");
+	GMT_Usage (API, 1, "\n-Q<mode>[<args>]");
+	GMT_Usage (API, -2, "Compute tension factors to achieve the following mode [Default is no tension]:");
+	GMT_Usage (API, 3, "p: Piecewise linear interpolation; no tension [Default].");
+	GMT_Usage (API, 3, "l: Smooth interpolation with local gradient estimates.");
+	GMT_Usage (API, 3, "g: Smooth interpolation with global gradient estimates and tension.  Optionally append <N>/<M>/<U>, where");
+	GMT_Usage (API, 4, "<N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].");
+	GMT_Usage (API, 4, "<M> = Number of Gauss-Seidel iterations when determining gradients [10].");
+	GMT_Usage (API, 4, "<U> = Maximum change in a gradient at the last iteration [0.01].");
+	GMT_Usage (API, 3, "s: Smoothing.  Optionally append <E>/<U>/<N>, where");
+	GMT_Usage (API, 4, "<E> = Expected squared error in a typical (scaled) data value [0.01].");
+	GMT_Usage (API, 4, "<U> = Upper bound on  weighted sum of squares of deviations from data [npoints].");
+	GMT_Usage (API, 4, "<N> = Number of iterations to converge solutions for gradients and variable tensions (-T only) [3].");
 	GMT_Option (API, "Rg");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Use variable tension (ignored for -Qp) [constant].\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "If no region is specified we default to the entire world [-Rg].");
+	GMT_Usage (API, 1, "\n-T Use variable tension (ignored for -Qp) [constant].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Scale data by 1/(max-min) prior to gridding [no scaling].\n");
+	GMT_Usage (API, 1, "\n-Z Scale data by 1/(max-min) prior to gridding [no scaling].");
 	GMT_Option (API, "bi3,di,e,h,i,qi,r,s,:,.");
 
 	return (GMT_MODULE_USAGE);
