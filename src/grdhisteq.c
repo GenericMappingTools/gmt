@@ -100,7 +100,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<ingrid> is name of input grid file.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-C[<n_cells>]");
+	GMT_Usage (API, 1, "\n-C<n_cells>");
 	GMT_Usage (API, -2, "Set how many cells (divisions) of data range to make [16].");
 	GMT_Usage (API, 1, "\n-D[<table>]");
 	GMT_Usage (API, -2, "Dump level information to <table> or stdout if not given.");
