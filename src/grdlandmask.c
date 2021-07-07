@@ -134,9 +134,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-N<maskvalues>");
 	GMT_Usage (API, -2, "Give values to use if a node is outside or inside a feature. Specify this information using 1 "
 		"of 2 formats:");
-	GMT_Usage (API, -3, "-N<wet>/<dry>.");
-	GMT_Usage (API, -3, "-N<ocean>/<land>/<lake>/<island>/<pond>. NaN is a valid entry. Default values are 0/1/0/1/0 "
-		"(i.e., 0/1).");
+	GMT_Usage (API, 3, "%s <wet>/<dry>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <ocean>/<land>/<lake>/<island>/<pond>.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "NaN is a valid entry. [Default values are 0/1/0/1/0 (i.e., 0/1)].");
 	GMT_Option (API, "V,r,x,.");
 
 	return (GMT_MODULE_USAGE);
