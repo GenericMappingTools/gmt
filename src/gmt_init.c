@@ -7898,7 +7898,7 @@ void gmt_innercont_syntax (struct GMT_CTRL *GMT) {
 void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 	struct GMTAPI_CTRL *API = GMT->parent;
 	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	GMT_Usage (API, 1, "\n%s", GMT_I_OPT);
+	GMT_Usage (API, 1, "\n-%c%s", option, GMT_inc_OPT);
 	GMT_Usage (API, -2, "Specify increment(s) and optionally append units or modifiers. "
 		"For geographic regions in degrees you can optionally append units from this list: "
 		"(d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.");
