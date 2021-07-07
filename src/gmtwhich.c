@@ -80,10 +80,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D Print the directory where a file is found [full path to file].");
 	GMT_Usage (API, 1, "\n-G[a|c|l|u]");
 	GMT_Usage (API, -2, "Download file if possible and not found locally. Optionally, append one of the following:");
-	GMT_Usage (API, -3, "a: place under the user directory in the appropriate folder.");
-	GMT_Usage (API, -3, "c: place it in the cache directory.");
-	GMT_Usage (API, -3, "l: place it in the current local directory [Default].");
-	GMT_Usage (API, -3, "u: place it in the user\'s data directory.");
+	GMT_Usage (API, -3, "a: Place under the user directory in the appropriate folder.");
+	GMT_Usage (API, -3, "c: Place it in the cache directory.");
+	GMT_Usage (API, -3, "l: Place it in the current local directory [Default].");
+	GMT_Usage (API, -3, "u: Place it in the user\'s data directory.");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
