@@ -132,7 +132,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]] "
 		"[-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]] "
-		"[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s] [-S<slopegrid>] [%s]"
+		"[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s] [-S<slopegrid>] [%s] "
 		"[-fg] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
