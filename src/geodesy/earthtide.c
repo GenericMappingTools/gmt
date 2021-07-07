@@ -1266,31 +1266,33 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [-G<outgrid>] [-C<comp>] [%s] [-L<lon>/<lat>] [%s] [-S] [-T[<min>/<max>/][-|+]<inc>[+i|n]] "
-		"[%s] [%s] [%s]%s[%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_bo_OPT, GMT_o_OPT,
+		"[%s] [%s] [%s] [%s]%s[%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_o_OPT,
 		GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 2, "(Note: One of -G, -L, or -S is required.)");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Specify file name for output grid file (s). "
+		"If more than one component is set via -C then <outgrid> must contain %%s to format component code.");
+	GMT_Usage (API, 1, "\n-L<lon>/<lat>");
+	GMT_Usage (API, -2, "Geographical coordinate where to compute the time-series.");
+	GMT_Usage (API, 1, "\n-S Output position of Sun and Moon in geographical coordinates plus "
+		"distance in meters. Output is a Mx7 matrix, where M is the number of "
+		"times (set by -T) and columns are time, sun_lon, sun_lat, sun_dist "
+		"moon_lon, moon_lat, moon_dist.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C<comp>");
 	if (API->external)
 		GMT_Usage (API, -2, "List of comma-separated components to be written as grids. Choose from");
 	else
 		GMT_Usage (API, -2, "List of comma-separated components to be written as grids (requires -G). Choose from");
 	GMT_Usage (API, 3, "x|e: Get x|east component.");
-	GMT_Usage (API, 3, "y|n: Get y|north conmponent.");
+	GMT_Usage (API, 3, "y|n: Get y|north component.");
 	GMT_Usage (API, 3, "z|v: Get z|vertical component [Default].");
 	GMT_Option (API, "I");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Specify file name for output grid file (s). "
-		"If more than one component is set via -C then <outgrid> must contain %%s to format component code.");
-	GMT_Usage (API, 1, "\n-L<lon>/<lat>");
-	GMT_Usage (API, -2, "Geographical coordinate where to compute the time-series.");
 	GMT_Option (API, "R");
-	GMT_Usage (API, 1, "\n-S Output position of Sun and Moon in geographical coordinates plus "
-		"distance in meters. Output is a Mx7 matrix, where M is the number of "
-		"times (set by -T) and columns are time, sun_lon, sun_lat, sun_dist "
-		"moon_lon, moon_lat, moon_dist.");
 	GMT_Usage (API, 1, "\n-T[<min>/<max>/][-|+]<inc>[+i|n]");
 	GMT_Usage (API, -2, "Make evenly spaced output time steps from <min> to <max> by <inc>. Optional modifiers:");
 	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce over the range instead of increment.");

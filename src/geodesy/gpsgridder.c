@@ -136,22 +136,24 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[n]<val>[+f<file>]] [-Fd|f<val>] [-I<dx>[/<dy>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[n]<val>[+f<file>]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
 		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[w]] [%s] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_Rgeo_OPT GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Usage (API, 1, "Choose one of three ways to specify where to evaluate the spline:");
-	GMT_Usage (API, 2, "1. Specify a rectangular grid domain with options -R, -I [and optionally -r].");
-	GMT_Usage (API, 2, "2. Supply a mask file via -T whose values are NaN or 0.  The spline will then "
-		"only be evaluated at the nodes originally set to zero.");
-	GMT_Usage (API, 2, "3. Specify a set of output locations via the -N option.");
+	GMT_Usage (API, 2, "%s Specify a rectangular grid domain with options -R, -I [and optionally -r].", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "%s Supply a mask file via -T whose values are NaN or 0.  The spline will then "
+		"only be evaluated at the nodes originally set to zero.", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "%s Specify a set of output locations via the -N option.", GMT_LINE_BULLET);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
-	GMT_Option (API, "<");
-	GMT_Usage (API, -2, "<table> [or stdin] must contain x y u v [weight_u weight_v] records. "
+	GMT_Usage (API, 1, "\n<table>");
+	GMT_Usage (API, -2, "<table> is one or more data files (in ASCII, binary, netCDF). "
+		"If no files are given, standard input is read. "
+		"The data must contain x y u v [weight_u weight_v] records. "
 		"Specify -fg to convert longitude, latitude to Flat Earth coordinates.");
 	GMT_Usage (API, 1, "\n-G<outfile>");
 	GMT_Usage (API, -2, "Give name of output file (if -N) or a gridfile name template that must "
@@ -165,7 +167,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -C<val> to select only the largest <val> eigenvalues [all]. "
 		"If <val> is in 0-1 range we assume it is the fraction of eigenvalues to use. "
 		"Note: ~1/4 of the total number of data constraints is a good starting point "
-		"[Default uses Gauss-Jordan elimination to solve the linear system]");
+		"[Default uses Gauss-Jordan elimination to solve the linear system].");
+	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
+	GMT_Usage (API, -2, "Evaluate spline at input locations and report statistics on the misfit. "
+		"If <misfitfile> is given then we write individual location misfits to that file.");
 	GMT_Usage (API, 1, "\n-Fd|f<val>");
 	GMT_Usage (API, -2, "Fudging factor to avoid Green-function singularities. Choose among two directives:");
 	GMT_Usage (API, 3, "d: Append <del_radius> to add to all distances between nodes and points "
