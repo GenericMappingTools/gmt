@@ -156,8 +156,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-E Value to use for empty bins [Default is NaN].");
 	GMT_Usage (API, 1, "\n-N Normalize the output by the area of the bins [no normalization].");
 	GMT_Usage (API, 1, "\n-T Use area-covering tiling to set up non-overlapping bins. Choose binning scheme:");
-	GMT_Usage (API, -3, "h hexagonal binning, write non-equidistant table to standard output (or file named in -G).");
-	GMT_Usage (API, -3, "r rectangular binning, writes equidistant grid (named via -G) [Default].");
+	GMT_Usage (API, -3, "h: hexagonal binning, write non-equidistant table to standard output (or file named in -G).");
+	GMT_Usage (API, -3, "r: rectangular binning, writes equidistant grid (named via -G) [Default].");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W Input <table> has observation weights in 4th column. We then compute the weighted version "
 			"of selection in -C. Append +s to read standard deviations s instead and compute weight = 1/s.");
