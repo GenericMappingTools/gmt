@@ -59,12 +59,15 @@ EXTERN_MSC void gmtlib_get_point_from_r_az (struct GMT_CTRL *GMT, double lon0, d
 #define SPOTTER_N_GRID		100
 #define SPOTTER_D_CUT		1.0e-6
 
-void spotter_rot_usage (struct GMTAPI_CTRL *API, char option) {
-	GMT_Message (API, GMT_TIME_NONE, "\t-%c Specify file with the rotations to be used (see documentation for format).\n", option);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i if you want to invert the finite rotations prior to use.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternative 1: Give a single rotation as plon/plat/prot.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternative 2: Give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to extract that rotation from the GPlates rotation database.\n");
+void spotter_rot_usage (struct GMTAPI_CTRL *API) {
+	GMT_Usage (API, 1, "\n%s", SPOTTER_E_OPT);
+	GMT_Usage (API, -2, "Specify rotation(s) to use in one of three ways:");
+	GMT_Usage (API, 3, "%s Give a file with a series of rotations to be used (see documentation for format).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Give a single rotation as <plon>/<plat>/<prot> (in degrees).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Give two plate IDs separated by a hyphen (e.g., PAC-MBL) "
+		"to extract that rotation from the GPlates rotation database.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Append +i if you want to invert the finite rotation(s) prior to use.");
+
 }
 
 /* Sort functions used to order the rotations */
@@ -349,6 +352,7 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, *c = NULL;
 	gmt_M_unused(GMT);
 	if ((c = strstr (arg, "+i"))) c[0] = '\0';	/* Chop off modifier */
+	if (c) R->invert = true;	/* Gave +i */
 	if (k == 0 && spotter_GPlates_pair (arg)) {	/* A GPlates plate pair to look up in the rotation table */
 		R->file = strdup (arg);
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received GPlates pair: %s\n", arg);
@@ -356,12 +360,12 @@ unsigned int spotter_parse (struct GMT_CTRL *GMT, char option, char *arg, struct
 	else if (!gmt_access (GMT, &arg[k], F_OK)) {	/* Was given a file (with possible leading + flag) */
 		R->file = strdup (&arg[k]);
 		if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(R->file))) n_errors++;
-		if (k == 1 || c) R->invert = true;
+		if (k == 1) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
 	}
 	else if (gmt_file_is_cache (GMT->parent, arg)) {	/* Was given a remote file */
 		R->file = strdup (&arg[k]);
-		if (k == 1 || c) R->invert = true;
+		if (k == 1) R->invert = true;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Received rotation file: %s\n", R->file);
 	}
 	else {	/* Apply a fixed total reconstruction rotation to all input points  */

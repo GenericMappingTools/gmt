@@ -12,8 +12,10 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdpmodeler** |-E|\ *rot_file* **-S**\ *flags*
+**gmt grdpmodeler** 
 [ *agegrdfile* ]
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
+**-S**\ *flags*
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *outgrid* ]
 [ |SYN_OPT-R| ]
@@ -22,6 +24,7 @@ Synopsis
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -100,6 +103,11 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-ocols.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
 
 .. include:: ../../explain_help.rst_
 
