@@ -13517,8 +13517,8 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 
 GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *fp, const char *in_line) {
 	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
-	bool keep_same_indent = (level < 0), go = true;
-	int width, k, j, next_level, current_width = 0;
+	bool keep_same_indent = (level < 0), go = true, force = false;
+	int width, k, j, next_level, current_width = 0, try = 0;
 	static int gmtapi_indent[8] = {0, 2, 5, 7, 10, 13, 15, 0}; /* Last one is for custom negative values exceeding 6 */
 	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
 	char message[GMT_MSGSIZ] = {""};
@@ -13535,7 +13535,7 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 	current_width = gmtapi_indent[level];
 	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
 		width = (W[k+1].space) ? API->terminal_width : API->terminal_width - 1;	/* May need one space for ellipsis at end */
-		if ((current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
+		if (force || (current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
 			if (W[k].space)	/* This word requires a leading space */
 				strcat (message, " ");
 			strcat (message, W[k].word);
@@ -13543,6 +13543,7 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 			free (W[k].word);	/* Free the word we are done with */
 			if (W[k+1].word == NULL)	/* Finalize the last line */
 				strcat (message, "\n");
+            force = false;  /* In case it was set */
 		}
 		else {	/* Must split at the current break point and continue on next line */
 			if (W[k].space) { /* No break character needed since space separation is expected */
@@ -13559,6 +13560,9 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 			}
 			W[k].space = 0;	/* Can be no leading space if starting a the line */
 			k--;	/* Since k will be incremented by loop and we did not write this word yet */
+            try++;
+            if (try == 2) /* Word is longer than effective terminal width - must force output (even if too long) to get past this stalemate */
+                force = true, try = 0;
 		}
 	}
 	free (W);	/* Free the structure array */
