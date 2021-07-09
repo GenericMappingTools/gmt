@@ -13476,7 +13476,7 @@ int GMT_Report_ (unsigned int *level, const char *format, int len) {
 GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	/* Split line into an array of words where words are separated by either
 	 * a space (like between options), the occurrence of "][" sequences, or
-	 * items separated by slashes "/" or bars "|".
+	 * items separated by slashes "/" or bars "|" or hyphens "-".
 	 * These are the places where we are allowed to break the line. */
 	struct GMT_WORD *array = NULL;
 	unsigned int n = 0, c, start = 0, next, end, j, stop, space = 0, n_alloc = GMT_LEN256;
@@ -13484,14 +13484,14 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	while (line[start]) {	/* More line to chop up */
 		/* Find the next break location */
 		stop = start;
-		while (line[stop] && !(strchr (" /|", line[stop]) || (line[stop] == ']' && line[stop+1] == '['))) stop++;
+		while (line[stop] && !(strchr (" /|", line[stop]) || (line[stop] == ']' && line[stop+1] == '[') || (line[stop] == '-' && isalpha (line[stop+1])))) stop++;
 		end = next = stop;	/* Mark likely end */
 		array[n].space = space;	/* Do we need a leading space (set via previous word)? */
 		if (line[stop] == ' ') {	/* Skip the space to start over at next word */
 			while (line[stop] == ' ') stop++;	/* In case there are more than one space */
 			next = stop; space = 1;
 		}
-		else if (line[stop] && strchr ("/|]", line[stop])) {	/* Include this char then break */
+		else if (line[stop] && strchr ("/|]-", line[stop])) {	/* Include this char then break */
 			next = ++end, space = 0;
 		}
 		array[n].word = calloc (end - start + 1, sizeof (char));	/* Allocate space for word */

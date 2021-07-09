@@ -72,7 +72,7 @@
 "panoply     : Default colormap of Panoply [C=RGB]",
 "plasma      : New colormap Option C from matplotlib [C=RGB]",
 "polar       : Blue via white to red [S, C=RGB]",
-"rainbow     : Rainbow: magenta-blue-cyan-green-yellow-red [C=HSV]",
+"rainbow     : Rainbow via magenta-blue-cyan-green-yellow-red [C=HSV]",
 "red2green   : Polar scale from red to green via white [S, C=RGB]",
 "relief      : Wessel/Martinez colors for topography [R=-8000/+8000, H, C=RGB]",
 "roma        : Perceptually uniform \'seis\' colormap, by Fabio Crameri [S, C=RGB]",
