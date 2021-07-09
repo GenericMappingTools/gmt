@@ -7572,9 +7572,10 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
 	char line[GMT_LEN256] = {""};
-	char divider[90] = {"---------------------------------------------------------------------------------------"};
+	char divider[110] = {"-----------------------------------------------------------------------------------------------------------"};
 	struct GMTAPI_CTRL *API = GMT->parent;
-	int L = MAX (MIN (API->terminal_width-5, 88), 0);	/* Number of dashes to print in divider line */
+	/* Note: 108 is the max length of entries in gmt_cpt_masters.h.  Update 110 and 108 if that changes */
+	int L = MAX (MIN (API->terminal_width-5, 108), 0);	/* Number of dashes to print in divider line */
 	GMT_Usage (API, 1, "\n-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
 	GMT_Usage (API, 2, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
 	divider[L] = '\0';	/* Truncate the line */
