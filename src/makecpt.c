@@ -147,7 +147,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E[<nlevels>]] "
 		"[-F[R|r|h|c][+c[<label>]][+k<keys>]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-M] [-N] [-Q] [-S<mode>] "
 		"[-T<min>/<max>[/<inc>[+b|i|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]] [-Z] [%s] [%s] [%s] [%s] [%s]\n",
-		name, H_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+		name, H_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_ho_OPT, GMT_i_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
