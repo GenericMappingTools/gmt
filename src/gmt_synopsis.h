@@ -105,7 +105,7 @@
 /*! Macros for the common GMT options used in a program's usage synopsis */
 
 #define GMT_B_OPT	"-B<args>"
-#define GMT_I_OPT	"-I<xinc>[+e|n][/<yinc>[+e|n]]"
+#define GMT_I_OPT   "-I" GMT_inc_OPT
 #define GMT_J_OPT	"-J<args>"
 #define GMT_R2_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>][+r]"
 #define GMT_R3_OPT	"-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>][+u<unit>][+r]"
