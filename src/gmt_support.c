@@ -7571,12 +7571,23 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
+	char line[GMT_LEN256] = {""};
+	char divider[110] = {"-----------------------------------------------------------------------------------------------------------"};
 	struct GMTAPI_CTRL *API = GMT->parent;
+	/* Note: 108 is the max length of entries in gmt_cpt_masters.h.  Update 110 and 108 if that changes */
+	int L = MAX (MIN (API->terminal_width-5, 108), 0);	/* Number of dashes to print in divider line */
 	GMT_Usage (API, 1, "\n-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
 	GMT_Usage (API, 2, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
-	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
-	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "     %s\n", GMT_CPT_master[k]);
-	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
+	divider[L] = '\0';	/* Truncate the line */
+	gmt_message (GMT, "     %s\n", divider);
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) {
+		strncpy (line, GMT_CPT_master[k], GMT_LEN256);
+		char *c = strchr (line, ':');	/* Find the start of the info */
+		c[0] = '\0';
+		gmt_message (GMT, "     %s: ", line);
+		GMT_Usage (API, -19, "%s", &c[2]);
+	}
+	gmt_message (GMT, "     %s\n", divider);
 	GMT_Usage (API, 2, "[For more, visit soliton.vm.bytemark.co.uk/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]. "
 		"Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear "
 		"continuous CPT from those colors automatically.");
