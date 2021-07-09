@@ -159,7 +159,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set back- and foreground color to match the bottom/top limits "
 		"in the output CPT [Default (-D or -Do) uses the output color table]. Append i "
 		"to match the bottom/top values in the input CPT instead.");
-	GMT_Usage (API, 1, "\n-E<nlevels>");
+	GMT_Usage (API, 1, "\n-E[<nlevels>]");
 	GMT_Usage (API, -2, "Use <nlevels> equidistant color levels from zmin to zmax. "
 		"This option implies we read data from given command-line files [or stdin] to "
 		"determine data range (use -i to select a data column, else last column is used). "
