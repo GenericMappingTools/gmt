@@ -1602,7 +1602,7 @@ GMT_LOCAL void gmtplot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CT
 			k = 0;	/* Start all over */
 		}
 	}
-    else if (k) {   /* Must plot now */
+	else if (k) {   /* Must plot now */
 		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)k, PSL_MOVE|PSL_STROKE);
 		k = 0;
     }
