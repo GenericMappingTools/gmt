@@ -1611,7 +1611,7 @@ GMT_LOCAL void gmtplot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CT
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);	k++;
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);	k++;
 	}
-    for (i = S_SIDE; i <= W_SIDE; i++) if ((GMT->current.map.frame.side[i] & GMT_AXIS_DRAW) == 0) flag = 0;
+	for (i = S_SIDE; i <= W_SIDE; i++) if ((GMT->current.map.frame.side[i] & GMT_AXIS_DRAW) == 0) flag = 0;
 	if (k)	/* Finally draw the strange donut/pacman boundary as one piece */
 		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)k, PSL_MOVE|PSL_STROKE|flag);
 }
