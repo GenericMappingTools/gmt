@@ -1550,7 +1550,7 @@ GMT_LOCAL void gmtplot_circle_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 
 GMT_LOCAL void gmtplot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	bool circles = false;
-    unsigned int flag = PSL_CLOSE;
+	unsigned int flag = PSL_CLOSE;
 	uint64_t i, k = 0, nr, n_max_path;
 	double a, da;
 
