@@ -101,9 +101,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
-	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<abyssalhills>");
 	GMT_Usage (API, -2, "Give multisegment file with abyssal hill lineaments [none].");
@@ -116,6 +113,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-G<polegrid>");
 	GMT_Usage (API, -2, "Specify file name for output grid [no grid].  Requires -R -I [-r]. "
 		"Accumulates weighted great-circle length density on the grid.");
+	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
+	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
 	GMT_Usage (API, 1, "\n-N Normalize grid so maximum is 1 [no normalization].");
 	GMT_Usage (API, 1, "\n-Ss|p|l[<modifiers>]");
 	GMT_Usage (API, -2, "Set the spotter directive:");
