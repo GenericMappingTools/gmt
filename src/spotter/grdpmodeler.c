@@ -117,6 +117,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set output filename with the model predictions. "
 		"Must contain %%s if more than one item is specified in -S. "
 		"Default writes x,y,<predictions> to standard output.");
+	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
+	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
 	GMT_Usage (API, 1, "\n-N<upper_age>");
 	GMT_Usage (API, -2, "Extend earliest stage pole back to <upper_age> [no extension].");
 	GMT_Option (API, "Rg");

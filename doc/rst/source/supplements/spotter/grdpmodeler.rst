@@ -18,6 +18,7 @@ Synopsis
 **-S**\ *flags*
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *outgrid* ]
+[ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
@@ -82,6 +83,15 @@ Optional Arguments
     tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
     If the **-G** option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
+
+.. _-I:
+
+.. include:: ../../explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
 
 .. _-T:
 
