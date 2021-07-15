@@ -123,7 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Default writes lon,lat,age,<adrswxyXY> to standard output.");
 	GMT_Usage (API, 1, "\n-T<time>");
 	GMT_Usage (API, -2, "Set fixed time of reconstruction to override any input ages.");
-	GMT_Option (API, "bi3,bo,d,e,h,i,o,q,s,:,.");
+	GMT_Option (API, "bi3,bo,d,e,f,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
