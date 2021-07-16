@@ -168,7 +168,8 @@ Optional Arguments
 
 **-L**\ *minlimit/maxlimit*
     Limit range of CPT to *minlimit/maxlimit*, and don't count data
-    outside this range when estimating CDF(Z). [Default uses min and max of data.]
+    outside this range when estimating CDF(Z). To set only one limit,
+    specify the other limit as "-" [Default uses min and max of data.]
 
 .. _-M:
 

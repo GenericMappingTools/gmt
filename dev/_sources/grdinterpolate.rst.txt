@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdinterpolate** *cube* | *grd1 grd2 ...*
 |-G|\ *outfile*
-[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+v**\ *vname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
+[ |SYN_OPT-D3| ]
 [ |-E|\ *table*\|\ *line* ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\ [**+1**\|\ **2**] ]
 [ |SYN_OPT-R| ]

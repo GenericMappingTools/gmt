@@ -22,7 +22,7 @@ Synopsis
 [ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
 [ |-Q|\ ]
-[ |-S|\ *scale* ]
+[ |-S|\ *scale*\|\ **d** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -164,9 +164,10 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *scale*
+**-S**\ *scale*\|\ **d**
     Multiply each element by *scale* in the space domain (after the
-    frequency domain operations). [Default is 1.0].
+    frequency domain operations). [Default is 1.0].  Alternatively,
+    append **d** to convert deflection of vertical to micro-radians.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

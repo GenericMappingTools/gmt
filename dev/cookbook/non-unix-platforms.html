@@ -135,8 +135,9 @@
 <li class="toctree-l2"><a class="reference internal" href="data-filtering.html">15. Filtering of Data in GMT</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">16. GMT on non-UNIX Platforms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#introduction">16.1. Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mingw-msys2-and-gmt">16.2. MINGW|MSYS2 and GMT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cygwin-and-gmt">16.3. Cygwin and GMT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows-subsystem-for-linux">16.2. Windows Subsystem for Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mingw-msys2-and-gmt">16.3. MINGW|MSYS2 and GMT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cygwin-and-gmt">16.4. Cygwin and GMT</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cpts.html">17. Of Colors and Color Legends</a></li>
@@ -274,6 +275,7 @@ solutions:</p>
 <dl class="simple">
 <dt>WINDOWS:</dt><dd><p>Choose among these three possibilities:</p>
 <ol class="arabic simple">
+<li><p>Windows Subsystem for Linux</p></li>
 <li><p>Install GMT under MinGW/MSYS2 (A collection of GNU utilities).</p></li>
 <li><p>Install GMT under Cygwin (A GNU port to Windows).</p></li>
 <li><p>Install GMT in Windows using Microsoft C/C++ or other
@@ -284,8 +286,22 @@ with DOS batch files.</p></li>
 </dd>
 </dl>
 </div>
+<div class="section" id="windows-subsystem-for-linux">
+<h2><span class="section-number">16.2. </span>Windows Subsystem for Linux<a class="headerlink" href="#windows-subsystem-for-linux" title="Permalink to this headline">¶</a></h2>
+<p>If you’re running Windows 10 you may take advantage of the Windows Subsystem for Linux.
+This provides an easy way of setting up a functional Linux environment and required tools to build and use GMT.</p>
+<p>From the Windows Subsystem for Linux Documentation:</p>
+<blockquote>
+<div><p>The Windows Subsystem for Linux lets developers run a GNU/Linux environment
+-- including most command-line tools, utilities, and applications
+-- directly on Windows, unmodified, without the overhead of a traditional virtual machine or dual-boot setup.</p>
+</div></blockquote>
+<p>See <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/">Windows Subsystem for Linux Documentation</a> to get started.</p>
+<p>Once WSL is installed, choose a distribution (e.g. Debian) and follow the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md#ubuntudebian">install</a>
+instructions or <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md">build from source</a>.</p>
+</div>
 <div class="section" id="mingw-msys2-and-gmt">
-<h2><span class="section-number">16.2. </span>MINGW|MSYS2 and GMT<a class="headerlink" href="#mingw-msys2-and-gmt" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">16.3. </span>MINGW|MSYS2 and GMT<a class="headerlink" href="#mingw-msys2-and-gmt" title="Permalink to this headline">¶</a></h2>
 <p>Though one can install GMT natively using CMake, the simplest way of installing
 under MINGW|MSYS2 is to just install the Windows binaries and use them from
 the msys2 bash shell. As simple as that. Furthermore, GMT programs launch
@@ -294,7 +310,7 @@ GMT on Windows. As one option, <a class="reference external" href="https://gitfo
 can be easily installed and includes a bash emulator with MINGW|MSYS2.</p>
 </div>
 <div class="section" id="cygwin-and-gmt">
-<h2><span class="section-number">16.3. </span>Cygwin and GMT<a class="headerlink" href="#cygwin-and-gmt" title="Permalink to this headline">¶</a></h2>
+<h2><span class="section-number">16.4. </span>Cygwin and GMT<a class="headerlink" href="#cygwin-and-gmt" title="Permalink to this headline">¶</a></h2>
 <p>Because GMT works best in conjugation with UNIX tools we suggest you
 install GMT using the Cygwin product from Cygnus (now assimilated by
 Redhat, Inc.). This free version works on any Windows version and it
@@ -349,7 +365,7 @@ regtool -v list /HKLM/Software/Cygnus<span class="se">\ </span>Solutions/Cygwin
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

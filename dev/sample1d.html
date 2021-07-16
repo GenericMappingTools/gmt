@@ -298,7 +298,9 @@ necessarily included in the output, and <strong>R</strong> as <strong>r</strong>
 given spacing to fit the track length exactly. Finally, append
 <strong>+d</strong> to delete duplicate input records (identified by having
 no change in the time column, and
-<strong>+l</strong> if distances should be measured along rhumb lines (loxodromes).</p>
+<strong>+l</strong> if distances should be measured along rhumb lines (loxodromes).
+<strong>Note</strong>: Calculation mode for loxodromes is spherical, hence <strong>-je</strong>
+cannot be used in combination with <strong>+l</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
@@ -359,7 +361,7 @@ spline.  Requires <strong>-Fs</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -618,7 +620,7 @@ included, use</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

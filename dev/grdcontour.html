@@ -246,7 +246,7 @@
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<strong>d</strong>|<strong>f</strong>|<strong>n</strong>|<strong>l</strong>|<strong>L</strong>|<strong>x</strong>|<strong>X</strong>]<em>params</em> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>low/high</em>|<strong>n</strong>|<strong>N</strong>|<strong>P</strong>|<strong>p</strong> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<em>cpt</em>] ]
-[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<em>cut</em>][<strong>+z</strong>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<em>n</em>][<strong>+z</strong>] ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>] ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>smoothfactor</em> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<strong>h</strong>|<strong>l</strong>][<strong>+a</strong>][<strong>+d</strong><em>gap</em>[/<em>length</em>]][<strong>+l</strong>[<em>labels</em>]] ]
@@ -255,7 +255,7 @@
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<em>type</em>]<em>pen</em>[<strong>+c</strong>[<strong>l</strong>|<strong>f</strong>]] ]
 [ <a class="reference internal" href="#x"><span><strong>-X</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>xshift</em>] ]
 [ <a class="reference internal" href="#y"><span><strong>-Y</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>f</strong>|<strong>r</strong>][<em>yshift</em>] ]
-[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<strong>+s</strong><em>factor</em>][<strong>+o</strong><em>shift</em>][<strong>+p</strong>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<strong>+o</strong><em>shift</em>][<strong>+p</strong>][<strong>+s</strong><em>factor</em>] ]
 [ <strong>-bo</strong><a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-do</strong><a class="reference internal" href="gmt.html#do-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
@@ -487,7 +487,7 @@ via <strong>-C</strong> instead.</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong>[<em>cut</em>][<strong>+z</strong>]</dt><dd><p>Do not draw contours with less than <em>cut</em> number of points [Draw all contours].
+<dt><strong>-Q</strong>[<em>n</em>][<strong>+z</strong>]</dt><dd><p>Do not draw contours with less than <em>n</em> number of points [Draw all contours].
 Alternatively, give instead a minimum contour length in distance units
 (see <a class="reference internal" href="#units">Units</a> for available units and how distances are computed),
 including <strong>c</strong> (Cartesian distances using user coordinates) or <strong>C</strong> for plot
@@ -554,7 +554,7 @@ file is applied to the contour annotations.  Select <strong>+c</strong> for both
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong>[<strong>+s</strong><em>factor</em>][<strong>+o</strong><em>shift</em>][<strong>+p</strong>]</dt><dd><p>Use to subtract <em>shift</em> from the data and multiply the results by
+<dt><strong>-Z</strong>[<strong>+o</strong><em>shift</em>][<strong>+p</strong>][<strong>+s</strong><em>factor</em>]</dt><dd><p>Use to subtract <em>shift</em> from the data and multiply the results by
 <em>factor</em> before contouring starts [1/0]. (Numbers in <strong>-A</strong>, <strong>-C</strong>,
 <strong>-L</strong> refer to values after this scaling has occurred.) Append
 <strong>+p</strong> to indicate that this grid file contains z-values that are
@@ -709,7 +709,7 @@ contours_O.txt for open contours, try:</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

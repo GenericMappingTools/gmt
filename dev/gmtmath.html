@@ -239,9 +239,11 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt math</strong> [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>t_f(t)</em>[<strong>+e</strong>][<strong>+r</strong>][<strong>+s</strong>|<strong>w</strong>] ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cols</em> ]
-[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>eigen</em> ] [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>eigen</em> ]
+[ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>n_col</em>[/<em>t_col</em>] ]
-[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ] [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>f</strong>|<strong>l</strong>] ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>n</strong>] ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<strong>f</strong>|<strong>l</strong>] ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+b</strong>|<strong>i</strong>|<strong>l</strong>|<strong>n</strong>]|<em>file</em>|<em>list</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
@@ -340,9 +342,13 @@ columns.</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong></dt><dd><p>Quick mode for scalar calculation. Shorthand for <strong>-Ca</strong> <strong>-N</strong>1/0  <strong>-T</strong>0/0/1.
-In this mode, constants may have plot units (i.e., c, i, p) and if so the final
-answer will be reported in the unit set by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>.</p>
+<dt><strong>-Q</strong>[<strong>c</strong>|<strong>i</strong>|<strong>p</strong>|<strong>n</strong>]</dt><dd><p>Quick mode for scalar calculation. Shorthand for <strong>-Ca</strong> <strong>-N</strong>1/0  <strong>-T</strong>0/0/1.
+In this mode, constants may have dimensional units (i.e., <strong>c</strong>, <strong>i</strong>, or <strong>p</strong>),
+and will be converted to internal <em>inches</em> before computing. If one or more constants
+with units are encountered then the final answer will be reported in the unit set by
+<a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a>, unless overridden by appending another unit. Alternatively,
+append <strong>n</strong> for a non-dimensional result, meaning no unit conversion during output.
+To avoid any unit conversion on input, just do not use units.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
@@ -394,7 +400,7 @@ For details on array creation, see <a class="reference internal" href="#generate
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -1472,6 +1478,17 @@ then clearly relative time formatting is required, while if you are computing ne
 by, say, adding an interval to absolute times then you will need to use <strong>-fo</strong> to set
 the output format for such columns to absolute time.</p>
 </div>
+<div class="section" id="scalar-math-with-units">
+<h2>Scalar math with units<a class="headerlink" href="#scalar-math-with-units" title="Permalink to this headline">¶</a></h2>
+<p>If you use <strong>-Q</strong> to do simple calculations, please note that the support for dimensional units is
+limited to converting a number ending in c, i, or p to internal inches.  Thus, while you can run
+gmt -Qc 1c 1c MUL =, you may be surprised that the output area is not 1 cm squared.  The reason is
+that <strong>gmt math</strong> cannot keep track of what unit any particular item on the stack might be so it will
+assume it is internally in inches and then scale the final output to cm.  In this particular case,
+the unit is in inches squared and scaling by 2.54 once will give 0.3937 inch times cm as the unit.
+Thus, conversions only work for linear unit calculations, such as gmt math -Qp 1c 0.5i ADD =, which
+will return the result as 64.34 points.</p>
+</div>
 <div class="section" id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p><strong>Note</strong>: Below are some examples of valid syntax for this module.
@@ -1482,6 +1499,12 @@ of uses that are common but cannot be run verbatim as written.</p>
 <p>To add two plot dimensions of different units, we can run</p>
 <blockquote>
 <div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">length</span><span class="o">=</span><span class="sb">`</span>gmt math -Q 15c 2i <span class="nv">SUB</span> <span class="o">=</span><span class="sb">`</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>To compute the ratio of two plot dimensions of different units, we select <em>non-dimensional</em> output and run</p>
+<blockquote>
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">ratio</span><span class="o">=</span><span class="sb">`</span>gmt math -Qn 15c 2i <span class="nv">DIV</span> <span class="o">=</span><span class="sb">`</span>
 </pre></div>
 </div>
 </div></blockquote>
@@ -1625,7 +1648,7 @@ Publishing Corp.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

@@ -239,27 +239,29 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt 2kml</strong> [ <em>table</em> ]
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>a</strong>|<strong>g</strong>|<strong>s</strong>[<em>alt</em>|<strong>x</strong><em>scale</em>] ]
-[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ] [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>descriptfile</em> ]
+[ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>descriptfile</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<strong>+e</strong>][<strong>+s</strong>] ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>e</strong>|<strong>s</strong>|<strong>t</strong>|<strong>l</strong>|<strong>p</strong>|<strong>w</strong> ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<em>color</em>][<strong>+f</strong>|<strong>n</strong>] ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>icon</em> ]
 [ <a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong> ]
-[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>col1:name1</em>,<em>col2:name2</em>,… ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>name1</em>,<em>name2</em>,… ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>t</strong>|<em>col</em>|<em>name_template</em>|<em>name</em>] ]
 [ <a class="reference internal" href="#o"><span><strong>-O</strong></span></a></strong> ]
-[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>a</strong>|<strong>i</strong><em>az</em> ]
-[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>s</strong><em>scale</em> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><strong>a</strong>|<strong>i</strong>|<strong>s</strong><em>arg</em> ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><strong>e</strong>|<em>w/e/s/n</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><strong>c</strong>|<strong>n</strong><em>scale</em>] ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>title</em>[/<em>foldername</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<em>pen</em>][<em>attr</em>] ]
-[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>args</em> ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<strong>+a</strong><em>alt_min/alt_max</em>][<strong>+f</strong><em>minfade/maxfade</em>][<strong>+l</strong><em>minLOD/maxLOD</em>][<strong>+o</strong>][<strong>+v</strong>] ]
+[ <strong>-a</strong><a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-di</strong><a class="reference internal" href="gmt.html#di-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
 [ <strong>-i</strong><a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-qi</strong><a class="reference internal" href="gmt.html#qi-full"><span class="std std-ref">flags</span></a> ]
@@ -410,15 +412,14 @@ named. Also note that options (2) is not available unless input is an ASCII file
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Qa</strong>|<strong>i</strong><em>azimuth</em></dt><dd><p>Option in support of wiggle plots (requires <strong>-Fw</strong>). You may
+<dt><strong>-Qa</strong>|<strong>i</strong>|<strong>s</strong><em>arg</em></dt><dd><p>Option in support of wiggle plots (requires <strong>-Fw</strong>). You may
 control which directions the positive wiggles will tend to point
-to with <strong>-Qa</strong>.  The provided azimuth defines a half-circle
+to with <strong>-Qa</strong>.  The appended <em>azimuth</em> defines a half-circle
 centered on the selected azimuth [0] where positive anomalies
 will plot.  If outside then switch by 180 degrees.  Alternatively,
-use <strong>-Qi</strong> to set a fixed direction with no further variation.</p>
-</dd>
-<dt><strong>-Qs</strong><em>scale</em></dt><dd><p>Required setting for wiggle plots (i.e., it requires <strong>-Fw</strong>).
-Sets a wiggle scale in <em>z</em>-data units per the user’s units (given
+use <strong>-Qi</strong> to set a fixed <em>azimuth</em> with no further variation.
+Scaling is also required via <strong>-Qs</strong><em>scale</em>.
+Set a wiggle scale in <em>z</em>-data units per the user’s units (given
 via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
 is then inverted to yield degrees per user z-unit and used to
 convert wiggle anomalies to map distances and positions.</p>
@@ -432,7 +433,7 @@ determine and use the exact domain of the data (single file only)
 </dd>
 </dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong><strong>c</strong>|<strong>n</strong><em>scale</em>]</dt><dd><p>Scale icons or labels. Here, <strong>-Sc</strong> sets a scale for the symbol
+<dt><strong>-S</strong><strong>c</strong>|<strong>n</strong><em>scale</em></dt><dd><p>Scale icons or labels. Here, <strong>-Sc</strong> sets a scale for the symbol
 icon, whereas <strong>-Sn</strong> sets a scale for the name labels [1 for both].</p>
 </dd>
 </dl>
@@ -459,14 +460,18 @@ given in (fractional) pixels and not in points (1/72 inch).</p>
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong><em>args</em></dt><dd><p>Set one or more attributes of the Document and Region tags. Append
+<dt><strong>-Z</strong>[<strong>+a</strong><em>alt_min/alt_max</em>][<strong>+f</strong><em>minfade/maxfade</em>][<strong>+l</strong><em>minLOD/maxLOD</em>][<strong>+o</strong>][<strong>+v</strong>]</dt><dd><p>Set one or more attributes of the Document and Region tags. Append
 <strong>+a</strong><em>alt_min/alt_max</em> to specify limits on visibility based on
-altitude. Append <strong>+l</strong><em>lod_min/lod_max</em> to specify limits on
-visibility based on Level Of Detail, where <em>lod_max</em> == -1 means it
-is visible to infinite size. Append <strong>+f</strong><em>fade_min/fade_max</em> to
-fade in and out over a ramp [abrupt]. Append <strong>+v</strong> to make a
-feature <em>not</em> visible when loaded [visible]. Append <strong>+o</strong> to open a
-folder or document in the sidebar when loaded [closed].</p>
+altitude. Append <strong>+f</strong><em>fade_min/fade_max</em> to fade in and out
+over a ramp [abrupt]. Append <strong>+l</strong><em>lod_min/lod_max</em> to specify limits on
+visibility based on Level Of Detail, where a <em>lod_max</em> of -1 means it
+is visible to infinite size. Append <strong>+o</strong> to open a older or document
+in the sidebar when loaded [closed]. Append <strong>+v</strong> to make a feature
+<em>not</em> visible when loaded [visible].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-a</strong>[[<em>col</em>=]<em>name</em>[,<em>…</em>]] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set aspatial column associations <em>col</em>=<em>name</em>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -494,7 +499,7 @@ folder or document in the sidebar when loaded [closed].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -689,7 +694,7 @@ description tags, respectively, for the current feature.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

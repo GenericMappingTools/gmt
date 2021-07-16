@@ -306,7 +306,7 @@ Append <strong>+as</strong> to instead determine the scaling from the geometric 
 <div class="section" id="optional-arguments-begin-mode">
 <h2>Optional Arguments (begin mode)<a class="headerlink" href="#optional-arguments-begin-mode" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong>[<em>autolabel</em>][<strong>+c</strong><em>dx</em>[/<em>dy</em>]][<strong>+g</strong><em>fill</em>][<strong>+j</strong>|<strong>J</strong><em>refpoint</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+p</strong><em>pen</em>][<strong>+r</strong>|<strong>R</strong>][<strong>+v</strong>]</dt><dd><p>Specify automatic tagging of each subplot.  Append either a number or letter [a].
+<dt><strong>-A</strong>[<em>autolabel</em>][<strong>+c</strong><em>dx</em>[/<em>dy</em>]][<strong>+g</strong><em>fill</em>][<strong>+j</strong>|<strong>J</strong><em>refpoint</em>][<strong>+o</strong><em>dx</em>[/<em>dy</em>]][<strong>+p</strong><em>pen</em>][<strong>+r</strong>|<strong>R</strong>][<strong>+s</strong>[[<em>dx</em>/<em>dy</em>][/<em>shade</em>]]][<strong>+v</strong>]</dt><dd><p>Specify automatic tagging of each subplot.  Append either a number or letter [a].
 This sets the tag of the first, top-left subplot and others follow sequentially.
 Surround the number or letter by parentheses on any side if these should be typeset
 as part of the tag (<strong>Note</strong>: In UNIX shells you may need to escape these parentheses.)
@@ -321,6 +321,9 @@ by the justification [4p/4p, i.e., 20% of the <a class="reference internal" href
 Append <strong>+p</strong><em>pen</em> to draw the outline of the tag’s text box using selected <em>pen</em> [no outline].
 Append <strong>+r</strong> to typeset your tag numbers using lowercase Roman numerals;
 use <strong>+R</strong> for uppercase Roman numerals [Arabic numerals].
+Append <strong>+s</strong> to draw an offset background shaded rectangle. Here, <em>dx</em>/<em>dy</em> indicates the
+shift relative to the tag box [default is <strong>2p</strong>/<strong>-2p</strong>] and <em>shade</em> sets the
+fill style to use for shading [default is <strong>gray50</strong>].
 Append <strong>+v</strong> to increase tag numbers vertically down columns [horizontally across rows].</p>
 </dd>
 </dl>
@@ -533,7 +536,7 @@ not yet been implemented.</p></li>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

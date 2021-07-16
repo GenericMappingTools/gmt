@@ -242,10 +242,11 @@
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>b</strong>|<strong>B</strong>|<strong>f</strong>|<strong>F</strong>|<strong>o</strong>|<strong>O</strong>[<em>lon0</em>/<em>lat0</em>][<strong>+v</strong>] ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<em>dx</em>/<em>dy</em>][<strong>+m</strong>] ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><strong>c</strong>|<strong>i</strong>|<strong>p</strong> ]
-[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<em>datum</em>] ] [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<em>unit</em>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<em>datum</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>|<strong>c</strong>|<strong>i</strong>|<strong>p</strong>] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<em>lon0</em>/<em>lat0</em>][<strong>+a</strong>][<strong>+i</strong>][<strong>+u</strong><em>unit</em>][<strong>+v</strong>] ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong> ]
-[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>line.xy</em>[<strong>+u</strong><em>unit</em>][<strong>+p</strong>] ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>table</em>[<strong>+p</strong>][<strong>+u</strong><em>unit</em>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>a</strong>|<strong>c</strong>|<strong>g</strong>|<strong>m</strong>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>d</strong>|<strong>e</strong>] ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ]
@@ -355,7 +356,7 @@ omitted). If <em>datum</em> is - or not given we assume WGS-84.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong>[<em>unit</em>]</dt><dd><p>Force 1:1 scaling, i.e., output (or input, see <strong>-I</strong>) data are in
+<dt><strong>-F</strong>[<strong>e</strong>|<strong>f</strong>|<strong>k</strong>|<strong>M</strong>|<strong>n</strong>|<strong>u</strong>|<strong>c</strong>|<strong>i</strong>|<strong>p</strong>]</dt><dd><p>Force 1:1 scaling, i.e., output (or input, see <strong>-I</strong>) data are in
 actual projected meters. To specify other units, append the desired
 unit (see <a class="reference internal" href="#units">Units</a>). Without <strong>-F</strong>, the output (or input, see <strong>-I</strong>)
 are in the units specified by <a class="reference internal" href="gmt.conf.html#term-PROJ_LENGTH_UNIT"><span class="xref std std-term">PROJ_LENGTH_UNIT</span></a> (but see
@@ -385,8 +386,8 @@ See <a class="reference internal" href="#output-order">Output Order</a> for how 
 </dd>
 </dl>
 <dl class="simple" id="l">
-<dt><strong>-L</strong><em>line.xy</em>[<strong>+u</strong><em>unit</em> |<em>c</em>  |<em>C</em>][<strong>+p</strong>]</dt><dd><p>Determine the shortest distance from the input data points to the
-line(s) given in the ASCII multisegment file <em>line.xy</em>. The distance
+<dt><strong>-L</strong><em>table</em>[<strong>+p</strong>][<strong>+u</strong><em>unit</em> |<em>c</em>  |<em>C</em>]</dt><dd><p>Determine the shortest distance from the input data points to the
+line(s) given in the ASCII multisegment file <em>table</em>. The distance
 and the coordinates of the nearest point will be appended to the
 output as three new columns. Append the distance unit via <strong>+u</strong> (see <a class="reference internal" href="#units">Units</a>
 for available units and how distances are computed [great circle using authalic radius]),
@@ -497,7 +498,7 @@ See <a class="reference internal" href="#output-order">Output Order</a> for how 
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -601,9 +602,9 @@ Clarke-1866 ellipsoid) to WGS 84, run</p>
 </div></blockquote>
 <p>To compute the closest distance (in km) between each point in the input
 file quakes.txt and the line segments given in the multisegment ASCII
-file coastline.xy, run</p>
+file coastline.txt, run</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject quakes.txt -Lcoastline.xy+uk &gt; quake_dist.txt
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt mapproject quakes.txt -Lcoastline.txt+uk &gt; quake_dist.txt
 </pre></div>
 </div>
 </div></blockquote>
@@ -721,7 +722,7 @@ North-Holland Publ., ISBN: 0 444 86149 1.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

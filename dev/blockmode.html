@@ -242,8 +242,8 @@
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>fields</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> ]
-[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<em>width</em>][<strong>+c</strong>][<strong>+a</strong>|<strong>+l</strong>|<strong>+h</strong> ]
-[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><strong>r</strong>|<strong>s</strong>[<strong>+l</strong>|<strong>h</strong>] ]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<em>width</em>][<strong>+c</strong>][<strong>+a</strong>|<strong>l</strong>|<strong>h</strong> ]]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<strong>r</strong>|<strong>s</strong>[<strong>+l</strong>|<strong>h</strong>]] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>[<em>grdfile</em>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -289,7 +289,7 @@ If no file is specified, <strong>blockmode</strong> will read from standard inpu
 </dl>
 <dl class="simple" id="i">
 <dt><strong>-I</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. <strong>Geographical
-(degrees) coordinates</strong>: Optionally, append a increment unit. Choose among
+(degrees) coordinates</strong>: Optionally, append an increment unit. Choose among
 <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
 of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
 instead, the increment is assumed to be given in meter, foot, km, Mile,
@@ -390,7 +390,7 @@ then append <strong>+s</strong> and we compute weight = 1/sigma.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-a</strong>[[<em>col</em>=]<em>name</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set aspatial column associations <em>col</em>=<em>name</em>.</p>
+<dt><strong>-a</strong>[[<em>col</em>=]<em>name</em>[,<em>…</em>]] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set aspatial column associations <em>col</em>=<em>name</em>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -418,7 +418,7 @@ then append <strong>+s</strong> and we compute weight = 1/sigma.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -512,7 +512,7 @@ called field_z.nc and field_s.nc, run:</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

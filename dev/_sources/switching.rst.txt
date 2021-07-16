@@ -1,12 +1,13 @@
 Switching between Different Versions
 ====================================
 
-We encourage all GMT users to start using version 5 immediately; it
+We encourage all GMT users to start using version 6 immediately; it
 has been tested extensively by the GMT team and has benefitted from
-bug reports for the 4.5.x versions. Users who still worry about the new
-version breaking things may install GMT 4.5.x and 5 side by side.
+bug reports for the 5.x and 4.5.x versions. Users who still worry about
+the new version breaking things may install GMT 4.5.x, 5, and/or 6 side
+by side.
 
-Because GMT 5 is backwards compatible with the 4.5.x series
+Because GMT 6 is backwards compatible with the 5.x and 4.5.x series
 (provided you configured it that way) yet maintains its parameters and
 history in separate files (e.g. ``.gmtdefaults4``, versus ``gmt.conf``)
 it is possible to install and use both versions on the same workstation.

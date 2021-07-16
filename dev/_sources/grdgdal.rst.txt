@@ -16,7 +16,7 @@ Synopsis
 |-A|\ *prog*\ [**+m**\ *method*\ **+c**\ *cpt*]
 |-G|\ *outfile* 
 [ |-F|\ "*gd opts*"]
-[ |-M|\ [**+r+w**]]
+[ |-M|\ [**+r**\ [**+w**]]]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -74,7 +74,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ [**+r+w**]
+**-M**\ [**+r**\ [**+w**]]
     Read and write files via GDAL. **-M** alone selects both reading and writing with GDAL.
     Option **-M+r** alone instructs the program to read with GDAL (and save with GMT). This option is needed when reading
     OGR vector data. **-M+w** indicates that the output will be saved with GDAL.

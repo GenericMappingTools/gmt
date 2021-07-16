@@ -246,7 +246,7 @@
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>px</em>/<em>py</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>wmin</em>/<em>wmax</em> ]
-[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>major</em>/<em>minor</em>/<em>azimuth</em>[<strong>+e</strong>|<strong>n</strong>] ]
+[ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong><em>major</em>[<em>unit</em>][/<em>minor</em>/<em>azimuth</em>][<strong>+e</strong>|<strong>n</strong>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
@@ -402,17 +402,17 @@ within <span class="math notranslate nohighlight">\(w_{min} &lt; q &lt; w_{max}\
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong><em>major</em>/<em>minor</em>/<em>azimuth</em>[<strong>+e</strong>|<strong>n</strong>]</dt><dd><p>Create the coordinates of an ellipse with <em>major</em> and <em>minor</em> axes given in km (unless <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> is given for a
+<dt><strong>-Z</strong><em>major</em>[<em>unit</em>][/<em>minor</em>/<em>azimuth</em>][<strong>+e</strong>|<strong>n</strong>]</dt><dd><p>Create the coordinates of an ellipse with <em>major</em> and <em>minor</em> axes given in km (unless <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> is given for a
 Cartesian ellipse) and the <em>azimuth</em> of the major axis in degrees; used in conjunction with <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong> (sets its center)
 and <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> (sets the distance increment). <strong>Note</strong>: For the Cartesian ellipse (which requires <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>), we expect
-<em>direction</em> counter-clockwise from the horizontal instead of an <em>azimuth</em>. The following modifiers are supported:</p>
+<em>direction</em> counter-clockwise from the horizontal instead of an <em>azimuth</em>. A geographic <em>major</em> may be specified
+in any desired unit [Default is km] by appending the unit (e.g., 3d for degrees); if so we assume the <em>minor</em> axis
+and the increment are also given in the same unit (see <a class="reference internal" href="#units">Units</a>).  For degenerate ellipses you can just supply a
+single <em>diameter</em> instead. The following modifiers are supported:</p>
 <ul class="simple">
 <li><p>Append <strong>+e</strong> to adjust the increment set via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> so that the ellipse has equal distance increments [Default
 uses the given increment and closes the ellipse].</p></li>
-<li><p>Append <strong>+n</strong> to set a specific number of unique equidistant points via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>. For degenerate ellipses you can
-just supply a single <em>diameter</em> instead.  A geographic diameter may be specified in any desired unit other than
-km [Default is km] by appending the unit (e.g., 3d for degrees); if so we assume the increment is also given in
-the same unit (see <a class="reference internal" href="#units">Units</a>).</p></li>
+<li><p>Append <strong>+n</strong> to set a specific number of unique equidistant points via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.</p></li>
 </ul>
 </dd>
 </dl>
@@ -445,7 +445,7 @@ the same unit (see <a class="reference internal" href="#units">Units</a>).</p></
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -626,7 +626,7 @@ This gives coordinates for an oblique small circle.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

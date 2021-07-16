@@ -247,7 +247,7 @@
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>scale</em>|<strong>g</strong>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>params</em> ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>]
-[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>scale</em> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>scale</em>|<strong>d</strong> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
@@ -419,8 +419,9 @@ only.</p>
 </dd>
 </dl>
 <dl class="simple" id="s">
-<dt><strong>-S</strong><em>scale</em></dt><dd><p>Multiply each element by <em>scale</em> in the space domain (after the
-frequency domain operations). [Default is 1.0].</p>
+<dt><strong>-S</strong><em>scale</em>|<strong>d</strong></dt><dd><p>Multiply each element by <em>scale</em> in the space domain (after the
+frequency domain operations). [Default is 1.0].  Alternatively,
+append <strong>d</strong> to convert deflection of vertical to micro-radians.</p>
 </dd>
 </dl>
 <dl class="simple" id="v">
@@ -546,7 +547,7 @@ components of the raw spectrum of the data in topo.nc, try:</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

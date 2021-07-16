@@ -240,7 +240,7 @@
 <p><strong>gmt grdmask</strong> <em>table</em> <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>mask_grd_file</em>
 <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>increment</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>] ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>|<strong>r</strong>|<strong>t</strong>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>z</strong>|<strong>Z</strong>|<strong>p</strong>|<strong>P</strong>]<em>values</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>search_radius</em>|<em>xlim</em>/<em>ylim</em> ] [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
@@ -287,7 +287,7 @@ are considered “inside”.</p>
 </dl>
 <dl class="simple" id="i">
 <dt><strong>-I</strong><em>xinc</em>[<strong>+e</strong>|<strong>n</strong>][/<em>yinc</em>[<strong>+e</strong>|<strong>n</strong>]]</dt><dd><p><em>x_inc</em> [and optionally <em>y_inc</em>] is the grid spacing. <strong>Geographical
-(degrees) coordinates</strong>: Optionally, append a increment unit. Choose among
+(degrees) coordinates</strong>: Optionally, append an increment unit. Choose among
 <strong>m</strong> to indicate arc minutes or <strong>s</strong> to indicate arc seconds. If one
 of the units <strong>e</strong>, <strong>f</strong>, <strong>k</strong>, <strong>M</strong>, <strong>n</strong> or <strong>u</strong> is appended
 instead, the increment is assumed to be given in meter, foot, km, Mile,
@@ -324,7 +324,9 @@ Alternatively, append <strong>m</strong> to have sides first follow meridians,
 then parallels. Or append <strong>p</strong> to first follow parallels, then meridians.
 For Cartesian data, points are simply connected, unless you append
 <strong>x</strong> or <strong>y</strong> to construct stair-case paths whose first move is along
-<em>x</em> or <em>y</em>, respectively.</p>
+<em>x</em> or <em>y</em>, respectively.  If your Cartesian data are polar (<em>theta</em>, <em>r</em>), append
+<strong>t</strong> or <strong>r</strong> to construct stair-case paths whose first move is along
+<em>theta</em> or <em>r</em>, respectively.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
@@ -389,7 +391,7 @@ that only the cell where point lies is masked, <strong>-S</strong>1<strong>c</st
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -543,7 +545,7 @@ in plates.gmt, based on the attribute POL_ID, do</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

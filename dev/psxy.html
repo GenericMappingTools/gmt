@@ -240,7 +240,7 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt psxy</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>] ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>|<strong>r</strong>|<strong>t</strong>] ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>dx</em>/<em>dy</em> ]
@@ -310,14 +310,16 @@ then we read from standard input.  </p>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>]</dt><dd><p>By default, geographic line segments are drawn as great circle arcs by resampling
+<dt><strong>-A</strong>[<strong>m</strong>|<strong>p</strong>|<strong>x</strong>|<strong>y</strong>|<strong>r</strong>|<strong>t</strong>]</dt><dd><p>By default, geographic line segments are drawn as great circle arcs by resampling
 coarse input data along such arcs. To disable this sampling and draw them as
 straight lines, use the <strong>-A</strong> flag.  Alternatively, add <strong>m</strong> to draw
 the line by first following a meridian, then a parallel. Or append <strong>p</strong>
 to start following a parallel, then a meridian. (This can be practical
 to draw a line along parallels, for example).  For Cartesian data, points
 are simply connected, unless you append <strong>x</strong> or <strong>y</strong> to draw stair-case
-curves that whose first move is along <em>x</em> or <em>y</em>, respectively.</p>
+curves that whose first move is along <em>x</em> or <em>y</em>, respectively. For polar
+projection, append <strong>r</strong> or <strong>t</strong> to draw stair-case curves that whose first
+move is along <em>r</em> or <em>theta</em>, respectively.</p>
 </dd>
 </dl>
 <dl class="simple" id="b">
@@ -373,10 +375,10 @@ where they are plotted on top to avoid the lower bounds being obscured.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong>[<strong>c</strong>|<strong>n</strong>|<strong>r</strong>][<strong>a</strong>|<strong>f</strong>|<strong>s</strong>|<strong>r</strong>|<em>refpoint</em>]</dt><dd><p>Alter the way points are connected (by specifying a <em>scheme</em>) and data are grouped (by specifying a <em>method</em>).
+<dt><strong>-F</strong>[<strong>c</strong>|<strong>n</strong>|<strong>p</strong>][<strong>a</strong>|<strong>f</strong>|<strong>s</strong>|<strong>r</strong>|<em>refpoint</em>]</dt><dd><p>Alter the way points are connected (by specifying a <em>scheme</em>) and data are grouped (by specifying a <em>method</em>).
 Append one of three line connection schemes:
 <strong>c</strong>: Draw continuous line segments for each group [Default].
-<strong>r</strong>: Draw line segments from a reference point reset for each group.
+<strong>p</strong>: Draw line segments from a reference point reset for each group.
 <strong>n</strong>: Draw networks of line segments between all points in each group.
 Optionally, append the one of four segmentation methods to define the group:
 <strong>a</strong>: Ignore all segment headers, i.e., let all points belong to a single group,
@@ -386,7 +388,7 @@ reset the group reference point to the first point of each group.
 <strong>s</strong>: Segment headers are honored so each segment is a group; the group
 reference point is reset to the first point of each incoming segment [Default].
 <strong>r</strong>: Same as <strong>s</strong>, but the group reference point is reset after
-each record to the previous point (this method is only available with the <strong>-Fr</strong> scheme).
+each record to the previous point (this method is only available with the <strong>-Fp</strong> scheme).
 Instead of the codes <strong>a</strong>|<strong>f</strong>|<strong>s</strong>|<strong>r</strong> you may append
 the coordinates of a <em>refpoint</em> which will serve as a fixed external
 reference point for all groups.</p>
@@ -1068,7 +1070,7 @@ To apply the color obtain to a fill, use <strong>-G+z</strong>; to apply it to t
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-a</strong>[[<em>col</em>=]<em>name</em>][,<em>…</em>] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set aspatial column associations <em>col</em>=<em>name</em>.</p>
+<dt><strong>-a</strong>[[<em>col</em>=]<em>name</em>[,<em>…</em>]] <a class="reference internal" href="gmt.html#aspatial-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set aspatial column associations <em>col</em>=<em>name</em>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -1092,7 +1094,7 @@ To apply the color obtain to a fill, use <strong>-G+z</strong>; to apply it to t
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -1466,7 +1468,7 @@ rearrange your data record to match the expected format.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

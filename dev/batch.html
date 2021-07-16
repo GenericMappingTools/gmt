@@ -239,7 +239,7 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt batch</strong> <em>mainscript</em>
 <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>prefix</em>
-<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>njobs</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]]
+<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>njobs</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]|<strong>W</strong>]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>includefile</em> ]
 [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>job</em>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong>[<strong>s</strong>] ]
@@ -278,14 +278,15 @@ are discussed below.</p>
 </dd>
 </dl>
 <dl class="simple" id="t">
-<dt><strong>-T</strong><em>njobs</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]]</dt><dd><p>Either specify how many jobs to make, create a one-column data set width values from
+<dt><strong>-T</strong><em>njobs</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]|<strong>W</strong>]</dt><dd><p>Either specify how many jobs to make, create a one-column data set width values from
 <em>min</em> to <em>max</em> every <em>inc</em> (append <strong>+n</strong> if <em>inc</em> is number of jobs instead), or supply a file with
 a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
 <em>mainscript</em> as named variables <strong>BATCH_COL0</strong>, <strong>BATCH_COL1</strong>, etc., while any trailing text
 can be accessed via the variable <strong>BATCH_TEXT</strong>.  Append <strong>+w</strong> to split the trailing
 string into individual <em>words</em> that can be accessed via variables <strong>BATCH_WORD0</strong>, <strong>BATCH_WORD1</strong>,
-etc. By default we use any white-space to separate words.  Append <em>str</em> to select another character(s)
-as the valid separator(s). The number of records equals the number of jobs. Note that the <em>preflight</em> script is allowed to
+etc. By default we look for either tabs or spaces to separate words.  Append <em>str</em> to select other character(s)
+as the valid separator(s) instead. To just use TAB as the only valid separator use <strong>+W</strong> instead.
+The number of records equals the number of jobs. Note that the <em>preflight</em> script is allowed to
 create <em>timefile</em>, hence we check for its existence both before <em>and</em> after the <em>preflight</em> script has
 completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
 job number via <strong>+s</strong><em>first</em>.  <strong>Note</strong>: All jobs are still included; this modifier only affects
@@ -537,7 +538,7 @@ gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w<span class="s2">&quot;\
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

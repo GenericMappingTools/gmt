@@ -238,7 +238,7 @@
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt dimfilter</strong> <em>ingrid</em>
-<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>distance_flag</em>
+<a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>0-4</em>
 <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>x</strong><em>width</em>[<em>modifier</em>]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em>
 <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><strong>x</strong><em>sectors</em>[<em>modifier</em>]
@@ -278,8 +278,8 @@ DiM-filtered data is generally recommended.</p>
 </dd>
 </dl>
 <dl id="d">
-<dt><strong>-D</strong><em>distance_flag</em></dt><dd><p>Distance <em>flag</em> tells how grid (x,y) relates to filter <em>width</em>, as follows:</p>
-<p><em>flag</em> = 0: grid (x,y) same units as <em>width</em>, Cartesian distances.
+<dt><strong>-D</strong><em>0-4</em></dt><dd><p>Distance <em>flag</em> determines how grid (x,y) relates to filter <em>width</em>, as follows:</p>
+<p><em>flag</em> = 0: grid (x,y) in same units as <em>width</em>, Cartesian distances.
 <em>flag</em> = 1: grid (x,y) in degrees, <em>width</em> in kilometers, Cartesian distances.
 <em>flag</em> = 2: grid (x,y) in degrees, <em>width</em> in km, dx scaled by
 cos(middle y), Cartesian distances.</p>
@@ -293,7 +293,7 @@ calculation.</p>
 </dd>
 </dl>
 <dl id="f">
-<dt><strong>-F</strong><strong>x</strong><em>width</em>[<em>modifier</em>]</dt><dd><p>Sets the primary filter type. Choose among convolution and
+<dt><strong>-F</strong><strong>x</strong><em>width</em>[<strong>+l</strong>|<strong>u</strong>]</dt><dd><p>Sets the primary filter type. Choose among convolution and
 non-convolution filters. Append the filter code <strong>x</strong> followed by the full
 diameter <em>width</em>. Available convolution filters are:</p>
 <p>(<strong>b</strong>) Boxcar: All weights are equal.</p>
@@ -308,7 +308,7 @@ return the smallest or largest of each sector’s modal values.</p>
 </dd>
 </dl>
 <dl id="n">
-<dt><strong>-N</strong><strong>x</strong><em>sectors</em>[<em>modifier</em>]</dt><dd><p>Sets the secondary filter type <strong>x</strong> and the number of bow-tie sectors.
+<dt><strong>-N</strong><strong>x</strong><em>sectors</em>[<strong>+l</strong>|<strong>u</strong>]</dt><dd><p>Sets the secondary filter type <strong>x</strong> and the number of bow-tie sectors.
 <em>sectors</em> must be integer and larger than 0. When <em>sectors</em> is
 set to 1, the secondary filter is not effective. Available secondary
 filters <strong>x</strong> are:</p>
@@ -491,7 +491,7 @@ Geosyst.</em>, <strong>9</strong>, Q03005, doi:10.1029/2007GC001850.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

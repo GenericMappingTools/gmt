@@ -116,11 +116,11 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**c**\|\ **n**\|\ **r**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*]
+**-F**\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*]
     Alter the way points are connected (by specifying a *scheme*) and data are grouped (by specifying a *method*).
     Append one of four line connection schemes:
     **c**\ : Form continuous line segments for each group [Default].
-    **r**\ : Form line segments from a reference point reset for each group.
+    **p**\ : Form line segments from a reference point reset for each group.
     **n**\ : Form networks of line segments between all points in each group.
     **v**\ : Form vector line segments suitable for :doc:`plot` **-Sv+s**.
     Optionally, append the one of four segmentation methods to define the group:
@@ -131,7 +131,7 @@ Optional Arguments
     **s**\ : Segment headers are honored so each segment is a group; the group
     reference point is reset to the first point of each incoming segment [Default].
     **r**\ : Same as **s**, but the group reference point is reset after
-    each record to the previous point (this method is only available with the **-Fr** scheme).
+    each record to the previous point (this method is only available with the **-Fp** scheme).
     Instead of the codes **a**\|\ **f**\|\ **s**\|\ **r** you may append
     the coordinates of a *refpoint* which will serve as a fixed external
     reference point for all groups.
@@ -341,7 +341,7 @@ where we reset the origin of the sequential numbering from 0 to 5000, try::
 
 To only read rows 100-200 and 500-600 from file junk.txt, try::
 
-    gmt convert junk.txt -q100-200,500-600 < subset.txt
+    gmt convert junk.txt -q100-200,500-600 > subset.txt
 
 To get all rows except those bad ones between rows 1000-2000, try::
 

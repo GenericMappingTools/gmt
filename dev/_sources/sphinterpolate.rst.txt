@@ -14,10 +14,10 @@ Synopsis
 
 **gmt sphinterpolate** [ *table* ]
 |-G|\ *grdfile*
+|SYN_OPT-I|
+|SYN_OPT-R|
 [ |-D|\ [*east*] ]
-[ |SYN_OPT-I| ]
 [ |-Q|\ *mode*\ [*options*] ]
-[ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
@@ -54,6 +54,15 @@ Required Arguments
 **-G**\ *grdfile*
     Name of the output grid to hold the interpolation.
 
+.. _-I:
+
+.. include:: explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rgeo.rst_
+
 Optional Arguments
 ------------------
 
@@ -64,10 +73,6 @@ Optional Arguments
     [Default assumes there are no duplicates, except possibly at the poles].
     Append a repeating longitude (*east*) to skip records with that longitude instead
     of the full (slow) search for duplicates.
-
-.. _-I:
-
-.. include:: explain_-I.rst_
 
 .. _-Q:
 
@@ -93,11 +98,6 @@ Optional Arguments
     bound on weighted sum of squares of deviations from data. Here, *N* is the number of
     iterations used to converge at solutions for gradients when variable
     tensions are selected (e.g., **-T** only) [3]
-
-.. _-R:
-
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rgeo.rst_
 
 .. _-T:
 

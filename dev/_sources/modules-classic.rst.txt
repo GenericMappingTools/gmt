@@ -41,7 +41,6 @@ All modules are requested via a call to the :doc:`gmt` program.
     gmtconnect
     gmtconvert
     gmtdefaults
-    grdgdal
     gmtget
     gmtinfo
     gmtlogo-classic
@@ -66,6 +65,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     grdfft
     grdfill
     grdfilter
+    grdgdal
     grdgradient
     grdhisteq
     grdimage-classic

@@ -489,7 +489,7 @@ via <strong>-C</strong> instead.</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
-<dt><strong>-Q</strong>[<em>cut</em>][<strong>+z</strong>]</dt><dd><p>Do not draw contours with less than <em>cut</em> number of points [Draw all contours].
+<dt><strong>-Q</strong>[<em>n</em>][<strong>+z</strong>]</dt><dd><p>Do not draw contours with less than <em>n</em> number of points [Draw all contours].
 Alternatively, give instead a minimum contour length in distance units
 (see <a class="reference internal" href="#units">Units</a> for available units and how distances are computed),
 including <strong>c</strong> (Cartesian distances using user coordinates) or <strong>C</strong> for plot
@@ -556,7 +556,7 @@ file is applied to the contour annotations.  Select <strong>+c</strong> for both
 </dd>
 </dl>
 <dl class="simple" id="z">
-<dt><strong>-Z</strong>[<strong>+s</strong><em>factor</em>][<strong>+o</strong><em>shift</em>][<strong>+p</strong>]</dt><dd><p>Use to subtract <em>shift</em> from the data and multiply the results by
+<dt><strong>-Z</strong>[<strong>+o</strong><em>shift</em>][<strong>+p</strong>][<strong>+s</strong><em>factor</em>]</dt><dd><p>Use to subtract <em>shift</em> from the data and multiply the results by
 <em>factor</em> before contouring starts [1/0]. (Numbers in <strong>-A</strong>, <strong>-C</strong>,
 <strong>-L</strong> refer to values after this scaling has occurred.) Append
 <strong>+p</strong> to indicate that this grid file contains z-values that are
@@ -725,7 +725,7 @@ contours_O.txt for open contours, try</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

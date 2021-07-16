@@ -51,8 +51,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="gmtget" href="gmtget.html" />
-    <link rel="prev" title="gmtdefaults" href="gmtdefaults.html" />
+    <link rel="next" title="grdgradient" href="grdgradient.html" />
+    <link rel="prev" title="grdfilter" href="grdfilter.html" />
 
 
   <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
@@ -241,7 +241,7 @@
 <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>prog</em>[<strong>+m</strong><em>method</em><strong>+c</strong><em>cpt</em>]
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outfile</em>
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>“<em>gd opts</em>”]
-[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<strong>+r+w</strong>]]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<strong>+r</strong>[<strong>+w</strong>]]]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-bi</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
@@ -292,7 +292,7 @@ or <em>roughness</em>) and, for <em>color-relief</em>, you also need to specify 
 </dd>
 </dl>
 <dl class="simple" id="m">
-<dt><strong>-M</strong>[<strong>+r+w</strong>]</dt><dd><p>Read and write files via GDAL. <strong>-M</strong> alone selects both reading and writing with GDAL.
+<dt><strong>-M</strong>[<strong>+r</strong>[<strong>+w</strong>]]</dt><dd><p>Read and write files via GDAL. <strong>-M</strong> alone selects both reading and writing with GDAL.
 Option <strong>-M+r</strong> alone instructs the program to read with GDAL (and save with GMT). This option is needed when reading
 OGR vector data. <strong>-M+w</strong> indicates that the output will be saved with GDAL.</p>
 </dd>
@@ -328,7 +328,7 @@ only applies to xyz input via GMT.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -380,8 +380,8 @@ and saving the result as a netCDF:</p>
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="gmtget.html" class="btn btn-neutral float-right" title="gmtget" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="gmtdefaults.html" class="btn btn-neutral float-left" title="gmtdefaults" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdgradient.html" class="btn btn-neutral float-right" title="grdgradient" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="grdfilter.html" class="btn btn-neutral float-left" title="grdfilter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
@@ -390,7 +390,7 @@ and saving the result as a netCDF:</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

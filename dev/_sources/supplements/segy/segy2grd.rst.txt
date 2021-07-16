@@ -16,7 +16,7 @@ Synopsis
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**n**\|\ **z**] ]
-[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
+[ |-D|\ |SYN_OPT-D2| ]
 [ |-L|\ [*nsamp*] ]
 [ |-M|\ [*ntraces*] ]
 [ |-N|\ *nodata* ]

@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfill** *ingrid*
-[ |-A|\ *mode*\ [*arg*] ]
+[ |-A|\ **c**\|\ **n**\|\ **s**\ [*arg*] ]
 [ |-G|\ *outgrid* ]
 [ |-L|\ [**p**] ]
 [ |-N|\ *value* ]
@@ -43,10 +43,10 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ *mode*\ [*arg*]
+**-A**\ **c**\|\ **n**\|\ **s**\ [*arg*]
     Specify the hole-filling algorithm to use.  Choose among **c** for constant
     fill (and append the constant fill *value*), **n** for nearest neighbor (and optionally
-    append a search *radius* in pixels [default radius is :math:`r^2 = \sqrt{X^2 + Y^2}`,
+    append a search *radius* in pixels [default radius is :math:`r = \sqrt{X^2 + Y^2}`,
     where (*X,Y*) are the node dimensions of the grid]), or
     **s** for bicubic spline (optionally append a *tension* parameter [no tension]).
 
@@ -90,32 +90,28 @@ Examples
 .. include:: explain_example.rst_
 
 To identify all regions with NaNs in the grid data.grd and create a listing of the
-bounding coordinates of rectangular regions that would cover these NaN areas, try
-
-   ::
+bounding coordinates of rectangular regions that would cover these NaN areas, try::
 
     gmt grdfill data.grd -L > wesn_listing.txt
 
 To identify the same areas but this time write a multisegment file with polygons
-corresponding to the rectangular subregions, use
-
-   ::
+corresponding to the rectangular subregions, use::
 
     gmt grdfill data.grd -Lp > NaN_regions.txt
 
-To replace all NaN values in the file data.grd with the value 999.0, use
-
-   ::
+To replace all NaN values in the file data.grd with the value 999.0, use::
 
     gmt grdfill data.grd -Ac999 -Gno_NaNs_data.grd
 
 
 To replace all NaN values in the file data.grd with the values at the
-nearest non-NaN neighbor, try
-
-   ::
+nearest non-NaN neighbor, try::
 
     gmt grdfill data.grd -An -Gno_NaNs_NN_data.grd
+
+To replace all NaN values in the file data.grd with a spline interpolation using a tension of 0.2, try::
+
+    gmt grdfill data.grd -As0.2 -Gno_NaNs_spline_data.grd
 
 
 See Also

@@ -12,12 +12,15 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt velo** [ *table* ] |-J|\ *parameters*
+**gmt velo**
+[ *table* ]
+|-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][/*args*][**+f**\ *font*]
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*]
+[ |-D|\ *scale* ]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]
@@ -28,7 +31,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][**+c**\ [**f**\|\ **l**]] ]
 [ |-Z|\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**] ]
-|SYN_OPT-X| ]
+[ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]

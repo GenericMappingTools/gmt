@@ -49,7 +49,6 @@ All modules are requested via a call to the :doc:`gmt` program.
    gmtconnect
    gmtconvert
    gmtdefaults
-   grdgdal
    gmtget
    gmtinfo
    gmtlogo
@@ -74,6 +73,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    grdfft
    grdfill
    grdfilter
+   grdgdal
    grdgradient
    grdhisteq
    grdimage
@@ -212,7 +212,6 @@ Core Modules
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
     - :doc:`gmtdefaults`
-    - :doc:`grdgdal`
     - :doc:`gmtget`
     - :doc:`gmtinfo`
     - :doc:`gmtlogo`
@@ -237,6 +236,7 @@ Core Modules
     - :doc:`grdfft`
     - :doc:`grdfill`
     - :doc:`grdfilter`
+    - :doc:`grdgdal`
     - :doc:`grdgradient`
     - :doc:`grdhisteq`
     - :doc:`grdimage`

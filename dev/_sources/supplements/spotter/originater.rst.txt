@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt originater** [ *table* ] |-E|\ *rotfile*\ [**+i**]
+**gmt originater** [ *table* ]
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
 |-F|\ *hs_file*\ [**+d**]
 [ |-D|\ *d_km* ]
 [ |-L|\ [*flag*] ]
@@ -29,6 +30,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -157,6 +159,7 @@ Optional Arguments
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-q.rst_
+.. include:: ../../explain_-s.rst_
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_help.rst_
 

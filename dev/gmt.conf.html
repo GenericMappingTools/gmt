@@ -963,9 +963,18 @@ Choose <strong>auto</strong> for <a class="reference internal" href="cookbook/fe
 [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong> for
 <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
 </dd>
+<dt id="term-MAP_LABEL_MODE"><strong>MAP_LABEL_MODE</strong><a class="headerlink" href="#term-MAP_LABEL_MODE" title="Permalink to this term">¶</a></dt><dd><p>Determines from where the label offset is measured: Choose <strong>annot</strong>
+to mean the distance from the end of the annotation or <strong>axis</strong>
+to mean the distance from the axis.  To set separate modes for the
+<em>x</em> and <em>y</em> axes, separate modes by a slash [default is <strong>annot/annot</strong>]. Choose
+<strong>axis</strong> if you need to align multiple axes labels across many rows or columns.</p>
+</dd>
 <dt id="term-MAP_LABEL_OFFSET"><strong>MAP_LABEL_OFFSET</strong><a class="headerlink" href="#term-MAP_LABEL_OFFSET" title="Permalink to this term">¶</a></dt><dd><p>Distance from base of axis annotations to the top of the axis label
 [default is <a class="reference internal" href="theme-settings.html"><span class="doc">theme dependent</span></a>]. Choose <strong>auto</strong>
-for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>.</p>
+for <a class="reference internal" href="cookbook/features.html#auto-scaling"><span class="std std-ref">automatic scaling with plot size</span></a>. To
+set different offsets for the <em>x</em> and <em>y</em> axes, separate distances
+by a slash (e.g., <strong>8p/12p</strong> for 8p offset for the x-axis and 12p
+offset for the y-axis)</p>
 </dd>
 <dt id="term-MAP_LINE_STEP"><strong>MAP_LINE_STEP</strong><a class="headerlink" href="#term-MAP_LINE_STEP" title="Permalink to this term">¶</a></dt><dd><p>Determines the maximum length (&gt; 0) of individual straight
 line-segments when drawing arcuate lines [default is <strong>0.75p</strong>]</p>
@@ -1540,7 +1549,7 @@ correspond to 1800 through 1828. [default is <strong>1950</strong>].</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

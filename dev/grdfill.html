@@ -239,7 +239,7 @@
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt grdfill</strong> <em>ingrid</em>
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>mode</em>[<em>arg</em>] ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>c</strong>|<strong>n</strong>|<strong>s</strong>[<em>arg</em>] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outgrid</em> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<strong>p</strong>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>value</em> ]
@@ -266,9 +266,9 @@ can be used to replace the hole values.  <strong>Note</strong>: One of <strong>-
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><em>mode</em>[<em>arg</em>]</dt><dd><p>Specify the hole-filling algorithm to use.  Choose among <strong>c</strong> for constant
+<dt><strong>-A</strong><strong>c</strong>|<strong>n</strong>|<strong>s</strong>[<em>arg</em>]</dt><dd><p>Specify the hole-filling algorithm to use.  Choose among <strong>c</strong> for constant
 fill (and append the constant fill <em>value</em>), <strong>n</strong> for nearest neighbor (and optionally
-append a search <em>radius</em> in pixels [default radius is <span class="math notranslate nohighlight">\(r^2 = \sqrt{X^2 + Y^2}\)</span>,
+append a search <em>radius</em> in pixels [default radius is <span class="math notranslate nohighlight">\(r = \sqrt{X^2 + Y^2}\)</span>,
 where (<em>X,Y</em>) are the node dimensions of the grid]), or
 <strong>s</strong> for bicubic spline (optionally append a <em>tension</em> parameter [no tension]).</p>
 </dd>
@@ -332,32 +332,28 @@ can be cut and pasted into your terminal for testing.
 Other commands requiring input files are just dummy examples of the types
 of uses that are common but cannot be run verbatim as written.</p>
 <p>To identify all regions with NaNs in the grid data.grd and create a listing of the
-bounding coordinates of rectangular regions that would cover these NaN areas, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -L &gt; wesn_listing.txt
+bounding coordinates of rectangular regions that would cover these NaN areas, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -L &gt; wesn_listing.txt
 </pre></div>
 </div>
-</div></blockquote>
 <p>To identify the same areas but this time write a multisegment file with polygons
-corresponding to the rectangular subregions, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -Lp &gt; NaN_regions.txt
+corresponding to the rectangular subregions, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -Lp &gt; NaN_regions.txt
 </pre></div>
 </div>
-</div></blockquote>
-<p>To replace all NaN values in the file data.grd with the value 999.0, use</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -Ac999 -Gno_NaNs_data.grd
+<p>To replace all NaN values in the file data.grd with the value 999.0, use:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -Ac999 -Gno_NaNs_data.grd
 </pre></div>
 </div>
-</div></blockquote>
 <p>To replace all NaN values in the file data.grd with the values at the
-nearest non-NaN neighbor, try</p>
-<blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -An -Gno_NaNs_NN_data.grd
+nearest non-NaN neighbor, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -An -Gno_NaNs_NN_data.grd
 </pre></div>
 </div>
-</div></blockquote>
+<p>To replace all NaN values in the file data.grd with a spline interpolation using a tension of 0.2, try:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdfill data.grd -As0.2 -Gno_NaNs_spline_data.grd
+</pre></div>
+</div>
 </div>
 <div class="section" id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
@@ -385,7 +381,7 @@ nearest non-NaN neighbor, try</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

@@ -237,9 +237,13 @@
 <p>Time domain filtering of 1-D data tables</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt filter1d</strong> [ <em>table</em> ] <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>type&lt;width&gt;</em>[<em>modifier</em>]
-[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>increment</em> ] [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
-[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>lack_width</em> ] [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>t_col</em> ] [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>q_factor</em> ]
+<p><strong>gmt filter1d</strong> [ <em>table</em> ]
+<a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>type&lt;width&gt;</em>[<strong>+l</strong>|<strong>u</strong>]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>increment</em> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>lack_width</em> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>t_col</em> ]
+[ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>q_factor</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>symmetry_factor</em> ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong>[<em>min/max</em>/]<em>inc</em>[<strong>+a</strong>][<strong>+e</strong>|<strong>i</strong>|<strong>n</strong>] |<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>file</em>|<em>list</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -277,7 +281,7 @@ then we read from standard input.  </p>
 </dd>
 </dl>
 <dl id="f">
-<dt><strong>-F</strong><strong>type</strong><em>width</em>[<em>modifier</em>]</dt><dd><p>Sets the filter <strong>type</strong>. Choose among convolution and non-convolution
+<dt><strong>-F</strong><strong>type</strong><em>width</em>[<strong>+l</strong>|<strong>u</strong>]</dt><dd><p>Sets the filter <strong>type</strong>. Choose among convolution and non-convolution
 filters. Append the filter code followed by the full filter
 <em>width</em> in same units as time column. By default we
 perform low-pass filtering; append <strong>+h</strong> to select high-pass filtering.
@@ -333,7 +337,7 @@ resample data with <a class="reference internal" href="sample1d.html"><span clas
 </dl>
 <dl class="simple" id="n">
 <dt><strong>-N</strong><em>t_col</em></dt><dd><p>Indicates which column contains the independent variable (time). The
-left-most column is # 0, the right-most is # (<em>n_cols</em> - 1).  [Default is 0].</p>
+left-most column is 0, while the right-most is (<em>n_cols</em> - 1) [Default is 0].</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
@@ -387,7 +391,7 @@ For details on array creation, see <a class="reference internal" href="#generate
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -561,9 +565,9 @@ with a 5 year Gaussian filter, try</p>
 <p>Data along track often have uneven sampling and gaps which we do not
 want to interpolate using <a class="reference internal" href="sample1d.html"><span class="doc">sample1d</span></a>. To find the median depth in a 50
 km window every 25 km along the track of cruise v3312, stored in
-v3312.dt, checking for gaps of 10km and asymmetry of 0.3:</p>
+v3312.txt, checking for gaps of 10km and asymmetry of 0.3:</p>
 <blockquote>
-<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt filter1d v3312.dt -FM50 -T0/100000/25 -L10 -S0.3 &gt; v3312_filt.dt
+<div><div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt filter1d v3312.txt -FM50 -T0/100000/25 -L10 -S0.3 &gt; v3312_filt.txt
 </pre></div>
 </div>
 </div></blockquote>
@@ -599,7 +603,7 @@ and not shorten the track, and add the distances to the file, use</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

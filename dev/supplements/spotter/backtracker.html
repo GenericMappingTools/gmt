@@ -237,12 +237,13 @@
 <p>Generate forward and backward flowlines and hotspot tracks</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt backtracker</strong> [ <em>table</em> ] <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>rot_file</em>|<em>lon</em>/<em>lat</em>/<em>angle</em>
+<p><strong>gmt backtracker</strong> [ <em>table</em> ]
+<a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>rot_file</em>|<em>ID1-ID2</em>|<em>lon</em>/<em>lat</em>/<em>angle</em>[<strong>+i</strong>]
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<em>young</em>/<em>old</em>] ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><strong>f</strong>|<strong>b</strong> ]
-[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>drift.txt</em> ]
-[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><strong>f</strong>|<strong>b</strong>[<em>step</em>] ]
-[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>fact</em>] ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>driftfile</em> ]
+[ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><strong>f</strong>|<strong>b</strong><strong>F</strong>|<strong>B</strong>[<em>step</em>] ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>factor</em>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>upper_age</em> ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>fixed_age</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>filestem</em> ]
@@ -252,10 +253,12 @@
 [ <strong>-b</strong><a class="reference internal" href="../../gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-d</strong><a class="reference internal" href="../../gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-e</strong><a class="reference internal" href="../../gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
+[ <strong>-f</strong><a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-h</strong><a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">headers</span></a> ]
 [ <strong>-i</strong><a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-o</strong><a class="reference internal" href="../../gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-q</strong><a class="reference internal" href="../../gmt.html#q-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-s</strong><a class="reference internal" href="../../gmt.html#s-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
@@ -280,7 +283,7 @@ then we read from standard input.  </p>
 </dd>
 </dl>
 <dl id="e">
-<dt><strong>-E</strong><em>rotfile</em></dt><dd><p>Rotations can be specified in one of three ways:
+<dt><strong>-E</strong><em>rot_file</em>|<em>ID1-ID2</em>|<em>lon</em>/<em>lat</em>/<em>angle</em>[<strong>+i</strong>]</dt><dd><p>Rotations can be specified in one of three ways:
 (1): Give file with rotation parameters. This file must contain one
 record for each rotation; each record must be of the following
 format:</p>
@@ -296,15 +299,16 @@ brackets. Here, <strong>C</strong> = (<em>g</em>/<em>khat</em>)*[ <em>a b d; b c
 which shows <strong>C</strong> made up of three row vectors. If the degrees of
 freedom (<em>df</em>) in fitting the rotation is 0 or not given it is set
 to 10000. Blank lines and records whose first column contains # will
-be ignored. You may append <strong>+i</strong> to the filename to indicate
-you wish to invert the rotations.
+be ignored.
 (2): Give the filename composed of two plate IDs
 separated by a hyphen (e.g., PAC-MBL) and we will instead extract
 that rotation from the GPlates rotation database. We return an error
 if the rotation cannot be found.
 (3): Specify <em>lon</em>/<em>lat</em>/<em>angle</em>, i.e., the longitude,
 latitude, and opening angle (all in degrees and separated by /) for
-a single total reconstruction rotation.</p>
+a single total reconstruction rotation.
+Regardless of method, you may append <strong>+i</strong> to the argument to indicate
+you wish to invert the rotation(s).</p>
 </dd>
 </dl>
 </div>
@@ -328,7 +332,7 @@ you are not; instead you specify the age at the reconstructed point.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong><em>drift.txt</em></dt><dd><p>Supply a file with (lon, lat, age) records that describe the history
+<dt><strong>-F</strong><em>driftfile</em></dt><dd><p>Supply a file with (lon, lat, age) records that describe the history
 of hotspot motion for the current hotspot. The reconstructions will
 use the 3rd data input column (i.e., the age) to obtain the
 location of the hotspot at that time, via an interpolation of the
@@ -340,7 +344,7 @@ seamount trails (<strong>-Df</strong> <strong>-Lb</strong>). (3) Cannot be used 
 </dd>
 </dl>
 <dl class="simple" id="l">
-<dt><strong>-Lf</strong>|<strong>b</strong>[<em>step</em>]</dt><dd><p>Specify a sampled path between initial and final position: <strong>-Lf</strong>
+<dt><strong>-Lf</strong>|<strong>b</strong>|<strong>F</strong>|<strong>B</strong>[<em>step</em>]</dt><dd><p>Specify a sampled path between initial and final position: <strong>-Lf</strong>
 will draw particle flowlines, while <strong>-Lb</strong> will draw backtrack
 (hotspot track) paths. Append sampling interval in km. If <em>step</em> &lt; 0 or not provided
 then only the rotation times will be returned. When <strong>-LF</strong> or
@@ -350,8 +354,8 @@ control the direction of the paths by using <strong>-D</strong>.</p>
 </dd>
 </dl>
 <dl class="simple" id="m">
-<dt><strong>-M</strong>[<em>fact</em>]</dt><dd><p>Scale opening angles by <em>fact</em> on output [0.5].
-Typically used to get half-rates needed for flowlines.</p>
+<dt><strong>-M</strong>[<em>factor</em>]</dt><dd><p>Scale opening angles by <em>factor</em> on output [0.5].
+Typically used to get half-spreading rates needed to compute flowlines.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
@@ -408,11 +412,15 @@ rotation.</p>
 </dd>
 </dl>
 <dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="../../gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
 <dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -421,6 +429,10 @@ rotation.</p>
 </dl>
 <dl class="simple">
 <dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="../../gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data range(s) [all].</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-s</strong>[<em>cols</em>][<strong>+a</strong>][<strong>+r</strong>] <a class="reference internal" href="../../gmt.html#s-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set handling of NaN records.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -533,7 +545,7 @@ p. 319.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

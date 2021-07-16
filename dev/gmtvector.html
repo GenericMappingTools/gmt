@@ -237,10 +237,13 @@
 <p>Operations on Cartesian vectors in 2-D and 3-D</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt vector</strong> [ <em>tables</em> ] [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>m</strong>[<em>conf</em>]|<em>vector</em> ]
+<p><strong>gmt vector</strong> [ <em>table</em> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>m</strong>[<em>conf</em>]|<em>vector</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>] ]
-[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ] [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ] [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>vector</em> ]
-[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>a</strong>|<strong>d</strong>|<strong>D</strong>|<strong>p</strong><em>az</em>|<strong>r</strong>[<em>arg</em>]|<strong>R</strong>|<strong>s</strong>|<strong>t</strong>[<em>arg</em>]|<strong>x</strong> ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ]
+[ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>vector</em> ]
+[ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><strong>a</strong>|<strong>d</strong>|<strong>D</strong>|<strong>p</strong><em>azim</em>|<strong>r</strong>[<em>arg</em>]|<strong>R</strong>|<strong>s</strong>|<strong>t</strong>[<em>arg</em>]|<strong>x</strong> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
 [ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
@@ -252,6 +255,7 @@
 [ <strong>-j</strong><a class="reference internal" href="gmt.html#distcalc-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-o</strong><a class="reference internal" href="gmt.html#ocols-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-q</strong><a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-s</strong><a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
@@ -260,7 +264,7 @@
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><strong>vector</strong> reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
 [or (lat,lon); see <strong>-:</strong>] coordinates from the first 2-3 columns on
-standard input [or one or more <em>tables</em>]. If <strong>-fg</strong> is selected and only two items
+standard input [or one or more tables]. If <strong>-fg</strong> is selected and only two items
 are read (i.e., lon, lat) then these coordinates are converted to
 Cartesian three-vectors on the unit sphere. Otherwise we expect (r,
 theta) unless <strong>-Ci</strong> is in effect. If no file is found we expect a
@@ -287,9 +291,9 @@ read from standard input.</p>
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><strong>m</strong>[<em>conf</em>]|<em>vector</em></dt><dd><p>Specify a single, primary vector instead of reading <em>tables</em>; see
-<em>tables</em> for possible vector formats. Alternatively, append <strong>m</strong>
-to read <em>tables</em> and set the single, primary vector to be the mean
+<dt><strong>-A</strong><strong>m</strong>[<em>conf</em>]|<em>vector</em></dt><dd><p>Specify a single, primary vector instead of reading data table(s); see
+<em>table</em> for possible vector formats. Alternatively, append <strong>m</strong>
+to read <em>table</em> and set the single, primary vector to be the mean
 resultant vector first. We also compute the confidence ellipse for
 the mean vector (azimuth of major axis, major axis, and minor axis;
 for geographic data the axes will be reported in km). You may
@@ -322,11 +326,11 @@ vector. Required by operations in <strong>-T</strong> that need two vectors
 </dd>
 </dl>
 <dl class="simple" id="t">
-<dt><strong>-T</strong><strong>a</strong>|<strong>d</strong>|<strong>D</strong>|<strong>p</strong><em>az</em>|<strong>s</strong>|<strong>r</strong>[<em>arg</em>]|<strong>R</strong>|<strong>s</strong>|<strong>t</strong>[<em>arg</em>]|<strong>x</strong></dt><dd><p>Specify the vector transformation of interest. Append <strong>a</strong> for
+<dt><strong>-T</strong><strong>a</strong>|<strong>d</strong>|<strong>D</strong>|<strong>p</strong><em>azim</em>|<strong>s</strong>|<strong>r</strong>[<em>arg</em>]|<strong>R</strong>|<strong>s</strong>|<strong>t</strong>[<em>arg</em>]|<strong>x</strong></dt><dd><p>Specify the vector transformation of interest. Append <strong>a</strong> for
 average, <strong>b</strong> for the pole of the two points bisector, <strong>d</strong> for
 dot product (use <strong>D</strong> to get angle in degrees between the two
-vectors), <strong>p</strong><em>az</em> for the pole to the great circle specified by
-input vector and the circle’s <em>az</em> (no second vector used), <strong>s</strong> for vector sum,
+vectors), <strong>p</strong><em>azim</em> for the pole to the great circle specified by
+input vector and the circle’s <em>azim</em> (no second vector used), <strong>s</strong> for vector sum,
 <strong>r</strong><em>par</em> for vector rotation (here, <em>par</em> is a single
 angle for 2-D Cartesian data and <em>lon/lat/angle</em> for a 3-D rotation
 pole and angle), <strong>R</strong> will instead rotate the fixed secondary vector
@@ -370,7 +374,7 @@ perform a great circle calculation unless <strong>-je</strong> is selected.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -503,7 +507,7 @@ reconstructions, see the GMT “spotter” supplement.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

@@ -238,12 +238,15 @@
 <p>Plot velocity vectors, crosses, anisotropy bars and wedges</p>
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
-<p><strong>gmt psvelo</strong> [ <em>table</em> ] <a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
+<p><strong>gmt psvelo</strong>
+[ <em>table</em> ]
+<a class="reference internal" href="#j"><span><strong>-J</strong></span></a></strong><em>parameters</em>
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em>
 <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong><em>format</em>[<em>scale</em>][/<em>args</em>][<strong>+f</strong><em>font</em>]
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><em>parameters</em> ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em>]
+[ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>scale</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>fill</em> ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>fill</em> ]
 [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong>[<em>scale</em>] ]
@@ -276,6 +279,13 @@ You may choose from velocity vectors and their uncertainties,
 rotational wedges and their uncertainties, anisotropy bars,
 or strain crosses.  Symbol fills or their outlines may be colored
 based on constant parameters or via color lookup tables.</p>
+<div class="figure align-center" id="id1">
+<a class="reference internal image-reference" href="../../_images/GMT_velo.png"><img alt="../../_images/GMT_velo.png" src="../../_images/GMT_velo.png" style="width: 600px;" /></a>
+<p class="caption"><span class="caption-text">You can make four different geodetic symbols: Rotational wedges,
+velocity error ellipses with vector, anisotropy bars, and strain crosses.
+The first two symbols allow you to select separate colors and pens for the main
+symbol and its error component.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</div>
 </div>
 <div class="section" id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
@@ -290,45 +300,53 @@ then we read from standard input.  </p>
 <a class="reference internal" href="../../cookbook/options.html#proj-codes"><span class="std std-ref">(See projections table)</span></a>.</p>
 </dd>
 </dl>
-<span class="target" id="r"></span><dl class="simple">
-<dt><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</dt><dd><p><em>west</em>, <em>east</em>, <em>south</em>, and <em>north</em> specify the region of interest,
-and you may specify them in decimal degrees or in
-[±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format
-Append <strong>+r</strong> if lower left
-and upper right map coordinates are given instead of w/e/s/n. The
-two shorthands <strong>-Rg</strong> and <strong>-Rd</strong> stand for global domain (0/360
-and -180/+180 in longitude respectively, with -90/+90 in latitude).
-Set geographic regions by specifying ISO country codes from the Digital Chart of the World using
-<strong>-R</strong><em>code1,code2,…</em>[<strong>+r</strong>|<strong>R</strong>[<em>incs</em>]] instead:
-Append one or more comma-separated countries using the 2-character
-<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2">ISO 3166-1 alpha-2 convention</a>.  To select a state of a country
-(if available), append .state, e.g, US.TX for Texas.  To specify a
-whole continent, prepend = to any of the continent codes AF (Africa),
-AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
-NA (North America), or SA (South America).  Use <strong>+r</strong> to modify the bounding box coordinates from the polygon(s):
-Append <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or <em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> to adjust the
-region to be a multiple of these steps [no adjustment]. Alternatively, use <strong>+R</strong> to extend the region
-outward by adding these increments instead, or <strong>+e</strong> which is like <strong>+r</strong> but
-it ensures that the bounding box extends by at least 0.25 times the increment [no extension].
-Alternatively for grid creation, give <strong>R</strong><em>code</em><em>lon</em>/<em>lat</em>/<em>nx</em>/<em>ny</em>, where
-<em>code</em> is a 2-character combination of L, C, R (for left, center, or right)
-and T, M, B for top, middle, or bottom. e.g., BL for lower left.  This
-indicates which point on a rectangular region the <em>lon</em>/<em>lat</em> coordinate
-refers to, and the grid dimensions <em>nx</em> and <em>ny</em> with grid spacings via
-<strong>-I</strong> is used to create the corresponding region.
-Alternatively, specify the name of an existing grid file and the
-<strong>-R</strong> settings (and grid spacing and registration, if applicable) are copied from
-the grid. Appending <strong>+u</strong><em>unit</em> expects projected (Cartesian)
-coordinates compatible with chosen <strong>-J</strong> and we inversely project
-to determine actual rectangular geographic region.
-For perspective view (<strong>-p</strong>), optionally append /<em>zmin</em>/<em>zmax</em>.
-In case of perspective view (<strong>-p</strong>), a z-range (<em>zmin</em>, <em>zmax</em>)
-can be appended to indicate the third dimension. This needs to be
-done only when using the <strong>-Jz</strong> option, not when using only the
-<strong>-p</strong> option. In the latter case a perspective view of the plane is
-plotted, with no third dimension.  </p>
-</dd>
-</dl>
+<span class="target" id="r"></span><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]</p>
+<blockquote>
+<div><p>Specify the region of interest.   The region may be specified in one of six ways:</p>
+<ol class="arabic">
+<li><p><strong>-R</strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[<strong>+u</strong><em>unit</em>]. This is the standard way to specify geographic regions
+when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
+decimal degrees or in [±]dd:mm[:ss.xxx][<strong>W</strong>|<strong>E</strong>|<strong>S</strong>|<strong>N</strong>] format. Optionally, append
+<strong>+u</strong><em>unit</em> to specify a region in projected units (e.g., UTM meters) where <em>west</em>/<em>east</em>/<em>south</em>/<em>north</em> are
+Cartesian projected coordinates compatible with the chosen projection (<strong>-J</strong>) and <em>unit</em> is an allowable
+<a class="reference internal" href="../../cookbook/features.html#dist-units"><span class="std std-ref">distance unit</span></a>; we inversely project to determine the actual rectangular geographic region.</p></li>
+<li><p><strong>-R</strong><em>west</em>/<em>south</em>/<em>east</em>/<em>north</em><strong>+r</strong>. This form is useful for map projections that are oblique,
+making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
+and upper right corner geographic coordinates, followed by the modifier <strong>+r</strong>. This form guarantees a
+rectangular map even though lines of equal longitude and latitude are not straight lines.</p></li>
+<li><p><strong>-R</strong><strong>g</strong> or <strong>-R</strong><strong>d</strong>. These forms can be used to quickly specify the global domain (0/360 for <strong>-Rg</strong>
+and -180/+180 for <strong>-Rd</strong> in longitude, with -90/+90 in latitude).</p></li>
+<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by
+consulting the DCW (Digital Chart of the World) database and derives the bounding regions for one or more
+countries given by the codes. Simply append one or more comma-separated countries using the two-character
+<a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>. To select a state within a
+country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend <strong>=</strong> to any
+of the continent codes <strong>AF</strong> (Africa), <strong>AN</strong> (Antarctica), <strong>AS</strong> (Asia), <strong>EU</strong> (Europe), <strong>OC</strong> (Oceania),
+<strong>NA</strong> (North America), or <strong>SA</strong> (South America). The following modifiers can be appended:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>+r</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no adjustment]. For example, <strong>-R</strong><em>FR</em><strong>+r</strong>1 will select the
+national bounding box of France rounded to nearest integer degree.</p></li>
+<li><p><strong>+R</strong> to extend the region outward by adding the amounts specified by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em> [default is no extension].</p></li>
+<li><p><strong>+e</strong> to adjust the region boundaries to be multiples of the steps indicated by <em>inc</em>, <em>xinc</em>/<em>yinc</em>, or
+<em>winc</em>/<em>einc</em>/<em>sinc</em>/<em>ninc</em>, while ensuring that the bounding box extends by at least 0.25 times the increment
+[default is no adjustment].</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p><strong>-R</strong><em>justify</em><em>lon0</em>/<em>lat0</em>/<em>nx</em>/<em>ny</em>, where <em>justify</em> is a 2-character combination of
+<strong>L</strong>|<strong>C</strong>|<strong>R</strong> (for left, center, or right) and <strong>T</strong>|<strong>M</strong>|<strong>B</strong> (for top, middle, or bottom)
+(e.g., <strong>BL</strong> for lower left). The two character code <em>justify</em> indicates which point on a rectangular region
+region the <em>lon0</em>/<em>lat0</em> coordinates refer to and the grid dimensions <em>nx</em> and <em>ny</em> are used with grid spacings
+given via <strong>-I</strong> to create the corresponding region. This method can be used when creating grids. For example,
+<strong>-RCM</strong><em>25</em>/<em>25</em>/<em>50</em>/<em>50</em> specifies a <em>50</em>x<em>50</em> grid centered on <em>25</em>,<em>25</em>.</p></li>
+<li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending
+on the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration
+(see <a class="reference internal" href="../../cookbook/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
+</ol>
+</div></blockquote>
 <dl id="s">
 <dt><strong>-S</strong></dt><dd><p>Selects the meaning of the columns in the data file and the figure to be plotted.  In all
 cases, the scales are in data units per length unit and sizes are in length units (default length
@@ -342,6 +360,7 @@ Use <strong>+f</strong> to set the font and size of the text [9p,Helvetica,black
 The arrow will be drawn with the pen attributes specified by the <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> option and arrow-head can be colored via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.
 The ellipse will be filled with the color or shade specified by the <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> option [default is transparent],
 and its outline will be drawn if <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is selected using the pen selected (by <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> if not given by <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>).
+<strong>Note</strong>: If <em>confidence</em> is nonzero and neither <strong>-L</strong> nor <strong>-E</strong> are set then we use <strong>-W</strong> (or default) to draw ellipse outlines.
 Parameters are expected to be in the following columns:</p>
 <blockquote>
 <div><p><strong>1</strong>,<strong>2</strong>:
@@ -360,6 +379,7 @@ name of station (optional).</p>
 <blockquote>
 <div><p>Anisotropy bars. The <em>barscale</em> sets the scaling of the bars.
 If <em>barscale</em> is not given the we read it from the data file as an extra column.
+Unless <strong>-A</strong> is used to change it via modifier <strong>+h</strong><em>shape</em>, the vector shape defaults to 0.1.
 Parameters are expected to be in the following columns:</p>
 <blockquote>
 <div><p><strong>1</strong>,<strong>2</strong>:
@@ -377,6 +397,7 @@ Use <strong>+f</strong> to set the font and size of the text [9p,Helvetica,black
 The arrow will be drawn with the pen attributes specified by the <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> option and arrow-head can be colored via <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong>.
 The ellipse will be filled with the color or shade specified by the <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong> option [default is transparent],
 and its outline will be drawn if <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong> is selected using the pen selected (by <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong> if not given by <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>).
+<strong>Note</strong>: If <em>confidence</em> is nonzero and neither <strong>-L</strong> nor <strong>-E</strong> are set then we use <strong>-W</strong> (or default) to draw ellipse outlines.
 Parameters are expected to be in the following columns:</p>
 <blockquote>
 <div><p><strong>1</strong>,<strong>2</strong>:
@@ -446,8 +467,8 @@ determined from the magnitude.  See <strong>-Z</strong> for other selections.</p
 </dd>
 </dl>
 <dl class="simple" id="d">
-<dt><strong>-D</strong><em>Sigma_scale</em></dt><dd><p>can be used to rescale the uncertainties of velocities (<strong>-Se</strong> and
-<strong>-Sr</strong>) and rotations (<strong>-Sw</strong>). Can be combined with the <em>confidence</em> variable.</p>
+<dt><strong>-D</strong><em>scale</em></dt><dd><p>Can be used to rescale the uncertainties of velocities (<strong>-Se</strong> and
+<strong>-Sr</strong>) and rotations (<strong>-Sw</strong>) [1].</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
@@ -541,7 +562,7 @@ instead, append <strong>+e</strong>.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="../../gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -583,13 +604,13 @@ any module-specific option (but not the GMT common options), then exit.</p>
 </div>
 <div class="section" id="vector-attributes">
 <h2>Vector Attributes<a class="headerlink" href="#vector-attributes" title="Permalink to this headline">¶</a></h2>
-<div class="figure align-center" id="id1">
+<div class="figure align-center" id="id2">
 <a class="reference internal image-reference" href="../../_images/GMT_vector.png"><img alt="../../_images/GMT_vector.png" src="../../_images/GMT_vector.png" style="width: 600px;" /></a>
 <p class="caption"><span class="caption-text">Vector attributes are controlled by options and modifiers.  We will refer to
 this figure and the labels therein when introducing the corresponding modifiers.
 All vectors require you to specify the <strong>b</strong>egin point <span class="math notranslate nohighlight">\(x_b, y_b\)</span> and
 the <strong>e</strong>nd point <span class="math notranslate nohighlight">\(x_e, y_e\)</span>, or alternatively the direction <em>d</em> and length
-<em>L</em>, while for map projections we usually specify the azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> instead.</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+<em>L</em>, while for map projections we usually specify the azimuth <span class="math notranslate nohighlight">\(\alpha\)</span> instead.</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
 </div>
 <p>Several modifiers may be appended to vector-producing options for
 specifying the placement of vector heads, their shapes, and the
@@ -671,14 +692,14 @@ To center the vector on the balance point, use <strong>-Svb</strong>; to align p
 use <strong>-Svh</strong>; to align point with the vector tail, use <strong>-Svt</strong> [Default]. To give the
 head point’s coordinates instead of direction and length, use <strong>-Svs</strong>. Upper case
 <strong>B</strong>, <strong>H</strong>, <strong>T</strong>, <strong>S</strong> will draw a double-headed vector [Default is single head].</p>
-<div class="figure align-center" id="id2">
+<div class="figure align-center" id="id3">
 <a class="reference internal image-reference" href="../../_images/GMT_vector4.png"><img alt="../../_images/GMT_vector4.png" src="../../_images/GMT_vector4.png" style="width: 600px;" /></a>
 <p class="caption"><span class="caption-text">A GMT 4 vector has no separate pen for the stem -- it is all part of a Cartesian polygon.
 You may optionally fill and draw its outline.  The modifiers listed above generally do
 not apply.  <strong>Note</strong>: While the <em>tailwidth</em> (<span class="math notranslate nohighlight">\(t_w\)</span>) and <em>headlength</em> (<span class="math notranslate nohighlight">\(h_l\)</span>)
 parameters are given as indicated, the <em>halfheadwidth</em> (<span class="math notranslate nohighlight">\(h_w\)</span>) is oddly given as the
 half-width in GMT 4 so we retain that convention here (but have updated the documentation;
-blue lines indicate these three parameters).</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+blue lines indicate these three parameters).</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
 </div>
 </div>
 <div class="section" id="data-column-order">
@@ -774,7 +795,7 @@ Geophysics at University of Wisconsin-Madison, Madison, Wisconsin, USA</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

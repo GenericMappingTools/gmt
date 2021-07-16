@@ -239,7 +239,7 @@
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt rotconverter</strong> [ <strong>±</strong> ] <em>rotA</em> [ <strong>±</strong> <em>rotB</em> ] [ <strong>±</strong> <em>rotC</em> ] …
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong> ] [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
-[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><em>out</em> ]
+[ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong><strong>s</strong>|<strong>t</strong> ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong> ]
 [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong>[<em>fact</em>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong> ] [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong> ]
@@ -288,7 +288,7 @@ time information, give <em>lon/lat/angle</em> only.</p>
 </dd>
 </dl>
 <dl class="simple" id="f">
-<dt><strong>-F</strong><em>out</em></dt><dd><p>Specify the output format for rotations. The <em>out</em> flag must be
+<dt><strong>-F</strong><strong>s</strong>|<strong>t</strong></dt><dd><p>Specify the output format for rotations. The <em>out</em> flag must be
 either <strong>t</strong> or <strong>s</strong> for total reconstruction or stage rotations,
 respectively. [Default is <strong>-Ft</strong> (output contains total
 reconstruction rotations)].</p>
@@ -322,6 +322,10 @@ Requires stage pole output (see <strong>-F</strong>).</p>
 </dl>
 <dl class="simple" id="v">
 <dt><strong>-V</strong>[<em>level</em>]</dt><dd><p>Select verbosity level [<strong>w</strong>]. <a class="reference internal" href="../../gmt.html#v-full"><span class="std std-ref">(See full description)</span></a> <a class="reference internal" href="../../cookbook/options.html#verbose-feedback-the-v-option"><span class="std std-ref">(See cookbook information)</span></a>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-h</strong>[<strong>i</strong>|<strong>o</strong>][<em>n</em>][<strong>+c</strong>][<strong>+d</strong>][<strong>+m</strong><em>segheader</em>][<strong>+r</strong><em>remark</em>][<strong>+t</strong><em>title</em>] <a class="reference internal" href="../../gmt.html#h-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Skip or produce header record(s).  </p>
 </dd>
 </dl>
 <dl class="simple">
@@ -419,7 +423,7 @@ To use an alternate rotation file, create an environmental parameters named
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

@@ -1074,7 +1074,7 @@ even though lines of equal longitude and latitude are not straight lines.</p></l
 <li><p><strong>-R</strong><em>gridfile</em>. This will copy the domain settings found for the grid in specified file. Note that depending on
 the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration (see
 <a class="reference internal" href="cookbook/options.html#grid-registration-the-r-option"><span class="std std-ref">Grid registration: The -r option</span></a>).</p></li>
-<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]]. This indirectly supplies the region by consulting
+<li><p><strong>-R</strong><em>code1,code2,…</em>[<strong>+e</strong>|<strong>r</strong>|<strong>R</strong><em>incs</em>]. This indirectly supplies the region by consulting
 the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
 the codes. Simply append one or more comma-separated countries using the two-character
 <a class="reference external" href="https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)">ISO 3166-1 alpha-2 convention</a>.
@@ -1101,7 +1101,7 @@ region. This method can be used when creating grids. For example, <strong>-RCM</
 <li><p><strong>-R</strong><em>xmin</em>/<em>xmax</em>/<em>ymin</em>/<em>ymax</em>/<em>zmin</em>/<em>zmax</em>. This method can be used for perspective views with the <strong>-Jz</strong>
 and the <a class="reference internal" href="cookbook/options.html#option-p"><span class="std std-ref">-p</span></a> option, where the z-range (<em>zmin</em>/<em>zmax</em>) is appended to the first method to indicate
 the third dimension. This is not used for <a class="reference internal" href="cookbook/options.html#option-p"><span class="std std-ref">-p</span></a> without <strong>-Jz</strong>, in which case a perspective view of
-the place is plotted with no third dimension</p></li>
+the place is plotted with no third dimension.</p></li>
 </ol>
 <blockquote id="rz">
 <span id="rz-full"></span><div><p>In case of perspective view <strong>-p</strong>, a z-range (<em>zmin</em>, <em>zmax</em>) can be appended to indicate the third dimension. This
@@ -1357,7 +1357,8 @@ consecutive columns have the same format you may specify a range of columns rath
 must be given in the format <em>start</em>[:<em>inc</em>]:<em>stop</em>, where <em>inc</em> defaults to 1 if not specified.  For example, if our
 input file has geographic coordinates (latitude, longitude) with absolute calendar coordinates in the columns 3 and 4,
 we would specify <strong>fi</strong>0<strong>y</strong>,1<strong>x</strong>,3:4<strong>T</strong>. All other columns are assumed to have the default (floating
-point) format and need not be set individually.</p>
+point) format and need not be set individually. <strong>Note</strong>: You can also indicate that all items from the given column
+and to the end of the record should be considered <em>trailing text</em> by giving the code <strong>s</strong> (for string).</p>
 <p>The shorthand <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<strong>g</strong> means <strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]0x,1y (i.e., geographic coordinates). A
 special use of <strong>-f</strong> is to select <strong>-fp</strong>[<em>unit</em>], which <em>requires</em> <strong>-J</strong> and lets you use <em>projected</em> map
 coordinates (e.g., UTM meters) as data input. Such coordinates are automatically inverted to longitude, latitude during
@@ -1451,9 +1452,11 @@ one of the following modifiers to any column or column range to transform the in
 <li><p><strong>+o</strong> to add the given <em>offset</em> to the input values [default is 0].</p></li>
 </ul>
 <p>To read from a given column until the end of the record, leave off <em>stop</em> when specifying the column range. Normally,
-any trailing text is read but when <strong>-i</strong> is used you must explicitly add the column <strong>t</strong> to retain the text. To only
-ingest a single word from the trailing text, append the word number (first word is 0).  Finally, <strong>-in</strong> will simply
-read the numerical input and skip any trailing text.</p>
+any trailing text will be read but when <strong>-i</strong> is used to specify specific input columns you must explicitly append the
+“column” <strong>t</strong> to retain the trailing text internally. To only ingest a single word from the trailing text, append
+the word number (first word is 0).  If your trailing text columns start with a valid number and you want to ensure
+the content from column <em>col</em> to the end of the record will be considered trailing text, use <strong>-f</strong><em>col</em><strong>s</strong>.
+Finally, <strong>-in</strong> will simply read the numerical input and skip any trailing text.</p>
 <span class="target" id="distcalc-full"></span></div>
 <div class="section" id="the-j-option-spherical-distance-calculations">
 <h3>The <strong>-j</strong> option (spherical distance calculations)<a class="headerlink" href="#the-j-option-spherical-distance-calculations" title="Permalink to this headline">¶</a></h3>
@@ -1558,11 +1561,12 @@ individual columns or column ranges in the format <em>start</em>[:<em>inc</em>]:
 separated by commas [Default writes all columns in order, starting with the first column (i.e., column 0)]. Columns can
 be repeated. The chosen data columns will be used as given and columns not listed will be skipped. To write from a given
 column until the end of the record, leave off <em>stop</em> when specifying the column range.</p>
-<p>Normally, any trailing text in the internal records will be written but when <strong>-o</strong> is used you must explicitly add
-the column <strong>t</strong>. To only output a single word from the trailing text, append the word number (first word is 0).
+<p>Normally, any trailing text in the internal records will be included in the output, but when <strong>-o</strong> is used to specify
+specific columns you must explicitly append the extra “column” <strong>t</strong> to include the trailing text on output. To only select
+a single word from the trailing text, append the word number (first word is 0).
 Finally, <strong>-on</strong> will simply write the numerical output only and skip any trailing text, while <strong>-ot</strong> will only output
 the trailing text (or selected word). <strong>Note</strong>: If <strong>-i</strong> is also used then columns given to <strong>-o</strong> correspond to the
-order <em>after</em> the <strong>-i</strong> selection and not the columns in the original record.</p>
+order <em>after</em> the <strong>-i</strong> selection has taken place and <em>not</em> the columns in the original record.</p>
 </div>
 <div class="section" id="the-p-option">
 <span id="perspective-full"></span><h3>The <strong>-p</strong> option<a class="headerlink" href="#the-p-option" title="Permalink to this headline">¶</a></h3>
@@ -2026,7 +2030,7 @@ GMT documentation site <a class="reference external" href="https://docs.generic-
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

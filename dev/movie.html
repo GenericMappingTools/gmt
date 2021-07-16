@@ -240,7 +240,7 @@
 <p><strong>gmt movie</strong> <em>mainscript</em>
 <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>canvas</em>
 <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>prefix</em>
-<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>nframes</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]]
+<a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>nframes</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]|<strong>W</strong>]
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong>[<strong>+l</strong>[<em>n</em>]][<strong>+s</strong><em>stride</em>] ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong><em>displayrate</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>titlepage</em>[<strong>+d</strong><em>duration</em>[<strong>s</strong>]][<strong>+f</strong>[<strong>i</strong>|<strong>o</strong>]<em>fade</em>[<strong>s</strong>]][<strong>+g</strong><em>fill</em>] ]
@@ -258,6 +258,7 @@
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong>[<em>workdir</em>] ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<strong>s</strong>] ]
+[ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-x</strong>[[-]<em>n</em>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
@@ -311,15 +312,15 @@ You can prevent this issue by using <strong>-Z</strong> to delete the directory 
 </dd>
 </dl>
 <dl class="simple" id="t">
-<dt><strong>-T</strong><em>nframes</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]]</dt><dd><p>Either specify how many image frames to make, create a one-column data set width values from
+<dt><strong>-T</strong><em>nframes</em>|<em>min</em>/<em>max</em>/<em>inc</em>[<strong>+n</strong>]|<em>timefile</em>[<strong>+p</strong><em>width</em>][<strong>+s</strong><em>first</em>][<strong>+w</strong>[<em>str</em>]|<strong>W</strong>]</dt><dd><p>Either specify how many image frames to make, create a one-column data set width values from
 <em>min</em> to <em>max</em> every <em>inc</em> (append <strong>+n</strong> if <em>inc</em> is number of frames instead), or supply a file with a set of parameters,
 one record (i.e., row) per frame.  The values in the columns will be available to the
 <em>mainscript</em> as named variables <strong>MOVIE_COL0</strong>, <strong>MOVIE_COL1</strong>, etc., while any trailing text
 can be accessed via the variable <strong>MOVIE_TEXT</strong>.  Append <strong>+w</strong> to split the trailing
 string into individual words that can be accessed via variables <strong>MOVIE_WORD0</strong>, <strong>MOVIE_WORD1</strong>,
-etc. By default we use any white-space to separate words.  Append <em>str</em> to select another character(s)
-as the valid separator(s).  The number of records equals
-the number of frames. Note that the <em>background</em> script is allowed to create <em>timefile</em>,
+etc. By default we look for either tabs or spaces to separate words.  Append <em>str</em> to select other character(s)
+as the valid separator(s) instead. To just use TAB as the only valid separator use <strong>+W</strong> instead.
+The number of records equals the number of frames. Note that the <em>background</em> script is allowed to create <em>timefile</em>,
 hence we check for its existence both before <em>and</em> after the background script has completed.  Normally,
 the frame numbering starts at 0; you can change this by appending a different starting frame
 number via <strong>+s</strong><em>first</em>.  <strong>Note</strong>: All frames are still included; this modifier only affects
@@ -485,6 +486,10 @@ problems related to low space in the main directory.</p>
 the temporary script files, parameter files, and layer <em>PostScript</em> files are all removed (but see <strong>-Q</strong>)].
 If your <em>mainscript</em> and all input scripts via <strong>-E</strong>, <strong>-I</strong>, and <strong>-S</strong> should be deleted as well then
 append <strong>s</strong>.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
 </dd>
 </dl>
 <dl class="simple" id="cores">
@@ -796,7 +801,7 @@ ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex <span class="nv">vstack</span><s
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

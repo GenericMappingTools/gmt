@@ -238,6 +238,7 @@
 <div class="section" id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt grd2kml</strong> <em>grid</em>
+<a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>prefix</em>
 [ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>a</strong>|<strong>g</strong>|<strong>s</strong>[<em>altitude</em>] ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
 [ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><em>URL</em> ]
@@ -245,12 +246,12 @@
 [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>factor</em> ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong>[<em>intensfile</em>|<em>intensity</em>|<em>modifiers</em>] ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong><em>tilesize</em> ]
-[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong><em>prefix</em> ]
 [ <a class="reference internal" href="#s"><span><strong>-S</strong></span></a></strong>[<em>extra</em>] ]
 [ <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>title</em> ]
 [ <a class="reference internal" href="#w"><span><strong>-W</strong></span></a></strong><em>cfile</em>|<em>pen</em>[<strong>+s</strong><em>scale</em>/<em>limit</em>] ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
+[ <strong>-n</strong><a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
 </div>
@@ -273,6 +274,11 @@ If plain tiles are selected (i.e., no contours specified) then the PNG tiles are
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>grid</em></dt><dd><p>A 2-D gridded data set (see <a class="reference internal" href="gmt.html#grd-inout-full"><span class="std std-ref">Grid File Formats</span></a>).</p>
+</dd>
+</dl>
+<dl class="simple" id="n">
+<dt><strong>-N</strong><em>prefix</em></dt><dd><p>Sets a unique name prefixed used for the top-level KML filename <em>and</em> the
+directory where all referenced KML files and raster images will be written [GMT_Quadtree].</p>
 </dd>
 </dl>
 </div>
@@ -345,11 +351,6 @@ grids (here meaning 360-degree longitude range), we will select a
 <em>tilesize</em> of 360 if <strong>-L</strong> is not specified.</p>
 </dd>
 </dl>
-<dl class="simple" id="n">
-<dt><strong>-N</strong><em>prefix</em></dt><dd><p>Sets a unique name prefixed used for the top-level KML filename <em>and</em> the
-directory where all referenced KML files and raster images will be written [GMT_Quadtree].</p>
-</dd>
-</dl>
 <dl class="simple" id="s">
 <dt><strong>-S</strong>[<em>extra</em>]</dt><dd><p>Add extra layers beyond that necessary to capture the full resolution of the data [none].
 This will let GMT interpolate your grid and make more tiles, versus letting Google Earth
@@ -378,6 +379,10 @@ for pen widths that exactly equal 0 or “faint”).  Use <strong>+s</strong> to
 </dl>
 <dl class="simple">
 <dt><strong>-f</strong>[<strong>i</strong>|<strong>o</strong>]<em>colinfo</em> <a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Specify data types of input and/or output columns.  </p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><strong>-n</strong>[<strong>b</strong>|<strong>c</strong>|<strong>l</strong>|<strong>n</strong>][<strong>+a</strong>][<strong>+b</strong><em>BC</em>][<strong>+c</strong>][<strong>+t</strong><em>threshold</em>] <a class="reference internal" href="gmt.html#n-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select interpolation mode for grids.</p>
 </dd>
 </dl>
 </div>
@@ -465,7 +470,7 @@ supplying a suitable title, and using color masking for unmapped area, try:</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

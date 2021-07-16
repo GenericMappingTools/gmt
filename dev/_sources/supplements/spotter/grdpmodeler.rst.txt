@@ -12,16 +12,20 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdpmodeler** |-E|\ *rot_file* **-S**\ *flags*
+**gmt grdpmodeler** 
 [ *agegrdfile* ]
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
+**-S**\ *flags*
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *outgrid* ]
+[ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -80,6 +84,15 @@ Optional Arguments
     If the **-G** option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
 
+.. _-I:
+
+.. include:: ../../explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
+
 .. _-T:
 
 **-T**\ *age*
@@ -100,6 +113,11 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-ocols.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
 
 .. include:: ../../explain_help.rst_
 

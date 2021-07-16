@@ -20,7 +20,7 @@ Synopsis
 [ |-D| ]
 [ |-I|\ *intensity* ]
 [ |-M| ]
-[ |-N|\ [**i**\|\ **o**][*factor*] ]
+[ |-N|\ [**i**\|\ **o**][*divisor*] ]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -105,10 +105,10 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [**i**\|\ **o**][*factor*]
+**-N**\ [**i**\|\ **o**][*divisor*]
     Normalize all input grids from 0-255 to 0-1 and all output grids from 0-1 to 0-255.
     To only turn on normalization for input *or* output, use **-Ni** or **-No** instead.
-    To normalize by another factor than 255, append an optional *factor* value.
+    To divide by another value than 255, append an optional *divisor*.
 
 .. _-Q:
 

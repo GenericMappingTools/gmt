@@ -14,14 +14,14 @@ Synopsis
 
 **gmt sphdistance** [ *table* ]
 |-G|\ *grdfile*
+|SYN_OPT-I|
+|SYN_OPT-R|
 [ |-C| ]
 [ |-D| ]
 [ |-E|\ **d**\|\ **n**\|\ **z**\ [*dist*] ]
-[ |SYN_OPT-I| ]
 [ |-L|\ *unit* ]
 [ |-N|\ *nodetable* ]
 [ |-Q|\ *voronoi.txt* ]
-[ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -60,6 +60,15 @@ Required Arguments
     Name of the output grid to hold the computed distances (but see **-E**
     for other node value options).
 
+.. _-I:
+
+.. include:: explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rgeo.rst_
+
 Optional Arguments
 ------------------
 
@@ -89,10 +98,6 @@ Optional Arguments
     Optionally, append the resampling interval along Voronoi arcs in spherical
     degrees [1].
 
-.. _-I:
-
-.. include:: explain_-I.rst_
-
 .. _-L:
 
 **-L**\ *unit*
@@ -115,11 +120,6 @@ Optional Arguments
     [Default performs the Voronoi construction on input data]. For
     binary data **-bi** you must specify the node
     information separately (via **-N**).
-
-.. _-R:
-
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rgeo.rst_
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

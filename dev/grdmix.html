@@ -245,7 +245,7 @@
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong> ]
 [ <a class="reference internal" href="#i"><span><strong>-I</strong></span></a></strong><em>intensity</em> ]
 [ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong> ]
-[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>][<em>factor</em>] ]
+[ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>i</strong>|<strong>o</strong>][<em>divisor</em>] ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong> ]
 [ <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>region</em> ]
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
@@ -321,9 +321,9 @@ transformation.</p>
 </dd>
 </dl>
 <dl class="simple" id="n">
-<dt><strong>-N</strong>[<strong>i</strong>|<strong>o</strong>][<em>factor</em>]</dt><dd><p>Normalize all input grids from 0-255 to 0-1 and all output grids from 0-1 to 0-255.
+<dt><strong>-N</strong>[<strong>i</strong>|<strong>o</strong>][<em>divisor</em>]</dt><dd><p>Normalize all input grids from 0-255 to 0-1 and all output grids from 0-1 to 0-255.
 To only turn on normalization for input <em>or</em> output, use <strong>-Ni</strong> or <strong>-No</strong> instead.
-To normalize by another factor than 255, append an optional <em>factor</em> value.</p>
+To divide by another value than 255, append an optional <em>divisor</em>.</p>
 </dd>
 </dl>
 <dl class="simple" id="q">
@@ -422,7 +422,7 @@ applying intensities from intens.grd and add transparency from transp.grd grids,
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>

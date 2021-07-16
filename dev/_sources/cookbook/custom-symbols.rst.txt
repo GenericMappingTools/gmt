@@ -8,7 +8,7 @@ Background
 
 The GMT tools :doc:`/plot` and :doc:`/plot3d` are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
-such as circles, triangles, and many others. One the command line, custom
+such as circles, triangles, and many others. On the command line, custom
 symbols are selected via the **-Sk**\ *symbolname*\ [/*size*] symbol
 selection, where *symbolname* refers
 

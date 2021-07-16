@@ -12,17 +12,22 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt pmodeler** *table* |-E|\ *rot_file* **-S**\ *flags*
+**gmt pmodeler** *table*
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
+**-S**\ *flags*
 [ |-F|\ *polygonfile* ]
 [ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -91,12 +96,17 @@ Optional Arguments
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-e.rst_
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-f.rst_
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-g.rst_
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-ocols.rst_
 .. include:: ../../explain_-q.rst_
+.. include:: ../../explain_-s.rst_
 .. include:: ../../explain_help.rst_
 
 .. include:: explain_geodetic.rst_

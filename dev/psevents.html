@@ -242,17 +242,17 @@
 <a class="reference internal" href="#r"><span><strong>-R</strong></span></a></strong><em>west</em>/<em>east</em>/<em>south</em>/<em>north</em>[/<em>zmin</em>/<em>zmax</em>][<strong>+r</strong>][<strong>+u</strong><em>unit</em>]
 <a class="reference internal" href="#t"><span><strong>-T</strong></span></a></strong><em>now</em>
 [ <em>table</em> ]
-[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>r</strong>[<em>dpu</em>][<strong>c</strong>|<strong>i</strong>]|<strong>s</strong> ]
+[ <a class="reference internal" href="#a"><span><strong>-A</strong></span></a></strong><strong>r</strong>[<em>dpu</em>[<strong>c</strong>|<strong>i</strong>]]|<strong>s</strong> ]
 [ <a class="reference internal" href="#b"><span><strong>-B</strong></span></a></strong>[<strong>p</strong>|<strong>s</strong>]<em>parameters</em> ]
 [ <a class="reference internal" href="#c"><span><strong>-C</strong></span></a></strong><em>cpt</em> ]
 [ <a class="reference internal" href="#d"><span><strong>-D</strong></span></a></strong>[<strong>j</strong>|<strong>J</strong>]<em>dx</em>[/<em>dy</em>][<strong>+v</strong>[<em>pen</em>]] ]
-[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong><strong>s</strong>|<strong>t</strong>[<strong>+o</strong>|<strong>O</strong><em>dt</em>][<strong>+r</strong><em>dt</em>][<strong>+p</strong><em>dt</em>][<strong>+d</strong><em>dt</em>][<strong>+f</strong><em>dt</em>][<strong>+l</strong><em>dt</em>] ]
+[ <a class="reference internal" href="#e"><span><strong>-E</strong></span></a></strong>[<strong>s</strong>|<strong>t</strong>][<strong>+o</strong>|<strong>O</strong><em>dt</em>][<strong>+r</strong><em>dt</em>][<strong>+p</strong><em>dt</em>][<strong>+d</strong><em>dt</em>][<strong>+f</strong><em>dt</em>][<strong>+l</strong><em>dt</em>] ]
 [ <a class="reference internal" href="#f"><span><strong>-F</strong></span></a></strong>[<strong>+a</strong><em>angle</em>][<strong>+f</strong><em>font</em>][<strong>+j</strong><em>justify</em>][<strong>+r</strong>[<em>first</em>]|<strong>z</strong>[<em>format</em>]] ]
 [ <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>color</em> ]
 [ <a class="reference internal" href="#h"><span><strong>-H</strong></span></a></strong><em>labelbox</em> ]
 [ <a class="reference internal" href="#k"><span><strong>-K</strong></span></a></strong> ]
 [ <a class="reference internal" href="#l"><span><strong>-L</strong></span></a></strong>[<em>length</em>|<strong>t</strong>] ]
-[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong>[<em>val1</em>][<strong>+c</strong><em>val2</em>] ]
+[ <a class="reference internal" href="#m"><span><strong>-M</strong></span></a></strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong><em>val1</em>[<strong>+c</strong><em>val2</em>] ]
 [ <a class="reference internal" href="#n"><span><strong>-N</strong></span></a></strong>[<strong>c</strong>|<strong>r</strong>] ]
 [ <a class="reference internal" href="#o"><span><strong>-O</strong></span></a></strong> ] [ <strong>-P</strong> ]
 [ <a class="reference internal" href="#q"><span><strong>-Q</strong></span></a></strong><em>prefix</em> ]
@@ -318,7 +318,7 @@ the unit of the values given in options like <strong>-E</strong> and <strong>-L<
 <div class="section" id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="a">
-<dt><strong>-A</strong><strong>r</strong>[<em>dpu</em>][<strong>c</strong>|<strong>i</strong>]|<strong>s</strong></dt><dd><p>When no <strong>-S</strong> is given we expect to read lines or polygons.  Two different forms for input are
+<dt><strong>-A</strong><strong>r</strong>[<em>dpu</em>[<strong>c</strong>|<strong>i</strong>]]|<strong>s</strong></dt><dd><p>When no <strong>-S</strong> is given we expect to read lines or polygons.  Two different forms for input are
 supported and specified via the <strong>-A</strong>directive: (1) Choose <strong>-Ar</strong> if your input data are <em>lines</em>, the data
 format is given as <em>x, y, time</em>, and the “event” is the portion of that line limited by the current
 time (<em>now</em>), event duration (via <strong>-L</strong>) and rise/fade periods (via <strong>-Es</strong>), or (2) choose <strong>-As</strong>
@@ -359,7 +359,7 @@ to change the attributes for this line.</p>
 </dd>
 </dl>
 <dl class="simple" id="e">
-<dt><strong>-Es</strong>|<strong>t</strong>[<strong>+o</strong>|<strong>O</strong><em>dt</em>][<strong>+r</strong><em>dt</em>][<strong>+p</strong><em>dt</em>][<strong>+d</strong><em>dt</em>][<strong>+f</strong><em>dt</em>][<strong>+l</strong><em>dt</em>]</dt><dd><p>Set the time knots for the <strong>s</strong>ymbol or <strong>t</strong>ext time-functions.  Append
+<dt><strong>-E</strong>[<strong>s</strong>|<strong>t</strong>][<strong>+o</strong>|<strong>O</strong><em>dt</em>][<strong>+r</strong><em>dt</em>][<strong>+p</strong><em>dt</em>][<strong>+d</strong><em>dt</em>][<strong>+f</strong><em>dt</em>][<strong>+l</strong><em>dt</em>]</dt><dd><p>Set the time knots for the <strong>s</strong>ymbol or <strong>t</strong>ext time-functions.  Append
 <strong>+o</strong> to shift the event start and end times by a constant offset (basically shifting
 the event in time by <em>dt</em>; or use <strong>+O</strong> to only shift the start time, effectively shortening
 the duration of the event), <strong>+r</strong> to indicate the
@@ -412,7 +412,7 @@ polygons.</p>
 </dd>
 </dl>
 <dl class="simple" id="m">
-<dt><strong>-M</strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong>[<em>val1</em>][<strong>+c</strong><em>val2</em>]</dt><dd><p>Modify the initial <strong>i</strong>ntensity of the color, <strong>s</strong>ize of the symbol, or its <strong>t</strong>ransparency during
+<dt><strong>-M</strong><strong>i</strong>|<strong>s</strong>|<strong>t</strong><em>val1</em>[<strong>+c</strong><em>val2</em>]</dt><dd><p>Modify the initial <strong>i</strong>ntensity of the color, <strong>s</strong>ize of the symbol, or its <strong>t</strong>ransparency during
 the <em>rise</em> interval [Defaults are 1, 1, and 100, respectively].  Option <strong>-M</strong> is repeatable for the different attributes.
 Optionally, for finite-duration events you may append <strong>+c</strong> to set the corresponding terminal value
 during the coda [0, 0, 100, respectively].  The intensity setting (normally in the interval ±1, with 0
@@ -506,7 +506,7 @@ classic module names.</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -675,7 +675,7 @@ or you specify <strong>-Ar</strong>200<strong>i</strong>.</p>
     <p>
         &#169; Copyright 2021, The GMT Team..
       <span class="lastupdated">
-        Last updated on Jun 06, 2021.
+        Last updated on Jul 16, 2021.
       </span>
 
     </p>
