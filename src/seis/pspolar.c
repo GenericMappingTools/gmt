@@ -34,7 +34,7 @@
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BHJKOPRUVXYdehiqt" GMT_OPT("c")
 
-#define DEFAULT_FONTSIZE	9.0	/* In points */
+#define DEFAULT_FONTSIZE	12.0	/* In points */
 #define DEFAULT_OFFSET		3.0	/* In points */
 
 /* Control structure for pspolar */
