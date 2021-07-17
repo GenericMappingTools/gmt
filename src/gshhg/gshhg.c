@@ -384,12 +384,11 @@ EXTERN_MSC int GMT_gshhg (void *V_API, int mode, void *args) {
 				T[seg_no]->data[GMT_Y][row] = p.y * GSHHG_SCL;
 			}
 			T[seg_no]->n_rows = h.n;
-			D->n_records += T[seg_no]->n_rows;
-			if (Ctrl->G.active) {
+			if (Ctrl->G.active) {	/* Must add one more dummy NaN record and increment rows */
 				T[seg_no]->data[GMT_X][row] = T[seg_no]->data[GMT_Y][row] = GMT->session.d_NaN;
 				T[seg_no]->n_rows++;
-				D->n_records ++;
 			}
+			D->n_records += T[seg_no]->n_rows;
 		}
 		seg_no++;
 		max_east = 180000000;	/* Only Eurasia (the first polygon) needs 270 */
