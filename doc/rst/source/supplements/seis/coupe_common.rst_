@@ -90,7 +90,7 @@ Optional Arguments
 **-F**\ *mode*\ [*args*]
     Set one or more attributes; repeatable. The various combinations are
 
-**-Fs**\ *symbol*\ [*size*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Fs**\ *symbol*\ [*size*]
     Select a symbol instead of mechanism. Choose from the following:
     (**c**) circle, (**d**) diamond, (**i**) itriangle, (**s**) square,
     (**t**) triangle, (**x**) cross. *size* is the symbol size in
@@ -98,10 +98,6 @@ Optional Arguments
     to indicate that the size information is in units of cm, inches, meters,
     or points, respectively). If *size* must be read, it must be in column 4
     and the text string will start in column 5.
-
-    Append **+f**\ *font* to change the font of the text string;
-    append **+j**\ *justify* to change the text location relative to the beachball (default is above the beachball);
-    append **+o** to offset the text string by *dx/dy*.
 
     Parameters are expected to be in the following columns:
 

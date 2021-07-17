@@ -13484,7 +13484,7 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	while (line[start]) {	/* More line to chop up */
 		/* Find the next break location */
 		stop = start;
-		while (line[stop] && !(strchr (" /|", line[stop]) || (line[stop] == ']' && line[stop+1] == '[') || (line[stop] == '-' && isalpha (line[stop+1])))) stop++;
+		while (line[stop] && !(strchr (" /|", line[stop]) || (line[stop] == ']' && line[stop+1] == '[') || (line[stop] == '-' && stop && line[stop-1] != ' ' && isalpha (line[stop+1])))) stop++;
 		end = next = stop;	/* Mark likely end */
 		array[n].space = space;	/* Do we need a leading space (set via previous word)? */
 		if (line[stop] == ' ') {	/* Skip the space to start over at next word */
