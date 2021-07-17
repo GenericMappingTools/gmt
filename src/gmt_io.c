@@ -4672,7 +4672,6 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2)
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
-	GMT->current.io.has_previous_rec = true;
 
 	if (set_nan_flag) GMT->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
