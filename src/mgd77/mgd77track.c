@@ -476,7 +476,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 			case 'W':
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;

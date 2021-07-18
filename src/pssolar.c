@@ -146,7 +146,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute terminators\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", NULL, 0);
 	GMT_Option (API, "X,b,c,o,p");
 	GMT_Option (API, "t,.");
 
@@ -244,7 +244,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 			case 'W':		/* Pen */
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;

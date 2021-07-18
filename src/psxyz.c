@@ -302,7 +302,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", 8);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", NULL, 8);
 	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
 	GMT_Usage (API, 1, "\n-Z<value>");
@@ -321,7 +321,7 @@ GMT_LOCAL unsigned int gmt_get_z_bands (struct GMTAPI_CTRL *API, struct PSXYZ_CT
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
-		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
+		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);
 		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +cl to apply cpt color (-C) to the pen only.\n");
 		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +cf to apply cpt color (-C) to symbol fill.\n");
 		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +c for both effects [none].\n");
@@ -435,7 +435,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 					Ctrl->L.polygon = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {	/* Want outline */
 					if (c[2] && gmt_getpen (GMT, &c[2], &Ctrl->L.pen)) {
-						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [no outline]", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [no outline]", NULL, 0);
 						n_errors++;
 					}
 					Ctrl->L.outline = 1;
@@ -478,7 +478,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 					}
 				}
 				else if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 11);
+					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 11);
 					n_errors++;
 				}
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;

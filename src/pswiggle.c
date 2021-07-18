@@ -254,7 +254,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify track pen attributes. [Default is no track].\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", NULL, 0);
 	GMT_Option (API, "X");
 	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give the wiggle scale in data-units per %s.\n",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
@@ -395,14 +395,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 			case 'T':
 				Ctrl->T.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->T.pen)) {
-					gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;

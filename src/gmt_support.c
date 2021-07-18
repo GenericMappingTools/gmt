@@ -5278,7 +5278,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 					if (k) pen_p[k-1] = '1';	/* Now we have a unit pen thickness for later scaling */
 				}
 				if (gmt_getpen (GMT, pen_p, s->pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					fclose (fp);
 					return GMT_PARSE_ERROR;
 				}
@@ -17669,7 +17669,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 			if (pen[0]) {	/* Got a pen */
 				if (gmt_getpen (GMT, pen, &cont[c].pen)) {	/* Bad pen syntax */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse %s as a proper pen specification - aborting\n", pen);
-					gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'C', NULL, " ", NULL, 0);
 					gmt_M_free (GMT, cont);
 					return (NULL);
 				}
