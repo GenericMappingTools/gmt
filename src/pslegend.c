@@ -101,32 +101,35 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<specfile>] -D%s[+w<width>[/<height>]][+l<spacing>]%s [%s]\n", name, GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<dx>[/<dy>]] [-F%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-M] %s%s%s[%s] [-S<scale>]\n", GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<file>] [%s] [%s] [%s]\n\t[%s]%s[%s]\n\t[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\tReads legend layout specification from <specfile> [or stdin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information and <specfile> format).\n\n");
+	GMT_Usage (API, 0, "usage: %s [<specfile>] -D%s[+w<width>[/<height>]][+l<spacing>]%s [%s] [-C<dx>[/<dy>]] [-F%s] "
+		"[%s] [-M] %s%s%s[%s] [-S<scale>] [-T<file>] [%s] [%s] [%s] [%s]%s[%s] [%s] [%s] [%s]\n",
+		name, GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT,
+		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
+
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<specfile> is a legend layout specification file [or we read stdin]. "
+		"See module documentation for more information and <specfile> format.");
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	gmt_refpoint_syntax (API->GMT, "D", "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify legend width with +w<width>; <height> is optional [estimated from <specfile>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only codes A, C, D, G, H, L, and S are used the <width> is optional as well.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The remaining arguments are optional:\n");
+	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
+	GMT_Usage (API, -2, "Specify legend width with +w<width>; <height> is optional [estimated from <specfile>]. "
+		"If only codes A, C, D, G, H, L, and S are used the <width> is optional as well. "
+		"The remaining arguments are optional:");
 	gmt_refpoint_syntax (API->GMT, "D", NULL, GMT_ANCHOR_LEGEND, 2);
-	GMT_Message (API, GMT_TIME_NONE, "\t   +l sets the line <spacing> factor in units of the current annotation font size [1.1].\n");
+	GMT_Usage (API, 3, " +l sets the line <spacing> factor in units of the current annotation font size [1.1].");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<specfile> is one or more ASCII specification files with legend commands.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between legend frame and internal items [%gp].\n", GMT_FRAME_CLEARANCE);
+	GMT_Usage (API, 1, "\n-C<dx>[/<dy>]");
+	GMT_Usage (API, -2, "Set the clearance between legend frame and internal items [%gp].", GMT_FRAME_CLEARANCE);
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the legend", 2);
 	GMT_Option (API, "J-,K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Merge hidden and explicit legend information files (modern mode only).\n");
+	GMT_Usage (API, 1, "\n-M Merge hidden and explicit legend information files (modern mode only).");
 	GMT_Option (API, "O,P,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Scale all symbol sizes by <scale> [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Modern mode: Write hidden legend specification file to <file>.\n");
+	GMT_Usage (API, 1, "\n-S<scale>");
+	GMT_Usage (API, -2, "Scale all symbol sizes by <scale> [1].");
+	GMT_Usage (API, 1, "\n-T<file>");
+	GMT_Usage (API, -2, "Modern mode: Write hidden legend specification file to <file>.");
 	GMT_Option (API, "U,V,X,c,p,qi,t,.");
 
 	return (GMT_MODULE_USAGE);
