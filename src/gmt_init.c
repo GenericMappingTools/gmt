@@ -7965,7 +7965,7 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 	\param option ...
 	\param string ...
 */
-void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, unsigned int mode) {
+void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, char *prefix, unsigned int mode) {
 	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all, 8 = CPT interactions */
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char msg[GMT_LEN256] = {""};
@@ -7980,10 +7980,18 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 		sprintf (msg, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
 	else
 		strcpy (msg, string);
-	if (longoption)
-		GMT_Usage (API, 1, "\n-%s=%s", longoption, args);
-	else
-		GMT_Usage (API, 1, "\n-%c%s", option, args);
+	if (longoption) {
+		if (prefix)
+			GMT_Usage (API, 1, "\n-%s=%s%s", longoption, prefix, args);
+		else
+			GMT_Usage (API, 1, "\n-%s=%s", longoption, args);
+	}
+	else {
+		if (prefix)
+			GMT_Usage (API, 1, "\n-%c%s%s", option, prefix, args);
+		else
+			GMT_Usage (API, 1, "\n-%c%s", option, args);
+	}
 	GMT_Usage (API, -2, "%s", msg);
 	GMT_Usage (API, 2, "<pen> is a comma-separated list of three optional items in the order: "
 		"<width>[%s], <color>, and <style>[%s].", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);

@@ -133,7 +133,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Message (API, GMT_TIME_NONE, "\t   If -S is not selected then we plot lines (requires -W) or polygons (requires -G or -C).\n");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 15);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", NULL, 15);
 	GMT_Option (API, "X,bi2,c,di,e,f,g,h,i,p,qi,t,:,.");
 
 	return (GMT_MODULE_USAGE);

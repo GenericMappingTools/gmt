@@ -892,7 +892,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				Ctrl->G.active = true;
 				if ((c = strstr (opt->arg, "+p"))) {	/* Gave outline modifier */
 					if (c[2] && gmt_getpen (GMT, &c[2], &pen)) {	/* Bad pen */
-						gmt_pen_syntax (GMT, 'G', NULL, "+p<pen> sets pen attributes [no outline]", 0);
+						gmt_pen_syntax (GMT, 'G', NULL, "+p<pen> sets pen attributes [no outline]", NULL, 0);
 						n_errors++;
 					}
 					else	/* Pen is valid, just copy verbatim */

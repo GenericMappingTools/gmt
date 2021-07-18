@@ -317,7 +317,7 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 					error++;
 				}
 				else if (gmt_getfill (GMT, &p[1], &Ctrl->A.fill)) {
-					gmt_pen_syntax (GMT, 'A', NULL, "sets background fill attributes", 0);
+					gmt_pen_syntax (GMT, 'A', NULL, "sets background fill attributes", NULL, 0);
 					error++;
 				}
 				break;
@@ -354,7 +354,7 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 				if (!p[1])
 					Ctrl->A.pen = GMT->current.setting.map_default_pen;
 				else if (gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-					gmt_pen_syntax (GMT, 'A', NULL, "sets background outline pen attributes", 0);
+					gmt_pen_syntax (GMT, 'A', NULL, "sets background outline pen attributes", NULL, 0);
 					error++;
 				}
 				break;
