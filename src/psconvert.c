@@ -522,7 +522,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *Z = (API->GMT->current.setting.run_mode == GMT_CLASSIC) ? " [-Z]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <psfile1> <psfile2> <...> -A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width>[/<height>]][+u] "
+	GMT_Usage (API, 0, "usage: %s <psfile1> <psfile2> <...> [-A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width>[/<height>]][+u]] "
 		"[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>] "
 		"[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s] "
 		"[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
@@ -650,11 +650,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Additional modifiers allow you to specify the content in the KML file:");
 	GMT_Usage (API, 3, "+a Append <altmode>[<altitude>] to set the altitude mode of this layer, where "
 		"<altmode> is one of 5 recognized by Google Earth:");
-	GMT_Usage (API, 4, "G: clamped to the ground [Default].");
+	GMT_Usage (API, 4, "G: Clamped to the ground [Default].");
 	GMT_Usage (API, 4, "g: Append altitude (in m) relative to ground.");
 	GMT_Usage (API, 4, "A: Append absolute altitude (in m).");
 	GMT_Usage (API, 4, "s: Append altitude (in m) relative to seafloor.");
-	GMT_Usage (API, 4, "S: clamped to the seafloor.");
+	GMT_Usage (API, 4, "S: Clamped to the seafloor.");
 	GMT_Usage (API, 3, "+f Append <minfade>/<maxfade>] to set distances over which we fade from opaque "
 		"to transparent [no fading].");
 	GMT_Usage (API, 3, "+l Append <minLOD>/<maxLOD>] to set Level Of Detail when layer should be "
