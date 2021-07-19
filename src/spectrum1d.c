@@ -542,30 +542,44 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[<name_stem>]] [-T]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[h|m]] [-N[<name_stem>]] "
+		"[-T] [%s] [-W] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_qi_OPT, GMT_s_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Use data subsets of <segment_size> elements.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <segment_size> must be radix 2;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   std. err. = 1/sqrt(n_data/segment_size).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C[<xycnpago>] 2 column X(t),Y(t) input; estimate Cross-spectra\n\t   [Default 1 col, X power only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally specify cross-spectra output(s)  [Default is all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x = xpower, y = ypower, c = coherent power, n = noise power,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p = phase, a = admittance, g = gain, o = squared coherency.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set delta_time sampling interval of data [Default = 1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Leave trend alone:  Do not remove least squares trend from data [Default removes trend].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append m to just remove mean or h to remove mid-value instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Supply name stem for files [Default = 'spectrum'].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Output files will be named <name_stem>.xpower, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To disable the writing of individual files, just give -N.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Disable writing the single output to stdout.\n");
+	GMT_Usage (API, 1, "\n-S<segment_size>");
+	GMT_Usage (API, -2, "Use data subsets of <segment_size> elements. "
+		"<segment_size> must be radix 2; "
+		"std. err. = 1/sqrt(n_data/segment_size).");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[<xycnpago>]");
+	GMT_Usage (API, -2, "Select output columns. For 2 column X(t),Y(t) input; estimate Cross-spectra [Default 1 col, X power only]. "
+		"Optionally specify cross-spectra output(s) [Default is all]:");
+	GMT_Usage (API, 3, "x: x-power.");
+	GMT_Usage (API, 3, "y: y-power.");
+	GMT_Usage (API, 3, "c: Coherent power.");
+	GMT_Usage (API, 3, "n: Noise power.");
+	GMT_Usage (API, 3, "p: Phase spectrum.");
+	GMT_Usage (API, 3, "a: Admittance.");
+	GMT_Usage (API, 3, "g: Gain.");
+	GMT_Usage (API, 3, "o: Squared coherency.");
+	GMT_Usage (API, 1, "\n-D<dt>");
+	GMT_Usage (API, -2, "Set delta_time sampling interval of data [Default = 1.0].");
+	GMT_Usage (API, 1, "\n-L[h|m]");
+	GMT_Usage (API, -2, "Leave trend alone:  Do not remove least squares trend from data [Default removes trend]. Optional directives:");
+	GMT_Usage (API, 3, "h: Remove mid-value instead.");
+	GMT_Usage (API, 3, "m: Remove mean instead.");
+	GMT_Usage (API, 1, "\n-N[<name_stem>]");
+	GMT_Usage (API, -2, "Supply name stem for files [Default = 'spectrum']. "
+		"Output files will be named <name_stem>.xpower, etc. "
+		"To disable the writing of individual files, just give -N.");
+	GMT_Usage (API, 1, "\n-T Disable writing the single output to stdout.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Write Wavelength of spectral estimate in col 1 [Default = frequency].\n");
+	GMT_Usage (API, 1, "\n-W Write Wavelength of spectral estimate in col 1 [Default = frequency].");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,qi,s,.");
 
 	return (GMT_MODULE_USAGE);
