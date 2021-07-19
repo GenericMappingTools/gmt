@@ -62,7 +62,8 @@ Required Arguments
 **-D**\ *fmtfile*
     Format definition file prefix for this data set [See Format Definition Files below
     for more information]. Specify full path if the file is not in the
-    current directory.
+    current directory. If **-D** is not given then we default to *TAG*\ .fmt.
+    **Note**: Deprecated extension .def will work but consider renaming the file.
 
 Optional Arguments
 ------------------

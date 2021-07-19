@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ *flags* ]
 [ |-I|\ [*list*] ]
-[ |-L|\ [*corrtable*] ]
+[ |-L|\ [*corrections*] ]
 [ |-N|\ *nx_min*\ [**+p**] ]
 [ |-Q|\ **e**\|\ **i** ]
 [ |SYN_OPT-R| ]
@@ -111,7 +111,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*corrtable*]
+**-L**\ [*corrections*]
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the
