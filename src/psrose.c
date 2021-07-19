@@ -223,7 +223,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X");
 	GMT_Usage (API, 1, "\n-Zu|<scale>");
 	GMT_Usage (API, -2, "Multiply the radii by <scale> before plotting; or use -Zu to set input radii to 1.");
-	GMT_Usage (API, -2, "\n-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
+	GMT_Usage (API, 1, "\n-: Expect (azimuth,radius) input rather than (radius,azimuth) [%s].", choice[API->GMT->current.setting.io_lonlat_toggle[GMT_IN]]);
 	GMT_Option (API, "bi2,c,di,e,h,i,p,qi,s,t,w,.");
 
 	return (GMT_MODULE_USAGE);
