@@ -222,7 +222,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -Z<scale>[<unit>] [-A[<azimuth>]] [%s] [-C<center>] [-D%s+w<length>[+a]%s%s[+l<label>]] "
 		"[-F%s] [-G<fill>[+n][+p]] [-I<az>] [%s] %s%s%s[-T<pen>] [%s] [%s] [-W<pen>] [%s] [%s] [%s] %s[%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] %s] [%s] [%s]\n",
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_XYANCHOR, GMT_JUSTIFY, GMT_OFFSET, GMT_PANEL, GMT_Jz_OPT,
 		API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT,
 		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT,
