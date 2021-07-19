@@ -171,7 +171,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<sector_angle>[+r]");
 	GMT_Usage (API, -2, "Set sector width in degrees for sector diagram [Default is windrose].");
 	GMT_Usage (API, 3, "+r Select rose diagram.");
