@@ -520,145 +520,157 @@ GMT_LOCAL double psconvert_smart_ceil (double x) {
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
+	const char *Z = (API->GMT->current.setting.run_mode == GMT_CLASSIC) ? " [-Z]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width>[/<height>]][+u]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
-		GMT_Message (API, GMT_TIME_NONE, "\t[-Z] ");
-	GMT_Message (API, GMT_TIME_NONE, "[%s]\n", GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <psfile1> <psfile2> <...> [-A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width>[/<height>]][+u]] "
+		"[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>] "
+		"[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s] "
+		"[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
+		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tWorks by modifying the page size in order that the resulting\n");
-	GMT_Message (API, GMT_TIME_NONE, "\timage will have the size specified by the BoundingBox.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tAs an option, a tight BoundingBox may be computed.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<psfile(s)> PostScript file(s) to be converted.\n");
+	GMT_Usage (API, -1, "Works by modifying the page size in order that the resulting "
+		"image will have the size specified by the BoundingBox. "
+		"As an option, a tight BoundingBox may be computed.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<psfile(s)> PostScript file(s) to be converted.");
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\tTo access the current internal GMT plot, specify <psfile> as \"=\".\n");
+		GMT_Usage (API, -2, "Note: To access the current internal GMT plot, specify <psfile> as \"=\".");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fade> (0-100) to fade entire plot to black (100%% fade)[no fading].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +g<color> to change the fade color [black].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<paint> to paint the BoundingBox [no paint].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +m<margin(s)> to enlarge the BoundingBox, with <margin(s)> being\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <off> for uniform margin for all 4 sides,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <xoff>/<yoff> for separate x- and y-margins, or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <woff>/<eoff>/<soff>/<noff> for separate w-,e-,s-,n-margins.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to leave the BoundingBox as is.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to outline the BoundingBox [%s].\n",
-	             gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to force rounding of HighRes BoundingBox instead of ceil.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[m]<width>[/<height>] option the select a new image size\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (Ghostscript does the re-interpolation work).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append measurement unit u (%s) [%c].\n",
-	             GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -A+S<scale> to scale the image by the <scale> factor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +u to strip out time-stamps (produced by GMT -U options).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to Ghostscript\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   as is. Repeat to add several options [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set an alternative output directory (which must exist)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is same directory as PS files].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -D. to place the output in the current directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set raster resolution in dpi [default = 720 for images in a PDF, 300 for other formats].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force the output file name. By default output names are constructed\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   using the input names as base, which are appended with an appropriate\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Use this option to provide a different name, but WITHOUT\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Extension is still determined and appended automatically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Full path to your Ghostscript executable.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Under Windows, Ghostscript path is fished from the registry.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If this fails you can still add the GS path to system's path\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or give the full path here.\n");
+	GMT_Usage (API, 1, "\n-A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width>[/<height>]][+u]");
+	GMT_Usage (API, -2, "Adjust the BoundingBox to the minimum required by the image contents. Optional modifiers:");
+	GMT_Usage (API, 3, "+f Append <fade> (0-100) to fade entire plot to black (100%% fade)[no fading]. "
+		"Use +g to change the fade color [black].");
+	GMT_Usage (API, 3, "+g Append <fill> to paint the BoundingBox [no fill].");
+	GMT_Usage (API, 3, "+m Append <margin(s)> to enlarge the BoundingBox, with <margin(s)> being "
+		"<off> for uniform margin for all 4 sides, "
+		"<xoff>/<yoff> for separate x- and y-margins, or "
+		"<woff>/<eoff>/<soff>/<noff> for separate w-,e-,s-,n-margins.");
+	GMT_Usage (API, 3, "+n Leave the BoundingBox as is.");
+	GMT_Usage (API, 3, "+p Outline the BoundingBox, optionally append <pen> [%s].",
+		gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, 3, "+r Force rounding of HighRes BoundingBox instead of ceil.");
+	GMT_Usage (API, 3, "+s Append [m]<width>[/<height>] the select a new image size "
+		"but maintaining the DPI set by -E (Ghostscript does the re-interpolation work). "
+		"Use +sm to only change size if figure size exceeds the new maximum size(s). "
+		"Append measurement unit u (%s) [%c].",
+		GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
+	GMT_Usage (API, 3, "+S Scale the image by the appended <scale> factor.");
+	GMT_Usage (API, 3, "+u Strip out time-stamps (produced by GMT -U options).");
+	GMT_Usage (API, 1, "\n-C<gs_option>");
+	GMT_Usage (API, -2, "Specify a single, custom option that will be passed on to Ghostscript "
+		"as is. Repeat to add several options [none].");
+	GMT_Usage (API, 1, "\n-D<dir>");
+	GMT_Usage (API, -2, "Set an alternative output directory (which must exist) "
+		"[Default is same directory as PS files]. "
+		"Use -D. to place the output in the current directory.");
+	GMT_Usage (API, 1, "\n-E<resolution>");
+	GMT_Usage (API, -2, "Set raster resolution in dpi [default = 720 for images in a PDF, 300 for other formats].");
+	GMT_Usage (API, 1, "\n-F<out_name>");
+	GMT_Usage (API, -2, "Force the output file name. By default output names are constructed "
+		"using the input names as base, which are appended with an appropriate "
+		"extension. Use this option to provide a different name, but WITHOUT "
+		"extension. Extension is still determined and appended automatically.");
+	GMT_Usage (API, 1, "\n-G<gs_path>");
+	GMT_Usage (API, -2, "Full path to your Ghostscript executable. "
+		"NOTE: Under Unix systems this is generally not necessary. "
+		"Under Windows, Ghostscript path is fished from the registry. "
+		"If this fails you can still add the GS path to system's path "
+		"or give the full path here, e.g., "
 #ifdef WIN32
-	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -Gc:\\programs\\gs\\gs9.27\\bin\\gswin64c).\n");
+		"-Gc:\\programs\\gs\\gs9.27\\bin\\gswin64c).");
 #else
-	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -G/some/unusual/dir/bin/gs).\n");
+		"-G/some/unusual/dir/bin/gs).");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpi by integer <factor>, rasterize, then downsample [no downsampling].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Used to improve raster image quality, especially for lower raster resolutions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and that is what psconvert does by default, unless option -I is set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to all but PDF format. We have no solution to offer other than ... upgrade GS\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Sandwich current psfile between background and foreground plots:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Mb Append the name of a background PostScript plot [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Mf Append name of foreground PostScript plot [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   so that they show unrotated in Portrait mode.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This is practical when converting to image formats or preparing\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   EPS or PDF plots for inclusion in documents.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4) of sub-sampling box.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg4 -Qt4 unless overridden explicitly.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Qp to create a GeoPDF (requires -Tf).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the Ghostscript command to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   b means BMP.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e means EPS.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   E means EPS with setpagedevice command.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f means PDF.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   F means multi-page PDF (requires -F).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g means PNG.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (transparent where nothing is plotted).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   j means JPEG.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG [if supported by your Ghostscript version].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, and t, append +m to get a monochrome (grayscale) image [color].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The EPS format can be combined with any of the other formats.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For example, -Tef creates both an EPS and PDF file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-V Provide progress report [default is silent] and show the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   gdal_translate command, in case you want to use this program\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to create a geoTIFF file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Write a ESRI type world file suitable to make (e.g.,) .tif files\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   recognized as geotiff by software that know how to do it. Be aware,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   however, that different results are obtained depending on the image\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   contents and if the -B option has been used or not. The trouble with\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -B is that it creates a frame and very likely its ticks and annotations\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   introduces pixels outside the map data extent. As a consequence,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the map extent estimation will be wrong. To avoid this problem, use\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the --MAP_FRAME_TYPE=inside option which plots all annotation-related\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   items inside the image and therefore does not compromise the coordinate\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   computations. The world file naming follows the convention of jamming\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a 'w' in the file extension. So, if the output is tif (-Tt) the world\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   file is a .tfw, for jpeg a .jgw, and so on.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -W+g to do a system call to gdal_translate and produce a true\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   geoTIFF image right away. The output file will have the extension\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   .tiff. See the man page for other 'gotchas'. Automatically sets -A -P.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -W+k to create a minimalist KML file that allows loading the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   image in Google Earth. Note that for this option the image must be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in geographical coordinates. If not, a warning is issued but the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   KML file is created anyway.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Several modifiers allow you to specify the content in the KML file:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +a<altmode>[<altitude>] sets the altitude mode of this layer, where\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <altmode> is one of 5 recognized by Google Earth:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      G clamped to the ground [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      g Append altitude (in m) relative to ground.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      A Append absolute altitude (in m).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      s Append altitude (in m) relative to seafloor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      S clamped to the seafloor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     to transparent [no fading].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     active [always active]. Image goes inactive when there are fewer\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     than minLOD pixels or more than maxLOD pixels visible.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -1 means never invisible.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +n<layername> sets the name of this particular layer\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [\"GMT Image Overlay\"].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +o<foldername> sets the name of this particular folder\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [\"GMT Image Folder\"].  This yields a KML snipped without header/trailer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +u<URL> prepands this URL to the name of the image referenced in the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     KML [local file].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Escape any +? modifier inside strings with \\.\n");
+	GMT_Usage (API, 1, "\n-H<factor>");
+	GMT_Usage (API, -2, "Temporarily increase dpi by integer <factor>, rasterize, then downsample [no downsampling]. "
+		"Used to improve raster image quality, especially for lower raster resolutions.");
+	GMT_Usage (API, 1, "\n-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles. "
+		"GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that "
+		"and that is what psconvert does by default, unless option -I is set. "
+		"Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied "
+		"to all but PDF format. We have no solution to offer other than ... upgrade GS.");
+	GMT_Usage (API, 1, "\n-L<listfile>");
+	GMT_Usage (API, -2, "The <listfile> is an ASCII file with names of files to be converted. ");
+	GMT_Usage (API, 1, "\n-Mb|f<psfile>");
+	GMT_Usage (API, -2, "Sandwich current psfile between background and foreground plots:");
+	GMT_Usage (API, 3, "b: Append the name of a background PostScript plot [none].");
+	GMT_Usage (API, 3, "f: Append name of foreground PostScript plot [none].");
+	GMT_Usage (API, 1, "\n-P Force Portrait mode. All Landscape mode plots will be rotated back "
+		"so that they show unrotated in Portrait mode. "
+		"This is practical when converting to image formats or preparing "
+		"EPS or PDF plots for inclusion in documents.");
+	GMT_Usage (API, 1, "\n-Q[g|p|t]1|2|4");
+	GMT_Usage (API, -2, "Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4) of sub-sampling box. "
+		"For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1. "
+		"For raster formats the defaults are -Qg4 -Qt4 unless overridden explicitly. "
+		"Optionally, use -Qp to create a GeoPDF (requires -Tf).");
+	GMT_Usage (API, 1, "\n-S Apart from executing it, also writes the Ghostscript command to "
+		"standard error and keeps all intermediate files.");
+	GMT_Usage (API, 1, "\n-Tb|e|E|f|F|g|G|j|m|s|t[+m]");
+	GMT_Usage (API, -2, "Set output format [default is jpeg]:");
+	GMT_Usage (API, 3, "b: Select BMP.");
+	GMT_Usage (API, 3, "e: Select EPS.");
+	GMT_Usage (API, 3, "E: Select EPS with setpagedevice command.");
+	GMT_Usage (API, 3, "f: Select PDF.");
+	GMT_Usage (API, 3, "F: Select multi-page PDF (requires -F).");
+	GMT_Usage (API, 3, "g: Select PNG.");
+	GMT_Usage (API, 3, "G: Select PNG (transparent where nothing is plotted).");
+	GMT_Usage (API, 3, "j: Select JPEG.");
+	GMT_Usage (API, 3, "m: Select PPM.");
+	GMT_Usage (API, 3, "s: Select SVG [if supported by your Ghostscript version].");
+	GMT_Usage (API, 3, "t: Select TIF.");
+	GMT_Usage (API, -2, "Note: For b, g, j, and t, append +m to get a monochrome (grayscale) image [color]. "
+		"The EPS format can be combined with any of the other formats. "
+		"For example, -Tef creates both an EPS and PDF file.");
+	GMT_Option (API, "V");
+	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
+		"to create a geoTIFF file.");
+	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
+	GMT_Usage (API, -2, "Write a ESRI type world file suitable to make (e.g.,) .tif files "
+		"recognized as geotiff by software that know how to do it. Be aware, "
+		"however, that different results are obtained depending on the image "
+		"contents and if the -B option has been used or not. The trouble with "
+		"-B is that it creates a frame and very likely its ticks and annotations "
+		"introduces pixels outside the map data extent. As a consequence, "
+		"the map extent estimation will be wrong. To avoid this problem, use "
+		"the --MAP_FRAME_TYPE=inside option which plots all annotation-related "
+		"items inside the image and therefore does not compromise the coordinate "
+		"computations. The world file naming follows the convention of jamming "
+		"a 'w' in the file extension. So, if the output is tif (-Tt) the world "
+		"file is a .tfw, for jpeg a .jgw, and so on.  A few modifiers are available:");
+	GMT_Usage (API, 3, "+g Do a system call to gdal_translate and produce a true "
+		"eoTIFF image right away. The output file will have the extension "
+		".tiff. See the man page for other 'gotchas'. Automatically sets -A -P.");
+	GMT_Usage (API, 3, "+k Create a minimalist KML file that allows loading the "
+		"image in Google Earth. Note that for this option the image must be "
+		"in geographical coordinates. If not, a warning is issued but the "
+		"KML file is created anyway.");
+	GMT_Usage (API, -2, "Additional modifiers allow you to specify the content in the KML file:");
+	GMT_Usage (API, 3, "+a Append <altmode>[<altitude>] to set the altitude mode of this layer, where "
+		"<altmode> is one of 5 recognized by Google Earth:");
+	GMT_Usage (API, 4, "G: Clamped to the ground [Default].");
+	GMT_Usage (API, 4, "g: Append altitude (in m) relative to ground.");
+	GMT_Usage (API, 4, "A: Append absolute altitude (in m).");
+	GMT_Usage (API, 4, "s: Append altitude (in m) relative to seafloor.");
+	GMT_Usage (API, 4, "S: Clamped to the seafloor.");
+	GMT_Usage (API, 3, "+f Append <minfade>/<maxfade>] to set distances over which we fade from opaque "
+		"to transparent [no fading].");
+	GMT_Usage (API, 3, "+l Append <minLOD>/<maxLOD>] to set Level Of Detail when layer should be "
+		"active [always active]. Image goes inactive when there are fewer "
+		"than minLOD pixels or more than maxLOD pixels visible. "
+		"-1 means never invisible.");
+	GMT_Usage (API, 3, "+n Append <layername> of this particular layer "
+		"[\"GMT Image Overlay\"].");
+	GMT_Usage (API, 3, "+o Append <foldername> to name this particular folder "
+		"\"GMT Image Folder\"].  This yields a KML snipped without header/trailer.");
+	GMT_Usage (API, 3, "+t Append <doctitle> to set the document name [\"GMT KML Document\"].");
+	GMT_Usage (API, 3, "+u Append <URL> and prepend it to the name of the image referenced in the "
+		"KML [local file]. "
+		"Escape any +? modifier inside strings with \\.");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
-		GMT_Message (API, GMT_TIME_NONE, "\t-Z Remove input PostScript file(s) after successful conversion.\n");
+		GMT_Usage (API, 1, "\n-Z Remove input PostScript file(s) after successful conversion.");
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
