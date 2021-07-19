@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdtrend** *grdfile* |-N|\ *n\_model*\ [**+r**]
+**gmt grdtrend** *grdfile* |-N|\ *n\_model*\ [**+r**]\ [**+x** | **+y**]
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
@@ -38,6 +38,8 @@ reweight the data based on a robust scale estimate, in order to converge
 to a solution insensitive to outliers. This may be handy when separating
 a "regional" field from a "residual" which should have non-zero mean,
 such as a local mountain on a regional surface.
+Optionally append **+x** OR **+y** (just one ofc) to fit a model only along
+the *xx* or *yy* axis.
 
 If data file has values set to NaN, these will be ignored during
 fitting; if output files are written, these will also have NaN in the
