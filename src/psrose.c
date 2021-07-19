@@ -182,7 +182,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	}
 	GMT_Usage (API, 1, "\n-C<cpt>");
 	GMT_Usage (API, -2, "Use CPT to assign fill to sectors based on the r-value. Requires -A (sector diagram).");
-	GMT_Usage (API, 1, "\n-D Will center the sectors.");
+	GMT_Usage (API, 1, "\n-D Shift sectors so that they are centered on the bin interval (e.g., first sector is centered on 0 degrees).");
 	GMT_Usage (API, 1, "\n-E[m|[+w]<modefile>]");
 	GMT_Usage (API, -2, "Plot vectors listed in the <modefile>. For calculated mean direction instead, choose -Em, with optional modifier:");
 	GMT_Usage (API, 3, "+w Write the calculated mean direction to <modefile>.");
