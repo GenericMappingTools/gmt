@@ -582,8 +582,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
 	GMT_Usage (API, -2, "Alternatively, give a file with bin boundaries in the first column, or a comma-separate list of values.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Option (API, "B-");
 	GMT_Usage (API, 1, "\n-A Plot horizontal bars, i.e., flip x and y axis [Default is vertical].");
+	GMT_Option (API, "B-");
 	GMT_Usage (API, 1, "\n-C<cpt>[+b]");
 	GMT_Usage (API, -2, "Use CPT to assign color to bars based on the mid-bar coordinate.  Alternatively, append +b "
 		"to assign color based on the histogram value instead (count or percent only; see -Z).");
