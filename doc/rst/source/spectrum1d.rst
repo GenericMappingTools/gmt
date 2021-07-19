@@ -112,7 +112,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**
+**-L**\ [**h**\|\ **m**]
     Leave trend alone. By default, a linear trend will be removed prior
     to the transform. Alternatively, append **m** to just remove the
     mean value or **h** to remove the mid-value.
