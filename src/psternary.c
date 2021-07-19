@@ -105,7 +105,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>] [-C<cpt>] [-G<fill>] [-JX[-]<width>] "
-		"[%s[-L<a>/<b/<c>] [-M] [-N] %s%s [-S[<symbol>][<size>]] [-R<amin>/<amax>/<bmin>/<bmax>/<cmin>/<cmax>] [%s] [%s] "
+		"%s[-L<a>/<b/<c>] [-M] [-N] %s%s [-S[<symbol>][<size>]] [-R<amin>/<amax>/<bmin>/<bmax>/<cmin>/<cmax>] [%s] [%s] "
 		"[-W[<pen>][<attr>]] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT,
 		GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT,
