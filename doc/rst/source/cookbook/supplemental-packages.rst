@@ -87,10 +87,12 @@ seis: Seismology
 This package contains the programs
 :doc:`coupe </supplements/seis/coupe>`,
 :doc:`meca </supplements/seis/meca>`,
-:doc:`polar </supplements/seis/polar>`, and
-:doc:`sac </supplements/seis/sac>` which are used by seismologists
+:doc:`polar </supplements/seis/polar>`,
+:doc:`sac </supplements/seis/sac>`,
+:doc:`sac </supplements/seis/vs30>`, and
+:doc:`sac </supplements/seis/shake>`, which are used by seismologists
 for plotting focal mechanisms (including cross-sections
-and polarities) and SAC files.
+and polarities), compute Vs30 velocities, intensity maps and SAC files.
 The coupe, meca, and polar were developed by Kurt Feigl and Genevieve
 Patau, while Dongdong Tian added sac; the package is now maintained by the GMT team.
 
