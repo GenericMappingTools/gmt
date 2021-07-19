@@ -46,6 +46,8 @@
 #define THIS_MODULE_OPTIONS "-Vbdefghiqs"
 
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
+#define SPECTRUM1D_SEPARATE_YES	0
+#define SPECTRUM1D_SEPARATE_NO	1
 
 struct SPECTRUM1D_CTRL {
 	struct SPECTRUM1D_Out {	/* -><file> */
@@ -530,6 +532,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.col[6] = 'g';
 	C->C.col[7] = 'o';
 	C->N.name = strdup ("spectrum");
+	C->N.mode = SPECTRUM1D_SEPARATE_YES;
 	return (C);
 }
 
@@ -553,12 +556,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "<");
 	GMT_Usage (API, 1, "\n-S<segment_size>");
 	GMT_Usage (API, -2, "Use data subsets of <segment_size> elements. "
-		"<segment_size> must be radix 2; "
+		"Note: <segment_size> must be radix 2; "
 		"std. err. = 1/sqrt(n_data/segment_size).");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C[<xycnpago>]");
-	GMT_Usage (API, -2, "Select output columns. For 2 column X(t),Y(t) input; estimate Cross-spectra [Default 1 col, X power only]. "
-		"Optionally specify cross-spectra output(s) [Default is all]:");
+	GMT_Usage (API, -2, "Specify cross-spectra output(s) for two-column X(t),Y(t) input [Default is all]:");
 	GMT_Usage (API, 3, "x: x-power.");
 	GMT_Usage (API, 3, "y: y-power.");
 	GMT_Usage (API, 3, "c: Coherent power.");
@@ -577,9 +579,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Supply name stem for files [Default = 'spectrum']. "
 		"Output files will be named <name_stem>.xpower, etc. "
 		"To disable the writing of individual files, just give -N.");
-	GMT_Usage (API, 1, "\n-T Disable writing the single output to stdout.");
+	GMT_Usage (API, 1, "\n-T Disable writing a single output table with selected columns to standard output.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W Write Wavelength of spectral estimate in col 1 [Default = frequency].");
+	GMT_Usage (API, 1, "\n-W Write Wavelength of spectral estimate in first column [Default = frequency].");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,qi,s,.");
 
 	return (GMT_MODULE_USAGE);
@@ -659,7 +661,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 					}
 				}
 				else	/* Turn off multiple file output */
-					Ctrl->N.mode = 1;
+					Ctrl->N.mode = SPECTRUM1D_SEPARATE_NO;
 				break;
 			case 'S':
 				Ctrl->S.active = true;
@@ -687,7 +689,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.inc <= 0.0, "Option -D: Sampling interval must be positive\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->C.active + 1);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Cannot use both -T and -N as no output would be produced\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == SPECTRUM1D_SEPARATE_NO && Ctrl->T.active, "Cannot use both -T and -N as no output would be produced\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -788,7 +790,7 @@ EXTERN_MSC int GMT_spectrum1d (void *V_API, int mode, void *args) {
 				spectrum1d_assign_output (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->data);
 				Sout->n_rows = C.n_spec;
 			}
-			if (Ctrl->N.mode == 0) {	/* Write separate tables */
+			if (Ctrl->N.mode == SPECTRUM1D_SEPARATE_YES) {	/* Write separate tables */
 				if (spectrum1d_write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
 					Return (GMT_RUNTIME_ERROR);
 			}
