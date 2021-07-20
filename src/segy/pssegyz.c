@@ -145,7 +145,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "Note: Must specify either -W or -F.");
+	GMT_Usage (API, 1, "\nNote: Must specify either -W or -F.");
 	GMT_Usage (API, 1, "\n<segyfile> is an IEEE SEGY file [or standard input].");
 	GMT_Usage (API, 1, "\n-D<dev>");
 	GMT_Usage (API, -2, "Set <dev> to give deviation in X units of plot for 1.0 on scaled trace. " 
