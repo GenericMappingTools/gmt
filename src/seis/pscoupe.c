@@ -504,6 +504,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: If fontsize < 0 then no label written; offset is from the limit of the beach ball.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
+	GMT_Usage (API, 1, "\n-C<cpt>");
 	gmt_fill_syntax (API->GMT, 'E', NULL, "Set color used for extensive parts [Default is white].");
 	GMT_Usage (API, 1, "\n-F<directive><parameters> (repeatable)");
 	GMT_Usage (API, -2, "Set various attributes of symbols depending on directive:");
