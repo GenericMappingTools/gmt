@@ -100,7 +100,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-T<TAG>");
 	GMT_Usage (API, -2, "Set the system tag for this compilation.");
-	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C Report center of each tile with tracks instead of track listing [Default is track files].");
 	GMT_Usage (API, 1, "\n-D Only report the track names and skip the report for each field.");
 	GMT_Usage (API, 1, "\n-F<flags>");
