@@ -146,6 +146,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set <dev> to give deviation in X units of plot for 1.0 on scaled trace.");
 	GMT_Usage (API, 1, "\n-F<color>");
 	GMT_Usage (API, -2, "Set <color> to fill variable area with a single color for the bitmap.");
+	GMT_Usage (API, 1, "\n-W Plot wiggle trace.");
 	GMT_Option (API, "JX,R");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Note: Units for y are s or km.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
