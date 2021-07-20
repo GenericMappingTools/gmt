@@ -472,7 +472,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+z Set distance min and max from horizontal plane in km, along steepest descent direction [no limit]");
 	GMT_Usage (API, 3, "+r Determine and set plot domain (-R) from the cross-section parameters [Use -R as given].");
 	GMT_Usage (API, -2, "Note: <width>, <length>, <dmin> and <dmax> must all be given in km.");
-	GMT_Usage (API, 1, "\n-C<cpt>");
 	GMT_Usage (API, -2, "Use CPT to assign colors based on depth-value in 3rd column.");
 	GMT_Option (API, "J-,R");
 	GMT_Usage (API, 1, "\n-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]");
