@@ -11,7 +11,7 @@ EOF
 
 gmt begin panels_history ps
   gmt set FONT_TITLE Helvetica-Bold
-  gmt subplot begin 2x2 -Fs3i -M5p -A -SCb -SRl -Bwstr -R0/80/0/10 -T"SPLINE INTERPOLATIONS"
+  gmt subplot begin 2x2 -Fs3i -M5p -A -Scb -Srl -Bwstr -R0/80/0/10 -T"SPLINE INTERPOLATIONS"
     gmt set FONT_ANNOT_PRIMARY=Times-Roman
     gmt subplot set 0 -ALINEAR
     gmt plot t.txt -Sc0.2c -Gblack

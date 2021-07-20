@@ -44,7 +44,7 @@ gmt begin ex03
 	gmt convert -A samp_ship.pg samp_sat.pg -o1,3 | gmt spectrum1d -S256 -D1 -W -C -T
 	# Time to plot spectra, use -l to build a legend
 	gmt set FONT_TAG 18p,Helvetica-Bold
-	gmt subplot begin 2x1 -M0.3c -SCb+l"Wavelength (km)" -T"Ship and Satellite Gravity" -Fs10c -A+jTR+o8p -BWeSn+g240/255/240
+	gmt subplot begin 2x1 -M0.3c -Scb+l"Wavelength (km)" -T"Ship and Satellite Gravity" -Fs10c -A+jTR+o8p -BWeSn+g240/255/240
 		gmt subplot set 0,0 -A"Input Power"
 		gmt plot spectrum.xpower -JX-?l/?l -Bxa1f3p -Bya1f3p+l"Power (mGal@+2@+km)" -Gred -ST5p -R1/1000/0.1/10000 -Ey+p0.5p -lShip
 		gmt plot spectrum.ypower -Gblue -Sc5p -Ey+p0.5p -lSatellite

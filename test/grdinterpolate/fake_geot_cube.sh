@@ -11,7 +11,7 @@ gmt begin fake_geot_cube ps
 	done < t.txt
 	gmt grdinterpolate -Zt.txt tmp_?.grd -Gfake_geot_cube.nc
 	gmt makecpt -T0/12
-	gmt subplot begin 4x2 -Fs5c -SCb -SRl -Blrbt -A1+gwhite -X5c -Y4c -M1c/0.25c -R-10/10/-10/10 -JM5c
+	gmt subplot begin 4x2 -Fs5c -Scb -Srl -Blrbt -A1+gwhite -X5c -Y4c -M1c/0.25c -R-10/10/-10/10 -JM5c
 		while read t; do
 			z=$(gmt math -Q -fi0T -fo0t $t =)
 			n=$(gmt math -Q -fi0T -fo0t $t 2020-01-01T SUB 1 ADD =)

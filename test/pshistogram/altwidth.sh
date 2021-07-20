@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Ensure the new -E option works as advertised
 gmt begin altwidth ps
-	gmt subplot begin 3x2 -Fs7c -SCb -SRl -R3/7/0/8 -BWSrt -A
+	gmt subplot begin 3x2 -Fs7c -Scb -Srl -R3/7/0/8 -BWSrt -A
 		gmt subplot set -A"No -E"
 		gmt histogram  hist.txt -T0.2 -Gred -W0.5p
 		gmt subplot set -A"w=0.1"
