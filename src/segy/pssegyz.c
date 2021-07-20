@@ -178,7 +178,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Specify <x/y> to set variable spacing. "
 		"x,y are (number) for fixed location, c for cdp, o for offset, b<n> for long int at byte n.");
 	GMT_Option (API, "U,V");
-	GMT_Usage (API, 1, "\n-W Plot wiggle trace.");
 	GMT_Option (API, "X");
 	GMT_Usage (API, 1, "\n-Z Suppress plotting traces whose rms amplitude is 0.");
 	GMT_Option (API, "c,p,t,.");
