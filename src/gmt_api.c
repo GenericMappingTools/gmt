@@ -12839,6 +12839,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
     else if (!strncmp (module, "grdfill", 7U)) {
         type = ((opt = GMT_Find_Option (API, 'L', *head))) ? 'D' : 'G'; /* Giving -L means we are writing a table */
     }
+    else if (!strncmp (module, "spectrum1d", 10U)) {
+         if ((opt = GMT_Find_Option (API, 'T', *head))) /* Giving -T deactivates stdout writing */
+            deactivate_output = true;   /* Turn off implicit output since none is in effect */
+    }
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
