@@ -177,7 +177,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Look in <filename> for a list of locations to select traces "
 		"(same units as header * X, i.e., values printed by previous -V run).");
 	GMT_Option (API, "U,V");
-	GMT_Usage (API, 1, "\n-W Plot wiggle trace.");
 	GMT_Option (API, "X");
 	GMT_Usage (API, 1, "\n-Z Suppress plotting traces whose rms amplitude is 0.");
 	GMT_Option (API, "c,p,t,.");
