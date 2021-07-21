@@ -20,6 +20,7 @@ Synopsis
 [|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**]
 [ |SYN_OPT-V| ]
 [ |-W| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -126,6 +127,8 @@ Optional Arguments
    Input data have a 4th column containing observation point weights.
    These are multiplied with the geometrical weight factor to determine
    the actual weights used in the calculations.
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
 .. include:: explain_-bi.rst_
