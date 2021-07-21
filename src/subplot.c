@@ -193,8 +193,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+af|s][+c<dx>[/<dy>]][+g<fill>][+p<pen>][+w<pen>] "
-		"[-A<autotag>] [-C[<side>]<clearance>] [-D] [%s] [-M<margins>] [%s] [-Sc|r[<layout>][+<mods>]] [-T<title>] [%s] [%s] [%s] [%s]\n",
-	 	name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
+		"[-A<autotag>] [%s] [-C[<side>]<clearance>] [-D] [%s] [-M<margins>] [%s] [-Sc|r[<layout>][+<mods>]] [-T<title>] [%s] [%s] [%s] [%s]\n",
+	 	name, GMT_B_OPT, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
 	GMT_Usage (API, 0, "usage: %s set [<row>,<col>|<index>] [-A<fixedtag>] [-C[<side>]<clearance>] [%s]", name, GMT_V_OPT);
 	GMT_Usage (API, -2, "Note: Set <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n");
 	GMT_Usage (API, 0, "usage: %s end [%s]\n", name, GMT_V_OPT);
@@ -235,6 +235,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+s Append [<dx>/<dy>][/<shade>] to plot a shadow behind the tag panel [Default is 2p/-2p/gray50].");
 	GMT_Usage (API, 3, "+v Number subplots down the columns [subplots are numbered across rows].");
 	GMT_Usage (API, -2, "Note: Use subplot set -A<fixedtag> to override the auto-tag system for one subplot.");
+	GMT_Option (API, "B-");
+	GMT_Usage (API, -2, "Note: Usually it is better to use -S to organize annotations and ticks than to use -B directly.");
 	GMT_Usage (API, 1, "\n-C[<side>]<clearance>");
 	GMT_Usage (API, -2, "Specify a gap of dimension <clearance> to the <side> (w|e|s|n) of the plottable subplot. "
 		"Shrinks the size for the main plot to make room for scales, bars, etc. "
