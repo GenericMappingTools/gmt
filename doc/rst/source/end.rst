@@ -51,7 +51,7 @@ close the current modern session and finalize any plots requested::
     gmt end
 
 Here is the same example, but this time we want to name the map,
-obtained both PDF and PNG versions of it, and automatically open
+create both PDF and PNG versions of it, and automatically open
 the PDF file in the relevant viewer::
 
     gmt begin map pdf,png
