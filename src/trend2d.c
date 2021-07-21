@@ -427,7 +427,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Choose at least 1, up to 6, any order, of xyzmrw for ASCII output to stdout.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Usage (API, -2, "Note: Input must provide (x,y,z[,w]) records.");
+	GMT_Usage (API, 1, "\n-F<xyzmrw>|p");
+	GMT_Usage (API, -2, "Choose at least 1, up to 6, any order, of xyzmrw for output to standard output.:");
 	GMT_Message (API, GMT_TIME_NONE, "\t   x=x, y=y, z=z, m=model, r=residual=z-m, w=weight (determined iteratively if robust fit used).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fp by itself to report the model coefficients only.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3+r.\n");
