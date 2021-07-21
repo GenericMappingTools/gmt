@@ -175,8 +175,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct IMG2GRD_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <world_image_filename> -G<outgrid> %s -T<type> [-D[<minlat>/<maxlat>]] [-E] [-F] "
-		"[-I<min>[m|s]] [-M] [-N<navg>] [-S[<scale>]] [%s] [-W<maxlon>] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <world_image_filename> -G<outgrid> %s [-D[<minlat>/<maxlat>]] [-E] [-F] "
+		"[-I<min>[m|s]] [-M] [-N<navg>] [-S[<scale>]] [-T<type>] [%s] [-W<maxlon>] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -186,12 +186,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set filename for the output grid file.");
 	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
 	GMT_Usage (API, -2, "Specify the region in decimal degrees or degrees:minutes.");
-	GMT_Usage (API, 1, "\n-T<type>");
-	GMT_Usage (API, -2, "Select the img type format:");
-	GMT_Usage (API, 3, "0: Obsolete img files w/ no constraint code, gets data.");
-	GMT_Usage (API, 3, "1: New img file w/ constraints coded, gets data at all points [Default].");
-	GMT_Usage (API, 3, "2: New img file w/ constraints coded, gets data only at constrained points, NaN elsewhere.");
-	GMT_Usage (API, 3, "3: New img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-D[<minlat>/<maxlat>]");
 	GMT_Usage (API, -2, "Set input img file bottom and top latitudes [%.3f/%.3f]. "
@@ -210,6 +204,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-S[<scale>]");
 	GMT_Usage (API, -2, "Multiply img integer values by <scale> before output [1]. "
 		"To set scale based on information encoded in filename, just give -S.");
+	GMT_Usage (API, 1, "\n-T<type>");
+	GMT_Usage (API, -2, "Select the img type format:");
+	GMT_Usage (API, 3, "0: Obsolete img files w/ no constraint code, gets data.");
+	GMT_Usage (API, 3, "1: New img file w/ constraints coded, gets data at all points [Default].");
+	GMT_Usage (API, 3, "2: New img file w/ constraints coded, gets data only at constrained points, NaN elsewhere.");
+	GMT_Usage (API, 3, "3: New img file w/ constraints coded, gets 1 at constraints, 0 elsewhere.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-W<maxlon>");
 	GMT_Usage (API, -2, "Input img file runs from 0 to <maxlon> longitude [360.0].");
