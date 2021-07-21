@@ -31,7 +31,7 @@ Optional Arguments
 **show**
     Open all graphics produced by the session in the default viewer.
     **Note**: In the event you have selected more than one output format
-    we onlly open the first one listed.
+    we only open the first one listed.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
