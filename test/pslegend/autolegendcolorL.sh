@@ -19,7 +19,7 @@ cat << EOF > p.txt
 EOF
 gmt begin autolegendcolorL ps
   gmt set COLOR_SET red,black,cyan,darkgreen
-  gmt subplot begin 2x2 -R-1/6/-1/6 -Fs8c -SRl -SCb -Blrtb -A -T"Test auto-color line legends"
+  gmt subplot begin 2x2 -R-1/6/-1/6 -Fs8c -Srl -Scb -Blrtb -A -T"Test auto-color line legends"
     gmt plot p.txt -R-1/6/-1/6 -W3p,auto -l"Line #"+jBR -c
     gmt plot p.txt -R-1/6/-1/6 -W3p,auto -l"Line X-%2.2d"+jBR -c
     gmt plot p.txt -R-1/6/-1/6 -W3p,auto -l"Line A,Line B,Line C,N/A"+jBR -c
