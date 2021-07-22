@@ -105,6 +105,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set <out>/<edge>/<in> to use if node is outside, on the path, or inside. NaN is a valid entry. "
 		"[Default values are 0/0/1]. Alternatively, use -Nz (inside) or -NZ (inside & edge) to set the inside nodes "
 		"of a polygon to a z-value obtained as follows (in this order):");
+	GMT_Usage (API, 3, "%s If OGR/GMT files, get z-value via -aZ=<name> for attribute <name>.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Interpret segment z-values (-Z<zval>) as the z-value.", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s Interpret segment labels (-L<label>) as the z-value.", GMT_LINE_BULLET);
 	GMT_Usage (API, -2, "Finally, use -Np|P and append origin for running polygon IDs [0]. For -Nz|Z|p|P you may "
