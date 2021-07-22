@@ -532,6 +532,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
+	GMT_Usage (API, -2, "Note: Input must provide (x,y[,w]) records; see -W for weights.");
 	GMT_Usage (API, 1, "\n-F<xymrw|p|P|c>");
 	GMT_Usage (API, -2, "Choose at least 1, up to 5, any order, of xymrw for output to standard output:");
 	GMT_Usage (API, 3, "x: The x-coordinate.");
