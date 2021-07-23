@@ -17,12 +17,13 @@ Synopsis
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-T|\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**] \|\ *file*\|\ *list* ]
 [ |-Z|\ *level*\ [*ymin*\ /*ymax*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-x| ]
@@ -48,10 +49,11 @@ Required Arguments
 ------------------
 
 *table*
-    The file describing cross-sectional polygons of one or more bodies.  Polygons
+    One or more ASCII files describing cross-sectional polygons of one or more bodies.  Polygons
     will be automatically closed if not already closed, and repeated vertices will
     be eliminated.  The segment header for each body will be examined for a density
-    parameter in kg/m^3; see **-D** for overriding this value.
+    parameter in kg/m^3; see **-D** for overriding this value.  If no *table* is given then we
+    read standard input.
 
 Optional Arguments
 ------------------
@@ -87,7 +89,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**] \|\ *file*\|\ *list*
     Specify an equidistant output lattice.
     For details on array creation, see `Generate 1D Array`_.
 

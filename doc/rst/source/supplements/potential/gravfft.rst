@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
+**gmt gravfft** *ingrid* [ *ingrid2* ]
+|-G|\ *outfile*
 [ |-C|\ *n/wavelength/mean\_depth/tbw* ]
 [ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
@@ -20,9 +21,10 @@ Synopsis
 [ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
+[ |-S| ]
 [ |-T|\ *te/rl/rm/rw*\ [*/ri*]\ [**+m**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *wd*]
+[ |-W|\ *wd*\ [**k**] ]
 [ |-Z|\ *zm*\ [*zl*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -168,7 +170,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *wd*
+**-W**\ *wd*\ [**k**]
     Set water depth (or observation height) relative to topography [0].  Append **k** to indicate km.
 
 .. _-Z:

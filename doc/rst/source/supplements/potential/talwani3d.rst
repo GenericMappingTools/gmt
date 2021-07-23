@@ -13,7 +13,8 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt talwani3d** [ *table* ]
-[ |-A| ] [ |-D|\ *rho* ] ]
+[ |-A| ]
+[ |-D|\ *rho* ] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
 [ |SYN_OPT-I| ]
@@ -22,7 +23,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |-Z|\ *level*\|\ *obsgrid* ]
 [ |SYN_OPT-V| ]
-[ |SYN_OPT-bi| ]
+[ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
@@ -118,8 +119,8 @@ Optional Arguments
     Set observation level, either as a constant or variable by giving the name of a grid with observation
     levels.  If the latter is used then this grid determines the output grid region as well [0].
 
-.. |Add_-bi| replace:: [Default is 2 input columns].
-.. include:: ../../explain_-bi.rst_
+.. |Add_-bo| replace:: [Default is 2 output columns].
+.. include:: ../../explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-d.rst_
