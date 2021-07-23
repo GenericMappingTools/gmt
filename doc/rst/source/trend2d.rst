@@ -41,8 +41,10 @@ number of terms in f(x,y) which significantly reduce the variance in z.
 n\_model may be in [1,10] to fit a model of the following form (similar
 to grdtrend):
 
-  m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
-  m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
+.. math::
+
+  m_1 + m_{2}x + m_{3}y + m_{4}xy + m_{5}x^2 + m_{6}y^2 + m_{7}x^3 +
+  m_{8}x^{2}y + m_{9}xy^2 + m_{10}y^3.
 
 The user must specify **-N**\ *n\_model*, the number of model parameters
 to use; thus, **-N**\ *4* fits a bilinear trend, **-N**\ *6* a quadratic
