@@ -17,7 +17,7 @@ Synopsis
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
-[ |-T|\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**] \|\ *file*\|\ *list* ]
+[ |-T|\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**]\ \|\ *file*\|\ *list* ]
 [ |-Z|\ *level*\ [*ymin*\ /*ymax*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -85,11 +85,12 @@ Optional Arguments
 
 **-N**\ *trackfile*
     Specifies locations where we wish to compute the predicted value.  When this option
-    is used you cannot use **-T** to set an equidistant lattice. The output data records are written to stdout.
+    is used you cannot use **-T** to set an equidistant lattice. The output data records are written to
+    standard output (see **-bo** for binary output).
 
 .. _-T:
 
-**-T**\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**] \|\ *file*\|\ *list*
+**-T**\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**]\ \|\ *file*\|\ *list*
     Specify an equidistant output lattice.
     For details on array creation, see `Generate 1D Array`_.
 

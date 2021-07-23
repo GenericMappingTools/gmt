@@ -13,8 +13,8 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt flexure** |-D|\ *rm*/*rl*\ [/*ri*]\ /*rw*
-|-E|\ *Te*\ [**k**]\ |\ *D*\|\ *file*
-|-Q|\ *args*]
+|-E|\ *Te*\ [**k**]\|\ *D*\|\ *file*
+|-Q|\ *args*
 [ |-A|\ [**l**\|\ **r**]\ *bc*\ [/*args*] ]
 [ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *force* ]
@@ -57,7 +57,7 @@ Required Arguments
 
 .. _-E:
 
-**-E**\ *Te*\ [**k**]\ |\ *D*\|\ *file*
+**-E**\ *Te*\ [**k**]\|\ *D*\|\ *file*
     Sets the elastic plate thickness (in meter); append **k** for km.
     If the elastic thickness exceeds 1e10 it will be interpreted as
     a flexural rigidity *D* instead (by default *D* is computed from *Te*, Young's
@@ -103,7 +103,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *force*
-    Set a constant horizontal in-plane force, in Pa m [0]
+    Set a constant horizontal in-plane force, in Pa m [0].
 
 .. _-L:
 
@@ -198,6 +198,8 @@ for a 10 km thick plate with typical densities, try
 References
 ----------
 
+Bodine, J. H., 1980, *Numerical computation of plate flexure in marine geophysics*, 
+Tech. Rep. CU-1-80, Columbia University.
 
 See Also
 --------

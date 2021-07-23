@@ -14,7 +14,7 @@ Synopsis
 
 **gmt gravfft** *ingrid* [ *ingrid2* ]
 |-G|\ *outfile*
-[ |-C|\ *n/wavelength/mean\_depth/tbw* ]
+[ |-C|\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w** ]
 [ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
 [ |-F|\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
@@ -78,12 +78,12 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *n/wavelength/mean\_depth/tbw*
+**-C**\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w**
     Compute only the theoretical admittance curves of the selected model
     and exit. *n* and *wavelength* are used to compute (n \* wavelength)
     the total profile length in meters. *mean\_depth* is the mean water
-    depth. Append dataflags (one or two) of *tbw* in any order. *t* =
-    use "from top" model, *b* = use "from below" model. Optionally
+    depth. Append dataflags (one or two) of **t**\|\ **b**\|\ **w** in any order.
+    Here, *t* = use "from top" model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
 
 .. _-D:

@@ -82,7 +82,7 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *m/n*
-    The filter window size in terms of row/columns. The default value is 25/25.
+    The filter window size in terms of row/columns [Default value is 25/25].
 
 .. _-M:
 
@@ -98,13 +98,13 @@ Optional Arguments
 .. _-R:
 
 **-R**\ *west*/*east*/*south*/*north*
-    defines the Region of the output points. [Default: Same as input.]
+    defines the Region of the output points [Default: Same as input].
 
 .. _-T:
 
 **-T**\ *year*
     Decimal year used by the IGRF routine to compute the declination and
-    inclination at each point [Default: 2000]
+    inclination at each point [Default is 2000].
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -149,7 +149,7 @@ vectors collinear and computed from IGRF :
 Reference
 ---------
 
-Luis, J.L. and Miranda, J.M. (2008), Reevaluation of magnetic chrons in
+Luis, J.L. and Miranda, J.M., 2008, Reevaluation of magnetic chrons in
 the North Atlantic between 35N and 47N: Implications for the formation
 of the Azores Triple Junction and associated plateau. *JGR*, VOL.
 **113**, B10105, doi:10.1029/2007JB005573

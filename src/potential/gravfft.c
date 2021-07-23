@@ -418,7 +418,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>] "
+	GMT_Usage (API, 0, "usage: %s <ingrid> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>] "
 		"[-D<density>] [-E<n_terms>] [-F[f[+s]|b|g|v|n|e]] [-I<cbktw>] [-N%s] [-Q] [-S] "
 		"[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>[k]] [-Z<zm>[/<zl>]] [-fg] [%s]\n",
 		name, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
@@ -426,8 +426,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<topo_grd> is the input grdfile with topography values. "
-		"Optionally, give a second grid <ingrid2> for admittance and coherence computations");
+	GMT_Usage (API, 1, "\n<ingrid> is the input grdfile with topography values. "
+		"Optionally, give a second grid <ingrid2> for cross-spectral computations");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Filename for output netCDF grdfile with gravity [or geoid] values.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
@@ -455,9 +455,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "e: East deflections of the vertical (micro-radian).");
 	GMT_Usage (API, 3, "n: North deflections of the vertical (micro-radian).");
 	GMT_Usage (API, 1, "\n-I<cbktw>");
-	GMT_Usage (API, -2, "Use <ingrid2> and <topo_grd> to estimate admittance|coherence and write "
+	GMT_Usage (API, -2, "Use <ingrid2> and <ingrid> to estimate admittance|coherence and write "
 		"output to stdout (-G ignored if set). The <ingrid2>  should contain gravity or geoid anomalies "
-		"for the same region of <topo_grd>. Default computes admittance. Output "
+		"for the same region of <ingrid>. Default computes admittance. Output "
 		"contains 3 or 4 columns: Frequency (wavelength), admittance (coherence) "
 		"one sigma error bar and, optionally, a theoretical admittance. "
 		"Append dataflags (one to three) from cbktw:");
