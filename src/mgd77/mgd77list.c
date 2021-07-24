@@ -221,7 +221,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "azim:    Track azimuth (Degrees east from north).");
 	GMT_Usage (API, 3, "cc:      Course change, i.e., change in azimuth (Degrees east from north).");
 	GMT_Usage (API, 3, "vel:     Ship velocity (m/s).");
-	GMT_Usage (API, -2, "%s Geophysical Observations.\n", GMT_LINE_BULLET)
+	GMT_Usage (API, -2, "%s Geophysical Observations.\n", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "twt:     Two-way travel-time (s).");
 	GMT_Usage (API, 3, "depth:   Corrected bathymetry (m) [Also see -Z].");
 	GMT_Usage (API, 3, "mtf1:    Magnetic Total Field Sensor 1 (gamma, nTesla).");
@@ -350,7 +350,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Velocities are given in m/s unless changed by -Ns.");
 	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
 	GMT_Usage (API, -2, "Return data inside the specified region only [0/360/-90/90].");
-	GMT_Usage (API, 1, "\n-Ga|b<rec>");
+	GMT_Usage (API, 1, "\n-Sa|b<dist>");
 	GMT_Usage (API, -2, "Limit output based on distance along cruise. Append a directive and distance (with optional unit from %s [meter]); repeatable:", GMT_LEN_UNITS2_DISPLAY);
 	GMT_Usage (API, 3, "a: Start output at this distance[Start of cruise].");
 	GMT_Usage (API, 3, "b: End output at this distance [End of cruise].");
