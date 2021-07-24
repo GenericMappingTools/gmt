@@ -570,7 +570,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+s Read standard deviations and compute weights as 1/s^2.");
 	GMT_Option (API, "bi");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 2 (or 3 if -W is set) input columns.");
-	GMT_Option (API, "bo,d,e,h,i,q,s,w,:,.");
+	GMT_Option (API, "bo,d,e,f,h,i,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
