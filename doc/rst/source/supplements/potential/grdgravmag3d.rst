@@ -94,7 +94,9 @@ Optional Arguments
 
       **t**\|\ **T**\|\ **f**\|\ **F**  to compute the total field.
 
-      For a variable inclination and declination use IGRF. Set any of **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n** to do that
+    If we want to compute the magnetic anomalies over a large region where the ambient magnetic field
+    can no longer be assumed to be constant we can set variable inclinations and declinations via IGRF.
+    Set any of **-H+i**\|\ **g**\|\ **r**\|\ **f**\|\ **n** to do that
 
 .. _-I:
 

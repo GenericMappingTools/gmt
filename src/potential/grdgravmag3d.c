@@ -224,7 +224,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "z: Compute the Vertical component.");
 	GMT_Usage (API, 3, "h: Compute the Horizontal component.");
 	GMT_Usage (API, 3, "t: Compute the total field.");
-	GMT_Usage (API, -2, "Note: For a variable inclination and declination use IGRF. Set any of -H+i|g|r|f|n to do that.");
+	GMT_Usage (API, -2, "If we want to compute the magnetic anomalies over a large region where the ambient "
+		"magnetic field can no longer be assumed to be constant we can set variable inclinations and declinations "
+		"via IGRF. Set any of -H+i|g|r|f|n to do that.");
 	GMT_Option (API, "I");
 	GMT_Usage (API, -2, "Note: The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).");
 	GMT_Usage (API, 1, "\n-L<z_obs>");
