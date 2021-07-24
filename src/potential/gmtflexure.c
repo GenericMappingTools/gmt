@@ -327,7 +327,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "2: \"Clamped\" condition, append <w0> so w at end = <w0> [0], w' = 0.");
 	GMT_Usage (API, 3, "3: \"Free\" condition, append m/f as (m)oment and (f)orce at end [0/0].");
 	GMT_Usage (API, -2, "Default BCs are -A0.  Use SI units for any optional arguments.");
-	GMT_Usage (API, 1, "\n-C[p|y]<value>");
+	GMT_Usage (API, 1, "\n-Cp|y<value>");
 	GMT_Usage (API, -2, "Set rheological constants given the directive (repeatable):");
 	GMT_Usage (API, 3, "y: Append a value to change Young's modulus [%g].", YOUNGS_MODULUS);
 	GMT_Usage (API, 3, "p: Append a value to change Poisson's ratio [%g].", POISSONS_RATIO);
