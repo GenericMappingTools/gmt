@@ -122,37 +122,43 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MANAGE_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> [-Aa|c|d|D|e|E|g|i|n|t|T<info>[+f]] [-D<name1>,<name2>,...]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-	             GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_j_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cruise(s)> [-Aa|c|d|D|e|E|g|i|n|t|T<info>[+f]] [-D<name1>,<name2>,...] "
+		"[-E<no_char>] [-F] [-I<abbrev>/<name>/<units>/<size>/<scale>/<offset>/\"comment\"] "
+		"[-N%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+	    name, GMT_LEN_UNITS2_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_j_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Append a new data column to the given files.  Append +f to overwrite an\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   existing column with same name with new data [Default will refuse if an\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   existing column has the same abbreviation as the new data].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The code letters are:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a: Give filename with a new column to add.  We expect a single-column file\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      with the same number of records as the MGD77 file.  Only one cruise can be set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c: Create a new column to be calculated from existing columns.  Add code:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        m = IGRF total field, c = Carter correction, g = IGF (\"normal gravity\").\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        r = recomputed magnetic anomaly rmag = mtfx - IGRF total field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append x for which mtfx field to use (1 or 2) [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        For g, optionally append 1-4 to select the gravity formula to use:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        1 = Heiskanen 1924, 2 = International 1930, 3 = IGF1967, 4 = IGF1980.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        [Default uses formula specified in the MGD77 header, or 4 if not valid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d: Give filename with (dist [see -N], data) for a new column.  We expect a two-column file\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      with distances (in km) in first column and data values in 2nd.  Only one cruise can be set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with matching distance will have data assigned.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   D: Same as d but we interpolate between the dist,data pairs to fill in all data records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e: Ingest MGD77 error/correction information (e77) produced by mgd77sniffer.  We will look\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      By default we will apply recommended header (h) and systematic fixes (f) and set all data bit flags.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append a combination of these flags to change the default accordingly:\n");
+	GMT_Usage (API, 1, "\n-Aa|c|d|D|e|E|g|i|n|t|T<info>[+f]");
+	MT_Usage (API, -2, "Append a new data column to the given files.  Append +f to overwrite an "
+		"existing column with same name with new data [Default will refuse if an "
+		"existing column has the same abbreviation as the new data]. "
+		"The code letters are:");
+	GMT_Usage (API, 3, "a: Give filename with a new column to add.  We expect a single-column file "
+		"with the same number of records as the MGD77 file. Only one cruise can be set. "
+		"If filename is - we read from stdin.");
+	GMT_Usage (API, 3, "c: Create a new column to be calculated from existing columns.  Add code:");
+	GMT_Usage (API, 4, "m: IGRF total field.");
+	GMT_Usage (API, 4, "c: Carter correction.");
+	GMT_Usage (API, 4, "g: IGF (\"normal gravity\"). Optionally append 1-4 to select the gravity formula to use:");
+	GMT_Usage (API, 5, "1: Heiskanen 1924.");
+	GMT_Usage (API, 5, "2: International 1930.");
+	GMT_Usage (API, 5, "3: IGF1967.");
+	GMT_Usage (API, 5, "4: IGF1980.\n");
+	GMT_Usage (API, -4, "[Default uses formula specified in the MGD77 header, or 4 if not valid].");
+	GMT_Usage (API, 4, "r: Recomputed magnetic anomaly rmag = mtfx - IGRF total field. "
+		"Append x for which mtfx field to use (1 or 2) [1].");
+	GMT_Usage (API, 3, "d: Give filename with (dist [see -N], data) for a new column.  We expect a two-column file "
+		"with distances (in km) in first column and data values in 2nd.  Only one cruise can be set. "
+		"If filename is - we read from stdin.  Only records with matching distance will have data assigned.");
+	GMT_Usage (API, 3, "D: Same as d but we interpolate between the dist,data pairs to fill in all data records.");
+	GMT_Usage (API, 3, "e: Ingest MGD77 error/correction information (e77) produced by mgd77sniffer.  We will look "
+		"for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77. "
+		"By default we will apply recommended header (h) and systematic fixes (f) and set all data bit flags. "
+		"Append a combination of these flags to change the default accordingly:");
 	GMT_Message (API, GMT_TIME_NONE, "\t        h = Ignore all header recommendations\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        f = Ignore all systematic fixes recommendations\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t        n = Ignore data record bitflags pertaining to navigation (time, lon, lat).\n");
@@ -160,17 +166,17 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t        s = Ignore data record bitflags pertaining to data slopes (gradients).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Use -DE to ignore the verification status of the e77 file [Default requires verification to be Y].\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Note: Previous E77 information will be removed prior to processing this E77 information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g: Sample a GMT grid along track. (also see -n; use -R to select a sub-region).\n");
+	GMT_Usage (API, 3, "g: Sample a GMT grid along track. (also see -n; use -R to select a sub-region).\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      Append filename of the GMT grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -n; use -R to select a sub-region).\n");
+	GMT_Usage (API, 3, "i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -n; use -R to select a sub-region).\n");
 	gmt_img_syntax (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   n: Give filename with (rec_no, data) for a new column.  We expect a two-column file\n");
+	GMT_Usage (API, 3, "n: Give filename with (rec_no, data) for a new column.  We expect a two-column file\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      with record numbers (0 means 1st row) in first column and data values in 2nd.  Only one cruise can be set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with matching record numbers will have data assigned.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t: Give filename with (abstime, data) for a new column.  We expect a two-column file\n");
+	GMT_Usage (API, 3, "t: Give filename with (abstime, data) for a new column.  We expect a two-column file\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      with dateTclock strings in first column and data values in 2nd.  Only one cruise can be set.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t      If filename is - we read from stdin.  Only records with matching times will have data assigned.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   T: Same as t but we interpolate between the time, data pairs to fill in all data records.\n");
+	GMT_Usage (API, 3, "T: Same as t but we interpolate between the time, data pairs to fill in all data records.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete the columns listed from all the cruise data files.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   The columns are removed before any data are added.  It is not a substitute for -A...+f.\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   However, sometimes the shape of new data demands the old to be deleted first (you will be told).\n");
