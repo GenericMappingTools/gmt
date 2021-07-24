@@ -187,7 +187,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s %s %s [%s] [%s] [-C<fill>[+l|r]] [-D<resolution>][+f]] [-E%s] "
 		"[-G[<fill>]] [-F%s] [-I<feature>[/<pen>]] %s [-L%s] [-M] [-N<feature>[/<pen>]] %s%s[-Q] [-S[<fill>]] "
 		"[-Td%s] [-Tm%s] [%s] [%s] [-W[<feature>/][<pen>]] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]%s [%s]\n",
-		name, GMT_J_OPT, GMT_A_OPT, GMT_B_OPT, DCW_OPT, GMT_PANEL, API->K_OPT, GMT_SCALE, API->O_OPT,
+		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_A_OPT, GMT_B_OPT, DCW_OPT, GMT_PANEL, API->K_OPT, GMT_SCALE, API->O_OPT,
 		API->P_OPT, GMT_TROSE_DIR, GMT_TROSE_MAG, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT, API->c_OPT,
 		GMT_do_OPT, GMT_p_OPT, GMT_t_OPT, GMT_colon_OPT, dbg, GMT_PAR_OPT);
 
