@@ -24,6 +24,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -139,6 +140,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
 
