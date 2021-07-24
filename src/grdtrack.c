@@ -179,7 +179,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Repeat -G for as many grids as you wish to sample, or "
 		"use -G+l<list> to pass a list of grid file names. "
 		"Note: If the file is a Sandwell/Smith Mercator grid (IMG format) then more information is required:");
-	gmt_img_syntax (API->GMT);
+	gmt_img_syntax (API->GMT, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
 	GMT_Option (API, "<");

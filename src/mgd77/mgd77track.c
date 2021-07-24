@@ -172,7 +172,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Option (API, "J-,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A[c][<size>]][+i<inc>");
+	GMT_Usage (API, 1, "\n-A[c][<size>]][+i<inc>]");
 	GMT_Usage (API, -2, "Annotate legs when they enter the grid. Append c for cruise ID [Default is file prefix]; "
 		"<size> is optional text size in points [9].  The font used is controlled by FONT_LABEL. "
 		"Optionally, append +i<inc> to place label every <inc> units apart, where unit may be "
@@ -186,6 +186,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Gt|d|n<number>");
 	GMT_Usage (API, -2, "Consider point separations exceeding d<gap> (km) or t<gap> (minutes) to indicate a gap (do not draw) [0]. "
 		"Use n<number> to plot only one every other <number> points. Useful to reduce plot file size.");
+	GMT_Usage (API, 1, "\n-Ia|c|m|t");
 	GMT_Usage (API, -2, "Ignore certain data file formats from consideration. Append combination of acmt to ignore [Default ignores none]:");
 	GMT_Usage (API, 3, "a: MGD77 ASCII table.");
 	GMT_Usage (API, 3, "c: MGD77+ netCDF table.");
@@ -200,25 +201,25 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "O,P");
 	GMT_Usage (API, 1, "\n-Sa|b<dist>");
 	GMT_Usage (API, -2, "Limit plotting based on distance along cruise. Append a directive and distance (with optional unit from %s [meter]); repeatable:", GMT_LEN_UNITS2_DISPLAY);
-	GMT_Usage (API, 3, "a: Start plotting at this distance[Start of cruise].");
+	GMT_Usage (API, 3, "a: Start plotting at this distance [Start of cruise].");
 	GMT_Usage (API, 3, "b: End plotting at this distance [End of cruise].");
 	GMT_Usage (API, 1, "\n-TT|t|d<ms,mc,mfs,mf,mfc>");
 	GMT_Usage (API, -2, "Set attributes of marker items. First select a marker directive:");
 	GMT_Usage (API, 3, "T: New day marker.");
 	GMT_Usage (API, 3, "t: Same day marker.");
 	GMT_Usage (API, 3, "d: Distance marker.");
-	GMT_Usage (API, -2, "Next append 5 comma-separated items: "
+	GMT_Usage (API, -2, "Next append five comma-separated items: "
 		"<markersize>,<markercolor>,<markerfontsize,<markerfont>,<markerfontcolor>.");
 	GMT_Usage (API, -2, "Default settings for the three marker types are:");
-	GMT_Usage (API, 3, "%s T%s,black,%g,%d,black.",
+	GMT_Usage (API, 3, "%s T%s,black,%g,%d,black.", GMT_LINE_BULLET,
 		day_marker_size, API->GMT->current.setting.font_annot[GMT_PRIMARY].size,
-		API->GMT->current.setting.font_annot[GMT_PRIMARY].id, GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "%s t%s,white,%g,%d,black.",
+		API->GMT->current.setting.font_annot[GMT_PRIMARY].id);
+	GMT_Usage (API, 3, "%s t%s,white,%g,%d,black.", GMT_LINE_BULLET,
 		day_marker_size, API->GMT->current.setting.font_annot[GMT_PRIMARY].size,
-		API->GMT->current.setting.font_annot[GMT_PRIMARY].id, GMT_LINE_BULLET);
-	GMT_Usage (API, 3, "d%s,black,%g,%d,black.",
+		API->GMT->current.setting.font_annot[GMT_PRIMARY].id);
+	GMT_Usage (API, 3, "%s d%s,black,%g,%d,black.", GMT_LINE_BULLET,
 		dist_marker_size, API->GMT->current.setting.font_annot[GMT_PRIMARY].size,
-		API->GMT->current.setting.font_annot[GMT_PRIMARY].id, GMT_LINE_BULLET);
+		API->GMT->current.setting.font_annot[GMT_PRIMARY].id);
 	GMT_Option (API, "U,V");
 	GMT_Usage (API, 1, "\n-W<pen>");
 	GMT_Usage (API, -2, "Set track pen attributes [%s].", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));

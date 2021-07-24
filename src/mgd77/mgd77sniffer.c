@@ -414,7 +414,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"These factors are then reflected in regression output. Multiple -G calls allowed.");
 #endif
 	GMT_Usage (API, 1, "\n-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] | -G<fieldabbrev>,<grid>");
-	GMT_Usage (API, -2, "Compare cruise data to the specified GMT geographic grid or Sandwell/Smith Mercator img grid:");
+	GMT_Usage (API, -2, "Compare cruise data to the specified  Sandwell/Smith Mercator img grid or GMT geographic grid:");
 	GMT_Usage (API, 3, "%s Compare cruise data to the specified Sandwell/Smith Mercator grid. Requires valid MGD77 "
 		"field abbreviation followed by a comma, the path (if not in current directory) "
 		"and grid filename, scale (0.1 or 1), and mode (see mgd77manage for details). "
@@ -460,17 +460,17 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Sd|s|t");
 	GMT_Usage (API, -2, "Specify gradient type for along-track excessive slope checking:");
 	GMT_Usage (API, 3, "d: Calculate change in z values along track (dz).");
-	GMT_Usage (API, 3, "s: Calculate spatial gradients (dz/ds) [default].");
+	GMT_Usage (API, 3, "s: Calculate spatial gradients (dz/ds) [Default].");
 	GMT_Usage (API, 3, "t: Calculate time gradients (dz/dt).");
 	GMT_Usage (API, 1, "\n-T<gap>");
 	GMT_Usage (API, -2, "Set maximum acceptable distance gap between records (km) [5]. "
 		"Set to zero to deactivate gap checking.");
 	GMT_Usage (API, 1, "\n-Wc|g|o|s|t|v|x");
-	GMT_Usage (API, -2, "Print out only certain warning types. Comma delimit any combination of c|g|o|s|t|v|x, where:");
+	GMT_Usage (API, -2, "Print out only certain warning types. Comma-delimit any combination of c|g|o|s|t|v|x, where:");
 	GMT_Usage (API, 3, "c: Type code warnings.");
 	GMT_Usage (API, 3, "g: Gradient out of range.");
 	GMT_Usage (API, 3, "o: Offsets from grid (requires -G).");
-	GMT_Usage (API, 3, "s: Speed out of range,.");
+	GMT_Usage (API, 3, "s: Speed out of range.");
 	GMT_Usage (API, 3, "t: Time warnings.");
 	GMT_Usage (API, 3, "v: Value out of range.");
 	GMT_Usage (API, 3, "x: Warning summaries.");
@@ -481,7 +481,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"(i.e., -Z5 flags coefficients m, b, rms, and r that fall outside 95%%.)");
 	GMT_Usage (API, 1, "\n-bo Output binary data for -D option.  Append d for double and s for single precision [double].");
 	GMT_Option (API, "do,n,.");
-	GMT_Usage (API, -2, "MGD77 FIELD INFO:\n");
+	GMT_Usage (API, -2, "\nMGD77 FIELD INFO:\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tField\t\t\tAbbreviation\t\tUnits\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tTwo-way Travel Time\ttwt\t\t\tsec\n");
 	GMT_Message (API, GMT_TIME_NONE, "\tCorrected Depth \tdepth\t\t\tm\n");

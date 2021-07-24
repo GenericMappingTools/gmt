@@ -140,14 +140,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "a: Give filename with a new column to add.  We expect a single-column file "
 		"with the same number of records as the MGD77 file. Only one cruise can be set. "
 		"If filename is - we read from stdin.");
-	GMT_Usage (API, 3, "c: Create a new column to be calculated from existing columns.  Add code:");
+	GMT_Usage (API, 3, "c: Create a new column to be calculated from existing columns.  Add a code:");
 	GMT_Usage (API, 4, "m: IGRF total field.");
 	GMT_Usage (API, 4, "c: Carter correction.");
 	GMT_Usage (API, 4, "g: IGF (\"normal gravity\"). Optionally append 1-4 to select the gravity formula to use:");
 	GMT_Usage (API, 5, "1: Heiskanen 1924.");
 	GMT_Usage (API, 5, "2: International 1930.");
 	GMT_Usage (API, 5, "3: IGF1967.");
-	GMT_Usage (API, 5, "4: IGF1980.\n");
+	GMT_Usage (API, 5, "4: IGF1980.");
 	GMT_Usage (API, -4, "[Default uses formula specified in the MGD77 header, or 4 if not valid].");
 	GMT_Usage (API, 4, "r: Recomputed magnetic anomaly rmag = mtfx - IGRF total field. "
 		"Append x for which mtfx field to use (1 or 2) [1].");
@@ -164,12 +164,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 4, "n: Ignore data record bitflags pertaining to navigation (time, lon, lat).");
 	GMT_Usage (API, 4, "v: Ignore data record bitflags pertaining to data values.");
 	GMT_Usage (API, 4, "s: Ignore data record bitflags pertaining to data slopes (gradients).");
-	GMT_Usage (API, 3, "Use -DE to ignore the verification status of the e77 file [Default requires verification to be Y]. "
+	GMT_Usage (API, 4, "Use -DE to ignore the verification status of the e77 file [Default requires verification to be Y]. "
 		"Note: Previous E77 information will be removed prior to processing this E77 information.");
-	GMT_Usage (API, 3, "g: Sample a GMT grid along track. (also see -n; use -R to select a sub-region). "
+	GMT_Usage (API, 3, "g: Sample a GMT grid along track (also see -n; use -R to select a sub-region). "
 		"Append filename of the GMT grid.");
 	GMT_Usage (API, 3, "i: Sample a Sandwell/Smith *.img Mercator grid along track (also see -n; use -R to select a sub-region). ");
-	gmt_img_syntax (API->GMT);
+	gmt_img_syntax (API->GMT, 4);
 	GMT_Usage (API, 3, "n: Give filename with (rec_no, data) for a new column.  We expect a two-column file "
 		"with record numbers (0 means 1st row) in first column and data values in 2nd.  Only one cruise can be set. "
 		"If filename is - we read from stdin.  Only records with matching record numbers will have data assigned.");
@@ -193,8 +193,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "scale:   Multiply data by this scale before writing to mgd77+ file.");
 	GMT_Usage (API, 3, "offset:  Add after scaling before writing to mgd77+ file.");
 	GMT_Usage (API, 3, "comment: Any text (in double quotes) for information about column (%d char max).", MGD77_COL_COMMENT_LEN);
-	GMT_Usage (API, -2, "Note: Option -I is ignored by -Ae.");
-	GMT_Usage (API, -2, "Note for text: Interpolation is not allowed, and \"not-a-string\" is created from -E.");
+	GMT_Usage (API, -2, "Note: Option -I is ignored by -Ae. "
+		"Note for text: Interpolation is not allowed, and \"not-a-string\" is created from -E.");
 	GMT_Usage (API, 1, "\n-N%s", GMT_LEN_UNITS2_DISPLAY);
 	GMT_Usage (API, -2, "Append your choice for distance unit (if -Ad|D are set). Choose among "
 		"m(e)ter, (f)oot, (k)m, (M)ile, (n)autical mile, or s(u)rvey foot [Default is -Nk].");

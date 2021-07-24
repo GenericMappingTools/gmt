@@ -94,11 +94,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	MGD77_Cruise_Explain (API->GMT);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C[m|e]");
-	GMT_Usage (API, -2, "List abbreviations of all columns present for each cruise.:");
+	GMT_Usage (API, -2, "List abbreviations of all columns present for each cruise:");
 	GMT_Usage (API, 3, "m: List just the MGD77 columns present");
 	GMT_Usage (API, 3, "e: List just any extra columns present");
 	GMT_Usage (API, 1, "\n-E[m|e]");
-	GMT_Usage (API, -2, "Give the information summary of each cruise's geographical/temporal extent.:");
+	GMT_Usage (API, -2, "Give the information summary of each cruise's geographical/temporal extent:");
 	GMT_Usage (API, 3, "m: Count just the number of non-NaN values for each MGD77 field.");
 	GMT_Usage (API, 3, "e: Count just the of non-NaN values for each extra field.");
 	GMT_Usage (API, 1, "\n-Mf[<item>]|r|e|h");

@@ -84,7 +84,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A+a<alt>+t<date>+y] [-C<cm4file>] [-D<dstfile>] [-E<f107file>] "
 		"[-Frthxyzdi[/[0|9]1234567]] [-G] [-Lrtxyz[/1234]] [-Sc|l<low>/<high>] [%s "
 		"[%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_o_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -93,13 +93,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<table>");
-	GMT_Usage (API, -2, "File with records that must contain lon, lat, alt, time[, other cols]. "
-		"longitude and latitude is the geocentric position on the ellipsoid [but see -G]. "
-		"alt is the altitude in km positive above the ellipsoid. "
-		"time is the time of data acquisition, in <date>T<clock> format (but see -A+y). "
+	GMT_Usage (API, -2, "File with records that must contain <lon>, <lat>, <alt>, <time>[, other cols]. "
+		"Here, (<lon>, <lat>) is the geocentric position on the ellipsoid [but see -G], "
+		"<alt> is the altitude in km positive above the ellipsoid, and "
+		"<time> is the time of data acquisition, in <date>T<clock> format (but see -A+y). "
 		"We read <stdin> if no input file is given.");
-	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A+y+a<alt>+t<date>");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A+a<alt>+t<date>+y");
 	GMT_Usage (API, -2, "Adjust how the input records are interpreted. Append modifiers:");
 	GMT_Usage (API, 3, "+a Append <alt> to indicate a constant altitude [Default is 3rd column].");
 	GMT_Usage (API, 3, "+t Append <time> to indicate a constant time [Default is 4th column].");
@@ -116,7 +116,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"OR a single solar radio flux to apply for all records.",
 		API->GMT->session.SHAREDIR);
 	GMT_Usage (API, 1, "\n-Frthxyzdi[/[0|9]1234567]");
-	GMT_Usage (API, -2, "Dataflags is a string made up of one or more of these characters:");
+	GMT_Usage (API, -2, "Dataflags is a string made up of one or more of these codes:");
 	GMT_Usage (API, 3, "r: Output all input columns before adding the items below (all in nTesla).");
 	GMT_Usage (API, 3, "t: List total field.");
 	GMT_Usage (API, 3, "h: List horizontal field.");
@@ -125,10 +125,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "z: List Z component.");
 	GMT_Usage (API, 3, "d: List declination.");
 	GMT_Usage (API, 3, "i: List inclination.");
-	GMT_Usage (API, -2, "Optionally, append a number to indicate the requested field contribution(s):");
+	GMT_Usage (API, -2, "Optionally, append one or more numbers to indicate the requested field contribution(s):");
 	GMT_Usage (API, 3, "0: Core field from IGRF only (no CM4 evaluation).");
-	GMT_Usage (API, 3, "1: Core field.\n");
-	GMT_Usage (API, 3, "2: Lithosphericield.");
+	GMT_Usage (API, 3, "1: Core field.");
+	GMT_Usage (API, 3, "2: Lithospheric field.");
 	GMT_Usage (API, 3, "3: Primary Magnetospheric field.");
 	GMT_Usage (API, 3, "4: Induced Magnetospheric field.");
 	GMT_Usage (API, 3, "5: Primary ionospheric field.");
@@ -145,8 +145,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-G Specify that coordinates are geocentric [geodetic].");
 	GMT_Usage (API, 1, "\n-Lrtxyz[/1234]");
 	GMT_Usage (API, -2, "Compute J field vectors from certain external sources. "
-		"Append a string made up of 1 or more of these characters:");
-		GMT_Usage (API, 3, "r: Output all input columns before adding the items below (all in Ampers/m).");
+		"Append a string made up of one or more of these codes:");
+		GMT_Usage (API, 3, "r: Output all input columns before adding the items below (all in Ampere/m).");
 		GMT_Usage (API, 3, "t: List magnitude field.");
 		GMT_Usage (API, 3, "x: List X component.");
 		GMT_Usage (API, 3, "y: List Y component.");
@@ -158,7 +158,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "4: Poloidal field.");
 	GMT_Usage (API, 1, "\n-Sc|l<low>/<high>");
 	GMT_Usage (API, -2, "Limit the CM4 contributions from core and lithosphere to certain harmonic degree bands. "
-		"Append c(ore) or l(ithosphere) and the low and high degrees to use [-Sc1/13 -Sl14/65].");
+		"Append c(ore) or l(ithosphere) and the <low> and <high> degrees to use [-Sc1/13 -Sl14/65].");
 	GMT_Option (API, "V,bi0");
 	if (gmt_M_showusage (API)) {
 		GMT_Usage (API, -2, "Default is 4 input columns (unless -A is used).  Note for binary input, absolute time must "
