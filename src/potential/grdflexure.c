@@ -782,7 +782,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-A<Nx/Ny/Nxy>");
 	GMT_Usage (API, -2, "Set in-plane force components <Nx>, <Ny> and shear force <Nxy> in Pa*m [isotropic deformation]. "
 		"Negative values mean compression, positive values mean extensional forces.");
-	GMT_Usage (API, 1, "\n-C[p|y]<value>");
+	GMT_Usage (API, 1, "\n-Cp|y<value>");
 	GMT_Usage (API, -2, "Set rheological constants given the directive (repeatable):");
 	GMT_Usage (API, 3, "y: Append a value to change Young's modulus [%g].", YOUNGS_MODULUS);
 	GMT_Usage (API, 3, "p: Append a value to change Poisson's ratio [%g].", POISSONS_RATIO);
