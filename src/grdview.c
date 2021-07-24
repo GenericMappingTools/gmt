@@ -469,12 +469,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<smooth>");
 	GMT_Usage (API, -2, "Smooth contours first (see grdcontour for <smooth> value info) [no smoothing].");
-	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", 0);
+	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", NULL, 0);
 	GMT_Usage (API, 3, "+s Skip tiles for nodes with z = NaN [Default paints all tiles].");
 	GMT_Usage (API, 3, "+o to draw tile outline; optionally append <pen> [Default uses no outline].");
 	GMT_Usage (API, -2, "Note: Cannot be used with -Jz|Z as it produces a flat image.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes for various features in form <type><pen>.", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes for various features in form <type><pen>.", NULL, 0);
 	GMT_Usage (API, -2, "Note: <type> can be c for contours, m for mesh, and f for facade:");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Usage (API, 3, "m: Sets attributes for mesh lines [%s]. "
@@ -701,7 +701,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						Ctrl->T.skip = true;
 					if ((c = strstr (opt->arg, "+o"))) {
 						if (gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {
-							gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
+							gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 							n_errors++;
 						}
 						else
@@ -715,7 +715,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						Ctrl->T.outline = true;
 						k++;
 						if (opt->arg[k] && gmt_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
-							gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
+							gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 							n_errors++;
 						}
 					}
@@ -736,7 +736,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				if (j == 0)	/* Copy pen when using just -W */

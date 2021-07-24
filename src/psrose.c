@@ -218,8 +218,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"This implies both <azimuth> and <azimuth> + 180 will be counted as inputs. "
 		"Ignored if -R sets a half-circle domain.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes for outline of rose [Default is no outline].", 0);
-	GMT_Usage (API, -2, "Note: Use -Wv<pen> to set a different pen for the vector (requires -E) [Same as rose outline].");
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes for outline of rose [Default is no outline].", NULL, 0);
+	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Wv<pen> to set a different pen for the vector (requires -E) [Same as rose outline].\n");
 	GMT_Option (API, "X");
 	GMT_Usage (API, 1, "\n-Zu|<scale>");
 	GMT_Usage (API, -2, "Multiply the radii by <scale> before plotting; or use -Zu to set input radii to 1.");
@@ -345,7 +345,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					n = sscanf (opt->arg, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 					if (n != 4 || gmt_getrgb (GMT, txt_d, Ctrl->M.S.v.fill.rgb)) {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Expected\n\t-M<tailwidth/headlength/headwidth/<color>>\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Expected\n\t-M<tailwidth/headlength/headwidth/<color>\n");
 						n_errors++;
 					}
 					else {	/* Turn the old args into new +a<angle> and pen width */
@@ -393,7 +393,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 					Ctrl->N.selected = true;
 					if ((c = strstr (opt->arg, "+p")) != NULL) {
 						if (gmt_getpen (GMT, &c[2], &Ctrl->N.pen)) {
-							gmt_pen_syntax (GMT, 'N', NULL, " ", 0);
+							gmt_pen_syntax (GMT, 'N', NULL, " ", NULL, 0);
 							n_errors++;
 						}
 					}
@@ -416,7 +416,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				n = (opt->arg[0] == 'v') ? 1 : 0;
 				Ctrl->W.active[n] = true;
 				if (gmt_getpen (GMT, &opt->arg[n], &Ctrl->W.pen[n])) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;

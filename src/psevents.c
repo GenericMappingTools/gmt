@@ -248,7 +248,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append symbol code and optionally <size>.  If no size we read it from the data file. "
 		"Default plots lines or polygons; see -A for further instructions.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", NULL, 0);
 	GMT_Option (API, "X");
 	GMT_Usage (API, 1, "\n-Z\"<command>\"");
 	GMT_Usage (API, -2, "Append core external <command> and required options that must include -S<format><size>. "
