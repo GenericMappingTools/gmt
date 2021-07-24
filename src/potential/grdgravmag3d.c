@@ -204,7 +204,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"volume between them is computed.");
 	GMT_Usage (API, 1, "\n-C<density>");
 	GMT_Usage (API, -2, "Set body density in SI.");
-	GMT_Usage (API, 1, "\n--F<xy_file>");
+	GMT_Usage (API, 1, "\n-F<xy_file>");
 	GMT_Usage (API, -2, "Pass file with locations where anomaly is going to be computed.");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Set name of the output grdfile.");
@@ -1788,4 +1788,3 @@ c    a,b,c:  the three direction cosines.
 	*b = cos(xincl) * sin(xdecl-xazim);
 	*c = sin(xincl);
 }
-
