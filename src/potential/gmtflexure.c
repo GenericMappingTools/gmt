@@ -298,7 +298,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E<Te>[k]|<D>|<file> -Qn|q|t[<args>] [-A[l|r]<bc>[/<args>]] "
-		"[-C[p|y]<value>] [-F<force>] [-L] [-M[x][z]] [-S] [-T<wpre>] [%s] [-W<w0>[k]] [-Z<zm>[k]] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-Cp|y<value>] [-F<force>] [-L] [-M[x][z]] [-S] [-T<wpre>] [%s] [-W<w0>[k]] [-Z<zm>[k]] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
