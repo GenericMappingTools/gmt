@@ -19,14 +19,14 @@ Synopsis (begin mode)
 
 **gmt subplot begin** *nrows*\ **x**\ *ncols*
 |-F|\ [**f**\|\ **s**]\ *width*\ /*height*\ [**+f**\ *wfracs*\ /*hfracs*][**+af**\|\ **s**][**+c**\ *dx/dy*][**+g**\ *fill*][**+p**\ *pen*][**+w**\ *pen*]
-[ |-A|\ *autolabel* ]
+[ |-A|\ *autotag* ]
 [ |-C|\ [*side*]\ *clearance* ]
 [ |-D| ]
 [ |SYN_OPT-B| ]
 [ |-J|\ *parameters* ]
 [ |-M|\ *margins* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ *layout* ]
+[ |-S|\ **c**\|\ **r**\ [*layout*][*mods*] ]
 [ |-T|\ *title* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-X| ]
@@ -89,7 +89,7 @@ Optional Arguments (begin mode)
 
 .. _-A:
 
-**-A**\ [*autolabel*][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+j**\|\ **J**\ *refpoint*][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+r**\|\ **R**][**+s**\ [[*dx*/*dy*][/*shade*]]][**+v**]
+**-A**\ [*autotag*][**+c**\ *dx*\ [/*dy*]][**+g**\ *fill*][**+j**\|\ **J**\ *refpoint*][**+o**\ *dx*\ [/*dy*]][**+p**\ *pen*][**+r**\|\ **R**][**+s**\ [[*dx*/*dy*][/*shade*]]][**+v**]
     Specify automatic tagging of each subplot.  Append either a number or letter [a].
     This sets the tag of the first, top-left subplot and others follow sequentially.
     Surround the number or letter by parentheses on any side if these should be typeset
@@ -160,18 +160,18 @@ Optional Arguments (begin mode)
 
 .. _-S:
 
-**-S**\ *layout*
-    Set subplot layout for shared axes. May be set separately for rows (**-SR**) and columns (**-SC**).
-    Considerations for **-SC**: Use when all subplots in a **C**\ olumn share a common *x*-range. The first (i.e., **t**\ op) and the last
+**-S**\ **c**\|\ **r**\ [*layout*][*mods*]
+    Set subplot *layout* for shared axes. May be set separately for rows (**-Sr**) and columns (**-Sc**).
+    Considerations for **-Sc**: Use when all subplots in a **c**\ olumn share a common *x*-range. The first (i.e., **t**\ op) and the last
     (i.e., **b**\ ottom) rows will have *x* annotations; append **t** or **b** to select only one of those two rows [both].
     Append **+l** if annotated *x*-axes should have a label [none]; optionally append the label if it is the same
-    for the entire subplot.
+    for the entire subplot. Optionally, use **+s** to set a separate (secondary) label.
     Append **+t** to make space for subplot titles for each row; use **+tc** for top row titles only [no subplot titles].
     Labels and titles that depends on which row or column are specified as usual via a subplot's own **-B** setting.
-    Considerations for **-SR**: Use when all subplots in a **R**\ ow share a common *y*-range. The first (i.e., **l**\ eft) and the last
+    Considerations for **-Sr**: Use when all subplots in a **r**\ ow share a common *y*-range. The first (i.e., **l**\ eft) and the last
     (i.e., **r**\ ight) columns will have *y*-annotations; append **l** or **r** to select only one of those two columns [both].
     Append **+l** if annotated *y*-axes will have a label [none]; optionally, append the label if it is the same
-    for the entire subplot.
+    for the entire subplot. Optionally, use **+s** to set a separate (secondary) label.
     Append **+p** to make all annotations axis-parallel [horizontal]; if not used you may have to set **-C** to secure
     extra space for long horizontal annotations.
     Append **+w** to the **-F** argument to draw horizontal and vertical lines
@@ -198,7 +198,7 @@ Optional Arguments (begin mode)
 Synopsis (set mode)
 -------------------
 
-**gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedlabel*] [ **-C**\ *side*\ *clearance* ] [ |SYN_OPT-V| ]
+**gmt subplot set** [ *row,col*\|\ *index* ] [ **-A**\ *fixedtag*] [ **-C**\ *side*\ *clearance* ] [ |SYN_OPT-V| ]
 
 Before you start plotting you must first select the active subplot.
 **Note**: If any **-J** option is passed *without* the scale or width when you first are plotting
@@ -218,7 +218,7 @@ Optional Arguments (set mode)
 
 .. _subplot_set-A:
 
-**-A**\ *fixedlabel*
+**-A**\ *fixedtag*
     Overrides the automatic labeling with the given string.  No modifiers are allowed.
     Placement, justification, etc. are all inherited from how **-A** was specified by the
     initial **subplot begin** command.  **Note**: Overriding means you initiate the tag
@@ -228,7 +228,8 @@ Optional Arguments (set mode)
 
 **-C**\ [*side*]\ *clearance*
     Reserve a space of dimension *clearance* between the margin and the subplot on the specified
-    side, using *side* values from **w**, **e**, **s**, or **n**.  The option is repeatable to set aside space
+    side, using *side* values from **w**, **e**, **s**, or **n**, or **x** for both **w** and **e**
+    or **y** for both **s** and **n**.  The option is repeatable to set aside space
     on more than one side.  Such space will be left untouched by the main map plotting but can
     be accessed by modules that plot scales, bars, text, etc.  This setting overrides the common
     clearances set by **-C** during **subplot begin**.
@@ -274,7 +275,7 @@ Examples
 To make a minimalistic 2x2 basemap layout called panels.pdf, try::
 
     gmt begin panels pdf
-      gmt subplot begin 2x2 -Fs8c -M5p -A -SCb -SRl -R0/80/0/10
+      gmt subplot begin 2x2 -Fs8c -M5p -A -Scb -Srl -R0/80/0/10
         gmt subplot set
         gmt basemap
         gmt subplot set

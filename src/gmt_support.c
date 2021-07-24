@@ -17042,7 +17042,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	-T<argument>
 	 *
 	 * where <argument> is one of these:
-	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l]
+	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l|t]
 	 *	<file>
 	 *
 	 * Parsing:

@@ -24,7 +24,7 @@ Synopsis
 [ |-N|\ *max_iterations* ]
 [ |-Q| ]
 [ |-S|\ *search_radius*\ [**m**\|\ **s**] ]
-[ |-T|\ [**i**\|\ **b**]\ *tension_factor* ]
+[ |-T|\ [**b**\|\ **i**]\ *tension_factor* ]
 [ |SYN_OPT-V| ]
 [ |-Z|\ *over-relaxation_factor* ]
 [ |SYN_OPT-a| ]
@@ -187,7 +187,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [**i**\|\ **b**]\ *tension_factor*
+**-T**\ [**b**\|\ **i**]\ *tension_factor*
     Tension factor[s]. These must be between 0 and 1. Tension may be
     used in the interior solution (above equation, where it suppresses
     spurious oscillations) and in the boundary conditions (where it

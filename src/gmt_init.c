@@ -18064,7 +18064,7 @@ GMT_LOCAL bool gmtinit_A_was_given (char *text) {
 GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	/* Loop over all registered figures and their selected formats and
 	 * convert the hidden PostScript figures to selected graphics.
-	 * If show is not NULL then we display them via gmt docs */
+	 * If show is not NULL then we display the first graphics listed (if more than one) via gmt docs */
 
 	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
 	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
@@ -18179,7 +18179,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				return error;
 			}
 
-			if (show) {	/* Open the plot in the viewer via call to gmt docs */
+			if (show && f == 0) {	/* Open the plot in the viewer via call to gmt docs */
 				size_t start = 0, end = strlen (fig[k].prefix) - 1;
 				char ext[GMT_LEN8] = {""};
 				strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */

@@ -12839,6 +12839,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
     else if (!strncmp (module, "grdfill", 7U)) {
         type = ((opt = GMT_Find_Option (API, 'L', *head))) ? 'D' : 'G'; /* Giving -L means we are writing a table */
     }
+    else if (!strncmp (module, "spectrum1d", 10U)) {
+         if ((opt = GMT_Find_Option (API, 'T', *head))) /* Giving -T deactivates stdout writing */
+            deactivate_output = true;   /* Turn off implicit output since none is in effect */
+    }
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */
@@ -13473,27 +13477,47 @@ int GMT_Report_ (unsigned int *level, const char *format, int len) {
 }
 #endif
 
+GMT_LOCAL unsigned int gmtapi_hyphen (const char *line, unsigned int stop) {
+    /* Examine a few cases:
+     * 0) line[stop] is not a hyphen
+     * 1) -option : Start of an option is not hyphenation.
+     *    --PAR=value: Special case of option.
+     * 2) hyphen-word: Detected if text/numbers on each side.  Just break, no continuation character needed.
+     */
+    if (line[stop] != '-') return 0;    /* Not a hyphenated case */
+    if (stop == 0) return 2;    /* Nothing before the hyphen means option or negative number, cannot split */
+    if (line[stop-1] == '-') return 0;   /* --PAR case caught */
+    if (line[stop-1] == '[') return 0;   /*  [-option] case caught */
+    if (line[stop-1] == ' ') return 0;   /*  -option case caught */
+    //return (isalpha (line[stop+1]) && isalpha (line[stop-1]) ? 2 : 1);
+    return (2); /* Regular hyphenated word or number range or similar */
+}
+
 GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	/* Split line into an array of words where words are separated by either
 	 * a space (like between options), the occurrence of "][" sequences, or
 	 * items separated by slashes "/" or bars "|" or hyphens "-".
 	 * These are the places where we are allowed to break the line. */
 	struct GMT_WORD *array = NULL;
-	unsigned int n = 0, c, start = 0, next, end, j, stop, space = 0, n_alloc = GMT_LEN256;
+	unsigned int n = 0, c, start = 0, next, end, j, stop, space = 0, n_alloc = GMT_LEN256, hyphen = 0;
 	array = calloc (n_alloc, sizeof (struct GMT_WORD));
 	while (line[start]) {	/* More line to chop up */
+        hyphen = 0; /* Initialize */
 		/* Find the next break location */
 		stop = start;
-		while (line[stop] && !(strchr (" /|", line[stop]) || (line[stop] == ']' && line[stop+1] == '[') || (line[stop] == '-' && isalpha (line[stop+1])))) stop++;
+		while (line[stop] && !(strchr (" /|", line[stop]) || (line[stop] == ']' && line[stop+1] == '[') || (hyphen = gmtapi_hyphen (line, stop)))) stop++;
 		end = next = stop;	/* Mark likely end */
 		array[n].space = space;	/* Do we need a leading space (set via previous word)? */
 		if (line[stop] == ' ') {	/* Skip the space to start over at next word */
 			while (line[stop] == ' ') stop++;	/* In case there are more than one space */
 			next = stop; space = 1;
 		}
-		else if (line[stop] && strchr ("/|]-", line[stop])) {	/* Include this char then break */
-			next = ++end, space = 0;
-		}
+        else if (line[stop] && strchr ("/|]", line[stop])) {   /* Include this char then break */
+            next = ++end, space = 0;
+        }
+        else if (line[stop] == '-') {   /* Include this char then break with no break symbol */
+            next = ++end, space = hyphen;
+        }
 		array[n].word = calloc (end - start + 1, sizeof (char));	/* Allocate space for word */
 		for (j = start, c = 0; j < end; j++, c++) array[n].word[c] = line[j];
 		n++;	/* Got another word */
@@ -13515,6 +13539,10 @@ GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
 	return (array);
 }
 
+GMT_LOCAL unsigned int gmtapi_space (unsigned int space) {
+    return (space == 2) ? 0 : space;
+}
+
 GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *fp, const char *in_line) {
 	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
 	bool keep_same_indent = (level < 0), go = true, force = false;
@@ -13534,12 +13562,12 @@ GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *f
 	for (j = 0; go && j < gmtapi_indent[level]; j++) strcat (message, " ");	/* Starting spaces */
 	current_width = gmtapi_indent[level];
 	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
-		width = (W[k+1].space) ? API->terminal_width : API->terminal_width - 1;	/* May need one space for ellipsis at end */
+		width = (gmtapi_space (W[k+1].space)) ? API->terminal_width : API->terminal_width - 1;	/* May need one space for ellipsis at end */
 		if (force || (current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
-			if (W[k].space)	/* This word requires a leading space */
+			if (gmtapi_space (W[k].space))	/* This word requires a leading space */
 				strcat (message, " ");
 			strcat (message, W[k].word);
-			current_width += strlen (W[k].word) + W[k].space;	/* Update line width so far */
+			current_width += strlen (W[k].word) + gmtapi_space (W[k].space);	/* Update line width so far */
 			free (W[k].word);	/* Free the word we are done with */
 			if (W[k+1].word == NULL)	/* Finalize the last line */
 				strcat (message, "\n");
