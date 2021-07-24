@@ -753,7 +753,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[k][/<te2>[k]]] -G<outgrid> [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
+	GMT_Usage (API, 0, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[k][/<te2>[k]]] -G<outgrid> [-A<Nx/Ny/Nxy>] [-Cp|y<value] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
 		"[-L<list>] [-M<tm>[k|M]] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>[+l]]|<file>] [%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n",
 		name, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
