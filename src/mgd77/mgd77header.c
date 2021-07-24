@@ -73,7 +73,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <cruise(s)>  [-H<headinfo>] [-Mf[<item>]|f|r|t] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cruise(s)>  [-H<headinfo>] [-Mf[<item>]|r|t] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -84,11 +84,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-H<headinfo>");
 	GMT_Usage (API, -2, "Read and assign header values from a file. Each input file row gives an exact "
 		"header_field_name, space or tab, and header value. Values are read according to "
-		"NGDC's MGD77 header format specification, e.g.:");
+		"NGDC's MGD77 header format specification. Two examples are given:");
 	GMT_Usage (API, 3, "Source_Institution Univ. of Hawaii.");
 	GMT_Usage (API, 3, "Port_of_Arrival Honolulu, HAWAII");
 	GMT_Usage (API, -2, "Note: See mgd77info -Mf output for recognized header field names.");
-	GMT_Usage (API, 1, "\n-Mf[<item>]|f|r|t");
+	GMT_Usage (API, 1, "\n-Mf[<item>]|r|t");
 	GMT_Usage (API, -2, "Print header items.  Append type of presentation:");
 	GMT_Usage (API, 3, "f: Print header items individually, one per line.  Append name of a particular "
 		"item (e.g., Port_of_Departure), all [Default], or - to see a list of items."

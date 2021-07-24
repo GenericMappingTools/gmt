@@ -185,8 +185,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cruise(s)> -F<dataflags>[,<tests>] [-Ac|d|f|m|t[<code>][+f]] "
-		"[-Da|b<date>] [-E] [-Ga|b<rec>] [-Ia|c|m|t] [-L[<corrtable.txt>]] [-Nd|s<unit>] [-Qa|c|v<min>/<max>] "
-		"[%s] [-Sa|b<dist>] [-T[m|e]] [%s] [-W<Weight>] [-Z[n|p] [%s] [%s] [-h] [%s] [%s] [%s]\n",
+		"[-Da|b<date>] [-E] [-Ga|b<rec>] [-Ia|c|m|t] [-L[<corrtable>]] [-Nd|s<unit>] [-Qa|c|v<min>/<max>] "
+		"[%s] [-Sa|b<dist>] [-T[m|e]] [%s] [-W<weight>] [-Z[n|p] [%s] [%s] [-h] [%s] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_j_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -196,7 +196,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-F<dataflags>[,<tests>]");
 	GMT_Usage (API, -2, "Give comma-separated string made up of one or more of these abbreviations "
 		"(for standard MGD77 files - use mgd77list to probe for other columns in MGD77+ files).");
-	GMT_Usage (API, -2, "%s Track information.:", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "%s Track information:", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "time: Choose between Absolute time [default], Relative time, or fractional year:");
 	GMT_Usage (API, 4, "atime: Absolute time (formatted according to FORMAT_DATE_OUT, FORMAT_CLOCK_OUT).");
 	GMT_Usage (API, 4, "rtime: Relative time (formatted according to FORMAT_FLOAT_OUT and TIME_SYSTEM (or TIME_EPOCH, TIME_UNIT)).");
@@ -216,12 +216,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "id:      Survey leg ID [string_output].");
 	GMT_Usage (API, 3, "ngdcid:  NGDC ID [TEXTSTRING].");
 	GMT_Usage (API, 3, "recno:   Record number.");
-	GMT_Usage (API, -2, "%s Derived navigational information.\n", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "%s Derived navigational information:", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "dist:    Along-track distances (see -j for method and -N for units).");
 	GMT_Usage (API, 3, "azim:    Track azimuth (Degrees east from north).");
 	GMT_Usage (API, 3, "cc:      Course change, i.e., change in azimuth (Degrees east from north).");
 	GMT_Usage (API, 3, "vel:     Ship velocity (m/s).");
-	GMT_Usage (API, -2, "%s Geophysical Observations.\n", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "%s Geophysical Observations:", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "twt:     Two-way travel-time (s).");
 	GMT_Usage (API, 3, "depth:   Corrected bathymetry (m) [Also see -Z].");
 	GMT_Usage (API, 3, "mtf1:    Magnetic Total Field Sensor 1 (gamma, nTesla).");
@@ -229,7 +229,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "mag:     Magnetic residual anomaly (gamma, nTesla).");
 	GMT_Usage (API, 3, "gobs:    Observed gravity (mGal).");
 	GMT_Usage (API, 3, "faa:     Free-air gravity anomaly (mGal).");
-	GMT_Usage (API, -2, "%s Codes, Corrections, and Information.\n", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "%s Codes, Corrections, and Information:", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "drt:     Data record type [5].");
 	GMT_Usage (API, 3, "ptc:     Position type code.");
 	GMT_Usage (API, 3, "bcc:     Bathymetric correction code.");
@@ -241,21 +241,21 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "sln:     Seismic line number string [TEXTSTRING].");
 	GMT_Usage (API, 3, "sspn:    Seismic shot point number string [TEXTSTRING].");
 	GMT_Usage (API, 3, "nqc:     Navigation quality code.");
-	GMT_Usage (API, -2, "%s Computed Information.\n", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "%s Computed Information:", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "carter:  Carter correction from twt (m).");
 	GMT_Usage (API, 3, "igrf:    International Geomagnetic Reference Field (gamma, nTesla).");
 	GMT_Usage (API, 3, "ceot:    Calculated Eotvos correction (mGal).");
 	GMT_Usage (API, 3, "ngrav:   IGF, or Theoretical (Normal) Gravity Field (mGal).");
 	GMT_Usage (API, 3, "weight:  Report weight as specified in -W [1].");
 	GMT_Usage (API, -2, "Note: The data are written in the order specified in <dataflags>.");
-	GMT_Usage (API, -2, "Shortcut flags are:");
+	GMT_Usage (API, -2, "Special group shortcut flags are available:");
 	GMT_Usage (API, 3, "mgd77:   The full set of all 27 fields in the MGD77 specification.");
 	GMT_Usage (API, 3, "mgd77t:  The full set of all 26 columns in the MGD77T specification.");
 	GMT_Usage (API, 3, "geo:     time,lon,lat + the 7 geophysical observations.");
 	GMT_Usage (API, 3, "all:     As mgd77 but with time items written as a date-time string.");
 	GMT_Usage (API, 3, "allt:    As mgd77t but with time items written as a date-time string.");
 	GMT_Usage (API, 3, "dat:     As mgd77t but in plain table file order.");
-	GMT_Usage (API, -2, "Append + to include the 5 derived quantities dist, azim, cc, vel, and weight [see -W] "
+	GMT_Usage (API, -2, "Append + to any shortcut include the five derived quantities dist, azim, cc, vel, and weight [see -W] "
 		"[Default is all].");
 	GMT_Usage (API, -2, "Note: Abbreviations in UPPER CASE will suppress records where any such column is NaN "
 		"(Note that -E is a shorthand to set all abbreviations to upper case).");
@@ -277,31 +277,31 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Adjust some data values before output. Append c|d|f|m|t to select field:");
 	GMT_Usage (API, 3, "c: Append <code>[,<v>] to adjust field carter. <v>, the sound velocity in water, is taken from "
 		"the MGD77 header (or 1500 if invalid); optionally append your <v> (in m/s). "
-		"Here, C(twt) is Carter correction, U(twt,v) is uncorrected depth (given <v>), "
-		"TC(z) is twt from inverse Carter correction, TU(z,v) is twt from uncorrected depth. Available <code>:");
+		"Below, C(twt) is Carter correction, U(twt,v) is uncorrected depth (given <v>), "
+		"TC(z) is twt from inverse Carter correction, TU(z,v) is twt from uncorrected depth. Select a <code>:");
 	GMT_Usage (API, 4, "1: Return difference between U(twt,v) and depth [Default].");
 	GMT_Usage (API, 4, "2: Return difference between U(twt,v) and Carter(twt).");
 	GMT_Usage (API, 4, "4: Return difference between (uncorrected) depth and Carter (TU(depth,v)).");
 	GMT_Usage (API, 4, "8: Return difference between U(TC(depth),v) and depth.");
-	GMT_Usage (API, 3, "d: Append <code>[,<v>] to adjust field depth. <v> is optional sound speed in water (m/s). Available <code>:");
+	GMT_Usage (API, 3, "d: Append <code>[,<v>] to adjust field depth. <v> is optional sound speed in water (m/s). Select a <code>:");
 	GMT_Usage (API, 4, "1: Return depth as stored in file [Default].");
 	GMT_Usage (API, 4, "2: Return calculated uncorrected depth U(twt,v).");
 	GMT_Usage (API, 4, "4: Return calculated corrected depth Carter (twt,v).");
 	GMT_Usage (API, 3, "f: Append <code>[,<field>] to adjust field faa. <field>, the IGF reference field, is taken "
-		"from the MGD77 header (or 4 if invalid). Available <code>:");
+		"from the MGD77 header (or 4 if invalid). Select a <code>:");
 	GMT_Usage (API, 4, "1: Return faa as stored in file [Default].");
 	GMT_Usage (API, 4, "2: Return difference gobs - ngrav.");
 	GMT_Usage (API, 4, "4: Return difference gobs + eot - ngrav.");
 	GMT_Usage (API, 4, "8: Return difference gobs + ceot - ngrav.");
-	GMT_Usage (API, -3, "Pptionally append your <field>:");
-	GMT_Usage (API, 4, "1: Heiskanen 1924 formula. ");
-	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 1);
-	GMT_Usage (API, 4, "2: International 1930 formula. ");
-	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 2);
-	GMT_Usage (API, 4, "3: International 1967 formula. ");
-	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 3);
-	GMT_Usage (API, 4, "4: International 1980 formula. ");
-	MGD77_IGF_text (API->GMT, API->GMT->session.std[GMT_ERR], 4);
+	GMT_Usage (API, -4, "Optionally append your <field>:");
+	GMT_Usage (API, 5, "1: Heiskanen 1924 formula. ");
+	MGD77_IGF_text (API, 5, 1);
+	GMT_Usage (API, 5, "2: International 1930 formula. ");
+	MGD77_IGF_text (API, 5, 2);
+	GMT_Usage (API, 5, "3: International 1967 formula. ");
+	MGD77_IGF_text (API, 5, 3);
+	GMT_Usage (API, 5, "4: International 1980 formula. ");
+	MGD77_IGF_text (API, 5, 4);
 	GMT_Usage (API, 3, "m: Append <code> to adjust field mag:");
 	GMT_Usage (API, 4, "1: Return mag as stored in file [Default].");
 	GMT_Usage (API, 4, "2: Return difference mtfx - igrf, where x = msens (or 1 if undefined).");
@@ -317,8 +317,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "a: Start output at this time [Start of cruise].");
 	GMT_Usage (API, 3, "b: End output at this time [End of cruise].");
 	GMT_Usage (API, -2, "Note: If A|B is used instead or a|b then records with no time are excluded from output.");
-	GMT_Usage (API, 1, "\n-E Output records that exactly matches the requested geophysical information in -F "
-		"[Default will output all record that matches at least one column].");
+	GMT_Usage (API, 1, "\n-E Output records that exactly match the requested geophysical information in -F "
+		"[Default will output all records that match at least one column].");
 	GMT_Usage (API, 1, "\n-Ga|b<rec>");
 	GMT_Usage (API, -2, "Limit output based on record numbers. Append a directive and record number; repeatable:");
 	GMT_Usage (API, 3, "a: Start output at this record number [Start of cruise].");
@@ -329,11 +329,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "c: MGD77+ netCDF table.");
 	GMT_Usage (API, 3, "m: MGD77T ASCII table.");
 	GMT_Usage (API, 3, "t: Plain table.");
-	GMT_Usage (API, 1, "\n-L[<corrtable.txt>]");
+	GMT_Usage (API, 1, "\n-L[<corrtable>]");
 	GMT_Usage (API, -2, "Subtract systematic corrections from the data. If no correction file is given, "
 		"the default file mgd77_corrections.txt in $MGD77_HOME is assumed.");
 	GMT_Usage (API, 1, "\n-Nd|s<unit>");
-	GMT_Usage (API, -2, "Control units for (d)istances or (s)peed, and append you choice for unit. Choose among:");
+	GMT_Usage (API, -2, "Control units for (d)istances or (s)peed, and append you choice for unit; repeatable. Choose among:");
 	GMT_Usage (API, 3, "e: Metric units I (meters, m/s).");
 	GMT_Usage (API, 3, "f: British/US units I (feet, feet/s).");
 	GMT_Usage (API, 3, "k: Metric units II (km, km/hr).");
@@ -342,7 +342,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "u: Old US units (survey feet, sfeet/s).");
 	GMT_Usage (API, -2, "[Default is -Ndk -Nse].");
 	GMT_Usage (API, 1, "\n-Qa|c|v<min>/<max>");
-	GMT_Usage (API, -2, "Return data whose azimuth (-Qa), course changes (-Qc) or velocity (-Qv) fall inside specified range:");
+	GMT_Usage (API, -2, "Return data whose (a)zimuth, (c)ourse changes or (v)elocity fall inside specified range:");
 	GMT_Usage (API, 3, "a: Append <min_az>/<max_az>, where <min_az> < <max_az> [all azimuths, i.e., 0/360].");
 	GMT_Usage (API, 3, "c: Append <min_cc>/<max_cc>, where <min_cc> < <max_cc> [all course changes, i.e., -360/360]. "
 		"Use -QC to use abs value |cc| in the test [0/360].");
@@ -352,7 +352,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Return data inside the specified region only [0/360/-90/90].");
 	GMT_Usage (API, 1, "\n-Sa|b<dist>");
 	GMT_Usage (API, -2, "Limit output based on distance along cruise. Append a directive and distance (with optional unit from %s [meter]); repeatable:", GMT_LEN_UNITS2_DISPLAY);
-	GMT_Usage (API, 3, "a: Start output at this distance[Start of cruise].");
+	GMT_Usage (API, 3, "a: Start output at this distance [Start of cruise].");
 	GMT_Usage (API, 3, "b: End output at this distance [End of cruise].");
 	GMT_Usage (API, 1, "\n-T[m|e]");
 	GMT_Usage (API, -2, "Turn OFF the otherwise automatic adjustment of values based on correction terms "
@@ -361,10 +361,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "e: Select the extended columns set.");
 	GMT_Usage (API, -2, "Note: For controlling application of point bit flags, see -F and the : modifier discussion.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W<Weight>");
+	GMT_Usage (API, 1, "\n-W<weight>");
 	GMT_Usage (API, -2, "Set weight for these data [1].");
 	GMT_Usage (API, 1, "\n-Z[n|p]");
-	GMT_Usage (API, -2, "Control the direction of positive depth.  Choose one of:");
+	GMT_Usage (API, -2, "Control the direction of positive depth.  Choose between:");
 	GMT_Usage (API, 3, "n: Report bathymetry and msd as negative depths.");
 	GMT_Usage (API, 3, "p: Report bathymetry and msd as positive depths [Default].");
 	GMT_Option (API, "bo,do");

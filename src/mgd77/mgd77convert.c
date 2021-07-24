@@ -84,16 +84,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Usage (API, -2, "[Files are read from data repositories and written to current directory].");
+	GMT_Usage (API, -2, "Note: Files are read from data repositories and written to current directory.");
 	GMT_Usage (API, 1, "\n-Fa|c|m|t");
-	GMT_Usage (API, -2, "Convert from a file that is either:");
+	GMT_Usage (API, -2, "Convert from a file that has this format:");
 	GMT_Usage (API, 3, "a: MGD77 ASCII table.");
 	GMT_Usage (API, 3, "c: MGD77+ netCDF table.");
 	GMT_Usage (API, 3, "m: MGD77T ASCII table.");
 	GMT_Usage (API, 3, "t: Plain table.");
 	GMT_Usage (API, -2, "Note: Use -FC to recover the original MGD77 setting from the MGD77+ file [Default applies E77 corrections].");
 	GMT_Usage (API, 1, "\n-Ta|c|m|t[+f]");
-	GMT_Usage (API, -2, "Convert to a file that is either:");
+	GMT_Usage (API, -2, "Convert to a file that has this format:");
 	GMT_Usage (API, 3, "a: MGD77 ASCII table.");
 	GMT_Usage (API, 3, "c: MGD77+ netCDF table.");
 	GMT_Usage (API, 3, "m: MGD77T ASCII table.");
@@ -103,9 +103,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-C Convert from NGDC (*.h77, *.a77) to *.mgd77 format; no other options allowed. "
 		"Give one or more names of h77-files, a77-files, or just cruise prefixes.");
 	GMT_Usage (API, 1, "\n-D Select high-resolution, 4-byte storage for mag, diur, faa, eot, and msd with precision "
-		"of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, m precision].");
+		"of 10 fTesla, 1 nGal, 0.01 mm [Default is 2-byte with 0.1 nTesla, 0.1 mGal, 1 m precision].");
 	GMT_Usage (API, 1, "\n-L[e][w][+l]");
-	GMT_Usage (API, -2, "Set log level and destination setting for verification reporting.  Append a combination of:");
+	GMT_Usage (API, -2, "Set log level and destination setting for verification reporting.  Append one or both of:");
 	GMT_Usage (API, 3, "w: Warning messages.");
 	GMT_Usage (API, 3, "e: Error messages.");
 	GMT_Usage (API, -2, "Append +l to send the log to stdout [Default is stderr].");
