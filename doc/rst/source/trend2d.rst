@@ -43,7 +43,7 @@ to grdtrend):
 
 .. math::
 
-  m_1 + m_{2}x + m_{3}y + m_{4}xy + m_{5}x^2 + m_{6}y^2 + m_{7}x^3 +
+  z(x,y) = m_1 + m_{2}x + m_{3}y + m_{4}xy + m_{5}x^2 + m_{6}y^2 + m_{7}x^3 +
   m_{8}x^{2}y + m_{9}xy^2 + m_{10}y^3.
 
 The user must specify **-N**\ *n\_model*, the number of model parameters
