@@ -39,11 +39,11 @@ y=0.375
 y2=0.25
 while [ $i -le $n2 ]
 do
-	j1=$(expr $n2 - $i)
-	j2=$(expr $n2 - $i + 1)
-	left=$(sed -n ${j1}p tt.lis)
+	j2=$(expr $n2 + 1 - $i)
 	right=$(sed -n ${j2}p tt.lis)
-	if [ -n "$left" ]; then
+	if [[ ${i} < ${n2} ]]; then
+		j1=$(expr $n2 - $i)
+		left=$(sed -n ${j1}p tt.lis)
 		gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
 		gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
 		gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
