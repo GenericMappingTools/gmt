@@ -64,9 +64,10 @@ y=0.375
 y2=0.25
 while [ $i -le $n2 ]
 do
-	j=$(expr $i + 1)
-	left=$(sed -n ${j}p tt.lis)
-	right=$(sed -n ${i}p tt.lis)
+	j1=$(expr $n2 - $i)
+	j2=$(expr $n2 - $i + 1)
+	left=$(sed -n ${j1}p tt.lis)
+	right=$(sed -n ${j2}p tt.lis)
 	gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
 	gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
 	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
