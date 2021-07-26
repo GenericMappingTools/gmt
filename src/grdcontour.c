@@ -204,7 +204,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D<template>");
 	GMT_Usage (API, -2, "Dump contours as data line segments; no plotting takes place. "
 		"Append filename template which may contain C-format specifiers. "
-		"If no filename template is given we write all lines to stdout. "
+		"If no filename template is given we write all lines to standard output. "
 		"If filename has no specifiers then we write all lines to a single file. "
 		"If a float format (e.g., %%6.2f) is found we substitute the contour z-value. "
 		"If an integer format (e.g., %%06d) is found we substitute a running segment count. "

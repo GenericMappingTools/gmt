@@ -186,7 +186,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Select plotting of lines or polygons when no -S is given.  Choose input mode:");
 	GMT_Usage (API, 3, "r: Read records for lines with time in column 3. "
 		"Append <dpu> to convert your line records into dense point records that can be plotted as circles. "
-		"The resampled line will be written to stdout (requires options -R -J, optionally -C). "
+		"The resampled line will be written to standard output (requires options -R -J, optionally -C). "
 		"The <dpu> must be the same as the intended <dpu> for the movie frames. "
 		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Usage (API, 3, "s: Read whole segments (lines or polygons) with no time column. n"

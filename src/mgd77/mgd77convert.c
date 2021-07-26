@@ -108,7 +108,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set log level and destination setting for verification reporting.  Append one or both of:");
 	GMT_Usage (API, 3, "w: Warning messages.");
 	GMT_Usage (API, 3, "e: Error messages.");
-	GMT_Usage (API, -2, "Append +l to send the log to stdout [Default is stderr].");
+	GMT_Usage (API, -2, "Append +l to send the log to standard output [Default is standard error].");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
