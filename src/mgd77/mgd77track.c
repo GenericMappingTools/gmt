@@ -182,7 +182,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Plot track based on time. Append a directive and date (given as yyyy-mm-ddT[hh:mm:ss]); repeatable:");
 	GMT_Usage (API, 3, "a: Start plotting at this time [Start of cruise].");
 	GMT_Usage (API, 3, "b: End plotting at this time [End of cruise].");
-	GMT_Usage (API, 1, "\nDo NOT apply bitflags to MGD77+ cruises [Default applies error flags stored in the file].");
+	GMT_Usage (API, 1, "\n-F Do NOT apply bitflags to MGD77+ cruises [Default applies error flags stored in the file].");
 	GMT_Usage (API, 1, "\n-Gt|d|n<number>");
 	GMT_Usage (API, -2, "Consider point separations exceeding d<gap> (km) or t<gap> (minutes) to indicate a gap (do not draw) [0]. "
 		"Use n<number> to plot only one every other <number> points. Useful to reduce plot file size.");
