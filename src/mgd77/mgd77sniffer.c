@@ -457,6 +457,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"Hint: to test your custom limits, try: mgd77sniffer -Dl -L<yourlimitsfile>.");
 	GMT_Usage (API, 1, "\n-M Adjust navigation on land threshold (meters inland) [100].");
 	GMT_Usage (API, 1, "\n-N Use nautical units.");
+	GMT_Option (API, "Rg");
 	GMT_Usage (API, 1, "\n-Sd|s|t");
 	GMT_Usage (API, -2, "Specify gradient type for along-track excessive slope checking:");
 	GMT_Usage (API, 3, "d: Calculate change in z values along track (dz).");
