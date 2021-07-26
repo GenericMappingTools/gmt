@@ -76,9 +76,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -C[a|<n>] [-A[m|p|r|t|x|y]] [-K] [-O] OR %s <table> %s %s [%s] %s[-N] %s%s[-T] "
+	GMT_Usage (API, 0, "usage: %s -C[a|<n>] [-K] [-O]\n", name);
+	GMT_Usage (API, 1, "or\n");
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A[m|p|r|t|x|y]] [%s] %s[-N] %s%s[-T] "
 		"[%s] [%s] [-W[<pen>][%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_J_OPT, name, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
+		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
 		GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -100,7 +102,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "t: First follow theta, then radius for staircase curves for Polar projection.");
 	GMT_Usage (API, 3, "x: First follow x, then y for staircase curves for Cartesian projections.");
 	GMT_Usage (API, 3, "y: First follow y, then x for staircase curves for Cartesian projections.");
-	GMT_Option (API, "<,B-,K");
+	GMT_Option (API, "B-,K");
 	GMT_Usage (API, 1, "\n-N Use the outside of the polygons and the map boundary as clip paths.");
 	GMT_Option (API, "O,P");
 	GMT_Usage (API, 1, "\n-T Set clip path for the entire map frame.  No input file is required.");
