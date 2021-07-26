@@ -160,7 +160,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		strcpy (dist_marker_size, "0.06i");
 	}
 
-	GMT_Usage (API, 0, "usage: %s cruise(s) %s %s [-A[c][<size>]][+i<inc>] [%s] [-Da|b<date>] [-F] "
+	GMT_Usage (API, 0, "usage: %s <cruise(s)> %s %s [-A[c][<size>]][+i<inc>] [%s] [-Da|b<date>] [-F] "
 		"[-Gt|d|n<number>] [-Ia|c|m|t] %s[-L<trackticks>] [-N] %s%s[-Sa|b<dist>] [-TT|t|d<ms,mc,mfs,mf,mfc>] "
 		"[%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT,
