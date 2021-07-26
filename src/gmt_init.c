@@ -8269,15 +8269,15 @@ void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode
 }
 
 /*! For programs that can read *.img grids */
-void gmt_img_syntax (struct GMT_CTRL *GMT) {
+void gmt_img_syntax (struct GMT_CTRL *GMT, int indent) {
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, 2, "Give filename and append comma-separated scale, mode, and optionally max latitude. "
+	GMT_Usage (API, indent, "Give filename and append comma-separated scale, mode, and optionally max latitude. "
 		"The scale (typically 0.1 or 1) is used to multiply after read; give mode as follows:");
-	GMT_Usage (API, 3, "0: img file with no constraints coded, interpolate to get data at track.");
-	GMT_Usage (API, 3, "1: img file with constraints coded, interpolate to get data at track.");
-	GMT_Usage (API, 3, "2: img file with constraints coded, gets data only at constrained points, NaN elsewhere.");
-	GMT_Usage (API, 3, "3: img file with constraints coded, gets 1 at constraints, 0 elsewhere.");
-	GMT_Usage (API, -2, "For mode 2|3 you may want to consider the -n+t<threshold> setting.");
+	GMT_Usage (API, indent+1, "0: img file with no constraints coded, interpolate to get data at track.");
+	GMT_Usage (API, indent+1, "1: img file with constraints coded, interpolate to get data at track.");
+	GMT_Usage (API, indent+1, "2: img file with constraints coded, gets data only at constrained points, NaN elsewhere.");
+	GMT_Usage (API, indent+1, "3: img file with constraints coded, gets 1 at constraints, 0 elsewhere.");
+	GMT_Usage (API, -indent, "For mode 2|3 you may want to consider the -n+t<threshold> setting.");
 }
 
 /*! . */
