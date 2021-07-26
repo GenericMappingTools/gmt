@@ -108,7 +108,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "JZ,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n\n");
 	GMT_Usage (API, 1, "\n-A No plotting, just write coordinates of the (possibly oblique) rectangular map boundary "
-		"to given file (or stdout).  Requires -R and -J only.  Spacing along border "
+		"to given file (or standard output).  Requires -R and -J only.  Spacing along border "
 		"in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].",
 		API->GMT->session.u2u[GMT_INCH][GMT_PT] * API->GMT->current.setting.map_line_step);
 	GMT_Option (API, "B");

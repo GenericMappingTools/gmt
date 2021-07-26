@@ -164,7 +164,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-S<x>/<y>|<table>[+h<header>]");
 	GMT_Usage (API, -2, "Give a fixed point for across-stack sampling [Default] or interpolation [with -T]. For "
 		"multiple points, give a <table> of points instead (one point per record). Output is a multi-segment table "
-		"written to stdout unless -G is used to set a file name. To write each series to separate files, let "
+		"written to standard output unless -G is used to set a file name. To write each series to separate files, let "
 		"-G<outfile> contain a C-format integer specifier (e.g, %%d) for embedding the running point number. "
 		"Append a fixed header via +h<header> [trailing text per record in <table>].");
 	GMT_Usage (API, 1, "\n-T[<file>|<list>|<min>/<max>/<inc>[+b|i|l|n]]");

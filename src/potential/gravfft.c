@@ -456,7 +456,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "n: North deflections of the vertical (micro-radian).");
 	GMT_Usage (API, 1, "\n-I<cbktw>");
 	GMT_Usage (API, -2, "Use <ingrid2> and <ingrid> to estimate admittance|coherence and write "
-		"output to stdout (-G ignored if set). The <ingrid2>  should contain gravity or geoid anomalies "
+		"output to standard output (-G ignored if set). The <ingrid2>  should contain gravity or geoid anomalies "
 		"for the same region of <ingrid>. Default computes admittance. Output "
 		"contains 3 or 4 columns: Frequency (wavelength), admittance (coherence) "
 		"one sigma error bar and, optionally, a theoretical admittance. "
