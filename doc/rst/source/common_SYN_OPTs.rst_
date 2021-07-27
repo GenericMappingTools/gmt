@@ -70,7 +70,7 @@
 
 .. |SYN_OPT-w| replace:: **-w**\ :ref:`flags <-w_full>`
 
-.. |SYN_OPT-x| replace:: **-x**\ [[-]\ *n*]
+.. |SYN_OPT-x| replace:: **-x**\ [[-]\ :ref:`n <core_full>`]
 
 .. |SYN_OPT-:| replace:: **-:**\ [**i**\|\ **o**]
 
