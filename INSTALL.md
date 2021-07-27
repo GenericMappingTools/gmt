@@ -82,7 +82,7 @@ version requires a computer with the M1 Apple Silicon chip.
 
 | **GMT Version** | **Minimum MacOS** |
 |-------------|-------------|
-| 6.2         | macOS 11    |
+| 6.2         | macOS 10.15 |
 | 6.1         | macOS 10.12 |
 | 6.0         | macOS 10.12 |
 | 5.4         | macOS 10.12 |
