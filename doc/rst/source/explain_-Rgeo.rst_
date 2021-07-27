@@ -46,6 +46,6 @@
        (see :ref:`cookbook/options:Grid registration: The **-r** option`\ ).
 
     #. **-Ra**\ [**uto**] or *-Re**\ [**xact**]. Under modern mode, and for *plotting* modules only, you can automatically
-       determine the region from the data used. Depending on argument you can either get the exact area [Default if no **-R**
+       determine the region from the data used. You can either get the exact area using **-Re** [Default if no **-R**
        is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
-       the data range.
+       the data range using **-Ra**.
