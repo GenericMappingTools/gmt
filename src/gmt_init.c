@@ -7855,13 +7855,13 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	gap = (GMT->current.setting.proj_length_unit == GMT_CM) ? 10.0 / 2.54 : 4.0;
 	gap *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 
-	GMT_Usage (API, indent+1, "d: Append distance <dist> between %ss with specified map unit in %s  [Default is d%g%c]. "
+	GMT_Usage (API, indent, "d: Append distance <dist> between %ss with specified map unit in %s  [Default is d%g%c]. "
 		"The first %s will appear at <frac>*<dist>; change this by appending /<frac> [0.25].",
 			feature[kind], GMT_DIM_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0], feature[kind]);
-	GMT_Usage (API, indent+1, "D: Same as +d, but append geographic distance between %ss with specified unit in %s.", feature[kind], GMT_LEN_UNITS_DISPLAY);
-	GMT_Usage (API, indent+1, "f: Append <file> with locations of individual points along the %ss where %ss should be placed.", type[kind], feature[kind]);
+	GMT_Usage (API, indent, "D: Same as +d, but append geographic distance between %ss with specified unit in %s.", feature[kind], GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, indent, "f: Append <file> with locations of individual points along the %ss where %ss should be placed.", type[kind], feature[kind]);
 	if (kind == 0) {
-		GMT_Usage (API, indent+1, "l: Append <line1>[,<line2>,...] to set coordinates for "
+		GMT_Usage (API, indent, "l: Append <line1>[,<line2>,...] to set coordinates for "
 		"straight line segments; %ss will be placed where these "
 		"lines intersect %ss.  The format of each <line> "
 		"is <start>/<stop>, where <start> or <stop> is either <lon/lat> or a "
@@ -7870,28 +7870,28 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 		"to mean the global minimum and maximum locations in the grid.", feature[kind], type[kind]);
 	}
 	else {
-		GMT_Usage (API, indent+1, "l: Append <line1>[,<line2>,...] to set start and stop coordinates for "
+		GMT_Usage (API, indent, "l: Append <line1>[,<line2>,...] to set start and stop coordinates for "
 		"straight line segments; %ss will be placed where these "
 		"lines intersect %ss.  The format of each <line> "
 		"is <start>/<stop>, where <start> or <stop> is either <lon/lat> or a "
 		"2-character key that uses the standard text justification codes "
 		"to specify a point on the map as [LCR][BMT].", feature[kind], type[kind]);
 	}
-	GMT_Usage (API, indent+1, "L: Same as +l, but the point pairs define great circles instead of straight lines.");
-	GMT_Usage (API, indent+1, "n: Append number of centered equidistant %ss per %s. "
+	GMT_Usage (API, indent, "L: Same as +l, but the point pairs define great circles instead of straight lines.");
+	GMT_Usage (API, indent, "n: Append number of centered equidistant %ss per %s. "
 		"Optionally, append /<min_dist> to enforce a minimum spacing between consecutive %ss [0].", feature[kind], type[kind], feature[kind]);
-	GMT_Usage (API, indent+1, "N: Same as +n, but start %s exactly at the start of %s. "
+	GMT_Usage (API, indent, "N: Same as +n, but start %s exactly at the start of %s. "
 		"Special cases: N-1 will place a single %s at start of the %s, while "
 		"N+1 will place a single %s at the end of the %s.",
 			feature[kind], type[kind], feature[kind], type[kind], feature[kind], type[kind]);
 	if (kind == 1) {
-		GMT_Usage (API, indent+1, "s: Append number of equidistant %ss per segmented %s. "
+		GMT_Usage (API, indent, "s: Append number of equidistant %ss per segmented %s. "
 			"Similar to +n, but splits input lines into a series of 2-point segments first.", feature[kind], type[kind]);
-		GMT_Usage (API, indent+1, "S: Same as +s, but with %s placement as described for +N.", feature[kind]);
+		GMT_Usage (API, indent, "S: Same as +s, but with %s placement as described for +N.", feature[kind]);
 	}
-	GMT_Usage (API, indent+1, "x: Append name of a multi-segment <file> and place "
+	GMT_Usage (API, indent, "x: Append name of a multi-segment <file> and place "
 		"%ss at intersections between %ss and lines in <file>.", feature[kind], type[kind]);
-	GMT_Usage (API, indent+1, "X: Same as +x, but will resample the lines first.");
+	GMT_Usage (API, indent, "X: Same as +x, but will resample the lines first.");
 	if (kind < 2) {
 		GMT_Usage (API, -indent, "For all placement selections, append +r<radius> to specify minimum "
 			"radial separation between labels [0].");
@@ -8217,7 +8217,7 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 	 * 16	= Accepts +z (not mathangle, geovector)
 	 */
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, -(level-1), "Append length of vector head. Note: "
+	GMT_Usage (API, -level, "Append length of vector head. Note: "
 		"Left and right sides are defined by looking from start to end of vector. Optional modifiers:");
 	GMT_Usage (API, level, "+a Set <angle> of the vector head apex [30]");
 	GMT_Usage (API, level, "+b Place a vector head at the beginning of the vector [none]. "
