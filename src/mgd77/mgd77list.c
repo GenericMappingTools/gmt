@@ -186,7 +186,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cruise(s)> -F<dataflags>[,<tests>] [-Ac|d|f|m|t[<code>][+f]] "
 		"[-Da|b<date>] [-E] [-Ga|b<rec>] [-Ia|c|m|t] [-L[<corrtable>]] [-Nd|s<unit>] [-Qa|c|v<min>/<max>] "
-		"[%s] [-Sa|b<dist>] [-T[m|e]] [%s] [-W<weight>] [-Z[n|p] [%s] [%s] [-h] [%s] [%s] [%s]\n",
+		"[%s] [-Sa|b<dist>] [-T[m|e]] [%s] [-W<weight>] [-Z[n|p]] [%s] [%s] [-h] [%s] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_j_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
