@@ -125,10 +125,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z] [%s] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
+
 	GMT_Usage (API, 1, "Note 1: Output is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...");
 	GMT_Usage (API, 1, "Note 2: If time is not selected (or present) we use record numbers as proxies i1 i2");
-
-	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.");
