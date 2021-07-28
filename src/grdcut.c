@@ -99,7 +99,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> %s [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [%s] [-S<lon>/<lat>/<radius>[+n]] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> %s [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -124,10 +124,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-N[<nodata>]");
 	GMT_Usage (API, -2, "Allow grid to be extended if new -R exceeds existing boundaries. "
 		"Optionally, append value to initialize nodes outside current region [Default is NaN].");
-	GMT_Option (API, "V");
 	gmt_dist_syntax (API->GMT, "S<lon>/<lat>/<radius>[+n]", "Specify an origin and radius to find the corresponding rectangular area.");
 	GMT_Usage (API, -2, "Note: All nodes on or inside the radius are contained in the subset grid. "
 		"Append +n to set all nodes in the subset outside the circle to NaN.");
+	GMT_Option (API, "V");
 	GMT_Usage (API, 1, "\n-Z[<min>/<max>][+n|N|r]");
 	GMT_Usage (API, -2, "Specify an optional range and determine the corresponding rectangular region "
 		"so that all nodes outside this region are outside the range [-inf/+inf]. Modifiers related to the treatment of NaNs:");
