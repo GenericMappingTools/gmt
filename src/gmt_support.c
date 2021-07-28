@@ -13625,7 +13625,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	/* Initialize the panel clearances */
 	P->padding[XLO] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 	for (pos = XHI; pos <= YHI; pos++) P->padding[pos] = P->padding[XLO];
-	P->off[GMT_X] = P->padding[XLO];	/* Set the shadow offsets [default is (4p, -4p)] */
+	P->off[GMT_X] = P->padding[XLO];	/* Set the shadow offsets [Default is (4p, -4p)] */
 	P->off[GMT_Y] = -P->off[GMT_X];
 
 	if (text == NULL || text[0] == 0) {	/* Blank arg means draw outline with default pen */

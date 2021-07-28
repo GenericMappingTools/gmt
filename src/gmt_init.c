@@ -2011,7 +2011,7 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 #define is_just(item,k)  (item[k] == 'j' && (strchr ("LCRBMT", item[k+1]) && strchr ("LCRBMT", item[k+2])))	/* Is +j<just> */
 #define is_off(item,k)   (item[k] == 'o' && strchr ("-+.0123456789", item[k+1]))	/* Looks like +onumber> */
 
-/*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o]<dx>/<dy>]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
+/*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o]<dx>[/<dy>]]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	int just = 1, error = 0;
 
@@ -6918,15 +6918,15 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
 	GMT_Usage (API, -2, "Specify the min/max coordinates of your data region in user units. "
 		"Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds]. "
-		"Use -R<xmin/xmax/ymin/ymax>+u<unit> for regions given in projected coordinates, "
-		"with <unit> selected from %s. "
+		"Use -R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] for regions given in projected coordinates, "
+		"with <unit> selected from %s. [e] "
 		"Use [yyyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. "
 		"Append +r if -R specifies the coordinates of the lower left and "
 		"upper right corners of a rectangular area.", GMT_LEN_UNITS2_DISPLAY);
 	if (GMT->current.setting.run_mode == GMT_MODERN) {
 		GMT_Usage (API, -2, "Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable). "
 		"Use -R<gridfile> to use its limits (and increments if applicable). "
-		"Use -Rg and -Rd as shorthands for -R0/360/-90/90 and -R-180/180/-90/90. "
+		"Use -Rg and -Rd as shorthand for -R0/360/-90/90 and -R-180/180/-90/90. "
 		"Derive region from closed polygons from the Digital Chart of the World (DCW): "
 		"Append a comma-separated list of ISO 3166 codes for countries to set region, i.e., "
 		"<code1>,<code2>,... etc., using the 2-character ISO country codes (see pscoast -E+l for list). "
@@ -7178,7 +7178,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"Give optional central meridian and standard parallel, and <scale>. Common parallels: "
 				"<lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular), "
 				"45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann), "
-				"37.5 (Min. overall distortion), and 0 (Plate Carree [default]).");
+				"37.5 (Min. overall distortion), and 0 (Plate Carree [Default]).");
 
 			GMT_Usage (API, 2, "-Jr|R[<lon0>/]<scale>|<width> (Winkel Tripel). Give optional central meridian and <scale>.");
 
@@ -7353,7 +7353,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -2, "Plot GMT Unix System Time stamp and optionally append a <label>. Optional modifiers:");
 			GMT_Usage (API, 3, "+c Use the command line as the label [%s].", GMT_choice[GMT->current.setting.map_logo]);
 			GMT_Usage (API, 3, "+j Set frame justification point [BL].");
-			GMT_Usage (API, 3, "+o Offset stamp by <dx>/<dy> [-54p/-54p].");
+			GMT_Usage (API, 3, "+o Offset stamp by <dx>[/<dy>] [-54p/-54p].");
 			break;
 
 		case 'V':	/* Verbose */
@@ -7375,7 +7375,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "\n%s %s", GMT_X_OPT, GMT_Y_OPT);
 			GMT_Usage (API, -2, "Shift origin of plot to (<xshift>, <yshift>). "
-				"Prepend r for shift relative to current point (default), prepend a for temporary "
+				"Prepend r for shift relative to current point [Default], prepend a for temporary "
 				"adjustment of origin, prepend f to position relative to lower left corner of page, "
 				"prepend c for offset of center of plot to center of page. "
 				"For overlays (-O), the default setting is [r0], otherwise [f%g%c].", GMT->current.setting.map_origin[GMT_Y] * s, u);
@@ -7456,7 +7456,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "\n%s", GMT_e_OPT);
 			GMT_Usage (API, -2, "Only accept input data records that contain the string \"pattern\". "
-				"Use -e~\"pattern\" to only accept data records that DO NOT contain this pattern. "
+				"Use -e~\"pattern\" to only accept data records that do NOT contain this pattern. "
 				"If your pattern begins with ~, escape it with \\~.  To match against "
 				"extended regular expressions use -e[~]/<regexp>/[i] (i for case-insensitive).");
 			GMT_Usage (API, 3, "+f Read patterns from <file> instead, one per line.");
@@ -7482,7 +7482,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 3, "+f Set <font> used for the label.");
 			GMT_Usage (API, 3, "+g Set a frame fill <fill> [white].");
 			GMT_Usage (API, 3, "+j Set the justification of the legend [BL].");
-			GMT_Usage (API, 3, "+o Shift legend placement from reference point by <off> [0.2c].");
+			GMT_Usage (API, 3, "+o Shift legend placement from reference point by <dx>[/<dy>] [0.2c].");
 			GMT_Usage (API, 3, "+p Draw frame outline, optionally append <pen> [1p].");
 			GMT_Usage (API, 3, "+s Set an overall symbol scale [1].");
 			GMT_Usage (API, 3, "+w Set a specific legend width [auto].");
@@ -7529,17 +7529,17 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'h':	/* Header */
 
 			GMT_Usage (API, 1, "\n%s", GMT_h_OPT);
-			GMT_Usage (API, -2, "Input/output file has [%d] header record(s) [%s]. "
-				"Optionally, append i for input or o for output only and number of expected header records [0]. "
+			GMT_Usage (API, -2, "Input/output file has <nrecs> header record(s) [%s]. "
+				"Optionally, append i for input or o for output only and number of expected header records [%d]. "
 				"Note: -hi turns off the writing of all headers on output since none will be read.  Optional modifiers:",
-				GMT->current.setting.io_n_header_items, GMT_choice[GMT->current.setting.io_header[GMT_IN]]);
+				GMT_choice[GMT->current.setting.io_header[GMT_IN]], GMT->current.setting.io_n_header_items);
 			GMT_Usage (API, 3, "+c Add header record with column information [none].");
 			GMT_Usage (API, 3, "+d Delete headers before adding new ones [Default will append headers].");
 			GMT_Usage (API, 3, "+m Insert a new segment header and <segheader> content after the headers [none].");
 			GMT_Usage (API, 3, "+r Add a <remark> comment to the output [none].");
-			GMT_Usage (API, 3, "+t Add a <title> comment to the output [none]. "
-				"Note: <remark> and <title> may contain \\n to indicate line-breaks. ");
-			GMT_Usage (API, -2, "For binary files, <nrecs> is considered to mean number of bytes instead of records.");
+			GMT_Usage (API, 3, "+t Add a <title> comment to the output [none].");
+			GMT_Usage (API, -2, "Note: <remark> and <title> may contain \\n to indicate line-breaks. "
+				"For binary files, <nrecs> is considered to mean number of bytes instead of records.");
 			break;
 
 		case 'i':	/* -i option for input column order */
@@ -7573,9 +7573,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 #ifdef DEBUG
 				GMT_Usage (API, 3, "+A Save the anti-aliasing counter to nz_grd_counter.grd for debugging.");
 #endif
-				GMT_Usage (API, 3, "+a switch off anti-aliasing (except for linear) [Default is ON].");
-				GMT_Usage (API, 3, "+b Change boundary conditions. <BC> can be either "
-					"g for geographic, p for periodic, and n for natural boundary conditions. "
+				GMT_Usage (API, 3, "+a Switch off anti-aliasing (except for linear) [Default is ON].");
+				GMT_Usage (API, 3, "+b Change boundary conditions, where <BC> can be either "
+					"g for geographic, p for periodic, or n for natural boundary conditions. "
 					"For p and n you may optionally append x or y [Default is both]: "
 					"x for periodic boundary conditions on x, "
 					"y for periodic boundary conditions on y "
@@ -7599,11 +7599,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			if (gmt_M_compat_check (GMT, 4) || options[k] == 'p') {
 				GMT_Usage (API, 1, "\n%s", GMT_p_OPT);
 				GMT_Usage (API, -2, "Select a 3-D pseudo perspective view.  Append the "
-					"<azimuth>/<elevation> of the viewpoint [180/90]. "
-					"When used with -Jz|Z, optionally add /<zlevel> for basemap level [bottom of z-axis]. "
+					"<azimuth>/<elevation> of the viewpoint [180/90], and "
+					"when used with -Jz|Z, optionally add /<zlevel> for basemap level [bottom of z-axis]. "
 					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. "
 					"For a plain rotation about the z-axis, give rotation angle only "
-					"and optionally use +w or +v to select location of axis. Optional modifiers:");
+					"and optionally use modifiers +w or +v to select location of axis:");
 				GMT_Usage (API, 3, "+w Specify a fixed coordinate point [region center].");
 				GMT_Usage (API, 3, "+v Set a fixed projected point [panel center].");
 			}
@@ -7799,7 +7799,7 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	if (kind < 2)
 		GMT_Usage (API, indent, "+g Paint text box [transparent]; optionally append <color> [white].");
 	else
-		GMT_Usage (API, indent, "+g Sets the <fill> for the symbol [transparent]");
+		GMT_Usage (API, indent, "+g Set the <fill> for the symbol [transparent]");
 	if (kind) GMT_Usage (API, indent, "+i Make the main line invisible [drawn using pen settings from -W].");
 	if (kind < 2) GMT_Usage (API, indent, "+j Set %s <justification> [Default is MC].", feature[kind]);
 	if (kind == 1) {
@@ -8004,7 +8004,7 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 		"a valid color name.");
 	GMT_Usage (API, 3, "<style> = pattern of dashes (-) and dots (.), scaled by <width>; "
 		"\"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\"; "
-		"<pattern>[:<offset>]; <pattern> holds lengths (default unit points) "
+		"<pattern>[:<offset>]; <pattern> holds lengths [Default unit is points] "
 		"of any number of lines and gaps separated by underscores. "
 		"The optional <offset> phase-shifts elements from start of the line [0].");
 	GMT_Usage (API, -2, "For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
@@ -8230,7 +8230,7 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 		"Append l|r to only draw left or right side of this head [both sides].");
 	if (mode & 8) GMT_Usage (API, level, "+g Set head <fill>; exclude <fill> to turn off fill [Default fill].");
 	GMT_Usage (API, level, "+h Set vector head shape in -2/2 range [%g].", GMT->current.setting.map_vector_shape);
-	if (mode & 1) GMT_Usage (API, level, "+j Justify vector at (b)eginning [default], (e)nd, or (c)enter.");
+	if (mode & 1) GMT_Usage (API, level, "+j Justify vector at (b)eginning [Default], (e)nd, or (c)enter.");
 	GMT_Usage (API, level, "+l Only draw left side of all specified vector heads [both sides].");
 	GMT_Usage (API, level, "+m Place vector head at mid-point of segment [Default expects +b|+e]. "
 		"Append f or r for forward|reverse direction [forward]. "
@@ -9445,7 +9445,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* -g gap checking implies -mo if not already set */
 
-	if (txt[0] == 'a') {	/* For multiple criteria, specify that all criteria be met [default is any] */
+	if (txt[0] == 'a') {	/* For multiple criteria, specify that all criteria be met [Default is any] */
 		k++;
 		GMT->common.g.match_all = true;
 		if (!txt[k]) return (1);	/* Just a single -ga */
