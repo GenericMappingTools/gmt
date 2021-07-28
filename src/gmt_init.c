@@ -7573,9 +7573,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 #ifdef DEBUG
 				GMT_Usage (API, 3, "+A Save the anti-aliasing counter to nz_grd_counter.grd for debugging.");
 #endif
-				GMT_Usage (API, 3, "+a switch off anti-aliasing (except for linear) [Default is ON].");
-				GMT_Usage (API, 3, "+b Change boundary conditions. <BC> can be either "
-					"g for geographic, p for periodic, and n for natural boundary conditions. "
+				GMT_Usage (API, 3, "+a Switch off anti-aliasing (except for linear) [Default is ON].");
+				GMT_Usage (API, 3, "+b Change boundary conditions, where <BC> can be either "
+					"g for geographic, p for periodic, or n for natural boundary conditions. "
 					"For p and n you may optionally append x or y [Default is both]: "
 					"x for periodic boundary conditions on x, "
 					"y for periodic boundary conditions on y "
