@@ -134,8 +134,8 @@
 #define GMT_p_OPT	"-p[x|y|z]<azim>[/<elev>[/<zlevel>]][+w<lon0>/<lat0>[/<z0>]][+v<x0>/<y0>]"
 #define GMT_r_OPT	"-r[g|p]"
 #define GMT_s_OPT	"-s[<cols>][+a][+r]"
-#define GMT_t_OPT	"-t<transp>[/<transp2>[+f|s]"
-#define GMT_tv_OPT	"-t[<transp>[/<transp2>[+f][+s]]"
+#define GMT_t_OPT	"-t<transp>[/<transp2>][+f|s]"
+#define GMT_tv_OPT	"-t[<transp>[/<transp2>]][+f][+s]"
 #define GMT_w_OPT	"-wa|y|w|d|p<period][/<phase>][+c<col>]"
 #define GMT_colon_OPT	"-:[i|o]"
 
