@@ -112,12 +112,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[-N[d|s][c|e|f|k|M|n]]] [%s] [%s] [-Wt|d|n<gap>] [%s]] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_j_OPT, GMT_PAR_OPT);
 
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
+
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, 1, "\n<TAG>");
 	GMT_Usage (API, -2, "Set a unique system identifier for this compilation.  Files created will be placed in the directory %s/<TAG>. "
 		"Note: The environmental parameter %s must be defined.", par, par);
-
-	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-D<deffile>");
