@@ -169,7 +169,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use negative width for high-pass filter [Default is no filtering].");
 	GMT_Usage (API, 1, "\n-N<template>");
 	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one "
-		"multisegment file to stdout].  Append file name template which MUST "
+		"multisegment file to standard output].  Append file name template which MUST "
 		"contain a C-style format code for a long integer (e.g., %%d) that represents "
 		"a sequential segment number across all tables (if more than one table) "
 		"[Default uses gmtsplit_segment_%%d.txt (or .bin for binary)]. "

@@ -834,7 +834,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[0]) {
 					Ctrl->L.error_pen = true;
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
-						gmt_pen_syntax (GMT, 'L', NULL, " ", 0);
+						gmt_pen_syntax (GMT, 'L', NULL, " ", NULL, 0);
 						n_errors++;
 					}
 				}
@@ -908,7 +908,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;

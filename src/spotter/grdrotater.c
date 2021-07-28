@@ -106,7 +106,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<grid> is the gridded data file in geographic coordinates to be rotated.");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Set output filename for the new, rotated grid.  The boundary of the "
-		"original grid (or a subset; see -F) after rotation is written to stdout (but see -D) "
+		"original grid (or a subset; see -F) after rotation is written to standard output (but see -D) "
 		"unless the grid is global.  If more than one reconstruction time is chosen "
 		"then -D is required unless -N is used and <outgrid> must be a filename template "
 		"containing a C-format specifier for formatting a double (for the variable time).");
@@ -116,7 +116,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set the west/east/south/north bounds for the rotated grid [Default will "
 		"determine the natural extent of the rotated grid instead].");
 	GMT_Usage (API, 1, "\n-D<rotoutline>");
-	GMT_Usage (API, -2, "Write the rotated polygon or grid outline to <rotoutline> [stdout]. "
+	GMT_Usage (API, -2, "Write the rotated polygon or grid outline to <rotoutline> [standard output]. "
 		"Required if more than one reconstruction time is chosen and -N is not set "
 		"and must then contain a C-format specifier for formatting a double (for the variable time).");
 	GMT_Usage (API, 1, "\n-F<polygontable>");

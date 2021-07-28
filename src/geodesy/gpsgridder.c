@@ -183,7 +183,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-N<nodefile>");
 	GMT_Usage (API, -2, "ASCII file with desired output locations. "
 		"The resulting ASCII coordinates and interpolation are written to file given in -G "
-		"or stdout if no file specified (see -bo for binary output).");
+		"or standard output if no file specified (see -bo for binary output).");
 	GMT_Option (API, "R");
 	if (gmt_M_showusage (API)) {
 		GMT_Usage (API, -2, "Requires -I for specifying equidistant increments.  A gridfile may be given; "

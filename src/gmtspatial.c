@@ -822,7 +822,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[only closed polygons are considered polygons].");
 	GMT_Usage (API, 3, "+l Consider all input as lines even if closed [closed polygons are considered polygons].");
 	GMT_Usage (API, 3, "+s Sort segments based on area or length; append a for ascending or d for descending [ascending].");
-	GMT_Usage (API, -2, "[Default only reports results to stdout].\n");
+	GMT_Usage (API, -2, "[Default only reports results to standard output].\n");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-Sb<width>|h|i|j|s|u");
 	GMT_Usage (API, -2, "Spatial manipulation of polygons; choose a directive:");

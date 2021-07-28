@@ -555,7 +555,7 @@ EXTERN_MSC double MGD77_carter_correction (struct GMT_CTRL *GMT, double lon, dou
 
 EXTERN_MSC int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, double alt, double lon, double lat, double *out);
 EXTERN_MSC double MGD77_Theoretical_Gravity (struct GMT_CTRL *GMT, double lon, double lat, int version);
-EXTERN_MSC void MGD77_IGF_text (struct GMT_CTRL *GMT, FILE *fp, int version);
+EXTERN_MSC void MGD77_IGF_text (struct GMTAPI_CTRL *API, int indent, int version);
 EXTERN_MSC double MGD77_Recalc_Mag_Anomaly_IGRF (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time, double lon, double lat, double obs, bool calc_date);
 EXTERN_MSC double MGD77_time_to_fyear (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, double time);
 EXTERN_MSC double MGD77_cal_to_fyear (struct GMT_CTRL *GMT, struct GMT_GCAL *cal);

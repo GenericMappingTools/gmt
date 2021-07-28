@@ -186,7 +186,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Select plotting of lines or polygons when no -S is given.  Choose input mode:");
 	GMT_Usage (API, 3, "r: Read records for lines with time in column 3. "
 		"Append <dpu> to convert your line records into dense point records that can be plotted as circles. "
-		"The resampled line will be written to stdout (requires options -R -J, optionally -C). "
+		"The resampled line will be written to standard output (requires options -R -J, optionally -C). "
 		"The <dpu> must be the same as the intended <dpu> for the movie frames. "
 		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Usage (API, 3, "s: Read whole segments (lines or polygons) with no time column. n"
@@ -248,7 +248,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append symbol code and optionally <size>.  If no size we read it from the data file. "
 		"Default plots lines or polygons; see -A for further instructions.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set symbol outline pen attributes [Default pen is %s]:", NULL, 0);
 	GMT_Option (API, "X");
 	GMT_Usage (API, 1, "\n-Z\"<command>\"");
 	GMT_Usage (API, -2, "Append core external <command> and required options that must include -S<format><size>. "

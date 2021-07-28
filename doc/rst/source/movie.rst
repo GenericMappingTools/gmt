@@ -588,6 +588,18 @@ horizontally, then combine the two resulting strips vertically::
 
 For more information on such manipulations, see the FFmpeg documentation.
 
+
+Adding an Audio Track
+---------------------
+
+If you wish to add an *audio* track to the animation, say a narration that explains your animation,
+you can record your audio using a suitable tool and save it to a \*.mp3 or \*.m4a file.  The audio track
+should be approximately the same length as the video.  Then, simply combine the two with FFMpeg::
+
+    ffmpeg -loglevel warning -i yourslientmovie.mp4 -i narration.m4a final.mp4
+
+For more information on audio manipulations, see the FFmpeg documentation.
+
 See Also
 --------
 
