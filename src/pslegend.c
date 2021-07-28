@@ -106,11 +106,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		name, GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT,
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
+
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<specfile> is a legend layout specification file [or we read stdin]. "
 		"See module documentation for more information and <specfile> format.");
-
-	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
 	GMT_Usage (API, -2, "Specify legend width with +w<width>; <height> is optional [estimated from <specfile>]. "
