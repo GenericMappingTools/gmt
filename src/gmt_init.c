@@ -7599,11 +7599,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			if (gmt_M_compat_check (GMT, 4) || options[k] == 'p') {
 				GMT_Usage (API, 1, "\n%s", GMT_p_OPT);
 				GMT_Usage (API, -2, "Select a 3-D pseudo perspective view.  Append the "
-					"<azimuth>/<elevation> of the viewpoint [180/90]. "
-					"When used with -Jz|Z, optionally add /<zlevel> for basemap level [bottom of z-axis]. "
+					"<azimuth>/<elevation> of the viewpoint [180/90], and "
+					"when used with -Jz|Z, optionally add /<zlevel> for basemap level [bottom of z-axis]. "
 					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. "
 					"For a plain rotation about the z-axis, give rotation angle only "
-					"and optionally use +w or +v to select location of axis. Optional modifiers:");
+					"and optionally use modifiers +w or +v to select location of axis:");
 				GMT_Usage (API, 3, "+w Specify a fixed coordinate point [region center].");
 				GMT_Usage (API, 3, "+v Set a fixed projected point [panel center].");
 			}
