@@ -130,7 +130,7 @@ int main (int argc, char *argv[]) {
 			/* Try all remaining arguments: */
 
 			/* Print module list */
-			if (!strcmp (argv[arg_n], "--help")) {
+			if (!strcmp (argv[arg_n], "--help") || !strcmp (argv[arg_n], "--show-help")) {
 				fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
 				fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 				fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
@@ -165,7 +165,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Print version and exit */
-			else if (!strncmp (argv[arg_n], "--version", 5U)) {
+			else if (!strncmp (argv[arg_n], "--version", 5U) || !strncmp (argv[arg_n], "--show-version", 10U)) {
 				fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_GIT_REVISION);
 				status = GMT_NOERROR;
 			}
@@ -234,7 +234,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* print new shell template */
-			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
+			else if (!strncmp (argv[arg_n], "--new-script", 12U) || !strncmp (argv[arg_n], "--show-new-script", 17U)) {
 				unsigned int type = 0;	/* Default is bash */
 				time_t right_now = time (NULL);
 				char *s = NULL, *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
@@ -280,7 +280,7 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 			/* print new glue C code for supplement */
-			else if (!strncmp (argv[arg_n], "--new-glue", 10U)) {
+			else if (!strncmp (argv[arg_n], "--new-glue", 10U) || !strncmp (argv[arg_n], "--show-new-glue", 15U)) {
 				char *s = strstr (argv[arg_n], "=");	if (s) s++;	/* Skip the equal */
 				if (s && s[0] == '\0') {
 					fprintf (stderr, "gmt: ERROR: --new-glue library name not given\n");
