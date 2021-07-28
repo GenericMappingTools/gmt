@@ -282,7 +282,7 @@ int main (int argc, char *argv[]) {
 			/* print new glue C code for supplement */
 			else if (!strncmp (argv[arg_n], "--new-glue", 10U) || !strncmp (argv[arg_n], "--show-new-glue", 15U)) {
 				char *s = strstr (argv[arg_n], "=");	if (s) s++;	/* Skip the equal */
-				if (s && s[0] == '\0') {
+				if (!s || s[0] == '\0') {
 					fprintf (stderr, "gmt: ERROR: --new-glue library name not given\n");
 					status = GMT_RUNTIME_ERROR;
 				}
