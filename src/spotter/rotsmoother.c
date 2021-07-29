@@ -102,7 +102,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTSMOOTHER_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C] [-N] [-S] [-T<time(s)>] [%s] [-W] [-Z] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A] [-C] [-N] [-S] [-T<time>] [%s] [-W] [-Z] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT,
 		GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -118,7 +118,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-C Compute covariance matrix for each mean rotation.");
 	GMT_Usage (API, 1, "\n-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles].");
 	GMT_Usage (API, 1, "\n-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles].");
-	GMT_Usage (API, 1, "\n-T<time(s)>");
+	GMT_Usage (API, 1, "\n-T<time>");
 	GMT_Usage (API, -2, "Set the output times when a mean rotation and covariance matrix is desired. "
 		"Append a single time (-T<time>), an equidistant range of times (-T<min>/<max>/<inc>), "
 		"Append +n to t_inc to indicate the number of points instead of an increment. "

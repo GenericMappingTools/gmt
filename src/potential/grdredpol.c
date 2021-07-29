@@ -1027,7 +1027,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <anomgrid> -G<rtp_grdfile> [-C<dec>/<dip>] [-Ei|d<grid>] [-F<m>/<n>] "
-		"[-Mm|r] [-N] [-T<year>] [%s] [-W<win_width>] [-Z<filterfile>] [%s] [%s] [%s]\n",
+		"[-Mm|r] [-N] [-T<year>] [%s] [%s] [-W<win_width>] [-Z<filterfile>] [%s] [%s]\n",
 				name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -1053,11 +1053,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-T<year>");
 	GMT_Usage (API, -2, "Set year used by the IGRF routine to compute the various DECs & DIPs [default is 2000].");
+	GMT_Option  (API, "V");
 	GMT_Usage (API, 1, "\n-W<win_width>");
 	GMT_Usage (API, -2, "Set window width in degrees [5].");
 	GMT_Usage (API, 1, "\n-Z<filterfile>");
 	GMT_Usage (API, -2, "Write filter file <filterfile> to disk.");
-	GMT_Option  (API, "V,n,.");
+	GMT_Option  (API, "n,.");
 
 	return (GMT_MODULE_USAGE);
 }

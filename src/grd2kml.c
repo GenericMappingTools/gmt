@@ -66,7 +66,7 @@ struct GRD2KML_CTRL {
 		bool active;
 		char filter;
 	} F;
-	struct GRD2KML_H {	/* -H<factor> */
+	struct GRD2KML_H {	/* -H<scale> */
 		bool active;
 		int factor;
 	} H;
@@ -144,7 +144,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <grid> -N<name> [-Aa|g|s[<altitude>]] [-C<cpt>] [-E<url>] [-F<filter>] "
-		"[-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
+		"[-H<scale>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
 		"[-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -177,8 +177,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "c: Cosine arch - weighted averaging with cosine arc weights.");
 	GMT_Usage (API, 3, "g: Gaussian - weighted averaging with Gaussian weights [Default].");
 	GMT_Usage (API, 3, "m: Median - median (50%% quantile) value of all points.");
-	GMT_Usage (API, 1, "\n-H<factor>");
-	GMT_Usage (API, -2, "Do sub-pixel smoothing using factor <factor> [no sub-pixel smoothing]. Ignored if -W not set.");
+	GMT_Usage (API, 1, "\n-H<scale>");
+	GMT_Usage (API, -2, "Do sub-pixel smoothing using factor <scale> [no sub-pixel smoothing]. Ignored if -W not set.");
 	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
 	GMT_Usage (API, -2, "Apply directional illumination. Append name of intensity grid file. "
 		" For a constant intensity (i.e., change the ambient light), append a single value. "

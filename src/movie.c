@@ -195,7 +195,7 @@ struct MOVIE_CTRL {
 		char *fill;		/* Canvas constant fill */
 		char pen[GMT_LEN64];	/* Canvas outline pen */
 	} G;
-	struct MOVIE_H {	/* -H<factor> */
+	struct MOVIE_H {	/* -H<scale> */
 		bool active;
 		int factor;	/* Amount of subpixel rendering */
 	} H;
@@ -320,9 +320,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -C<canvas>|<width>x<height>x<dpu> -N<prefix> -T<nframes>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
-		"[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>]] [-F<format>[+o<opts>][+t]] [-G[<fill>][+p<pen>]] [-H<factor>] "
+		"[-A[+l[<n>]][+s<stride>]] [-D<rate>] [-E<titlepage>[+d<duration>[s]][+f[i|o]<fade>[s]][+g<fill>]] [-F<format>[+o<opts>][+t]] [-G[<fill>][+p<pen>]] [-H<scale>] "
 		"[-I<includefile>] [-K[+f[i|o]<fade>[s]][+g<fill>][+p[i|o]]] [-L<labelinfo>] [-M[<frame>|f|m|l,][<format>][+r<dpu>]] [-P<progressinfo>] [-Q[s]] [-Sb<background>] "
-		"[-Sf<foreground>] [%s] [-W[<workdir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+		"[-Sf<foreground>] [%s] [-W[<dir>]] [-Z[s]] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -394,8 +394,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "[Default is no video products; just create the PNG frames].");
 	GMT_Usage (API, 1, "\n-G[<fill>][+p<pen>]");
 	GMT_Usage (API, -2, "Set the canvas background color [none].  Append +p<pen> to draw canvas outline [none].");
-	GMT_Usage (API, 1, "\n-H<factor>");
-	GMT_Usage (API, -2, "Temporarily increase <dpu> by <factor>, rasterize, then downsample [no downsampling]. "
+	GMT_Usage (API, 1, "\n-H<scale>");
+	GMT_Usage (API, -2, "Temporarily increase <dpu> by <scale>, rasterize, then downsample [no downsampling]. "
 		"Stabilizes sub-pixel changes between frames, such as moving text and lines.");
 	GMT_Usage (API, 1, "\n-I<includefile>");
 	GMT_Usage (API, -2, "Include a script file to be inserted into the movie_init.sh script [none]. "
@@ -458,9 +458,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"build a static foreground plot overlay appended to all frames. "
 		"Alternatively, give PostScript file of correct canvas size that will be the foreground.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[<workdir>]");
-	GMT_Usage (API, -2, "Give <workdir> where temporary files will be built [Default <workdir> = <prefix> set by -N]. "
-		"If <workdir> is not given we create one in the system temp directory named <prefix> (from -N).");
+	GMT_Usage (API, 1, "\n-W[<dir>]");
+	GMT_Usage (API, -2, "Give <dir> where temporary files will be built [Default <dir> = <prefix> set by -N]. "
+		"If <dir> is not given we create one in the system temp directory named <prefix> (from -N).");
 	GMT_Usage (API, 1, "\n-Z[s]");
 	GMT_Usage (API, -2, "Erase directory <prefix> after converting to movie [leave directory with PNGs alone]. "
 		"Append s to also delete all input scripts (mainscript and any files via -E, -I, -S).");

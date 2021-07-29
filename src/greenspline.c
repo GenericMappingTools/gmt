@@ -230,7 +230,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[%%][+f<file>][+m|M]] "
 		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q<az>] "
 		"[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
-		"[%s] [-W[w]] [-Z0-5] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s [%s]%s[%s] [%s]\n",
+		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s [%s]%s[%s] [%s]\n",
 		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -308,8 +308,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append w to indicate this column carries weights instead "
 		"[Default makes weights via w_i = 1/sigma_i^2] for the least squares solution.");
 	GMT_Usage (API, -2, "Note: weights only have an effect if -C is used.");
-	GMT_Usage (API, 1, "\n-Z0-5");
-	GMT_Usage (API, -2, "Distance mode determines how we calculate distances between (x,y) points. "
+	GMT_Usage (API, 1, "\n-Z<mode>");
+	GMT_Usage (API, -2, "Distance <mode> determines how we calculate distances between (x,y) points. "
 		"Mode 0 applies to Cartesian 1-D spline interpolation:");
 	GMT_Usage (API, 3, "0: x in user units, Cartesian distances.");
 	GMT_Usage (API, -2, "Modes 1-3 apply to Cartesian 2-D surface spline interpolation:");
