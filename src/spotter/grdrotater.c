@@ -97,7 +97,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <grid> %s -G<outgrid> [-F<polygontable>] [-A<region>] [-D<rotoutline>] [-N] "
-		"[%s] [-S] [-T<time(s)>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, SPOTTER_E_OPT, GMT_Rgeo_OPT,
+		"[%s] [-S] [-T<time>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, SPOTTER_E_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_n_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -125,7 +125,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-N Do NOT output the rotated polygon or grid outlines.");
 	GMT_Option (API, "Rg");
 	GMT_Usage (API, 1, "\n-S Do NOT rotate the grid - just produce the rotated outlines (requires -D).");
-	GMT_Usage (API, 1, "\n-T<time(s)>");
+	GMT_Usage (API, 1, "\n-T<time>");
 	GMT_Usage (API, -2, "Set the time(s) of reconstruction.  Append a single time (-T<time>), "
 		"an equidistant range of times (-T<min>/<max>/<inc> or -T<min>/<max>/<npoints>+n), "
 		"or the name of a file with a list of times (-T<tfile>).  If no -T is set "
