@@ -21,7 +21,7 @@ Synopsis
 [ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
 [ |-F|\ *format*\ [**+t**]\ [**+o**\ *options*]]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
-[ |-H|\ *factor*]
+[ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
 [ |-K|\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
 [ |-L|\ *labelinfo* ]
@@ -156,14 +156,14 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *factor*
+**-H**\ *scale*
     Given the finite dots-per-unit used to rasterize *PostScript* frames to PNGs, the quantizing of features
     to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings.  However,
     changes from frame to frame is outside the control of the individual frame rasterization and we
     find that, in particular, moving text may appear jittery when seen in the final animation.  You can mitigate
-    this effect by selecting a scale *factor* that, in effect, temporarily increases the effective dots-per-unit
-    by *factor*, rasterizes the frame, then downsamples the image by the same factor at the end.  The larger
-    the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
+    this effect by selecting an integer *scale* that, in effect, temporarily increases the effective dots-per-unit
+    by *scale*, rasterizes the frame, then down-samples the image by the same scale at the end.  The larger
+    the *scale*, the smoother the transitions.  Because processing time increases with *scale* we suggest you
     try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
     much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
     result to avoid aliasing [no downsampling].  This effect is called `subpixel <https://en.wikipedia.org/wiki/Subpixel_rendering>`_ rendering.

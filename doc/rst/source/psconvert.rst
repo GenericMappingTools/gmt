@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ *resolution* ]
 [ |-F|\ *out_name* ]
 [ |-G|\ *ghost_path* ]
-[ |-H|\ *factor* ]
+[ |-H|\ *scale* ]
 [ |-I| ]
 [ |-L|\ *listfile* ]
 [ |-M|\ **b**\|\ **f**\ *pslayer* ]
@@ -135,12 +135,12 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *factor*
+**-H**\ *scale*
     Given the finite dots-per-unit used to rasterize PostScript frames to rasters, the quantizing of features
     to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings (**-Q**)
-    which affect lines and text only.  The scale *factor* temporarily increases the effective dots-per-unit
-    by *factor*, rasterizes the plot, then downsamples the image by the same factor at the end.  The larger
-    the *factor*, the smoother the raster.  Because processing time increases with *factor* we suggest you
+    which affect lines and text only.  The given *scale* temporarily increases the effective dots-per-unit
+    by *scale*, rasterizes the plot, then down-samples the image by the same scale at the end.  The larger
+    the *scale*, the smoother the raster.  Because processing time increases with *scale* we suggest you
     try values in the 2-5 range.  Note that raster images can also suffer from quantizing when the original data
     have much higher resolution than your raster pixel dimensions.  The **-H** option may then be used to smooth
     the result to avoid aliasing [no downsampling].
