@@ -176,7 +176,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
 		"[-I<includefile>] [-M[<job>]] [-Q[s]] [-Sb<postflight>] [-Sf<preflight>] "
-		"[%s] [-W[<workdir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+		"[%s] [-W[<dir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -210,9 +210,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append name of <postflight> script (not necessarily a GMT script) which will "
 		"take actions once all batch jobs have completed.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[<workdir>]");
-	GMT_Usage (API, -2, "Specify <workdir> where temporary files will be built [<workdir> = <prefix> set by -N]. "
-		"If <workdir> is not given we create one in the system temp directory named <prefix> (from -N).");
+	GMT_Usage (API, 1, "\n-W[<dir>]");
+	GMT_Usage (API, -2, "Specify <dir> where temporary files will be built [<dir> = <prefix> set by -N]. "
+		"If <dir> is not given we create one in the system temp directory named <prefix> (from -N).");
 	GMT_Usage (API, 1, "\n-Z");
 	GMT_Usage (API, -2, "Erase input scripts (<mainscript> and any files via -I, -S) [leave input scripts alone]. Not compatible with -Q.");
 	GMT_Option (API, "f");
