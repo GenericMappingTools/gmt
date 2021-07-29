@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ *ghost_path* ]
 [ |-H|\ *scale* ]
 [ |-I| ]
-[ |-L|\ *listfile* ]
+[ |-L|\ *list* ]
 [ |-M|\ **b**\|\ **f**\ *pslayer* ]
 [ |-Q|\ [**g**\|\ **p**\|\ **t**][1\|2\|4] ]
 [ |-S| ]
@@ -158,8 +158,8 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *listfile*
-    The *listfile* is an ASCII file with the names of the PostScript
+**-L**\ *list*
+    The *list* is an ASCII file with the names of the PostScript
     files to be converted.
 
 .. _-M:

@@ -150,7 +150,7 @@ struct PSCONVERT_CTRL {
 	struct PSCONVERT_I {	/* -I */
 		bool active;
 	} I;
-	struct PSCONVERT_L {	/* -L<listfile> */
+	struct PSCONVERT_L {	/* -L<list> */
 		bool active;
 		char *file;
 	} L;
@@ -523,7 +523,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *Z = (API->GMT->current.setting.run_mode == GMT_CLASSIC) ? " [-Z]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <psfile1> <psfile2> <...> [-A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width>[/<height>]][+u]] "
-		"[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<scale>] [-I] [-L<listfile>] [-Mb|f<psfile>] "
+		"[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<scale>] [-I] [-L<list>] [-Mb|f<psfile>] "
 		"[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s] "
 		"[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
 		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
@@ -591,8 +591,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"and that is what psconvert does by default, unless option -I is set. "
 		"Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied "
 		"to all but PDF format. We have no solution to offer other than ... upgrade GS.");
-	GMT_Usage (API, 1, "\n-L<listfile>");
-	GMT_Usage (API, -2, "The <listfile> is an ASCII file with names of files to be converted. ");
+	GMT_Usage (API, 1, "\n-L<list>");
+	GMT_Usage (API, -2, "The <list> is an ASCII file with names of files to be converted. ");
 	GMT_Usage (API, 1, "\n-Mb|f<psfile>");
 	GMT_Usage (API, -2, "Sandwich current psfile between background and foreground plots:");
 	GMT_Usage (API, 3, "b: Append the name of a background PostScript plot [none].");
