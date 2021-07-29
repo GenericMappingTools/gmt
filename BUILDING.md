@@ -27,10 +27,6 @@ To build GMT, you have to install:
 - [netCDF](https://www.unidata.ucar.edu/software/netcdf/) (>=4.0, netCDF-4/HDF5 support mandatory)
 - [curl](https://curl.haxx.se/)
 
-> Note for developers: It is recommended that you install the optional dependencies.
-> [Sphinx](http://www.sphinx-doc.org) and [GraphicsMagick](http://www.graphicsmagick.org/)
-> are required for building the documentation and running the tests.
-
 ### Optional dependencies
 
 Optionally install these for more capabilities within GMT:
@@ -42,8 +38,6 @@ Optionally install these for more capabilities within GMT:
 - [GLib](https://developer.gnome.org/glib/) GTHREAD support (>=2.32)
 - LAPACK (Fast matrix inversion [not needed under macOS])
 - BLAS (Fast matrix multiplications [not needed under macOS])
-- [Ninja](https://ninja-build.org/) (Small build system focused on speed)
-- [pngquant](https://pngquant.org/) (Ability to optimize PNG images)
 
 For movie-making capabilities these executables are needed:
 
@@ -58,8 +52,10 @@ For viewing documentation under Linux via `gmt docs`, your need `xdg-open`:
 
 Install for building GMT documentation and running tests (not required for general use):
 
-- [Sphinx](http://www.sphinx-doc.org) (>=1.4.x, for building the documentation)
+- [Sphinx](http://www.sphinx-doc.org) (>=1.8, for building the documentation)
 - [GraphicsMagick](http://www.graphicsmagick.org/) (for running the tests)
+- [Ninja](https://ninja-build.org/) (Small build system focused on speed)
+- [pngquant](https://pngquant.org/) (Optimize PNG images in the documentation)
 
 ### Required support data
 
