@@ -89,13 +89,13 @@ Optional Arguments
 .. _-T:
 
 **-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
-    Make evenly spaced time-steps from *min* to *max* by *inc*. Append +n to indicate *inc* is the number of t-values
-    to produce over the range instead. Append a valid time unit (d|h|m|s) to the increment. If only *min* is given then
-    we use that date and time for the calculations.  If no **-T** is provided get
-    current time in UTC from the computer clock. If no **-G** or **-S** are provided then **-T** is interpreted to mean compute
-    a time-series at the location specified by **-L**, thus then **-L** becomes mandatory.
-    When **-G** and **-T**, only first time T series is considered. Finally, dates may range from 1901 through 2099.
-    For details on array creation, see `Generate 1D Array`_.
+    Make evenly spaced time-steps from *min* to *max* by *inc*. Append **+i** to indicate the reciprocal increment was given,
+    or append **+n** to indicate *inc* is the number of *t*-values to produce over the range instead. Append a valid time
+    unit (**d**\|\ **h**\|\ **m**\|\ **s**) to the increment. If only *min* is given then we use that date and time for the
+    calculations.  If no **-T** is provided get current time in UTC from the computer clock. If no **-G** or **-S** are
+    provided then **-T** is interpreted to mean compute a time-series at the location specified by **-L**, thus then **-L**
+    becomes mandatory. When **-G** and **-T**, only first time T series is considered. Finally, dates may range from 1901
+    through 2099. For details on array creation, see `Generate 1D Array`_.
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_
