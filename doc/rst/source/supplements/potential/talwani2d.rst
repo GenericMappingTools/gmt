@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt talwani2d** [ *table* ]
-[ |-A| ] [ |-D|\ *rho* ] ]
+[ |-A| ] [ |-D|\ *density* ] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
@@ -36,7 +36,7 @@ Description
 
 **talwani2d** will read the multi-segment *table* from file (or standard input).
 This file contains cross-sections of one or more 2-D bodies, with one polygon
-per segment.  The segment header must contain the parameter *rho*, which
+per segment.  The segment header must contain the parameter *density*, which
 states the the density of this body (individual body
 densities may be overridden by a fixed constant density contrast given via an optional **-D**).
 We can compute anomalies on an equidistant lattice (by specifying a lattice with
@@ -65,7 +65,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *unit*
+**-D**\ *density*
     Sets a fixed density contrast that overrides any per-body settings in the model file, in kg/m^3.
 
 .. _-F:
