@@ -74,7 +74,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *extra1[2] = {" [-G<grdfile>]", ""}, *extra2[2] = {" (requires -G)", ""};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A<fields>] [-C] [-E[+p|P]]%s [-S[m|n|s|w]] [%s] [-W[i][o][+s]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A<fields>] [-C] [-E[+p|P]]%s [-S[m|n|s|w]] [%s] [-W[i][o][+s|w]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_I_OPT, GMT_Rgeo_OPT, extra1[API->external], GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -106,12 +106,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "s: Report data sums.");
 	GMT_Usage (API, 3, "w: Reports weight sums.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[i|o][+s]");
+	GMT_Usage (API, 1, "\n-W[i|o][+s|w]");
 	GMT_Usage (API, -2, "Perform weighted calculations [no weights]. Optionally set weight directive:");
 	GMT_Usage (API, 3, "i: Read 4 cols (x,y,z,w) but skip w on output.");
 	GMT_Usage (API, 3, "o: Read 3 cols (x,y,z) but include weight sum (i.e., counts) on output.");
 	GMT_Usage (API, -2, "Default selects both weighted input and output. "
-		"Append +s to read standard deviations s instead and compute w = 1/s^2.");
+		"Append +s to read standard deviations s instead and compute w = 1/s^2. Default (or +w) reads weights directly");
 	GMT_Option (API, "a,bi");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 3 columns (or 4 if -W[+s] is set), or 2 for -Sn.");
 	GMT_Option (API, "bo,d,e,f,h,i,o,q,r,w,:,.");
