@@ -372,7 +372,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <cruises> [-A<fieldabbrev>,<scale>,<offset>] [-C<maxspd>] [-Dd|e|E|f|l|m|s|v[r]] "
-		"[-E] [-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] | -G<fieldabbrev>,<grid>] [-H] "
+		"[-E] [-F] [-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] | -G<fieldabbrev>,<grid>] [-H] "
 		"[-I<fieldabbrev>,<rec1>,<recN>] [-L<custom_limits_file>] [-M] [-N] "
 		"[%s] [-Sd|s|t] [-T<gap>] [-Wc|g|o|s|t|v|x] [%s] [-Z<level>] [%s] [%s] [%s] [%s]\n",
 	 	name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_n_OPT, GMT_PAR_OPT);
@@ -413,7 +413,7 @@ GMT_LOCAL int usage (struct GMTAPI_CTRL *API, int level) {
 		"and intercept passed through the -G option (i.e., -Gfield,m/b no grid name is passed). "
 		"These factors are then reflected in regression output. Multiple -G calls allowed.");
 #endif
-	GMT_Usage (API, 1, "\n-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>]] | -G<fieldabbrev>,<grid>");
+	GMT_Usage (API, 1, "\n-G<fieldabbrev>,<imggrid>,<scale>,<mode>[,<latmax>] | -G<fieldabbrev>,<grid>");
 	GMT_Usage (API, -2, "Compare cruise data to the specified  Sandwell/Smith Mercator img grid or GMT geographic grid:");
 	GMT_Usage (API, 3, "%s Compare cruise data to the specified Sandwell/Smith Mercator grid. Requires valid MGD77 "
 		"field abbreviation followed by a comma, the path (if not in current directory) "

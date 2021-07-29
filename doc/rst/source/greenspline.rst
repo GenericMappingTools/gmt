@@ -26,7 +26,7 @@ Synopsis
 [ |-S|\ **c\|t\|l\|r\|p\|q**\ [*pars*] ] [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**w**]]
-[ |-Z|\ *0-5* ]
+[ |-Z|\ *mode* ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -275,7 +275,7 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *0-5*
+**-Z**\ *mode*
     Sets the distance mode that determines how we calculate distances
     between data points. Select *mode* 0 for Cartesian 1-D spline
     interpolation: **-Z**\ 0 means (*x*) in user units, Cartesian

@@ -7645,10 +7645,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'w':	/* -w option for cyclicity */
 
 			GMT_Usage (API, 1, "\n%s", GMT_w_OPT);
-			GMT_Usage (API, -2, "Wrapped selected column [0] with specified cyclicity: "
+			GMT_Usage (API, -2, "Wrap selected column [0] with specified cyclicity: "
 				"Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles. "
-				"Alternatively, append c<period>[/<phase>] for custom cyclicity.");
-			GMT_Usage (API, 3, "+c<col> Select another column than x for wrapping.");
+				"Alternatively, append c<period>[/<phase>] for custom cyclicity [Default <phase> = 0].");
+			GMT_Usage (API, 3, "+c<col> Select another column than 0 (x) for wrapping.");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */

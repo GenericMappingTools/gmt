@@ -146,7 +146,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -D<lon>/<lat> %s %s -M<size>[c|i|p][+m<mag>] -S<symbol><size>[c|i|p] "
 		"[%s] [-E<fill>] [-F<fill>] [-G<fill>] %s[-N] %s%s[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]] [-Qh] "
-		"[-Qs<halfsize>[+v<size>[+<specs>]] [-Qt<pen>] [-T[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]] "
+		"[-Qs<halfsize>[+v<size>[<specs>]]] [-Qt<pen>] [-T[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]] "
 		"[%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT,
 		GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT,
 		GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -184,7 +184,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "g: Outline of station symbol in compressive part. "
 		"Add pen attributes if not current pen.");
 	GMT_Usage (API, 3, "h: Use special format derived from HYPO71 output.");
-	GMT_Usage (API, 3, "s: Plot S polarity azimuth: Append <halfsize>[+v<size>[+<specs>]]. "
+	GMT_Usage (API, 3, "s: Plot S polarity azimuth: Append <halfsize>[+v<size>[<specs>]]. "
 		"Azimuth of S polarity is in last column. "
 		"Specify a vector (with +v modifier) [Default is segment line. "
 		"Default definition of vector is +v0.3i+e+gblack if just +v is given.");

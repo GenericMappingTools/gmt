@@ -14,7 +14,7 @@ Synopsis
 
 **gmt talwani3d** [ *table* ]
 [ |-A| ]
-[ |-D|\ *rho* ] ]
+[ |-D|\ *density* ] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
 [ |SYN_OPT-I| ]
@@ -40,7 +40,7 @@ Description
 
 **talwani3d** will read the multi-segment *table* from file (or standard input).
 This file contains horizontal contours of a 3-D body at different *z*-levels, with one contour
-per segment.  Each segment header must contain the parameters *zlevel rho*, which
+per segment.  Each segment header must contain the parameters *zlevel density*, which
 states the *z* level of the contour and the density of this slice (optionally, individual slice
 densities may be overridden by a fixed density contrast given via **-D**).
 We can compute anomalies on an equidistant grid (by specifying a new grid with
@@ -56,7 +56,7 @@ Required Arguments
 *table*
     The file describing the horizontal contours of the bodies.  Contours will be
     automatically closed if not already closed, and repeated vertices will be eliminated.
-    The segment header for each slice will be examined for the pair *zlevel rho*, i.e.,
+    The segment header for each slice will be examined for the pair *zlevel density*, i.e.,
     the depth level of the slice and a density contrast in kg/m^3; see **-D** for overriding this value.
 
 .. _-I:
@@ -78,7 +78,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *unit*
+**-D**\ *density*
     Sets a fixed density contrast that overrides any individual slice settings in the model file, in kg/m^3.
 
 .. _-F:

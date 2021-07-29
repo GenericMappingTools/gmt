@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdspotter** [*grdfile*]
 |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*\ [**+i**]
-|-G|\ *CVAgrid*
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *agegrid* ]
@@ -52,7 +52,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**
+**-G**\ *outgrid*
     Specify name for output CVA grid file.
 
 .. _-I:
