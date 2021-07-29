@@ -31,7 +31,7 @@ Synopsis
 [ |-Sb|\ *background* ]
 [ |-Sf|\ *foreground* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*workdir*] ]
+[ |-W|\ [*dir*] ]
 [ |-Z|\ [**s**] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
@@ -272,9 +272,9 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*workdir*]
+**-W**\ [*dir*]
     By default, all temporary files and frame PNG file are created in the subdirectory *prefix* set via **-N**.
-    You can override that selection by giving another *workdir* as a relative or full directory path. If no
+    You can override that selection by giving another *dir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
     problems related to low space in the main directory.
