@@ -97,6 +97,18 @@ Calculations of specific great-circle and geodesic distances or for
 back-azimuths or azimuths are better done using :doc:`mapproject` as
 :doc:`project` is strictly spherical.
 
+
+.. figure:: /_images/project_setup.*
+   :width: 400 px
+   :align: center
+
+   Explanation of the coordinate system utilized by project.  The input point
+   (red circle) is given in the original *x-y* coordinate system and is projected to
+   the *p-q* coordinate system, defined by the center (**C**) and either the end-point
+   (**E**) or azimuth (:math:`\alpha`, or for geographic data a rotation pole **P**.
+   The blue point has projected coordinates (p,0) which is (r,s) in the original
+   coordinate system.
+
 Required Arguments
 ------------------
 
