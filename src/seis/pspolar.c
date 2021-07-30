@@ -146,7 +146,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -D<lon>/<lat> %s %s -M<size>[c|i|p][+m<mag>] -S<symbol><size>[c|i|p] "
 		"[%s] [-E<fill>] [-F<fill>] [-G<fill>] %s[-N] %s%s[-Qe[<pen>]] [-Qf[<pen>]] [-Qg[<pen>]] [-Qh] "
-		"[-Qs<halfsize>[+v<size>[+<specs>]] [-Qt<pen>] [-T[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]] "
+		"[-Qs<halfsize>[+v<size>[<specs>]]] [-Qt<pen>] [-T[+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]] "
 		"[%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeo_OPT,
 		GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT,
 		GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
@@ -184,7 +184,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "g: Outline of station symbol in compressive part. "
 		"Add pen attributes if not current pen.");
 	GMT_Usage (API, 3, "h: Use special format derived from HYPO71 output.");
-	GMT_Usage (API, 3, "s: Plot S polarity azimuth: Append <halfsize>[+v<size>[+<specs>]]. "
+	GMT_Usage (API, 3, "s: Plot S polarity azimuth: Append <halfsize>[+v<size>[<specs>]]. "
 		"Azimuth of S polarity is in last column. "
 		"Specify a vector (with +v modifier) [Default is segment line. "
 		"Default definition of vector is +v0.3i+e+gblack if just +v is given.");
@@ -283,13 +283,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						char *q = strstr (p, "+s");
 						if (q) q[0] = '\0';	/* Chop off the +s modifier */
 						if (gmt_getpen (GMT, &p[2], &Ctrl->OLD_C.pen)) {
-							gmt_pen_syntax (GMT, 'C', NULL, "Line connecting new and old point [Default current pen]", 0);
+							gmt_pen_syntax (GMT, 'C', NULL, "Line connecting new and old point [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						if (q) q[0] = '+';	/* Restore the +s modifier */
 					}
 					else if ((p = strchr (opt->arg, 'W')) && gmt_getpen (GMT, &p[1], &Ctrl->OLD_C.pen)) {	/* Old syntax */
-						gmt_pen_syntax (GMT, 'C', NULL, "Line connecting new and old point [Default current pen]", 0);
+						gmt_pen_syntax (GMT, 'C', NULL, "Line connecting new and old point [Default current pen]", NULL, 0);
 						n_errors++;
 					}
 					if ((p = strstr (opt->arg, "+s"))) {	/* Found +s<size> */
@@ -355,21 +355,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 					case 'e':	/* Outline station symbol in extensive part */
 						Ctrl->E.active = true;
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->E.pen)) {
-							gmt_pen_syntax (GMT, ' ', "Qe", "Outline station symbol (extensive part) [Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qe", "Outline station symbol (extensive part) [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'f':	/* Outline focal sphere */
 						Ctrl->F.active = true;
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->F.pen)) {
-							gmt_pen_syntax (GMT, ' ', "Qf", "Outline focal sphere [Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qf", "Outline focal sphere [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
 					case 'g':	/* Outline station symbol in compressive part */
 						Ctrl->G.active = true;
 						if (strlen (&opt->arg[1]) && gmt_getpen (GMT, &opt->arg[1], &Ctrl->G.pen)) {
-							gmt_pen_syntax (GMT, ' ', "Qg", "Outline station symbol (compressive part) [Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qg", "Outline station symbol (compressive part) [Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
@@ -406,7 +406,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 						break;
 					case 't':	/* Set color for station label */
 						if (gmt_getpen (GMT, &opt->arg[1], &Ctrl->T.font.pen)) {
-							gmt_pen_syntax (GMT, ' ', "Qt", "Station code symbol[Default current pen]", 0);
+							gmt_pen_syntax (GMT, ' ', "Qt", "Station code symbol[Default current pen]", NULL, 0);
 							n_errors++;
 						}
 						break;
@@ -474,7 +474,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 			case 'W':	/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;

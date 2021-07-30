@@ -129,10 +129,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C<closedfile>");
 	GMT_Usage (API, -2, "Write already-closed polygons to a separate <closedfile> [gmtconnect_closed.txt], "
-		"with the remaining open segments written separately to stdout "
+		"with the remaining open segments written separately to standard output "
 		"[All segments are written to a single output file; but see -D].");
 	GMT_Usage (API, 1, "\n-D[<template>]");
-	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one multisegment file to stdout]. "
+	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one multisegment file to standard output]. "
 		"Append file name template which MUST contain a C-format specifier for an integer (e.g., %%d). "
 		"If the format also includes a %%c string BEFORE the %%d part we replace it with C(losed) or O(pen) "
 		"[Default uses gmtconnect_segment_%%d.txt].");

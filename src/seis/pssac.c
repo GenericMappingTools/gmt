@@ -204,8 +204,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+r Reduce velocity in km/s by <reduce_vel>.");
 	GMT_Usage (API, 3, "+s Shift all traces by <shift> seconds.");
 	GMT_Option (API, "U,V");
-	GMT_Usage (API, 1, "\n-W<pen>");
-	GMT_Usage (API, -2, "Set pen attributes [%s].", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", NULL, 0);
 	GMT_Option (API, "X,c,h,p,t");
 	GMT_Option (API, ".");
 
@@ -387,7 +386,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 			case 'W':		/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, &opt->arg[0], &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
+					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);
 					n_errors++;
 				}
 				break;
@@ -580,7 +579,7 @@ GMT_LOCAL int pssac_init_list (struct GMT_CTRL *GMT, char **files, unsigned int 
 			if (nr == 4) {
 				L[n_files].custom_pen = true;
 				if (gmt_getpen (GMT, pen, &L[n_files].pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
+					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);
 				}
 			}
 			n_files++;

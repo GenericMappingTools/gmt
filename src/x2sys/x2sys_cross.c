@@ -50,6 +50,12 @@ enum x2sys_sets {
 	SET_B = 1
 };
 
+enum x2sys_types {
+	X2SYS_EXTERNAL = 1,
+	X2SYS_INTERNAL = 2,
+	X2SYS_BOTH = 3
+};
+
 struct X2SYS_CROSS_CTRL {
 	struct X2SYS_CROSS_A {	/* -A */
 		bool active;
@@ -119,10 +125,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z] [%s] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
+
 	GMT_Usage (API, 1, "Note 1: Output is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...");
 	GMT_Usage (API, 1, "Note 2: If time is not selected (or present) we use record numbers as proxies i1 i2");
-
-	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.");
@@ -258,9 +264,9 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				break;
 			case 'Q':	/* Specify internal or external only */
 				Ctrl->Q.active = true;
-				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
-				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
-				else Ctrl->Q.mode = 3;
+				if (opt->arg[0] == 'e') Ctrl->Q.mode = X2SYS_EXTERNAL;
+				else if (opt->arg[0] == 'i') Ctrl->Q.mode = X2SYS_INTERNAL;
+				else Ctrl->Q.mode = X2SYS_BOTH;
 				break;
 			case 'Z':	/* Return z1, z1 rather than (z1-z1) and 0.5 * (z1 + z2) */
 				Ctrl->Z.active = true;
@@ -282,7 +288,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.width < 1, "Option -W: window must be at least 1\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.limit[VLO] > Ctrl->S.limit[VHI], "Option -S: lower speed cutoff higher than upper cutoff!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Option -Q: Only one of -Qe -Qi can be specified!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == X2SYS_BOTH, "Option -Q: Only one of -Qe -Qi can be specified!\n");
 
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -376,7 +382,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	bool external = true;			/* false if only internal xovers are needed */
 	bool do_project = false;		/* true if we must project first */
 	bool do_examine = false;		/* true if we should examine y-range to pick closest pole*/
-	bool is_geographic = false;		/* true if we must project to polar cartesian */
+	bool is_geographic = false;		/* true if we must project to polar Cartesian */
 	bool got_time = false;			/* true if there is a time column */
 	bool first_header = true;		/* true for very first crossover */
 	bool first_crossover;			/* true for first crossover between two data sets */
@@ -461,8 +467,8 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	GMT->current.setting.interpolant = Ctrl->I.mode;
 	if (Ctrl->Q.active) {
-		if (Ctrl->Q.mode == 1) internal = false;
-		if (Ctrl->Q.mode == 2) external = false;
+		if (Ctrl->Q.mode == X2SYS_EXTERNAL) internal = false;
+		if (Ctrl->Q.mode == X2SYS_INTERNAL) external = false;
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Files found: %" PRIu64 "\n", n_tracks);
@@ -536,7 +542,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	X2SYS_NaN = GMT->session.d_NaN;
 
-	if (GMT->current.setting.interpolant == 0) Ctrl->W.width = 1;
+	if (GMT->current.setting.interpolant == GMT_SPLINE_LINEAR) Ctrl->W.width = 1;
 	window_width = 2 * Ctrl->W.width;
 	n_data_col = x2sys_n_data_cols (GMT, s);
 	got_time = (s->t_col >= 0);
@@ -580,7 +586,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	/* PW: Cannot use gmt_proj_setup since all that stuff assumes lon,lat are now in cols
 	 * 0 and 1.  But that is not true in x2sys since it honors the *.def file layout.
 	 * Since gmt_crossover deals with periodic longitudes then we really do not need to
-	 * project to Cartesian anyway.  If -DS|N is given (or no -D) and geographice then we internally
+	 * project to Cartesian anyway.  If -DS|N is given (or no -D) and geographic then we internally
 	 * project via a r-theta schene to x,y get the crossings and project back afterwards.
 	 * We examine the latitude range to select the most suitable pole for the projection (unless set in -D),
 	 * This may have issues if data cover both hemispheres to high latitudes. The projection we use is

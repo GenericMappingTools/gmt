@@ -186,7 +186,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -F<type><width>[+l|u] [-D<increment>] [-E] "
-		"[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>|<file>|<list>[+a][e|i|n]] "
+		"[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>|<file>|<list>[+a][+e|i|n]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -238,7 +238,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Check symmetry of data about window center.  Append a factor "
 		"between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor, "
 		"then no output will be given at this point [Default does not check Symmetry].");
-	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[<unit>]|<file>|<list>[+a][e|i|n]");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[<unit>]|<file>|<list>[+a][+e|i|n]");
 	GMT_Usage (API, -2, "Make evenly spaced output time steps from <min> to <max> by <inc> [Default uses input times]. "
 		"Alternatively, give a <file> with output times in the first column or a comma-separated <list>. "
 		"For absolute time filtering, append a valid time unit (%s) to the increment. "

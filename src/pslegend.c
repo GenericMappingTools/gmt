@@ -106,11 +106,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		name, GMT_XYANCHOR, GMT_OFFSET, GMT_B_OPT, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT,
 		GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
+	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
+
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<specfile> is a legend layout specification file [or we read stdin]. "
 		"See module documentation for more information and <specfile> format.");
-
-	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
 	GMT_Usage (API, -2, "Specify legend width with +w<width>; <height> is optional [estimated from <specfile>]. "
@@ -1054,7 +1054,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							if (txt_b[0] == '-')	/* Gave - as pen, meaning just note at what y-value we are but draw no line */
 								d_line_half_width = 0.0;
 							else {	/* Process the pen specification */
-								if (txt_b[0] && gmt_getpen (GMT, txt_b, &current_pen)) gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+								if (txt_b[0] && gmt_getpen (GMT, txt_b, &current_pen)) gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 								gmt_setpen (GMT, &current_pen);
 								d_line_half_width = 0.5 * current_pen.width / PSL_POINTS_PER_INCH;	/* Half the pen width */
 							}
@@ -1759,7 +1759,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								double v_line_y_stop = d_line_last_y0;
 								v_line_ver_offset = gmt_M_to_inch (GMT, txt_a);
 								if (txt_b[0] && gmt_getpen (GMT, txt_b, &current_pen)) {
-									gmt_pen_syntax (GMT, 'V', NULL, " ", 0);
+									gmt_pen_syntax (GMT, 'V', NULL, " ", NULL, 0);
 									Return (GMT_RUNTIME_ERROR);
 								}
 								gmt_setpen (GMT, &current_pen);

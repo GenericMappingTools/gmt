@@ -268,7 +268,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Optionally, append /<foldername> to name folder when used with "
 		"-O and -K as you organize features into groups.");
 	GMT_Option (API, "V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen attributes for lines and polygon outlines [Default is %s].", 8);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen attributes for lines and polygon outlines [Default is %s].", NULL, 8);
 	GMT_Usage (API, -2, "Note: Give width in pixels and append p.");
 	GMT_Usage (API, 1, "\n-Z[+a<alt_min>/<alt_max>][+f<minfade>/<maxfade>][+l<minLOD>/<maxLOD>][+o][+v]");
 	GMT_Usage (API, -2, "Control visibility of features.  Append one or more modifiers:");
@@ -289,7 +289,7 @@ GMT_LOCAL unsigned int gmt2kml_old_W_parser (struct GMTAPI_CTRL *API, struct GMT
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
-		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 8);
+		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 8);
 		n_errors++;
 	}
 	return n_errors;
@@ -527,7 +527,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				}
 				else if (opt->arg[0]) {
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 11);
+						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 11);
 						n_errors++;
 					}
 				}

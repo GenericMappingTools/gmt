@@ -472,10 +472,10 @@ GMT_LOCAL int gmtparse_compare_B (const void *p1, const void *p2) {
 }
 
 /*! */
-GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
-	bool do_sort = false;
+GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_and_dash_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	bool do_sort = false, got_theme = false;
 	char *c = NULL;
-	unsigned int np, n_B = 0, k, j, this_priority;
+	unsigned int np, n_B = 0, n_par = 0, k, j, this_priority;
 	struct GMT_OPTION *opt, *head = NULL;
 	struct B_PRIORITY *priority = NULL; /* Worst case is -Bpx, -Bsx, ... */
 
@@ -486,13 +486,22 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *
 
 	for (opt = options, k = 0; opt; opt = opt->next, k++) {
 		priority[k].opt = opt;
-		if (opt->option != 'B') continue;	/* Only look at -B options here */
-		n_B++;
-		if (gmtlib_B_is_frame (GMT, opt->arg)) {	/* Do a special check for -Bs which could be confused with secondary annotations */
+		if (! (opt->option == 'B' || opt->option == '-')) continue;	/* Only look at -B --PAR options here */
+		if (opt->option == '-') {	/* --PAR=value */
+			if (!strncmp (opt->arg, "GMT_THEME", 9U)) {	/* We need to process GMT_THEME first */
+				this_priority = 4;	/* We need to process GMT_THEME first */
+				got_theme = true;
+			}
+			else
+				this_priority = 5;	/* The rest can be at the end */
+			n_par++;
+		}
+		else if (gmtlib_B_is_frame (GMT, opt->arg)) {	/* Do a special check for -Bs which could be confused with secondary annotations */
 			if (opt->arg[0] == 's' && opt->arg[1] == '\0')	/* Place -Bs at the end */
 				this_priority = 3;
 			else	/* Don't care about the other frame setting here */
 				this_priority = 2;
+			n_B++;
 		}
 		else if ((c = gmt_first_modifier (GMT, opt->arg, "aflLpsSu"))) {	/* Option has axis modifier(s) */
 			c[0] = '\0';	/* Temporary chop them off */
@@ -501,13 +510,16 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *
 			if (strchr ("xyz", opt->arg[j])) j++;
 			this_priority = (opt->arg[j]) ? 1 : 2;	/* If nothing then probably just a label setting, else we have a leading interval setting */
 			c[0] = '+';	/* Restore modifiers */
+			n_B++;
 		}
-		else /* Must be interval setting */
+		else { /* Must be interval setting */
 			this_priority = 1;
+			n_B++;
+		}
 		priority[k].level = this_priority;
 	}
 	for (k = 1; k < np; k++) if (priority[k].level < priority[k-1].level) do_sort = true;
-	if (n_B <= 1) do_sort = false;	/* No point sorting on -B if only one such option */
+	if (n_B <= 1 && !(got_theme && n_par > 1)) do_sort = true;	/* Sorting needed */
 	if (do_sort) mergesort (priority, np, sizeof (struct B_PRIORITY), gmtparse_compare_B);
 	/* Rebuild options links */
 	head = opt = GMT_Make_Option (GMT->parent, priority[0].opt->option, priority[0].opt->arg);
@@ -517,7 +529,7 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_options_order (struct GMT_CTRL *
 	}
 	gmt_M_free (GMT, priority);
 
-	if (do_sort) {
+	if (do_sort && n_B > 1) {
 		char *cmd = GMT_Create_Cmd (GMT->parent, head);
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT_Parse_Options: Interval-setting -B options were reordered to appear before axis and frame -B options to ensure proper parsing.\n");
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT_Parse_Options: New option order: %s\n", cmd);
@@ -1082,7 +1094,8 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 
 	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmtparse_check_b_options (API->GMT, in_options);	/* Determine the syntax of the -B option(s) */
 
-	options = gmtparse_ensure_b_options_order (API->GMT, in_options);	/* Sorted list to avoid parsing axes labels etc before axis increments since we may auto-set increments in the former */
+	/* Need sorted list to avoid parsing axes labels etc before axis increments since we may auto-set increments in the former, and also --GMT_THEME must be parsed before other -- */
+	options = gmtparse_ensure_b_and_dash_options_order (API->GMT, in_options);
 
 	n_errors = gmtparse_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
 

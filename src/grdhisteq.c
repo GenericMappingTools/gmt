@@ -103,7 +103,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-C<n_cells>");
 	GMT_Usage (API, -2, "Set how many cells (divisions) of data range to make [16].");
 	GMT_Usage (API, 1, "\n-D[<table>]");
-	GMT_Usage (API, -2, "Dump level information to <table> or stdout if not given.");
+	GMT_Usage (API, -2, "Dump level information to <table> or standard output if not given.");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Create an equalized output grid file called <outgrid>.");
 	GMT_Usage (API, 1, "\n-N[<norm>]");

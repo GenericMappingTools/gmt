@@ -97,7 +97,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <grid> %s -G<outgrid> [-F<polygontable>] [-A<region>] [-D<rotoutline>] [-N] "
-		"[%s] [-S] [-T<time(s)>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, SPOTTER_E_OPT, GMT_Rgeo_OPT,
+		"[%s] [-S] [-T<time>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, SPOTTER_E_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_n_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -106,7 +106,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<grid> is the gridded data file in geographic coordinates to be rotated.");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Set output filename for the new, rotated grid.  The boundary of the "
-		"original grid (or a subset; see -F) after rotation is written to stdout (but see -D) "
+		"original grid (or a subset; see -F) after rotation is written to standard output (but see -D) "
 		"unless the grid is global.  If more than one reconstruction time is chosen "
 		"then -D is required unless -N is used and <outgrid> must be a filename template "
 		"containing a C-format specifier for formatting a double (for the variable time).");
@@ -116,7 +116,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set the west/east/south/north bounds for the rotated grid [Default will "
 		"determine the natural extent of the rotated grid instead].");
 	GMT_Usage (API, 1, "\n-D<rotoutline>");
-	GMT_Usage (API, -2, "Write the rotated polygon or grid outline to <rotoutline> [stdout]. "
+	GMT_Usage (API, -2, "Write the rotated polygon or grid outline to <rotoutline> [standard output]. "
 		"Required if more than one reconstruction time is chosen and -N is not set "
 		"and must then contain a C-format specifier for formatting a double (for the variable time).");
 	GMT_Usage (API, 1, "\n-F<polygontable>");
@@ -125,7 +125,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-N Do NOT output the rotated polygon or grid outlines.");
 	GMT_Option (API, "Rg");
 	GMT_Usage (API, 1, "\n-S Do NOT rotate the grid - just produce the rotated outlines (requires -D).");
-	GMT_Usage (API, 1, "\n-T<time(s)>");
+	GMT_Usage (API, 1, "\n-T<time>");
 	GMT_Usage (API, -2, "Set the time(s) of reconstruction.  Append a single time (-T<time>), "
 		"an equidistant range of times (-T<min>/<max>/<inc> or -T<min>/<max>/<npoints>+n), "
 		"or the name of a file with a list of times (-T<tfile>).  If no -T is set "

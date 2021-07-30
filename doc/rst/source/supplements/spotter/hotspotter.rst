@@ -14,7 +14,7 @@ Synopsis
 
 **gmt hotspotter** [*table*]
 |-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
-|-G|\ *CVAgrid*
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-N|\ *upper_age* ]
@@ -55,7 +55,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *CVAgrid*
+**-G**\ *outgrid*
     Specify name for output grid file.
 
 .. _-I:
