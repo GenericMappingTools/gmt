@@ -99,15 +99,16 @@ back-azimuths or azimuths are better done using :doc:`mapproject` as
 
 
 .. figure:: /_images/project_setup.*
-   :width: 400 px
+   :width: 500 px
    :align: center
 
    Explanation of the coordinate system utilized by project.  The input point
-   (red circle) is given in the original *x-y* coordinate system and is projected to
+   (red circle) is given in the original *x-y* (or *lon-lat*) coordinate system and is projected to
    the *p-q* coordinate system, defined by the center (**C**) and either the end-point
-   (**E**) or azimuth (:math:`\alpha`, or for geographic data a rotation pole **P**.
-   The blue point has projected coordinates (p,0) which is (r,s) in the original
-   coordinate system.
+   (**E**) or azimuth (:math:`\alpha`), or for geographic data a rotation pole **T** (not shown).
+   The blue point has projected coordinates (p,q=0), which is (r,s) in the original
+   coordinate system.  Options **-L** (limit range of *p*) and **-W** (limit range of *q*)
+   can be used to exclude data outside the specified limits (light gray area).
 
 Required Arguments
 ------------------
