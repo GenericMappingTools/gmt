@@ -447,7 +447,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_FONT font;
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -A<params> %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r[a]] %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
 		"[%s] [-C<cpt>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
 		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s "
 		"[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -461,7 +461,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Usage (API, 1, "\n-A Specify cross-section parameters. Choose directive and append parameters:");
+	GMT_Usage (API, 1, "\n-Aa|b|c|d<params>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r[a]]");
+	GMT_Usage (API, -2, "Specify cross-section parameters. Choose directive and append parameters:");
 	GMT_Usage (API, 3, "a: Geographic start and end points, append <lon1>/<lat1>/<lon2>/<lat2>.");
 	GMT_Usage (API, 3, "b: Geographic start point and strike, length: Append <lon1>/<lat1>/<strike>/<length>.");
 	GMT_Usage (API, 3, "c: Cartesian start and end points, append <x1>/<y1>/<x2>/<y2>.");
@@ -470,7 +471,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+d Set the <dip> of the plane [90].");
 	GMT_Usage (API, 3, "+w Set the <width> of cross-section on each side of a vertical plane or above and under an oblique plane [infinity].");
 	GMT_Usage (API, 3, "+z Set distance min and max from horizontal plane in km, along steepest descent direction [no limit]");
-	GMT_Usage (API, 3, "+r Determine and set plot domain (-R) from the cross-section parameters [Use -R as given].");
+	GMT_Usage (API, 3, "+r Determine and set plot domain (-R) from the cross-section parameters [Use -R as given]. "
+		"Optionally, append a to adjust domain to sensible multiples of dx/dz.");
 	GMT_Usage (API, -2, "Note: <width>, <length>, <dmin> and <dmax> must all be given in km.");
 	GMT_Usage (API, -2, "Use CPT to assign colors based on depth-value in 3rd column.");
 	GMT_Option (API, "J-,R");
@@ -598,8 +600,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					if ((p = gmt_first_modifier (GMT, opt->arg, "drwz"))) {	/* Process any modifiers */
 						if (gmt_get_modifier (p, 'd', txt_a))
 							Ctrl->A.PREF.dip = atof (txt_a);
-						if (gmt_get_modifier (p, 'r', txt_a))
+						if (gmt_get_modifier (p, 'r', txt_a)) {
 							Ctrl->A.frame = true;
+							Ctrl->A.exact = (txt_a[0] != 'a');	/* Default (or +ze) is exact */
+						}
 						if (gmt_get_modifier (p, 'w', txt_a))
 							Ctrl->A.p_width = atof (txt_a);
 						if (gmt_get_modifier (p, 'z', txt_a))
@@ -973,6 +977,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
+	bool detect_range = false;
+
 	int n_rec = 0, n_plane_old = 0, form = 0, error;
 	int i, transparence_old = 0, not_defined = 0;
 	int n_scanned = 0;
@@ -1076,12 +1082,19 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	if (D->n_records == 0)
 		GMT_Report (API, GMT_MSG_WARNING, "No data records provided\n");
 
-	if (doubleAlmostEqualZero (Ctrl->A.dmin, Ctrl->A.dmax)) {	/* Must find depth range */
+	if (doubleAlmostEqualZero (Ctrl->A.dmin, Ctrl->A.dmax)) {	/* Must find depth range and max symbol size */
+		detect_range = true;
 		Ctrl->A.dmin = DBL_MAX;	Ctrl->A.dmax = -DBL_MAX;
+		size = Ctrl->S.scale;
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];	/* Shorthand */
 				for (row = 0; row < S->n_rows; row++) {
+					if (Ctrl->S.read && S->data[scol][row] > size) size = S->data[scol][row];	/* Largest size so far */
+					if (Ctrl->H.active) {	/* Variable scaling of symbol size and pen width */
+						double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? S->data[xcol][row] : Ctrl->H.value;
+						size *= scl;
+					}
 					if (S->data[GMT_Z][row] < Ctrl->A.dmin) Ctrl->A.dmin = S->data[GMT_Z][row];
 					if (S->data[GMT_Z][row] > Ctrl->A.dmax) Ctrl->A.dmax = S->data[GMT_Z][row];
 				}
@@ -1089,7 +1102,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->A.frame) {
+	if (Ctrl->A.frame) {	/* Do initial or final map setup */
 		GMT->common.R.wesn[XLO] = 0.0;
 		GMT->common.R.wesn[XHI] = Ctrl->A.p_length;
 		GMT->common.R.wesn[YLO] = Ctrl->A.dmin;
@@ -1098,6 +1111,15 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+
+	if (Ctrl->A.frame && detect_range) {	/* Extend what we found by largest symbol size */
+		double dz = size * (Ctrl->A.dmax - Ctrl->A.dmin) / GMT->current.map.height;	/* Need GMT->current.map.height hence the initial gmt_map_setup call */
+		GMT->common.R.wesn[YLO] = MAX (0, GMT->common.R.wesn[YLO] - dz);	/* Do not go into the air... */
+		GMT->common.R.wesn[YHI] += dz;
+		if (!Ctrl->A.exact) gmt_round_wesn (GMT->common.R.wesn, false);	/* Use data range to round to nearest reasonable multiples */
+		/* Must do the set up again since wesn changed */
+		if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
+	}
 
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 	gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
