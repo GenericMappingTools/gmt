@@ -201,7 +201,7 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Deprecated 7.29.2021 PW, use -di */
-				if (gmt_M_compat_check (GMT, 4)) {	/* Honor old -N<value> option */
+				if (gmt_M_compat_check (GMT, 6)) {	/* Honor old -N<value> option */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -N is deprecated; use GMT common option -di<nodata> instead.\n");
 					if (opt->arg[0]) {
 						char arg[GMT_LEN64] = {""};
