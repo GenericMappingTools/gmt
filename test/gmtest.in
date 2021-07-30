@@ -98,6 +98,7 @@ function psldemo()
 # Must have wrappers for all test programs not part of GMT distro:
 
 for apiprog in \
+	testapi_columns \
     testapi_cube \
     testapi_makecpt \
     testapi_matrix \
