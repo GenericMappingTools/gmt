@@ -50,7 +50,7 @@ PostScript code is written to stdout.
 
 struct PSCOUPE_CTRL {
 	struct PSCOUPE_A {	/* -A[<params>] */
-		bool active, frame, polygon;
+		bool active, frame, polygon, exact;
 		int fuseau;
 		char proj_type;
 		double p_width, p_length, dmin, dmax;
@@ -1085,13 +1085,13 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	if (doubleAlmostEqualZero (Ctrl->A.dmin, Ctrl->A.dmax)) {	/* Must find depth range and max symbol size */
 		detect_range = true;
 		Ctrl->A.dmin = DBL_MAX;	Ctrl->A.dmax = -DBL_MAX;
-		size = Ctrl->S.scale;
+		size = Ctrl->S.scale;	/* Default size, if given */
 		for (tbl = 0; tbl < D->n_tables; tbl++) {
 			for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
 				S = D->table[tbl]->segment[seg];	/* Shorthand */
 				for (row = 0; row < S->n_rows; row++) {
 					if (Ctrl->S.read && S->data[scol][row] > size) size = S->data[scol][row];	/* Largest size so far */
-					if (Ctrl->H.active) {	/* Variable scaling of symbol size and pen width */
+					if (Ctrl->H.active) {	/* Variable scaling of symbol size */
 						double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? S->data[xcol][row] : Ctrl->H.value;
 						size *= scl;
 					}
@@ -1100,6 +1100,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				}
 			}
 		}
+		GMT_Report (API, GMT_MSG_INFORMATION, "Observed depth range is %lg to %lg\n", GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 	}
 
 	if (Ctrl->A.frame) {	/* Do initial or final map setup */
@@ -1114,9 +1115,13 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	if (Ctrl->A.frame && detect_range) {	/* Extend what we found by largest symbol size */
 		double dz = size * (Ctrl->A.dmax - Ctrl->A.dmin) / GMT->current.map.height;	/* Need GMT->current.map.height hence the initial gmt_map_setup call */
-		GMT->common.R.wesn[YLO] = MAX (0, GMT->common.R.wesn[YLO] - dz);	/* Do not go into the air... */
+		GMT->common.R.wesn[YLO] = MAX (0, GMT->common.R.wesn[YLO] - dz);	/* Do not go negative into the air... */
 		GMT->common.R.wesn[YHI] += dz;
-		if (!Ctrl->A.exact) gmt_round_wesn (GMT->common.R.wesn, false);	/* Use data range to round to nearest reasonable multiples */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Size-adjusted depth range is %lg to %lg\n", GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		if (!Ctrl->A.exact) {
+			gmt_round_wesn (GMT->common.R.wesn, false);	/* Use data range to round to nearest reasonable multiples */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Auto-adjusted depth range is %lg to %lg\n", GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		}
 		/* Must do the set up again since wesn changed */
 		if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 	}
@@ -1183,7 +1188,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 						event_title[0] = '\0';
 				}
 
-				depth = in[2];
+				depth = in[GMT_Z];
 
 				if (!pscoupe_dans_coupe (in[GMT_X], in[GMT_Y], depth, Ctrl->A.xlonref, Ctrl->A.ylatref, Ctrl->A.fuseau, Ctrl->A.PREF.str,
 					Ctrl->A.PREF.dip, Ctrl->A.p_length, Ctrl->A.p_width, &distance, &n_dep) && !Ctrl->N.active)
