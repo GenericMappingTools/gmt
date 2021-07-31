@@ -38,7 +38,7 @@ Required Arguments
 
 .. _-A:
 
-**-Aa**\|\ **b**\|\ **c**\|\ **d**\|\ *params*\ [**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
+**-Aa**\|\ **b**\|\ **c**\|\ **d**\ *params*\ [**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
   Select the cross-section parameters:
 
   **-Aa**\ *lon1*/*lat1*/*lon2*/*lat2*
@@ -51,7 +51,7 @@ Required Arguments
      plot domain from the cross-section parameters; append **a** for automatic rounding
      of the domain, **e** for the exact limits [Default], or *dx* to round the distances
      to integer multiples of *dx*. Use **+z** to control the depth range by appending
-     **a** for automatic rounding, **e** to use the exact fit values, *dz* to round
+     **a** for automatic rounding, **e** to use the exact fit values [Default], *dz* to round
      depths to integer multiples of *dz*, or give desired *min/max* range. For
      **a** and *dz* you may prepend **s** to clamp the minimum depth at the surface (0).
 

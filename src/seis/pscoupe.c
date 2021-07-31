@@ -449,7 +449,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_FONT font;
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+d<dip>][+w<width>][+z[s]a|e|<dz>|<zmin>/<zdmax>][+r[a|e|<dx>]] %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>] %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
 		"[%s] [-C<cpt>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
 		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s "
 		"[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -463,7 +463,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Usage (API, 1, "\n-Aa|b|c|d<params>[+d<dip>][+w<width>][+z[s]a|e|<dz>|<zmin>/<zdmax>][+r[a|e|<dx>]]");
+	GMT_Usage (API, 1, "\n-Aa|b|c|d<params>[+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>]");
 	GMT_Usage (API, -2, "Specify cross-section parameters. Choose directive and append parameters:");
 	GMT_Usage (API, 3, "a: Geographic start and end points, append <lon1>/<lat1>/<lon2>/<lat2>.");
 	GMT_Usage (API, 3, "b: Geographic start point and strike, length: Append <lon1>/<lat1>/<strike>/<length>.");
@@ -471,11 +471,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "d: Cartesian start point and strike, length, Append <x1>/<y1>/<strike>/<length>.");
 	GMT_Usage (API, -2, "Several optional modifiers are available:");
 	GMT_Usage (API, 3, "+d Set the <dip> of the plane [90].");
-	GMT_Usage (API, 3, "+w Set the <width> of cross-section on each side of a vertical plane or above and under an oblique plane [infinity].");
-	GMT_Usage (API, 3, "+z Set distance min and max from horizontal plane in km, along steepest descent direction [no limit]");
 	GMT_Usage (API, 3, "+r Determine and set plot domain (-R) from the cross-section parameters [Use -R as given]. "
-		"Optionally, append a to adjust domain to sensible multiples of dx/dz.");
-	GMT_Usage (API, -2, "Note: <width>, <length>, <dmin> and <dmax> must all be given in km.");
+		"Optionally, append a to adjust domain to suitable multiples of dx/dz, e for the exact domain, or <dx> to quantize distances.");
+	GMT_Usage (API, 3, "+w Set the <width> of cross-section on each side of a vertical plane or above and under an oblique plane [infinity].");
+	GMT_Usage (API, 3, "+z Adjust the z-range.  Append a for a sensible rounding, e for the exact range, <dz> to quantize depths, or "
+		"distance min/max from horizontal plane in km, along steepest descent direction [no limit]. Optionally prepend s to clamp minimum depth at surface (0).");
+	GMT_Usage (API, -2, "Note: <width>, <length>, <dx>, <dz>, <min> and <max> must all be given in km.");
 	GMT_Usage (API, -2, "Use CPT to assign colors based on depth-value in 3rd column.");
 	GMT_Option (API, "J-,R");
 	GMT_Usage (API, 1, "\n-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]");
@@ -1141,6 +1142,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->A.frame) {	/* Do initial or final map setup */
+		/* If dx or dz were given then we impose those conditions here.  We also impose the +zs clamp at zero depth here */
 		GMT->common.R.wesn[XLO] = 0.0;
 		GMT->common.R.wesn[XHI] = (Ctrl->A.dx > 0.0) ? ceil (Ctrl->A.p_length / Ctrl->A.dx) * Ctrl->A.dx : Ctrl->A.p_length;
 		GMT->common.R.wesn[YLO] = (Ctrl->A.dz > 0.0) ? floor (Ctrl->A.dmin / Ctrl->A.dz) * Ctrl->A.dz : ((Ctrl->A.force) ? 0.0 : Ctrl->A.dmin);
@@ -1151,21 +1153,22 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
-	if (Ctrl->A.frame && detect_range) {	/* Extend y-range by largest symbol size */
+	if (Ctrl->A.frame && detect_range) {	/* Extend y-range by largest symbol size and maybe label space*/
 		double z_range_1 = (Ctrl->A.dmax - Ctrl->A.dmin);
-		double z_inc_scl, dz, label_space[2] = {0.0, 0.0};
+		double z_inc_scl, dz, label_space[2] = {0.0, 0.0};	/* Note: label_space may remain at 0,0 if justification is on the side of the symbol */
 		if (!Ctrl->S.no_label) {	/* Deal with space needed by label */
 			int label_justify = gmt_flip_justify(GMT, Ctrl->S.justify);
-			double H = (GMT_TEXT_CLEARANCE * 0.01 + GMT_LET_HEIGHT) * Ctrl->S.font.size / PSL_POINTS_PER_INCH;	/* Label and offset estimate */
-			if (label_justify < 4)	/* Label below symbol */
+			double H = (GMT_TEXT_CLEARANCE * 0.01 + GMT_LET_HEIGHT) * Ctrl->S.font.size / PSL_POINTS_PER_INCH;	/* Combined label and offset dimension */
+			if (label_justify < 4)	/* Label goes below symbol */
 				label_space[1] = H + Ctrl->S.offset[1];
-			else if (label_justify > 8)	/* Label above symbol */
+			else if (label_justify > 8)	/* Label goes above symbol */
 				label_space[0] = H + Ctrl->S.offset[1];
 		}
-		z_inc_scl = z_range_1 / (GMT->current.map.height - 2.0*size - MAX(label_space[0], label_space[1]));	/* Need GMT->current.map.height hence the initial gmt_map_setup call */
-		dz = (size + label_space[1]) * z_inc_scl;
-		GMT->common.R.wesn[YLO] = MAX (0, GMT->common.R.wesn[YLO] - dz);	/* Do not go negative into the air... */
-		dz = (size + label_space[0]) * z_inc_scl;
+		/* Need GMT->current.map.height hence the initial gmt_map_setup call.  */
+		z_inc_scl = z_range_1 / (GMT->current.map.height - 2.0*size - MAX(label_space[0], label_space[1]));
+		dz = (size + label_space[1]) * z_inc_scl;	/* km to extend low range outward */
+		GMT->common.R.wesn[YLO] = MAX (0, GMT->common.R.wesn[YLO] - dz);	/* But do not go negative into the air... */
+		dz = (size + label_space[0]) * z_inc_scl;	/* km to extend high range outward */
 		GMT->common.R.wesn[YHI] += dz;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Symbol-adjusted depth range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		if (!(Ctrl->A.exact[GMT_X] && Ctrl->A.exact[GMT_Y])) {
@@ -1174,10 +1177,10 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 			gmt_round_wesn (GMT->common.R.wesn, false);	/* Use data range to round to nearest reasonable multiples */
 			if (Ctrl->A.exact[GMT_X]) gmt_M_memcpy (GMT->common.R.wesn, wesn, 2U, double);	/* Wanted to keep the original range */
 			if (Ctrl->A.exact[GMT_Y]) gmt_M_memcpy (&GMT->common.R.wesn[YLO], &wesn[YLO], 2U, double);	/* Wanted to keep the original range */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Auto-adjusted depth range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Final auto-adjusted depth range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		}
-		if (Ctrl->A.force) GMT->common.R.wesn[YLO] = 0.0;
-		/* Must do the set up again since wesn changed */
+		if (Ctrl->A.force) GMT->common.R.wesn[YLO] = 0.0;	/* Just as a precaution */
+		/* Now must do the set up again since wesn has changed */
 		if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 	}
 
