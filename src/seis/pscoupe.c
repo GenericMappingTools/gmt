@@ -50,10 +50,10 @@ PostScript code is written to stdout.
 
 struct PSCOUPE_CTRL {
 	struct PSCOUPE_A {	/* -A[<params>] */
-		bool active, frame, polygon, exact;
+		bool active, frame, polygon, force, exact[2];
 		int fuseau;
 		char proj_type;
-		double p_width, p_length, dmin, dmax;
+		double p_width, p_length, dmin, dmax, dz, dx;
 		double lon1, lat1, lon2, lat2;
 		double xlonref, ylatref;
 		struct GMT_PEN pen;
@@ -164,6 +164,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->A.PREF.dip = 90.0;	/* Vertical is the default dip */
 	C->A.p_width = 20000;	/* Infinity, basically */
+	C->A.exact[GMT_X] = true;	/* We want exact distance range by default if +r is given */
+	C->A.exact[GMT_Y] = true;	/* We want approximate depth range by default if +r is given */
 	C->L.pen = C->T.pen = C->P2.pen = C->T2.pen = C->W.pen = GMT->current.setting.map_default_pen;
 	/* Set width temporarily to -1. This will indicate later that we need to replace by W.pen */
 	C->L.pen.width = C->T.pen.width = C->P2.pen.width = C->T2.pen.width = -1.0;
@@ -447,7 +449,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_FONT font;
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r[a]] %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+d<dip>][+w<width>][+z[s]a|e|<dz>|<zmin>/<zdmax>][+r[a|e|<dx>]] %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
 		"[%s] [-C<cpt>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
 		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s "
 		"[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -461,7 +463,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Usage (API, 1, "\n-Aa|b|c|d<params>[+d<dip>][+w<width>][+z<dmin>/<dmax>][+r[a]]");
+	GMT_Usage (API, 1, "\n-Aa|b|c|d<params>[+d<dip>][+w<width>][+z[s]a|e|<dz>|<zmin>/<zdmax>][+r[a|e|<dx>]]");
 	GMT_Usage (API, -2, "Specify cross-section parameters. Choose directive and append parameters:");
 	GMT_Usage (API, 3, "a: Geographic start and end points, append <lon1>/<lat1>/<lon2>/<lat2>.");
 	GMT_Usage (API, 3, "b: Geographic start point and strike, length: Append <lon1>/<lat1>/<strike>/<length>.");
@@ -600,16 +602,49 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					if ((p = gmt_first_modifier (GMT, opt->arg, "drwz"))) {	/* Process any modifiers */
 						if (gmt_get_modifier (p, 'd', txt_a))
 							Ctrl->A.PREF.dip = atof (txt_a);
-						if (gmt_get_modifier (p, 'r', txt_a)) {
+						if (gmt_get_modifier (p, 'r', txt_a)) {	/* +r[a|e|<dx>] */
 							Ctrl->A.frame = true;
-							Ctrl->A.exact = (txt_a[0] != 'a');	/* Default (or +ze) is exact */
+							switch (txt_a[0]) {
+								case 'a':	/* Auto for both axes */
+									Ctrl->A.exact[GMT_X] = Ctrl->A.exact[GMT_Y] = false;
+									break;
+								case 'e':	/* Exact data range for both axes [Default] */
+								case '\0':
+									Ctrl->A.exact[GMT_X] = Ctrl->A.exact[GMT_Y] = true;
+									break;
+								default:	/* Got a <dx> argument in km so exact in x, auto in */
+									Ctrl->A.dx = atof (txt_a);
+									Ctrl->A.exact[GMT_X] = true;
+									break;
+							}
 						}
 						if (gmt_get_modifier (p, 'w', txt_a))
 							Ctrl->A.p_width = atof (txt_a);
-						if (gmt_get_modifier (p, 'z', txt_a))
-							sscanf (txt_a, "%lf/%lf", &Ctrl->A.dmin, &Ctrl->A.dmax);
-						p[0] = '\0';	/* Chop off modifiers */
+						if (gmt_get_modifier (p, 'z', txt_a)) {	/* +z[s]a|e|<dz>|<z0/z1> */
+							unsigned k = 0;
+							if (txt_a[0] == 's') {	/* Force zmin to be at surface (0) */
+								Ctrl->A.force = true;
+								k++;
+							}
+							switch (txt_a[k]) {
+								case 'a':	/* Auto-depths */
+								case '\0':	/* Which is also the default */
+									Ctrl->A.exact[GMT_Y] = false;	/* Determine good depth range */
+									break;
+								case 'e':	/* Want exact depth range */
+									Ctrl->A.exact[GMT_Y] = true;	/* Determine exact depth range */
+									break;
+								default:
+									if (strchr (txt_a, '/'))	/* Gave min/max */
+										sscanf (&txt_a[k], "%lf/%lf", &Ctrl->A.dmin, &Ctrl->A.dmax);
+									else	/* Gave dz increment */
+										Ctrl->A.dz = atof (&txt_a[k]);
+									Ctrl->A.exact[GMT_Y] = true;	/* Determine exact rounded depth range */
+									break;
+							}
+						}
 					}
+					p[0] = '\0';	/* Chop off modifiers */
 					/* Process the first 4 args */
 					if (sscanf (&opt->arg[1], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A requires 4 arguments before modifiers.\n");
@@ -891,10 +926,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					if (gmt_get_modifier (opt->arg, 'j', word) && strchr ("LCRBMT", word[0]) && strchr ("LCRBMT", word[1]))
 						Ctrl->S.justify = gmt_just_decode (GMT, word, Ctrl->S.justify);
 					if (gmt_get_modifier (opt->arg, 'f', word)) {
-						if (strcmp (word, "0"))
-							n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
-						else
+						if (word[0] == '0' && (word[1] == '\0' || word[1] == 'p'))
 							Ctrl->S.font.size = 0.0;
+						else
+							n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
 					}
 					if (gmt_get_modifier (opt->arg, 'o', word)) {
 						if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
@@ -1100,28 +1135,48 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		GMT_Report (API, GMT_MSG_INFORMATION, "Observed depth range is %lg to %lg\n", GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		if (!Ctrl->M.active) size *= 1.6;	/* Since we are not computing sizes we assume a max Magnitude 8 symbol size instead of 5 */
+		size /= 2.0;	/* Since we want radius below */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Observed frame range is 0/%lg/%lg/%lg\n", Ctrl->A.p_length, Ctrl->A.dmin, Ctrl->A.dmax);
 	}
 
 	if (Ctrl->A.frame) {	/* Do initial or final map setup */
 		GMT->common.R.wesn[XLO] = 0.0;
-		GMT->common.R.wesn[XHI] = Ctrl->A.p_length;
-		GMT->common.R.wesn[YLO] = Ctrl->A.dmin;
-		GMT->common.R.wesn[YHI] = Ctrl->A.dmax;
+		GMT->common.R.wesn[XHI] = (Ctrl->A.dx > 0.0) ? ceil (Ctrl->A.p_length / Ctrl->A.dx) * Ctrl->A.dx : Ctrl->A.p_length;
+		GMT->common.R.wesn[YLO] = (Ctrl->A.dz > 0.0) ? floor (Ctrl->A.dmin / Ctrl->A.dz) * Ctrl->A.dz : ((Ctrl->A.force) ? 0.0 : Ctrl->A.dmin);
+		GMT->common.R.wesn[YHI] = (Ctrl->A.dz > 0.0) ? ceil (Ctrl->A.dmax / Ctrl->A.dz) * Ctrl->A.dz : Ctrl->A.dmax;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Rounded frame range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		if (gmt_M_is_zero (Ctrl->A.PREF.dip)) Ctrl->A.PREF.dip = 1.0;
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
-	if (Ctrl->A.frame && detect_range) {	/* Extend what we found by largest symbol size */
-		double dz = size * (Ctrl->A.dmax - Ctrl->A.dmin) / GMT->current.map.height;	/* Need GMT->current.map.height hence the initial gmt_map_setup call */
-		GMT->common.R.wesn[YLO] = MAX (0, GMT->common.R.wesn[YLO] - dz);	/* Do not go negative into the air... */
-		GMT->common.R.wesn[YHI] += dz;
-		GMT_Report (API, GMT_MSG_INFORMATION, "Size-adjusted depth range is %lg to %lg\n", GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
-		if (!Ctrl->A.exact) {
-			gmt_round_wesn (GMT->common.R.wesn, false);	/* Use data range to round to nearest reasonable multiples */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Auto-adjusted depth range is %lg to %lg\n", GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+	if (Ctrl->A.frame && detect_range) {	/* Extend y-range by largest symbol size */
+		double z_range_1 = (Ctrl->A.dmax - Ctrl->A.dmin);
+		double z_inc_scl, dz, label_space[2] = {0.0, 0.0};
+		if (!Ctrl->S.no_label) {	/* Deal with space needed by label */
+			int label_justify = gmt_flip_justify(GMT, Ctrl->S.justify);
+			double H = (GMT_TEXT_CLEARANCE * 0.01 + GMT_LET_HEIGHT) * Ctrl->S.font.size / PSL_POINTS_PER_INCH;	/* Label and offset estimate */
+			if (label_justify < 4)	/* Label below symbol */
+				label_space[1] = H + Ctrl->S.offset[1];
+			else if (label_justify > 8)	/* Label above symbol */
+				label_space[0] = H + Ctrl->S.offset[1];
 		}
+		z_inc_scl = z_range_1 / (GMT->current.map.height - 2.0*size - MAX(label_space[0], label_space[1]));	/* Need GMT->current.map.height hence the initial gmt_map_setup call */
+		dz = (size + label_space[1]) * z_inc_scl;
+		GMT->common.R.wesn[YLO] = MAX (0, GMT->common.R.wesn[YLO] - dz);	/* Do not go negative into the air... */
+		dz = (size + label_space[0]) * z_inc_scl;
+		GMT->common.R.wesn[YHI] += dz;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Symbol-adjusted depth range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		if (!(Ctrl->A.exact[GMT_X] && Ctrl->A.exact[GMT_Y])) {
+			double wesn[4];
+			gmt_M_memcpy (wesn, GMT->common.R.wesn, 4U, double);	/* Make a copy */
+			gmt_round_wesn (GMT->common.R.wesn, false);	/* Use data range to round to nearest reasonable multiples */
+			if (Ctrl->A.exact[GMT_X]) gmt_M_memcpy (GMT->common.R.wesn, wesn, 2U, double);	/* Wanted to keep the original range */
+			if (Ctrl->A.exact[GMT_Y]) gmt_M_memcpy (&GMT->common.R.wesn[YLO], &wesn[YLO], 2U, double);	/* Wanted to keep the original range */
+			GMT_Report (API, GMT_MSG_INFORMATION, "Auto-adjusted depth range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		}
+		if (Ctrl->A.force) GMT->common.R.wesn[YLO] = 0.0;
 		/* Must do the set up again since wesn changed */
 		if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 	}
@@ -1265,7 +1320,6 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 					meca.NP2.str = in[5];
 					fault        = in[6];
 					meca.magms   = in[7];
-
 					moment.exponent = 0;
 					moment.mant = meca.magms;
 					meca.NP2.dip = meca_computed_dip2 (meca.NP1.str, meca.NP1.dip, meca.NP2.str);
