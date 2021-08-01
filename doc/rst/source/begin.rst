@@ -51,6 +51,8 @@ Optional Arguments
     Give one or more comma-separated graphics extensions from the list of allowable
     :ref:`graphics formats <tbl-formats>`
     (default format is configurable via setting :term:`GMT_GRAPHICS_FORMAT` [pdf]).
+    Optionally, append **+m** for monochrome image (BMP, JPEG, PNG, and TIFF only)
+    and **+q**\ *quality* in 0-100 range to change JPEG quality [90].
 
 .. _begin-options:
 
