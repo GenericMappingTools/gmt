@@ -27,7 +27,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_MODERN_NAME	"coupe"
 #define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
-#define THIS_MODULE_KEYS	"<D{,>X}"
+#define THIS_MODULE_KEYS	"<D{,>?}"
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
 
@@ -49,9 +49,10 @@ PostScript code is written to stdout.
 /* Control structure for pscoupe */
 
 struct PSCOUPE_CTRL {
-	struct PSCOUPE_A {	/* -A[<params>] */
+	struct PSCOUPE_A {	/* -Aa|b|c|d<params>[+c[t|n]][+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>] */
 		bool active, frame, polygon, force, exact[2];
 		int fuseau;
+		int report;	/* GMT_IS_FLOAT: print w e s n, GMT_IS_TEXT: print "-Rw/e/s/n" based on -A+r */
 		char proj_type;
 		double p_width, p_length, dmin, dmax, dz, dx;
 		double lon1, lat1, lon2, lat2;
@@ -449,7 +450,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_FONT font;
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>] %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+c[n|t]][+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>] %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
 		"[%s] [-C<cpt>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
 		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s "
 		"[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
@@ -463,13 +464,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Usage (API, 1, "\n-Aa|b|c|d<params>[+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>]");
+	GMT_Usage (API, 1, "\n-Aa|b|c|d<params>[+c[n|t]][+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>]");
 	GMT_Usage (API, -2, "Specify cross-section parameters. Choose directive and append parameters:");
 	GMT_Usage (API, 3, "a: Geographic start and end points, append <lon1>/<lat1>/<lon2>/<lat2>.");
 	GMT_Usage (API, 3, "b: Geographic start point and strike, length: Append <lon1>/<lat1>/<strike>/<length>.");
 	GMT_Usage (API, 3, "c: Cartesian start and end points, append <x1>/<y1>/<x2>/<y2>.");
 	GMT_Usage (API, 3, "d: Cartesian start point and strike, length, Append <x1>/<y1>/<strike>/<length>.");
 	GMT_Usage (API, -2, "Several optional modifiers are available:");
+	GMT_Usage (API, 3, "+c No plotting; print the region as a -Rw/e/s/n string (+ct) or numbers (+c[n] or Default).");
 	GMT_Usage (API, 3, "+d Set the <dip> of the plane [90].");
 	GMT_Usage (API, 3, "+r Determine and set plot domain (-R) from the cross-section parameters [Use -R as given]. "
 		"Optionally, append a to adjust domain to suitable multiples of dx/dz, e for the exact domain, or <dx> to quantize distances.");
@@ -619,6 +621,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 									break;
 							}
 						}
+						if (gmt_get_modifier (p, 'c', txt_a)) /* Check if +c, +cn [Default], or +ct */
+							Ctrl->A.report = (txt_a[0] == 't') ? GMT_IS_TEXT : GMT_IS_FLOAT;
 						if (gmt_get_modifier (p, 'w', txt_a))
 							Ctrl->A.p_width = atof (txt_a);
 						if (gmt_get_modifier (p, 'z', txt_a)) {	/* +z[s]a|e|<dz>|<z0/z1> */
@@ -1180,6 +1184,38 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Final auto-adjusted depth range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		}
 		if (Ctrl->A.force) GMT->common.R.wesn[YLO] = 0.0;	/* Just as a precaution */
+
+		if (Ctrl->A.report) {	/* No plotting, just report the region */
+			char txt[GMT_LEN256] = {""};
+			struct GMT_RECORD *Out = NULL;
+			GMT_Report (API, GMT_MSG_INFORMATION, "Report region as %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+			if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+				Return (API->error);
+			}
+			if (Ctrl->A.report == GMT_IS_TEXT) {
+				Out = gmt_new_record (GMT, NULL, txt);	/* Since we only need to worry about trailing text */
+				sprintf (txt, "-R%.16lg/%.16lg/%.16lg/%.16lg", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+				if ((error = GMT_Set_Columns (API, GMT_OUT, 0, GMT_COL_FIX)) != GMT_NOERROR) {
+					Return (error);
+				}
+			}
+			else {	/* Want numerical record */
+				Out = gmt_new_record (GMT, GMT->common.R.wesn, NULL);	/* Since we only need to worry about numerics */
+				if ((error = GMT_Set_Columns (API, GMT_OUT, 4, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+					Return (error);
+				}
+			}
+			if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+				Return (API->error);
+			}
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+			if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+				Return (API->error);
+			}
+			gmt_M_free (GMT, Out);
+			Return (GMT_NOERROR);
+		}
+
 		/* Now must do the set up again since wesn has changed */
 		if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 	}

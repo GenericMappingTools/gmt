@@ -38,7 +38,7 @@ Required Arguments
 
 .. _-A:
 
-**-Aa**\|\ **b**\|\ **c**\|\ **d**\ *params*\ [**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
+**-Aa**\|\ **b**\|\ **c**\|\ **d**\ *params*\ [**+c**\ [**n**\|\ **t**]][**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
   Select the cross-section parameters:
 
   **-Aa**\ *lon1*/*lat1*/*lon2*/*lat2*
@@ -54,6 +54,9 @@ Required Arguments
      **a** for automatic rounding, **e** to use the exact fit values [Default], *dz* to round
      depths to integer multiples of *dz*, or give desired *min/max* range. For
      **a** and *dz* you may prepend **s** to clamp the minimum depth at the surface (0).
+     **Note**: Append **+c** to simply report the determined region and exit (no plotting takes
+     places).  By default (**+cn**) we report a single numerical record with *xmin xmax ymin ymax*.
+     Use **+ct** to instead report a text record in the format **-R**\ *xmin/xmax/ymin/ymax*.
 
   **-Ab**\ *lon1*/*lat1*/*strike*/*length*
      *lon1* and *lat1* are the longitude and latitude of the beginning of the
