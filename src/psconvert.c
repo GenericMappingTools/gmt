@@ -487,7 +487,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->G.file = strdup (GMT_GS_EXECUTABLE);
 #endif
 	C->D.dir = strdup (".");
-	C->T.quality = 90;	/* Default JPG quality */
+	C->T.quality = GMT_JPEG_DEF_QUALITY;	/* Default JPG quality */
 
 	C->W.doctitle = strdup ("GMT KML Document");
 	C->W.overlayname = strdup ("GMT Image Overlay");
@@ -902,7 +902,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_GEO] && Ctrl->T.device != GS_DEV_PDF,
 	                                   "Creating GeoPDF format requires -Tf\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->T.device == GS_DEV_JPG || Ctrl->T.device == GS_DEV_JPGG) && (Ctrl->T.quality < 0 || Ctrl->T.quality > 100),
-	                                   "JPG Quality value must be in 0-100 range [90]\n");
+	                                   "JPG Quality value must be in 0-100 range [%d]\n", GMT_JPEG_DEF_QUALITY);
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_LINES] && (Ctrl->Q.bits[PSC_LINES] < 1 || Ctrl->Q.bits[PSC_LINES] > 4),
 	                                   "Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
