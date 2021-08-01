@@ -18017,7 +18017,7 @@ GMT_LOCAL int gmtinit_put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fmt[], int gcode[], int *quality) {
+GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fmt[], int gcode[], int *quality, int *monochrome) {
 	/* Count up how many graphics formats were selected and what their codes were.
 	 * We know the arguments are all valid formats since checked by figure or begin */
 	int k, n = 0;
@@ -18028,13 +18028,17 @@ GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats,
 		if ((k = gmt_get_graphics_id (GMT, p)) != GMT_NOTSET) {	/* Valid code */
 			gcode[n] = k;
 			fmt[n++] = gmt_session_code[k];
-			if (gmt_session_code[k] == 'j' && (c = strstr (p, "+q"))) {	/* Gave JPEG quality modifier */
-				*quality = atoi (&c[2]);
-				if (*quality < 0 || *quality > 100) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad JPEG quality argument (%s} - reset to %d\n", c, GMT_JPEG_DEF_QUALITY);
-					*quality = GMT_JPEG_DEF_QUALITY;
+			if (gmt_session_code[k] == 'j' ) {	/* Check for modifiers */
+				if ((c = strstr (p, "+q"))) {	/* Gave JPEG quality modifier */
+					*quality = atoi (&c[2]);
+					if (*quality < 0 || *quality > 100) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad JPEG quality argument (%s} - reset to %d\n", c, GMT_JPEG_DEF_QUALITY);
+						*quality = GMT_JPEG_DEF_QUALITY;
+					}
 				}
 			}
+			if (strchr ("bgjt", gmt_session_code[k]) && strstr (p, "+m"))	/* Want monochrome image */
+				*monochrome = 1;
 		}
 	}
 	return (n);
@@ -18075,10 +18079,10 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	 * If show is not NULL then we display the first graphics listed (if more than one) via gmt docs */
 
 	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
-	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""}, device_extra[GMT_LEN8] = {""};
+	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""}, device_extra[GMT_LEN8] = {""}, *do_gray[2] = {"", "+m"};
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS, auto_size;
-	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16], jpeg_quality = GMT_JPEG_DEF_QUALITY;
+	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16], jpeg_quality = GMT_JPEG_DEF_QUALITY, monochrome = 0;
 	unsigned int pos = 0;
 	double legend_width = 0.0, legend_scale = 1.0;
 
@@ -18102,7 +18106,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
 		/* Go through the format list and build array for -T arguments */
-		nf = gmtinit_get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode, &jpeg_quality);
+		nf = gmtinit_get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode, &jpeg_quality, &monochrome);
 		if (n_orig && k) {	/* Specified one or more figs via gmt figure so must switch to the current figure and update the history */
 			if ((error = GMT_Call_Module (API, "figure", GMT_MODULE_CMD, fig[k].prefix))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to switch to figure%s\n", fig[k].prefix);
@@ -18143,11 +18147,11 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if ((c = strrchr (fig[k].prefix, '/'))) {	/* Must pass any leading directory in the file name via -D and file prefix via -F */
 				char *file_only = &c[1];	/* The file name */
 				c[0] = '\0';		/* Temporarily chop off the file to yield directory only */
-				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c%s -D%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], device_extra, fig[k].prefix, file_only);
+				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c%s%s -D%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], device_extra, do_gray[monochrome], fig[k].prefix, file_only);
 				c[0] = '/';		/* Restore last slash */
 			}
 			else	/* Place products in current directory */
-				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], device_extra, fig[k].prefix);
+				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c%s%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], device_extra, do_gray[monochrome], fig[k].prefix);
 			gmt_filename_get (fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
