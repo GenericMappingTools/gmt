@@ -174,6 +174,7 @@ struct PSCONVERT_CTRL {
 		int eps;	/* 1 if we want to make EPS, -1 with setpagedevice (possibly in addition to another format) */
 		int ps;		/* 1 if we want to save the final PS under "modern" setting */
 		int device;	/* May be negative */
+		int quality;	/* For JPG [90] */
 	} T;
 	struct PSCONVERT_W {	/* -W -- for world file production */
 		bool active;
@@ -486,6 +487,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->G.file = strdup (GMT_GS_EXECUTABLE);
 #endif
 	C->D.dir = strdup (".");
+	C->T.quality = GMT_JPEG_DEF_QUALITY;	/* Default JPG quality */
 
 	C->W.doctitle = strdup ("GMT KML Document");
 	C->W.overlayname = strdup ("GMT Image Overlay");
@@ -524,7 +526,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <psfile1> <psfile2> <...> [-A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width>[/<height>]][+u]] "
 		"[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<scale>] [-I] [-L<list>] [-Mb|f<psfile>] "
-		"[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s] "
+		"[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
 		"[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
 		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
@@ -608,8 +610,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Optionally, use -Qp to create a GeoPDF (requires -Tf).");
 	GMT_Usage (API, 1, "\n-S Apart from executing it, also writes the Ghostscript command to "
 		"standard error and keeps all intermediate files.");
-	GMT_Usage (API, 1, "\n-Tb|e|E|f|F|g|G|j|m|s|t[+m]");
-	GMT_Usage (API, -2, "Set output format [default is jpeg]:");
+	GMT_Usage (API, 1, "\n-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]");
+	GMT_Usage (API, -2, "Set output format [default is JPEG]:");
 	GMT_Usage (API, 3, "b: Select BMP.");
 	GMT_Usage (API, 3, "e: Select EPS.");
 	GMT_Usage (API, 3, "E: Select EPS with setpagedevice command.");
@@ -621,8 +623,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "m: Select PPM.");
 	GMT_Usage (API, 3, "s: Select SVG [if supported by your Ghostscript version].");
 	GMT_Usage (API, 3, "t: Select TIF.");
-	GMT_Usage (API, -2, "Note: For b, g, j, and t, append +m to get a monochrome (grayscale) image [color]. "
-		"The EPS format can be combined with any of the other formats. "
+	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
+	GMT_Usage (API, 3, "+m For b, g, j, and t, make a monochrome (grayscale) image [color].");
+	GMT_Usage (API, 3, "+q Append quality in 0-100 for JPEG only [%d].", GMT_JPEG_DEF_QUALITY);
+	GMT_Usage (API, -2, "Note: The EPS format can be combined with any of the other formats. "
 		"For example, -Tef creates both an EPS and PDF file.");
 	GMT_Option (API, "V");
 	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
@@ -686,6 +690,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, mode;
 	int j = 0;
 	bool grayscale = false, halfbaked = false;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -789,6 +794,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 					grayscale = true;
 				else if (strstr (opt->arg, "+m"))	/* Modern monochrome option (like -M in grdimage) */
 					grayscale = true;
+				if ((c = strstr (opt->arg, "+q"))) {	/* Got a quality setting for JPG */
+					Ctrl->T.quality = atoi (&c[2]);
+					c[0] = '\0';	/* Chop this modifier off for now */
+				}
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'e':	/* EPS */
@@ -838,6 +847,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 							break;
 					}
 				}
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'W':	/* Save world file */
 				n_errors += psconvert_parse_GE_settings (GMT, opt->arg, Ctrl);
@@ -891,6 +901,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_GEO] && Ctrl->T.device != GS_DEV_PDF,
 	                                   "Creating GeoPDF format requires -Tf\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->T.device == GS_DEV_JPG || Ctrl->T.device == GS_DEV_JPGG) && (Ctrl->T.quality < 0 || Ctrl->T.quality > 100),
+	                                   "JPG Quality value must be in 0-100 range [%d]\n", GMT_JPEG_DEF_QUALITY);
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_LINES] && (Ctrl->Q.bits[PSC_LINES] < 1 || Ctrl->Q.bits[PSC_LINES] > 4),
 	                                   "Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
@@ -1469,7 +1481,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	char **ps_names = NULL;
 	char ps_file[PATH_MAX] = "", no_U_file[PATH_MAX] = "", clean_PS_file[PATH_MAX] = "", tmp_file[PATH_MAX] = "",
-	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "";
+	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "", jpeg_device[GMT_LEN16] = {""};
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""}, GSstring[GMT_LEN64] = {""},
 	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_BB = NULL, *proj4_cmd = NULL;
@@ -1593,6 +1605,11 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	}
 
 	/* Parameters for all the formats available */
+
+	if (Ctrl->T.quality != GMT_JPEG_DEF_QUALITY) {	/* User wanted a specific JPG quality */
+		sprintf (jpeg_device, "-dJPEGQ=%d", Ctrl->T.quality);
+		device_options[Ctrl->T.device] = jpeg_device;	/* Use this one instead */
+	}
 
 	/* Artifex says that the -dSCANCONVERTERTYPE=2 new scan converter is faster (confirmed) and
    	   will be the default in a future release. Since it was introduced in 9.21 we start using it

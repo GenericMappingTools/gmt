@@ -25,7 +25,7 @@ Synopsis
 [ |-M|\ **b**\|\ **f**\ *pslayer* ]
 [ |-Q|\ [**g**\|\ **p**\|\ **t**][1\|2\|4] ]
 [ |-S| ]
-[ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**] ]
+[ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**][**+q**\ *quality*] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *params* ]
 [ |-Z| ]
@@ -187,13 +187,14 @@ Optional Arguments
 
 .. _-T:
 
-**-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**]
+**-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**][**+q**\ *quality*]
     Sets the output format, where **b** means BMP, **e** means EPS,
     **E** means EPS with PageSize command, **f** means PDF, **F** means
     multi-page PDF, **j** means JPEG, **g** means PNG, **G** means
     transparent PNG (untouched regions are transparent), **m** means
     PPM, **s** means SVG, and **t** means TIFF [default is JPEG]. To **bjgt** you can
-    append **+m** in order to get a monochrome (grayscale) image. The EPS format can be
+    append **+m** in order to get a monochrome (grayscale) image. To **j** you can
+    append **+q** to change JPEG quality in 0-100 range [90]. The EPS format can be
     combined with any of the other formats. For example, **-Tef**
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
     PDF file from the list of input PS or PDF files. It requires the **-F** option.

@@ -58,6 +58,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "ppm:	Portable Pixel Map.");
 	GMT_Usage (API, 3, "ps:	PostScript.");
 	GMT_Usage (API, 3, "tif:	Tagged Image Format File.");
+	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
+	GMT_Usage (API, 3, "+m For bmp, png, jpg, and tif, make a monochrome (grayscale) image [color].");
+	GMT_Usage (API, 3, "+q Append quality in 0-100 for jpg only [%d].", GMT_JPEG_DEF_QUALITY);
 	GMT_Usage (API, 1, "\n<psconvertoptions>");
 	GMT_Usage (API, -2,	"Contains one or more comma-separated options that"
 		" will be passed to psconvert when preparing this figure [%s].", GMT_SESSION_CONVERT);
