@@ -289,13 +289,19 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 							n_errors++;
 						}
 						break;	/* -I- is backwards compatible */
-					default: j = 0;	break;
+					default:	/* Numbers.  Check for stray letters */
+						if (opt->arg[0] && isalpha (opt->arg[0])) {
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Bad argument %s.\n", opt->arg);
+							n_errors++;
+						}
+						j = 0;
+						break;
 				}
 				if (opt->arg[j] == '\0' && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {
 						n_errors++;
 						GMT_Report (API, GMT_MSG_ERROR, "Option -I: No increment given.\n");
 				}
-				else {
+				else if (!n_errors) {
 					if (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)
 						Ctrl->I.ncol = 2;
 					else {
@@ -368,7 +374,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->I.active, "Option-D requires -I\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && !Ctrl->C.active && Ctrl->I.ncol < 2,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && !Ctrl->C.active && Ctrl->I.ncol < 2 && special,
 	                                   "Option -Ip requires -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->T.active,
 	                                   "Only one of -I and -T can be specified\n");
