@@ -1172,7 +1172,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 		/* Need GMT->current.map.height hence the initial gmt_map_setup call.  */
 		z_inc_scl = z_range_1 / (GMT->current.map.height - 2.0*size - MAX(label_space[0], label_space[1]));
 		dz = (size + label_space[1]) * z_inc_scl;	/* km to extend low range outward */
-		GMT->common.R.wesn[YLO] = MAX (0, GMT->common.R.wesn[YLO] - dz);	/* But do not go negative into the air... */
+		GMT->common.R.wesn[YLO] -= dz;
 		dz = (size + label_space[0]) * z_inc_scl;	/* km to extend high range outward */
 		GMT->common.R.wesn[YHI] += dz;
 		GMT_Report (API, GMT_MSG_INFORMATION, "Symbol-adjusted depth range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
