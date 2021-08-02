@@ -9,7 +9,7 @@
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
-[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md) 
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 ## What is GMT?
 
@@ -102,7 +102,7 @@ GMT may be linked with these libraries (* means optional):
 [Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),
 [Basic Linear Algebra Subprograms (BLAS*)](http://www.netlib.org/blas/),
-[GLIB*](https://developer.gnome.org/glib/), and
+[GLIB*](https://wiki.gnome.org/Projects/GLib), and
 [ZLIB*](https://www.zlib.net). GMT may call these executables:
 GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 [FFmpeg](https://www.ffmpeg.org),
