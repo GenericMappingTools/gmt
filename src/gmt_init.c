@@ -18028,13 +18028,11 @@ GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats,
 		if ((k = gmt_get_graphics_id (GMT, p)) != GMT_NOTSET) {	/* Valid code */
 			gcode[n] = k;
 			fmt[n++] = gmt_session_code[k];
-			if (gmt_session_code[k] == 'j' ) {	/* Check for modifiers */
-				if ((c = strstr (p, "+q"))) {	/* Gave JPEG quality modifier */
-					*quality = atoi (&c[2]);
-					if (*quality < 0 || *quality > 100) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad JPEG quality argument (%s} - reset to %d\n", c, GMT_JPEG_DEF_QUALITY);
-						*quality = GMT_JPEG_DEF_QUALITY;
-					}
+			if (gmt_session_code[k] == 'j' && (c = strstr (p, "+q"))) {	/* Check for modifier =q for JPG */
+				*quality = atoi (&c[2]);
+				if (*quality < 0 || *quality > 100) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad JPEG quality argument (%s} - reset to %d\n", c, GMT_JPEG_DEF_QUALITY);
+					*quality = GMT_JPEG_DEF_QUALITY;
 				}
 			}
 			if (strchr ("bgjt", gmt_session_code[k]) && strstr (p, "+m"))	/* Want monochrome image */
