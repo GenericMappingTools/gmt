@@ -1154,6 +1154,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Rounded frame range is %lg/%lg/%lg/%lg\n", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		if (gmt_M_is_zero (Ctrl->A.PREF.dip)) Ctrl->A.PREF.dip = 1.0;
 	}
+	gmt_set_cartesian (GMT, GMT_IN);	/* Since that is what it is */
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) Return (GMT_PROJECTION_ERROR);
 
