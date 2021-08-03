@@ -1632,7 +1632,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "As far as we know selected raster type is unsupported by GE.\n");
 	}
 
-	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A- is set ) */
+	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A+n is set ) */
 		if (!Ctrl->A.active) Ctrl->A.active = Ctrl->A.crop = true;
 		Ctrl->P.active = true;
 	}

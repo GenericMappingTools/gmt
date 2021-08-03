@@ -18071,6 +18071,13 @@ GMT_LOCAL bool gmtinit_A_was_given (char *text) {
 	return false;
 }
 
+GMT_LOCAL bool gmtinit_cannot_crop (char *p) {
+	if (p[0] != 'A') return false;	/* Not -A option */
+	if (strstr (p, "+n")) return false;	/* No cropping allowed */
+	if (p[1] == '+') return false;	/* Gave a modifier unrelated to cropping */
+	return true;	/* Cannot do cropping via -A when a specific media size was given */
+}
+
 GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	/* Loop over all registered figures and their selected formats and
 	 * convert the hidden PostScript figures to selected graphics.
@@ -18159,7 +18166,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
 					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
-					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
+					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
@@ -18173,7 +18180,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
 					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
-					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given */
+					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
@@ -18185,6 +18192,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			else if (not_PS && auto_size) /* No specific settings but must always add -A if not PostScript unless when media size is given */
 				strcat (cmd, " -A");
+			GMT_Report (API, GMT_MSG_NOTICE, "psconvert: %s\n", cmd);
 			GMT_Report (API, GMT_MSG_DEBUG, "psconvert: %s\n", cmd);
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to call psconvert\n");
