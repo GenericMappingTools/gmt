@@ -78,7 +78,7 @@ the GMT project have 'Maintainer' listed below their names.
         </div>
     </div>
     <div class="team-card">
-        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/23025878?v=4" alt="Card image">
+        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/11457381?v=4" alt="Card image">
         <div class="team-card-body">
             <h6 class="team-card-text">Remko Scharroo</h6>
             <h7 class="team-card-text">Joined GMT 4</h7>
