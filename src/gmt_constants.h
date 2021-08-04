@@ -320,6 +320,9 @@ enum GMT_time_period {
  */
 #define GMT_CPTFILE_MODIFIERS "hiuU"
 
+/* Valid options to psconvert from figure and begin */
+#define GMT_PSCONVERT_LIST "ACDEHIMNQS"
+
 /* Settings for usage message indents and break/continue characters */
 
 #define GMT_LINE_BREAK	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
