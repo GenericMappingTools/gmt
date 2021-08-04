@@ -26,7 +26,7 @@
 	{   0, 'h', "header",        "i,o",     "in,out",                                   "c,d,r,t", 					"columns,delete,remark,title"},
 	{ ',', 'i', "incols",        "",        "",                                         "l,o,s",   					"log10,offset,scale"},
 	{   0, 'j', "distance",     "e,f,g",   "ellipsoidal,flatearth,spherical",        "",   			    		""},
-	{   0, 'l', "legend",        "",        "",                                         "D,G,H,L,N,S,V,f,g,j,o,p,s,w",   "horline,gap,header,linetext,ncols,size,vertline,font,fill,justify,offset,pen,scale,width"},
+	{   0, 'l', "legend",        "",        "",                                         "D,G,H,L,N,S,V,f,g,j,o,p,s,w",   "hline,gap,header,linetext,ncols,size,vline,font,fill,justify,offset,pen,scale,width"},
 	{   0, 'n', "interpolation", "b,c,l,n", "bspline,bicubic,linear,nearneighbor",   "a,b,c,t",     				"anti_alias,bc,clip,threshold"},
 	{ ',', 'o', "outcols",       "",        "",                                         "",        					""},
 	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     					"view,world"},
