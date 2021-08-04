@@ -68,7 +68,7 @@ Optional Arguments
 **-A**\ [**+r**][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
     by the image content. Append **+u** to first remove any GMT-produced time-stamps.
-    Use the **-A+r** to round the HighRes BoundingBox instead of using the ``ceil`` function.
+    Append **+r** to *round* the HighResBoundingBox instead of using the ``ceil`` function.
     This is going against Adobe Law but can be useful when creating very small images
     where the difference of one pixel might matter. If **-V** is used we also report
     the dimensions of the final illustration.
@@ -138,7 +138,7 @@ Optional Arguments
     unit and/or impose different width and height (**Note**: This may change the
     image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
     work and the final image will retain the DPI resolution set by **-E**.  Use **-I+sm**
-    to set a maximum size and the new *width* are only imposed if the original figure width
+    to set a maximum size and the new *width* is only imposed if the original figure width
     exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
     Alternatively, use **-I+S**\ *scale* to scale the image by a constant factor.
 
@@ -158,13 +158,13 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [**+f**\ *fade*][**+g**\ *paint*][**+i**][**+p**\ [*pen*]]
-    Set optional canvas fill color, fading, or draw the outline of the canvas.
-    Use **-N+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
-    Use **-N+g**\ *paint* to paint the BoundingBox behind the illustration and
-    use **-N+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
+    Set optional BoundingBox fill color, fading, or draw the outline of the BoundingBox.
+    Append **+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
+    Append **+g**\ *paint* to paint the BoundingBox behind the illustration and
+    append **+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
     the default pen of 0.25p,black).  **Note**: If both **+g** and **+f** are used
     then we use *paint* as the fade color instead of black.
-    Use **-N+i**  to enforce gray-shades by using ICC profiles.  Ghostscript versions
+    Append **+i**  to enforce gray-shades by using ICC profiles.  Ghostscript versions
     >= 9.00 change gray-shades by using ICC profiles.  Ghostscript 9.05
     and above provide the '-dUseFastColor=true' option to prevent that
     and that is what **psconvert** does by default, unless modifier **+i** is
