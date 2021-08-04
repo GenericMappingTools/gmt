@@ -27,19 +27,20 @@ the GMT project have 'Maintainer' listed below their names.
 
     <div class="team-row">
     <div class="team-card">
-        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/3974108?v=4" alt="Card image">
+        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/26473567?v=4" alt="Card image">
         <div class="team-card-body">
-            <h6 class="team-card-text">Dongdong Tian</h6>
-            <h7 class="team-card-text">Joined GMT 6</h7>
+            <h6 class="team-card-text">Paul Wessel</h6>
+            <h7 class="team-card-text">Founder</h7>
             <h7 class="team-card-text">Maintainer</h7>
-            <h7 class="team-card-text"><a href="https://github.com/seisman" >@seisman</a></h7>
+            <h7class="team-card-text"><a href="https://github.com/PaulWessel" >@PaulWessel</a></h7>
         </div>
     </div>
     <div class="team-card">
-        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/30259412?v=4" alt="Card image">
+        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/65617689?v=4" alt="Card image">
         <div class="team-card-body">
-            <h6 class="team-card-text">Florian Wobbe</h6>
-            <h7 class="team-card-text">Joined GMT 5</h7>
+            <h6 class="team-card-text">Walter Smith</h6>
+            <h7 class="team-card-text">Founder</h7>
+            <h7class="team-card-text"><a href="https://github.com/WalterHFSmith" >@WalterHFSmith</a></h7>
         </div>
     </div>
     <div class="team-card">
@@ -52,11 +53,35 @@ the GMT project have 'Maintainer' listed below their names.
         </div>
     </div>
     <div class="team-card">
+        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/11457381?v=4" alt="Card image">
+        <div class="team-card-body">
+            <h6 class="team-card-text">Remko Scharroo</h6>
+            <h7 class="team-card-text">Joined GMT 4</h7>
+            <h7class="team-card-text"><a href="https://github.com/remkos" >@remkos</a></h7>
+        </div>
+    </div>
+    <div class="team-card">
+        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/30259412?v=4" alt="Card image">
+        <div class="team-card-body">
+            <h6 class="team-card-text">Florian Wobbe</h6>
+            <h7 class="team-card-text">Joined GMT 5</h7>
+        </div>
+    </div>
+    <div class="team-card">
         <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/290082?v=4" alt="Card image">
         <div class="team-card-body">
             <h6 class="team-card-text">Leonardo Uieda</h6>
             <h7 class="team-card-text">Joined GMT 6</h7>
             <h7 class="team-card-text"><a href="https://github.com/leouieda" >@leouieda</a></h7>
+        </div>
+    </div>
+    <div class="team-card">
+        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/3974108?v=4" alt="Card image">
+        <div class="team-card-body">
+            <h6 class="team-card-text">Dongdong Tian</h6>
+            <h7 class="team-card-text">Joined GMT 6</h7>
+            <h7 class="team-card-text">Maintainer</h7>
+            <h7 class="team-card-text"><a href="https://github.com/seisman" >@seisman</a></h7>
         </div>
     </div>
     <div class="team-card">
@@ -66,31 +91,6 @@ the GMT project have 'Maintainer' listed below their names.
             <h7 class="team-card-text">Joined GMT 6</h7>
             <h7 class="team-card-text">Maintainer</h7>
             <h7class="team-card-text"><a href="https://github.com/meghanrjones" >@meghanrjones</a></h7>
-        </div>
-    </div>
-    <div class="team-card">
-        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/26473567?v=4" alt="Card image">
-        <div class="team-card-body">
-            <h6 class="team-card-text">Paul Wessel</h6>
-            <h7 class="team-card-text">Founder</h7>
-            <h7 class="team-card-text">Maintainer</h7>
-            <h7class="team-card-text"><a href="https://github.com/PaulWessel" >@PaulWessel</a></h7>
-        </div>
-    </div>
-    <div class="team-card">
-        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/11457381?v=4" alt="Card image">
-        <div class="team-card-body">
-            <h6 class="team-card-text">Remko Scharroo</h6>
-            <h7 class="team-card-text">Joined GMT 4</h7>
-            <h7class="team-card-text"><a href="https://github.com/remkos" >@remkos</a></h7>
-        </div>
-    </div>
-    <div class="team-card">
-        <img class="card-img-top team-img" src="https://avatars.githubusercontent.com/u/65617689?v=4" alt="Card image">
-        <div class="team-card-body">
-            <h6 class="team-card-text">Walter Smith</h6>
-            <h7 class="team-card-text">Founder</h7>
-            <h7class="team-card-text"><a href="https://github.com/WalterHFSmith" >@WalterHFSmith</a></h7>
         </div>
     </div>
     </div>
