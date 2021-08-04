@@ -139,7 +139,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"The code letters are:");
 	GMT_Usage (API, 3, "a: Give filename with a new column to add.  We expect a single-column file "
 		"with the same number of records as the MGD77 file. Only one cruise can be set. "
-		"If filename is - we read from stdin.");
+		"If filename is - we read from standard input.");
 	GMT_Usage (API, 3, "c: Create a new column to be calculated from existing columns.  Add a code:");
 	GMT_Usage (API, 4, "m: IGRF total field.");
 	GMT_Usage (API, 4, "c: Carter correction.");
@@ -153,7 +153,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append x for which mtfx field to use (1 or 2) [1].");
 	GMT_Usage (API, 3, "d: Give filename with (dist [see -N], data) for a new column.  We expect a two-column file "
 		"with distances (in km) in first column and data values in 2nd.  Only one cruise can be set. "
-		"If filename is - we read from stdin.  Only records with matching distance will have data assigned.");
+		"If filename is - we read from standard input.  Only records with matching distance will have data assigned.");
 	GMT_Usage (API, 3, "D: Same as d but we interpolate between the dist,data pairs to fill in all data records.");
 	GMT_Usage (API, 3, "e: Ingest MGD77 error/correction information (e77) produced by mgd77sniffer.  We will look "
 		"for the <cruise>.e77 file in the current directory or in $MGD77_HOME/E77. "
@@ -172,10 +172,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_img_syntax (API->GMT, 4);
 	GMT_Usage (API, 3, "n: Give filename with (rec_no, data) for a new column.  We expect a two-column file "
 		"with record numbers (0 means 1st row) in first column and data values in 2nd.  Only one cruise can be set. "
-		"If filename is - we read from stdin.  Only records with matching record numbers will have data assigned.");
+		"If filename is - we read from standard input.  Only records with matching record numbers will have data assigned.");
 	GMT_Usage (API, 3, "t: Give filename with (abstime, data) for a new column.  We expect a two-column file "
 		"with dateTclock strings in first column and data values in 2nd.  Only one cruise can be set. "
-		"If filename is - we read from stdin.  Only records with matching times will have data assigned.");
+		"If filename is - we read from standard input.  Only records with matching times will have data assigned.");
 	GMT_Usage (API, 3, "T: Same as t but we interpolate between the time, data pairs to fill in all data records.");
 	GMT_Usage (API, 1, "\n-D<name1>,<name2>,...");
 	GMT_Usage (API, -2, "Delete the columns listed from all the cruise data files. "

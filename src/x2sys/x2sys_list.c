@@ -126,7 +126,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [stdin].");
+	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [standard input].");
 	GMT_Usage (API, 1, "\n-C<column>");
 	GMT_Usage (API, -2, "The name of the data column whose crossovers we want.");
 	GMT_Usage (API, 1, "\n-T<TAG>");
@@ -289,7 +289,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Only one COEdatabase can be given (or stdin)\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Only one COEdatabase can be given (or standard input)\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "More than one output file given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Only one of -Qe -Qi can be specified!\n");

@@ -161,7 +161,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"to match the bottom/top values in the input CPT instead.");
 	GMT_Usage (API, 1, "\n-E[<nlevels>]");
 	GMT_Usage (API, -2, "Use <nlevels> equidistant color levels from zmin to zmax. "
-		"This option implies we read data from given command-line files [or stdin] to "
+		"This option implies we read data from given command-line files [or standard input] to "
 		"determine data range (use -i to select a data column, else last column is used). "
 		"If <nlevels> is not set we use the number of color slices in the chosen CPT.");
 	GMT_Usage (API, 1, "\n-F[R|r|h|c][+c[<label>]][+k<keys>]");
