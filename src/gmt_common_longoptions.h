@@ -17,7 +17,7 @@
 	{   0, 'X', "xshift",        "a,c,f,r", "absolute,center,fixed,relative",           "",         				""},
 	{   0, 'Y', "yshift",        "a,c,f,r", "absolute,center,fixed,relative",           "",         				""},
 	{   0, 'a', "aspatial",      "",        "",                                         "",         				""},
-	{   0, 'b', "binary",        "",        "",                                         "b,l",      				"bigendian,little_endian"},
+	{   0, 'b', "binary",        "",        "",                                         "b,l",      				"big_endian,little_endian"},
 	{   0, 'c', "panel",         "",        "",                                         "",      				    ""},
 	{   0, 'd', "nodata",        "i,o",     "in,out",                                   "",         				""},
 	{   0, 'e', "find",          "",        "",                                         "f",        				"file"},
