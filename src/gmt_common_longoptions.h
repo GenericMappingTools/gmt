@@ -8,8 +8,8 @@
 	 * The items below correspond to the named parameters in the GMT_KEYWORD_DICTIONARY structure:
 	 */
 	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
-	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t,s",				"box,fill,noframe,pole,title,subtitle" },
-	{   0, 'B', "axis",          "x,y,z",   "x,y,z",                                    "a,f,l,L,p,s,S,u",			"angle,fancy,label,hlabel,prefix,altlabel,alt_hlabel,unit" },
+	{   0, 'B', "frame",         "",        "",                                         "b,g,i,n,o,s,t,w,x,y,z",	"box,fill,interior,noframe,pole,subtitle,pen,yzfill,xzfill,xyfill" },
+	{   0, 'B', "axis",          "x,y,z",   "x,y,z",                                    "a,f,l,L,p,s,S,u",			"angle,fancy,label,hlabel,prefix,alt_label,alt_hlabel,unit" },
 	{   0, 'J', "projection",    "",        "",                                         "",         				""},
 	{   0, 'R', "region",        "",        "",                                         "r,u",        				"rectangular,unit"},
 	{   0, 'U', "timestamp",     "",        "",                                         "c,j,o",    				"command,justify,offset"},
