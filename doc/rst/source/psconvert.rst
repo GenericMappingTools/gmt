@@ -133,14 +133,14 @@ Optional Arguments
     Append **+m** to specify extra margins to extend the bounding box.
     Give either one (uniform), two (x and y) or four (individual sides)
     margins; append unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
-    Use the **-I+s**\ *width* to resize the output image to exactly *width* units.
+    Append **+s**\ *width* to resize the output image to exactly *width* units.
     The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
     unit and/or impose different width and height (**Note**: This may change the
     image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
-    work and the final image will retain the DPI resolution set by **-E**.  Use **-I+sm**
+    work and the final image will retain the DPI resolution set by **-E**.  Append **+sm**
     to set a maximum size and the new *width* is only imposed if the original figure width
     exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
-    Alternatively, use **-I+S**\ *scale* to scale the image by a constant factor.
+    Alternatively, append **+S**\ *scale* to scale the image by a constant factor.
 
 .. _-L:
 
@@ -229,7 +229,7 @@ Optional Arguments
     Together with **-V** it prints on screen the gdal_translate
     (gdal_translate is a command line tool from the GDAL package)
     command that reads the raster + world file and creates a true
-    geotiff file. Use **-W+g** to do a system call to gdal_translate
+    geotiff file. Append **+g** to do a system call to gdal_translate
     and create a geoTIFF image right away. The output file will have a
     .tiff extension.
 
@@ -238,7 +238,7 @@ Optional Arguments
     .tfw, for jpeg we have a .jgw and so on. **Note**: This option automatically
     sets **-A** **-P**.  Append **+c** to *not* crop the image.
 
-    Use **-W+k** to create a minimalist KML file that allows loading the
+    Append **+k** to create a minimalist KML file that allows loading the
     image in GoogleEarth. Note that for this option to work it is necessary that the postscript
     image must have been created with **-JX** or **-Jx** Cartesian projection of
     geographical coordinates. If not, a warning is issued but the KML
