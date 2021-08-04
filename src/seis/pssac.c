@@ -145,7 +145,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Usage (API, 1, "\n[<saclist>|<SACfiles>]");
 	GMT_Usage (API, -2, "<SACfiles> are the name of SAC files to plot on maps. Only evenly spaced SAC data is supported. "
-		"<saclist> is an ASCII file (or stdin) which contains the name of SAC files to plot and controlling parameters. "
+		"<saclist> is an ASCII file (or standard input) which contains the name of SAC files to plot and controlling parameters. "
 		"Each record has 1, 3 or 4 items:  <filename> [<X> <Y> [<pen>]]. "
 		"<filename> is the name of SAC file to plot. "
 		"<X> and <Y> are the position of seismograms to plot on a map. "

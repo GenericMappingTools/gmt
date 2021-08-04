@@ -294,7 +294,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT,
 		GMT_V_OPT, GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT,
 		GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
-	GMT_Usage (API, -2, "Note: Reads <x,y[,fontinfo,angle,justify],text> records from <table> [or stdin], "
+	GMT_Usage (API, -2, "Note: Reads <x,y[,fontinfo,angle,justify],text> records from <table> [or standard input], "
 		"OR (with -M) one or more text paragraphs with formatting info in the segment headers. "
 		"Built-in escape sequences:");
 	GMT_Usage (API, 3, "%s @~ toggles between current font and Symbol font.", GMT_LINE_BULLET);
