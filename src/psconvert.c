@@ -623,7 +623,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *Z = (API->GMT->current.setting.run_mode == GMT_CLASSIC) ? " [-Z]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <psfile1> <psfile2> ... [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
+	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
 		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
 		"[-N[+f<fade>][+g<fill>][+i][+p[<pen>]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
 		"[-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
@@ -635,9 +635,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"image will have the size specified by the BoundingBox. "
 		"As an option, a tight BoundingBox may be computed.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<psfile1 <psfile2> ... PostScript file(s) to be converted.");
+	GMT_Usage (API, 1, "\n<psfiles> One or more PostScript files to be converted.");
 	if (API->external)
-		GMT_Usage (API, -2, "Note: To access the current internal GMT plot, specify <psfile> as \"=\".");
+		GMT_Usage (API, -2, "Note: To access the current internal GMT plot, specify <psfiles> as \"=\".");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A[+r][+u]");
 	GMT_Usage (API, -2, "Adjust the BoundingBox to the minimum required by the image contents. Optional modifiers:");

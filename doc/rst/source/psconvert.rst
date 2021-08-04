@@ -20,7 +20,7 @@ Synopsis
 [ |-F|\ *out_name* ]
 [ |-G|\ *ghost_path* ]
 [ |-H|\ *scale* ]
-[ |-I|\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*/\ *height*][**+S**\ *scale*] ]
+[ |-I|\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*\ [/\ *height*]][**+S**\ *scale*] ]
 [ |-L|\ *list* ]
 [ |-M|\ **b**\|\ **f**\ *pslayer* ]
 [ |-N|\ [**+f**\ *fade*][**+g**\ *paint*][**+i**][**+p**\ [*pen*]] ]
@@ -128,19 +128,18 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*/\ *height*][**+S**\ *scale*]
+**-I**\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*\ [/\ *height*]][**+S**\ *scale*]
     Adjust the BoundingBox and HiResBoundingBox by scaling and/or adding margins.
     Append **+m** to specify extra margins to extend the bounding box.
     Give either one (uniform), two (x and y) or four (individual sides)
     margins; append unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
-
-    Use the **-I+s**\ *new_width* to resize the output image to exactly *new_width* units.
-    The default is to use what is set by :term:`PROJ_LENGTH_UNIT`
-    but you can append a new unit and/or impose different width and height. What happens
-    here is that Ghostscript will do the re-interpolation work and the final image will
-    retain the DPI resolution set by **-E**.  Use **-I+sm** to set a maximum size and
-    the new width are only imposed if the original figure width exceeds it. Append
-    /\ *new_height* to also impose a maximum height in addition to the width.
+    Use the **-I+s**\ *width* to resize the output image to exactly *width* units.
+    The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
+    unit and/or impose different width and height (**Note**: This may change the
+    image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
+    work and the final image will retain the DPI resolution set by **-E**.  Use **-I+sm**
+    to set a maximum size and the new *width* are only imposed if the original figure width
+    exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
     Alternatively, use **-I+S**\ *scale* to scale the image by a constant factor.
 
 .. _-L:
