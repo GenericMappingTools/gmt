@@ -8,8 +8,8 @@
 	 * The items below correspond to the named parameters in the GMT_KEYWORD_DICTIONARY structure:
 	 */
 	/* separator, short_option, long_option, short_directives, long_directives, short_modifiers, long_modifiers */
-	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t,s",				"box,fill,noframe,obliquepole,title,subtitle" },
-	{   0, 'B', "axis",          "x,y,z",   "x,y,z",                                    "a,f,l,L,p,s,S,u",			"angle,fancy,label,Label,prefix,second_label,Second_label,unit" },
+	{   0, 'B', "frame",         "",        "",                                         "b,g,n,o,t,s",				"box,fill,noframe,pole,title,subtitle" },
+	{   0, 'B', "axis",          "x,y,z",   "x,y,z",                                    "a,f,l,L,p,s,S,u",			"angle,fancy,label,hlabel,prefix,altlabel,alt_hlabel,unit" },
 	{   0, 'J', "projection",    "",        "",                                         "",         				""},
 	{   0, 'R', "region",        "",        "",                                         "r,u",        				"rectangular,unit"},
 	{   0, 'U', "timestamp",     "",        "",                                         "c,j,o",    				"command,justify,offset"},
@@ -17,7 +17,7 @@
 	{   0, 'X', "xshift",        "a,c,f,r", "absolute,center,fixed,relative",           "",         				""},
 	{   0, 'Y', "yshift",        "a,c,f,r", "absolute,center,fixed,relative",           "",         				""},
 	{   0, 'a', "aspatial",      "",        "",                                         "",         				""},
-	{   0, 'b', "binary",        "",        "",                                         "b,l",      				"bigendian,littleendian"},
+	{   0, 'b', "binary",        "",        "",                                         "b,l",      				"bigendian,little_endian"},
 	{   0, 'c', "panel",         "",        "",                                         "",      				    ""},
 	{   0, 'd', "nodata",        "i,o",     "in,out",                                   "",         				""},
 	{   0, 'e', "find",          "",        "",                                         "f",        				"file"},
@@ -25,9 +25,9 @@
 	{   0, 'g', "gap",           "",        "",                                         "n,p",        				"negative,positive"},
 	{   0, 'h', "header",        "i,o",     "in,out",                                   "c,d,r,t", 					"columns,delete,remark,title"},
 	{ ',', 'i', "incols",        "",        "",                                         "l,o,s",   					"log10,offset,scale"},
-	{   0, 'j', "spherical",     "e,f,g",   "ellipsoidal,flatearth,greatcircle",        "",   			    		""},
-	{   0, 'l', "legend",        "",        "",                                         "D,G,H,L,N,S,V,f,g,j,o,p,s,w",   	"drawline,gap,header,linetext,ncols,size,vertline,font,fill,justify,offset,pen,scale,width"},
-	{   0, 'n', "interpolation", "b,c,l,n", "bspline,bicubic,linear,nearestneighbor",   "a,b,c,t",     				"antialias,bc,clip,threshold"},
+	{   0, 'j', "distance",     "e,f,g",   "ellipsoidal,flatearth,spherical",        "",   			    		""},
+	{   0, 'l', "legend",        "",        "",                                         "D,G,H,L,N,S,V,f,g,j,o,p,s,w",   "drawline,gap,header,linetext,ncols,size,vertline,font,fill,justify,offset,pen,scale,width"},
+	{   0, 'n', "interpolation", "b,c,l,n", "bspline,bicubic,linear,nearneighbor",   "a,b,c,t",     				"anti_alias,bc,clip,threshold"},
 	{ ',', 'o', "outcols",       "",        "",                                         "",        					""},
 	{   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",     					"view,world"},
 	{ ',', 'q', "inrows",        "~",       "invert",                                   "a,c,f,s",   				"perset,column,perfile,persegment"},	/* Actually -qi */
