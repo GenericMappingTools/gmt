@@ -30,8 +30,8 @@
     {   0, 'n', "interpolation", "b,c,l,n", "bspline,bicubic,linear,nearneighbor",      "a,b,c,t",                      "anti_alias,bc,clip,threshold"},
     { ',', 'o', "outcols",       "",        "",                                         "",                             ""},
     {   0, 'p', "perspective",   "x,y,z",   "x,y,z",                                    "v,w",                          "view,world"},
-    { ',', 'q', "inrows",        "~",       "invert",                                   "a,c,f,s",                      "perset,column,perfile,persegment"},    /* Actually -qi */
-    { ',', 'q', "outrows",       "~",       "invert",                                   "a,c,f,s",                      "perset,column,perfile,persegment"},    /* Actually -qo */
+    { ',', 'q', "inrows",        "~",       "invert",                                   "a,c,f,s",                      "byset,column,byfile,bysegment"},    /* Actually -qi */
+    { ',', 'q', "outrows",       "~",       "invert",                                   "a,c,f,s",                      "byset,column,byfile,bysegment"},    /* Actually -qo */
     {   0, 'r', "registration",  "g,p",     "gridline,pixel",                           "",                             ""},
     {   0, 's', "skiprows",      "",        "",                                         "a,r",                          "any,reverse"},
     {   0, 't', "transparency",  "",        "",                                         "",                             ""},
