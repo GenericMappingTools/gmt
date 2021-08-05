@@ -315,8 +315,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "n: There is no load (only -A and -L contribute to deformation). "
 		"If no file is given via -E<file> then append <min>/<max>/<inc> to set an equidistant profile.");
 	GMT_Usage (API, 4, "+n Indicate that <inc> is the number of points instead.");
-	GMT_Usage (API, 3, "q: Append pressure <load> file (or we read stdin) with (x,load in Pa) for all points.");
-	GMT_Usage (API, 3, "t: Append relief <load> file (or we read stdin) with (x,load in m or km) for all points (see -M).");
+	GMT_Usage (API, 3, "q: Append pressure <load> file (or we read standard input) with (x,load in Pa) for all points.");
+	GMT_Usage (API, 3, "t: Append relief <load> file (or we read standard input) with (x,load in m or km) for all points (see -M).");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A[l|r]<bc>[/<args>]");
 	GMT_Usage (API, -2, "Specify boundary conditions at the ends of the profile. "

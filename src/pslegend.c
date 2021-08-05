@@ -109,7 +109,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<specfile> is a legend layout specification file [or we read stdin]. "
+	GMT_Usage (API, 1, "\n<specfile> is a legend layout specification file [or we read standard input]. "
 		"See module documentation for more information and <specfile> format.");
 
 	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position and size of the legend rectangle", GMT_ANCHOR_LEGEND, 1);
