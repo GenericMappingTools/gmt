@@ -108,7 +108,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Create an equalized output grid file called <outgrid>.");
 	GMT_Usage (API, 1, "\n-N[<norm>]");
 	GMT_Usage (API, -2, "Use with -G to make an output grid file with standard normal scores. "
-		"Alternatively, append <norm> to normalize the scores to <-1,+1>.");
+		"Alternatively, append <norm> to normalize the scores to -<norm>/+<norm>.");
 	GMT_Usage (API, 1, "\n-Q Use quadratic equalization scaling [Default is linear].");
 	GMT_Option (API, "R,V,h,.");
 
