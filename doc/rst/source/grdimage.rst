@@ -57,7 +57,7 @@ along the standard parallels 18 and 24, centered on (142W, 55N), try::
 
     gmt begin alaska_gray
       gmt grd2cpt -Cgray @AK_gulf_grav.nc
-      grdimage @AK_gulf_grav.nc -Jl142W/55N/18/24/1.5c -B
+      gmt grdimage @AK_gulf_grav.nc -Jl142W/55N/18/24/1.5c -B
     gmt end show
 
 To create an illuminated color plot of the gridded data set
