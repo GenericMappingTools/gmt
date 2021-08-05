@@ -1264,7 +1264,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				transp[GMT_FILL_TRANSP] = 0.0;	/* Reset */
 				PSL_settransparencies (PSL, transp);
 			}
-			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, 0.0, PSL_MR, 0);
+			if (Ctrl->D.etext)
+				gmt_map_text (GMT, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, 0.0, PSL_MR, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle on right side */
 			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
@@ -1397,14 +1398,14 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 		if (label[0]) {	/* Add label */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
-			PSL_plottext (PSL, xleft + 0.5 * length, y_label, GMT->current.setting.font_label.size, label, 0.0, Label_justify, form);
+			gmt_map_text (GMT, xleft + 0.5 * length, y_label, &GMT->current.setting.font_label, label, 0.0, Label_justify, form);
 		}
 		if (unit[0]) {	/* Add unit label */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the left */
-				PSL_plottext (PSL, xleft  - elength[XLO] - GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, 0.0, PSL_MR, form);
+				gmt_map_text (GMT, xleft  - elength[XLO] - GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], unit, 0.0, PSL_MR, form);
 			else
-				PSL_plottext (PSL, xright + elength[XHI] + GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, 0.0, PSL_ML, form);
+				gmt_map_text (GMT, xright + elength[XHI] + GMT->current.setting.map_annot_offset[GMT_PRIMARY], 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], unit, 0.0, PSL_ML, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
@@ -1588,7 +1589,8 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				transp[GMT_FILL_TRANSP] = 0.0;
 				PSL_settransparencies (PSL, transp);
 			}
-			if (Ctrl->D.etext) PSL_plottext (PSL, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, Ctrl->D.etext, -90.0, PSL_TC, 0);
+			if (Ctrl->D.etext)
+				gmt_map_text (GMT, xp[2] - fabs (GMT->current.setting.map_annot_offset[GMT_PRIMARY]), 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], Ctrl->D.etext, -90.0, PSL_TC, 0);
 		}
 		if (Ctrl->D.emode & (2 - reverse)) {	/* Add color triangle at top */
 			xp[0] = xp[2] = xp[3] = xright + gap;	xp[1] = xp[0] + Ctrl->D.elength;
@@ -1744,7 +1746,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (label[0] && (flip || !B_set)) {	/* Add label separately */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_label);
 			if (strchr (label, '@') || strchr (label, '(') || !(flip & PSSCALE_FLIP_VERT)) { /* Must set text along-side color bar */
-				PSL_plottext (PSL, xleft + 0.5 * length, y_label, GMT->current.setting.font_label.size, label, 0.0, Label_justify, form);
+				gmt_map_text (GMT, xleft + 0.5 * length, y_label, &GMT->current.setting.font_label, label, 0.0, Label_justify, form);
 			}
 			else {	/* Set label text as column (AARRGGHH) */
 				int dir = (flip & PSSCALE_FLIP_LABEL) - 1;
@@ -1762,9 +1764,9 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (unit[0]) {	/* Add unit label */
 			form = gmt_setfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]);
 			if (flip & PSSCALE_FLIP_UNIT)	/* The y-label is on the bottom */
-				PSL_plottext (PSL, xleft  - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - elength[XLO], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_TC, form);
+				gmt_map_text (GMT, xleft  - GMT->current.setting.map_annot_offset[GMT_PRIMARY] - elength[XLO], 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], unit, -90.0, PSL_TC, form);
 			else
-				PSL_plottext (PSL, xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + elength[XHI], 0.5 * width, GMT->current.setting.font_annot[GMT_PRIMARY].size, unit, -90.0, PSL_BC, form);
+				gmt_map_text (GMT, xright + GMT->current.setting.map_annot_offset[GMT_PRIMARY] + elength[XHI], 0.5 * width, &GMT->current.setting.font_annot[GMT_PRIMARY], unit, -90.0, PSL_BC, form);
 		}
 		if (P->is_wrapping) {	/* Add cyclic glyph */
 			if ((flip & PSSCALE_FLIP_UNIT) || unit[0] == 0)	/* The y-label is on the left or not used so place cyclic glyph on right */
