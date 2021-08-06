@@ -375,6 +375,7 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 					error++;
 				}
 				Ctrl->N.fade_level *= 0.01;	/* Normalized */
+				Ctrl->N.fade = true;
 				break;
 			case 'g':	/* Fill background */
 				Ctrl->N.paint = true;
