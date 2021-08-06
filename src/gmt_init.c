@@ -18000,7 +18000,7 @@ GMT_LOCAL int gmtinit_put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 		unsigned int bad = 0, pos = 0;
 		char p[GMT_LEN256] = {""};
 		while (gmt_strtok (&c[1], ",", &pos, p)) {	/* Check args to determine what kind it is */
-			if (!strchr ("ACDEHMQS", p[0])) {	/* Check if valid psconvert options */
+			if (!strchr (GMT_PSCONVERT_LIST, p[0])) {	/* Check if valid psconvert options */
 				bad++;
 			}
 		}
@@ -18069,6 +18069,13 @@ GMT_LOCAL bool gmtinit_A_was_given (char *text) {
 		k++;
 	}
 	return false;
+}
+
+GMT_LOCAL bool gmtinit_cannot_crop (char *p) {
+	if (p[0] != 'A') return false;	/* Not -A option */
+	if (strstr (p, "+n")) return false;	/* No cropping allowed */
+	if (p[1] == '+') return false;	/* Gave a modifier unrelated to cropping */
+	return true;	/* Cannot do cropping via -A when a specific media size was given */
 }
 
 GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
@@ -18159,29 +18166,31 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
 					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
-					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
+					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 						if (p[0] == 'D') strncpy (dir, &p[1], GMT_LEN1024-1);	/* Needed in show */
 					}
 				}
-				if (not_PS && auto_size && !gmtinit_A_was_given (fig[k].options))	/* Must always add -A if not PostScript unless when media size is given, unless crop is off via +n */
-					strcat (cmd, " -A");
+				if (not_PS && !gmtinit_A_was_given (fig[k].options)) {	/* -A not given and not PostScript */
+					strcat (cmd, (auto_size) ? " -A" : " -A+M");	/* Must always add -A unless when media size is given */
+				}
 			}
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
 					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
-					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given */
+					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
-				if (not_PS && auto_size && !gmtinit_A_was_given (API->GMT->current.setting.ps_convert))	/* Must always add -A if not PostScript unless when media size is given */
-					strcat (cmd, " -A");
+				if (not_PS && !gmtinit_A_was_given (API->GMT->current.setting.ps_convert)) {	/* -A not given and not PostScript */
+					strcat (cmd, (auto_size) ? " -A" : " -A+M");	/* Must always add -A unless when media size is given */
+				}
 			}
 			else if (not_PS && auto_size) /* No specific settings but must always add -A if not PostScript unless when media size is given */
 				strcat (cmd, " -A");
