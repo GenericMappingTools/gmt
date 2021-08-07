@@ -112,6 +112,15 @@ is no limit on how many parameters your symbol may use. To access the trailing t
 the input file you use $t and for a particular word (number k = 0, 1, ...) in the
 trailing text you use $t\ *k*.
 
+Angles and azimuths
+~~~~~~~~~~~~~~~~~~~
+
+For variables used to pass angles or azimuths, the type of angle is controlled via the **N**
+statement in the previous section.  If a symbol accepts two angles given via variables
+or constants we will treat both angles as either azimuths or Cartesian angles.  If you are
+specifying only constants then the angles are assumed to be Cartesian unless you append
+**a** to one (or both) of the constant angles; this flags the value as a geographic azimuth.
+
 Macro commands
 ~~~~~~~~~~~~~~
 
@@ -172,6 +181,8 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | triangle      | **t**      | Plot a triangle                        | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
+| vector        | **b**      | Plot a simple vector with head at end  | :math:`x, y, \alpha, length`               |
++---------------+------------+----------------------------------------+--------------------------------------------+
 | wedge         | **w**      | Plot a wedge                           | :math:`x, y, d, \alpha_1, \alpha_2`        |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | cross         | **x**      | Plot a cross                           | :math:`x, y, size`                         |
@@ -189,6 +200,8 @@ does not apply if the angle is given via a variable, in which case the type of a
 has already been specified via **N:** above and already converged before seen by **O**.
 Finally, the **O** command can also be given the negative of a variable, e.g., -$2 to
 undo a rotation, if necessary.
+Note for **v**: The vector stem and head outline are always drawn. Head properties are automatically derived from
+the *width* of the pen only (head length = 8 times pen width, apex = 30 degrees, shape = 0.5).
 
 Symbol fill and outline
 ~~~~~~~~~~~~~~~~~~~~~~~
