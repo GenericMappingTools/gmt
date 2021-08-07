@@ -105,7 +105,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, "Name of grid to extract a subset from");
+	gmt_ingrid_syntax (API, 0, "Name of grid to extract a subset from");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Specify output grid file.");
 	GMT_Option (API, "R");

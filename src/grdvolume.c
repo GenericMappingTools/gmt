@@ -316,7 +316,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, "Name of input grid");
+	gmt_ingrid_syntax (API, 0, "Name of input grid");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high> or -Cr<cval>");
 	GMT_Usage (API, -2, "Find area, volume, and mean height inside the given <cval> contour, "

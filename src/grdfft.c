@@ -576,7 +576,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, "Name of input grid.  For cross-spectrum also supply <ingrid2> (same modifiers apply)");
+	gmt_ingrid_syntax (API, 0, "Name of input grid.  For cross-spectrum also supply <ingrid2> (same modifiers apply)");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<azimuth>");
 	GMT_Usage (API, -2, "Take azimuthal derivative along line <azimuth> degrees CW from North.");

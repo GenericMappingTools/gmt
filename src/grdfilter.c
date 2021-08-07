@@ -591,7 +591,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, "Name of grid to be filtered");
+	gmt_ingrid_syntax (API, 0, "Name of grid to be filtered");
+	GMT_Usage (API, -2, "Note: If the file is a Sandwell/Smith Mercator grid (IMG format) and -D5 is used then more information is required: <imgfile>,<scale>,<mode>[,<maxlat>].");
+	gmt_img_syntax (API->GMT, 2);
 	GMT_Usage (API, 1, "\n-D<flag>]");
 	GMT_Usage (API, -2, "Distance flag determines how grid (x,y) maps into distance units of filter width as follows, first for Cartesian data:");
 	GMT_Usage (API, 3, "p: grid x,y with <width> in pixels (must be an odd number), Cartesian distances.");

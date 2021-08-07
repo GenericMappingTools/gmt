@@ -267,7 +267,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, "Name of grid to be filtered");
+	gmt_ingrid_syntax (API, 0, "Name of grid to be filtered");
 	GMT_Usage (API, 1, "\n-D0-4");
 	GMT_Usage (API, -2, "Distance flag determines how grid (x,y) maps into distance units of filter width as follows:");
 	GMT_Usage (API, 3, "0: grid x,y same units as <filter_width>, Cartesian distances.");

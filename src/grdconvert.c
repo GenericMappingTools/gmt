@@ -82,7 +82,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, "Name of grid toconvert from");
+	gmt_ingrid_syntax (API, 0, "Name of grid to convert from");
 	GMT_Usage (API, 1, "\n-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]]");
 	GMT_Usage (API, -2, "The new converted grid file. <scale> and <offset>, if given, will multiply data by scale and "
 		"add offset. Optionally, +n designates an invalid grid value to act as NaN.");

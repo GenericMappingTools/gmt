@@ -107,7 +107,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, "Name of input grid in geographic coordinates with crustal ages");
+	gmt_ingrid_syntax (API, 0, "Name of input grid in geographic coordinates with crustal ages");
 	spotter_rot_usage (API);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-F<polygontable>");

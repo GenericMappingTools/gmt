@@ -164,21 +164,20 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]] "
+	GMT_Usage (API, 0, "usage: %s -G%s -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]] "
 		"[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]] "
 		"[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[a|l|L|m|p|u|U][+a][+c][+d][+r][+s[<file>]]] [-T<radius>>[+e|p]] [%s] [-Z] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] %s] [%s] [%s] [%s]\n",
-		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 
-	GMT_Usage (API, 1, "\n-G<grid>");
-	GMT_Usage (API, -2, "Set the name of a 2-D binary data set to sample. "
-		"Repeat -G for as many grids as you wish to sample, or "
+	gmt_ingrid_syntax (API, 'G', "Name of grid to sample");
+	GMT_Usage (API, -2, "Note: Repeat -G for as many grids as you wish to sample, or "
 		"use -G+l<list> to pass a list of grid file names. "
-		"Note: If the file is a Sandwell/Smith Mercator grid (IMG format) then more information is required:");
+		"If the file is a Sandwell/Smith Mercator grid (IMG format) then more information is required: <imgfile>,<scale>,<mode>[,<maxlat>].");
 	gmt_img_syntax (API->GMT, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 

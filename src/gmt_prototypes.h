@@ -108,7 +108,7 @@ EXTERN_MSC int gmt_default_error (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC bool gmt_get_time_system (struct GMT_CTRL *GMT, char *name, struct GMT_TIME_SYSTEM *time_system);
 EXTERN_MSC int gmt_hash_lookup (struct GMT_CTRL *GMT, const char *key, struct GMT_HASH *hashnode, unsigned int n, unsigned int n_hash);
 EXTERN_MSC void gmt_syntax (struct GMT_CTRL *GMT, char option);
-EXTERN_MSC void gmt_ingrid_syntax (struct GMTAPI_CTRL *API, char *message);
+EXTERN_MSC void gmt_ingrid_syntax (struct GMTAPI_CTRL *API, char option, char *message);
 EXTERN_MSC void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
 EXTERN_MSC void gmt_innercont_syntax (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part);
