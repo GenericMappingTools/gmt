@@ -1849,7 +1849,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fclose (Ctrl->E.fp);
 			Return (GMT_ERROR_ON_FOPEN);
 		}
-		sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
+		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, possibly fading */
 		if (Ctrl->E.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->E.fill);}	/* Chose another fade color than black */
 		if (Ctrl->E.PS) {	/* Need to place a background title first (which will be in parent dir when loop script is run) */
 			strcat (extra, ",Mb../../");
@@ -2131,12 +2131,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			gmt_set_dvalue (fp, Ctrl->In.mode, "MOVIE_FADE", fade_level, 0);
 		}
 		else if (Ctrl->K.active) {
-			sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
+			sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
 			if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 		}
 		else
-			sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
-		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
+			sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
+		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -N option */
+			if (!Ctrl->K.active) strcat (extra, "N");	/* Need to switch to the -N option first */
 			if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 			if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 		}
@@ -2312,12 +2313,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	if (Ctrl->K.active) {
-		sprintf (extra, "A+n+r+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
+		sprintf (extra, "A+M+r,N+f%s", gmt_place_var (Ctrl->In.mode, "MOVIE_FADE"));	/* No cropping, image size is fixed, but fading may be in effect for some frames */
 		if (Ctrl->K.fill) {strcat (extra, "+g"); strcat (extra, Ctrl->K.fill);}	/* Chose another fade color than black */
 	}
 	else
-		sprintf (extra, "A+n+r");	/* No cropping, image size is fixed */
-	if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -A option */
+		sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
+	if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -N option */
+		if (!Ctrl->K.active) strcat (extra, "N");	/* Need to switch to the -N option first */
 		if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 		if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 	}
