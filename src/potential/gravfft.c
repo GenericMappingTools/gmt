@@ -426,8 +426,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is the input grdfile with topography values. "
-		"Optionally, give a second grid <ingrid2> for cross-spectral computations");
+	gmt_ingrid_syntax (API, "Name of input grid with topography values.  Optionally, give a second grid <ingrid2> for cross-spectral computations (same modifiers apply)");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Filename for output netCDF grdfile with gravity [or geoid] values.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");

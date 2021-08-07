@@ -383,13 +383,13 @@ GMT_LOCAL int gmtgrdio_parse_grd_format_scale_old (struct GMT_CTRL *Ctrl, struct
 }
 
 GMT_LOCAL int gmtgrdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
-	/* parses format string after = suffix: ff[+f<scale>][+o<offset>/][+n<invalid>]
+	/* parses format string after = suffix: ff[+s<scale>][+o<offset>/][+n<invalid>]
 	 * ff:      can be one of [abcegnrs][bsifd]
 	 * scale:   can be any non-zero normalized number or 'a' for scale and
 	 *          offset auto-adjust, defaults to 1.0 if omitted
 	 * offset:  can be any finite number or 'a' for offset auto-adjust, defaults to 0 if omitted
 	 * invalid: can be any finite number, defaults to NaN if omitted
-	 * scale and offset may be left empty (e.g., ns//a will auto-adjust the offset only)
+	 * E.g., ns+oa will auto-adjust the offset only.
 	 */
 
 	char type_code[3];

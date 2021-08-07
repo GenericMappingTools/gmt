@@ -7729,6 +7729,21 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 	}
 }
 
+/*! Input grid specification */
+/*!
+	\param GMT ...
+	\param message ...
+*/
+void gmt_ingrid_syntax (struct GMTAPI_CTRL *API, char *message) {
+	GMT_Usage (API, 1, "\n%s", GMT_INGRID);
+	GMT_Usage (API, -2, "%s. Optionally append =<ID> for a specific file format and add any modifiers:", message);
+	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [0]");
+	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
+	GMT_Usage (API, 3, "+o Offset data values by the given <offset> [0].");
+	GMT_Usage (API, 3, "+s Scale data values by the given <scale> [1].");
+	GMT_Usage (API, -2, "Note: Any offset is added after any scaling.");
+}
+
 /*! GSHHG subset specification */
 /*!
 	\param GMT ...
