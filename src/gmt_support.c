@@ -13829,7 +13829,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 			if (modifiers[k] == '+') {
 				k++;
 				switch (modifiers[k]) {	/* The modifier code */
-					case 'h': case 'i': case 'o': case 'n': case 's':	/* +h[<hinge>], +i<inc>, ++o<offset>, +n<nodata>, +s<scale> */
+					case 'd': case 'h': case 'i': case 'o': case 'n': case 's':	/* +h[<hinge>], +i<inc>, +d<divisor>, +o<offset>, +n<nodata>, +s<scale> */
 						k++;	/* Move to start of argument, next modifier, or NULL */
 						while (modifiers[k] && modifiers[k] != '+' && strchr ("-+.0123456789eE", modifiers[k])) k++;	/* Skip a numerical argument */
 						if (!(modifiers[k] == '\0' || modifiers[k] == '+')) error = true;	/* Means we found non-numbers after valid modifier */
