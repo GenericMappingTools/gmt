@@ -447,11 +447,11 @@ GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struc
 		strcat (A_option, "+r");
 	if (gmt_get_modifier (arg, 'u', string))
 		strcat (A_option, "+u");
-	if (gmt_get_modifier (arg, 'M', string))	/* Only issued by gmt end */
+	if (gmt_get_modifier (arg, 'M', string))	/* Only issued by gmt end and movie */
 		strcat (A_option, "+M");
-	/* Note: If -A+n is given then we */
+	/* Note: If -A+n is given then we handle it via backwards compatibility */
 	if (gmt_get_modifier (arg, 'n', string)) {
-		if (gmt_M_compat_check (GMT, 5)) {
+		if (gmt_M_compat_check (GMT, 6)) {
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-A+n (no args) is deprecated, use -W+c instead.\n");
 			Ctrl->W.no_crop = true;
 		}
