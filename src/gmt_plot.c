@@ -7155,8 +7155,9 @@ GMT_LOCAL void gmtplot_draw_eps_symbol (struct GMT_CTRL *GMT, double x0, double 
 
 GMT_LOCAL bool gmtplot_is_azimuth (struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_CUSTOM_SYMBOL_ITEM *s, unsigned int var_no) {
 	/* We either know a particular column has variable azimuths or vi were given an angle flagged with a trailing 'a' */
-	if (s->angular == GMT_IS_AZIMUTH || symbol->type[s->var[var_no]-1] == GMT_IS_AZIMUTH ) return true;	/* Must convert azimuth to angle */
-	return false;	/* Got angle */
+    if (s->angular == GMT_IS_AZIMUTH) return true; /* Must convert a constant azimuth to angle */
+    if (s->is_var[var_no] && symbol->type[s->var[var_no]-1] == GMT_IS_AZIMUTH ) return true; /* Must convert variable azimuth to angle */
+	return false;	/* Got Cartesian angle */
 }
 
 int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double size[], char *tr_text, struct GMT_CUSTOM_SYMBOL *symbol, struct GMT_PEN *pen, struct GMT_FILL *fill, unsigned int outline) {
