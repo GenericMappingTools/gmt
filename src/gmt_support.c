@@ -4944,6 +4944,8 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 		if (buffer[0] == '#') continue;	/* Skip comments */
 		gmt_chop (buffer);	/* Get rid of \n \r */
+		if ((c = strrchr (buffer, '#')))	/* Has trailing comments */
+			c[0] = '\0';	/* Chop it off */
 		if (gmt_is_a_blank_line (buffer)) continue;	/* Skip blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_LEN64] = {""};
