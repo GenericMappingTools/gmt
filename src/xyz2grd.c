@@ -182,6 +182,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				if (!opt->arg[0] && gmt_M_compat_check (GMT, 4)) {	/* In GMT4, just -A implied -Az */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; use -Az instead.\n");
 					Ctrl->A.active = true;
