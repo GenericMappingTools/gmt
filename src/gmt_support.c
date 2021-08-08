@@ -13832,7 +13832,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 				allow_a = false;	/* a is not a valid number */
 				switch (modifiers[k]) {	/* The modifier code */
 					case 'o': case 's':	/* +o<offset>|a,  +s<scale>|a */
-						allow_a = true;	/* A for auto is OK for these modifiers */
+						allow_a = true;	/* Argument "a" for auto is OK for these modifiers */
 						/* Fall through on purpose */
 					case 'h': case 'i': case 'n': 	/* +h[<hinge>], +i<inc>, +n<nodata> */
 						k++;	/* Move to start of argument, next modifier, or NULL */
