@@ -115,6 +115,14 @@ trailing text you use $t\ *k*.
 Angles and azimuths
 ~~~~~~~~~~~~~~~~~~~
 
+.. _Custom_symbols:
+
+.. figure:: /_images/GMT_angle-azim.*
+   :width: 500 px
+   :align: center
+
+   a) A geographic azimuth custom symbol (@azimuth.def). b) A Cartesian angle symbol (@angle.def).
+
 For variables used to pass angles or azimuths, the type of angle is controlled via the **N**
 statement in the previous section.  If a symbol accepts two angles given via variables
 or constants we will treat both angles as either azimuths or Cartesian angles.  If you are

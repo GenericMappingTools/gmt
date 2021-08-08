@@ -7445,7 +7445,7 @@ int gmt_draw_custom_symbol (struct GMT_CTRL *GMT, double x0, double y0, double s
 
 			case PSL_VECTOR:
 				/* Sets sensible vector head size derived from current stem pen thickness (-W). Head outline is always drawn, fill is optional */
-				if (flush) gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
+				gmtplot_flush_symbol_piece (GMT, PSL, xx, yy, &n, &p, &f, this_outline, &flush);
 				gmtplot_get_the_fill (&f, s, current_pen, current_fill);
 				gmtplot_get_the_pen (&p, s, current_pen, current_fill);
 				this_outline = (p.rgb[0] == -1) ? 0 : outline;
