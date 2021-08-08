@@ -115,19 +115,23 @@ trailing text you use $t\ *k*.
 Angles and azimuths
 ~~~~~~~~~~~~~~~~~~~
 
-.. _Custom_symbols:
+.. _Angle_azimuths:
 
 .. figure:: /_images/GMT_angle-azim.*
    :width: 500 px
    :align: center
 
-   a) A geographic azimuth custom symbol (@azimuth.def). b) A Cartesian angle symbol (@angle.def).
+   a) A geographic azimuth custom symbol (@azimuth.def). b) A Cartesian angle
+   symbol (@angle.def).
 
 For variables used to pass angles or azimuths, the type of angle is controlled via the **N**
 statement in the previous section.  If a symbol accepts two angles given via variables
 or constants we will treat both angles as either azimuths or Cartesian angles.  If you are
 specifying only constants then the angles are assumed to be Cartesian unless you append
-**a** to one (or both) of the constant angles; this flags the value as a geographic azimuth.
+**a** to one (or both) of the constant angles; this suffix flags the value as a geographic azimuth;
+see :ref:`Custom symbols <Angle_azimuths>` for examples of the two angles. These two custom
+symbols are remote files and can be downloaded and used as starting points for more elaborate
+symbols.
 
 Macro commands
 ~~~~~~~~~~~~~~
@@ -189,7 +193,7 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | triangle      | **t**      | Plot a triangle                        | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| vector        | **b**      | Plot a simple vector with head at end  | :math:`x, y, \alpha, length`               |
+| vector        | **v**      | Plot a simple vector with head at end  | :math:`x, y, \alpha, length`               |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | wedge         | **w**      | Plot a wedge                           | :math:`x, y, d, \alpha_1, \alpha_2`        |
 +---------------+------------+----------------------------------------+--------------------------------------------+
