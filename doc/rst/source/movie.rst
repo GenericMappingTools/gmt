@@ -48,8 +48,8 @@ animation job.  Instead, the user can focus on composing the main frame plot and
 parallel execution of frames and assembly of images into a movie take place in the background.
 Individual frames are converted from *PostScript* plots to lossless, transparent PNG images and optionally
 assembled into an animation (this last step requires external tools that must be present in
-your path; see Technical Details below).  For opaque PNG images, simply specify a background
-color via **-G**.
+your path; see Technical Details below). The user can add title sequences, fading, labels, and
+progress indicators as desired. 
 
 Required Arguments
 ------------------
@@ -134,10 +134,10 @@ Optional Arguments
 
 **-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**]
     Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
-    *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* (implied by all the others).  You may optionally
+    *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  You may optionally
     add additional FFmpeg encoding settings for *mp4* and *webm* via the **+o** modifier (in quotes if more
     than one word). Choose **+t** to generate transparent PNG images [opaque]. If just *png* is chosen then no
-    animation will be assembled.  For *gif* you may consider using modifier *+l** for turning on looping and
+    animation will be assembled.  For *gif* you may consider using modifier **+l** for turning on looping and
     optionally append how many times to repeat [infinite].  If either a *mp4* or *webm* product has been
     selected then you can limit the frames being used to make a GIF animation:  Append **+s**\ *stride*
     to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
