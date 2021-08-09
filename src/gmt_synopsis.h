@@ -32,6 +32,9 @@
 #ifndef GMT_SYNOPSIS_H
 #define GMT_SYNOPSIS_H
 
+/* Full syntax of output grids */
+#define GMT_OUTGRID  "<outgrid>[=<ID>][+d<divisor>][+n<invalid>][+o<offset>|a][+s<scale>|a][:<driver>[/<dataType>]]"
+
 #define GMT_inc_OPT	"<xinc>[+e|n][/<yinc>[+e|n]]"
 #define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
 #define GMT_Jx_OPT	"-Jx|X<args>"
