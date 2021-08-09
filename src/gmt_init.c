@@ -7742,7 +7742,7 @@ void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 	GMT_Usage (API, -2, "%s. Optionally append =<ID> for writing a specific file format and add any modifiers:", message);
 	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [0]");
 	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
-	GMT_Usage (API, 3, "+o Offset data values by the given <offset>, or append a for automatic range offset [0].");
+	GMT_Usage (API, 3, "+o Offset data values by the given <offset>, or append a for automatic range offset to preserve precision for integer grids [0].");
 	GMT_Usage (API, 3, "+s Scale data values by the given <scale>, or append a for automatic range scale [1].");
 	GMT_Usage (API, -2, "Note: Any offset is added after any scaling, and +sa also sets +oa (unless overridden). "
 		"To write specific formats via GDAL, use <ID> = gd and supply <driver> [and optionally <dataType>].");
