@@ -7747,19 +7747,6 @@ void gmt_ingrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 	GMT_Usage (API, -2, "Note: Any offset is added after any scaling.");
 }
 
-void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
-	if (option == 0)
-		GMT_Usage (API, 1, "\n%s", GMT_OUTGRID);
-	else
-		GMT_Usage (API, 1, "\n-%c%s", option, GMT_OUTGRID);
-	GMT_Usage (API, -2, "%s. Optionally append =<ID> for writing a specific file format and add any modifiers:", message);
-	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [0]");
-	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
-	GMT_Usage (API, 3, "+o Offset data values by the given <offset>, or append a for automatic range offset [0].");
-	GMT_Usage (API, 3, "+s Scale data values by the given <scale>, or append a for automatic range scale [1].");
-	GMT_Usage (API, -2, "Note: Any offset is added after any scaling. Also +sa also sets +oa unless overridden.");
-}
-
 /*! GSHHG subset specification */
 /*!
 	\param GMT ...
