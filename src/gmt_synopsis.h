@@ -118,7 +118,7 @@
 #define GMT_c0_OPT	"-c[<row>,<col>|<index>]"
 #define GMT_d_OPT	"-d[i|o]<nodata>"
 #define GMT_e_OPT	"-e[~]<pattern>|/<regexp>/[i]|+f<file>"
-#define GMT_f_OPT	"-f[i|o]c|g|p[<unit>]|<col>f|t|T|x|y"
+#define GMT_f_OPT	"-f[i|o]<colinfo>"
 #define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z<gap>[+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
 #define GMT_i_OPT	"-i<cols>[+l][+d<divisor>][+s<scale>][+o<offset>][,...][,t[<word>]]"

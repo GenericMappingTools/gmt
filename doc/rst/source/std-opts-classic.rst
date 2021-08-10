@@ -39,7 +39,7 @@ Common Options (Classic Mode)
    * - **-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
      - :ref:`Filter data records that match the given pattern <-e_full>`
    * - **-f**\ [**i**\|\ **o**]\ *colinfo*
-     - :ref:`Set formatting of ASCII input or output <-f_full>`
+     - :ref:`Set column content of input or output <-f_full>`
    * - **-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**+n**\|\ **p**]
      - :ref:`Segment data by detecting gaps <-g_full>`
    * - **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
