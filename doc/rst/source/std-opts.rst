@@ -24,9 +24,9 @@ Common Options
      - :ref:`Shift plot origin in y-direction <-XY_full>`
    * - **-a**\ [*col*\ =]\ *name*\ [,\ *...*]
      - :ref:`Associates aspatial data with columns <-aspatial_full>`
-   * - **-bi**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
+   * - **-bi**\ *record*\ [**+l**\|\ **b**]
      - :ref:`Select binary input <-bi_full>`
-   * - **-bo**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
+   * - **-bo**\ *record*\ [**+l**\|\ **b**]
      - :ref:`Select binary output <-bo_full>`
    * - **-c**\ [*row*\ ,\ *col*\|\ *index*]
      - :ref:`Advance plot focus to selected (or next) subplot panel <-c_full>`

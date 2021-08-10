@@ -27,7 +27,7 @@ format [*ncols*][*type*][**w**], where *ncols* is the number of consecutive data
     - **x** - use to skip *ncols* anywhere in the record
 
 Force byte-swapping of a group by appending **w** at the end of the group.
-For records with mixed types, simply append additional comma-separated combinations of *ncols* *type* (no space).
+For records with mixed types, append additional comma-separated groups (no space between groups).
 The following modifiers are supported:
 
     - **+b**\|\ **l** to indicate that the entire data file should be read as big- or little-endian, respectively.
