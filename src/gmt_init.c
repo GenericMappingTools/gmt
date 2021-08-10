@@ -7513,7 +7513,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"respectively, or append d for distance gaps.  Use upper case X|Y|D to "
 				"first project the points (requires -R -J).  Optional modifiers:");
 			GMT_Usage (API, 3, "+a All criteria must be met to declare a gap [Just one criterion must be met].");
-			GMT_Usage (API, 3, "+c Set alternative z-column [2].");
+			GMT_Usage (API, 3, "+c Set alternative z-coordinate column [2].");
 			GMT_Usage (API, 3, "+n Let d = prev-curr; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
 			GMT_Usage (API, 3, "+p Let d = curr-prev; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
 			GMT_Usage (API, -2, "For geographic data: Append <unit> from %s [Default is meter (%c)]. "

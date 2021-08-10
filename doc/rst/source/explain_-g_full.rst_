@@ -3,7 +3,7 @@ The **-g** option
 
 **Syntax**
 
-**-g**\ **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|\ *gap*\ [**u**][**+a**][**+c**\ *col*][**+n**\|\ **p**]
+**-g**\ **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\ *gap*\ [**u**][**+a**][**+c**\ *col*][**+n**\|\ **p**]
     Examine the spacing between consecutive data points in order to impose breaks in the line.
 
 **Description**
