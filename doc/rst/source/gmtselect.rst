@@ -50,7 +50,7 @@ selected based on whether or not they are 1) inside a rectangular region (**-R**
 *dist* km of any point in *pointfile*, 3) within *dist* km of any line in *linefile*, 4) inside one of the
 polygons in the *polygonfile*, 5) inside geographical features (based on coastlines), 6) has z-values
 within a given range, or 7) inside bins of a grid mask whose nodes are non-zero. The sense of the tests can
-be reversed for each of these 6 criteria by using the **-I** option. See option **-:** on how to read
+be reversed for each of these 7 criteria by using the **-I** option. See option **-:** on how to read
 (y,x) or (latitude,longitude) files (this option affects all module input data).  **Note**: If no projection
 information is used then you must supply **-fg** to tell **select** that your data are geographical.
 
@@ -195,12 +195,13 @@ Optional Arguments
     min or max, specify a hyphen (-). If your 3rd column is absolute
     time then remember to supply **-f**\ 2T. To specify another column, append
     **+c**\ *col*, and to specify several tests just repeat the **Z** option as
-    many times has you have columns to test. **Note**: When more than one **Z** option
+    many times as you have columns to test. **Note**: When more than one **Z** option
     is given then the **-Iz** option cannot be used.  In the case of multiple tests
-    you may use these modifiers as well: **a** passes any record that passes at least
-    one of your *z* tests [all tests must pass], and **i** reverses the tests to pass
-    record with *z* value NOT in the given range.  Finally, if **+c** is not used
-    then it is automatically incremented for each new **-Z** option, starting with 2.
+    you may use these modifiers as well: **+a** passes any record that passes at least
+    one of your *z* tests [Default is all tests must pass], and **+i** reverses the
+    tests to pass record with *z* value NOT in the given range.  Finally, if **+c** is
+    not used then it is automatically incremented for each new **-Z** option, starting
+    with 2.
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
