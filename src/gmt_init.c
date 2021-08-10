@@ -7508,18 +7508,19 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'g':	/* -g option to tell GMT to identify data gaps based on point separation */
 
 			GMT_Usage (API, 1, "\n%s", GMT_g_OPT);
-			GMT_Usage (API, -2, "Use data point separations to determine if there are data gaps. "
-				"Append x|X or y|Y to identify data gaps in x or y coordinates, "
-				"respectively, and append d|D for distance gaps.  Upper case X|Y|D means "
-				"we first project the points (requires -J).  Optional modifiers:");
+			GMT_Usage (API, -2, "Use data point separations to identify data gaps. "
+				"Append x, y, or z to identify data gaps in x, y or z coordinates, "
+				"respectively, or append d for distance gaps.  Use upper case X|Y|D to "
+				"first project the points (requires -R -J).  Optional modifiers:");
+			GMT_Usage (API, 3, "+a All criteria must be met to declare a gap [Just one criterion must be met].");
+			GMT_Usage (API, 3, "+c Set alternative z-column [2].");
 			GMT_Usage (API, 3, "+n Let d = prev-curr; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
 			GMT_Usage (API, 3, "+p Let d = curr-prev; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
-			GMT_Usage (API, -2, "For geographic data: Choose <gap> unit from %s [Default is meter (%c)]. "
-				"For gaps based on projected coordinates: Choose unit from %s [%s]. "
+			GMT_Usage (API, -2, "For geographic data: Append <unit> from %s [Default is meter (%c)]. "
+				"For gaps based on projected coordinates: Append unit from %s [%s]. "
 				"For time data the unit is determined by TIME_UNIT. "
 				"For Cartesian data a unit is not specified. "
-				"Repeat the -g option to specify multiple criteria, and add -ga "
-				"to indicate that all criteria must be met [Default is just one criterion must be met].",
+				"Repeat the -g option to specify multiple criteria.",
 				GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT, GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
@@ -9428,10 +9429,11 @@ int gmt_check_binary_io (struct GMT_CTRL *GMT, uint64_t n_req) {
 
 /*! . */
 int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
-	int i, kk, k = 0, c, gap = 0;
+	int i, kk, k = 0, c, gap = 0, z_col = GMT_Z;
 	char *t = NULL;
 	/* Process the GMT gap detection option for parameters (leading [+|-] for gap is deprecated) */
-	/* Syntax, e.g., -g[x|X|y|Y|d|D|[<col>]z]<gap>[d|m|s|e|f|k|M|n|c|i|p][+n|p] or -ga */
+	/* Syntax, e.g., -gx|y|z|d|X|Y|D<gap>[d|m|s|e|f|k|M|n|c|i|p][+a][+c<col>][+n|p] */
+	/* Deprecated: -gx|X|y|Y|d|D|[<col>]z<gap>[d|m|s|e|f|k|M|n|c|i|p][+n|p] or -ga */
 
 	if (!txt || !txt[0]) return (GMT_PARSE_ERROR);	/* -g requires an argument */
 	if ((i = GMT->common.g.n_methods) == GMT_N_GAP_METHODS) {
@@ -9442,19 +9444,32 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* -g gap checking implies -mo if not already set */
 
-	if (txt[0] == 'a') {	/* For multiple criteria, specify that all criteria be met [Default is any] */
+	if (txt[0] == 'a') {	/* Deprecated syntax for multiple criteria, specify that all criteria be met [Default is any] */
 		k++;
 		GMT->common.g.match_all = true;
 		if (!txt[k]) return (1);	/* Just a single -ga */
 	}
 
-	if ((t = strstr (txt, "+n"))) {	/* Gave modifier +n for negative gap check */
-		gap = -1;
-		t[0] = '\0';	/* Chop off modifier */
-	}
-	else if ((t = strstr (txt, "+p"))) {	/* Gave modifier +p for positive gap check */
-		gap = +1;
-		t[0] = '\0';	/* Chop off modifier */
+	if ((t = gmt_first_modifier (GMT, txt, "acnp"))) {	/* Process any modifiers */
+		char p[GMT_LEN16] = {""};
+		unsigned int pos = 0, n_errors = 0;
+		while (gmt_getmodopt (GMT, 'g', t, "acnp", &pos, p, &n_errors) && n_errors == 0) {
+			switch (p[0]) {
+				case 'a':	GMT->common.g.match_all = true;	break;	/* All criteria must be met */
+				case 'c':	/* Specify alternate z-column */
+					z_col = (p[1]) ? atoi (&p[1]) : GMT_Z;
+					if (z_col < GMT_Z) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -g: +c<col> given a <col> less than 2, which is x,y territory\n");
+						n_errors++;
+					}
+					break;
+				case 'n':	gap = -1;	break;	/* prev - current */
+				case 'p':	gap = +1;	break;	/* current - prev */
+				default:
+					break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		t[0] = '\0';	/* Chop off the modifiers */
 	}
 
 	/* Check if we have deprecated syntax and if that is allowed by the compatibility setting */
@@ -9498,9 +9513,9 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			break;
 		case 'z':	/* Difference in user's z-coordinates used for test */
 			GMT->common.g.method[i] = (gap == -1) ? GMT_NEGGAP_IN_COL : ((gap == +1) ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
-			GMT->common.g.col[i] = 2;
+			GMT->common.g.col[i] = z_col;
 			break;
-		case '1':	/* Difference in a specified column's coordinates used for test */
+		case '1':	/* Difference in a specified z-column's coordinates used for test [Deprecated: Use +c<col> instead] */
 		case '2':
 		case '3':
 		case '4':
@@ -9513,7 +9528,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			c = k;
 			while (txt[k] && isdigit ((int)txt[k])) k++;	/* Skip past until we find z */
 			if (txt[k] != 'z') {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[k]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|z\n", txt[k]);
 				if (t) t[0] = '+';	/* Restore modifiers */
 				return (1);
 			}
@@ -9521,7 +9536,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			GMT->common.g.col[i] = atoi (&txt[c]);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[0]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|z\n", txt[0]);
 			if (t) t[0] = '+';	/* Restore modifiers */
 			return (1);
 			break;
@@ -9558,7 +9573,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			break;	/* Already set, or will be reset below  */
 	}
 	k++;	/* Skip to start of gap value */
-	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip sign */
+	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip deprected sign */
 	if ((GMT->common.g.gap[i] = atof (&txt[k])) == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gap value must be non-zero\n");
 		if (t) t[0] = '+';	/* Restore modifiers */
