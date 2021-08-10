@@ -7410,12 +7410,16 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'C':	/* -b binary option with input only */
 
 			GMT_Usage (API, 1, "\n%s", GMT_bi_OPT);
-			GMT_Usage (API, -2, "Select binary input; data <type> = c|u|h|H|i|I|l|L|f|D.");
+			GMT_Usage (API, -2, "Select native binary table input; <record> is comma-separated  groups of [<ncols>][<type>][w]; "
+				"<ncols> is number of consecutive columns of given <type> from c|u|h|H|i|I|l|L|f|d [d]. "
+				"A group may be byte-swapped by appending w. Available modifiers: ");
+			GMT_Usage (API, 3, "+b Read table assuming big-endian byte-order.");
+			GMT_Usage (API, 3, "+l Read table assuming little-endian byte-order.");
 			break;
 
 		case '0':	/* -bi/-bo addendum when input format is unknown */
 
-			GMT_Usage (API, -2, "Prepend <ncols> for the number of columns for each <type>.");
+			/* Nothing anymore, but leave case since may still be requested by a module */
 			break;
 
 		case '1':	/* -bi/-bo addendum when input format is unknown */
@@ -7426,13 +7430,17 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case '6':
 		case '7':
 
-			GMT_Usage (API, -2, "Prepend <ncols> for the number of columns for each <type> in binary file(s) [%c].", options[k]);
+			GMT_Usage (API, -2, "Note: If <ncols> is not given we default to %c.", options[k]);
 			break;
 
 		case 'D':	/* -b binary option with output only */
 
 			GMT_Usage (API, 1, "\n%s", GMT_bo_OPT);
-			GMT_Usage (API, -2, "Select binary output; <type> = c|u|h|H|i|I|l|L|f|D.");
+			GMT_Usage (API, -2, "Select native binary table out; <record> is comma-separated groups of [<ncols>][<type>][w]; "
+				"<ncols> is number of consecutive columns of given <type> from c|u|h|H|i|I|l|L|f|d [d]. "
+				"A group may be byte-swapped by appending w. Available modifiers: ");
+			GMT_Usage (API, 3, "+b Write table in big-endian byte-order.");
+			GMT_Usage (API, 3, "+l Write table in little-endian byte-order.");
 			break;
 
 		case 'c':	/* -c option advances subplot panel focus under modern mode */
