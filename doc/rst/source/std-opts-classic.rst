@@ -30,9 +30,9 @@ Common Options (Classic Mode)
      - :ref:`Shift plot origin in y-direction <-XY_full>`
    * - **-a**\ [*col*\ =]\ *name*\ [,\ *...*]
      - :ref:`Associates aspatial data with columns <-aspatial_full>`
-   * - **-bi**\ *record*\ [**+l**\|\ **b**]
+   * - **-bi**\ *record*\ [**+b**\|\ **l**]
      - :ref:`Select binary input <-bi_full>`
-   * - **-bo**\ *record*\ [**+l**\|\ **b**]
+   * - **-bo**\ *record*\ [**+b**\|\ **l**]
      - :ref:`Select binary output <-bo_full>`
    * - **-d**\ [**i**\|\ **o**]\ *nodata*
      - :ref:`Replace columns with nodata with NaN <-d_full>`
