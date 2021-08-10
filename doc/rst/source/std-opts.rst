@@ -36,7 +36,7 @@ Common Options
      - :ref:`Filter data records that match the given pattern <-e_full>`
    * - **-f**\ [**i**\|\ **o**]\ *colinfo*
      - :ref:`Set formatting of ASCII input or output <-f_full>`
-   * - **-g**\ **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|\ *gap*\ [**u**][**+a**][**+c**\ *col*][**+n**\|\ **p**]
+   * - **-g**\ **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\ *gap*\ [**u**][**+a**][**+c**\ *col*][**+n**\|\ **p**]
      - :ref:`Segment data by detecting gaps <-g_full>`
    * - **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
      - :ref:`ASCII tables have header record[s] <-h_full>`
