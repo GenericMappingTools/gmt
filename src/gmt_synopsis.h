@@ -42,8 +42,8 @@
 
 /* Use b, h, when applies to both i and o, else use only the bi, bo variants */
 
-#define GMT_bi_OPT  "-bi<record>[+l|b]"
-#define GMT_bo_OPT  "-bo<record>[+l|b]"
+#define GMT_bi_OPT  "-bi<record>[+b|l]"
+#define GMT_bo_OPT  "-bo<record>[+b|l]"
 #define GMT_di_OPT	"-di<nodata>"
 #define GMT_do_OPT	"-do<nodata>"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
