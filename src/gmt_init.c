@@ -7424,7 +7424,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'D':	/* -b binary option with output only */
 
 			GMT_Usage (API, 1, "\n%s", GMT_bo_OPT);
-			GMT_Usage (API, -2, "Select native binary table out; <record> is comma-separated groups of [<ncols>][<type>][w]; "
+			GMT_Usage (API, -2, "Select native binary table output; <record> is comma-separated groups of [<ncols>][<type>][w]; "
 				"<ncols> is number of consecutive columns of given <type> from c|u|h|H|i|I|l|L|f|d [d]. "
 				"A group may be byte-swapped by appending w. Available modifiers: ");
 			GMT_Usage (API, 3, "+b Write table in big-endian byte-order.");
