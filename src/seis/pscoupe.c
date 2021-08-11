@@ -28,7 +28,7 @@ PostScript code is written to stdout.
 #define THIS_MODULE_LIB		"seis"
 #define THIS_MODULE_PURPOSE	"Plot cross-sections of focal mechanisms"
 #define THIS_MODULE_KEYS	"<D{,>?}"
-#define THIS_MODULE_NEEDS	"Jd"
+#define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYdehipqt" GMT_OPT("c")
 
 #define DEFAULT_FONTSIZE		9.0	/* In points */
@@ -648,8 +648,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 									break;
 							}
 						}
+						p[0] = '\0';	/* Chop off modifiers */
 					}
-					p[0] = '\0';	/* Chop off modifiers */
 					/* Process the first 4 args */
 					if (sscanf (&opt->arg[1], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4) {
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A requires 4 arguments before modifiers.\n");
