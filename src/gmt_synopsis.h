@@ -42,8 +42,8 @@
 
 /* Use b, h, when applies to both i and o, else use only the bi, bo variants */
 
-#define GMT_bi_OPT	"-bi[<ncols>][<type>][w][+l|b]"
-#define GMT_bo_OPT	"-bo[<ncols>][<type>][w][+l|b]"
+#define GMT_bi_OPT  "-bi<record>[+b|l]"
+#define GMT_bo_OPT  "-bo<record>[+b|l]"
 #define GMT_di_OPT	"-di<nodata>"
 #define GMT_do_OPT	"-do<nodata>"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
@@ -119,7 +119,7 @@
 #define GMT_d_OPT	"-d[i|o]<nodata>"
 #define GMT_e_OPT	"-e[~]<pattern>|/<regexp>/[i]|+f<file>"
 #define GMT_f_OPT	"-f[i|o]<colinfo>"
-#define GMT_g_OPT	"-g[a]x|y|d|X|Y|D|[<col>]z<gap>[+n|p]"
+#define GMT_g_OPT	"-gx|y|z|d|X|Y|D<gap>[<unit>][+a][+c<col>][+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
 #define GMT_i_OPT	"-i<cols>[+l][+d<divisor>][+s<scale>][+o<offset>][,...][,t[<word>]]"
 #define GMT_j_OPT	"-je|f|g"

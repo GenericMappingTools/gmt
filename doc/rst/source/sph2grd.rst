@@ -128,7 +128,7 @@ coefficients in the remote file EGM96_to_360.txt, use
 
    ::
 
-    gmt sph2grd @EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+    gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
 
 Reference
 ---------
