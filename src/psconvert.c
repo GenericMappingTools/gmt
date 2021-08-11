@@ -280,7 +280,7 @@ GMT_LOCAL int psconvert_parse_new_I_settings (struct GMT_CTRL *GMT, char *arg, s
 	char p[GMT_LEN128] = {""}, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 
 	if (arg[0] == '\0') {	/* This is the old -I option */
-		if (gmt_M_compat_check (GMT, 4)) {
+		if (gmt_M_compat_check (GMT, 6)) {
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-I (no args) is deprecated; use -N+i instead.\n");
 			Ctrl->N.use_ICC_profiles = true;
 		}
