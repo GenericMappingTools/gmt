@@ -7451,9 +7451,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -2, "Only accept input data records that contain the string \"pattern\". "
 				"Use -e~\"pattern\" to only accept data records that do NOT contain this pattern. "
 				"If your pattern begins with ~, escape it with \\~.  To match against "
-				"extended regular expressions use -e[~]/<regexp>/[i] (i for case-insensitive).");
-			GMT_Usage (API, 3, "+f Read patterns from <file> instead, one per line.");
-			GMT_Usage (API, -2, "To give a single pattern starting with +f, escape it with \\+f.");
+				"extended regular expressions use -e[~]/<regexp>/[i] (i for case-insensitive). "
+				"Use +f<file> to read patterns from a file instead, one pattern per line.");
+			GMT_Usage (API, -2, "Note: To give a single pattern starting with +f, escape it with \\+f.");
 			break;
 
 		case 'k':	/* -di option to tell GMT the relationship between NaN and a nan-proxy for input */
@@ -7636,10 +7636,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'w':	/* -w option for cyclicity */
 
 			GMT_Usage (API, 1, "\n%s", GMT_w_OPT);
-			GMT_Usage (API, -2, "Wrap selected column [0] with specified cyclicity: "
+			GMT_Usage (API, -2, "Wrap selected column [0] with specified cyclicity. "
 				"Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles. "
 				"Alternatively, append c<period>[/<phase>] for custom cyclicity [Default <phase> = 0].");
-			GMT_Usage (API, 3, "+c<col> Select another column than 0 (x) for wrapping.");
+			GMT_Usage (API, 3, "+c<col> Select another column than 0 (first) for wrapping.");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */
@@ -9216,7 +9216,7 @@ GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int direc
 	/* Parsing of <rows> sequences */
 	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process another range */
 		if (p[0] == '~') {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is allowed before the first range in -q\n");
 			return (GMT_PARSE_ERROR);
 		}
 		/* We can process A or A: or A- or A/ or A:B or A-B or A/B or :B or -B or /B */
@@ -9245,7 +9245,7 @@ GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int direc
 	/* Parsing of <range> sequences */
 	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process another range */
 		if (p[0] == '~') {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is allowed before the first range in -q\n");
 			return (GMT_PARSE_ERROR);
 		}
 		/* We can process A or A/ or A/B or /B */
