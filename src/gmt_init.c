@@ -1338,15 +1338,17 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	return (error);
 }
 
-/*! Routine will decode the -f[i|o]<col>|<colrange>[t|T|g|c],... arguments */
+/*! Routine will decode the -f[i|o]<shortcut>|<cols>[d|f|s|t|T|x|y],... arguments */
 GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
-	unsigned int dir, d, k = 1, c, pos = 0, code, *col = NULL;
+	unsigned int dir, k = 1, c, pos = 0, code, *col = NULL;
 	int64_t i, start = -1, stop = -1, inc;
 	enum gmt_enum_units unit = GMT_IS_METER;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -f requires an argument */
+
+	/* Determine if this is for input, output, or both */
 
 	if (arg[0] == 'i') {	/* Apply to input columns only */
 		dir = GMT_IN;
@@ -1363,9 +1365,9 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		strncpy (GMT->common.f.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	}
 
-	strncpy (copy, &arg[k], GMT_BUFSIZ-1);	/* arg should NOT have a leading i|o part */
+	strncpy (copy, &arg[k], GMT_BUFSIZ-1);	/* copy should NOT have a leading i|o part */
 
-	if (copy[0] == 'c') {	/* Got -f[i|o]c which is shorthand for -f[i|o]0f,1f (Cartesian) */
+	if (copy[0] == 'c') {	/* Got -f[i|o]c which is shorthand for -f[i|o]0:1f (Cartesian) */
 		if (dir == GMT_IO) {
 			gmt_set_cartesian (GMT, GMT_IN);
 			gmt_set_cartesian (GMT, GMT_OUT);
@@ -1377,7 +1379,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		pos = 1;
 		start = stop = 1;
 	}
-	else if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
+	else if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below for more action) */
 		if (dir == GMT_IO) {
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
@@ -1401,42 +1403,28 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->current.proj.inv_coord_unit = unit;
 	}
 
-	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
-		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
+	/* Process each group of columns that shall have the same type */
+	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process the next group = <columns><type> */
+		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);	/* Get column(s) or bust */
 		for (c = 0; p[c] && strchr ("0123456789-:", p[c]); c++);	/* Wind to position after the column or column range */
-		d = dir;
 		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, f, d or s. */
-			case 'T':	/* Absolute calendar time */
-				code = GMT_IS_ABSTIME;
-				break;
-			case 't':	/* Relative time (units since epoch) */
-				code = GMT_IS_RELTIME;
-				break;
-			case 'x':	/* Longitude coordinates */
-				code = GMT_IS_LON;
-				break;
-			case 'y':	/* Latitude coordinates */
-				code = GMT_IS_LAT;
-				break;
-			case 'f':	/* Plain floating point coordinates */
-				code = GMT_IS_FLOAT;
-				break;
-			case 'd':	/* Length dimension (with possible unit) */
-				code = GMT_IS_DIMENSION;
-				break;
-			case 's':	/* This must be start of trailing text */
-				code = GMT_IS_STRING;
-				break;
+			case 'T':	code = GMT_IS_ABSTIME;	break;		/* Absolute calendar time */
+			case 't':	code = GMT_IS_RELTIME;	break;		/* Relative time (units since epoch) */
+			case 'x':	code = GMT_IS_LON;		break;		/* Longitude coordinates */
+			case 'y':	code = GMT_IS_LAT;		break;		/* Latitude coordinates */
+			case 'f':	code = GMT_IS_FLOAT;	break;		/* Plain floating point coordinates */
+			case 'd':	code = GMT_IS_DIMENSION;	break;	/* Length dimension (with possible unit) */
+			case 's':	code = GMT_IS_STRING;	break;		/* This must be start of trailing text */
 			default:	/* No suffix, consider it an error */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Malformed -f argument [%s]\n", arg);
 				return 1;
 				break;
 		}
 
-		/* Now set the code for these columns */
+		/* Now set the code for this group of columns */
 
 		for (i = start; i <= stop; i += inc)
-			gmt_set_column_type (GMT, d, (unsigned int)i, code);
+			gmt_set_column_type (GMT, dir, (unsigned int)i, code);
 	}
 	return (GMT_NOERROR);
 }
@@ -7502,15 +7490,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
 
 			GMT_Usage (API, 1, "\n%s", GMT_f_OPT);
-			GMT_Usage (API, -2, "Special formatting of input/output columns (time or geographical). "
-				"Specify i(nput) or o(utput) [Default is both input and output]. "
-				"Give one or more columns (or column ranges) separated by commas. "
-				"Append T (Calendar format), t (time relative to TIME_EPOCH), "
-				"f (floating point), x (longitude), or y (latitude) to each item. "
-				"You may also use s (string) to indicate the start column of trailing text. "
-				"Note: -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates), "
-				"-f[i|o]c means -f[i|o]0-1f (Cartesian coordinates) while "
-				"-fp[<unit>] means input x,y are in projected coordinates.");
+			GMT_Usage (API, -2, "Indicate content of input/output columns. Optionally append i(nput) or o(utput) [Default is both]. "
+				"Append <colinfo> as one or more comma-separated groups of <cols><type>, where <cols> is a column (or column ranges) "
+				"and <type> is the column type, chosen from T (Calendar format), t (time relative to TIME_EPOCH), f (floating point), "
+				"x (longitude), y (latitude), or d (dimension). You may also use s (string) to indicate the start column of trailing text. "
+				"Shortcuts: -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates), -f[i|o]c means -f[i|o]0:1f (Cartesian coordinates), "
+				"while -fp[<unit>] means input x,y are already in projected coordinates in <unit> [e].");
 			break;
 
 		case 'g':	/* -g option to tell GMT to identify data gaps based on point separation */
