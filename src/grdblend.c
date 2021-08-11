@@ -663,7 +663,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<blendfile> | <grid1> <grid2> ...");
-	GMT_Usage (API, -2, "<blendfile> is an ASCII file (or stdin) with blending parameters for each input grid. "
+	GMT_Usage (API, -2, "<blendfile> is an ASCII file (or standard input) with blending parameters for each input grid. "
 		"Each record has 1-3 items: filename [-R<inner_reg>] [<weight>]. "
 		"Relative weights are <weight> [1] inside the given -R [grid domain] and cosine taper to 0 "
 		"at actual grid -R. Skip <inner_reg> if inner region should equal the actual region. "

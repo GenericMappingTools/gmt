@@ -91,6 +91,8 @@
 #define GMT_PAPER_MARGIN_AUTO	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) for auto-size mode */
 #define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (12.7 centimeter) for fixed-size mode */
 
+#define GMT_JPEG_DEF_QUALITY	90	/* Default JPG quality value for psconvert -Tj */
+
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
 	/*! 0 */	GMT_HISTORY_OFF = 0,
@@ -317,6 +319,9 @@ enum GMT_time_period {
  * +U<unit> converts z-values from meter to given unit
  */
 #define GMT_CPTFILE_MODIFIERS "hiuU"
+
+/* Valid options to psconvert from figure and begin */
+#define GMT_PSCONVERT_LIST "ACDEHIMNQS"
 
 /* Settings for usage message indents and break/continue characters */
 

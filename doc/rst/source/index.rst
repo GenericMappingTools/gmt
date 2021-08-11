@@ -82,12 +82,13 @@ Quick links
 
     .. toctree::
         :maxdepth: 1
-        :caption: Developer Resources
+        :caption: Development
 
         Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
         Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
-        reStructuredText Cheatsheet <rst-cheatsheet>
-        Debugging GMT <debug>
-        GMT C API <api>
-        PostScriptLight C API <postscriptlight>
-        devdocs
+        /devdocs/team
+        reStructuredText Cheatsheet </devdocs/rst-cheatsheet>
+        Debugging GMT </devdocs/debug>
+        GMT C API </devdocs/api>
+        PostScriptLight C API </devdocs/postscriptlight>
+        /devdocs/devdocs

@@ -117,7 +117,7 @@
     strike of plane 2
 
     **7**:
-    must be -1/+1 for a normal/inverse fault
+    must be ±1 for a normal/inverse fault
 
     **8**:
     magnitude

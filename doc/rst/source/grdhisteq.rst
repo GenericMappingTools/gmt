@@ -86,7 +86,7 @@ Optional Arguments
 **-N**\ [*norm*]
     Gaussian output. Use with **-G** to make an output grid with
     standard normal scores. Append *norm* to force the scores to fall in
-    the <-1,+1> range [Default is standard normal scores].
+    the ±*norm* range [Default is standard normal scores].
 
 .. _-Q:
 

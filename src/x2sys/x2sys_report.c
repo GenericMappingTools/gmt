@@ -123,7 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [stdin].");
+	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [standard input].");
 	GMT_Usage (API, 1, "\n-C<column> ");
 	GMT_Usage (API, -2, "Name of the data column whose crossovers we want.");
 	GMT_Usage (API, 1, "\n-T<TAG>");

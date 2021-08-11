@@ -297,6 +297,14 @@ To truncate polygons A.txt against polygon B.txt, resulting in an open line segm
 
     gmt spatial A.txt -TB.txt > line.txt
 
+If you want to plot a polygon with holes (donut polygon) from a multiple segment file 
+wich contains both perimeters and holes, it could be neccesary first to reorganize the file 
+so it can plotted with plot. To do this run 
+
+  ::
+  
+  gmt spatial file.txt -Sh > organized_file.txt
+
 Notes
 -----
 

@@ -103,7 +103,7 @@ https://www.generic-mapping-tools.org
 Internal links
 --------------
 
-Link to the a module with :doc:`plot` or :doc:`/plot`.
+Link to the a module with :doc:`/plot` or :doc:`/plot`.
 
 Link to a section title with `Lists`_.
 

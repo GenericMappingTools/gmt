@@ -3199,7 +3199,7 @@ static inline bool gmtsupport_same_longitude (double a, double b) {
 	return doubleAlmostEqualZero (a, b);
 }
 
-#define GMT_SAME_LATITUDE(A,B)  (doubleAlmostEqualZero (A,B))			/* A and B are the same latitude */
+#define gmt_M_same_latitude(A,B)  (doubleAlmostEqualZero (A,B))			/* A and B are the same latitude */
 
 /*! . */
 GMT_LOCAL int gmtsupport_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEGMENT *P, unsigned int count[]) {
@@ -3221,7 +3221,7 @@ GMT_LOCAL int gmtsupport_inonout_sphpol_count (double plon, double plat, const s
 		 * Since we want to obtain either ONE or ZERO intersections per segment we will skip to next
 		 * point if case (2) occurs: this avoids counting a crossing twice for consecutive segments.
 		 */
-		if (gmtsupport_same_longitude (plon, P->data[GMT_X][i]) && GMT_SAME_LATITUDE (plat, P->data[GMT_Y][i])) return (GMT_ONEDGE);	/* Point is on the perimeter */
+		if (gmtsupport_same_longitude (plon, P->data[GMT_X][i]) && gmt_M_same_latitude (plat, P->data[GMT_Y][i])) return (GMT_ONEDGE);	/* Point is on the perimeter */
 		in = i + 1;			/* Next point index */
 		/* Next deal with case when the longitude of P goes ~right through the second of the line nodes */
 		if (gmtsupport_same_longitude (plon, P->data[GMT_X][in])) continue;	/* Line goes through the 2nd node - ignore */
@@ -3273,8 +3273,8 @@ GMT_LOCAL int gmtsupport_inonout_sphpol_count (double plon, double plat, const s
 			return (1);	/* P is on segment boundary; we are done*/
 		}
 		/* Calculate latitude at intersection */
-		if (GMT_SAME_LATITUDE (P->data[GMT_Y][i], P->data[GMT_Y][in])) {	/* Special cases */
-			if (GMT_SAME_LATITUDE (plat, P->data[GMT_Y][in])) return (GMT_ONEDGE);	/* P is on S boundary */
+		if (gmt_M_same_latitude (P->data[GMT_Y][i], P->data[GMT_Y][in])) {	/* Special cases */
+			if (gmt_M_same_latitude (plat, P->data[GMT_Y][in])) return (GMT_ONEDGE);	/* P is on S boundary */
 			x_lat = P->data[GMT_Y][i];
 		}
 		else
@@ -4944,6 +4944,8 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 		if (buffer[0] == '#') continue;	/* Skip comments */
 		gmt_chop (buffer);	/* Get rid of \n \r */
+		if ((c = strrchr (buffer, '#')))	/* Has trailing comments */
+			c[0] = '\0';	/* Chop it off */
 		if (gmt_is_a_blank_line (buffer)) continue;	/* Skip blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_LEN64] = {""};
@@ -13806,6 +13808,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 	 * found, or NULL.  Any modifier will be of the form +?[<arg>], where ? is a lower or upper-case
 	 * letter, and <arg> is optional. */
 	bool go = true;	/* Keep scanning backwards until we find an unrecognized modifier */
+	bool allow_a;	/* True when "a" is a valid argument to the modifier */
 	char *modifiers = NULL;	/* Pointer to the start of valid modifiers in this filename, or NULL */
 	size_t k = strlen (filename);	/* k will serve as the index of the current character in the filename string */
 	gmt_M_unused (API);
@@ -13828,10 +13831,15 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 		while (!error && modifiers[k]) {
 			if (modifiers[k] == '+') {
 				k++;
+				allow_a = false;	/* a is not a valid number */
 				switch (modifiers[k]) {	/* The modifier code */
-					case 'h': case 'i': case 'o': case 'n': case 's':	/* +h[<hinge>], +i<inc>, ++o<offset>, +n<nodata>, +s<scale> */
+					case 'o': case 's':	/* +o<offset>|a,  +s<scale>|a */
+						allow_a = true;	/* Argument "a" for auto is OK for these modifiers */
+						/* Fall through on purpose */
+					case 'h': case 'i': case 'n': 	/* +h[<hinge>], +i<inc>, +n<nodata> */
 						k++;	/* Move to start of argument, next modifier, or NULL */
 						while (modifiers[k] && modifiers[k] != '+' && strchr ("-+.0123456789eE", modifiers[k])) k++;	/* Skip a numerical argument */
+						if (allow_a && modifiers[k] == 'a') k++;	/* Ok with a for this modifier */
 						if (!(modifiers[k] == '\0' || modifiers[k] == '+')) error = true;	/* Means we found non-numbers after valid modifier */
 						break;
 					case 'u': case 'U':	/* +u<unit>, +U<unit */

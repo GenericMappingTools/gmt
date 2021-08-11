@@ -50,7 +50,7 @@ including many printers and large-format plotters. Many tools exists to
 display PostScript on a computer screen. Open source tools such as
 ghostscript can be used to convert PostScript into PDF or raster
 images (e.g., TIFF, JPEG) at a user-defined resolution (DPI). In
-particular, the GMT tool :doc:`psconvert` is a front-end to ghostscript and
+particular, the GMT tool :doc:`/psconvert` is a front-end to ghostscript and
 pre-selects the optimal options for ghostscript that will render quality
 PDF and images.
 
@@ -952,7 +952,7 @@ recreate the problem.
 See Also
 --------
 
-:doc:`psconvert`
+:doc:`/psconvert`
 
 References
 ----------
