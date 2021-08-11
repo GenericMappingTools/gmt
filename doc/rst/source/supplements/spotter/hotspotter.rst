@@ -12,7 +12,9 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt hotspotter** [*table*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt hotspotter** [*table*]
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-N|\ *upper_age* ]
@@ -21,10 +23,12 @@ Synopsis
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -51,7 +55,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *CVAgrid*
+**-G**\ *outgrid*
     Specify name for output grid file.
 
 .. _-I:

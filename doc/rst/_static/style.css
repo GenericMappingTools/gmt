@@ -121,3 +121,37 @@ h1, h2, h3, h4, h5, h6 {
 	font-weight: bold;
 	font-style: italic;
 }
+
+.team-row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.team-card {
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.5rem;
+    margin: 0.25em;
+    flex: 0 1 175px;
+}
+
+.team-img {
+    border-radius: 0.5rem;
+    width: 100%;
+    height: 20vh!important;
+    object-fit: cover;
+}
+
+.team-card-body {
+    padding: 1.25rem;
+    height: 135px;
+}
+
+.team-card-text {
+    display: flex;
+    margin-block-start: 0em;
+    margin-block-end: 0.2em;
+    margin-inline-start: 0px;
+    margin-inline-end: 0px;
+}

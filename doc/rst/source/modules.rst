@@ -212,7 +212,6 @@ Core Modules
     - :doc:`gmtconnect`
     - :doc:`gmtconvert`
     - :doc:`gmtdefaults`
-    - :doc:`grdgdal`
     - :doc:`gmtget`
     - :doc:`gmtinfo`
     - :doc:`gmtlogo`
@@ -237,6 +236,7 @@ Core Modules
     - :doc:`grdfft`
     - :doc:`grdfill`
     - :doc:`grdfilter`
+    - :doc:`grdgdal`
     - :doc:`grdgradient`
     - :doc:`grdhisteq`
     - :doc:`grdimage`

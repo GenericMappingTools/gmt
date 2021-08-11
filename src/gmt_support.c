@@ -3199,7 +3199,7 @@ static inline bool gmtsupport_same_longitude (double a, double b) {
 	return doubleAlmostEqualZero (a, b);
 }
 
-#define GMT_SAME_LATITUDE(A,B)  (doubleAlmostEqualZero (A,B))			/* A and B are the same latitude */
+#define gmt_M_same_latitude(A,B)  (doubleAlmostEqualZero (A,B))			/* A and B are the same latitude */
 
 /*! . */
 GMT_LOCAL int gmtsupport_inonout_sphpol_count (double plon, double plat, const struct GMT_DATASEGMENT *P, unsigned int count[]) {
@@ -3221,7 +3221,7 @@ GMT_LOCAL int gmtsupport_inonout_sphpol_count (double plon, double plat, const s
 		 * Since we want to obtain either ONE or ZERO intersections per segment we will skip to next
 		 * point if case (2) occurs: this avoids counting a crossing twice for consecutive segments.
 		 */
-		if (gmtsupport_same_longitude (plon, P->data[GMT_X][i]) && GMT_SAME_LATITUDE (plat, P->data[GMT_Y][i])) return (GMT_ONEDGE);	/* Point is on the perimeter */
+		if (gmtsupport_same_longitude (plon, P->data[GMT_X][i]) && gmt_M_same_latitude (plat, P->data[GMT_Y][i])) return (GMT_ONEDGE);	/* Point is on the perimeter */
 		in = i + 1;			/* Next point index */
 		/* Next deal with case when the longitude of P goes ~right through the second of the line nodes */
 		if (gmtsupport_same_longitude (plon, P->data[GMT_X][in])) continue;	/* Line goes through the 2nd node - ignore */
@@ -3273,8 +3273,8 @@ GMT_LOCAL int gmtsupport_inonout_sphpol_count (double plon, double plat, const s
 			return (1);	/* P is on segment boundary; we are done*/
 		}
 		/* Calculate latitude at intersection */
-		if (GMT_SAME_LATITUDE (P->data[GMT_Y][i], P->data[GMT_Y][in])) {	/* Special cases */
-			if (GMT_SAME_LATITUDE (plat, P->data[GMT_Y][in])) return (GMT_ONEDGE);	/* P is on S boundary */
+		if (gmt_M_same_latitude (P->data[GMT_Y][i], P->data[GMT_Y][in])) {	/* Special cases */
+			if (gmt_M_same_latitude (plat, P->data[GMT_Y][in])) return (GMT_ONEDGE);	/* P is on S boundary */
 			x_lat = P->data[GMT_Y][i];
 		}
 		else
@@ -4944,6 +4944,8 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 	while (fgets (buffer, GMT_BUFSIZ, fp)) {
 		if (buffer[0] == '#') continue;	/* Skip comments */
 		gmt_chop (buffer);	/* Get rid of \n \r */
+		if ((c = strrchr (buffer, '#')))	/* Has trailing comments */
+			c[0] = '\0';	/* Chop it off */
 		if (gmt_is_a_blank_line (buffer)) continue;	/* Skip blank lines */
 		if (buffer[0] == 'N' && buffer[1] == ':') {	/* Got extra parameter specs. This is # of data columns expected beyond the x,y[,z] stuff */
 			char flags[GMT_LEN64] = {""};
@@ -5278,7 +5280,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 					if (k) pen_p[k-1] = '1';	/* Now we have a unit pen thickness for later scaling */
 				}
 				if (gmt_getpen (GMT, pen_p, s->pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					fclose (fp);
 					return GMT_PARSE_ERROR;
 				}
@@ -7571,12 +7573,23 @@ void gmtlib_free_palette (struct GMT_CTRL *GMT, struct GMT_PALETTE **P) {
 
 /*! Adds listing of available GMT cpt choices to a program's usage message */
 int gmt_list_cpt (struct GMT_CTRL *GMT, char option) {
+	char line[GMT_LEN256] = {""};
+	char divider[110] = {"-----------------------------------------------------------------------------------------------------------"};
 	struct GMTAPI_CTRL *API = GMT->parent;
-	GMT_Usage (API, 1, "-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
+	/* Note: 108 is the max length of entries in gmt_cpt_masters.h.  Update 110 and 108 if that changes */
+	int L = MAX (MIN (API->terminal_width-5, 108), 0);	/* Number of dashes to print in divider line */
+	GMT_Usage (API, 1, "\n-%c Specify a colortable [Default is %s]:", option, GMT->current.setting.cpt);
 	GMT_Usage (API, 2, "[Legend: R = Default z-range, H = Hard Hinge, S = Soft Hinge, C = Colormodel]");
-	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
-	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) gmt_message (GMT, "     %s\n", GMT_CPT_master[k]);
-	gmt_message (GMT, "     ---------------------------------------------------------------------------------------\n");
+	divider[L] = '\0';	/* Truncate the line */
+	gmt_message (GMT, "     %s\n", divider);
+	for (unsigned int k = 0; k < GMT_N_CPT_MASTERS; k++) {
+		strncpy (line, GMT_CPT_master[k], GMT_LEN256);
+		char *c = strchr (line, ':');	/* Find the start of the info */
+		c[0] = '\0';
+		gmt_message (GMT, "     %s: ", line);
+		GMT_Usage (API, -19, "%s", &c[2]);
+	}
+	gmt_message (GMT, "     %s\n", divider);
 	GMT_Usage (API, 2, "[For more, visit soliton.vm.bytemark.co.uk/pub/cpt-city and www.fabiocrameri.ch/visualisation.php]. "
 		"Alternatively, specify -Ccolor1,color2[,color3,...] to build a linear "
 		"continuous CPT from those colors automatically.");
@@ -7749,8 +7762,14 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 	/* Determine input source */
 
 	if (source_type == GMT_IS_FILE) {	/* source is a file name */
+		struct stat S;
 		strncpy (cpt_file, source, PATH_MAX-1);
 		Z = gmtsupport_cpt_parse (GMT, cpt_file, GMT_IN, &hinge_mode, &z_hinge);
+		if (stat (cpt_file, &S) == 0 && S.st_size == 0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Color palette table %s is empty\n", cpt_file);
+			gmt_M_free (GMT, Z);
+			return (NULL);
+		}
 		if ((fp = fopen (cpt_file, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot open color palette table %s\n", cpt_file);
 			gmt_M_free (GMT, Z);
@@ -13608,7 +13627,7 @@ int gmt_getpanel (struct GMT_CTRL *GMT, char option, char *text, struct GMT_MAP_
 	/* Initialize the panel clearances */
 	P->padding[XLO] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 	for (pos = XHI; pos <= YHI; pos++) P->padding[pos] = P->padding[XLO];
-	P->off[GMT_X] = P->padding[XLO];	/* Set the shadow offsets [default is (4p, -4p)] */
+	P->off[GMT_X] = P->padding[XLO];	/* Set the shadow offsets [Default is (4p, -4p)] */
 	P->off[GMT_Y] = -P->off[GMT_X];
 
 	if (text == NULL || text[0] == 0) {	/* Blank arg means draw outline with default pen */
@@ -13789,6 +13808,7 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 	 * found, or NULL.  Any modifier will be of the form +?[<arg>], where ? is a lower or upper-case
 	 * letter, and <arg> is optional. */
 	bool go = true;	/* Keep scanning backwards until we find an unrecognized modifier */
+	bool allow_a;	/* True when "a" is a valid argument to the modifier */
 	char *modifiers = NULL;	/* Pointer to the start of valid modifiers in this filename, or NULL */
 	size_t k = strlen (filename);	/* k will serve as the index of the current character in the filename string */
 	gmt_M_unused (API);
@@ -13811,10 +13831,15 @@ char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, 
 		while (!error && modifiers[k]) {
 			if (modifiers[k] == '+') {
 				k++;
+				allow_a = false;	/* a is not a valid number */
 				switch (modifiers[k]) {	/* The modifier code */
-					case 'h': case 'i': case 'o': case 'n': case 's':	/* +h[<hinge>], +i<inc>, ++o<offset>, +n<nodata>, +s<scale> */
+					case 'o': case 's':	/* +o<offset>|a,  +s<scale>|a */
+						allow_a = true;	/* Argument "a" for auto is OK for these modifiers */
+						/* Fall through on purpose */
+					case 'h': case 'i': case 'n': 	/* +h[<hinge>], +i<inc>, +n<nodata> */
 						k++;	/* Move to start of argument, next modifier, or NULL */
 						while (modifiers[k] && modifiers[k] != '+' && strchr ("-+.0123456789eE", modifiers[k])) k++;	/* Skip a numerical argument */
+						if (allow_a && modifiers[k] == 'a') k++;	/* Ok with a for this modifier */
 						if (!(modifiers[k] == '\0' || modifiers[k] == '+')) error = true;	/* Means we found non-numbers after valid modifier */
 						break;
 					case 'u': case 'U':	/* +u<unit>, +U<unit */
@@ -17025,7 +17050,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	-T<argument>
 	 *
 	 * where <argument> is one of these:
-	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l]
+	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l|t]
 	 *	<file>
 	 *
 	 * Parsing:
@@ -17652,7 +17677,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 			if (pen[0]) {	/* Got a pen */
 				if (gmt_getpen (GMT, pen, &cont[c].pen)) {	/* Bad pen syntax */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse %s as a proper pen specification - aborting\n", pen);
-					gmt_pen_syntax (GMT, 'C', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'C', NULL, " ", NULL, 0);
 					gmt_M_free (GMT, cont);
 					return (NULL);
 				}

@@ -14,7 +14,8 @@ Synopsis
 
 **gmt mgd77info** *GEODAS-ids*
 [ |-C|\ [**m**\|\ **e**] ]
-[ |-E|\ [**m**\|\ **e**] ] [ **-I**\ *ignore* ]
+[ |-E|\ [**m**\|\ **e**] ]
+[ |-I|\ **a\|c\|m\|t** ]
 [ |-M|\ **f**\ [*item*]\|\ **r**\|\ **e**\|\ **h** ]
 [ |-L|\ [**v**] ]
 [ |SYN_OPT-V| ]
@@ -74,7 +75,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *ignore*
+**-I**\ **a\|c\|m\|t**
     Ignore certain data file formats from consideration. Append
     **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII or plain
     tab-separated ASCII table files, respectively. The option may be

@@ -4293,13 +4293,14 @@ void MGD77_end (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F) {
 }
 
 void MGD77_Cruise_Explain (struct GMT_CTRL *GMT) {
-	GMT_Usage (GMT->parent, 1, "<cruises> can be one of five kinds of specifiers: "
-		"1) 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc., "
-		"2) 2-character <agency> codes which will return all cruises from each agency, "
-		"3) 4-character <agency><vessel> codes, which will return all cruises from those vessels, "
-		"4) A single =<list>, where <list> is a table with NGDC IDs, one per line, "
-		"5) If nothing is specified we return all cruises in the data base. "
-		"[See the documentation for agency and vessel codes].");
+	GMT_Usage (GMT->parent, 1, "\n<cruise(s)>");
+	GMT_Usage (GMT->parent, -2, "This can be one of five types of specifiers:");
+	GMT_Usage (GMT->parent, 3, "%s 8-character NGDC IDs, e.g., 01010083, JA010010, etc., etc.", GMT_LINE_BULLET);
+	GMT_Usage (GMT->parent, 3, "%s 2-character <agency> codes which will return all cruises from each agency.", GMT_LINE_BULLET);
+	GMT_Usage (GMT->parent, 3, "%s 4-character <agency><vessel> codes, which will return all cruises from those vessels.", GMT_LINE_BULLET);
+	GMT_Usage (GMT->parent, 3, "%s A single =<list>, where <list> is a table with NGDC IDs, one per line.", GMT_LINE_BULLET);
+	GMT_Usage (GMT->parent, -2, "If nothing is specified we return all cruises in the data base. "
+		"(See the documentation for agency and vessel codes).");
 }
 
 GMT_LOCAL int mgd77_compare_L (const void *p1, const void *p2) {
@@ -5633,24 +5634,23 @@ int MGD77_igrf10syn (struct GMT_CTRL *GMT, int isv, double date, int itype, doub
 	return (MGD77_NO_ERROR);
 }
 
-void MGD77_IGF_text (struct GMT_CTRL *GMT, FILE *fp, int version) {
-	gmt_M_unused(GMT);
+void MGD77_IGF_text (struct GMTAPI_CTRL *API, int indent, int version) {
 	switch (version) {
 		case 1:	/* Heiskanen 1924 model */
-			fprintf (fp, "g = %.12g * [1 + %.6f * sin^2(lat) - %.7f * sin^2(2*lat) + %.6f * cos^2(lat) * cos^2(lon-18)]\n",
+			GMT_Usage (API, indent, "g = %.12g * [1 + %.6f * sin^2(lat) - %.7f * sin^2(2*lat) + %.6f * cos^2(lat) * cos^2(lon-18)]",
 				MGD77_IGF24_G0, MGD77_IGF24_G1, MGD77_IGF24_G2, MGD77_IGF24_G3);
 			break;
 		case 2:	/* International 1930 model */
-			fprintf (fp, "g = %.12g * [1 + %.7f * sin^2(lat) - %.7f * sin^2(2*lat)]\n", MGD77_IGF30_G0, MGD77_IGF30_G1, MGD77_IGF30_G2 );
+			GMT_Usage (API, indent, "g = %.12g * [1 + %.7f * sin^2(lat) - %.7f * sin^2(2*lat)]", MGD77_IGF30_G0, MGD77_IGF30_G1, MGD77_IGF30_G2 );
 			break;
 		case 3:	/* IAG 1967 model */
-			fprintf (fp, "g = %.12g * [1 + %.7f * sin^2(lat) - %.7f * sin^2(2*lat)]\n", MGD77_IGF67_G0, MGD77_IGF67_G1, MGD77_IGF67_G2);
+			GMT_Usage (API, indent, "g = %.12g * [1 + %.7f * sin^2(lat) - %.7f * sin^2(2*lat)]", MGD77_IGF67_G0, MGD77_IGF67_G1, MGD77_IGF67_G2);
 			break;
 		case 4:	/* IAG 1980 model */
-			fprintf (fp, "g = %.12g * [(1 + %.14g * sin^2(lat)) / sqrt (1 - %.14g * sin^2(lat))]\n", MGD77_IGF80_G0, MGD77_IGF80_G1, MGD77_IGF80_G2);
+			GMT_Usage (API, indent, "g = %.12g * [(1 + %.14g * sin^2(lat)) / sqrt (1 - %.14g * sin^2(lat))]", MGD77_IGF80_G0, MGD77_IGF80_G1, MGD77_IGF80_G2);
 			break;
 		default:	/* Unrecognized */
-			fprintf (fp, "Unrecognized theoretical gravity formula code (%d)\n", version);
+			GMT_Usage (API, indent, "Unrecognized theoretical gravity formula code (%d)", version);
 			break;
 	}
 }

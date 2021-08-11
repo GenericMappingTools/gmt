@@ -775,24 +775,28 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	/* Show the usage */
 	char *action[2] = {"extract", "plot"};
 	char *action2[2] = {"extracting", "plotting"};
-	if (plot == 1)
-		GMT_Message (API, GMT_TIME_NONE, "\t-%c Apply different fill or outline to specified list of countries.\n", option);
-	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-%c Extract clipping polygons from specified list of countries.\n", option);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Based on closed polygons from the Digital Chart of the World (DCW).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append comma-separated list of ISO 3166 codes for countries to %s, i.e.,\n", action[plot]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   <code1>,<code2>,... etc., using the 2-character country codes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to just list the countries and their codes [no %s takes place].\n", action2[plot]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +L to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Select =<continent>+l|L to only list countries from that continent (repeatable).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +z to add -Z<countrycode> to multisegment headers if extracting polygons.\n");
+	char *usage[2] = {"Extract clipping polygons", "Apply different fill or outlines"};
+	GMT_Usage (API, 1, "\n-%c%s", option, DCW_OPT);
+	GMT_Usage (API, -2, "%s for specified list of countries. "
+		"Based on closed polygons from the Digital Chart of the World (DCW). "
+		"Append comma-separated list of ISO 3166 codes for countries to %s, i.e., "
+		"<code1>,<code2>,... etc., using the 2-character country codes. "
+		"To select a state of a country (if available), append .state, e.g, US.TX for Texas. "
+		"To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code>. Some modifiers:", usage[plot], action[plot]);
 	if (plot == 1) {
-		GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<pen> to draw outline [none] and +g<fill> to fill [none].\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   Append +c or +C to set clip paths for the inside or outside area, respectively [none].\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   One of +c|C|p|g must be specified to plot; if -M is in effect we just get the data.\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   Repeat -%c to give different groups of items their own pen/fill settings.\n", option);
+		GMT_Usage (API, 3, "+c Set clip paths for the inside  area [none].");
+		GMT_Usage (API, 3, "+C Set clip paths for the outside area [none].");
+		GMT_Usage (API, 3, "+g Fill polygons using given <fill> to fill [none].");
+	}
+	GMT_Usage (API, 3, "+l Just list the countries and their codes [no %s takes place].", action2[plot]);
+	GMT_Usage (API, 3, "+L List states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US. "
+		"Select =<continent>+l|L to only list countries from that continent (repeatable).");
+	if (plot == 1)
+		GMT_Usage (API, 3, "+p Draw outline using given <pen> [none].");
+	GMT_Usage (API, 3, "+z Add -Z<countrycode> to multisegment headers if extracting polygons.");
+	if (plot == 1) {
+		GMT_Usage (API, -2, "Note: One of +c|C|p|g must be specified to plot; if -M is in effect we just get the data. "
+			"Repeat -%c to give different groups of items their own pen/fill settings.", option);
 	}
 }
 
@@ -849,7 +853,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					break;
 				case 'p':
 					if (gmt_getpen (GMT, &p[1], &(this_item->pen))) {	/* Error decoding pen */
-						gmt_pen_syntax (GMT, option, NULL, " ", 0);
+						gmt_pen_syntax (GMT, option, NULL, " ", NULL, 0);
 						n_errors++;
 					}
 					this_item->mode |= DCW_DO_OUTLINE;

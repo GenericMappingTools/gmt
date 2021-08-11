@@ -698,9 +698,9 @@ binary metafile plot systems since such files cannot easily be modified
 after they have been created. GMT programs also write many comments to
 the plot file which make it easier for users to orient themselves should
 they need to edit the file (e.g., % Start of x-axis) [16]_. All
-GMT programs create PostScript code by calling the :doc:`PSL </postscriptlight>` plot
+GMT programs create PostScript code by calling the :doc:`PSL </devdocs/postscriptlight>` plot
 library (The user may call these functions from his/her own C or FORTRAN
-plot programs. See the manual pages for :doc:`PSL </postscriptlight>` syntax). Although
+plot programs. See the manual pages for :doc:`PSL </devdocs/postscriptlight>` syntax). Although
 GMT programs can create very individualized plot code, there will
 always be cases not covered by these programs. Some knowledge of
 PostScript will enable the user to add such features directly into the
@@ -2319,7 +2319,7 @@ conventions for netCDF grids. Thus, products created under those
 conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be
 read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
-`ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_, `Panoply
+`ncview <https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_, `Panoply
 <http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
 <https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.

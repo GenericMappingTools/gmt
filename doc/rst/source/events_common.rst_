@@ -44,7 +44,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **r**\ [*dpu*][**c**\|\ **i**]\|\ **s**
+**-A**\ **r**\ [*dpu*\ [**c**\|\ **i**]]\|\ **s**
     When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
     supported and specified via the **-A**\ directive: (1) Choose **-Ar** if your input data are *lines*, the data
     format is given as *x, y, time*, and the "event" is the portion of that line limited by the current
@@ -89,7 +89,7 @@ Optional Arguments
 
 .. _-E:
 
-**-Es**\|\ **t**\ [**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
+**-E**\ [**s**\|\ **t**\ ][**+o**\|\ **O**\ *dt*][**+r**\ *dt*][**+p**\ *dt*][**+d**\ *dt*][**+f**\ *dt*][**+l**\ *dt*]
     Set the time knots for the **s**\ ymbol or **t**\ ext time-functions.  Append
     **+o** to shift the event start and end times by a constant offset (basically shifting
     the event in time by *dt*\ ; or use **+O** to only shift the start time, effectively shortening
@@ -145,7 +145,7 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ **i**\|\ **s**\|\ **t**\ [*val1*]\ [**+c**\ *val2*]
+**-M**\ **i**\|\ **s**\|\ **t**\ *val1*\ [**+c**\ *val2*]
     Modify the initial **i**\ ntensity of the color, **s**\ ize of the symbol, or its **t**\ ransparency during
     the *rise* interval [Defaults are 1, 1, and 100, respectively].  Option **-M** is repeatable for the different attributes.
     Optionally, for finite-duration events you may append **+c** to set the corresponding terminal value

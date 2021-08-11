@@ -1550,6 +1550,7 @@ GMT_LOCAL void gmtplot_circle_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTR
 
 GMT_LOCAL void gmtplot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	bool circles = false;
+	unsigned int flag = PSL_CLOSE;
 	uint64_t i, k = 0, nr, n_max_path;
 	double a, da;
 
@@ -1597,17 +1598,22 @@ GMT_LOCAL void gmtplot_theta_r_map_boundary (struct GMT_CTRL *GMT, struct PSL_CT
 			gmt_geo_to_xy (GMT, a, GMT->common.R.wesn[YLO], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);
 		}
 		if (circles) {	/* Nothing to connect to, so plot this circle as is */
-			PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
+			PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)nr, PSL_MOVE|PSL_STROKE);
 			k = 0;	/* Start all over */
 		}
 	}
+	else if (k) {   /* Must plot now */
+		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)k, PSL_MOVE|PSL_STROKE);
+		k = 0;
+    }
 	/* Now at W (XLO, YLO).  If need to add a radial W boundary add it now to the array, ending at XLO, YHI (where we started) */
 	if (GMT->current.map.frame.side[W_SIDE] & GMT_AXIS_DRAW) {
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);	k++;
 		gmt_geo_to_xy (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YHI], &GMT->current.plot.x[k], &GMT->current.plot.y[k]);	k++;
 	}
+	for (i = S_SIDE; i <= W_SIDE; i++) if ((GMT->current.map.frame.side[i] & GMT_AXIS_DRAW) == 0) flag = 0;
 	if (k)	/* Finally draw the strange donut/pacman boundary as one piece */
-		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)k, PSL_MOVE|PSL_STROKE|PSL_CLOSE);
+		PSL_plotline (PSL, GMT->current.plot.x, GMT->current.plot.y, (int)k, PSL_MOVE|PSL_STROKE|flag);
 }
 
 GMT_LOCAL void gmtplot_map_tick (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double *xx, double *yy, unsigned int *sides, double *angles, unsigned int nx, unsigned int type, double len) {
@@ -2640,7 +2646,7 @@ bool gmtplot_skip_pole_lat_annotation (struct GMT_CTRL *GMT, double lat) {
 
 static char *gmtplot_revise_angles_just (struct GMT_CTRL *GMT, double line_angle, unsigned side, unsigned int def_just[], double *t_angle, unsigned int *just) {
 	/* Given the side (W or E) and angle of the boundary, determine the justification of the text and possibly flip it 180 */
-	static char *flip[2] = {"", "neg "}, *name = "WE";
+	static char *flip[2] = {"", "neg "};
 	unsigned int k = GMT->current.proj.got_azimuths ? 1 : 0, pside;
 	if (side == W_SIDE) side = 0; else side = 1;	/* Turn W_SIDE to 0 and E_SIDE to 1 for use with flip and def_just arrays */
 	pside = GMT->current.proj.got_azimuths ? 1-side : side;	/* Since azimuths go the other way */

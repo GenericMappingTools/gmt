@@ -11,7 +11,7 @@ gmt begin polycut
 	# Like first, but retain input region
 	gmt grdcut @earth_relief_30m -FFR.txt -GFR_world.grd
 	gmt grdimage FR_world.grd -B -Rd -JQ0/18c
-	gmt subplot begin 1x2 -Fs8.5c -SCb -SRl -RFR -JM8.5c -M0.35c -Yh+1c
+	gmt subplot begin 1x2 -Fs8.5c -Scb -Srl -RFR -JM8.5c -M0.35c -Yh+1c
 		gmt grdimage FR_only.grd -c
 		gmt grdimage FR_not.grd -c
 	gmt subplot end

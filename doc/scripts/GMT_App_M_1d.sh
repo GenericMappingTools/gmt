@@ -39,25 +39,22 @@ y=0.375
 y2=0.25
 while [ $i -le $n2 ]
 do
-	j=$(expr $i + 1)
-	left=$(sed -n ${j}p tt.lis)
-	right=$(sed -n ${i}p tt.lis)
-	if [ -n "$left" ]; then
-	  gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
-	  gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
+	j2=$(expr $n2 + 1 - $i)
+	right=$(sed -n ${j2}p tt.lis)
+	if [[ ${i} < ${n2} ]]; then
+		j1=$(expr $n2 - $i)
+		left=$(sed -n ${j1}p tt.lis)
+		gmt makecpt -H -C$left -T-1/1 > tt.left.cpt
+		gmt makecpt -H -C$left -T-1/1/0.25 > tt.left2.cpt
+		gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
+		gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
+		echo 1.55 $y ${left} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC
+		x=4.50
+	else
+		x=3.05
 	fi
 	gmt makecpt -H -C$right -T-1/1 > tt.right.cpt
 	gmt makecpt -H -C$right -T-1/1/0.25 > tt.right2.cpt
-	if [ -n "$left" ]; then
-	  gmt colorbar -Dx1.55i/${y}i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
-	  gmt colorbar -Dx1.55i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.left2.cpt -Bf0.25
-		echo 1.55 $y ${left} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC
-	fi
-	if [ ${i} == ${n2} ] && [ $((i % 2)) != 0 ]; then
-		x=3.05
-	else
-		x=4.50
-	fi
 	gmt colorbar -Dx${x}i/${y}i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
 	gmt colorbar -Dx${x}i/${y2}i+w2.70i/0.125i+h+jTC -Ctt.right2.cpt -Bf0.25
 	echo ${x} $y ${right} | gmt text -D0/0.05i -F+f9p,Helvetica-Bold+jBC

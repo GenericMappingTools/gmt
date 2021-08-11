@@ -1,5 +1,9 @@
 .. |SYN_OPT-B| replace:: |-B|\ [**p**\|\ **s**]\ *parameters*
 
+.. |SYN_OPT-D2| replace:: |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*]
+
+.. |SYN_OPT-D3| replace:: |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+v**\ *vname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*]
+
 .. |SYN_OPT-I| replace:: |-I|\ *increment*
 
 .. |SYN_OPT-R| replace:: |-R|\ *region*
@@ -66,7 +70,7 @@
 
 .. |SYN_OPT-w| replace:: **-w**\ :ref:`flags <-w_full>`
 
-.. |SYN_OPT-x| replace:: **-x**\ [[-]\ *n*]
+.. |SYN_OPT-x| replace:: **-x**\ [[-]\ :ref:`n <core_full>`]
 
 .. |SYN_OPT-:| replace:: **-:**\ [**i**\|\ **o**]
 

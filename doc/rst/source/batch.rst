@@ -14,14 +14,14 @@ Synopsis
 
 **gmt batch** *mainscript*
 |-N|\ *prefix*
-|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
+|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
 [ |-Sb|\ *preflight* ]
 [ |-Sf|\ *postflight* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*workdir*] ]
+[ |-W|\ [*dir*] ]
 [ |-Z| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
@@ -58,15 +58,16 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
+**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
     Either specify how many jobs to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of jobs instead), or supply a file with
     a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
     *mainscript* as named variables **BATCH_COL0**, **BATCH_COL1**, etc., while any trailing text
     can be accessed via the variable **BATCH_TEXT**.  Append **+w** to split the trailing
     string into individual *words* that can be accessed via variables **BATCH_WORD0**, **BATCH_WORD1**,
-    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
-    as the valid separator(s). The number of records equals the number of jobs. Note that the *preflight* script is allowed to
+    etc. By default we look for either tabs or spaces to separate words.  Append *str* to select other character(s)
+    as the valid separator(s) instead. To just use TAB as the only valid separator use **+W** instead.
+    The number of records equals the number of jobs. Note that the *preflight* script is allowed to
     create *timefile*, hence we check for its existence both before *and* after the *preflight* script has
     completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
     job number via **+s**\ *first*.  **Note**: All jobs are still included; this modifier only affects
@@ -124,13 +125,13 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*workdir*]
+**-W**\ [*dir*]
     By default, all temporary files and job products are created in the subdirectory *prefix* set via **-N**.
-    You can override that selection by giving another *workdir* as a relative or full directory path. If no
+    You can override that selection by giving another *dir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
     problems related to low space in the main directory.  The product files will still be placed in the *prefix*
-    directory.  The *workdir* is removed unless **-Q** is specified for debugging.
+    directory.  The *dir* is removed unless **-Q** is specified for debugging.
 
 .. _-Z:
 
