@@ -124,7 +124,7 @@ Examples
 --------
 
 To create a 1 x 1 degree global grid file from the ASCII
-coefficients in the remote file EGM96_to_360.txt, use
+coefficients in the remote file EGM96_to_36.txt, use
 
    ::
 
