@@ -1990,9 +1990,11 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		if (D->table[0]->segment[0]->n_rows < (uint64_t)P->n_colors) {
-			GMT_Report (API, GMT_MSG_ERROR, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
+			GMT_Report (API, GMT_MSG_ERROR, "-Z file %s has fewer entries than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
+		else if (D->table[0]->segment[0]->n_rows > (uint64_t)P->n_colors)
+			GMT_Report (API, GMT_MSG_WARNING, "-Z file %s has more entries than -C file %s - only the first %d entries will be used\n", Ctrl->Z.file, Ctrl->C.file, P->n_colors);
 		z_width = D->table[0]->segment[0]->data[GMT_X];
 		for (i = 0; i < P->n_colors; i++) sum += z_width[i];
 		if (!doubleAlmostEqual (sum, fabs (Ctrl->D.dim[GMT_X]))) {	/* Ensure the lengths sum up correctly */
