@@ -163,7 +163,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [-C<cpt>] [-D%s[+w<length>[/<width>]][+e[b|f][<length>]][+h|v][+j<justify>][+ma|c|l|u][+n[<txt>]]%s[+r]] "
 		"[-F%s] [-G<zlo>/<zhi>] [-I[<max_intens>|<low_i>/<high_i>]] [%s] %s[-L[i][<gap>]] [-M] [-N[p|<dpi>]] %s%s[-Q] [%s] "
-		"[-S[+a<angle>][+c|n][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<zfile>] %s[%s] [%s] [%s]\n",
+		"[-S[+a<angle>][+c|n][+s][+x<label>][+y<unit>]] [%s] [%s] [-W<scale>] [%s] [%s] [-Z<widthfile>] %s[%s] [%s] [%s]\n",
 			name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT,
 			GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
@@ -233,10 +233,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-W<scale>");
 	GMT_Usage (API, -2, "Multiply all z-values in the CPT by <scale> [no change].");
 	GMT_Option (API, "X");
-	GMT_Usage (API, 1, "\n-Z<zfile>");
-	GMT_Usage (API, -2, "Give file with colorbar-width (in %s) per color entry. By default, width of entry",
-		"is scaled to color range, i.e., z = 0-100 gives twice the width as z = 100-150.",
-		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Usage (API, 1, "\n-Z<widthfile>");
+	GMT_Usage (API, -2, "Give file with colorbar-widths (relative or absolute) per color entry "
+		"[Default (no -Z) computes widths via their fractions of the full data range]. "
+		"Note: If the sum of widths differs from bar length then the widths are scaled to match it.");
 	GMT_Option (API, "c,p");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "(Requires -R and -J for proper functioning).");
 	GMT_Option (API, "t,.");
@@ -1975,14 +1975,29 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->Z.active) {
-		if (GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, &D)) {
+	if (Ctrl->Z.active) {	/* Widths of slices per color is prescribed manually via this file */
+		double sum = 0.0;
+		unsigned int save = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_DIMENSION);
+
+		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->Z.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		z_width = D->table[0]->segment[0]->data[GMT_X];
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, save);
+		if (D->n_segments != 1) {
+			GMT_Report (API, GMT_MSG_ERROR, "-Z file %s must only have one segment!\n", Ctrl->Z.file);
+			Return (GMT_RUNTIME_ERROR);
+		}
 		if (D->table[0]->segment[0]->n_rows < (uint64_t)P->n_colors) {
 			GMT_Report (API, GMT_MSG_ERROR, "-Z file %s has fewer slices than -C file %s!\n", Ctrl->Z.file, Ctrl->C.file);
 			Return (GMT_RUNTIME_ERROR);
+		}
+		z_width = D->table[0]->segment[0]->data[GMT_X];
+		for (i = 0; i < P->n_colors; i++) sum += z_width[i];
+		if (!doubleAlmostEqual (sum, fabs (Ctrl->D.dim[GMT_X]))) {	/* Ensure the lengths sum up correctly */
+			double f = fabs (Ctrl->D.dim[GMT_X]) / sum;
+			for (i = 0; i < P->n_colors; i++) z_width[i] *= f;
 		}
 	}
 	else if (Ctrl->L.active) {
