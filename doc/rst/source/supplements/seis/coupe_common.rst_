@@ -38,28 +38,38 @@ Required Arguments
 
 .. _-A:
 
-**-A**
+**-Aa**\|\ **b**\|\ **c**\|\ **d**\ *params*\ [**+c**\ [**n**\|\ **t**]][**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
   Select the cross-section parameters:
 
-  **-Aa**\ *lon1*/*lat1*/*lon2*/*lat2*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
+  **-Aa**\ *lon1*/*lat1*/*lon2*/*lat2*
      *lon* and *lat* are the longitude and latitude of points 1 and 2
      limiting the length of the cross-section, *dip* is the dip of the plane
      on which the cross-section is made [90], *width* is the width in km of the
      cross-section on each side of a vertical plane or above and under an
-     oblique plane [infinity], and *dmin* and *dmax* are the distances min and max from
+     oblique plane [infinity], and *min* and *max* are the limits on distances from
      horizontal plane in km, along steepest descent direction. Add **+r** to get the
-     plot domain from the cross-section parameters.
+     plot domain from the cross-section parameters; append **a** for automatic rounding
+     of the domain, **e** for the exact limits [Default], or *dx* to round the distances
+     to integer multiples of *dx*. Use **+z** to control the depth range by appending
+     **a** for automatic rounding, **e** to use the exact fit values [Default], *dz* to round
+     depths to integer multiples of *dz*, or give desired *min/max* range. For
+     **a** and *dz* you may prepend **s** to clamp the minimum depth at the surface (0).
+     When automatic depth range selection is in effect we consider the size of the symbols
+     so that no symbol close to the depth limits will be clipped.
+     **Note**: Append **+c** to simply report the determined region and exit (no plotting takes
+     places).  By default (**+cn**) we report a single numerical record with *xmin xmax ymin ymax*.
+     Use **+ct** to instead report a text record in the format **-R**\ *xmin/xmax/ymin/ymax*.
 
-  **-Ab**\ *lon1*/*lat1*/*strike*/*length*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
+  **-Ab**\ *lon1*/*lat1*/*strike*/*length*
      *lon1* and *lat1* are the longitude and latitude of the beginning of the
      cross-section, *strike* is the azimuth of the direction of the
      cross-section, and *length* is the length along which the cross-section
      is made (in km). The other parameters are the same as for **-Aa** option.
 
-  **-Ac**\ *x1*/*y1*/*x2*/*y2*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
+  **-Ac**\ *x1*/*y1*/*x2*/*y2*
      The same as **-Aa** option with *x* and *y* given as Cartesian coordinates.
 
-  **-Ad**\ *x1*/*y1*/*strike*/*length*\ [**+d**\ *dip*][**+w**\ *width*][**+z**\ *dmin*/*dmax*][**+r**]
+  **-Ad**\ *x1*/*y1*/*strike*/*length*
      The same as **-Ab** option with *x* and *y* given as Cartesian coordinates.
 
 .. _-S:

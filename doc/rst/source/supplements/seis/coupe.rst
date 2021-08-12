@@ -12,8 +12,11 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt coupe** [ *table* ] |-J|\ *parameters*
-|SYN_OPT-R| |-A|\ *parameters*
+**gmt coupe**
+[ *table* ]
+|-J|\ *parameters*
+|SYN_OPT-R|
+|-A|\ **a**\|\ **b**\|\ **c**\|\ **d**\ *params*\ [**+c**\ [**n**\|\ **t**]][**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
 |-S|\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
