@@ -54,6 +54,8 @@ Required Arguments
      **a** for automatic rounding, **e** to use the exact fit values [Default], *dz* to round
      depths to integer multiples of *dz*, or give desired *min/max* range. For
      **a** and *dz* you may prepend **s** to clamp the minimum depth at the surface (0).
+     When automatic depth range selection is in effect we consider the size of the symbols
+     so that no symbol close to the depth limits will be clipped.
      **Note**: Append **+c** to simply report the determined region and exit (no plotting takes
      places).  By default (**+cn**) we report a single numerical record with *xmin xmax ymin ymax*.
      Use **+ct** to instead report a text record in the format **-R**\ *xmin/xmax/ymin/ymax*.
