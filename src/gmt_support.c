@@ -14901,10 +14901,10 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	struct GMT_DATASEGMENT *S = NULL;
 
 	/* Temporarily change what data type col one is */
-	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	save_coltype = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
 	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
-	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, gmt_M_type (GMT, GMT_IN, A->id));
 	GMT->current.io.trailing_text[GMT_IN] = true;	/* Since we definitively have that here */
 	text = ((item == 'a' || item == 'i') && labels);
 	if (!GMT->common.R.oblique)	/* Eliminate items outside rectangular w/e/s/n/z0/z1 bounds */
@@ -14915,11 +14915,11 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open custom annotation file %s!\n", A->file_custom);
-		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (0);
 	}
 	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
 	S = D->table[0]->segment[0];	/* All we got */
@@ -17385,11 +17385,14 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 	if (T->file) {	/* Got a file, read first column into the array; must be one segment only */
 		/* Temporarily change what data type col zero is */
 		struct GMT_DATASET *D = NULL;
-		unsigned int save_coltype[2] = {GMT->current.io.col_type[GMT_IN][GMT_X],GMT->current.io.col_type[GMT_OUT][GMT_X]};
+		unsigned int save_coltype[2];
 		unsigned int save_trailing = GMT->current.io.trailing_text[GMT_IN];
 		unsigned int save_max_cols_to_read = GMT->current.io.max_cols_to_read;
 		int error;
-		if (T->temporal) GMT->current.io.col_type[GMT_IN][GMT_X] = GMT_IS_ABSTIME;
+
+		save_coltype[GMT_IN]  = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+		save_coltype[GMT_OUT] = gmt_get_column_type (GMT, GMT_OUT, GMT_X);
+		if (T->temporal) gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);
 		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
 		GMT->current.io.record_type[GMT_IN] = GMT_READ_NORMAL;
 		GMT->current.io.trailing_text[GMT_IN] = false;
@@ -17397,9 +17400,9 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, T->file, NULL)) == NULL) {
 			return (GMT_PARSE_ERROR);
 		}
-		if (GMT->current.io.col_type[GMT_IN][GMT_X] == GMT_IS_ABSTIME) T->temporal = true;	/* We read absolute times from the file */
-		GMT->current.io.col_type[GMT_IN][GMT_X]  = save_coltype[GMT_IN];
-		GMT->current.io.col_type[GMT_OUT][GMT_X] = save_coltype[GMT_OUT];
+		if (gmt_get_column_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME) T->temporal = true;	/* We read absolute times from the file */
+		gmt_set_column_type (GMT, GMT_IN,  GMT_X, save_coltype[GMT_IN]);
+		gmt_set_column_type (GMT, GMT_OUT, GMT_X, save_coltype[GMT_OUT]);
 		GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 		GMT->current.io.max_cols_to_read = save_max_cols_to_read;
 		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
@@ -17624,7 +17627,7 @@ struct GMT_CONTOUR_INFO * gmt_get_contours_from_table (struct GMT_CTRL *GMT, cha
 	 */
 	bool got_angle;
 	char pen[GMT_LEN64] = {""}, txt[GMT_LEN64] = {""};
-	unsigned int seg, row, c, save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	unsigned int seg, row, c, save_coltype = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 	int nc;
 	struct GMT_DATASET *C = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
