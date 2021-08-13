@@ -7,9 +7,9 @@
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
-	opt="-Mps -Fnone"
+	opt="-Mps"
 else	# Make animated GIF
-	opt="-A+l"
+	opt="-Fgif+l"
 fi
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh
