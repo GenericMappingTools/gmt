@@ -2485,6 +2485,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16] = {""};
 			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
+			double w_new, h_new;
 
 			strncpy (tag, &ext[Ctrl->T.device][1], 15U);
 			gmt_str_toupper (tag);
@@ -2510,12 +2511,21 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			strcat (out_file, ext[Ctrl->T.device]);
 
 			if (Ctrl->I.new_dpi_x) {	/* We have a resize request (was Ctrl->I.resize = true;) */
-				pix_w = urint (psconvert_smart_ceil (w * Ctrl->I.new_dpi_x / 72.0));
-				pix_h = urint (psconvert_smart_ceil (h * Ctrl->I.new_dpi_y / 72.0));
+				w_new = w * Ctrl->I.new_dpi_x / 72.0;
+				h_new = h * Ctrl->I.new_dpi_y / 72.0;
 			}
 			else {
-				pix_w = urint (psconvert_smart_ceil (w * Ctrl->E.dpi / 72.0));
-				pix_h = urint (psconvert_smart_ceil (h * Ctrl->E.dpi / 72.0));
+				w_new = w * Ctrl->E.dpi / 72.0;
+				h_new = h * Ctrl->E.dpi / 72.0;
+
+			}
+			if (Ctrl->A.round) {
+				pix_w = urint (w_new);
+				pix_h = urint (h_new);
+			}
+			else {
+				pix_w = urint (psconvert_smart_ceil (w_new));
+				pix_h = urint (psconvert_smart_ceil (h_new));
 			}
 
 			if (Ctrl->H.active)	/* Rasterize at higher resolution, then downsample in gs */
