@@ -167,11 +167,6 @@ Optional Arguments
     Draw the "beach ball" outline using current pen (see |-W|) or
     sets pen attributes.
 
-.. _-M:
-
-**-M**
-    Same size for any magnitude.
-
 .. _-N:
 
 **-N**
