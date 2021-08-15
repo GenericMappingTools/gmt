@@ -22,7 +22,7 @@ modifiers to control how the rows are counted [Default is **+a**]:
 Alternatively, use **+c**\ *col* to indicate that the arguments instead are min/max *data limits* for the values in
 column *col*. With **+c**\ *col*, only rows whose data for the given column *col* are within the range(s) given by the
 *min*/*max* limits are read (with **-qi**) or written (with **-qo**). **Note**: Because arguments may contain colons or
-be negative, your must specify *start*/*stop* instead of *start*\ [:*inc*]:*stop*. If *min* or *max* is not given we
+be negative, you must specify *min*/*max* instead of *start*\ [:*inc*]:*stop*. If *min* or *max* is not given we
 default to -infinity and + infinity, respectively (e.g., **-qo**\ 50/**+c**\ 2 will only write records whose z-values is ≥ 50).
 
 **Note**: Header records do not increase the row counters; only data records do.
