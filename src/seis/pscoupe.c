@@ -495,7 +495,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+a Set the label angle [0].");
 	GMT_Usage (API, 3, "+f Set font attributes for the label [%s].", gmt_putfont (API->GMT, &font));
 	GMT_Usage (API, 3, "+j Set the label <justification> [TC].");
-	GMT_Usage (API, 3, "+l Use linear scaling for moment symbols [log moment].");
+	GMT_Usage (API, 3, "+l Use linear symbol scaling based on moment [magnitude].");
 	GMT_Usage (API, 3, "+m Use <scale> as fixed size for any magnitude or moment.");
 	GMT_Usage (API, 3, "+o Set the label offset <dx>[/<dy>] [0/0].");
 	GMT_Usage (API, 3, "+s Set reference magnitude [%g] or moment [%ge%d] (if +l) for symbol size.", SEIS_MAG_REFERENCE, SEIS_MOMENT_MANT_REFERENCE, SEIS_MOMENT_EXP_REFERENCE);
