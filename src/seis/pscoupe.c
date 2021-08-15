@@ -97,24 +97,10 @@ struct PSCOUPE_CTRL {
 		bool active;
 	} Q;
 	struct PSCOUPE_S {	/* -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>]  and -Fs */
-		bool active;
+		#include "meca_symbol.h"
+	/* Extra parameters for coupe */
 		bool zerotrace;
-		bool no_label;
-		bool read;	/* True if no scale given; must be first column after the required ones */
-		bool fixed;	/* Use fixed symbol size (+m) */
-		bool linear;	/* Scale symbols size linearly with moment (+l) */
-		unsigned int readmode;
-		unsigned int plotmode;
-		unsigned int n_cols;
 		int symbol;
-		char P_symbol, T_symbol;
-		double scale;
-		double angle;
-		double reference;
-		int justify;
-		double offset[2];
-		struct GMT_FILL fill;
-		struct GMT_FONT font;
 	} S;
 	struct PSCOUPE_T {	/* -T<nplane>[/<pen>] */
 		bool active;

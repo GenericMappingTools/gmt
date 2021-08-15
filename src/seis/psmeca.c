@@ -88,20 +88,7 @@ struct PSMECA_CTRL {
 		bool active;
 	} N;
 	struct PSMECA_S {	/* -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] */
-		bool active;
-		bool no_label;
-		bool read;	/* True if no scale given; must be first column after the required ones */
-		bool fixed;	/* Use fixed symbol size (+m) */
-		bool linear;	/* Scale symbols size linearly with moment (+l) */
-		unsigned int readmode;
-		unsigned int plotmode;
-		unsigned int n_cols;
-		double scale;
-		double angle;
-		double reference;
-		int justify;
-		double offset[2];
-		struct GMT_FONT font;
+#include "meca_symbol.h"
 	} S;
 	struct PSMECA_T {	/* -T<nplane>[/<pen>] */
 		bool active;
