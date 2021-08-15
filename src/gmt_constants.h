@@ -89,7 +89,7 @@
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
 #define GMT_PAPER_MARGIN_AUTO	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) for auto-size mode */
-#define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (12.7 centimeter) for fixed-size mode */
+#define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (2.54 centimeter) for fixed-size mode */
 
 #define GMT_JPEG_DEF_QUALITY	90	/* Default JPG quality value for psconvert -Tj */
 
@@ -273,7 +273,7 @@ enum GMT_time_period {
 #define GMT_DEFAULT_CPT_NAME	"turbo"
 /* Default color list (or cpt) for automatic, sequential color choices */
 #define GMT_DEFAULT_COLOR_SET	"#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F"
-	
+
 /* CPT extension is pretty fixed */
 #define GMT_CPT_EXTENSION	".cpt"
 #define GMT_CPT_EXTENSION_LEN	4U
