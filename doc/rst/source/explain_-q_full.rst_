@@ -3,7 +3,7 @@ The **-q** option
 
 **Syntax**
 
-**-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+**-q**\ [**i**\|\ **o**][~]\ *rows*\|\ *limits*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
     Select specific data rows to be read and/or written.
 
 **Description**
