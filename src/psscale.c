@@ -959,14 +959,24 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	/* Defeat the auto-repeat of axis info */
 	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
 	if (Ctrl->F.active) {	/* Place rectangle behind the color bar */
-		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, h_off = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
+		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, h_off = 0.0, v_sup_adjust = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
 
 		/* Must guesstimate the width of the largest horizontal annotation */
-		sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
-		sprintf (test, "%ld", lrint (ceil (center ? P->data[P->n_colors-1].z_low : P->data[P->n_colors-1].z_high)));
-		hor_annot_width = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
+		if (Ctrl->Q.active) {	/* Need to estimate width of 10^x instead */
+			sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
+			sprintf (test, "%ld", lrint (floor (P->data[P->n_colors-1].z_high)));
+			hor_annot_width = 2;	/* Width of the "10" part in number of fullsize characters*/
+			hor_annot_width += 0.7 * (MAX ((int)strlen (text), (int)strlen (test)));	/* Add width of the widest superscript which is 0.7 times smaller */
+			hor_annot_width *= GMT_DEC_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Convert to points then inches */
+			v_sup_adjust = 0.35 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Vertical increase in annotation height due to placing superscript */
+		}
+		else {	/* Regular linear use of values */
+			sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
+			sprintf (test, "%ld", lrint (ceil (center ? P->data[P->n_colors-1].z_low : P->data[P->n_colors-1].z_high)));
+			hor_annot_width = ((MAX ((int)strlen (text), (int)strlen (test)) + ndec) * GMT_DEC_WIDTH +
 			((ndec > 0) ? GMT_PER_WIDTH : 0.0))
 			* GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
+		}
 		bar_tick_len = fabs (GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER]);	/* Length of tickmarks */
 		if (Ctrl->D.horizontal) {	/* Determine center and dimensions of horizontal background rectangle */
 			/* Determine dimensions */
@@ -992,7 +1002,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 				v_off = 0.5 * (GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH - width);
 			}
 			/* Adjust clearances for the panel */
-			if (flip & PSSCALE_FLIP_ANNOT) dim[YHI] += annot_off; else dim[YLO] += annot_off;
+			if (flip & PSSCALE_FLIP_ANNOT) dim[YHI] += annot_off + v_sup_adjust; else dim[YLO] += annot_off + v_sup_adjust;
 			if (flip & PSSCALE_FLIP_LABEL) dim[YHI] += label_off; else dim[YLO] += label_off;
 			dim[YHI] += 0.5 * GMT->current.setting.map_frame_pen.width / PSL_POINTS_PER_INCH;
 			if (v_off > dim[YHI]) dim[YHI] = v_off;	/* Y-label is higher than top of bar */
