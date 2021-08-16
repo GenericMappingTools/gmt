@@ -47,8 +47,8 @@
 #define GMT_di_OPT	"-di<nodata>"
 #define GMT_do_OPT	"-do<nodata>"
 #define GMT_ho_OPT	"-ho[<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
-#define GMT_qi_OPT	"-qi[~]<rows>[,...][+c<col>][+a|f|s]"
-#define GMT_qo_OPT	"-qo[~]<rows>[,...][+c<col>][+a|f|s]"
+#define GMT_qi_OPT	"-qi[~]<rows>|<limits>[,...][+c<col>][+a|f|s]"
+#define GMT_qo_OPT	"-qo[~]<rows>|<limits>[,...][+c<col>][+a|f|s]"
 #define GMT_PAR_OPT	"--PAR=<value>"
 
 #ifdef GMT_MP_ENABLED
