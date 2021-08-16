@@ -59,9 +59,7 @@ To plot a text at the upper left corner of a 10 cm map::
 
     echo TopLeft | gmt text -R1/10/1/10 -JX10 -B -F+cTL -pdf plot
 
-To add a typeset figure caption for a 3-inch wide illustration, use
-
-   ::
+To add a typeset figure caption for a 3-inch wide illustration, use::
 
     gmt text -R0/3/0/5 -JX3i -h1 -M -N -F+f12,Times-Roman+jLT -pdf figure << EOF
     This is an unmarked header record not starting with #
