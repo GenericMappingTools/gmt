@@ -968,7 +968,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			hor_annot_width = 2;	/* Width of the "10" part in number of fullsize characters*/
 			hor_annot_width += 0.7 * (MAX ((int)strlen (text), (int)strlen (test)));	/* Add width of the widest superscript which is 0.7 times smaller */
 			hor_annot_width *= GMT_DEC_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Convert to points then inches */
-			v_sup_adjust = 0.35 * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Vertical increase in annotation height due to placing superscript */
+			v_sup_adjust = 0.35 * GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Vertical increase in annotation height due to placing superscript */
 		}
 		else {	/* Regular linear use of values */
 			sprintf (text, "%ld", lrint (floor (P->data[0].z_low)));
