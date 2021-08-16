@@ -1064,14 +1064,14 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 
-	unit[0] = label[0] = 0;
+	unit[0] = label[0] = 0;	/* Rest to blank */
 	/* Save label and unit, because we are going to switch them off in GMT->current.map.frame and do it ourselves */
 	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256-1);
-	strncpy (unit, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256-1);
-	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;
-	if (Ctrl->L.active) {
-		strncpy (label, Ctrl->S.label, GMT_LEN256-1);
-		strncpy (unit, Ctrl->S.unit, GMT_LEN256-1);
+	strncpy (unit,  GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256-1);
+	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;	/* No longer in -B machinery */
+	if (Ctrl->L.active || !B_set) {	/* May have gotten -S settings, if so, update */
+		if (label[0] == '\0') strncpy (label, Ctrl->S.label, GMT_LEN256-1);
+		if (unit[0] == '\0') strncpy (unit, Ctrl->S.unit, GMT_LEN256-1);
 	}
 	if (flip & PSSCALE_FLIP_ANNOT) {	/* Place annotations on the opposite side */
 		justify = l_justify = (Ctrl->D.horizontal) ? PSL_BC : PSL_MR;
