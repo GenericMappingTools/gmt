@@ -491,12 +491,12 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 				if (S->data[Ctrl->N.col][0] > S->data[Ctrl->N.col][S->n_rows-1]) {	/* t-column is monotonically decreasing */
 					min = (Ctrl->T.T.delay[GMT_X]) ? floor (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
 					max = (Ctrl->T.T.delay[GMT_Y]) ? ceil (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
-					Ctrl->T.T.reverse = true;	/* Flag we are monotonically decreasing in value */
+					Ctrl->T.T.reverse = true;	/* Flag we are monotonically decreasing in time for this segment */
 				}
 				else {
 					min = (Ctrl->T.T.delay[GMT_X]) ? ceil (S->data[Ctrl->N.col][0] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.min;
 					max = (Ctrl->T.T.delay[GMT_Y]) ? floor (S->data[Ctrl->N.col][S->n_rows-1] / Ctrl->T.T.inc) * Ctrl->T.T.inc : Ctrl->T.T.max;
-					Ctrl->T.T.reverse = false;	/* Flag we are monotonically increasing in value */
+					Ctrl->T.T.reverse = false;	/* Flag we are monotonically increasing in time for this segment */
 				}
 				if (gmt_create_array(GMT, 'T', &(Ctrl->T.T), &min, &max) != GMT_NOERROR) {
 					GMT_Report(API, GMT_MSG_WARNING, "Segment %" PRIu64 " in table %" PRIu64 " had troubles.\n", seg, tbl);
