@@ -88,7 +88,7 @@ EXTERN_MSC char *basename(char *path);
 #endif
 
 #ifndef HAVE_CHARCAT    /* Do not think this is a standard function but just in case */
-EXTERN_MSC char *charcat (char *dest, const char add);
+EXTERN_MSC char *chrcat (char *dest, const char add);
 #endif
 
 #ifdef __cplusplus

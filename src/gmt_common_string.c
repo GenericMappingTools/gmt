@@ -875,7 +875,7 @@ char *basename(char *path) {
 }
 
 #ifndef HAVE_CHARCAT	/* Do not think this is a standard function but just in case */
-char *charcat (char *dest, const char add) {
+char *chrcat (char *dest, const char add) {
 	/* Simple function to add a single character to a string. No check if there is room
 	 * only that it is not NULL, and we explicitly terminate the updated string */
 	if (dest) {

@@ -729,7 +729,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
 				if (save == GMT_IS_ABSTIME) {	/* Append unit used */
 					gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, save);	/* Reset column type */
-					charcat (record, GMT->current.setting.time_system.unit);
+					chrcat (record, GMT->current.setting.time_system.unit);
 				}
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
