@@ -17410,38 +17410,34 @@ int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM
 
 	/* Check the unit sanity */
 	switch (time_system->unit) {
-		case 'y':
-		case 'Y':
+		case 'y':	case 'Y':
 			/* This is a kludge: we assume all years are the same length, thinking that a user
 			with decimal years doesn't care about precise time.  To do this right would
 			take an entirely different scheme, not a simple unit conversion. */
 			time_system->scale = GMT_YR2SEC_F;
 			break;
-		case 'o':
-		case 'O':
+		case 'o':	case 'O':
 			/* This is also a kludge: we assume all months are the same length, thinking that a user
 			with decimal years doesn't care about precise time.  To do this right would
 			take an entirely different scheme, not a simple unit conversion. */
 			time_system->scale = GMT_MON2SEC_F;
 			break;
-		case 'd':
-		case 'D':
+		case 'w':	case 'W':
+			time_system->scale = GMT_WEEK2SEC_F;
+			break;
+		case 'd':	case 'D':
 			time_system->scale = GMT_DAY2SEC_F;
 			break;
-		case 'h':
-		case 'H':
+		case 'h':	case 'H':
 			time_system->scale = GMT_HR2SEC_F;
 			break;
-		case 'm':
-		case 'M':
+		case 'm':	case 'M':
 			time_system->scale = GMT_MIN2SEC_F;
 			break;
-		case 's':
-		case 'S':
+		case 's':	case 'S':
 			time_system->scale = 1.0;
 			break;
-		case 'c':
-		case 'C':
+		case 'c':	case 'C':
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c (seconds) is deprecated; use s instead.\n");
 				time_system->scale = 1.0;
@@ -17461,9 +17457,9 @@ int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM
 	if (gmtinit_scanf_epoch (GMT, time_system->epoch, &time_system->rata_die, &time_system->epoch_t0)) error += 2;
 
 	if (error & 1) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "TIME_UNIT is invalid.  Default assumed.\n");
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Choose one only from y o d h m s\n");
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Corresponding to year month day hour minute second\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "TIME_UNIT is invalid.  Default second is assumed.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Choose one only from %s\n", GMT_TIME_UNITS_DISPLAY);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Corresponding to year month week day hour minute second\n");
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
 	}
 	if (error & 2) {

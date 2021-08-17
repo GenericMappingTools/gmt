@@ -194,12 +194,14 @@ enum GMT_time_period {
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
 #define GMT_ARC_UNITS	"dms"		/* Distances in arc-{degree,minute,second}t */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
+#define GMT_TIME_FIX_UNITS	"wdhms"	/* Fixed time increment units */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
 #define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */
 #define GMT_DIM_UNITS_DISPLAY	"c|i|p"			/* Same, used to display as options */
 #define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n|u"	/* Same, used to display as options */
 #define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n|u"		/* Same, used to display as options */
 #define GMT_TIME_UNITS_DISPLAY	"y|o|w|d|h|m|s"		/* Same, used to display as options */
+#define GMT_TIME_FIX_UNITS_DISPLAY	"w|d|h|m|s"		/* Same, used to display as options */
 #define GMT_DEG2SEC_F	3600.0
 #define GMT_DEG2SEC_I	3600
 #define GMT_SEC2DEG	(1.0 / GMT_DEG2SEC_F)
@@ -214,6 +216,9 @@ enum GMT_time_period {
 #define GMT_HR2DAY	(1.0 / GMT_DAY2HR_F)
 #define GMT_WEEK2DAY_F	7.0
 #define GMT_WEEK2DAY_I	7
+#define GMT_WEEK2SEC_F	604800.0
+#define GMT_WEEK2SEC_I	604800
+#define GMT_SEC2WEEK	(1.0 / GMT_WEEK2SEC_F)
 #define GMT_DAY2WEEK	(1.0 / GMT_WEEK2DAY_F)
 #define GMT_DAY2MIN_F	1440.0
 #define GMT_DAY2MIN_I	1440
