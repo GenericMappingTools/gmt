@@ -873,3 +873,11 @@ char *basename(char *path) {
 	 assert(strlen(newstr) == newstr_len);
 	 return newstr;
 }
+
+#ifndef HAVE_CHARCAT	/* Do not think this is a standard function but just in case */
+char *charcat (char *dest, const char add) {
+	/* Simple function to add a single character to a string */
+	if (dest) dest[strlen(dest)] = add;
+	return (dest);
+}
+#endif

@@ -709,19 +709,17 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[YHI], GMT_Y);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->T.active) {	/* Return -T string */
-				unsigned int save = gmt_get_column_type (GMT, GMT_OUT, Ctrl->T.col);
-				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
+				unsigned int save = gmt_get_column_type (GMT, GMT_OUT, Ctrl->T.col);	/* Remember what column type this is */
+				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;	/* Round min/max given the increment */
 				wesn[XHI]  = ceil  (xyzmax[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
 				sprintf (record, "-T");
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XLO], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XHI], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
-				gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, GMT_IS_FLOAT);
+				if (save == GMT_IS_ABSTIME) gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, GMT_IS_FLOAT);	/* Must temporarily switch to float to typeset increment */
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
-				gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, save);
 				if (save == GMT_IS_ABSTIME) {	/* Append unit used */
-					char the_unit[2] = {""};
-					the_unit[0] = GMT->current.setting.time_system.unit;
-					strcat (record, the_unit);
+					gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, save);	/* Reset column type */
+					charcat (record, GMT->current.setting.time_system.unit);
 				}
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
