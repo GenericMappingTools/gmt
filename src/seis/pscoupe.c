@@ -792,8 +792,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 
 							if (gmt_get_modifier (opt->arg, 'j', word) && strchr ("LCRBMT", word[0]) && strchr ("LCRBMT", word[1]))
 								Ctrl->S.justify = gmt_just_decode (GMT, word, Ctrl->S.justify);
-							if (gmt_get_modifier (opt->arg, 'f', word))
-								n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
+							if (gmt_get_modifier (opt->arg, 'f', word)) {
+								if (word[0] == '-' || (word[0] == '0' && (word[1] == '\0' || word[1] == 'p')))
+									Ctrl->S.font.size = 0.0;
+								else
+									n_errors += gmt_getfont (GMT, word, &(Ctrl->S.font));
+							}
 							if (gmt_get_modifier (opt->arg, 'o', word)) {
 								if (gmt_get_pair (GMT, word, GMT_PAIR_DIM_DUP, Ctrl->S.offset) < 0) n_errors++;
 							} else {	/* Set default offset */
