@@ -33,7 +33,7 @@ Synopsis
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
-
+[ |SYN_OPT-s| ]
 |No-spaces|
 
 Description
