@@ -166,6 +166,8 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
+.. include:: explain_-s.rst_
+
 .. include:: explain_help.rst_
 
 .. include:: explain_precision.rst_
