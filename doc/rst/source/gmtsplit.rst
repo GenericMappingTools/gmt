@@ -165,6 +165,8 @@ Optional Arguments
 
 .. include:: explain_-q.rst_
 
+.. include:: explain_-s.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
