@@ -137,6 +137,8 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
+.. include:: explain_-s.rst_
+
 .. include:: explain_colon.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
