@@ -766,7 +766,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	unsigned int Label_justify, form, cap, join, n_xpos, nx = 0, ny = 0, nv, nm, barmem, k, justify, no_B_mode = Ctrl->S.mode;
 	int this_just, p_val, center = 0;
 	bool reverse, all = true, use_image, const_width = true, do_annot, use_labels, cpt_auto_fmt = true;
-	bool B_set = GMT->current.map.frame.draw, skip_lines = Ctrl->S.skip, need_image;
+	bool B_set = GMT->current.map.frame.set[GMT_X], skip_lines = Ctrl->S.skip, need_image;
 	char format[GMT_LEN256] = {""}, text[GMT_LEN256] = {""}, test[GMT_LEN256] = {""}, unit[GMT_LEN256] = {""}, label[GMT_LEN256] = {""}, endash;
 	static char *method[2] = {"polygons", "colorimage"};
 	unsigned char *bar = NULL, *tmp = NULL;
@@ -958,6 +958,16 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 
 	/* Defeat the auto-repeat of axis info */
 	if (!strcmp (GMT->current.map.frame.axis[GMT_X].label, GMT->current.map.frame.axis[GMT_Y].label)) GMT->current.map.frame.axis[GMT_Y].label[0] = 0;
+
+	unit[0] = label[0] = 0;	/* Rest to blank */
+	/* Save label and unit, because we are going to switch them off in GMT->current.map.frame and do it ourselves */
+	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256-1);
+	strncpy (unit,  GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256-1);
+	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;	/* No longer in -B machinery */
+	if (Ctrl->L.active || !B_set) {	/* May have gotten -S settings, if so, update */
+		if (label[0] == '\0') strncpy (label, Ctrl->S.label, GMT_LEN256-1);
+		if (unit[0] == '\0') strncpy (unit, Ctrl->S.unit, GMT_LEN256-1);
+	}
 	if (Ctrl->F.active) {	/* Place rectangle behind the color bar */
 		double x_center, y_center, bar_tick_len, u_off = 0.0, v_off = 0.0, h_off = 0.0, v_sup_adjust = 0.0, dim[4] = {0.0, 0.0, 0.0, 0.0};
 
@@ -986,18 +996,18 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			/* Extend y clearance by annotation height */
 			annot_off += GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 			/* If a label then add space for offset and label height */
-			if (GMT->current.map.frame.axis[GMT_X].label[0]) {
+			if (label[0]) {
 				label_off = 1.0;	/* 1-letter height */
-				if (!(flip & PSSCALE_FLIP_LABEL) && psscale_letter_hangs_down (GMT->current.map.frame.axis[GMT_X].label))
+				if (!(flip & PSSCALE_FLIP_LABEL) && psscale_letter_hangs_down (label))
 					label_off += 0.3;	/* Add 30% hang below baseline */
 				label_off *= GMT_LET_HEIGHT * GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;	/* Scale to inches */
 				label_off += MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]);	/* Add offset */
 			}
 			/* If a unit then add space on the right to deal with the unit */
-			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
+			if (unit[0]) {
 				/* u_off is width of the label placed on the right side , while v_off, if > 0, is the extra height of the label beyond the width of the bar */
-				size_t ylen = strlen (GMT->current.map.frame.axis[GMT_Y].label);
-				if (strchr (GMT->current.map.frame.axis[GMT_Y].label, '\\')) ylen = (ylen > 3) ? ylen - 3 : 0;
+				size_t ylen = strlen (unit);
+				if (strchr (unit, '\\')) ylen = (ylen > 3) ? ylen - 3 : 0;
 				u_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + (0.5+ylen) * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;
 				v_off = 0.5 * (GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH - width);
 			}
@@ -1038,13 +1048,13 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			/* Extend x clearance by annotation width */
 			annot_off += hor_annot_width;
 			/* Increase width if there is a label */
-			if (GMT->current.map.frame.axis[GMT_X].label[0])
+			if (label[0])
 				label_off = MAX (0.0, GMT->current.setting.map_label_offset[GMT_Y]) + GMT->current.setting.font_label.size / PSL_POINTS_PER_INCH;
 			/* If a unit then consider if its width exceeds the bar width; then use half the excess to adjust center and width of box, and its height to adjust the height of box */
-			if (GMT->current.map.frame.axis[GMT_Y].label[0]) {
+			if (unit[0]) {
 				/* u_off is ~half-width of the label placed on top of the vertical bar, while v_off is the extra height needed to accommodate the label */
-				size_t ylen = strlen (GMT->current.map.frame.axis[GMT_Y].label);
-				if (strchr (GMT->current.map.frame.axis[GMT_Y].label, '\\')) ylen = (ylen > 3) ? ylen - 3 : 0;
+				size_t ylen = strlen (unit);
+				if (strchr (unit, '\\')) ylen = (ylen > 3) ? ylen - 3 : 0;
 				u_off = 0.5 * MAX (0.0, 1.3*ylen * GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH - width);
 				v_off = MAX (0.0, GMT->current.setting.map_annot_offset[GMT_PRIMARY]) + GMT->current.setting.font_annot[GMT_PRIMARY].size * GMT_LET_HEIGHT / PSL_POINTS_PER_INCH;
 			}
@@ -1074,15 +1084,6 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 	}
 	gmt_setpen (GMT, &GMT->current.setting.map_frame_pen);
 
-	unit[0] = label[0] = 0;
-	/* Save label and unit, because we are going to switch them off in GMT->current.map.frame and do it ourselves */
-	strncpy (label, GMT->current.map.frame.axis[GMT_X].label, GMT_LEN256-1);
-	strncpy (unit, GMT->current.map.frame.axis[GMT_Y].label, GMT_LEN256-1);
-	GMT->current.map.frame.axis[GMT_X].label[0] = GMT->current.map.frame.axis[GMT_Y].label[1] = 0;
-	if (Ctrl->L.active) {
-		strncpy (label, Ctrl->S.label, GMT_LEN256-1);
-		strncpy (unit, Ctrl->S.unit, GMT_LEN256-1);
-	}
 	if (flip & PSSCALE_FLIP_ANNOT) {	/* Place annotations on the opposite side */
 		justify = l_justify = (Ctrl->D.horizontal) ? PSL_BC : PSL_MR;
 		y_base = width;
