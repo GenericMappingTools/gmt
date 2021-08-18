@@ -102,6 +102,13 @@
 #	include <mex.h>
 #endif
 
+/* These are used in gmtinit_init_custom_annot and gmtinit_decode_tinfo only */
+#define GMT_ITEM_ANNOT		0
+#define GMT_ITEM_INTVAL		1
+#define GMT_ITEM_TICK		2
+#define GMT_ITEM_GRID		3
+#define GMT_N_AXIS_ITEMS	4
+
 #define GMT_USER_MEDIA_OFFSET 1000
 #define GMT_COMPAT_INFO "Please see " GMT_DOC_URL "/changes.html#new-features-in-gmt-5 for more information.\n"
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keyword[case_val])
@@ -3557,30 +3564,30 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	struct GMT_DATASEGMENT *S = NULL;
 
 	/* Temporarily change what data type col one is */
-	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	save_coltype = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
 	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
-	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, gmt_M_type (GMT, GMT_IN, A->id));
 	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
 	GMT->current.io.record_type[GMT_IN] = GMT_READ_MIXED;
 	GMT->current.io.trailing_text[GMT_IN] = true;
 	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
-		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (1);
 	}
 	if (D->n_records == 0) {
 		GMT_Destroy_Data (GMT->parent, &D);
-		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (1);
 	}
-	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
 	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
-	gmt_M_memset (n_int, 4, int);
+	gmt_M_memset (n_int, GMT_N_AXIS_ITEMS, int);
 	S = D->table[0]->segment[0];	/* All we got */
 
 	for (row = 0; row < S->n_rows; row++) {
@@ -3593,16 +3600,16 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 		for (k = 0; type[k]; k++) {
 			switch (type[k]) {
 				case 'a':	/* Regular annotation */
-					n_int[0]++;
+					n_int[GMT_ITEM_ANNOT]++;
 					break;
 				case 'i':	/* Interval annotation */
-					n_int[1]++;
+					n_int[GMT_ITEM_INTVAL]++;
 					break;
 				case 'f':	/* Tick placement */
-					n_int[2]++;
+					n_int[GMT_ITEM_TICK]++;
 					break;
 				case 'g':	/* Gridline placement */
-					n_int[3]++;
+					n_int[GMT_ITEM_GRID]++;
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized type (%c) at row %d in custom file %s.\n", type[k], (int)row, A->file_custom);
@@ -3614,7 +3621,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	GMT_Destroy_Data (GMT->parent, &D);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processed custom annotations via %s for axis %d.\n", A->file_custom, A->id);
-	if (n_int[0] && n_int[1]) {
+	if (n_int[GMT_ITEM_ANNOT] && n_int[GMT_ITEM_INTVAL]) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
 		n_errors++;
 	}
@@ -3781,24 +3788,24 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 	if (!in) return (GMT_NOERROR);	/* NULL pointer passed */
 
 	if (flag == 'c') {	/* Custom annotation arrangement */
-		int k, n_int[4];
+		int k, n_int[GMT_N_AXIS_ITEMS];
 		char *list = "aifg";
 		if (!(gmt_access (GMT, &in[1], R_OK))) {
 			gmt_M_str_free (A->file_custom);
 			A->file_custom = strdup (&in[1]);
 			A->special = GMT_CUSTOM;
 			if (gmtinit_init_custom_annot (GMT, A, n_int)) return (-1);	/* See what ticks, anots, gridlines etc are requested */
-			for (k = 0; k < 4; k++) {
+			for (k = 0; k < GMT_N_AXIS_ITEMS; k++) {
 				if (n_int[k] == 0) continue;
 				flag = list[k];
 				if (!GMT->current.map.frame.primary) flag = (char)toupper ((int)flag);
 				if ((error = gmtinit_set_titem (GMT, A, "0", flag, str[axis], true)))	/* Store the findings for this segment */
 					return (error);
 			}
-			if (n_int[0]) A->item[GMT_ANNOT_UPPER].special = true;	/* custom  annotations */
-			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom interval annotations */
-			if (n_int[2]) A->item[GMT_TICK_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom tick annotations */
-			if (n_int[3]) A->item[GMT_GRID_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom gridline annotations */
+			if (n_int[GMT_ITEM_ANNOT])  A->item[GMT_ANNOT_UPPER].special = true;	/* custom annotations selected */
+			if (n_int[GMT_ITEM_INTVAL]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom interval annotations selected */
+			if (n_int[GMT_ITEM_TICK])   A->item[GMT_TICK_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom tick annotations selected */
+			if (n_int[GMT_ITEM_GRID])   A->item[GMT_GRID_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom gridlines selected */
 			if (axis == GMT_Z)
 				GMT->current.map.frame.drawz = true;
 			else
@@ -7451,9 +7458,9 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, -2, "Only accept input data records that contain the string \"pattern\". "
 				"Use -e~\"pattern\" to only accept data records that do NOT contain this pattern. "
 				"If your pattern begins with ~, escape it with \\~.  To match against "
-				"extended regular expressions use -e[~]/<regexp>/[i] (i for case-insensitive).");
-			GMT_Usage (API, 3, "+f Read patterns from <file> instead, one per line.");
-			GMT_Usage (API, -2, "To give a single pattern starting with +f, escape it with \\+f.");
+				"extended regular expressions use -e[~]/<regexp>/[i] (i for case-insensitive). "
+				"Use +f<file> to read patterns from a file instead, one pattern per line.");
+			GMT_Usage (API, -2, "Note: To give a single pattern starting with +f, escape it with \\+f.");
 			break;
 
 		case 'k':	/* -di option to tell GMT the relationship between NaN and a nan-proxy for input */
@@ -7636,10 +7643,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'w':	/* -w option for cyclicity */
 
 			GMT_Usage (API, 1, "\n%s", GMT_w_OPT);
-			GMT_Usage (API, -2, "Wrap selected column [0] with specified cyclicity: "
+			GMT_Usage (API, -2, "Wrap selected column [0] with specified cyclicity. "
 				"Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles. "
 				"Alternatively, append c<period>[/<phase>] for custom cyclicity [Default <phase> = 0].");
-			GMT_Usage (API, 3, "+c<col> Select another column than 0 (x) for wrapping.");
+			GMT_Usage (API, 3, "+c<col> Select another column than 0 (first) for wrapping.");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */
@@ -9217,7 +9224,7 @@ GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int direc
 	/* Parsing of <rows> sequences */
 	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process another range */
 		if (p[0] == '~') {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is allowed before the first range in -q\n");
 			return (GMT_PARSE_ERROR);
 		}
 		/* We can process A or A: or A- or A/ or A:B or A-B or A/B or :B or -B or /B */
@@ -9246,7 +9253,7 @@ GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int direc
 	/* Parsing of <range> sequences */
 	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process another range */
 		if (p[0] == '~') {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is allowed before the first range in -q\n");
 			return (GMT_PARSE_ERROR);
 		}
 		/* We can process A or A/ or A/B or /B */
