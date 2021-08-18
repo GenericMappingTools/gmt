@@ -164,6 +164,8 @@ Optional Arguments
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
+.. include:: explain_-s.rst_
+
 .. include:: explain_-w.rst_
 
 .. include:: explain_core.rst_
