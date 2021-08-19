@@ -62,7 +62,8 @@ Optional Arguments
     taking advantage of the full machinery of **-Es** and **-Et** and all the effects controlled by **-M** for symbols.
     The *dpu* must match the intended dpu when running :doc:`movie`. Note *dpu* means pixels per cm if you are using
     SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_LENGTH_UNIT` setting).
-    Alternatively, append **c** or **i** to set the unit used explicitly.
+    Alternatively, append **c** or **i** to set the unit used explicitly. Also note that if your movie involves
+    changes to the region or the map projection then you may need to run the **-Ar**\ *dpu* as part of the main script.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
@@ -334,7 +335,6 @@ fade period (where the text fades out).  The figure below illustrate the setup:
    Here we show how a label may go from being invisible to reaching full opaqueness
    at the event begin time, staying visible for the given duration, and then finally
    fade away completely. For labels, the plateau and decay periods do not apply.
-
 
 
 Sorting the data
