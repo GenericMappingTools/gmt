@@ -25,6 +25,6 @@ cat << EOF > tmp.txt
 34.4	28.62	15	-1.325	-0.131	1.457	-0.173	-0.831	-0.683	25	34.4	28.62	C080393G
 34.73	29.07	18.4	-1.361	-3.255	4.616	3.887	0.091	-4.493	26	34.73	29.07	M112295A
 EOF
-gmt begin seis_13 ps
+gmt begin seis_13
 	sort -gr +9 tmp.txt | gmt psmeca -Sm0.4i+f0+l+s5e25 -R24/45/19/38 -JM16c -B
 gmt end show
