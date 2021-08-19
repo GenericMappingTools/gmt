@@ -16,8 +16,8 @@
 
 #define EPSIL 0.0001
 
-#define SEIS_MAG_REFERENCE 5			/* Reference magnitude for -S */
-#define SEIS_MOMENT_MANT_REFERENCE 4	/* Mantissa for reference moment for -S */
+#define SEIS_MAG_REFERENCE 5.0			/* Reference magnitude for -S */
+#define SEIS_MOMENT_MANT_REFERENCE 4.0	/* Mantissa for reference moment for -S */
 #define SEIS_MOMENT_EXP_REFERENCE 23	/* Exponent for reference moment for -S */
 
 #define squared(x) ((x) * (x))
