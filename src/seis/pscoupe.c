@@ -90,31 +90,17 @@ struct PSCOUPE_CTRL {
 		bool active;
 		struct GMT_PEN pen;
 	} L;
-	struct PSCOUPE_M {	/* -M */
-		bool active;
-	} M;
 	struct PSCOUPE_N {	/* -N */
 		bool active;
 	} N;
 	struct PSCOUPE_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct PSCOUPE_S {	/* -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] and -Fs */
-		bool active;
+	struct PSCOUPE_S {	/* -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>]  and -Fs */
+		#include "meca_symbol.h"
+	/* Extra parameters for coupe */
 		bool zerotrace;
-		bool no_label;
-		bool read;	/* True if no scale given; must be first column after the required ones */
-		unsigned int readmode;
-		unsigned int plotmode;
-		unsigned int n_cols;
 		int symbol;
-		char P_symbol, T_symbol;
-		double scale;
-		double angle;
-		int justify;
-		double offset[2];
-		struct GMT_FILL fill;
-		struct GMT_FONT font;
 	} S;
 	struct PSCOUPE_T {	/* -T<nplane>[/<pen>] */
 		bool active;
@@ -176,6 +162,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->S.font = GMT->current.setting.font_annot[GMT_PRIMARY];
 	C->S.font.size = DEFAULT_FONTSIZE;
 	C->S.justify = PSL_TC;
+	C->S.reference = SEIS_MAG_REFERENCE;
 	C->A2.size = DEFAULT_SYMBOL_SIZE * GMT->session.u2u[GMT_PT][GMT_INCH];
 	C->A2.P_symbol = C->A2.T_symbol = PSL_CIRCLE;
 	return (C);
@@ -450,9 +437,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	struct GMT_FONT font;
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+c[n|t]][+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>] %s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -Aa|b|c|d<params>[+c[n|t]][+d<dip>][+r[a|e|<dx>]][+w<width>][+z[s]a|e|<dz>|<min>/<max>] "
+		"%s %s -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] "
 		"[%s] [-C<cpt>] [-E<fill>] [-Fa[<size>[/<Psymbol>[<Tsymbol>]]]] [-Fe<fill>] [-Fg<fill>] [-Fr<fill>] [-Fp[<pen>]] [-Ft[<pen>]] "
-		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-M] [-N] %s%s "
+		"[-Fs<symbol><size>] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s[-L<pen>] [-N] %s%s "
 		"[-Q] [-T<nplane>[/<pen>]] [%s] [%s] [-W<pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT,
 		API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -481,7 +469,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: <width>, <length>, <dx>, <dz>, <min> and <max> must all be given in km.");
 	GMT_Usage (API, -2, "Use CPT to assign colors based on depth-value in 3rd column.");
 	GMT_Option (API, "J-,R");
-	GMT_Usage (API, 1, "\n-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+o<dx>[/<dy>]]");
+	GMT_Usage (API, 1, "\n-S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>]");
 	GMT_Usage (API, -2, "Select format directive and optional symbol modifiers:");
 	GMT_Usage (API, 3, "a: Focal mechanism in Aki & Richard's convention:");
 	GMT_Usage (API, 4, "X Y depth strike dip rake mag [newX newY] [event_title].");
@@ -507,7 +495,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+a Set the label angle [0].");
 	GMT_Usage (API, 3, "+f Set font attributes for the label [%s].", gmt_putfont (API->GMT, &font));
 	GMT_Usage (API, 3, "+j Set the label <justification> [TC].");
+	GMT_Usage (API, 3, "+l Use linear symbol scaling based on moment [magnitude].");
+	GMT_Usage (API, 3, "+m Use <scale> as fixed size for any magnitude or moment.");
 	GMT_Usage (API, 3, "+o Set the label offset <dx>[/<dy>] [0/0].");
+	GMT_Usage (API, 3, "+s Set reference magnitude [%g] or moment [%ge%d] (if +l) for symbol size.", SEIS_MAG_REFERENCE, SEIS_MOMENT_MANT_REFERENCE, SEIS_MOMENT_EXP_REFERENCE);
 	GMT_Usage (API, -2, "Note: If fontsize = 0 (+f0) then no label written; offset is from the limit of the beach ball.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
@@ -534,7 +525,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "K");
 	GMT_Usage (API, 1, "\n-L<pen>");
 	GMT_Usage (API, -2, "Draw line or symbol outline using the current pen (see -W; or append alternative pen).");
-	GMT_Usage (API, 1, "\n-M Set same size for any magnitude. Size is given with -S.");
 	GMT_Usage (API, 1, "\n-N Do Not skip/clip symbols that fall outside map border [Default will ignore those outside].");
 	GMT_Option (API, "O,P");
 	GMT_Usage (API, 1, "\n-Q Do not print cross-section information to files.");
@@ -865,8 +855,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				break;
-			case 'M':	/* Same size for any magnitude */
-				Ctrl->M.active = true;
+			case 'M':	/* Same size for any magnitude [Deprecated 8/14/2021 6.3.0 - use -S+m instead] */
+				if (gmt_M_compat_check (GMT, 6)) {
+					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-M is deprecated from 6.3.0; use -S modifier +m instead.\n");
+					Ctrl->S.fixed = true;
+				}
+				else
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Do not skip points outside border */
 				Ctrl->N.active = true;
@@ -921,11 +916,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 						break;
 				}
 
-				if ((strstr (opt->arg, "+a")) || (strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
-					/* New syntax: -S<format><scale>+a<angle>+f<font>+o<dx>/<dy>+j<justify> */
+				if ((strstr (opt->arg, "+a")) || (strstr (opt->arg, "+f")) || strstr (opt->arg, "+j") || strstr (opt->arg, "+l") || strstr (opt->arg, "+m") || strstr (opt->arg, "+o") || strstr (opt->arg, "+s")) {
+					/* New syntax: -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] */
 					char word[GMT_LEN256] = {""}, *c = NULL;
 
-					/* parse beachball size */
+					/* Parse beachball size */
 					if ((c = strchr (opt->arg, '+'))) c[0] = '\0';	/* Chop off modifiers for now */
 					Ctrl->S.scale = gmt_M_to_inch (GMT, &opt->arg[1]);
 					if (c) c[0] = '+';	/* Restore modifiers */
@@ -949,6 +944,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];
 					}
 					if (Ctrl->S.font.size <= 0.0) Ctrl->S.no_label = true;
+					if (gmt_get_modifier (opt->arg, 'l', word)) {
+						Ctrl->S.linear = true;
+						Ctrl->S.reference = SEIS_MOMENT_MANT_REFERENCE * pow (10.0, SEIS_MOMENT_EXP_REFERENCE);	/* May change if +s is given */
+					}
+					if (gmt_get_modifier (opt->arg, 'm', word))
+						Ctrl->S.fixed = true;
+					if (gmt_get_modifier (opt->arg, 's', word))
+						Ctrl->S.reference = atof (word);
 				} else {	/* Old syntax: -S<format><scale>[/fontsize[/offset]][+u] */
 					Ctrl->S.offset[1] = DEFAULT_OFFSET * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Set default offset */
 					if ((p = strstr (opt->arg, "+u"))) {	/* Plot label under symbol [over] */
@@ -1113,6 +1116,11 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 		}
 	}
 
+	if (Ctrl->S.linear)
+		GMT_Report (API, GMT_MSG_INFORMATION, "Linear moment scaling selected, normalizing by %e.\n", Ctrl->S.reference);
+	else
+		GMT_Report (API, GMT_MSG_INFORMATION, "Linear magnitude scaling selected, normalizing by %g.\n", Ctrl->S.reference);
+
 	GMT_Set_Columns (API, GMT_IN, Ctrl->S.n_cols, GMT_COL_FIX);	/* Set the required numerical columns */
 
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Register data input */
@@ -1144,7 +1152,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				}
 			}
 		}
-		if (!Ctrl->M.active) size *= 1.6;	/* Since we are not computing sizes we assume a max Magnitude 8 symbol size instead of 5 */
+		if (!Ctrl->S.fixed) size *= 1.6;	/* Since we are not computing sizes we assume a max Magnitude 8 symbol size instead of 5 */
 		size /= 2.0;	/* Since we want radius below */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Observed frame range is 0/%lg/%lg/%lg\n", Ctrl->A.p_length, Ctrl->A.dmin, Ctrl->A.dmax);
 	}
@@ -1445,12 +1453,13 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				}
 
 				if (!Ctrl->S.symbol) {
-					if (Ctrl->M.active) {
-						moment.mant = 4.0;
-						moment.exponent = 23;
+					if (Ctrl->S.fixed) {
+						moment.mant     = SEIS_MOMENT_MANT_REFERENCE;
+						moment.exponent = SEIS_MOMENT_EXP_REFERENCE;
 					}
 
-					size = (meca_computed_mw (moment, meca.magms) / 5.0) * scale;
+					size = (scale / Ctrl->S.reference) * ((Ctrl->S.linear) ? moment.mant * pow (10.0, moment.exponent) : meca_computed_mw (moment, meca.magms));
+
 					if (Ctrl->H.active) {	/* Variable scaling of symbol size and pen width */
 						double scl = (Ctrl->H.mode == PSCOUPE_READ_SCALE) ? in[xcol] : Ctrl->H.value;
 						size *= scl;
