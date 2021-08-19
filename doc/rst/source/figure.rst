@@ -86,14 +86,14 @@ To start a new figure GlobalMap that should be returned as a JPEG file with a 1 
 around the image, try::
 
     gmt begin
-    gmt figure GlobalMap jpg A+m1c
+    gmt figure GlobalMap jpg A,I+m1c
     gmt ...
     gmt end show
 
 If the same figure were to be called Global Map.jpg you would need quotes::
 
     gmt begin
-    gmt figure 'Global Map' jpg A+m1c
+    gmt figure 'Global Map' jpg A,I+m1c
     gmt ...
     gmt end show
 
