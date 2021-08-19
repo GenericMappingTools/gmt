@@ -395,6 +395,7 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 			Ctrl->A.loxo = false;
 		}
 		if (Ctrl->A.loxo) GMT->current.map.loxodrome = true;
+		GMT->hidden.sample_along_arc = true;	/* Ensure equidistant sampling along arc, not cord */
 	}
 
 	geometry = (Ctrl->T.T.spatial) ? GMT_IS_LINE : GMT_IS_NONE;
@@ -565,6 +566,8 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	}
 
 	gmt_M_free (GMT, nan_flag);
+
+	GMT->hidden.sample_along_arc = false;	/* Reset */
 
 	Return (GMT_NOERROR);
 }
