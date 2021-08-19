@@ -1483,6 +1483,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i, boost, f_lat_a, f_lat_b;
+	double E[3], R[3][3], R0[3][3], ds_radians, angle_radians;
 
 	if (GMT->current.proj.projection_GMT == GMT_POLAR) return (gmtvector_fix_up_path_polar (GMT, a_lon, a_lat, n, 1.0, mode));	/* r-theta stepping */
 
@@ -1638,10 +1639,9 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		else if ((n_step = lrint (boost * theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
 			/* Do this by crossing the end point vectors to get a rotation pole, then rotate a towards b in equal angular steps */
 			if (GMT->hidden.sample_along_arc) {	/* Need accurate incremental spacing so do the slower along-arc approach */
-				double E[3], R[3][3], R0[3][3], ds_radians, angle_radians;
-				gmt_cross3v (GMT, a, b, E);			/* Get pole E to plane trough a and b */
-				gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
-				gmtlib_init_rot_matrix (R0, E);		/* Get partial rotation matrix since no actual angle is applied yet */
+				gmt_cross3v (GMT, a, b, E);	/* Get pole E to plane trough a and b */
+				gmt_normalize3v (GMT, E);	/* Make sure E has unit length */
+				gmtlib_init_rot_matrix (R0, E);	/* Get partial rotation matrix since no actual angle is applied yet */
 				ds_radians = D2R * theta / n_step;
 				for (j = 1; j < n_step; j++) {
 					angle_radians = j * ds_radians;		/* The required rotation for this point relative to FZ origin */
