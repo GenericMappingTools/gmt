@@ -60,7 +60,7 @@ Optional Arguments
     Sets one or more comma-separated options (and possibly arguments) that
     can be passed to :doc:`psconvert` when preparing a session figure [**A**].
     The valid subset of options are
-    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **I**\ *args*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
+    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **I**\ *args*,\ **M**\ *args*,\ **N**\ *args*,\ **Q**\ *args*,\ **S**.
     Note that the leading hyphens should not be given.
     See the :doc:`psconvert` documentation for details on these options.
 
