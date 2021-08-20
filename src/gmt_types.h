@@ -390,6 +390,7 @@ struct GMT_INTERNAL {
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  GMT_CONTROLLER (0) is initiating process (e.g. gmt.c) */
 	bool mem_set;			/* true when we have initialized the tmp memory already */
+	bool sample_along_arc;		/* true when sample1d need exact sampling along the arc */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	size_t mem_txt_alloc;

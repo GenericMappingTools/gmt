@@ -102,7 +102,7 @@ Optional Arguments
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
     See `Output Order`_ for how **-A** affects the output record.  If **-R**
-    and **-J*** are given the we project the coordinates first and then
+    and **-J** are given the we project the coordinates first and then
     compute Cartesian angles instead.
 
 .. _-C:

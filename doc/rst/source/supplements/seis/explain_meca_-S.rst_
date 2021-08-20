@@ -1,7 +1,9 @@
-**-S**\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-S**\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
     Selects the meaning of the columns in the data file.
     *scale* adjusts the scaling of the radius of the "beach ball", which will be proportional to
     the magnitude. *scale* is the size for magnitude = 5 (i.e. scalar seismic moment M0 = 4.0E23 dynes-cm).
+    However, if **+l** is used then radius will be proportional to the seismic moment instead.  Use
+    **+s** to change the reference magnitude (or moment), and use **+m** to plot the same size for any magnitude.
     The color or shade of the compressive quadrants can
     be specified with the **-G** option. The color or shade of the extensive
     quadrants can be specified with the **-E** option.
@@ -17,7 +19,7 @@
     Nevertheless, it is possible to use "old style" **psvelomeca** input
     files without depth in third column using the **-Fo** option.
 
-**-Sa**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sa**\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
     Focal mechanisms in Aki and Richards convention.
     Parameters are expected to be in the following columns:
 
@@ -42,7 +44,7 @@
     **10**:
     Text string to appear near the beach ball (optional).
 
-**-Sc**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sc**\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
     Focal mechanisms in Global CMT convention.
     Parameters are expected to be in the following columns:
 
@@ -70,7 +72,7 @@
     **14**:
     Text string to appear near the beach ball (optional).
 
-**-Sm\|d\|z**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sm\|d\|z**\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
     Seismic moment tensor.
     **-Sm** plots the full seismic moment tensor.
     **-Sz** plots the deviatoric part of the moment tensor (zero trace).
@@ -100,7 +102,7 @@
     **13**:
     Text string to appear near the beach ball (optional).
 
-**-Sp**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sp**\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
     Focal mechanisms given with partial data on both planes.
     Parameters are expected to be in the following columns:
 
@@ -131,7 +133,7 @@
     **11**:
     Text string to appear near the beach ball (optional).
 
-**-Sx\|y\|t**\ [*scale*]\ [**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**-Sx\|y\|t**\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
     Principal axis.
     Use **-Sx** to plot full seismic moment tensor.
     Use **-Sy** to plot the closest double couple defined from the moment tensor (zero trace and zero determinant).

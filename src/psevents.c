@@ -283,15 +283,26 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 			case 'A':	/* Plotting lines or polygons, how are they given, or alternatively resample the line to an equivalent point file */
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
-					case 'r':
-						if (opt->arg[1] && (Ctrl->A.dpu = atof (&opt->arg[1])) > 0.0) {
-							Ctrl->A.mode = PSEVENTS_LINE_TO_POINTS;	/* Gave a dpu for guidance on line resampling into points */
-							if (strchr (&opt->arg[1], 'c'))	/* Explicitly said dpu is in cm */
-								Ctrl->A.dpu *= 2.54;	/* Now dpi */
-							else if (strchr (&opt->arg[1], 'i'))	/* Explicitly said dpu is in inch - do nothing */
-								Ctrl->A.dpu *= 1;	/* Still dpi */
-							else if (GMT->current.setting.proj_length_unit == GMT_CM)	/* Default length unit is cm so convert */
-								Ctrl->A.dpu *= 2.54;	/* Now dpi */
+					case 'r':	/* Expects Ar[<dpu>[c|i]] */
+						if (opt->arg[1]) {	/* Want to convert a line to points */
+							if ((Ctrl->A.dpu = atof (&opt->arg[1])) > 0.0) {
+								char unit = opt->arg[strlen(opt->arg)-1];	/* This is either c, i, or a digit, or a bad entry */
+								Ctrl->A.mode = PSEVENTS_LINE_TO_POINTS;	/* Gave a dpu for guidance on resampling a line into points */
+								if (unit == 'c')	/* Explicitly said dpu is in cm */
+									Ctrl->A.dpu *= 2.54;	/* Now dpi */
+								else if (unit == 'i')	/* Explicitly said dpu is in inch - do nothing */
+									Ctrl->A.dpu *= 1;	/* Still dpi */
+								else if (isalpha (unit)) {	/* Gave some junk, if not true then unit is now probably the last digit in the dpu */
+									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ar: Your dpu has a bad unit (%c)\n", unit);
+									n_errors++;
+								}
+								else if (GMT->current.setting.proj_length_unit == GMT_CM)	/* Default length unit is cm so convert */
+									Ctrl->A.dpu *= 2.54;	/* Now dpi */
+							}
+							else {
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ar: Your dpu could not be processed (%s)\n", &opt->arg[1]);
+								n_errors++;
+							}
 						}
 						else
 							Ctrl->A.mode = PSEVENTS_LINE_REC;	/* Read line (x,y,t) records */
