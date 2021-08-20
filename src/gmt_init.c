@@ -18154,6 +18154,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to place auto-legend on figure %s\n", fig[k].prefix);
 					gmt_M_free (API->GMT, fig);
+					gmt_M_str_free (copy);
 					return error;
 				}
 				API->GMT->common.l.active = active;
@@ -18210,6 +18211,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to call psconvert\n");
 				gmt_M_free (API->GMT, fig);
+				gmt_M_str_free (copy);
 				return error;
 			}
 			if (!strncmp (format, "jpeg", 4U) || !strncmp (format, "tiff", 4U)) {	/* Must rename file to have .jpeg or .tiff extensions */
@@ -18245,6 +18247,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to call docs\n");
 					gmt_M_free (API->GMT, fig);
+					gmt_M_str_free (copy);
 					return error;
 				}
 			}
