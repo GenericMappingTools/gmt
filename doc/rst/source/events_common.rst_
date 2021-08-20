@@ -46,12 +46,13 @@ Optional Arguments
 
 **-A**\ **r**\ [*dpu*\ [**c**\|\ **i**]]\|\ **s**
     When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
-    supported and specified via the **-A**\ directive: (1) Choose **-Ar** if your input data are *lines*, the data
-    format is given as *x, y, time*, and the "event" is the portion of that line limited by the current
-    time (*now*), event duration (via **-L**) and rise/fade periods (via **-Es**), or (2) choose **-As**
+    supported and specified via the chosen **-A** directives: (1) Choose **-Ar** if your input data are *trajectories*, the data
+    format is given as *x, y, time*, and the "event" is the portion of that trajectories limited by the current
+    time (*now*), event duration (via **-L**) and rise/fade periods (via **-Es**). If current time falls between
+    two points on the trajectory then we linearly interpolate to find the current end point. Alternatively, (2) choose **-As**
     to read each complete segment (i.e., a polygon or line with just *x, y* coordinates) from a multisegment
     file and get a common *time* for each segment via a required **-T**\ *string* specified in the segment
-    header.  Here, the entire polygon is the "event" if inside the limits of current time (*now*), event
+    header.  Here, the entire polygon or line is the "event" if inside the limits of current time (*now*), event
     duration (via **-L**) and rise/fade periods (via **-Es**).  If **-L**\ [**t**] is set then the *string*
     must be either of the format *begin*/*length*\|\ *end* or *begin*,\ *length*\|\ *end*.  Use a comma to
     separate absolute time specifications, otherwise a slash is also supported. **Note**:
@@ -336,7 +337,6 @@ fade period (where the text fades out).  The figure below illustrate the setup:
    fade away completely. For labels, the plateau and decay periods do not apply.
 
 
-
 Sorting the data
 ----------------
 
@@ -344,3 +344,11 @@ While only the events that should be visible will be plotted at the given time s
 the order of plotting is simply given by the order of records in the file.  Thus, if the
 file is *not* sorted into ascending time then later events might plot *beneath* earlier events.
 To prevent this, you can sort your file into ascending order via the :doc:`gmtconvert` **-N** option.
+
+Drawing trajectories
+--------------------
+
+If **-Ar** is used to draw trajectories (lines with *x,y,t* coordinates) then, as stated, we will
+use a linear interpolation to find intermediate terminal points.  For geographic data, and especially
+if your original point spacing is large, you may wish to first interpolate such trajectories along
+great circles via :doc:`sample1d` rather than subject large gaps to linear interpolation.
