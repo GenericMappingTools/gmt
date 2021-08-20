@@ -18212,28 +18212,27 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				gmt_M_free (API->GMT, fig);
 				return error;
 			}
-			if (!strncmp (format, "jpeg", 4U) || !strncmp (format, "tiff", 4U)) {	/* Must rename file to have .jpeg or .tiff extension */
-				char old_name[PATH_MAX] = {""}, new_name[PATH_MAX] = {""};
+			if (!strncmp (format, "jpeg", 4U) || !strncmp (format, "tiff", 4U)) {	/* Must rename file to have .jpeg or .tiff extensions */
+				/* Since psconvert cannot tell from j and t if the extensions should be 3 or 4 characters... */
+				char old_name[PATH_MAX] = {""}, new_name[PATH_MAX] = {""}, ext[GMT_LEN8] = {""};
+				strcpy (ext, format);	/* Set extension */
+				ext[2] = ext[3];	ext[3] = '\0';	/* Shorten to what psconvert used */
 				if (dir[0]) {
-					snprintf (old_name, GMT_BUFSIZ, "%s/%s.%s", dir, fig[k].prefix, gmt_session_format[gcode[f]]);
-					snprintf (new_name, GMT_BUFSIZ, "%s/%s.%s", dir, fig[k].prefix, format);
+					snprintf (old_name, PATH_MAX, "%s/%s.%s", dir, fig[k].prefix, ext);
+					snprintf (new_name, PATH_MAX, "%s/%s.%s", dir, fig[k].prefix, format);
 				}
 				else {
-					snprintf (old_name, GMT_BUFSIZ, "%s.%s", fig[k].prefix, gmt_session_format[gcode[f]]);
-					snprintf (new_name, GMT_BUFSIZ, "%s.%s", fig[k].prefix, format);
+					snprintf (old_name, PATH_MAX, "%s.%s", fig[k].prefix, ext);
+					snprintf (new_name, PATH_MAX, "%s.%s", fig[k].prefix, format);
 				}
-				if (gmt_rename_file (API->GMT, old_name, new_name, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
+				if (gmt_rename_file (API->GMT, old_name, new_name, GMT_RENAME_FILE))	/* Rename newly copied file to existing file */
 					GMT_Report (API, GMT_MSG_WARNING, "Failed to rename file from %s to %s\n", old_name, new_name);
-				}
 			}
 
-			if (show && f == 0) {	/* Open the plot in the viewer via call to gmt docs */
+			if (show && f == 0) {	/* Open the first plot in the viewer via call to gmt docs */
 				size_t start = 0, end = strlen (fig[k].prefix) - 1;
 				char ext[GMT_LEN8] = {""};
-				if (!strncmp (format, "jpeg", 4U) || !strncmp (format, "tiff", 4U))	/* Must rename file to have .jpeg or .tiff extension */
-					strcpy (ext, format);	/* Set longer extension */
-				else
-					strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */
+				strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */
 				gmt_str_tolower (ext);	/* In case it was PNG */
 				/* File names with spaces will be given in single quotes - remove those here when making single command string */
 				if (fig[k].prefix[0] == '\'') start = 1, fig[k].prefix[end] = '\0';	/* Remove the quote */
