@@ -1026,7 +1026,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				}
 			}
 			gmt_M_memcpy (out, in, n_copy_to_out, double);	/* Pass out the key input parameters unchanged (but not time, duration) */
-			out[x_col] = 1.0;	/* Defaul is full size */
+			out[x_col] = (t_event <= Ctrl->T.now) ? 1.0 : 0.0;	/* Default size is a step-function */
 
 			t_plateau = t_event + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];	/* End of the plateau phase */
 			t_decay = t_plateau + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];	/* End of the decay phase */
