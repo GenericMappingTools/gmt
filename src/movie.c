@@ -2171,7 +2171,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		else
 			sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
 		if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -N option */
-			if (!Ctrl->K.active) strcat (extra, "N");	/* Need to switch to the -N option first */
+			if (!Ctrl->K.active) strcat (extra, ",N");	/* Need to switch to the -N option first */
 			if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 			if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 		}
@@ -2353,7 +2353,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	else
 		sprintf (extra, "A+M+r");	/* No cropping, image size is fixed */
 	if (Ctrl->G.active) {	/* Want to set a fixed background canvas color and/or outline - we do this via the psconvert -N option */
-		if (!Ctrl->K.active) strcat (extra, "N");	/* Need to switch to the -N option first */
+		if (!Ctrl->K.active) strcat (extra, ",N");	/* Need to switch to the -N option first */
 		if (Ctrl->G.mode & 1) strcat (extra, "+p"), strcat (extra, Ctrl->G.pen);
 		if (Ctrl->G.mode & 2) strcat (extra, "+g"), strcat (extra, Ctrl->G.fill);
 	}
