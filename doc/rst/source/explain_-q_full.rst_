@@ -3,7 +3,7 @@ The **-q** option
 
 **Syntax**
 
-**-q**\ [**i**\|\ **o**][~]\ *rows*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
+**-q**\ [**i**\|\ **o**][~]\ *rows*\|\ *limits*\ [**+c**\ *col*][**+a**\|\ **f**\|\ **s**]
     Select specific data rows to be read and/or written.
 
 **Description**
@@ -22,6 +22,8 @@ modifiers to control how the rows are counted [Default is **+a**]:
 Alternatively, use **+c**\ *col* to indicate that the arguments instead are min/max *data limits* for the values in
 column *col*. With **+c**\ *col*, only rows whose data for the given column *col* are within the range(s) given by the
 *min*/*max* limits are read (with **-qi**) or written (with **-qo**). **Note**: Because arguments may contain colons or
-be negative, your must specify *start*/*stop* instead of *start*\ [:*inc*]:*stop*.
+be negative, you must specify *min*/*max* instead of *start*\ [:*inc*]:*stop*. If *min* or *max* is not given we
+default to -infinity and + infinity, respectively (e.g., **-qo**\ 50/**+c**\ 2 will only write records whose z-values (in 3rd column) is ≥ 50
+while *-qo**\ /50**+c**\ 2 will only write records whose z-values is ≤ 50).
 
 **Note**: Header records do not increase the row counters; only data records do.

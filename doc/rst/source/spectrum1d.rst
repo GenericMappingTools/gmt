@@ -23,6 +23,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -164,6 +165,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-qi.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_help.rst_
 

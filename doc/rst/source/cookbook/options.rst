@@ -38,7 +38,7 @@ importance (some are used a lot more than others).
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-e <option_-e>`          | Only process data records that match a *pattern*                   |
 +--------------------------------+--------------------------------------------------------------------+
-| :ref:`-f <option_-f>`          | Specify the data format on a per column basis                      |
+| :ref:`-f <option_-f>`          | Specify the data content on a per column basis                     |
 +--------------------------------+--------------------------------------------------------------------+
 | :ref:`-g <option_-g>`          | Identify data gaps based on supplied criteria                      |
 +--------------------------------+--------------------------------------------------------------------+

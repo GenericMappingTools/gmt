@@ -203,10 +203,12 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *zfile*
+**-Z**\ *widthfile*
     File with colorbar-width per color entry. By default, width of entry
     is scaled to color range, i.e., z = 0-100 gives twice the width as z
-    = 100-150 (Also see **-L**).
+    = 100-150 (Also see **-L**). **Note**: The widths may be in plot distance
+    units or given as relative fractions and will be automatically scaled
+    so that the sum of the widths equals the requested bar length.
 
 .. |Add_perspective| replace:: (Required **-R** and **-J** for proper functioning).
 .. include:: explain_perspective.rst_
