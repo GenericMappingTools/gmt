@@ -953,17 +953,17 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 				/* build output segment header: Pass any -Z<val>, -G<fill> -W<pen> as given, but if no -G, -W and command line has them we add them.
 				 * We do this because -t<transparency> will also be added and this is how the -G -W colors will acquire transparency in psxy */
 				gmt_M_memset (header, GMT_BUFSIZ, char);	/* Wipe header record */
-				if (Ctrl->C.active && gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-Z", string)) {	/* Found optional -Z<val> and -C<cpt> is in effect */
+				if (Ctrl->C.active && gmt_parse_segment_item (GMT, S->header, "-Z", string)) {	/* Found optional -Z<val> and -C<cpt> is in effect */
 					strcat (header, " -Z"); strcat (header, string);
 				}
-				if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-W", string)) {	/* Found optional -W<pen> */
+				if (gmt_parse_segment_item (GMT, S->header, "-W", string)) {	/* Found optional -W<pen> */
 					strcat (header, " -W"); strcat (header, string);
 				}
 				else if (Ctrl->W.active) {	/* Issue the current pen instead */
 					strcat (header, " -W"); strcat (header, Ctrl->W.pen);
 				}
 				if (Ctrl->A.mode == PSEVENTS_LINE_SEG) {	/* Deal with optional -G<fill> */
-					if (gmt_parse_segment_item (GMT, GMT->current.io.segment_header, "-G", string)) {	/* Found optional -G<fill> */
+					if (gmt_parse_segment_item (GMT, S->header, "-G", string)) {	/* Found optional -G<fill> */
 						strcat (header, " -G"); strcat (header, string);
 					}
 					else if (Ctrl->G.active) {	/* Issue the current fill instead */
@@ -1028,7 +1028,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						}
 					}
 					gmt_M_memcpy (out, in, n_copy_to_out, double);	/* Pass out the key input parameters unchanged (but not time, duration) */
-					out[x_col] = (t_event <= Ctrl->T.now) ? 1.0 : 0.0;	/* Default size is a step-function */
+					out[x_col] = (t_event <= Ctrl->T.now) ? 1.0 : 0.0;	/* Default size is a step-function unless modulated below */
 
 					t_plateau = t_event + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];	/* End of the plateau phase */
 					t_decay = t_plateau + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];	/* End of the decay phase */
@@ -1082,11 +1082,11 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						fprintf (fp_symbols, "\n");
 					}
 					else if (Ctrl->A.active) {	/* Just needed the line coordinates */
-						gmt_M_memcpy (last_in, in, 3U, double);
 						fprintf (fp_symbols, "\n");
-						have_previous_point = true;
+						gmt_M_memcpy (last_in, in, 3U, double);
+						have_previous_point = true;	/* Now we are able to interpolate if needed */
 					}
-					else {	/* Symbols -S, which may need -C and -S columns before the scale, intens, transp */ 
+					else {	/* Symbols -S, which may need optional -C and -S columns before the scale, intens, transp are appended */ 
 						for (col = GMT_Z; col < n_copy_to_out; col++)
 							fprintf (fp_symbols, "\t%.16g", out[col]);
 						fprintf (fp_symbols, "\t%g\t%g\t%g\n", out[x_col], out[i_col], out[t_col]);
@@ -1169,12 +1169,12 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		char *module = (GMT->current.setting.run_mode == GMT_CLASSIC) ? "psxy" : "plot";	/* Default module to use for symbols, lines, polygons */
 		/* Build plot command with fixed options and those that depend on -C -G -W.
 		 * We must set symbol unit as inch since we are passing sizes in inches directly (all dimensions are in inches internally in GMT). */
-		if (Ctrl->A.active) {	/* Command to plot lines or polygons */
+		if (Ctrl->A.active) {	/* Command to plot lines or polygons may require -C -W */
 			sprintf (cmd, "%s -R -J -O -K --GMT_HISTORY=readonly", tmp_file_symbols);
 			if (Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
 			if (Ctrl->A.mode == PSEVENTS_LINE_SEG && Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 		}
-		else if (Ctrl->Z.active) {
+		else if (Ctrl->Z.active) {	/* Command for special seismology or geodesy symbols may need -C -G -W -N */
 			sprintf (cmd, "%s %s -R -J -O -K -H -I -t --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=%s", tmp_file_symbols, Ctrl->Z.cmd, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 			if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.fill);}
@@ -1182,7 +1182,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 			if (Ctrl->N.active) strcat (cmd, Ctrl->N.arg);
 			module = (GMT->current.setting.run_mode == GMT_MODERN && !strncmp (Ctrl->Z.module, "ps", 2U)) ? &Ctrl->Z.module[2] : Ctrl->Z.module;
 		}
-		else {	/* Command to plot symbols */
+		else {	/* Command to plot standard symbols may need -C -G -W -N */
 			sprintf (cmd, "%s -R -J -O -K -H -I -t -S%s --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=%s", tmp_file_symbols, Ctrl->S.symbol, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 			if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.fill);}
@@ -1191,10 +1191,10 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt %s %s\n", module, cmd);
 
-		if (GMT_Call_Module (API, module, GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the symbols */
+		if (GMT_Call_Module (API, module, GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the symbols, lines, or polygons */
 			Return (API->error);
 		}
-		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_symbols)) {
+		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_symbols)) {	/* Remove temp file unless we used -Q */
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove file %s\n", tmp_file_symbols);
 			Return (GMT_RUNTIME_ERROR);
 		}
@@ -1222,12 +1222,13 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		if (GMT_Call_Module (API, module, GMT_MODULE_CMD, cmd) != GMT_NOERROR) {	/* Plot the labels */
 			Return (API->error);
 		}
-		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_labels)) {
+		if (!Ctrl->Q.active && gmt_remove_file (GMT, tmp_file_labels)) {	/* Remove temp file unless we used -Q */
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to remove file %s\n", tmp_file_labels);
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	if (fp_symbols || fp_labels) gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+	if (fp_symbols || fp_labels)	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghi_opts (GMT);
 
 	/* Finalize plot and we are done */
 
