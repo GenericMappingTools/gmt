@@ -2,6 +2,7 @@
 # Demonstrate plotting of animated trajectories, part 2: Discretized line with effects
 # Create a line with a few points and get Cartesian distances to use as time,
 # then sample densely to plot points to simulate a continuous line that can be modulated
+ps=trajectory3.ps
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 10
         opt="-M10,ps"
 else    # Make MP4 at 2 frames per second
@@ -33,6 +34,5 @@ gmt begin
 	gmt events -R0/9.6/-2.7/2.7 -Jx0.5i -Sc3p -Cheat.cpt points.txt -i0,1,1,2 -Es -T${MOVIE_COL0} -X0 -Y0
 gmt end
 EOF
-exit
 # Build the product
 gmt movie -C4.8ix2.7ix100 -Ntrajectory3 -Ttimes.txt -Sbpre.sh main.sh -Lf -M10 ${opt} -Z
