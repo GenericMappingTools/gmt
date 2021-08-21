@@ -28,7 +28,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"psevents"
 #define THIS_MODULE_MODERN_NAME	"events"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Plot event symbols, lines, polygons and labels for a moment in time"
+#define THIS_MODULE_PURPOSE	"Plot event symbols, lines, polygons and labels for one moment in time"
 #define THIS_MODULE_KEYS	"<D{,CC(,>?}"
 #define THIS_MODULE_NEEDS	"JR"
 #define THIS_MODULE_OPTIONS	"-:>BJKOPRUVXYabdefhipqw"
@@ -1171,14 +1171,14 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		 * We must set symbol unit as inch since we are passing sizes in inches directly (all dimensions are in inches internally in GMT). */
 		if (Ctrl->A.active) {	/* Command to plot lines or polygons may require -C -W */
 			sprintf (cmd, "%s -R -J -O -K --GMT_HISTORY=readonly", tmp_file_symbols);
-			if (Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
+			if (Ctrl->A.mode == PSEVENTS_LINE_REC && Ctrl->W.pen)    {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
 			if (Ctrl->A.mode == PSEVENTS_LINE_SEG && Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 		}
 		else if (Ctrl->Z.active) {	/* Command for special seismology or geodesy symbols may need -C -G -W -N */
 			sprintf (cmd, "%s %s -R -J -O -K -H -I -t --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=%s", tmp_file_symbols, Ctrl->Z.cmd, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 			if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.fill);}
-			if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
+			if (Ctrl->W.pen) {strcat (cmd, " -W");    strcat (cmd, Ctrl->W.pen);}
 			if (Ctrl->N.active) strcat (cmd, Ctrl->N.arg);
 			module = (GMT->current.setting.run_mode == GMT_MODERN && !strncmp (Ctrl->Z.module, "ps", 2U)) ? &Ctrl->Z.module[2] : Ctrl->Z.module;
 		}
@@ -1186,7 +1186,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 			sprintf (cmd, "%s -R -J -O -K -H -I -t -S%s --GMT_HISTORY=readonly --PROJ_LENGTH_UNIT=%s", tmp_file_symbols, Ctrl->S.symbol, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			if (Ctrl->C.active) {strcat (cmd, " -C"); strcat (cmd, Ctrl->C.file);}
 			if (Ctrl->G.active) {strcat (cmd, " -G"); strcat (cmd, Ctrl->G.fill);}
-			if (Ctrl->W.pen) {strcat (cmd, " -W"); strcat (cmd, Ctrl->W.pen);}
+			if (Ctrl->W.pen) {strcat (cmd, " -W");    strcat (cmd, Ctrl->W.pen);}
 			if (Ctrl->N.active) strcat (cmd, Ctrl->N.arg);
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "cmd: gmt %s %s\n", module, cmd);
@@ -1205,7 +1205,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		sprintf (cmd, "%s -R -J -O -K -t --GMT_HISTORY=readonly", tmp_file_labels);
 		if (Ctrl->D.active) {strcat (cmd, " -D"); strcat (cmd, Ctrl->D.string);}
 		if (Ctrl->F.active) {strcat (cmd, " -F"); strcat (cmd, Ctrl->F.string);}
-		if (Ctrl->N.active) strcat (cmd, " -N");
+		if (Ctrl->N.active) strcat (cmd, " -N");	/* Cannot use Ctrl->N.arg since pstext takes a plain -N */
 		if (Ctrl->H.active) {	/* Combinations of -Cdx/dy[+tO], -G<fill>, -S<dx>/<dy>/<shade>, -W<pen> */
 			strcat (cmd, " -C"); strcat (cmd, Ctrl->H.clearance);
 			if (Ctrl->H.box) strcat (string, "+tO");
