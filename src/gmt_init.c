@@ -18092,8 +18092,9 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	 * convert the hidden PostScript figures to selected graphics.
 	 * If show is not NULL then we display the first graphics listed (if more than one) via gmt docs */
 
-	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark;
 	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""}, device_extra[GMT_LEN8] = {""}, *do_gray[2] = {"", "+m"};
+	char *copy = NULL, *ptr = NULL, *format = NULL, *c = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS, auto_size;
 	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16], jpeg_quality = GMT_JPEG_DEF_QUALITY, monochrome = 0;
@@ -18129,7 +18130,9 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			gmtinit_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
 		}
+		copy = strdup (fig[k].formats);	ptr = copy;
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
+			format = strsep (&ptr, ",");	/* Name of next format as user specified it */
 			device_extra[0] = '\0';	/* Reset device arguments */
 			if (fmt[f] == 'j' && jpeg_quality != GMT_JPEG_DEF_QUALITY)
 				sprintf (device_extra, "+q%d", jpeg_quality);	/* Need to pass quality modifier */
@@ -18151,6 +18154,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to place auto-legend on figure %s\n", fig[k].prefix);
 					gmt_M_free (API->GMT, fig);
+					gmt_M_str_free (copy);
 					return error;
 				}
 				API->GMT->common.l.active = active;
@@ -18174,7 +18178,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
-					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
+					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media [deprecated] */
 					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
@@ -18207,10 +18211,27 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to call psconvert\n");
 				gmt_M_free (API->GMT, fig);
+				gmt_M_str_free (copy);
 				return error;
 			}
+			if (!strncmp (format, "jpeg", 4U) || !strncmp (format, "tiff", 4U)) {	/* Must rename file to have .jpeg or .tiff extensions */
+				/* Since psconvert cannot tell from j and t if the extensions should be 3 or 4 characters... */
+				char old_name[PATH_MAX] = {""}, new_name[PATH_MAX] = {""}, ext[GMT_LEN8] = {""};
+				strcpy (ext, format);	/* Set extension */
+				ext[2] = ext[3];	ext[3] = '\0';	/* Shorten to what psconvert used */
+				if (dir[0]) {
+					snprintf (old_name, PATH_MAX, "%s/%s.%s", dir, fig[k].prefix, ext);
+					snprintf (new_name, PATH_MAX, "%s/%s.%s", dir, fig[k].prefix, format);
+				}
+				else {
+					snprintf (old_name, PATH_MAX, "%s.%s", fig[k].prefix, ext);
+					snprintf (new_name, PATH_MAX, "%s.%s", fig[k].prefix, format);
+				}
+				if (gmt_rename_file (API->GMT, old_name, new_name, GMT_RENAME_FILE))	/* Rename newly copied file to existing file */
+					GMT_Report (API, GMT_MSG_WARNING, "Failed to rename file from %s to %s\n", old_name, new_name);
+			}
 
-			if (show && f == 0) {	/* Open the plot in the viewer via call to gmt docs */
+			if (show && f == 0) {	/* Open the first plot in the viewer via call to gmt docs */
 				size_t start = 0, end = strlen (fig[k].prefix) - 1;
 				char ext[GMT_LEN8] = {""};
 				strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */
@@ -18226,10 +18247,12 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to call docs\n");
 					gmt_M_free (API->GMT, fig);
+					gmt_M_str_free (copy);
 					return error;
 				}
 			}
 		}
+		gmt_M_str_free (copy);
 	}
 	gmt_M_free (API->GMT, fig);
 
