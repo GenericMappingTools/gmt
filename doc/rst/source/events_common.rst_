@@ -352,3 +352,6 @@ If **-Ar** is used to draw trajectories (lines with *x,y,t* coordinates) then, a
 use a linear interpolation to find intermediate terminal points.  For geographic data, and especially
 if your original point spacing is large, you may wish to first interpolate such trajectories along
 great circles via :doc:`sample1d` rather than subject large gaps to linear interpolation.
+**Note**: If **-Ar**\ *dpu* is used to discretize the line, then be aware that the resampling
+is affected by the current spline interpolator, controlled by :term:`GMT_INTERPOLANT`. To avoid
+any departures from straigh line segments you will need to select a linear interpolant.
