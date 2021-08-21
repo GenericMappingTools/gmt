@@ -662,7 +662,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	char tmp_file_symbols[PATH_MAX] = {""}, tmp_file_labels[PATH_MAX] = {""}, cmd[BUFSIZ] = {""}, *c = NULL;
 	char string[GMT_LEN128] = {""}, header[GMT_BUFSIZ] = {""}, X[GMT_LEN32] = {""}, Y[GMT_LEN32] = {""};
 
-	bool do_coda, finite_duration, has_text, out_segment = false;
+	bool do_coda, finite_duration, has_text, out_segment = false, have_previous_point = false;
 
 	int error;
 
@@ -671,9 +671,9 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 	unsigned int n_cols_needed, n_copy_to_out, col, s_in = 2, t_in = 2, d_in = 3, x_col = 2, i_col = 3, t_col = 4;
 	unsigned int x_type, y_type, geometry;
 
-	uint64_t tbl, seg, row, co, nn_symbols_plotted = 0, n_labels_plotted = 0;
+	uint64_t tbl, seg, row, n_symbols_plotted = 0, n_labels_plotted = 0;
 
-	double out[20], t_end = DBL_MAX, in[GMT_LEN16];
+	double out[20], t_end = DBL_MAX, in[GMT_LEN16], last_in[3];
 	double t_event, t_rise, t_plateau, t_decay, t_fade, x, t_event_seg, t_end_seg;
 
 	FILE *fp_symbols = NULL, *fp_labels = NULL;
@@ -987,7 +987,22 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 					t_end = DBL_MAX;	/* Infinite duration until overridden below */
 					t_event = in[t_in] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_OFFSET];	/* Nominal (or offset) start of this event */
 					t_rise = t_event - Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE];		/* Earliest time to plot anything at all for this event */
-					if (Ctrl->T.now < t_rise) goto Do_txt;	/* This event is still in the future so we skip it */
+					if (Ctrl->T.now < t_rise) {
+						if (Ctrl->A.active && have_previous_point) {	/* Linearly interpolate to supply the intermediate point on line first */
+							double dx, f = (Ctrl->T.now - last_in[t_in]) / (in[t_in] - last_in[t_in]);	/* Fractional portion of time for this line segment */
+							if (gmt_M_is_geographic (GMT, GMT_IN)) {
+								gmt_M_set_delta_lon (last_in[GMT_X], in[GMT_X], dx);	/* Beware of jumps due to sign differences */
+							}
+							else
+								dx = in[GMT_X] -  last_in[GMT_X];
+							out[GMT_X] = last_in[GMT_X] + f * dx;
+							out[GMT_Y] = last_in[GMT_Y] + f * (in[GMT_Y] -  last_in[GMT_Y]);
+							psevents_set_XY (GMT, x_type, y_type, out, X, Y);
+							fprintf (fp_symbols, "%s\t%s\n", X, Y);
+							have_previous_point = false;	/* So we do not repeat this step for this line segment */
+						}
+						goto Do_txt;	/* This event is still in the future so we skip it */
+					}
 					/* Compute the last time we need to plot the event [infinity] */
 					if (Ctrl->L.mode == PSEVENTS_FIXED_DURATION)	/* Only show the event as stable during this fixed interval */
 						t_end = t_event + Ctrl->L.length;
@@ -1066,8 +1081,11 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 							fprintf (fp_symbols, "\t%s", S->text[row]);
 						fprintf (fp_symbols, "\n");
 					}
-					else if (Ctrl->A.active)	/* Just needed the line coordinates */
+					else if (Ctrl->A.active) {	/* Just needed the line coordinates */
+						gmt_M_memcpy (last_in, in, 3U, double);
 						fprintf (fp_symbols, "\n");
+						have_previous_point = true;
+					}
 					else {	/* Symbols -S, which may need -C and -S columns before the scale, intens, transp */ 
 						for (col = GMT_Z; col < n_copy_to_out; col++)
 							fprintf (fp_symbols, "\t%.16g", out[col]);
