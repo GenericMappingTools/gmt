@@ -184,8 +184,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Record format: lon lat [z] [size] time [length|time2].");
 	GMT_Usage (API, 1, "\n-Ar[<dpu>[c|i]]|s");
 	GMT_Usage (API, -2, "Select plotting of lines or polygons when no -S is given.  Choose input mode:");
-	GMT_Usage (API, 3, "r: Read records for lines with time in column 3. "
-		"Append <dpu> to convert your line records into dense point records that can be plotted as circles. "
+	GMT_Usage (API, 3, "r: Read records for trajectories with time in column 3. We linearly interpolate any end points.  Alternatively, "
+		"append <dpu> to convert your line records into dense point records that can be plotted as circles later. "
 		"The resampled line will be written to standard output (requires options -R -J, optionally -C). "
 		"The <dpu> must be the same as the intended <dpu> for the movie frames. "
 		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
