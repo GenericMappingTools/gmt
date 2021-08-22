@@ -18066,17 +18066,19 @@ int gmt_dry_run_only (const char *cmd) {
 	return 0;
 }
 
-unsigned int gmt_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS) {
+unsigned int gmt_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int type, bool *PS) {
 	unsigned int n_errors = 0;
-	/* Examines file extension and compares to known mode from mainscript */
+	/* Examines file extension and compares to known mode from mainscript.
+	 * Here type is 0-2 for background, foreground, or title script/plot which may be either a script of PS/EPS
+	 * while type = 0 is script only and will be compared to the mode. */
 
 	if (PS) {	/* Only used in movie.c so far */
-		size_t L;
+		size_t L = strlen (file);
 		*PS = false;
-		if (k < 3 && (L = strlen (file)) > 3 && !strncmp (&file[L-3], ".ps", 3U)) {
+		if (type < 3 && L > 4 && (!strncmp (&file[L-3], ".ps", 3U) || !strncmp (&file[L-4], ".eps", 3U))) {
 			static char *layer[3] = {"background", "foreground", "title"};
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "PostScript %s layer %s detected\n", layer[k], file);
-			*PS = true;	/* Got a PostScript file */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "PostScript/EPS %s layer %s detected\n", layer[type], file);
+			*PS = true;	/* Got a PostScript or EPS file */
 			return GMT_NOERROR;
 		}
 	}
