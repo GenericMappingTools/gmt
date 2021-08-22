@@ -147,7 +147,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->H.soff[GMT_Y] = -C->H.soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
 	strcpy (C->H.pen, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Default outline pen */
 	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
-	C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default dz scale f-r -Mz */
+	C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default dz amplitude for -Mz */
 	return (C);
 }
 
@@ -1042,13 +1042,13 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x;	/* Magnification of amplitude */
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;		/* Magnification of intensity */
 						out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);	/* Magnification of opacity */
-						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] = Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
 					}
 					else if (Ctrl->T.now < t_plateau) {	/* We are within the plateau phase, keep everything constant */
 						out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1];
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1];
 						out[t_col] = 0.0;	/* No transparency during plateau phase */
-						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] = Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1];		/* Changing of color via dz */
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1];		/* Changing of color via dz */
 					}
 					else if (Ctrl->T.now < t_decay) {	/* We are within the decay phase */
 						x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
@@ -1056,7 +1056,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x + (1.0 - x);	/* Reduction of size down to the nominal size */
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
 						out[t_col] = 0.0;
-						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] = Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
 					}
 					else if (finite_duration && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
 						out[x_col] = 1.0;
@@ -1068,13 +1068,13 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						out[x_col] = x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];	/* Reduction of size down to coda size */
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
 						out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
-						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] = Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2] * (1.0 - x);			/* Changing of color via dz */
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2] * (1.0 - x);			/* Changing of color via dz */
 					}
 					else if (do_coda) {	/* If there is a coda then the symbol remains visible given those terminal attributes */
 						out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2];
 						out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
-						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] = Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2];
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2];
 					}
 					if (out_segment) {	/* Write segment header for lines and polygons only */
 						fprintf (fp_symbols, "%c -t%g %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], out[t_col], header);
