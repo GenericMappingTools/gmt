@@ -135,7 +135,7 @@ struct PSEVENTS_CTRL {
 	} Z;
 };
 
-/* THe names of the three external modules.  We skip first 2 letters if in modern mode */
+/* The names of the three external modules.  We skip first 2 letters if in modern mode */
 GMT_LOCAL char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -235,7 +235,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If no arg we read lengths from file; append t for reading end times instead. "
 		"If -L0 is given the event only lasts one frame.");
 	GMT_Usage (API, 1, "\n-Mi|s|t|z<val1>[+c<val2]");
-	GMT_Usage (API, -2, "Append i for intensity, s for size, t for transparency, and z for dz; repeatable. "
+	GMT_Usage (API, -2, "Append i for intensity, s for size, t for transparency, and z for dz (requires -C); repeatable. "
 		"Append value to use during rise, plateau, or decay phases. "
 		"Append +c to set a separate terminal value for the coda [no coda].");
 	GMT_Usage (API, 1, "\n-N[c|r]");
