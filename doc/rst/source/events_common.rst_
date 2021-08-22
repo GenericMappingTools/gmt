@@ -147,15 +147,18 @@ Optional Arguments
 
 .. _-M:
 
-**-M**\ **i**\|\ **s**\|\ **t**\ *val1*\ [**+c**\ *val2*]
-    Modify the initial **i**\ ntensity of the color, **s**\ ize of the symbol, or its **t**\ ransparency during
-    the *rise* interval [Defaults are 1, 1, and 100, respectively].  Option **-M** is repeatable for the different attributes.
-    Optionally, for finite-duration events you may append **+c** to set the corresponding terminal value
-    during the coda [0, 0, 100, respectively].  The intensity setting (normally in the interval ±1, with 0
-    having no effect) is used to brighten (*intensity* > 0) or darken (*intensity* < 0)
-    the symbol color during this period, the size setting is a magnifying factor that temporarily changes the
-    size of the symbol, while the transparency setting affects the symbol's transparency. **Note**: Polygons
-    can only use **-Mt** setting.
+**-M**\ **i**\|\ **s**\|\ **t**\|\ **z**\ *val1*\ [**+c**\ *val2*] ]
+
+    Modify the initial **i**\ ntensity of the color, the **s**\ ize of the symbol, its **t**\ ransparency
+    or the **z** data value during the *rise* interval [Defaults are 1, 1, 100, and 0 respectively].
+    Option **-M** is repeatable for the different attributes. Optionally, for finite-duration events you
+    may append **+c** to set the corresponding terminal value during the coda [0, 0, 100, 0, respectively].
+    The intensity setting (normally in the interval ±1, with 0 having no effect) is used to brighten
+    (*intensity* > 0) or darken (*intensity* < 0) the symbol color during this period (hue is kept fixed).
+    The size setting is a magnifying factor that temporarily changes the size of the symbol. The transparency
+    setting affects temporary changes to the symbol's transparency. Finally, the z-data setting temporarily
+    adds *val1* to the data set's *z*-values per the time function, and thus can change the symbol's color
+    via the CPT (hence **-C** is a required option for **-Mz**). **Note**: Polygons can only use **-Mt** setting.
 
 .. _-N:
 
@@ -268,8 +271,8 @@ setting [second].  You will need to specify the desired time unit that should be
 interpreting your **-E** and **-L** arguments.  The example below for seismicity uses
 actual earthquake times but we use days as the unit as second is too small.
 
-The three time-functions
-------------------------
+The four time-functions
+-----------------------
 
 Events typically have either a finite length, e.g., the temporal extent of
 the reign of a particular monarch, or are infinite.  Here, infinite simply means
@@ -277,10 +280,10 @@ its length exceeds the temporal extent of the time we are plotting.  In a movie,
 a basic representation of these events as points on a map would be to start plotting
 the symbol when the event starts and then keep the symbol visible on all frames until the
 event ends (or never stop plotting them in the infinite length case).  However, to draw
-attention to the arrival of a new event we can temporarily change three attributes of
-the symbol: Its size, color intensity, and transparency.  You can think of these three
-attributes as functions of time.  For some option settings, figure below
-illustrates how the symbol size may vary through the timespan of the movie.
+attention to the arrival of a new event we can temporarily change four attributes of
+the symbol: Its size, color intensity, transparency, and color (via CPT look-up).  You
+can think of these four attributes as functions of time.  For some option settings, the
+figure below illustrates how the symbol size may vary through the timespan of the movie.
 
 .. figure:: /_images/psevents_size.*
    :width: 400 px
@@ -305,7 +308,7 @@ illustrates how intensity may vary accordingly.
    seek to whiten the symbol during the event arrival, as well as darken it
    during a permanent code phase.
 
-Finally, for finite events you may wish to either fade them out completely or
+Next, for finite events you may wish to either fade them out completely or
 simply fade them to a constant but still visible transparency; this future stage
 is referred to as the coda and levels can be specified via the **-Mt** option.
 Figure below illustrates how transparency may vary through time.
@@ -317,6 +320,24 @@ Figure below illustrates how transparency may vary through time.
    Here we show how a symbol may go from being invisible to reaching full opaqueness
    at the event begin time, finally fading to a near-invisible stage after reaching
    its length.
+
+Finally, instead of selecting a fixed color for a symbol you can use **-C** to set a
+color table that we will use to modulate the color of the symbol.  It is done by adding
+a variable fraction of *dz* to the data's *z*-column and hence the CPT lookup will
+return different colors. The amplitude is controlled with the **-Mz** option which
+will create *dz* values in the range 0-*val1* [Default is 0-1]. In most cases the
+data set will have a zero z-value and hence the CPT will be set up for the 0-1 range
+(but note that the coda *dz* value may be negative so compose your CPT accordingly).
+Figure below illustrates how colors may vary through time.
+
+.. figure:: /_images/psevents_dz.*
+   :width: 400 px
+   :align: center
+
+   Here we show how a symbol may go from a constant color to changing colors
+   at the event begin time, finally fading to a different-colored stage after reaching
+   its length. This curve is scaled by the amplitude [1] and added to the *z*-data before
+   CPT-lookup occurs.
 
 While shown in these examples, the rise, plateau, fade, and coda periods are all optional
 and can be selected or ignored as you wish via **-E**.  You can choose to specify any or none
