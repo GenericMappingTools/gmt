@@ -4782,6 +4782,7 @@ GMT_LOCAL int gmtsupport_decode_arg (char *txt, int column, struct GMT_CUSTOM_SY
 		s->p[column] = atof (txt);	/* Get azimuth */
 		new_action = GMT_SYMBOL_AZIMROTATE;	/* Mark as a different rotate action */
 		txt[k] = 'a';	/* Restore the trailing 'a' */
+		s->angular = GMT_IS_AZIMUTH;
 	}
 	else	/* Got a fixed Cartesian plot angle */
 		s->p[column] = atof (txt);
@@ -5224,6 +5225,12 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				s->p[0] = atof (col[2]);
 				gmtsupport_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
 				gmtsupport_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
+				break;
+
+			case PSL_VECTOR:		/* Draw a vector symbol. Vector head is hardwired and scales with pen thickness */
+				if (last != 4) error++;
+				gmtsupport_decode_arg (col[2], 0, s);	/* angle could be a variable or constant degrees */
+				s->p[1] = atof (col[3]);	/* Non-dimensional length */
 				break;
 
 			case GMT_SYMBOL_EPS:		/* Place EPS file */
