@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Demonstrate plotting of animated trajectories, part 1: Line
 # Create a line with a few points and get Cartesian distances to use as time
+ps=trajectory1.ps
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 10
         opt="-M10,ps"
 else    # Make MP4 at 2 frames per second

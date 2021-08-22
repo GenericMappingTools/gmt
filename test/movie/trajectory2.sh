@@ -2,6 +2,7 @@
 # Demonstrate plotting of animated trajectories, part 2: Discretized line
 # Create a line with a few points and get Cartesian distances to use as time,
 # then sample densely to plot points to simulate the line
+ps=trajectory2.ps
 if [ $# -eq 0 ]; then   # Just make master PostScript frame 10
         opt="-M10,ps"
 else    # Make MP4 at 2 frames per second
