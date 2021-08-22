@@ -324,11 +324,11 @@ Figure below illustrates how transparency may vary through time.
 Finally, instead of selecting a fixed color for a symbol you can use **-C** to set a
 color table that we will use to modulate the color of the symbol.  It is done by adding
 a variable fraction of *dz* to the data's *z*-column and hence the CPT lookup will
-return different colors. The amplitude is controlled with the **-Mz** option which
-will create *dz* values in the range 0-*val1* [Default is 0-1]. In most cases the
-data set will have a zero z-value and hence the CPT will be set up for the 0-1 range
-(but note that the coda *dz* value may be negative so compose your CPT accordingly).
-Figure below illustrates how colors may vary through time.
+return different colors at different times. The amplitude is controlled with the **-Mz**
+option which will create *dz* values in the range 0-*val1* [Default is 0-1]. In most
+cases the data set will have a zero z-value and hence the CPT will be set up for the
+0-1 range (but note that the coda *val2* value may be negative so compose your CPT
+accordingly if using coda). Figure below illustrates how *dz* may vary through time.
 
 .. figure:: /_images/psevents_dz.*
    :width: 400 px
