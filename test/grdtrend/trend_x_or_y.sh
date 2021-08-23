@@ -3,13 +3,13 @@
 #	Testing the +x and +y modifiers to grdtrend -N
 
 gmt grdmath -R-1/1/-1/1 -I0.1 X = x.grd
-gmt grdtrend x.grd -N3+x -Dlixo_flat_x.grd
+gmt grdtrend x.grd -N2+x -Dlixo_flat_x.grd
 
 gmt grdmath -R-1/1/-1/1 -I0.1 Y = y.grd
-gmt grdtrend y.grd -N3+y -Dlixo_flat_y.grd
+gmt grdtrend y.grd -N2+y -Dlixo_flat_y.grd
 
-# Compute any difference between data and solution and if not 0 write it out
-gmt grdmath x.grd lixo_flat_x.grd SUB 0 NAN = diffx.grd
-gmt grdmath y.grd lixo_flat_y.grd SUB 0 NAN = diffy.grd
-gmt grd2xyz diffx.grd -s > fail
-gmt grd2xyz diffy.grd -s >> fail
+# Replace 0 with NaN and write out anything else as failure
+gmt grdmath lixo_flat_x.grd 0 NAN = lixo_flat_x.grd
+gmt grdmath lixo_flat_y.grd 0 NAN = lixo_flat_y.grd
+gmt grd2xyz lixo_flat_x.grd -s > fail
+gmt grd2xyz lixo_flat_y.grd -s >> fail
