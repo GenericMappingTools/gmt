@@ -32,7 +32,7 @@ EOF
 # Make main script that plots trajectory colored based on the y-coordinate
 cat << 'EOF' > main.sh
 gmt begin
-	gmt events -R0/9.6/-2.7/2.7 -Jx0.5i -Sc3p -Cheat.cpt points.txt -Es+r0.5+d0.25 -Mz -T${MOVIE_COL0} -X0 -Y0
+	gmt events -R0/9.6/-2.7/2.7 -Jx0.5i -Sc3p -Cheat.cpt points.txt -Es+d0.25 -Mz -T${MOVIE_COL0} -X0 -Y0
 gmt end
 EOF
 # Build the product
