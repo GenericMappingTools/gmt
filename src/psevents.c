@@ -62,10 +62,12 @@ enum Psevent {	/* Misc. named array indices */
 /* Control structure for psevents */
 
 struct PSEVENTS_CTRL {
-	struct PSEVENTS_A {	/* 	-Ar[<dpu>]|s */
+	struct PSEVENTS_A {	/* 	-Ar[<dpu>[+z]]|s */
 		bool active;
+		bool add_z;
 		unsigned int mode;
 		double dpu;		/* For resampling lines into points */
+		double z;		/* For adding z column */
 	} A;
 	struct PSEVENTS_C {	/* 	-C<cpt> */
 		bool active;
@@ -169,7 +171,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i][+z[<z>]]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
 		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|z<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
 		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT,
@@ -184,13 +186,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Usage (API, -2, "Record format: lon lat [z] [size] time [length|time2].");
-	GMT_Usage (API, 1, "\n-Ar[<dpu>[c|i]]|s");
+	GMT_Usage (API, 1, "\n-Ar[<dpu>[c|i][+z[<z>]]]|s");
 	GMT_Usage (API, -2, "Select plotting of lines or polygons when no -S is given.  Choose input mode:");
 	GMT_Usage (API, 3, "r: Read records for trajectories with time in column 3. We linearly interpolate any end points.  Alternatively, "
 		"append <dpu> to convert your line records into dense point records that can be plotted as circles later. "
 		"The resampled line will be written to standard output (requires options -R -J, optionally -C). "
 		"The <dpu> must be the same as the intended <dpu> for the movie frames. "
-		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s]. "
+		"Optionally, append +z[<z>] to insert a z-column into the point data with values <z> [0].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Usage (API, 3, "s: Read whole segments (lines or polygons) with no time column. n"
 		"Time is set via segment header -T<start>, -T<start>,<end>, or -T<start>,<duration (see -L).");
 	GMT_Usage (API, 1, "\n-C<cpt>");
@@ -287,6 +290,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				switch (opt->arg[0]) {
 					case 'r':	/* Expects Ar[<dpu>[c|i]] */
 						if (opt->arg[1]) {	/* Want to convert a line to points */
+							if ((c = strstr (opt->arg, "+z"))) {
+								Ctrl->A.add_z = true;
+								Ctrl->A.z = atof (&c[2]);
+								c[0] = '\0';	/* Temporarily chop off */
+							}
 							if ((Ctrl->A.dpu = atof (&opt->arg[1])) > 0.0) {
 								char unit = opt->arg[strlen(opt->arg)-1];	/* This is either c, i, or a digit, or a bad entry */
 								Ctrl->A.mode = PSEVENTS_LINE_TO_POINTS;	/* Gave a dpu for guidance on resampling a line into points */
@@ -305,6 +313,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ar: Your dpu could not be processed (%s)\n", &opt->arg[1]);
 								n_errors++;
 							}
+							if (c) c[0] = '+';	/* Restore */
 						}
 						else
 							Ctrl->A.mode = PSEVENTS_LINE_REC;	/* Read line (x,y,t) records */
@@ -751,6 +760,23 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Your line data must (a) have more than 1 record and (2) have at least 3 data columns (x,y[,z][,size],time).\n");
 			Return (API->error);
 		}
+		if (Ctrl->A.add_z) {	/* Must insert a zero z-column into this dataset for use with -Mz */
+			gmt_adjust_dataset (GMT, D, D->n_columns + 1);
+			for (tbl = 0; tbl < D->n_tables; tbl++) {	/* Shuffle the columns one step to the right */
+				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+					S = D->table[tbl]->segment[seg];
+					for (col = D->n_columns - 1; col > GMT_Z; col--)
+						gmt_M_memcpy (S->data[col], S->data[col-1], S->n_rows, double);
+					if (gmt_M_is_zero (Ctrl->A.z))	/* Set z-column to zero */
+						gmt_M_memset (S->data[GMT_Z], S->n_rows, double);
+					else {	/* Must assign non-zero value */
+						for (row = 0; row < S->n_rows; row++)
+							S->data[GMT_Z][row] = Ctrl->A.z;
+					}
+				}
+			}
+		}
+
 		last_col = D->n_columns - 1;	/* Remember ID of last column in the input file which must be the time column. */
 		type = gmt_M_type (GMT, GMT_IN, last_col);	/* Need to know if we have absolute time formatting or just floating point numbers */
 		/* Create virtual files for using the data in mapproject and another for holding the result */

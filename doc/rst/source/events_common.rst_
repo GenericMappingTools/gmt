@@ -44,7 +44,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **r**\ [*dpu*\ [**c**\|\ **i**]]\|\ **s**
+**-A**\ **r**\ [*dpu*\ [**c**\|\ **i**][**+z**\ [*z*]]]\|\ **s**
     When no **-S** is given we expect to read lines or polygons.  Two different forms for input are
     supported and specified via the chosen **-A** directives: (1) Choose **-Ar** if your input data are *trajectories*, the data
     format is given as *x, y, time*, and the "event" is the portion of that trajectories limited by the current
@@ -65,6 +65,8 @@ Optional Arguments
     SI units and pixels per inch if you are using US units (hence it depends on your :term:`PROJ_LENGTH_UNIT` setting).
     Alternatively, append **c** or **i** to set the unit used explicitly. Also note that if your movie involves
     changes to the region or the map projection then you may need to run the **-Ar**\ *dpu* as part of the main script.
+    Finally, use **+z**\ [*z*] to insert a *z*-column (initialized to zero unless another *z* value is appended) in
+    the dense point data file for use with **-Mz**.
 
 .. |Add_-B| replace:: |Add_-B_links|
 .. include:: explain_-B.rst_
