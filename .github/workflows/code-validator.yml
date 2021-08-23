@@ -56,3 +56,15 @@ jobs:
             fi
           done
           exit $error
+
+      - name: Check shebang of bash scripts
+        run: |
+          error=0
+          echo "Following bash scripts don't start with the shebang '#!/usr/bin/env bash'"
+          for file in $(find . -name "*.sh" ! -path "./share/tools/gmt_functions.sh" ! -path "./test/invalidate_modules.sh"); do
+            if [[ "$(head -n1 $file)" != "#!/usr/bin/env bash" ]]; then
+              ((++error))
+              echo "$error: $file"
+            fi
+          done
+          exit $error
