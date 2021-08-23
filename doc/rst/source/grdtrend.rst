@@ -57,7 +57,7 @@ Required Arguments
     *n_model* sets the ID of the highest model parameters to fit.
     Append **+r** for robust fit.  As an option, append either **+x** or **+y** to only
     fit a model that depends on *x* or *y* terms, respectively. This means we either fit
-    :math:`m_1 + m_2x + m_3x^2 + m_4x^3` or :math:`m_1 + m_2y + m_3y^2 + m_4y^3.`.
+    :math:`m_1 + m_2x + m_3x^2 + m_4x^3` or :math:`m_1 + m_2y + m_3y^2 + m_4y^3`.
     Note that the meaning of *n_model* remains the same, so -N10+y is needed to fit a
     four-term cubic trend in the *y*-direction only.
 
