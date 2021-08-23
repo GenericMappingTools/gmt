@@ -301,3 +301,8 @@ script you need to repeat it (%%); hence the font switching mechanism
 This only applies to text inside a script or that otherwise is processed
 by DOS. Data files that are opened and read by the module do not need
 such duplication.
+
+Limitations
+-----------
+
+Currently, each type of legend entry is limited to a maximum of 256 such entries.
