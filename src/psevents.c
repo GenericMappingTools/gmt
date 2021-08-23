@@ -39,6 +39,7 @@ enum Psevent {	/* Misc. named array indices */
 	PSEVENTS_INT = 0,
 	PSEVENTS_SIZE = 1,
 	PSEVENTS_TRANSP = 2,
+	PSEVENTS_DZ = 3,
 	PSEVENTS_OFFSET = 0,
 	PSEVENTS_RISE = 1,
 	PSEVENTS_PLATEAU = 2,
@@ -61,10 +62,12 @@ enum Psevent {	/* Misc. named array indices */
 /* Control structure for psevents */
 
 struct PSEVENTS_CTRL {
-	struct PSEVENTS_A {	/* 	-Ar[<dpu>]|s */
+	struct PSEVENTS_A {	/* 	-Ar[<dpu>[+z]]|s */
 		bool active;
+		bool add_z;
 		unsigned int mode;
 		double dpu;		/* For resampling lines into points */
+		double z;		/* For adding z column */
 	} A;
 	struct PSEVENTS_C {	/* 	-C<cpt> */
 		bool active;
@@ -102,9 +105,9 @@ struct PSEVENTS_CTRL {
 		unsigned int mode;
 		double length;
 	} L;
-	struct PSEVENTS_M {	/* 	-M[i|s|t]<val1>[+c<val2] */
-		bool active[3];
-		double value[3][2];
+	struct PSEVENTS_M {	/* 	-M[i|s|t*z]<val1>[+c<val2] */
+		bool active[4];
+		double value[4][2];
 	} M;
 	struct PSEVENTS_N {	/* -N[r|c] */
 		bool active;
@@ -134,7 +137,7 @@ struct PSEVENTS_CTRL {
 	} Z;
 };
 
-/* THe names of the three external modules.  We skip first 2 letters if in modern mode */
+/* The names of the three external modules.  We skip first 2 letters if in modern mode */
 GMT_LOCAL char *coupe = "pscoupe", *meca = "psmeca", *velo = "psvelo";
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -146,6 +149,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->H.soff[GMT_Y] = -C->H.soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
 	strcpy (C->H.pen, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));	/* Default outline pen */
 	C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = C->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 100.0;	/* Rise from and fade to invisibility */
+	C->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;	/* Default dz amplitude for -Mz */
 	return (C);
 }
 
@@ -167,9 +171,9 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i][+z[<z>]]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
-		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
+		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|z<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
 		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT,
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -182,13 +186,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Usage (API, -2, "Record format: lon lat [z] [size] time [length|time2].");
-	GMT_Usage (API, 1, "\n-Ar[<dpu>[c|i]]|s");
+	GMT_Usage (API, 1, "\n-Ar[<dpu>[c|i][+z[<z>]]]|s");
 	GMT_Usage (API, -2, "Select plotting of lines or polygons when no -S is given.  Choose input mode:");
 	GMT_Usage (API, 3, "r: Read records for trajectories with time in column 3. We linearly interpolate any end points.  Alternatively, "
 		"append <dpu> to convert your line records into dense point records that can be plotted as circles later. "
 		"The resampled line will be written to standard output (requires options -R -J, optionally -C). "
 		"The <dpu> must be the same as the intended <dpu> for the movie frames. "
-		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+		"Append i if dpi and c if dpc [Default will consult GMT_LENGTH_UNIT setting, currently %s]. "
+		"Optionally, append +z[<z>] to insert a z-column into the point data with values <z> [0].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
 	GMT_Usage (API, 3, "s: Read whole segments (lines or polygons) with no time column. n"
 		"Time is set via segment header -T<start>, -T<start>,<end>, or -T<start>,<duration (see -L).");
 	GMT_Usage (API, 1, "\n-C<cpt>");
@@ -232,8 +237,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set finite length of events, otherwise we assume they are all infinite. "
 		"If no arg we read lengths from file; append t for reading end times instead. "
 		"If -L0 is given the event only lasts one frame.");
-	GMT_Usage (API, 1, "\n-Mi|s|t<val1>[+c<val2]");
-	GMT_Usage (API, -2, "Append i for intensity, s for size, or t for transparency; repeatable. "
+	GMT_Usage (API, 1, "\n-Mi|s|t|z<val1>[+c<val2]");
+	GMT_Usage (API, -2, "Append i for intensity, s for size, t for transparency, and z for dz (requires -C); repeatable. "
 		"Append value to use during rise, plateau, or decay phases. "
 		"Append +c to set a separate terminal value for the coda [no coda].");
 	GMT_Usage (API, 1, "\n-N[c|r]");
@@ -285,6 +290,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				switch (opt->arg[0]) {
 					case 'r':	/* Expects Ar[<dpu>[c|i]] */
 						if (opt->arg[1]) {	/* Want to convert a line to points */
+							if ((c = strstr (opt->arg, "+z"))) {
+								Ctrl->A.add_z = true;
+								Ctrl->A.z = atof (&c[2]);
+								c[0] = '\0';	/* Temporarily chop off */
+							}
 							if ((Ctrl->A.dpu = atof (&opt->arg[1])) > 0.0) {
 								char unit = opt->arg[strlen(opt->arg)-1];	/* This is either c, i, or a digit, or a bad entry */
 								Ctrl->A.mode = PSEVENTS_LINE_TO_POINTS;	/* Gave a dpu for guidance on resampling a line into points */
@@ -303,6 +313,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ar: Your dpu could not be processed (%s)\n", &opt->arg[1]);
 								n_errors++;
 							}
+							if (c) c[0] = '+';	/* Restore */
 						}
 						else
 							Ctrl->A.mode = PSEVENTS_LINE_REC;	/* Read line (x,y,t) records */
@@ -442,6 +453,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					case 'i':	id = 0;	k = 1;	break;	/* Intensity settings */
 					case 's':	id = 1;	k = 1;	break;	/* Size settings */
 					case 't':	id = 2;	k = 1;	break;	/* Transparency settings */
+					case 'z':	id = 3;	k = 1;	break;	/* Delta z settings */
 					default:
 						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Directive %c not valid\n", opt->arg[1]);
 						n_errors++;
@@ -583,6 +595,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 		n_errors += gmt_M_check_condition (GMT, Ctrl->W.active, "Option -W: Not allowed with -Ar<dpu>.\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->current.setting.proj_length_unit == GMT_PT, "PROJ_LENGTH_UNIT: Must be either cm or inch for -Ar<dpu> to work.\n");
 	}
+	n_errors += gmt_M_check_condition (GMT, !Ctrl->C.active && Ctrl->M.active[PSEVENTS_DZ], "Option -Mz: Requires -C");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->D.string == NULL, "Option -D: No argument given\n");
 	n_errors += gmt_M_check_condition (GMT, !gmt_M_is_zero (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_DECAY]), "Option -Et: No decay phase for labels.\n");
 	n_errors += gmt_M_check_condition (GMT, !gmt_M_is_zero (Ctrl->E.dt[PSEVENTS_TEXT][PSEVENTS_PLATEAU]), "Option -Et: No plateau phase for labels.\n");
@@ -747,6 +760,23 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Your line data must (a) have more than 1 record and (2) have at least 3 data columns (x,y[,z][,size],time).\n");
 			Return (API->error);
 		}
+		if (Ctrl->A.add_z) {	/* Must insert a zero z-column into this dataset for use with -Mz */
+			gmt_adjust_dataset (GMT, D, D->n_columns + 1);
+			for (tbl = 0; tbl < D->n_tables; tbl++) {	/* Shuffle the columns one step to the right */
+				for (seg = 0; seg < D->table[tbl]->n_segments; seg++) {
+					S = D->table[tbl]->segment[seg];
+					for (col = D->n_columns - 1; col > GMT_Z; col--)
+						gmt_M_memcpy (S->data[col], S->data[col-1], S->n_rows, double);
+					if (gmt_M_is_zero (Ctrl->A.z))	/* Set z-column to zero */
+						gmt_M_memset (S->data[GMT_Z], S->n_rows, double);
+					else {	/* Must assign non-zero value */
+						for (row = 0; row < S->n_rows; row++)
+							S->data[GMT_Z][row] = Ctrl->A.z;
+					}
+				}
+			}
+		}
+
 		last_col = D->n_columns - 1;	/* Remember ID of last column in the input file which must be the time column. */
 		type = gmt_M_type (GMT, GMT_IN, last_col);	/* Need to know if we have absolute time formatting or just floating point numbers */
 		/* Create virtual files for using the data in mapproject and another for holding the result */
@@ -1038,11 +1068,13 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x;	/* Magnification of amplitude */
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;		/* Magnification of intensity */
 						out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] * (1.0-x);	/* Magnification of opacity */
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
 					}
 					else if (Ctrl->T.now < t_plateau) {	/* We are within the plateau phase, keep everything constant */
 						out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1];
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1];
 						out[t_col] = 0.0;	/* No transparency during plateau phase */
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1];		/* Changing of color via dz */
 					}
 					else if (Ctrl->T.now < t_decay) {	/* We are within the decay phase */
 						x = pow ((t_decay - Ctrl->T.now)/Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY], 2.0);	/* Quadratic function that goes from 1 to 0 */
@@ -1050,6 +1082,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] * x + (1.0 - x);	/* Reduction of size down to the nominal size */
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] * x;	/* Reduction of intensity down to 0 */
 						out[t_col] = 0.0;
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] * x;		/* Changing of color via dz */
 					}
 					else if (finite_duration && Ctrl->T.now < t_end) {	/* We are within the normal display phase with nominal symbol size */
 						out[x_col] = 1.0;
@@ -1061,11 +1094,13 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 						out[x_col] = x + (1.0 - x) * Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];	/* Reduction of size down to coda size */
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] * (1.0 - x);		/* Reduction of intensity down to coda intensity */
 						out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] * (1.0 - x);		/* Increase of transparency up to code transparency */
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2] * (1.0 - x);			/* Changing of color via dz */
 					}
 					else if (do_coda) {	/* If there is a coda then the symbol remains visible given those terminal attributes */
 						out[x_col] = Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2];
 						out[i_col] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2];
 						out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2];
+						if (Ctrl->M.active[PSEVENTS_DZ]) out[GMT_Z] += Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2];
 					}
 					if (out_segment) {	/* Write segment header for lines and polygons only */
 						fprintf (fp_symbols, "%c -t%g %s\n", GMT->current.setting.io_seg_marker[GMT_OUT], out[t_col], header);
