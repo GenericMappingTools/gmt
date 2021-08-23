@@ -144,21 +144,21 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> -N<n_model>[+r][+x|+y] [-D<diffgrid>] [%s] [-T<trendgrid>] "
+	GMT_Usage (API, 0, "usage: %s <ingrid> -N<n_model>[+r][+x|y] [-D<diffgrid>] [%s] [-T<trendgrid>] "
 		"[%s] [-W<weightgrid>[+s]] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<ingrid> is name of grid file to fit trend to.");
-	GMT_Usage (API, 1, "\n-N<n_model>[+r][+x|+y]");
+	GMT_Usage (API, 1, "\n-N<n_model>[+r][+x|y]");
 	GMT_Usage (API, -2, "Fit a [robust] model with <n_model> terms; append +r for robust solution.  "
-		"E.g., robust planar = -N3+r. Model parameters order is given as follows; "
-		"Optionally append +x OR +y to fit a model only along the x or y axis:");
-	GMT_Usage (API, -3, "%s <n_model> in [1,10]: z(x,y) = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.", GMT_LINE_BULLET);
-	GMT_Usage (API, -3, "%s <n_model> in [1, 4]: z(x,y) = m1 + m2*x + m3*x^2 + m4*x^3.", GMT_LINE_BULLET);
-	GMT_Usage (API, -3, "%s <n_model> in [1, 4]: z(x,y) = m1 + m2*y + m3*y^2 + m4*y^3.", GMT_LINE_BULLET);
-	GMT_Usage (API, -2, "E.g., robust planar = -N3+r while cubic in x-only is -N4+x.");
+		"Optionally append +x OR +y to fit a model only along the x or y axes. "
+		"Model parameters IDs are given as follows:");
+	GMT_Usage (API, -3, "%s m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "%s m1 + m2*x + m3*x^2 + m4*x^3 (for +x).", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "%s m1 + m2*y + m3*y^2 + m4*y^3 (for +y).", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "E.g., a robust x/y planar trend is -N3+r while a cubic trend in x only is -N4+x.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-D<diffgrid>");
 	GMT_Usage (API, -2, "Supply filename to write grid file of differences (input - trend).");

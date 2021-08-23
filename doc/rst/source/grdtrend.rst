@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdtrend** *grdfile* |-N|\ *n_model*\ [**+r**][**+x** | **y**]
+**gmt grdtrend** *grdfile* |-N|\ *n_model*\ [**+r**][**+x**\|\ **y**]
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
@@ -38,7 +38,8 @@ reweight the data based on a robust scale estimate, in order to converge
 to a solution insensitive to outliers. This may be handy when separating
 a "regional" field from a "residual" which should have non-zero mean,
 such as a local mountain on a regional surface.
-Optionally, you may choose to fit a trend that varies only along the *x* or *y* axis.
+Optionally, you may choose to fit a trend that varies only along the *x* or *y* axis,
+in which case you select an *n_model* from 1 (constant) to 4 (cubic).
 
 If data file has values set to NaN, these will be ignored during
 fitting; if output files are written, these will also have NaN in the
@@ -52,11 +53,11 @@ Required Arguments
 
 .. _-N:
 
-**-N**\ *n_model*\ [**+r**][**+x** | **y**]
+**-N**\ *n_model*\ [**+r**][**+x**\|\ **y**]
     *n_model* sets the ID of the highest model parameters to fit.
     Append **+r** for robust fit.  As an option, append either **+x** or **+y** to only
     fit a model that depends on *x* or *y* terms, respectively. This means we either fit
-    math:`m_1 + m_2x + m_5x^2 + m_7x^3` or math:`m_1 + m_3y + m_6y^2 + m_{10}y^3.`.
+    :math:`m_1 + m_2x + m_3x^2 + m_4x^3` or :math:`m_1 + m_2y + m_3y^2 + m_4y^3.`.
     Note that the meaning of *n_model* remains the same, so -N10+y is needed to fit a
     four-term cubic trend in the *y*-direction only.
 
