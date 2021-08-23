@@ -295,7 +295,7 @@ if(NOT DEFINED _MANAGE_STRING_CMAKE_)
 		foreach (_file ${_FILE} ${ARGN})
 			file (READ ${_file} _file_content LIMIT ${FILESIZE_LIMIT})
 			string_escape (_file_content _file_content) # ; -> #S and \ -> #B
-			# strip trainling "\n" and convert to list
+			# strip trailing "\n" and convert to list
 			string (REGEX REPLACE "\n+$" "" _file_content ${_file_content})
 			string (REPLACE "\n" ";" _file_content ${_file_content})
 			list(APPEND ${_OUT} "${_file_content}") # quotes -> also append empty lines

@@ -12,22 +12,23 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt psconvert** *psfile(s)*
-[ |-A|\ *params* ]
+**gmt psconvert** *psfiles*
+[ |-A|\ [**+r**][**+u**] ]
 [ |-C|\ *gs_option* ]
 [ |-D|\ *outdir* ]
 [ |-E|\ *resolution* ]
 [ |-F|\ *out_name* ]
 [ |-G|\ *ghost_path* ]
-[ |-H|\ *factor* ]
-[ |-I| ]
-[ |-L|\ *listfile* ]
+[ |-H|\ *scale* ]
+[ |-I|\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*\ [/\ *height*]][**+S**\ *scale*] ]
+[ |-L|\ *list* ]
 [ |-M|\ **b**\|\ **f**\ *pslayer* ]
+[ |-N|\ [**+f**\ *fade*][**+g**\ *paint*][**+i**][**+p**\ [*pen*]] ]
 [ |-Q|\ [**g**\|\ **p**\|\ **t**][1\|2\|4] ]
 [ |-S| ]
-[ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**] ]
+[ |-T|\ **b**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**][**+q**\ *quality*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *params* ]
+[ |-W|\ [**+a**\ *altmode*\ [*alt*]][**+c**][**+f**\ *minfade/maxfade*][**+g**][**+k**][**+l**\ *minLOD/maxLOD*][**+n**\ *layername*][**+o**\ *foldername*][**+t**\ *docname*][**+u**\ *URL*] ]
 [ |-Z| ]
 [ |SYN_OPT--| ]
 
@@ -64,33 +65,13 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**+f**\ *fade*][**+g**\ *paint*][**+m**\ *margins*][**+n**][**+p**\ [*pen*]][**+r**][**+s**\ [**m**]\|\ **S**\ *width*/\ *height*][**+u**]
+**-A**\ [**+r**][**+u**]
     Adjust the BoundingBox and HiResBoundingBox to the minimum required
-    by the image content. Append **+n** to leave the BoundingBoxes as they are
-    (e.g., to override any automatic setting of **-A** by **-W**).
-    Append **+u** to first remove any GMT-produced time-stamps.
-    Optionally, append **+m** to specify extra margins to extend the bounding box.
-    Give either one (uniform), two (x and y) or four (individual sides)
-    margins; append unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
-
-    Use the **-A+s**\ *new_width* to resize the output image to exactly *new_width* units.
-    The default is to use what is set by :term:`PROJ_LENGTH_UNIT`
-    but you can append a new unit and/or impose different width and height. What happens
-    here is that Ghostscript will do the re-interpolation work and the final image will
-    retain the DPI resolution set by **-E**.  Use **-A+sm** to set a maximum size and
-    the new width are only imposed if the original figure width exceeds it. Append
-    /\ *new_height* to also impose a maximum height in addition to the width.
-    Alternatively use **-A+S**\ *scale* to scale the image by a constant factor.
-
-    Use the **-A+r** to round the HighRes BoundingBox instead of using the ``ceil`` function.
+    by the image content. Append **+u** to first remove any GMT-produced time-stamps.
+    Append **+r** to *round* the HighResBoundingBox instead of using the ``ceil`` function.
     This is going against Adobe Law but can be useful when creating very small images
-    where the difference of one pixel might matter.
-    If **-V** is used we also report the dimensions of the illustration.
-    Use **-A+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
-    Use **-A+g**\ *paint* to paint the BoundingBox behind the illustration and
-    use **-A+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
-    the default pen of 0.25p,black).  **Note**: If both **+g** and **+f** are used
-    then we use *paint* as the fade color instead of black.
+    where the difference of one pixel might matter. If **-V** is used we also report
+    the dimensions of the final illustration.
 
 .. _-C:
 
@@ -135,31 +116,36 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *factor*
+**-H**\ *scale*
     Given the finite dots-per-unit used to rasterize PostScript frames to rasters, the quantizing of features
     to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings (**-Q**)
-    which affect lines and text only.  The scale *factor* temporarily increases the effective dots-per-unit
-    by *factor*, rasterizes the plot, then downsamples the image by the same factor at the end.  The larger
-    the *factor*, the smoother the raster.  Because processing time increases with *factor* we suggest you
+    which affect lines and text only.  The given *scale* temporarily increases the effective dots-per-unit
+    by *scale*, rasterizes the plot, then down-samples the image by the same scale at the end.  The larger
+    the *scale*, the smoother the raster.  Because processing time increases with *scale* we suggest you
     try values in the 2-5 range.  Note that raster images can also suffer from quantizing when the original data
     have much higher resolution than your raster pixel dimensions.  The **-H** option may then be used to smooth
     the result to avoid aliasing [no downsampling].
 
 .. _-I:
 
-**-I**
-    Enforce gray-shades by using ICC profiles.  Ghostscript versions
-    >= 9.00 change gray-shades by using ICC profiles.  Ghostscript 9.05
-    and above provide the '-dUseFastColor=true' option to prevent that
-    and that is what **psconvert** does by default, unless option **-I** is
-    set.  Note that for Ghostscript >= 9.00 and < 9.05 the gray-shade
-    shifting is applied to all but PDF format.  We have no solution to
-    offer other than upgrade Ghostscript.
+**-I**\ [**+m**\ *margins*][**+s**\ [**m**]\ *width*\ [/\ *height*]][**+S**\ *scale*]
+    Adjust the BoundingBox and HiResBoundingBox by scaling and/or adding margins.
+    Append **+m** to specify extra margins to extend the bounding box.
+    Give either one (uniform), two (x and y) or four (individual sides)
+    margins; append unit [Default is set by :term:`PROJ_LENGTH_UNIT`].
+    Append **+s**\ *width* to resize the output image to exactly *width* units.
+    The default unit is set by :term:`PROJ_LENGTH_UNIT` but you can append a new
+    unit and/or impose different width and height (**Note**: This may change the
+    image aspect ratio). What happens here is that Ghostscript will do the re-interpolation
+    work and the final image will retain the DPI resolution set by **-E**.  Append **+sm**
+    to set a maximum size and the new *width* is only imposed if the original figure width
+    exceeds it. Append /\ *height* to also impose a maximum height in addition to the width.
+    Alternatively, append **+S**\ *scale* to scale the image by a constant factor.
 
 .. _-L:
 
-**-L**\ *listfile*
-    The *listfile* is an ASCII file with the names of the PostScript
+**-L**\ *list*
+    The *list* is an ASCII file with the names of the PostScript
     files to be converted.
 
 .. _-M:
@@ -168,6 +154,23 @@ Optional Arguments
     Sandwich the current *psfile* between an optional background (**-Mb**) and
     optional foreground (**-Mf**) Postscript plots.  These files are expected
     to be stand-alone plots that will align when stacked.
+
+.. _-N:
+
+**-N**\ [**+f**\ *fade*][**+g**\ *paint*][**+i**][**+p**\ [*pen*]]
+    Set optional BoundingBox fill color, fading, or draw the outline of the BoundingBox.
+    Append **+f**\ *fade* to fade the entire plot towards black (100%) [no fading, 0].
+    Append **+g**\ *paint* to paint the BoundingBox behind the illustration and
+    append **+p**\ [*pen*] to draw the BoundingBox outline (append a pen or accept
+    the default pen of 0.25p,black).  **Note**: If both **+g** and **+f** are used
+    then we use *paint* as the fade color instead of black.
+    Append **+i**  to enforce gray-shades by using ICC profiles.  Ghostscript versions
+    >= 9.00 change gray-shades by using ICC profiles.  Ghostscript 9.05
+    and above provide the '-dUseFastColor=true' option to prevent that
+    and that is what **psconvert** does by default, unless modifier **+i** is
+    set.  Note that for Ghostscript >= 9.00 and < 9.05 the gray-shade
+    shifting is applied to all but PDF format.  We have no solution to
+    offer other than suggesting you upgrade Ghostscript.
 
 .. _-Q:
 
@@ -187,13 +190,14 @@ Optional Arguments
 
 .. _-T:
 
-**-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**]
+**-Tb**\|\ **e**\|\ **E**\|\ **f**\|\ **F**\|\ **j**\|\ **g**\|\ **G**\|\ **m**\|\ **s**\|\ **t**\ [**+m**][**+q**\ *quality*]
     Sets the output format, where **b** means BMP, **e** means EPS,
     **E** means EPS with PageSize command, **f** means PDF, **F** means
     multi-page PDF, **j** means JPEG, **g** means PNG, **G** means
     transparent PNG (untouched regions are transparent), **m** means
     PPM, **s** means SVG, and **t** means TIFF [default is JPEG]. To **bjgt** you can
-    append **+m** in order to get a monochrome (grayscale) image. The EPS format can be
+    append **+m** in order to get a monochrome (grayscale) image. To **j** you can
+    append **+q** to change JPEG quality in 0-100 range [90]. The EPS format can be
     combined with any of the other formats. For example, **-Tef**
     creates both an EPS and a PDF file. The **-TF** creates a multi-page
     PDF file from the list of input PS or PDF files. It requires the **-F** option.
@@ -206,7 +210,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**+g**][**+k**][**+t**\ *docname*][**+n**\ *layername*][**+o**\ *foldername*][**+a**\ *altmode*\ [*alt*]][**+l**\ *minLOD/maxLOD*][**+f**\ *minfade/maxfade*][**+u**\ *URL*]
+**-W**\ [**+a**\ *altmode*\ [*alt*]][**+c**][**+f**\ *minfade/maxfade*][**+g**][**+k**][**+l**\ *minLOD/maxLOD*][**+n**\ *layername*][**+o**\ *foldername*][**+t**\ *docname*][**+u**\ *URL*]
     Write a ESRI type world file suitable to make (e.g) .tif files be
     recognized as geotiff by software that know how to do it. Be aware,
     however, that different results are obtained depending on the image
@@ -225,18 +229,18 @@ Optional Arguments
     Together with **-V** it prints on screen the gdal_translate
     (gdal_translate is a command line tool from the GDAL package)
     command that reads the raster + world file and creates a true
-    geotiff file. Use **-W+g** to do a system call to gdal_translate
+    geotiff file. Append **+g** to do a system call to gdal_translate
     and create a geoTIFF image right away. The output file will have a
     .tiff extension.
 
     The world file naming follows the convention of jamming a 'w' in the
     file extension. So, if output is tif **-Tt** the world file is a
-    .tfw, for jpeg we have a .jgw and so on. This option automatically
-    sets **-A** **-P**.
+    .tfw, for jpeg we have a .jgw and so on. **Note**: This option automatically
+    sets **-A** **-P**.  Append **+c** to *not* crop the image.
 
-    Use **-W+k** to create a minimalist KML file that allows loading the
+    Append **+k** to create a minimalist KML file that allows loading the
     image in GoogleEarth. Note that for this option to work it is necessary that the postscript
-    image must have been created with **-JX** or **-Jx** cartesian projection of
+    image must have been created with **-JX** or **-Jx** Cartesian projection of
     geographical coordinates. If not, a warning is issued but the KML
     file is created anyway. Several modifier options are available to
     customize the KML file in the form of **+**\ *opt* strings. Append
@@ -361,14 +365,14 @@ To convert the file psfile.ps to PNG using a tight BoundingBox::
 
     gmt psconvert psfile.ps -A -Tg
 
-To convert the file map.ps to PDF, extend the BoundingBox by 0.2 cm,
+To convert the file map.ps to PDF, crop, then extend the BoundingBox by 0.2 cm,
 fill it with lightblue paint and draw outline with a thick pen::
 
-    gmt psconvert map.ps -A+m0.2c+glightblue+pthick -Tf
+    gmt psconvert map.ps -A -I+m0.2c -N+glightblue+pthick -Tf
 
-To create a 5 cm PNG version at 300 dpi of our example_01.ps file::
+To create a 5 cm PNG version at 300 dpi of our cropped example_01.ps file::
 
-    gmt psconvert example_01.ps -A+s5c -Tg
+    gmt psconvert example_01.ps -A -I+s5c -Tg
 
 To create a 3 pages PDF file from 3 individual PS files::
 

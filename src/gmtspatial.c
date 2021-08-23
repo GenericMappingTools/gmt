@@ -756,9 +756,9 @@ GMT_LOCAL struct NN_INFO *gmtspatial_NNA_update_info (struct GMT_CTRL *GMT, stru
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][[+s<sfact>]] [-E+n|p] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<sfact>]] [-E+n|p] "
 		"[-F[l]] [-I[i|e]] [-L%s/<noise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
-		"[-Sb<width>|h|i|j|s|u] [-T[<cpol>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT,
+		"[-Sb<width>|h|i|j|s|u] [-T[<cpol>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -822,7 +822,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"[only closed polygons are considered polygons].");
 	GMT_Usage (API, 3, "+l Consider all input as lines even if closed [closed polygons are considered polygons].");
 	GMT_Usage (API, 3, "+s Sort segments based on area or length; append a for ascending or d for descending [ascending].");
-	GMT_Usage (API, -2, "[Default only reports results to stdout].\n");
+	GMT_Usage (API, -2, "[Default only reports results to standard output].\n");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-Sb<width>|h|i|j|s|u");
 	GMT_Usage (API, -2, "Spatial manipulation of polygons; choose a directive:");

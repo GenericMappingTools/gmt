@@ -20,16 +20,17 @@ Synopsis
 [|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**]
 [ |SYN_OPT-V| ]
 [ |-W| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
-[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -128,6 +129,8 @@ Optional Arguments
    These are multiplied with the geometrical weight factor to determine
    the actual weights used in the calculations.
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
 .. include:: explain_-bi.rst_
 
@@ -140,7 +143,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: 0x20 .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
@@ -159,6 +162,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
 

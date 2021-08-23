@@ -21,7 +21,7 @@ Synopsis
 [ |-D|\ **b**\ *stopdate* ]
 [ |-F| ]
 [ |-G|\ **d**\|\ **t**\|\ **n**\ *gap* ]
-[ |-I|\ *ignore* ]
+[ |-I|\ **a\|c\|m\|t** ]
 [ |-L|\ *trackticks* ]
 [ |-S|\ **a**\ *startdist* ]
 [ |-S|\ **b**\ *stopdist* ]

@@ -19,6 +19,8 @@ categories:
     label: 'documentation'
   - title: 'Maintenance updates in GMT $RESOLVED_VERSION'
     label: 'maintenance'
+  - title: 'Deprecations in GMT $RESOLVED_VERSION'
+    label: 'deprecation'
 include-labels:
   - 'add-changelog'
 category-template: '### $TITLE'

@@ -75,7 +75,7 @@ struct GPSGRIDDER_CTRL {
 		bool active;
 		char *file;
 	} T;
-	struct GPSGRIDDER_W {	/* -W[w] */
+	struct GPSGRIDDER_W {	/* -W[+s|w] */
 		bool active;
 		unsigned int mode;	/* 0 = got sigmas, 1 = got weights */
 	} W;
@@ -137,7 +137,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[n]<val>[+f<file>]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
-		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[w]] [%s] [%s] [%s] [%s] "
+		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
@@ -183,7 +183,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-N<nodefile>");
 	GMT_Usage (API, -2, "ASCII file with desired output locations. "
 		"The resulting ASCII coordinates and interpolation are written to file given in -G "
-		"or stdout if no file specified (see -bo for binary output).");
+		"or standard output if no file specified (see -bo for binary output).");
 	GMT_Option (API, "R");
 	if (gmt_M_showusage (API)) {
 		GMT_Usage (API, -2, "Requires -I for specifying equidistant increments.  A gridfile may be given; "
@@ -193,11 +193,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Give effective 2-D Poisson's ratio [0.5]. Note: 1.0 is incompressible in a 2-D formulation.");
 	GMT_Usage (API, 1, "\n-T<maskgrid>");
 	GMT_Usage (API, -2, "Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).");
-	GMT_Usage (API, 1, "\n-W[w]");
-	GMT_Usage (API, -2, "Expects two extra input columns with data errors sigma_x, sigma_y). "
-		"Append w to indicate these columns carry weights instead "
-		"[Default makes weights via 1/sigma_x^2, 1/sigma_y^2]. "
-		"Note: -W will only have an effect if -C is used.");
+	GMT_Usage (API, 1, "\n-W[+s|w]");
+	GMT_Usage (API, -2, "Expects two extra input columns with either data weights or errors sigma_x, sigma_y):");
+	GMT_Usage (API, 3, "+s Read sigma-errors and make weights via 1/sigma_x^2, 1/sigma_y^2 [Default].");
+	GMT_Usage (API, 3, "+w Read weights directly [Default].");
+	GMT_Usage (API, -2, "Note: -W will only have an effect if -C is used.");
 	GMT_Option (API, "V,bi");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 4-6 input columns (see -W); use -i to select columns from any data table.");
 	GMT_Option (API, "d,e,f,h,i,n,o,qi,r,s,x,:,.");
@@ -310,7 +310,12 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Expect data weights in last two columns */
 				Ctrl->W.active = true;
-				if (opt->arg[0] == 'w') Ctrl->W.mode = GPS_GOT_W;	/* Got weights instead of sigmas */
+				if (opt->arg[0] == 'w')	/* Deprecated syntax -Ww */
+					Ctrl->W.mode = GPS_GOT_W;	/* Got weights instead of sigmas */
+				else if (strstr (opt->arg, "+w"))
+					Ctrl->W.mode = GPS_GOT_W;	/* Got weights instead of sigmas */
+				else if (opt->arg[0] == '\0' || strstr (opt->arg, "+s"))
+					Ctrl->W.mode = GPS_GOT_SIG;	/* Got sigmas instead of weights [Default] */
 				break;
 #ifdef DEBUG
 			case 'Z':	/* Dump matrices */

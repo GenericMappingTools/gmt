@@ -186,7 +186,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -F<type><width>[+l|u] [-D<increment>] [-E] "
-		"[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>|<file>|<list>[+a][e|i|n]] "
+		"[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>|<file>|<list>[+a][+e|i|n]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -238,7 +238,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Check symmetry of data about window center.  Append a factor "
 		"between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor, "
 		"then no output will be given at this point [Default does not check Symmetry].");
-	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[<unit>]|<file>|<list>[+a][e|i|n]");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[<unit>]|<file>|<list>[+a][+e|i|n]");
 	GMT_Usage (API, -2, "Make evenly spaced output time steps from <min> to <max> by <inc> [Default uses input times]. "
 		"Alternatively, give a <file> with output times in the first column or a comma-separated <list>. "
 		"For absolute time filtering, append a valid time unit (%s) to the increment. "
@@ -991,7 +991,7 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 		case 'f':
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
-			save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
+			save_col[GMT_X] = gmt_get_column_type (GMT, GMT_IN, GMT_X);	/* Save col type in case it is a time column */
 			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
 			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
@@ -1005,9 +1005,9 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
 	if (F.variable) {
 		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
-		save_col[GMT_X] = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
-		save_col[GMT_Y] = GMT->current.io.col_type[GMT_IN][GMT_Y];	/* Save col type in case it is a time column */
-		gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT->current.io.col_type[GMT_IN][F.t_col]);	/* Same units as time-series "t"*/
+		save_col[GMT_X] = gmt_get_column_type (GMT, GMT_IN, GMT_X);	/* Save col type in case it is a time column */
+		save_col[GMT_Y] = gmt_get_column_type (GMT, GMT_IN, GMT_Y);	/* Save col type in case it is a time column */
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, gmt_get_column_type (GMT, GMT_IN, F.t_col));	/* Same units as time-series "t"*/
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the widths as floats */
 		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
 		if ((F.W = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {

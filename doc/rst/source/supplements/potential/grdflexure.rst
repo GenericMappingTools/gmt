@@ -17,14 +17,14 @@ Synopsis
 |-E|\ [*Te*\ [**k**][/*Te2*\ [**k**]]]
 |-G|\ *outgrid*
 [ |-A|\ *Nx*/*Ny*/*Nxy* ]
-[ |-C|\ **p**\ *poisson* ] [ |-C|\ **y**\ *Young* ]
+[ |-C|\ **p**\|\ **y**\ *value* ]
 [ |-F|\ *nu_a*\ [/*h_a*\ [**k**]/*nu_m*] ]
 [ |-L|\ *list* ]
 [ |-M|\ *tm* ]
 [ |-N|\ *params* ]
 [ |-Q| ]
 [ |-S|\ *beta* ]
-[ |-T|\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**] ]
+[ |-T|\ *t0*\ [/*t1*/*dt*\ [**+l**]]\ \|\ *file* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wd*]\ [**k**]
 [ |-Z|\ *zm*]\ [**k**]
@@ -114,11 +114,9 @@ Optional Arguments
 
 .. _-C:
 
-**-Cp**\ *poisson*
-    Change the default value of Poisson's ratio [0.25].
-
-**-Cy**\ *Young*
-    Change the default value of Young's modulus [7.0e10 N/m^2].
+**-C**\ **p**\|\ **y**\ *value*
+    Append **p** or **y** to change the current value of Poisson's ratio [0.25]
+    or Young's modulus [7.0e10 N/m^2], respectively.
 
 .. _-F:
 
@@ -166,7 +164,7 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *t0*\ [/*t1*/*dt*]\ \|\ *file*\ [**+l**]
+**-T**\ *t0*\ [/*t1*/*dt*\ [**+l**]]\ \|\ *file*
     Specify *t0*, *t1*, and time increment (*dt*) for a sequence of calculations
     [Default is one calculation, with no time dependency].  For a single specific time, just
     give start time *t0*. Default *unit* is years; append **k** for kyr and **M** for Myr.

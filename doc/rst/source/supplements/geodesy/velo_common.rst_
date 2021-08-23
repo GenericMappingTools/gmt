@@ -235,7 +235,7 @@ Optional Arguments
 
 .. _-Z:
 
-**Z**\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**]
+**-Z**\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**]
     Select the quantity that will be used with the CPT given via **-C** to
     set the fill color.  Choose from **m**\ agnitude (vector magnitude or
     rotation magnitude), **e**\ ast-west velocity, **n**\ orth-south velocity,

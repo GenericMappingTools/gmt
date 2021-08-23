@@ -1,6 +1,6 @@
-#######################
-Developer Documentation
-#######################
+#########################
+GMT Enhancement Proposals
+#########################
 
 This section contains low-level documentation for how some aspects of GMT have been
 implemented or are in the planning-stages for design and implementation.  Users with
@@ -12,5 +12,5 @@ notice!
    :maxdepth: 1
    :numbered:
 
-   devdocs/long_options
-   devdocs/refactoring
+   /devdocs/long_options
+   /devdocs/refactoring

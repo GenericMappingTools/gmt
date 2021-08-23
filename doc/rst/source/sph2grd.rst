@@ -18,7 +18,7 @@ Synopsis
 [ |-D|\ [**g**\|\ **n**] ]
 [ |-E| ]
 [ |-F|\ [**k**]\ *filter* ]
-[ |-N|\ [*norm*] ]
+[ |-N|\ **g**\|\ **m**\|\ **s** ]
 [ |-Q| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -90,7 +90,7 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [*norm*]
+**-N**\ **g**\|\ **m**\|\ **s**
     Normalization used for coefficients.  Choose among **m**: Mathematical
     normalization - inner products summed over surface equal 1 [Default].
     **g** Geodesy normalization - inner products summed over surface
@@ -124,11 +124,11 @@ Examples
 --------
 
 To create a 1 x 1 degree global grid file from the ASCII
-coefficients in the remote file EGM96_to_360.txt, use
+coefficients in the remote file EGM96_to_36.txt, use
 
    ::
 
-    gmt sph2grd @EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+    gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
 
 Reference
 ---------

@@ -7,9 +7,9 @@
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted as PS only.
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
-	opt="-Mps -Fnone"
+	opt="-Mps"
 else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
-	opt="-Fmp4 -A+l+s10"
+	opt="-Fmp4 -Fgif+l+s10"
 fi
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh

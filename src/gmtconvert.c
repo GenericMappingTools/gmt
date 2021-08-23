@@ -154,7 +154,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+i Invert the test.");
 	GMT_Usage (API, 1, "\n-D[<template>[+o<orig>]]");
 	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one "
-		"multisegment file to stdout].  Append file name template which MUST "
+		"multisegment file to standard output].  Append file name template which MUST "
 		"contain a C-style format for an integer (e.g., %%d) that represents "
 		"a sequential segment number across all tables (if more than one table) "
 		"[Default uses gmtconvert_segment_%%d.txt (or .bin for binary)]. "

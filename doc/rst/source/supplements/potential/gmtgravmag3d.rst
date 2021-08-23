@@ -62,7 +62,7 @@ Required Arguments (not all)
 
 .. _-M:
 
-**-M+s**\ *body,params* (An alaternative to **-Tr**\ /**-Ts**). Create geometric bodies and compute their grav/mag effect.
+**-M+s**\ *body,params* (An alternative to **-Tr**\ /**-Ts**). Create geometric bodies and compute their grav/mag effect.
     Select among one or more of the following bodies, where *x0* & *y0* represent the horizontal coordinates
     of the body center [default to 0,0 positive up], *npts* is the number of points that a circle is discretized
     and *n_slices* apply when bodies are made by a pile of slices. For example Spheres and Ellipsoids are made of

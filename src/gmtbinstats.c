@@ -124,7 +124,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G<outgrid> %s %s -S%s [-E<empty>] [-N] [-T[h|r]] [%s] [-W[+s]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G<outgrid> %s %s -S%s [-E<empty>] [-N] [-T[h|r]] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 			 name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -159,8 +159,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -3, "h: hexagonal binning, write non-equidistant table to standard output (or file named in -G).");
 	GMT_Usage (API, -3, "r: rectangular binning, writes equidistant grid (named via -G) [Default].");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W Input <table> has observation weights in 4th column. We then compute the weighted version "
-			"of selection in -C. Append +s to read standard deviations s instead and compute weight = 1/s.");
+	GMT_Usage (API, 1, "\n-W[+s|w]");
+	GMT_Usage (API, -2, "Weighted input given, weights in 4th column; compute the weighted version "
+		"of selection in -C [Default is unweighted]. Select modifier:");
+	GMT_Usage (API, 3, "+s Read standard deviations and compute weights as 1/s.");
+	GMT_Usage (API, 3, "+w Read weights directly [Default].");
 	GMT_Option (API, "a,bi");
 	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.");
 	GMT_Option (API, "di,e,f,h,i");
@@ -253,6 +256,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 				break;
 			case 'W':	/* Use weights */
 				Ctrl->W.active = true;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "sw", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.sigma = (strstr (opt->arg, "+s")) ? true : false;
 				break;
 			default:	/* Report bad options */

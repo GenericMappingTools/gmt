@@ -167,7 +167,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <grid> %s [-A[n|[+]<int>|<list>][<labelinfo>] [%s] [-C<contours>] "
+	GMT_Usage (API, 0, "usage: %s <grid> %s [-A[n|[+]<int>|<list>][<labelinfo>]] [%s] [-C<contours>] "
 		"[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p] [-N[<cpt>]] %s%s[-Q[<n>][+z]] [%s] "
 		"[-S<smooth>] [%s] [%s] [%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s] [-Z[+o<shift>][+p][+s<fact>]] "
 		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, GMT_CONTG, API->K_OPT, API->O_OPT,
@@ -204,7 +204,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D<template>");
 	GMT_Usage (API, -2, "Dump contours as data line segments; no plotting takes place. "
 		"Append filename template which may contain C-format specifiers. "
-		"If no filename template is given we write all lines to stdout. "
+		"If no filename template is given we write all lines to standard output. "
 		"If filename has no specifiers then we write all lines to a single file. "
 		"If a float format (e.g., %%6.2f) is found we substitute the contour z-value. "
 		"If an integer format (e.g., %%06d) is found we substitute a running segment count. "
@@ -246,7 +246,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+l Append two characters (e.g., LH) or two comma-separated strings (e.g., \"low,high\") to place labels at the center "
 		"of local lows and highs.  If no labels are given we default to - and +.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours", NULL, 0);
 	GMT_Usage (API, -2, "The default pen settings are:");
 	P = API->GMT->current.setting.map_default_pen;
 	GMT_Usage (API, 3, "%s Contour pen:  %s.", GMT_LINE_BULLET, gmt_putpen (API->GMT, &P));
@@ -452,7 +452,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				}
 				if (j == k && opt->arg[j]) {	/* Set both and gave argument */
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[PEN_CONT])) {
-						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 						n_errors++;
 					}
 					else
@@ -466,7 +466,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 					if (gmt_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
 					id = (opt->arg[k] == 'a') ? PEN_ANNOT : PEN_CONT;
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 						n_errors++;
 					}
 					if (j == k) Ctrl->W.pen[PEN_ANNOT] = Ctrl->W.pen[PEN_CONT];	/* Must copy since it was not -Wc nor -Wa after all */

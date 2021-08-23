@@ -51,6 +51,8 @@ Optional Arguments
     Give one or more comma-separated graphics extensions from the list of allowable
     :ref:`graphics formats <tbl-formats>`
     (default format is configurable via setting :term:`GMT_GRAPHICS_FORMAT` [pdf]).
+    Optionally, append **+m** for monochrome image (BMP, JPEG, PNG, and TIFF only)
+    and **+q**\ *quality* in 0-100 range to change JPEG quality [90].
 
 .. _begin-options:
 
@@ -58,7 +60,7 @@ Optional Arguments
     Sets one or more comma-separated options (and possibly arguments) that
     can be passed to :doc:`psconvert` when preparing a session figure [**A**].
     The valid subset of options are
-    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **M**\ *args*,\ **Q**\ *args*,\ **S**.
+    **A**\ [*args*],\ **C**\ *args*,\ **D**\ *dir*,\ **E**\ *dpi*,\ **H**\ *factor*,\ **I**\ *args*,\ **M**\ *args*,\ **N**\ *args*,\ **Q**\ *args*,\ **S**.
     Note that the leading hyphens should not be given.
     See the :doc:`psconvert` documentation for details on these options.
 
@@ -115,7 +117,7 @@ be called gmtsession.pdf (assuming :term:`GMT_GRAPHICS_FORMAT` is pdf).
 To set up proceedings for a jpg figure with 0.5c white margin, and strictly using
 the GMT default settings, we would run::
 
-    gmt begin 'My Figure4' jpg A+m0.5c -C
+    gmt begin 'My Figure4' jpg A,I+m0.5c -C
 
 .. include:: explain_postscript.rst_
 

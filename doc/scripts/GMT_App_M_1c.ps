@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000
-%%Title: GMT v6.2.0_fe19d5d-dirty_2020.11.09 [64-bit] Document from basemap
+%%Title: GMT v6.3.0_7dac306-dirty_2021.07.25 [64-bit] Document from basemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Mon Nov  9 13:33:46 2020
+%%CreationDate: Mon Jul 26 16:51:50 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -637,6 +662,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -667,9 +706,9 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
-0 A [] 0 B
 8 W
-/PSL_slant_y 0 def
+0 A
+/PSL_slant_y 0 def /PSL_slant_x 0 def
 2 setlinecap
 N 0 6600 M 0 -6600 D S
 /PSL_A0_y 0 def
@@ -677,9 +716,6 @@ N 0 6600 M 0 -6600 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 7320 0 T
 N 0 6600 M 0 -6600 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 -7320 0 T
 N 0 0 M 7320 0 D S
 /PSL_A0_y 0 def
@@ -687,11 +723,9 @@ N 0 0 M 7320 0 D S
 /PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 6600 T
 N 0 0 M 7320 0 D S
-/PSL_A0_y 0 def
-/PSL_A1_y 0 def
-/PSL_LH 0 def /PSL_L_y PSL_A0_y PSL_A1_y mx def
 0 -6600 T
 0 setlinecap
+0 A
 %%EndObject
 0 A
 FQ
@@ -710,10 +744,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!'j9YjdBM)'tL.e.p=dia^GoX6&1I&6>@hT7RqNU$D*Lk:idX";``=:6h/fW2I\7PJe/hs5"TW9X.1"Q=#\mM;ESP?ptpuA
-8OUS%1^6<>I>e>mOTasrDch6%0O?H0Qk>=="81E%*E##*TH5La2%E/GG_u`*FW4S3(RU?jf"F^:A1N7k"@d2QkKR\t`EF*R
-5@f9W9Q;1>BIE5tFq[M8,#pW*5th.8P/+(K/R1&KKal853se;G1LMg\<]C^a6PN3[$:RH_F<"b='1Zmaag*mkOTs.@5P*QZ
-qV[DX<&tmm5,ana%nK*-L(&3]$/rp2?@3MVCF,[?&%nhiB7UXUAL\Zs4b\mu03p:86;#b>7l"F)>'UsnUEMp;-eZ71~>
+)@eV'rn*<fL3?%&TuNLcV2gCHI7ke]d-nK-QAT0.?S`Ka[+hI;G_2?jPCcq\lMAYX@="9AO=(]&S@t2GEIYgeYC05fD*;Lf
+p;3#aN/iFA59*4VNegae=K0Z>o_m/h'g>nV>KQ3<O+W.MR>[)QK/ji=fCQ\+<-3FZDjI>_OGemLAUBlUPiVVZPbF(W6>9:E
+</bsM+V?ZEiMrNdQY8?gR';]A+ADV1eWH#OV9>C3etRh'G`$?en,(?Z'Kkp`c^hh:iV19OKnXJ1BR!*dTZ!5qrmup8HCD:+
+668a^R#6iDJ=*X*F@9n,)b5m6Js<$i:*ieuIY3rdOLO)FJQHuNCOOFo[[4.ZAi=(qcCK;WE.1]+*=t)dDh!k*L4`]S~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -743,10 +777,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-/g3sOk4$9*Rae4QG?T_t5&/W,Z.d1MSn4)Be`8nJ>L](QY\06KI&:CJH.KCKMd_XqP.&PUT[^-de:ann2e,u[EoZ!@D,c$D
--reZf^YR/l\S7D.AsCo\e<OR,JmOA0As6OmFhVXYcZl3X4(d!-\8kZ'ZtPcTS@s>ULm_h;e>gQNA!#HeguRG]eZm?!AsCi,
-ZT9X>hU1?9_:R8Kd8WGMdt"DQ,uDX$SS1iI6Si)uUVc!CkLGBkLL?+kOgR.u<^elSQXl6*HDK&W\ZKM0f=TJ[V8M?NlcF1=
-KjTd54_WB'Ygp))WFhAd3FmG?LKd;jNFIs\C7*M&Wk`G=h9Y$-I]),Uk1#j4inN^4;L[)d^3*P2e"OV-W5UkO=`7;k~>
+#6tM6k2qnf>NMlH9h[WcCeDU?FSith.k;r/4>PKcJH"'IXda!RI8V%))=k/4>[0Yrh;%A"Rs&mKA7S1u6oPen'&BLB1c$]-
+V0\i"@K"Ek<)Z#<KN>UUD>1ZI,9n;OUj#pC63#s'r5Z]73%kaO%GI_5q7jBl0.@_T(;?M^VjM"TLfl)Q,N5V\s4Q#mZ(X]Z
+3H9"3?slElO^?G4I;!:brm8sTXHc%91jaLEosh+H+<=9S4gU_qKn32e4u6)64rP=VbGBIOYb%DL?kEt^s5`4,O'Q@07li[b
+e#%W1U2oP$QngBGDf/3+2D+gF^h[[V?=$#-$OZ[B[&TR,]:j0AcHG7JNn^Le6:*Q6SSA,Yg;]q2oX:e"hr"CS`^WEW~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -776,7 +810,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!'j9YjdBM)'tL.e.p=dia^GoX6&1I&~>
+)@eV'rn*<fL3?%&TuNLcV2gCHI7ke]~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -815,7 +849,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-/g3sOk4$9*Rae4QG?T_t5&/W,Z.d1M~>
+#6tM6k2qnf>NMlH9h[WcCeDU?FSith~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -857,8 +891,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 510 M 150 F1
-(bamakoS) bc Z
-5400 510 M (actonS) bc Z
+(tokyoS) bc Z
+5400 510 M (turkuS) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -878,10 +912,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-q"XVY!!0'QA\bmOP"A-:Bj%d:H#b5Xe'cL2>#Dl8NNSI]jlPQ2'c*Wi?\:<saMbT`E*TH&BN>HLQVpML@TD4<fu1Y-HS7"\
-We8!mR#=6pmdBMfbJU6,@^);@BH8+Y:.`=8Vj^X^;$@5K.OsE8hmK>1ZCZ33AlkdM?&1U)]X*dDaM$3Wdsj//^UTi9OD:_F
-A&cBkSR,6pLh?8Mo32b=\ZL[)+X*Rs>-F92l07EZccK`9)Q%ggN^Z:(=AY)L7';elT4D!Vg"'FA'Z\,!^:0Pb3]X6uB9PtY
-[%r&a\Y&E^n=F#eXc[D#NbP5'=l\Q$\Z^p>0ef"p:!_)(bfRZNeBmp_p8N[TQ;C5*2Dh7R?H'^`SQo(1^8f#]V9-`g~>
+!sT)-q>!d3]:Z:K(-5`IR**Oqe0\7U%NdE:MT=Z6j>LVG*Ct=3UWF)u710eN[(X]MmI$:>af2\jE086[6"rW(YnJli/RFeL
+%2FMdaq#dZ>D'i.`Qo](J^i9*%2gN"&K-@sb4G5s&1BdR*%\Y:bo]W+&hcn\\]YdPA(o_q)b"[8FgcFWacWIBR]OVHNlX:t
+Wt[Hnk3(u.I_RUHStr[7"UP^YajP[.apf+1.U/+_db#'S2IVB[,ZKR-'-%u^Ef-R5;1-(GnF<6Wb%QaS)FJ<W4(-:ZeimrR
+Z+J0h*\P=Md0L7!f@f!9hVh+O\I^)N'/<7BUrf^Iapf15R&\9mlK]ZmKl`I"+ARA"1fU$Jab?>/(dDV=Ku>cXTa_qi~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -900,7 +934,7 @@ O0
 0 0 TM
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/0.975i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
-%@PROJ: xy 0.00000000 101.00000000 0.00000000 0.12500000 0.000 101.000 0.000 0.125 +xy
+%@PROJ: xy 0.00000000 12.00000000 0.00000000 0.12500000 0.000 12.000 0.000 0.125 +xy
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
@@ -908,13 +942,10 @@ O0
 3780 1020 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 12 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!?#&:bkcpC0d:"6nXXGiF%m66@/[I>^lUGj;I]R=f)2J.2/68'0jUK1.qa2mh3C\?-!U>NUAMsoZ&LE_P<b7b/LtC=FFH1_
-94@UiILeMI6#T[@=^q?@`*.@Rl'YdaGsY#@;#7#DrMuA%:L\[$1i7V%aH8REQW3XMF;\+g\W8MFN%>Gs?4]>/;ft\/amg]f
-?^Z^$&k?C/\%Ebf@Z#glrNWF$_r(F*bqNg9"WpnU.pP/Q<n<L)m@%KPE)INP@O,Ai]oP!pIl9o>:AqAoXc+j&M(AM<d3rO4
-pRum(So@MJ99k8`$nbfm-sVdd0)V]6r5@V-6"$OI/8BMp!utK(CfhBG@f<C"1ML%#N\D,<@FC?,+C8L=QrrgHBD\Qb~>
+VU"3DGdOd6MDLnVqjNr5)BA^jDuY:eb-KT54duENRB]mC~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -944,7 +975,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-q"XVY!!0'QA\bmOP"A-:Bj%d:H#b5X~>
+!sT)-q>!d3]:Z:K(-5`IR**Oqe0\7U~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -983,7 +1014,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!?#&:bkcpC0d:"6nXXGiF%m66@/[I>~>
+VU"3DGdOd6MDLnVqjNr5)BA^jDuY:e~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1025,8 +1056,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 1230 M 150 F1
-(bilbaoS) bc Z
-5400 1230 M (batlowS) bc Z
+(osloS) bc Z
+5400 1230 M (paired) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1035,7 +1066,7 @@ O0
 0 0 TM
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/1.575i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
-%@PROJ: xy 0.00000000 256.00000000 0.00000000 0.12500000 0.000 256.000 0.000 0.125 +xy
+%@PROJ: xy 0.00000000 101.00000000 0.00000000 0.12500000 0.000 101.000 0.000 0.125 +xy
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
@@ -1043,15 +1074,13 @@ O0
 240 1740 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 256 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [256 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-G[;\Z;6^9Z#X`*q(2<jX=MOtRY^cm.?i^X;W.hXpj3IPTl#mt9%U]:\s(C>\VpPCi'Sc@PRI;)^:UlFp.JO@lZ)9pAKdSM;
--"InYNl\$d_*k"[@XJ?W!\fY'=0";3b]1?UQ3)lVSeqZ5M*G8b0Z:WB=9g+>W\/1"@JZH5o]'FJ,?Z2e!ddsL@qS),Tc)iI
-B&uhHP>K4MH_3#rX6Zf5hgQ^al;pN8?tR8clh@PTjL[)!O*+f[o3"/7gJheU5aKIQVi-`.+"IDF:41cpMo:R4ca@iF_8]M]
-W_)['$Kg%/ohOh*nM\r^EeN9Rc,`@+=jYpDHO&IT2Yq9tpY'4NF%u/!]nM4V7lYJ/2EDN.7!/AQU(+Y;g?YTTB3S9X_-_aG
-nR4Abe?8ABOk7@r\N&HkRdO8.=Q!AF>qrql:/B3EWB@jt>,5L:cAP'>/Bd?(?&fAt(Ac;R2U._p7[8ejC,AC\*8AQY\#*/O
-F6\NlncLJW^3k;<PPs'SI<6Z'fARHi24d!&$5HKb]7P-Hf8kSCi`1*BB/aJ/hqGV)ml.$_`ZIGEG@U~>
+)@U0Uo(-+FUFfE.[B5`XEM+R4IYOG`ld*2k]:s82TJL&H97Wc[+E<pJQ7,(Vq;U'!fu\T1Sg#V.*>`L'P+km0Uu0.nOeS41
+H(m95SgmBn_m>dY3eXH1PqZF/r9NJq:QZkRHTH&:/m"=)UR*#ADDc$r5]rdieA>XTUV*guMkHN]\"+g'Jc"WfftaL*&nk@'
+Udog-J=W5[7uVVZT;&3KCQtMgK;9Y:Ffqa00j^:1b-^p"d3h,5rpT4r*cNW(OB%+4qW6MIZ'e=;UGlkW+<ts.WKgtTU*rHg
+8UdE]4GC;JQTfJapu'X@%qaV6Wem@:DO$oUTp_aTPp.`(mF&]g'PT=1ROLgfp"R_90RS,6T9Q(;K:\Una06^7G0[Xj~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1081,10 +1110,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-ZN7E4s(9N0I_8F;gqIaWTm*grSAf5ujP4IY5F'm)FNJcZd?Ap`*2_W;Cqs;6mHeJl-D8P2J@S16iRDYN2jgo`XOa=mh8O9P
-EJ25>M9h-.^/^3eok)[AH.o]IkMp6sFG'GdB&1:Ab'S^!fP7`CT#+lmlK;g<cth.&Gg;.o\kA1Ba_e@-UXc2ad#`Y.ZZEfX
-O4'A@gU_C54.!luM"0tH^KHN&1Rc=$L9h\qf;s,)6^5fHJ$THbjkshDo4G<<Y/=h,eu!W(<0"O]P1d6`e!t[1Q$V&^FgE!a
-`+b"MI=]"(Okd]jj4\4^=,ktIEO7HiiR2MJ/Y1:OHcL&Yi6H/`KR_3rJEZ*-_-W&AG(]SbB!W2OrV^?93LJI$FOHP%~>
+"^-f`rj&5pQrA3__nq*ZA:r[lMLCPJ[C).bm[Ur%MeIa$c-1f)Ck<X5LQS'lXfdpqI>GDCN](R&^V>TRdtO3_Q`$jMjlMXO
+@>0K%PS7;Ya2`l,p8:K%K6)m0Z*KSiqQ2hoJgk/^DMF+/R$Er.QXbQ&_81mM?\Y,HR!=ROJs)<QAqI_0MHG1Z6uRYd>DoM_
+QHI=%l04NO?&8(BTqnWRf@Pf)c\167N_X\L]"3m)Ya!,FKX\FPZa>mbU6r[/M1q1X'jQT'IYc:pK5cU*,@H5)X-\0nOiGCo
+X0%]<eV;N"KKX+&.q=4bfnd,HNsT!Km-C(6VjO?\Qa3r]`5@;hifIr/N$i%e^qb_0H\^J7N-:,?bKGMtBnA!LKCJB%~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1114,7 +1143,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!<3$!!<<'!!!*'!s-`<Th.?Y!!!!"2~>
+)@U0Uo(-+FUFfE.[B5`XEM+R4IYOG`~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1153,7 +1182,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-ZN7E4s(9N0I_8F;gqIaWTm*grSAf5u~>
+"^-f`rj&5pQrA3__nq*ZA:r[lMLCPJ~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1195,8 +1224,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 1950 M 150 F1
-(categorical) bc Z
-5400 1950 M (budaS) bc Z
+(lapazS) bc Z
+5400 1950 M (nuukS) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1216,10 +1245,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-//h4Wq#5Jqg*g!\`kh8IVX5fkC-HRGhq[u\A"o6Vjm;:0e'I_hI*3ug>Iq33-UrDpK[[90mjfP\2JK9A5&nigonJXfU7gd%
-?'Zj6K1L.$.559&nbhP1qV'Np^q0(a6?Oe!:c`Eu\$>FlSEPE_h-Y]Y/RY*.Q/g68oub8GDi!#re+^&GmOBbp:O0r-8q&9:
-==?4I11mHEi;(:)oC),FVkiZ.=ci@MrTND?-W>gM1M5FqpqF9/6?9`+S*.>gnA;j/Un[1o_"0BrWe->i.P>-[,?FI.r@2$8
-OdG.rm/&1rF!jA#3,5\Yiqc)b^FW]Z-ol'AHc\s*`$mQWCPL@i-X!j\n15PSZ)mEEdIo2%T6lRQXf1Y;.U@priQK75~>
+)De`"s(52`J!%We0OC:r8Z6U'GJ3-O5&cS=oO_NqHRi$h+?lp&eS@^%L4HUO2J8BEq.;3]THck)Lq@ZOm:L%$H*?(=-r-U`
+X*$dPMG8SP*BC?-N.%,<D)uKs1Lll=aDQsOE4+\=-VUC0I=uF/Gin^3WS)%)l=WqFJQ@VVT$V9n2R.qEE\_$l+$?]JVfjLd
+Ua/F/?''Fe>FmrpO[4&I7<aPIC6a1MF<NrO/68HUQ[73OB(u482.`/VgM&KTR5\fF>`O1nD3D3_BVEmjA!M?m>+^8KF":7b
+9R_U\FGjLhHi*eSPK%M2qdq9RUfE2"*]gKb_/F4bGJNETlM+u=mq+_$O;g'_;1sHI9r9C<UG?;J,!r>f]l8_:EEJ*H~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1249,10 +1278,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!!Q!nrUac]PV$"&ZG;MoG+B:#FbcWHkj-"i*+>;=Lj#&D4(t/1etO6SL\CGr=b3"g:6,Ji<dpKqqYKE;VMF!eZ!iBR6ZAT7
-OHCDAI\aE0%OPu\n]enoQrAC&2.;mb.r]QmOFj$\f%d5.(L*0)LLl=.,>!gkqsJcsNDFhjq"Wg+UPM-NS`AnC7rt5,KUJmQ
-N%.bh*'](d`fi,^QN7LkoCUO5J"+R.SiC8L(H-STNKX_mAY?>cm-_kSAt*"WR1_,nEKQB^\;Mk<PLA-]#9$oGH^k'B9eT\9
-!Y83X;32qkM+Mi\1LHLj6%tZ,L\LQ"q>',<DOl0BN+Rs4M4o`"Gb#?nD1J+64_gJi'Nt>1l\(jdr;?*<hlR;3BXYg@~>
+s8U:])?J]<:ObG_o#"j,.N>ln8,MP6l'kU]1FW4pY:q.3pXjVY6pL(A<mY8KjbQe3n"K3[=m(oFl_IK**XViB^5YB=oZh/O
+0-T"a:9$lR4=1g=iIo0O8oZdBidaji69Qe@%Hs*U2C&t9r5Hia956=7p=!qH-lA^K6?kLFi-S:T4u`)SAGYDGn\&2_E)0^n
+,l$2Cm&<u\/0<>R9ck>YrUQo%;b?,2;>]^Km^$![T2Ya`\$8Urj+C4jMG_Gt99DM&HTEs)3&'Zm<9KKD-Q``F@nfiR+S<ih
+]MV5F?;)O`#Q=7qiI+P[GYn>-V*?=D9Ih.MVc8:32YuTt_Gs5$ctr!<;cte!ptpVl^g?)V;=CnpB/D%W)[$$+SbLi`~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1282,7 +1311,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-//h4Wq#5Jqg*g!\`kh8IVX5fkC-HRG~>
+)De`"s(52`J!%We0OC:r8Z6U'GJ3-O~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1321,7 +1350,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!!Q!nrUac]PV$"&ZG;MoG+B:#FbcWH~>
+s8U:])?J]<:ObG_o#"j,.N>ln8,MP6~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1363,8 +1392,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 2670 M 150 F1
-(devonS) bc Z
-5400 2670 M (davosS) bc Z
+(imolaS) bc Z
+5400 2670 M (lajollaS) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1380,14 +1409,12 @@ O0
 3.32550952342 setmiterlimit
 240 3180 T
 8 W
-V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
+V N 0 0 T 3240 150 scale /DeviceGray setcolorspace
+<< /ImageType 1 /Decode [0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-Mun(,o)5)D*,O,`QVK_VkgPF%8<PT*Rr9^?5"V'?.q%5<Hc]uWn*ZTM1QWVeS:D]K<B,TJ=dl!,F6qnWMB&'s/s3M$A_EZ8
-&o1k8_N?0MQ:=5_c?ka5:S%%MS9H6H@PDWagRXEGS9lEC1/b(AqON<\?fAPM^JL;#2IYajE7'<,C+EuKQ$r)aQ:aE-6:R0B
-11K%:NOV6<3_Y%C@?U-OQVoo..TqfLB8m7:O<J#!V'^E1EgrL=RrTj@6q*Z+*0MjSN<XB?dYOB/.Uh/6SVS;VOrTN$AWS!C
-P;#sh_,Qe'2e_I-DsQ8TnbJTJ,F2"fQV]f*[QJ*SU766NS"1XLa(9kkl]aA'ER92o\jW';+F*;8RV47:4A'nADLo`3~>
+q$)#N4B[spf4W+eL))F8VF,eQi1=joN@>E9cFu4,Y7"@)X"5B/dc<Z6)XVj>8&Bk@1YZD6>g'^8'0>in-8h0173SI.%d%Je
+Xgg=scp#Pd0oJhX/u\)Q*n?KRoG^AH~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1413,12 +1440,14 @@ O0
 3.32550952342 setmiterlimit
 3780 3180 T
 8 W
-V N 0 0 T 3240 150 scale /DeviceGray setcolorspace
-<< /ImageType 1 /Decode [0 1] /Width 100 /Height 1 /BitsPerComponent 8
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-q$)#N4B[spf4W+eL))F8VF,eQi1=joN@>E9cFu4,Y7"@)X"5B/dc<Z6)XVj>8&Bk@1YZD6>g'^8'0>in-8h0173SI.%d%Je
-Xgg=scp#Pd0oJhX/u\)Q*n?KRoG^AH~>
+Mun(,o)5)D*,O,`QVK_VkgPF%8<PT*Rr9^?5"V'?.q%5<Hc]uWn*ZTM1QWVeS:D]K<B,TJ=dl!,F6qnWMB&'s/s3M$A_EZ8
+&o1k8_N?0MQ:=5_c?ka5:S%%MS9H6H@PDWagRXEGS9lEC1/b(AqON<\?fAPM^JL;#2IYajE7'<,C+EuKQ$r)aQ:aE-6:R0B
+11K%:NOV6<3_Y%C@?U-OQVoo..TqfLB8m7:O<J#!V'^E1EgrL=RrTj@6q*Z+*0MjSN<XB?dYOB/.Uh/6SVS;VOrTN$AWS!C
+P;#sh_,Qe'2e_I-DsQ8TnbJTJ,F2"fQV]f*[QJ*SU766NS"1XLa(9kkl]aA'ER92o\jW';+F*;8RV47:4A'nADLo`3~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1444,11 +1473,11 @@ O0
 3.32550952342 setmiterlimit
 240 3030 T
 8 W
-V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
+V N 0 0 T 3240 150 scale /DeviceGray setcolorspace
+<< /ImageType 1 /Decode [0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-Mun(,o)5)D*,O,`QVK_VkgPF%8<PT*~>
+q$)#N4B[sp~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1483,11 +1512,11 @@ O0
 3.32550952342 setmiterlimit
 3780 3030 T
 8 W
-V N 0 0 T 3240 150 scale /DeviceGray setcolorspace
-<< /ImageType 1 /Decode [0 1] /Width 8 /Height 1 /BitsPerComponent 8
+V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-q$)#N4B[sp~>
+Mun(,o)5)D*,O,`QVK_VkgPF%8<PT*~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1529,8 +1558,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 3390 M 150 F1
-(hawaiiS) bc Z
-5400 3390 M (grayCS) bc Z
+(grayCS) bc Z
+5400 3390 M (hawaiiS) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1550,10 +1579,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-s8U:])?J]<:ObG_o#"j,.N>ln8,MP6l'kU]1FW4pY:q.3pXjVY6pL(A<mY8KjbQe3n"K3[=m(oFl_IK**XViB^5YB=oZh/O
-0-T"a:9$lR4=1g=iIo0O8oZdBidaji69Qe@%Hs*U2C&t9r5Hia956=7p=!qH-lA^K6?kLFi-S:T4u`)SAGYDGn\&2_E)0^n
-,l$2Cm&<u\/0<>R9ck>YrUQo%;b?,2;>]^Km^$![T2Ya`\$8Urj+C4jMG_Gt99DM&HTEs)3&'Zm<9KKD-Q``F@nfiR+S<ih
-]MV5F?;)O`#Q=7qiI+P[GYn>-V*?=D9Ih.MVc8:32YuTt_Gs5$ctr!<;cte!ptpVl^g?)V;=CnpB/D%W)[$$+SbLi`~>
+!!Q!nrUac]PV$"&ZG;MoG+B:#FbcWHkj-"i*+>;=Lj#&D4(t/1etO6SL\CGr=b3"g:6,Ji<dpKqqYKE;VMF!eZ!iBR6ZAT7
+OHCDAI\aE0%OPu\n]enoQrAC&2.;mb.r]QmOFj$\f%d5.(L*0)LLl=.,>!gkqsJcsNDFhjq"Wg+UPM-NS`AnC7rt5,KUJmQ
+N%.bh*'](d`fi,^QN7LkoCUO5J"+R.SiC8L(H-STNKX_mAY?>cm-_kSAt*"WR1_,nEKQB^\;Mk<PLA-]#9$oGH^k'B9eT\9
+!Y83X;32qkM+Mi\1LHLj6%tZ,L\LQ"q>',<DOl0BN+Rs4M4o`"Gb#?nD1J+64_gJi'Nt>1l\(jdr;?*<hlR;3BXYg@~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1583,10 +1612,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-)De`"s(52`J!%We0OC:r8Z6U'GJ3-O5&cS=oO_NqHRi$h+?lp&eS@^%L4HUO2J8BEq.;3]THck)Lq@ZOm:L%$H*?(=-r-U`
-X*$dPMG8SP*BC?-N.%,<D)uKs1Lll=aDQsOE4+\=-VUC0I=uF/Gin^3WS)%)l=WqFJQ@VVT$V9n2R.qEE\_$l+$?]JVfjLd
-Ua/F/?''Fe>FmrpO[4&I7<aPIC6a1MF<NrO/68HUQ[73OB(u482.`/VgM&KTR5\fF>`O1nD3D3_BVEmjA!M?m>+^8KF":7b
-9R_U\FGjLhHi*eSPK%M2qdq9RUfE2"*]gKb_/F4bGJNETlM+u=mq+_$O;g'_;1sHI9r9C<UG?;J,!r>f]l8_:EEJ*H~>
+//h4Wq#5Jqg*g!\`kh8IVX5fkC-HRGhq[u\A"o6Vjm;:0e'I_hI*3ug>Iq33-UrDpK[[90mjfP\2JK9A5&nigonJXfU7gd%
+?'Zj6K1L.$.559&nbhP1qV'Np^q0(a6?Oe!:c`Eu\$>FlSEPE_h-Y]Y/RY*.Q/g68oub8GDi!#re+^&GmOBbp:O0r-8q&9:
+==?4I11mHEi;(:)oC),FVkiZ.=ci@MrTND?-W>gM1M5FqpqF9/6?9`+S*.>gnA;j/Un[1o_"0BrWe->i.P>-[,?FI.r@2$8
+OdG.rm/&1rF!jA#3,5\Yiqc)b^FW]Z-ol'AHc\s*`$mQWCPL@i-X!j\n15PSZ)mEEdIo2%T6lRQXf1Y;.U@priQK75~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1616,7 +1645,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-s8U:])?J]<:ObG_o#"j,.N>ln8,MP6~>
+!!Q!nrUac]PV$"&ZG;MoG+B:#FbcWH~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1655,7 +1684,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-)De`"s(52`J!%We0OC:r8Z6U'GJ3-O~>
+//h4Wq#5Jqg*g!\`kh8IVX5fkC-HRG~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1697,8 +1726,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 4110 M 150 F1
-(lajollaS) bc Z
-5400 4110 M (imolaS) bc Z
+(davosS) bc Z
+5400 4110 M (devonS) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1718,10 +1747,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-"^-f`rj&5pQrA3__nq*ZA:r[lMLCPJ[C).bm[Ur%MeIa$c-1f)Ck<X5LQS'lXfdpqI>GDCN](R&^V>TRdtO3_Q`$jMjlMXO
-@>0K%PS7;Ya2`l,p8:K%K6)m0Z*KSiqQ2hoJgk/^DMF+/R$Er.QXbQ&_81mM?\Y,HR!=ROJs)<QAqI_0MHG1Z6uRYd>DoM_
-QHI=%l04NO?&8(BTqnWRf@Pf)c\167N_X\L]"3m)Ya!,FKX\FPZa>mbU6r[/M1q1X'jQT'IYc:pK5cU*,@H5)X-\0nOiGCo
-X0%]<eV;N"KKX+&.q=4bfnd,HNsT!Km-C(6VjO?\Qa3r]`5@;hifIr/N$i%e^qb_0H\^J7N-:,?bKGMtBnA!LKCJB%~>
+ZN7E4s(9N0I_8F;gqIaWTm*grSAf5ujP4IY5F'm)FNJcZd?Ap`*2_W;Cqs;6mHeJl-D8P2J@S16iRDYN2jgo`XOa=mh8O9P
+EJ25>M9h-.^/^3eok)[AH.o]IkMp6sFG'GdB&1:Ab'S^!fP7`CT#+lmlK;g<cth.&Gg;.o\kA1Ba_e@-UXc2ad#`Y.ZZEfX
+O4'A@gU_C54.!luM"0tH^KHN&1Rc=$L9h\qf;s,)6^5fHJ$THbjkshDo4G<<Y/=h,eu!W(<0"O]P1d6`e!t[1Q$V&^FgE!a
+`+b"MI=]"(Okd]jj4\4^=,ktIEO7HiiR2MJ/Y1:OHcL&Yi6H/`KR_3rJEZ*-_-W&AG(]SbB!W2OrV^?93LJI$FOHP%~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1740,7 +1769,7 @@ O0
 0 0 TM
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx4.50i/3.975i+w2.70i/0.125i+h+jTC -Ctt.right.cpt -B0
-%@PROJ: xy 0.00000000 101.00000000 0.00000000 0.12500000 0.000 101.000 0.000 0.125 +xy
+%@PROJ: xy 0.00000000 256.00000000 0.00000000 0.12500000 0.000 256.000 0.000 0.125 +xy
 %%BeginObject PSL_Layer_33
 0 setlinecap
 0 setlinejoin
@@ -1748,13 +1777,15 @@ O0
 3780 4620 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 256 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [256 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter /FlateDecode filter
 >> image
-)@U0Uo(-+FUFfE.[B5`XEM+R4IYOG`ld*2k]:s82TJL&H97Wc[+E<pJQ7,(Vq;U'!fu\T1Sg#V.*>`L'P+km0Uu0.nOeS41
-H(m95SgmBn_m>dY3eXH1PqZF/r9NJq:QZkRHTH&:/m"=)UR*#ADDc$r5]rdieA>XTUV*guMkHN]\"+g'Jc"WfftaL*&nk@'
-Udog-J=W5[7uVVZT;&3KCQtMgK;9Y:Ffqa00j^:1b-^p"d3h,5rpT4r*cNW(OB%+4qW6MIZ'e=;UGlkW+<ts.WKgtTU*rHg
-8UdE]4GC;JQTfJapu'X@%qaV6Wem@:DO$oUTp_aTPp.`(mF&]g'PT=1ROLgfp"R_90RS,6T9Q(;K:\Una06^7G0[Xj~>
+G[;\Z;6^9Z#X`*q(2<jX=MOtRY^cm.?i^X;W.hXpj3IPTl#mt9%U]:\s(C>\VpPCi'Sc@PRI;)^:UlFp.JO@lZ)9pAKdSM;
+-"InYNl\$d_*k"[@XJ?W!\fY'=0";3b]1?UQ3)lVSeqZ5M*G8b0Z:WB=9g+>W\/1"@JZH5o]'FJ,?Z2e!ddsL@qS),Tc)iI
+B&uhHP>K4MH_3#rX6Zf5hgQ^al;pN8?tR8clh@PTjL[)!O*+f[o3"/7gJheU5aKIQVi-`.+"IDF:41cpMo:R4ca@iF_8]M]
+W_)['$Kg%/ohOh*nM\r^EeN9Rc,`@+=jYpDHO&IT2Yq9tpY'4NF%u/!]nM4V7lYJ/2EDN.7!/AQU(+Y;g?YTTB3S9X_-_aG
+nR4Abe?8ABOk7@r\N&HkRdO8.=Q!AF>qrql:/B3EWB@jt>,5L:cAP'>/Bd?(?&fAt(Ac;R2U._p7[8ejC,AC\*8AQY\#*/O
+F6\NlncLJW^3k;<PPs'SI<6Z'fARHi24d!&$5HKb]7P-Hf8kSCi`1*BB/aJ/hqGV)ml.$_`ZIGEG@U~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1784,7 +1815,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-"^-f`rj&5pQrA3__nq*ZA:r[lMLCPJ~>
+ZN7E4s(9N0I_8F;gqIaWTm*grSAf5u~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1823,7 +1854,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-)@U0Uo(-+FUFfE.[B5`XEM+R4IYOG`~>
+!<3$!!<<'!!!*'!s-`<Th.?Y!!!!"2~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1865,8 +1896,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 4830 M 150 F1
-(nuukS) bc Z
-5400 4830 M (lapazS) bc Z
+(budaS) bc Z
+5400 4830 M (categorical) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1875,7 +1906,7 @@ O0
 0 0 TM
 % PostScript produced by:
 %@GMT: gmt colorbar -Dx1.55i/4.575i+w2.70i/0.125i+h+jTC -Ctt.left.cpt -B0
-%@PROJ: xy 0.00000000 12.00000000 0.00000000 0.12500000 0.000 12.000 0.000 0.125 +xy
+%@PROJ: xy 0.00000000 101.00000000 0.00000000 0.12500000 0.000 101.000 0.000 0.125 +xy
 %%BeginObject PSL_Layer_37
 0 setlinecap
 0 setlinejoin
@@ -1883,10 +1914,13 @@ O0
 240 5340 T
 8 W
 V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
-<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 12 /Height 1 /BitsPerComponent 8
-   /ImageMatrix [12 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
+<< /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
+   /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-VU"3DGdOd6MDLnVqjNr5)BA^jDuY:eb-KT54duENRB]mC~>
+!?#&:bkcpC0d:"6nXXGiF%m66@/[I>^lUGj;I]R=f)2J.2/68'0jUK1.qa2mh3C\?-!U>NUAMsoZ&LE_P<b7b/LtC=FFH1_
+94@UiILeMI6#T[@=^q?@`*.@Rl'YdaGsY#@;#7#DrMuA%:L\[$1i7V%aH8REQW3XMF;\+g\W8MFN%>Gs?4]>/;ft\/amg]f
+?^Z^$&k?C/\%Ebf@Z#glrNWF$_r(F*bqNg9"WpnU.pP/Q<n<L)m@%KPE)INP@O,Ai]oP!pIl9o>:AqAoXc+j&M(AM<d3rO4
+pRum(So@MJ99k8`$nbfm-sVdd0)V]6r5@V-6"$OI/8BMp!utK(CfhBG@f<C"1ML%#N\D,<@FC?,+C8L=QrrgHBD\Qb~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1916,10 +1950,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!sT)-q>!d3]:Z:K(-5`IR**Oqe0\7U%NdE:MT=Z6j>LVG*Ct=3UWF)u710eN[(X]MmI$:>af2\jE086[6"rW(YnJli/RFeL
-%2FMdaq#dZ>D'i.`Qo](J^i9*%2gN"&K-@sb4G5s&1BdR*%\Y:bo]W+&hcn\\]YdPA(o_q)b"[8FgcFWacWIBR]OVHNlX:t
-Wt[Hnk3(u.I_RUHStr[7"UP^YajP[.apf+1.U/+_db#'S2IVB[,ZKR-'-%u^Ef-R5;1-(GnF<6Wb%QaS)FJ<W4(-:ZeimrR
-Z+J0h*\P=Md0L7!f@f!9hVh+O\I^)N'/<7BUrf^Iapf15R&\9mlK]ZmKl`I"+ARA"1fU$Jab?>/(dDV=Ku>cXTa_qi~>
+q"XVY!!0'QA\bmOP"A-:Bj%d:H#b5Xe'cL2>#Dl8NNSI]jlPQ2'c*Wi?\:<saMbT`E*TH&BN>HLQVpML@TD4<fu1Y-HS7"\
+We8!mR#=6pmdBMfbJU6,@^);@BH8+Y:.`=8Vj^X^;$@5K.OsE8hmK>1ZCZ33AlkdM?&1U)]X*dDaM$3Wdsj//^UTi9OD:_F
+A&cBkSR,6pLh?8Mo32b=\ZL[)+X*Rs>-F92l07EZccK`9)Q%ggN^Z:(=AY)L7';elT4D!Vg"'FA'Z\,!^:0Pb3]X6uB9PtY
+[%r&a\Y&E^n=F#eXc[D#NbP5'=l\Q$\Z^p>0ef"p:!_)(bfRZNeBmp_p8N[TQ;C5*2Dh7R?H'^`SQo(1^8f#]V9-`g~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1949,7 +1983,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-VU"3DGdOd6MDLnVqjNr5)BA^jDuY:e~>
+!?#&:bkcpC0d:"6nXXGiF%m66@/[I>~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -1988,7 +2022,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-!sT)-q>!d3]:Z:K(-5`IR**Oqe0\7U~>
+q"XVY!!0'QA\bmOP"A-:Bj%d:H#b5X~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -2030,8 +2064,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 5550 M 150 F1
-(paired) bc Z
-5400 5550 M (osloS) bc Z
+(batlowS) bc Z
+5400 5550 M (bilbaoS) bc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -2051,10 +2085,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-#6tM6k2qnf>NMlH9h[WcCeDU?FSith.k;r/4>PKcJH"'IXda!RI8V%))=k/4>[0Yrh;%A"Rs&mKA7S1u6oPen'&BLB1c$]-
-V0\i"@K"Ek<)Z#<KN>UUD>1ZI,9n;OUj#pC63#s'r5Z]73%kaO%GI_5q7jBl0.@_T(;?M^VjM"TLfl)Q,N5V\s4Q#mZ(X]Z
-3H9"3?slElO^?G4I;!:brm8sTXHc%91jaLEosh+H+<=9S4gU_qKn32e4u6)64rP=VbGBIOYb%DL?kEt^s5`4,O'Q@07li[b
-e#%W1U2oP$QngBGDf/3+2D+gF^h[[V?=$#-$OZ[B[&TR,]:j0AcHG7JNn^Le6:*Q6SSA,Yg;]q2oX:e"hr"CS`^WEW~>
+/g3sOk4$9*Rae4QG?T_t5&/W,Z.d1MSn4)Be`8nJ>L](QY\06KI&:CJH.KCKMd_XqP.&PUT[^-de:ann2e,u[EoZ!@D,c$D
+-reZf^YR/l\S7D.AsCo\e<OR,JmOA0As6OmFhVXYcZl3X4(d!-\8kZ'ZtPcTS@s>ULm_h;e>gQNA!#HeguRG]eZm?!AsCi,
+ZT9X>hU1?9_:R8Kd8WGMdt"DQ,uDX$SS1iI6Si)uUVc!CkLGBkLL?+kOgR.u<^elSQXl6*HDK&W\ZKM0f=TJ[V8M?NlcF1=
+KjTd54_WB'Ygp))WFhAd3FmG?LKd;jNFIs\C7*M&Wk`G=h9Y$-I]),Uk1#j4inN^4;L[)d^3*P2e"OV-W5UkO=`7;k~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -2084,10 +2118,10 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 100 /Height 1 /BitsPerComponent 8
    /ImageMatrix [100 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-)@eV'rn*<fL3?%&TuNLcV2gCHI7ke]d-nK-QAT0.?S`Ka[+hI;G_2?jPCcq\lMAYX@="9AO=(]&S@t2GEIYgeYC05fD*;Lf
-p;3#aN/iFA59*4VNegae=K0Z>o_m/h'g>nV>KQ3<O+W.MR>[)QK/ji=fCQ\+<-3FZDjI>_OGemLAUBlUPiVVZPbF(W6>9:E
-</bsM+V?ZEiMrNdQY8?gR';]A+ADV1eWH#OV9>C3etRh'G`$?en,(?Z'Kkp`c^hh:iV19OKnXJ1BR!*dTZ!5qrmup8HCD:+
-668a^R#6iDJ=*X*F@9n,)b5m6Js<$i:*ieuIY3rdOLO)FJQHuNCOOFo[[4.ZAi=(qcCK;WE.1]+*=t)dDh!k*L4`]S~>
+!'j9YjdBM)'tL.e.p=dia^GoX6&1I&6>@hT7RqNU$D*Lk:idX";``=:6h/fW2I\7PJe/hs5"TW9X.1"Q=#\mM;ESP?ptpuA
+8OUS%1^6<>I>e>mOTasrDch6%0O?H0Qk>=="81E%*E##*TH5La2%E/GG_u`*FW4S3(RU?jf"F^:A1N7k"@d2QkKR\t`EF*R
+5@f9W9Q;1>BIE5tFq[M8,#pW*5th.8P/+(K/R1&KKal853se;G1LMg\<]C^a6PN3[$:RH_F<"b='1Zmaag*mkOTs.@5P*QZ
+qV[DX<&tmm5,ana%nK*-L(&3]$/rp2?@3MVCF,[?&%nhiB7UXUAL\Zs4b\mu03p:86;#b>7l"F)>'UsnUEMp;-eZ71~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -2117,7 +2151,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-#6tM6k2qnf>NMlH9h[WcCeDU?FSith~>
+/g3sOk4$9*Rae4QG?T_t5&/W,Z.d1M~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -2156,7 +2190,7 @@ V N 0 0 T 3240 150 scale /DeviceRGB setcolorspace
 << /ImageType 1 /Decode [0 1 0 1 0 1] /Width 8 /Height 1 /BitsPerComponent 8
    /ImageMatrix [8 0 0 -1 0 1] /DataSource currentfile /ASCII85Decode filter
 >> image
-)@eV'rn*<fL3?%&TuNLcV2gCHI7ke]~>
+!'j9YjdBM)'tL.e.p=dia^GoX6&1I&~>
 U
 2 setlinecap
 N 0 150 M 3240 0 D S
@@ -2198,8 +2232,8 @@ P
 PSL_clip N
 PSL_font_encode 1 get 0 eq {ISOLatin1+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
 1860 6270 M 150 F1
-(turkuS) bc Z
-5400 6270 M (tokyoS) bc Z
+(actonS) bc Z
+5400 6270 M (bamakoS) bc Z
 PSL_cliprestore
 %%EndObject
 grestore
