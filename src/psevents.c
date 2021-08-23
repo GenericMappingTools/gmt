@@ -566,11 +566,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 
-#ifdef DEBUG
 			case '/':	/* Write time-functions */
 				Ctrl->debug.active = true;
 				break;
-#endif
+
 			default:	/* Report bad options */
 				n_errors += gmt_default_error (GMT, opt->option);
 				break;
