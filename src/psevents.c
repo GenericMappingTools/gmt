@@ -732,6 +732,7 @@ GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL
 }
 
 GMT_LOCAL void psevents_test_functions (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl) {
+	/* debug test function to dump the four time-functions */
 	double t[PSEVENTS_NT], now = -2.0, out[4];
 	FILE *fp = fopen ("psevents_function.txt", "w");
 	gmt_M_memset (t, PSEVENTS_NT, double);	/* Initialize the t vector */
@@ -740,14 +741,10 @@ GMT_LOCAL void psevents_test_functions (struct GMT_CTRL *GMT, struct PSEVENTS_CT
 	t[PSEVENTS_T_PLATEAU] = Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_PLATEAU];
 	t[PSEVENTS_T_DECAY]   = t[PSEVENTS_T_PLATEAU] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];
 	t[PSEVENTS_T_END]     = t[PSEVENTS_T_DECAY] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY];
-	t[PSEVENTS_T_FADE]    = t[PSEVENTS_T_END] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE] ;
+	t[PSEVENTS_T_FADE]    = t[PSEVENTS_T_END] + Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE];
 	Ctrl->M.active[PSEVENTS_DZ] = true;
 	fprintf (fp, "# t_rise = -1.0, t_event = 0.0, t_plateau = 1.0, t_decay = 2.0, t_end = 3.0, t_fade = 4.0, now = -2/5\n");
 	fprintf (fp, "# now\tsize\tintens\transp\tdz\n");
-	//Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_RISE] = Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_DECAY] = Ctrl->E.dt[PSEVENTS_SYMBOL][PSEVENTS_FADE] = 1.0;
-	//Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL1] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL1] = Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL1] = 1.0;
-	//Ctrl->M.value[PSEVENTS_SIZE][PSEVENTS_VAL2] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL2] = 0.2;
-	//Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] = Ctrl->M.value[PSEVENTS_INT][PSEVENTS_VAL2] = Ctrl->M.value[PSEVENTS_DZ][PSEVENTS_VAL2] = -0.2;
 	while (now <= 5.005) {
 		gmt_M_memset (out, 4, double);	/* Initialize the out vector */
 		psevents_set_outarray (GMT, Ctrl, now, t, true, true, 0, 1, 2, 3, out);
