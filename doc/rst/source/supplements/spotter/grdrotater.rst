@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdrotater** *ingrid* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
+**gmt grdrotater** *ingrid*
+|-E|\ *rot_file*\|\ *lon*/*lat*/*angle*\ [**+i**]
 |-G|\ *outgrid*
 [ |-A|\ *region* ]
 [ |-D|\ *rotoutline* ]
@@ -24,8 +25,11 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-n| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -127,11 +131,14 @@ Optional Arguments
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-d.rst_
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-f.rst_
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_-n.rst_
+.. include:: ../../explain_-ocols.rst_
 .. include:: ../../explain_help.rst_
 .. include:: ../../explain_grdresample2.rst_
 

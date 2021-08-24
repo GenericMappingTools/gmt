@@ -44,3 +44,8 @@
     #. **-R**\ *gridfile*. This will copy the domain settings found for the grid in specified file. Note that depending
        on the nature of the calling module, this mechanism will also set grid spacing and possibly the grid registration
        (see :ref:`cookbook/options:Grid registration: The **-r** option`\ ).
+
+    #. **-Ra**\ [**uto**] or **-Re**\ [**xact**]. Under modern mode, and for *plotting* modules only, you can automatically
+       determine the region from the data used. You can either get the exact area using **-Re** [Default if no **-R**
+       is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
+       the data range using **-Ra**.

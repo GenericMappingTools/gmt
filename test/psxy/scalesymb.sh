@@ -24,7 +24,7 @@ cat << EOF > b.txt
 EOF
 gmt begin scalesymb ps
 	gmt makecpt -Cjet -T2/6
-	gmt subplot begin 2x1 -R-2/2/-2/2 -Fs10c -SCl -SRb
+	gmt subplot begin 2x1 -R-2/2/-2/2 -Fs10c -Scl -Srb
 		gmt plot -H -Sc -C a.txt   -c
 		gmt plot -H -Sc1.2i -C b.txt -c
 	gmt subplot end

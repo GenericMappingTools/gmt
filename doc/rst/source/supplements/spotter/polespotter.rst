@@ -17,7 +17,7 @@ Synopsis
 [ |-D|\ *spacing* ]
 [ |-E|\ **a**\|\ **f**\ *sigma* ]
 [ |-F|\ *fracturezones* ]
-[ |-G|\ *grid* ]
+[ |-G|\ *outgrid* ]
 [ |SYN_OPT-I| ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
@@ -86,7 +86,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *grid*
+**-G**\ *outgrid*
     Specify name for output grid.  For spot mode we will accumulate
     great circle line density for the grid.  Each bin that is crossed
     by a great circle is incremented by 1, multiplied by cos(latitude),

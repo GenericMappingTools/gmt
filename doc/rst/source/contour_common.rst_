@@ -131,8 +131,8 @@ Optional Arguments
 
 .. _-Q:
 
-**-Q**\ [*cut*][**+z**]
-    Do not draw contours with less than *cut* number of points [Draw all contours].
+**-Q**\ [*n*][**+z**]
+    Do not draw contours with less than *n* number of points [Draw all contours].
     Alternatively, give instead a minimum contour length in distance units
     (see `Units`_ for available units and how distances are computed),
     including **c** (Cartesian distances using user coordinates) or **C** for plot
@@ -204,6 +204,9 @@ Optional Arguments
 .. |Add_-e| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-e.rst_
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
@@ -218,6 +221,8 @@ Optional Arguments
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_-t.rst_
 

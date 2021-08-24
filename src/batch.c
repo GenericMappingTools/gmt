@@ -114,7 +114,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C = gmt_M_memory (GMT, NULL, 1, struct BATCH_CTRL);
 	C->x.n_threads = GMT->parent->n_cores;	/* Use all cores available unless -x is set */
-	strcpy (C->T.sep, " \t");	/* White space */
+	strcpy (C->T.sep, "\t ");	/* Any white space */
 	return (C);
 }
 
@@ -174,41 +174,52 @@ GMT_LOCAL int batch_delete_scripts (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctr
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w|W]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<includefile>] [-M[<job>]] [-Q[s]] [-Sb<postflight>] [-Sf<preflight>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<workdir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <mainscript> -N<prefix> -T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W] "
+		"[-I<includefile>] [-M[<job>]] [-Q[s]] [-Sb<postflight>] [-Sf<preflight>] "
+		"[%s] [-W[<dir>]] [-Z] [%s] [-x[[-]<n>]] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<mainscript> is the main GMT modern script that completes a single job.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the <prefix> used for batch files and directory names.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set number of jobs, create parameters from <min>/<max>/<inc>[+n] or give file with job-specific information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <min>/<max>/<inc> is used then +n is used to indicate that <inc> is in fact number of jobs instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <timefile> does not exist it must be created by the preflight script given via -Sf.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p<width> to set number of digits used in creating the job tags [automatic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s<first> to change the value of the first job [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to <timefile> to have trailing text be split into individual word variables.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We use any white-space as separators; use +W to strictly use TABs only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<mainscript>");
+	GMT_Usage (API, -2, "The main GMT modern script that completes a single job.");
+	GMT_Usage (API, 1, "\n-N<prefix>");
+	GMT_Usage (API, -2, "Set the <prefix> used for batch files and directory names.");
+	GMT_Usage (API, 1, "\n-T<njobs>|<min>/<max>/<inc>[+n]|<timefile>[+p<width>][+s<first>][+w[<str>]|W]");
+	GMT_Usage (API, -2, "Set number of jobs, create parameters from <min>/<max>/<inc>[+n] or give file with job-specific information. "
+		"If <timefile> does not exist it must be created by the preflight script given via -Sf.");
+	GMT_Usage (API, 3, "+p Set number of digits used in creating the job tags [automatic].");
+	GMT_Usage (API, 3, "+n Indicate that <inc> in <min>/<max>/<inc> is in fact number of jobs instead.");
+	GMT_Usage (API, 3, "+s Append <first> to change the value of the first job [0].");
+	GMT_Usage (API, 3, "+w Let trailing text in <timefile> be split into individual word variables. "
+		"We use space or TAB as separators; append <str> to set custom characters as separators instead.");
+	GMT_Usage (API, 3, "+W Same as +w but only use TAB as separator.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Include a script file to be inserted into the batch_init.sh script [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Used to add constant variables needed by all batch scripts.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Run just the indicated job number [0] for testing [run all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Debugging: Leave all intermediate files and directories behind for inspection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to only create the work scripts but none will be executed (except for <preflight> script).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Given names for the optional <postflight> and <preflight> GMT scripts [none]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sb Append name of <preflight> GMT modern script that may download or compute\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       files needed by the <mainscript>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sf Append name of <postflight> script (not necessarily a GMT script) which will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       take actions once all batch jobs have completed.\n");
+	GMT_Usage (API, 1, "\n-I<includefile>");
+	GMT_Usage (API, -2, "Specify a script file to be inserted into the batch_init.sh script [none]. "
+		"Used to add constant variables needed by all batch scripts.");
+	GMT_Usage (API, 1, "\n-M[<job>]");
+	GMT_Usage (API, -2, "Run just the indicated job number [0] for testing [run all].");
+	GMT_Usage (API, 1, "\n-Q[s]");
+	GMT_Usage (API, -2, "Debugging: Leave all intermediate files and directories behind for inspection. "
+		"Append s to only create the work scripts but none will be executed (except for <preflight> script).");
+	GMT_Usage (API, 1, "\n-Sf<preflight>");
+	GMT_Usage (API, -2, "Append name of <preflight> GMT modern script that may download or compute "
+		"files needed by the <mainscript>.");
+	GMT_Usage (API, 1, "\n-Sb<postflight>");
+	GMT_Usage (API, -2, "Append name of <postflight> script (not necessarily a GMT script) which will "
+		"take actions once all batch jobs have completed.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Give <workdir> where temporary files will be built [<workdir> = <prefix> set by -N].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <workdir> is not given we create one in the system temp directory named <prefix> (from -N).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Erase input scripts (<mainscript> and any files via -I, -S [leave input scripts alone].\n");
+	GMT_Usage (API, 1, "\n-W[<dir>]");
+	GMT_Usage (API, -2, "Specify <dir> where temporary files will be built [<dir> = <prefix> set by -N]. "
+		"If <dir> is not given we create one in the system temp directory named <prefix> (from -N).");
+	GMT_Usage (API, 1, "\n-Z");
+	GMT_Usage (API, -2, "Erase input scripts (<mainscript> and any files via -I, -S) [leave input scripts alone]. Not compatible with -Q.");
 	GMT_Option (API, "f");
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
-	GMT_Message (API, GMT_TIME_NONE, "\t-x Limit the number of cores used in job generation [Default uses all cores = %d].\n", API->n_cores);
-	GMT_Message (API, GMT_TIME_NONE, "\t   -x<n>  Select <n> cores (up to all available).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
+	GMT_Usage (API, 1, "\n-x[[-]<n>]");
+	GMT_Usage (API, -2, "Limit the number of cores used in job generation [Default uses all %d cores]. "
+		"If <n> is negative then we select (%d - <n>) cores (or at least 1).", API->n_cores, API->n_cores);
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
@@ -295,6 +306,10 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 									strncpy (Ctrl->T.sep, W, GMT_LEN8-1);
 									gmt_M_str_free (W);
 								}
+								break;
+							case 'W':	/* Split trailing text into words using only TABs. */
+								Ctrl->T.split = true;
+								Ctrl->T.sep[1] = '\0';	/* Truncate the space character in the list to only have TAB */
 								break;
 							default:
 								break;	/* These are caught in gmt_getmodopt so break is just for Coverity */

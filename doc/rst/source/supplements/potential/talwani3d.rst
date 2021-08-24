@@ -13,7 +13,8 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt talwani3d** [ *table* ]
-[ |-A| ] [ |-D|\ *rho* ] ]
+[ |-A| ]
+[ |-D|\ *density* ] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-G|\ *outfile* ]
 [ |SYN_OPT-I| ]
@@ -22,7 +23,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |-Z|\ *level*\|\ *obsgrid* ]
 [ |SYN_OPT-V| ]
-[ |SYN_OPT-bi| ]
+[ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
@@ -39,7 +40,7 @@ Description
 
 **talwani3d** will read the multi-segment *table* from file (or standard input).
 This file contains horizontal contours of a 3-D body at different *z*-levels, with one contour
-per segment.  Each segment header must contain the parameters *zlevel rho*, which
+per segment.  Each segment header must contain the parameters *zlevel density*, which
 states the *z* level of the contour and the density of this slice (optionally, individual slice
 densities may be overridden by a fixed density contrast given via **-D**).
 We can compute anomalies on an equidistant grid (by specifying a new grid with
@@ -55,7 +56,7 @@ Required Arguments
 *table*
     The file describing the horizontal contours of the bodies.  Contours will be
     automatically closed if not already closed, and repeated vertices will be eliminated.
-    The segment header for each slice will be examined for the pair *zlevel rho*, i.e.,
+    The segment header for each slice will be examined for the pair *zlevel density*, i.e.,
     the depth level of the slice and a density contrast in kg/m^3; see **-D** for overriding this value.
 
 .. _-I:
@@ -77,7 +78,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *unit*
+**-D**\ *density*
     Sets a fixed density contrast that overrides any individual slice settings in the model file, in kg/m^3.
 
 .. _-F:
@@ -104,8 +105,8 @@ Optional Arguments
 
 **-N**\ *trackfile*
     Specifies individual (x, y[, z]) locations where we wish to compute the predicted value.  When this option
-    is used there are no grids and the output data records are written to stdout.  If *trackfile*
-    has 3 columns we take the *z* value as our observation level; this level may be overridden via **-Z**.
+    is used there are no grids and the output data records are written to standard output (see **-bo** for binary output).
+    If *trackfile* has 3 columns we take the *z* value as our observation level; this level may be overridden via **-Z**.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -118,8 +119,8 @@ Optional Arguments
     Set observation level, either as a constant or variable by giving the name of a grid with observation
     levels.  If the latter is used then this grid determines the output grid region as well [0].
 
-.. |Add_-bi| replace:: [Default is 2 input columns].
-.. include:: ../../explain_-bi.rst_
+.. |Add_-bo| replace:: [Default is 2 output columns].
+.. include:: ../../explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-d.rst_

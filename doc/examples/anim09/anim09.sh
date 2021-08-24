@@ -45,5 +45,5 @@ gmt end
 EOF
 # 3. Run the movie
 gmt set PROJ_LENGTH_UNIT inch FONT_TAG 20p,Helvetica,white
-gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nanim09 -D24 -H4 -Fnone -K -M2000,png -Gblack -Le+jTR -Lf -V -W -Zs
+gmt movie main.sh -Iinclude.sh -CHD -Sbpre.sh -TMOR_PAC_twist_path.txt -Nanim09 -D24 -H4 -K -M2000,png -Gblack -Le+jTR -Lf -V -W -Zs
 rm -f gmt.conf

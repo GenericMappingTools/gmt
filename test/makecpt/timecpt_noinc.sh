@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Test makecpt with time array lacking an increament value
+# Test makecpt with time array lacking an increment value
 
 cat << EOF > cpt-true.cpt
 2012-06-29T08:00:00	0/0/127	2012-08-27T20:22:30	blue	L	

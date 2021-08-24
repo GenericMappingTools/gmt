@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Create 8 layers of Cartesian data, faking it
 # The original PS was made with the commented out lines so that we
 # can be sure the stacking into a cube and pulling out layers work
@@ -9,7 +9,7 @@ gmt begin fake_xyz_cube ps
 	done < z.txt
 	gmt grdinterpolate -Zz.txt tmp_?.grd -Gfake_xyz_cube.nc
 	gmt makecpt -T0/12
-	gmt subplot begin 4x2 -Fs5c -SCb -SRl -Blrbt -A1+gwhite -X5c -Y4c -M1c/0.25c
+	gmt subplot begin 4x2 -Fs5c -Scb -Srl -Blrbt -A1+gwhite -X5c -Y4c -M1c/0.25c
 		for z in $(seq 1 8); do
 			#gmt grdimage "tmp_${z}.grd" -c
 			gmt grdimage "fake_xyz_cube.nc?(${z})" -c

@@ -17,12 +17,12 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-E|\ [**b**] ] [ |-E|\ **r**\|\ **s**\ [**+l**\|\ **h**] ]
+[ |-E|\ [**b**\|\ **r**\|\ **s**\ [**+l**\|\ **h**]] ]
 [ |-G|\ [*grdfile*] ]
 [ |-Q| ]
 [ |-T|\ *quantile* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**\|\ **w**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -106,6 +106,7 @@ Optional Arguments
     *x*,\ *y*,\ *z*,\ *l*,\ *q25*,\ *q75*,\ *h*\ [,\ *w*], where *q25* and
     *q75* are the 25% and 75% quantiles, respectively. See **-W** for
     *w* output.
+
 **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the median value. If
@@ -144,7 +145,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**i**\|\ **o**][**+s**]
+**-W**\ [**i**\|\ **o**][**+s**\|\ **w**]
     Weighted modifier[s]. Unweighted input and output have 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted median values for each
@@ -152,7 +153,8 @@ Optional Arguments
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
     input only, and **-Wo** for weighted output only. [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma.
+    then append **+s** and we compute weight = 1/sigma.  Otherwise (or via **+w**
+    we use the weights directly).
 
 .. include:: explain_-aspatial.rst_
 

@@ -52,13 +52,13 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.8.0
+        uses: styfle/cancel-workflow-action@0.9.1
 
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Setup vcpkg (Windows)
-        uses: dawidd6/action-download-artifact@v2.10.0
+        uses: dawidd6/action-download-artifact@v2.14.1
         with:
           workflow: ci-caches.yml
           name: vcpkg-cache
@@ -112,7 +112,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.10.0
+        uses: dawidd6/action-download-artifact@v2.14.1
         with:
           workflow: ci-caches.yml
           name: gmt-cache
@@ -149,6 +149,9 @@ jobs:
           if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
           # Run tests
           ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
+          # show the slowest tests
+          sort -k3nr Testing/Temporary/CTestCostData.txt > /tmp/cost.txt
+          head -n 30 /tmp/cost.txt | awk 'NF==3 {printf("%50-s %d %5.1f\n", $1, $2, $3)}'
         env:
           CTEST_ARGS : "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
 

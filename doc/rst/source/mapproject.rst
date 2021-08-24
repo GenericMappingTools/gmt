@@ -17,10 +17,11 @@ Synopsis
 [ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*][**+m**] ]
 [ |-D|\ **c**\|\ **i**\|\ **p** ]
-[ |-E|\ [*datum*] ] [ |-F|\ [*unit*] ]
+[ |-E|\ [*datum*] ]
+[ |-F|\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**] ]
 [ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**] ]
 [ |-I| ]
-[ |-L|\ *line.xy*\ [**+u**\ *unit*][**+p**] ]
+[ |-L|\ *table*\ [**+p**][**+u**\ *unit*] ]
 [ |-N|\ [**a**\|\ **c**\|\ **g**\|\ **m**] ]
 [ |-Q|\ [**d**\|\ **e**] ]
 [ |-S| ]
@@ -101,7 +102,7 @@ Optional Arguments
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
     See `Output Order`_ for how **-A** affects the output record.  If **-R**
-    and **-J*** are given the we project the coordinates first and then
+    and **-J** are given the we project the coordinates first and then
     compute Cartesian angles instead.
 
 .. _-C:
@@ -136,7 +137,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [*unit*]
+**-F**\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see `Units`_). Without **-F**, the output (or input, see **-I**)
@@ -169,9 +170,9 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *line.xy*\ [**+u**\ *unit* \|\ *c*  \|\ *C*][**+p**]
+**-L**\ *table*\ [**+p**][**+u**\ *unit* \|\ *c*  \|\ *C*]
     Determine the shortest distance from the input data points to the
-    line(s) given in the ASCII multisegment file *line.xy*. The distance
+    line(s) given in the ASCII multisegment file *table*. The distance
     and the coordinates of the nearest point will be appended to the
     output as three new columns. Append the distance unit via **+u** (see `Units`_
     for available units and how distances are computed [great circle using authalic radius]),
@@ -341,11 +342,11 @@ Clarke-1866 ellipsoid) to WGS 84, run
 
 To compute the closest distance (in km) between each point in the input
 file quakes.txt and the line segments given in the multisegment ASCII
-file coastline.xy, run
+file coastline.txt, run
 
    ::
 
-    gmt mapproject quakes.txt -Lcoastline.xy+uk > quake_dist.txt
+    gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
 
 Given a file with longitude and latitude, compute both incremental
 and accumulated distance along track, and estimate travel times

@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -77,6 +78,8 @@ Optional Arguments
     **+d** to delete duplicate input records (identified by having
     no change in the time column, and
     **+l** if distances should be measured along rhumb lines (loxodromes).
+    **Note**: Calculation mode for loxodromes is spherical, hence **-je**
+    cannot be used in combination with **+l**.
 
 .. _-F:
 
@@ -142,6 +145,8 @@ Optional Arguments
 .. include:: explain_-q.rst_
 
 .. include:: explain_-w.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_help.rst_
 

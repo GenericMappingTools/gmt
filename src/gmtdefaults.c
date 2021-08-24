@@ -58,14 +58,17 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D[s|u]]\n\n", name);
+	GMT_Usage (API, 0, "usage: %s [-D[s|u]] [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the current GMT default settings.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to print the SI version of the system defaults.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to print the US version of the system defaults.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tALL settings will be written to standard output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D[s|u]");
+	GMT_Usage (API, -2, "Print the current GMT default settings. Optionally append a directive:");
+	GMT_Usage (API, 3, "s: Print the SI version of the system defaults.");
+	GMT_Usage (API, 3, "u: Print the US version of the system defaults.");
+	GMT_Usage (API, -2, "Note: ALL settings will be written to standard output.");
+	GMT_Option (API, "V");
 
 	return (GMT_MODULE_USAGE);
 }

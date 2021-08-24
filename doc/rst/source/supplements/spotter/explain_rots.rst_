@@ -1,6 +1,6 @@
 .. _-E:
 
-**-E**\ *rotfile*
+**-E**\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
     Rotations can be specified in one of three ways:
     (1): Give file with rotation parameters. This file must contain one
     record for each rotation; each record must be of the following
@@ -19,8 +19,7 @@
     which shows **C** made up of three row vectors. If the degrees of
     freedom (*df*) in fitting the rotation is 0 or not given it is set
     to 10000. Blank lines and records whose first column contains # will
-    be ignored. You may append **+i** to the filename to indicate
-    you wish to invert the rotations.
+    be ignored. 
     (2): Give the filename composed of two plate IDs
     separated by a hyphen (e.g., PAC-MBL) and we will instead extract
     that rotation from the GPlates rotation database. We return an error
@@ -28,3 +27,5 @@
     (3): Specify *lon*/*lat*/*angle*, i.e., the longitude,
     latitude, and opening angle (all in degrees and separated by /) for
     a single total reconstruction rotation.
+    Regardless of method, you may append **+i** to the argument to indicate
+    you wish to invert the rotation(s).

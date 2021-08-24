@@ -49,6 +49,8 @@ EXTERN_MSC int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *i
 
 /* gmt_init.c: */
 
+EXTERN_MSC void gmt_round_wesn (double wesn[], bool geo);
+EXTERN_MSC int gmt_get_dim_unit (struct GMT_CTRL *GMT, char c);
 EXTERN_MSC void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update);
 EXTERN_MSC void gmt_set_undefined_defaults (struct GMT_CTRL *GMT, double plot_dim, bool conf_update);
 EXTERN_MSC bool gmt_parse_s_option (struct GMT_CTRL *GMT, char *item);
@@ -107,21 +109,23 @@ EXTERN_MSC bool gmt_get_time_system (struct GMT_CTRL *GMT, char *name, struct GM
 EXTERN_MSC int gmt_hash_lookup (struct GMT_CTRL *GMT, const char *key, struct GMT_HASH *hashnode, unsigned int n, unsigned int n_hash);
 EXTERN_MSC void gmt_syntax (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
+EXTERN_MSC void gmt_innercont_syntax (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part);
 EXTERN_MSC void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string);
 EXTERN_MSC void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind);
 EXTERN_MSC void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string);
-EXTERN_MSC void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, unsigned int mode);
+EXTERN_MSC void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, char *prefix, unsigned int mode);
 EXTERN_MSC void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error);
 EXTERN_MSC void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
 EXTERN_MSC void gmt_dist_syntax (struct GMT_CTRL *GMT, char *option, char *string);
 EXTERN_MSC void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level);
 EXTERN_MSC void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode);
-EXTERN_MSC void gmt_img_syntax (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_img_syntax (struct GMT_CTRL *GMT, int indent);
 EXTERN_MSC void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option);
+EXTERN_MSC void gmt_GSHHG_resolution_syntax (struct GMT_CTRL *GMT, char option, char *string);
 EXTERN_MSC int gmt_getdefaults (struct GMT_CTRL *GMT, char *this_file);
 EXTERN_MSC void gmt_putdefaults (struct GMT_CTRL *GMT, char *this_file);
 EXTERN_MSC int gmt_hash_init (struct GMT_CTRL *GMT, struct GMT_HASH *hashnode , char **keys, unsigned int n_hash, unsigned int n_keys);
@@ -290,6 +294,7 @@ EXTERN_MSC int gmt_set_psfilename (struct GMT_CTRL *GMT);
 
 /* gmt_io.c: */
 
+EXTERN_MSC unsigned int gmt_realloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t dim[]);
 EXTERN_MSC void gmt_check_abstime_format (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t chunk);
 EXTERN_MSC int gmt_get_precision_width (struct GMT_CTRL *GMT, double x);
 EXTERN_MSC int gmt_convert_double (struct GMT_CTRL *GMT, char *text, double *value);

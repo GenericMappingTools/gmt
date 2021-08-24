@@ -12,20 +12,22 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdspotter** [*grdfile*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt grdspotter** [*grdfile*]
+|-E|\ *rot_file*\|\ *lon*/*lat*/*angle*\ [**+i**]
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *agegrid* ]
-[ |-D|\ *DIgrid* ]
+[ |-D|\ **i**\|\ **p**\ *grid* ]
 [ |-L|\ *IDgrid* ]
 [ |-M| ]
 [ |-N|\ *upper_age* ]
-[ |-P|\ *PAgrid* ]
 [ |-Q|\ *IDinfo* ]
 [ |-S| ]
 [ |-T|\ **t**\|\ **u**\ *fixed_val* ] [
 [ |SYN_OPT-V| ]
-[ |-W|\ *n\_try* ]] [ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ]
+[ |-W|\ *n\_try* ]]
+[ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
@@ -50,7 +52,7 @@ Required Arguments
 
 .. _-G:
 
-**-G**
+**-G**\ *outgrid*
     Specify name for output CVA grid file.
 
 .. _-I:
@@ -75,10 +77,12 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *DIgrid*
-    Use flowlines to determine the maximum CVA encountered along each
+**-Di**\|\ **p**\ *grid*
+    For **-Di**, we use flowlines to determine the maximum CVA encountered along each
     flowline and create a Data Importance (DI) grid with these values at
-    the originating nodes.
+    the originating nodes.  For **-Dp** we will instead use flowlines to determine
+    the flowline age at the CVA maximum for each node and create a Predicted Age (PA)
+    grid with these values at the originating nodes.  Repeatable.
 
 .. _-L:
 
@@ -100,13 +104,6 @@ Optional Arguments
 **-N**\ *upper_age*
     Set the upper age to assign to nodes whose crustal age is unknown
     (i.e., NaN) [no upper age]. Also see |-A|.
-
-.. _-P:
-
-**-P**\ *PAgrid*
-    Use flowlines to determine the flowline age at the CVA maximum for
-    each node and create a Predicted Age (PA) grid with these values at
-    the originating nodes.
 
 .. _-Q:
 

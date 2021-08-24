@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Push HTML pages to the gh-pages branch of the current GitHub repository.
 #
