@@ -4782,6 +4782,7 @@ GMT_LOCAL int gmtsupport_decode_arg (char *txt, int column, struct GMT_CUSTOM_SY
 		s->p[column] = atof (txt);	/* Get azimuth */
 		new_action = GMT_SYMBOL_AZIMROTATE;	/* Mark as a different rotate action */
 		txt[k] = 'a';	/* Restore the trailing 'a' */
+		s->angular = GMT_IS_AZIMUTH;
 	}
 	else	/* Got a fixed Cartesian plot angle */
 		s->p[column] = atof (txt);
@@ -5224,6 +5225,12 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 				s->p[0] = atof (col[2]);
 				gmtsupport_decode_arg (col[3], 1, s);	/* angle1 could be a variable or constant degrees */
 				gmtsupport_decode_arg (col[4], 2, s);	/* angle2 could be a variable or constant degrees */
+				break;
+
+			case PSL_VECTOR:		/* Draw a vector symbol. Vector head is hardwired and scales with pen thickness */
+				if (last != 4) error++;
+				gmtsupport_decode_arg (col[2], 0, s);	/* angle could be a variable or constant degrees */
+				s->p[1] = atof (col[3]);	/* Non-dimensional length */
 				break;
 
 			case GMT_SYMBOL_EPS:		/* Place EPS file */
@@ -18072,17 +18079,19 @@ int gmt_dry_run_only (const char *cmd) {
 	return 0;
 }
 
-unsigned int gmt_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int k, bool *PS) {
+unsigned int gmt_check_language (struct GMT_CTRL *GMT, unsigned int mode, char *file, unsigned int type, bool *PS) {
 	unsigned int n_errors = 0;
-	/* Examines file extension and compares to known mode from mainscript */
+	/* Examines file extension and compares to known mode from mainscript.
+	 * Here type is 0-2 for background, foreground, or title script/plot which may be either a script of PS/EPS
+	 * while type = 0 is script only and will be compared to the mode. */
 
 	if (PS) {	/* Only used in movie.c so far */
-		size_t L;
+		size_t L = strlen (file);
 		*PS = false;
-		if (k < 3 && (L = strlen (file)) > 3 && !strncmp (&file[L-3], ".ps", 3U)) {
+		if (type < 3 && L > 4 && (!strncmp (&file[L-3], ".ps", 3U) || !strncmp (&file[L-4], ".eps", 3U))) {
 			static char *layer[3] = {"background", "foreground", "title"};
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "PostScript %s layer %s detected\n", layer[k], file);
-			*PS = true;	/* Got a PostScript file */
+			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "PostScript/EPS %s layer %s detected\n", layer[type], file);
+			*PS = true;	/* Got a PostScript or EPS file */
 			return GMT_NOERROR;
 		}
 	}

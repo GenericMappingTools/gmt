@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Create 8 layers of geographic data with Cartesian z, faking it
 # The original PS was made with the commented out lines so that we
 # can be sure the stacking into a cube and pulling out layers work
