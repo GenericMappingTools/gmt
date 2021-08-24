@@ -17,7 +17,7 @@ data. In case the *id* is not provided, as in **+s**\ *scale*, then a
 automatically recognized from almost all of those formats that GMT and GDAL
 combined offer. If not, the same suffix can be added to input grid file names.
 See :doc:`grdconvert </grdconvert>` and Section :ref:`grid-file-format`
-of the GMT Technical Reference and Cookbook for more information.
+of the GMT Technical Reference and Cookbook for more information regarding GDAL settings.
 
 When reading a netCDF file that contains multiple grids, GMT will
 read, by default, the first 2-dimensional grid that it can find in that
