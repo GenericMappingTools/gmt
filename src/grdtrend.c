@@ -141,13 +141,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> -N<n_model>[+r] [-D<diffgrid>] [%s] [-T<trendgrid>] "
-		"[%s] [-W<weightgrid>[+s]] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -N<n_model>[+r] [-D<diffgrid>] [%s] [-T<trendgrid>] "
+		"[%s] [-W<weightgrid>[+s]] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is name of grid file to fit trend to.");
+	gmt_ingrid_syntax (API, 0, "Name of input grid to fit trend to");
 	GMT_Usage (API, 1, "\n-N<n_model>[+r]");
 	GMT_Usage (API, -2, "Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3+r. "
 		"Model parameters order is given as follows; append +r for robust solution: "
