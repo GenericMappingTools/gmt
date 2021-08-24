@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # This shows the wrapped distribution from https://github.com/GenericMappingTools/gmt/issues/4992
 # which happened because -N did not know about -w.  Now, we properly fit a von mises circular distro
 # to this wrapped histogram.

@@ -77,7 +77,7 @@
 
 #define GMT_PROJ_MAX_ITERATIONS	200
 #define GMT_PROJ_CONV_LIMIT	1e-9
-#define GMT_PROJ_IS_ZERO(x) (fabs (x) < GMT_PROJ_CONV_LIMIT)
+#define gmt_M_proj_is_zero(x) (fabs (x) < GMT_PROJ_CONV_LIMIT)
 
 GMT_LOCAL double gmtproj_robinson_spline (struct GMT_CTRL *GMT, double xp, double *x, double *y, double *c) {
 	/* Returns the interpolated value y(xp) from the Robinson coefficients */
@@ -154,7 +154,7 @@ GMT_LOCAL void gmtproj_ipolyconic_sub (struct GMT_CTRL *GMT, double y, double lo
 	gmt_M_wind_lon (GMT, *x);
 	y *= GMT->current.proj.i_EQ_RAD;
 	y += GMT->current.proj.pole * D2R;
-	if (GMT_PROJ_IS_ZERO (y))
+	if (gmt_M_proj_is_zero (y))
 		*x *= GMT->current.proj.EQ_RAD * D2R;
 	else {
 		phi = y;
@@ -1535,7 +1535,7 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 	lat0 = gmtproj_genper_getgeocentric (GMT, lat0, 0.0);
 	sincosd (lat0, &(GMT->current.proj.sinp), &(GMT->current.proj.cosp));
 
-	if (!GMT_PROJ_IS_ZERO (GMT->current.proj.ECC2)) {
+	if (!gmt_M_proj_is_zero (GMT->current.proj.ECC2)) {
 		gmtproj_genper_setup (GMT, 0.0, altitude, lat0_save, lon0);
 		GMT->current.proj.central_meridian = lon0;
 		GMT->current.proj.pole = GMT->current.proj.g_phig;
@@ -1997,7 +1997,7 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_PROJ_IS_ZERO (lat-GMT->current.proj.pole) && GMT_PROJ_IS_ZERO (lon)) {	/* Center of projection */
+	if (gmt_M_proj_is_zero (lat-GMT->current.proj.pole) && gmt_M_proj_is_zero (lon)) {	/* Center of projection */
 		*x = *y = 0.0;
 		return;
 	}
@@ -2012,7 +2012,7 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 	}
 	else {
 		c = d_acos (cc);
-		k = (GMT_PROJ_IS_ZERO (c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin (c);
+		k = (gmt_M_proj_is_zero (c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin (c);
 		*x = k * clat * slon;
 		*y = k * (GMT->current.proj.cosp * slat - GMT->current.proj.sinp * t);
 	}
@@ -2176,7 +2176,7 @@ GMT_LOCAL void gmtproj_grinten (struct GMT_CTRL *GMT, double lon, double lat, do
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_PROJ_IS_ZERO (flat)) {	/* Save time */
+	if (gmt_M_proj_is_zero (flat)) {	/* Save time */
 		*x = GMT->current.proj.EQ_RAD * D2R * lon;
 		*y = 0.0;
 		return;
@@ -2248,7 +2248,7 @@ GMT_LOCAL void gmtproj_winkel (struct GMT_CTRL *GMT, double lon, double lat, dou
 
 	sincos (lat, &s, &c);
 	D = d_acos (c * cos (lon));
-	if (GMT_PROJ_IS_ZERO (D))
+	if (gmt_M_proj_is_zero (D))
 		x1 = y1 = 0.0;
 	else {
 		X = s / sin (D);
@@ -2702,7 +2702,7 @@ GMT_LOCAL void gmtproj_cassini (struct GMT_CTRL *P, double lon, double lat, doub
 	gmt_M_wind_lon (P, lon)	/* Remove central meridian and place lon in -180/+180 range */
 	lon *= D2R;
 
-	if (GMT_PROJ_IS_ZERO (lat)) {	/* Quick when lat is zero */
+	if (gmt_M_proj_is_zero (lat)) {	/* Quick when lat is zero */
 		*x = P->current.proj.EQ_RAD * lon;
 		*y = -P->current.proj.c_M0;
 		return;
@@ -2761,7 +2761,7 @@ GMT_LOCAL void gmtproj_cassini_sph (struct GMT_CTRL *GMT, double lon, double lat
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_PROJ_IS_ZERO (lat)) {	/* Quick when lat is zero */
+	if (gmt_M_proj_is_zero (lat)) {	/* Quick when lat is zero */
 		*x = GMT->current.proj.EQ_RAD * lon * D2R;
 		*y = -GMT->current.proj.EQ_RAD * GMT->current.proj.c_p;
 		return;
@@ -2807,9 +2807,9 @@ GMT_LOCAL void gmtproj_valbers (struct GMT_CTRL *GMT, double lon0, double lat0, 
 
 	m1 = c1 * c1 / (1.0 - GMT->current.proj.ECC2 * s1 * s1);	/* Actually m1 and m2 squared */
 	m2 = c2 * c2 / (1.0 - GMT->current.proj.ECC2 * s2 * s2);
-	q0 = (GMT_PROJ_IS_ZERO (GMT->current.proj.ECC)) ? 2.0 * s0 : GMT->current.proj.one_m_ECC2 * (s0 / (1.0 - GMT->current.proj.ECC2 * s0 * s0) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s0) / (1.0 + GMT->current.proj.ECC * s0)));
-	q1 = (GMT_PROJ_IS_ZERO (GMT->current.proj.ECC)) ? 2.0 * s1 : GMT->current.proj.one_m_ECC2 * (s1 / (1.0 - GMT->current.proj.ECC2 * s1 * s1) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s1) / (1.0 + GMT->current.proj.ECC * s1)));
-	q2 = (GMT_PROJ_IS_ZERO (GMT->current.proj.ECC)) ? 2.0 * s2 : GMT->current.proj.one_m_ECC2 * (s2 / (1.0 - GMT->current.proj.ECC2 * s2 * s2) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s2) / (1.0 + GMT->current.proj.ECC * s2)));
+	q0 = (gmt_M_proj_is_zero (GMT->current.proj.ECC)) ? 2.0 * s0 : GMT->current.proj.one_m_ECC2 * (s0 / (1.0 - GMT->current.proj.ECC2 * s0 * s0) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s0) / (1.0 + GMT->current.proj.ECC * s0)));
+	q1 = (gmt_M_proj_is_zero (GMT->current.proj.ECC)) ? 2.0 * s1 : GMT->current.proj.one_m_ECC2 * (s1 / (1.0 - GMT->current.proj.ECC2 * s1 * s1) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s1) / (1.0 + GMT->current.proj.ECC * s1)));
+	q2 = (gmt_M_proj_is_zero (GMT->current.proj.ECC)) ? 2.0 * s2 : GMT->current.proj.one_m_ECC2 * (s2 / (1.0 - GMT->current.proj.ECC2 * s2 * s2) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s2) / (1.0 + GMT->current.proj.ECC * s2)));
 
 	GMT->current.proj.a_n = (doubleAlmostEqualZero (ph1, ph2)) ? s1 : (m1 - m2) / (q2 - q1);
 	GMT->current.proj.a_i_n = 1.0 / GMT->current.proj.a_n;
@@ -2848,7 +2848,7 @@ GMT_LOCAL void gmtproj_albers (struct GMT_CTRL *GMT, double lon, double lat, dou
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
 	s = sind (lat);
-	if (GMT_PROJ_IS_ZERO (GMT->current.proj.ECC))
+	if (gmt_M_proj_is_zero (GMT->current.proj.ECC))
 		q = 2.0 * s;
 	else {
 		r = GMT->current.proj.ECC * s;
@@ -2985,7 +2985,7 @@ GMT_LOCAL void gmtproj_polyconic (struct GMT_CTRL *GMT, double lon, double lat, 
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_PROJ_IS_ZERO(lat)) {
+	if (gmt_M_proj_is_zero(lat)) {
 		*x = GMT->current.proj.EQ_RAD * lon * D2R;
 		*y = GMT->current.proj.EQ_RAD * (lat - GMT->current.proj.pole) * D2R;
 	}
@@ -3007,7 +3007,7 @@ GMT_LOCAL void gmtproj_ipolyconic (struct GMT_CTRL *GMT, double *lon, double *la
 	x *= GMT->current.proj.i_EQ_RAD;
 	y *= GMT->current.proj.i_EQ_RAD;
 	y += GMT->current.proj.pole * D2R;
-	if (GMT_PROJ_IS_ZERO (y)) {
+	if (gmt_M_proj_is_zero (y)) {
 		*lat = y * R2D + GMT->current.proj.pole;
 		*lon = x * R2D + GMT->current.proj.central_meridian;
 	}

@@ -119,11 +119,6 @@ Optional Arguments
     Draws the "beach ball" outline with *pen* attributes instead of with
     the default pen set by **-W**.
 
-.. _-M:
-
-**-M**
-    Use the same size for any magnitude. Size is given with **-S**.
-
 .. _-N:
 
 **-N**

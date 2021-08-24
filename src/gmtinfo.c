@@ -127,9 +127,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]]] [-EL|l|H|h[<col>]] "
-		"[-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]] [-L] [-S[x][y]] [-T<dz>[+c<col>]] "
+		"[-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]] [-L] [-S[x][y]] [-T<dz>[%s][+c<col>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]",
-		name, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT,
+		name, GMT_TIME_FIX_UNITS_DISPLAY, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -137,18 +137,22 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-A[a|t|s] Select reports for (a)ll [Default], per (t)able, or per (s)egment.");
+	GMT_Usage (API, 1, "\n-A[a|t|s]");
+	GMT_Usage (API, -2, "Select reports for (a)ll [Default], per (t)able, or per (s)egment.");
 	GMT_Usage (API, 1, "\n-C Format the min and max into separate columns; -o may be used to limit output.");
 	GMT_Usage (API, 1, "\n-D Modifies results obtained by -I by shifting the region to better align with "
 		"the data center.  Optionally, append granularity for this shift [exact].");
-	GMT_Usage (API, 1, "\n-EL|l|H|h[<col>] Return the record with extreme value in specified column <col> [last column]. "
+	GMT_Usage (API, 1, "\n-EL|l|H|h[<col>]");
+	GMT_Usage (API, -2, "Return the record with extreme value in specified column <col> [last column]. "
 		"Specify l or h for min or max value, respectively. Upper case L or H "
 		"means we operate instead on the absolute values of the data.");
-	GMT_Usage (API, 1, "\n-Fi|d|t Return various counts of tables, segments, headers, and records, depending on mode:");
+	GMT_Usage (API, 1, "\n-Fi|d|t");
+	GMT_Usage (API, -2, "Return various counts of tables, segments, headers, and records, depending on mode:");
 	GMT_Usage (API, 3, "i: One record with the number of tables, segments, data records, headers, and overall records.");
 	GMT_Usage (API, 3, "d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.");
 	GMT_Usage (API, 3, "t: Tables:  Same as D but the counts resets per table.");
-	GMT_Usage (API, 1, "\n-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>] Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least two columns). "
+	GMT_Usage (API, 1, "\n-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]");
+	GMT_Usage (API, -2, "Return textstring -Rw/e/s/n to nearest multiple of <dx>/<dy> (assumes at least two columns). "
 		"Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples). "
 		"If -C is set then no -R string is issued.  Instead, the number of increments "
 		"given determines how many columns are rounded off to the nearest multiple. "
@@ -164,12 +168,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
 	GMT_Usage (API, 1, "\n-L Determine limiting region. With -I it rounds inward so bounds are within data range. "
 		"Use -A to find the limiting common bounds of all segments or tables.");
-	GMT_Usage (API, 1, "\n-S[x][y] Add extra space for error bars. Useful together with -I.");
+	GMT_Usage (API, 1, "\n-S[x][y]");
+	GMT_Usage (API, -2, "Add extra space for error bars. Useful together with -I.");
 	GMT_Usage (API, 3, "-Sx: Leaves space for horizontal error bar using value in third (2) column.");
 	GMT_Usage (API, 3, "-Sy: Leaves space for vertical error bar using value in third (2) column.");
 	GMT_Usage (API, 3, "-S or -Sxy: Leaves space for both error bars using values in third&fourth (2&3) columns.");
-	GMT_Usage (API, 1, "\n-T<dz>[+c<col>] Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz. "
-		"Calculations are based on the first (0) column; append +c<col> to use another column.");
+	GMT_Usage (API, 1, "\n-T<dz>[%s][+c<col>]", GMT_TIME_FIX_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Return textstring -Tzmin/zmax/dz to nearest multiple of the given <dz>.");
+	GMT_Usage (API, -2, "Note: Calculations are based on the first (0) column; append +c<col> to use another column. "
+		"If the column is absolute time you may append a valid fixed time unit to <dz> (Default is set by TIME_UNIT [s]).");
 	GMT_Option (API, "V,a");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Reports the names and data types of the aspatial fields.\n");
 	GMT_Option (API, "bi2,d,e,f,g,h,i,o,qi,r,s,w,:,.");
@@ -327,20 +334,32 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 			case 'T':	/* makecpt inc string */
 				Ctrl->T.active = true;
 				if ((c = strchr (opt->arg, '/')) && gmt_M_compat_check (GMT, 5)) {	/* Let it slide for now */
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -T<inc>[/<col>] syntax is deprecated; use -T<inc>[+c<col>] instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -T<inc>[/<col>] syntax is deprecated; use -T<inc>[%s][+c<col>] instead.\n", GMT_TIME_FIX_UNITS_DISPLAY);
 					j = sscanf (opt->arg, "%lf/%d", &Ctrl->T.inc, &Ctrl->T.col);
 					if (j == 1) Ctrl->T.col = 0;
 				}
 				else if (c || opt->arg[0] == '\0') {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Syntax is -T<inc>[+c<col>].\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Syntax is -T<inc>[%s][<[+c<col>].\n", GMT_TIME_FIX_UNITS_DISPLAY);
 					n_errors++;
 				}
 				else {	/* Modern syntax and parsing */
-					if ((c = strstr (opt->arg, "+c"))) {
+					size_t L;
+					if ((c = strstr (opt->arg, "+c"))) {	/* Specified alternate column */
 						Ctrl->T.col = atoi (&c[2]);
 						c[0] = '\0';	/* Temporarily hide the modifier */
 					}
 					Ctrl->T.inc = atof (opt->arg);
+					if ((L = strlen (opt->arg))) {	/* Switch to another valid time unit */
+						char unit = opt->arg[L-1];
+						if (strchr (GMT_TIME_FIX_UNITS, unit)) {	/* Change to another valid time unit */
+							API->GMT->current.setting.time_system.unit = unit;
+							(void) gmt_init_time_system_structure (API->GMT, &API->GMT->current.setting.time_system);
+						}
+						else if (isalpha (unit)) {	/* Got junk */
+							GMT_Report (API, GMT_MSG_ERROR, "Option -T: Bad time unit %c. Choose from %s.\n", unit, GMT_TIME_FIX_UNITS_DISPLAY);
+							n_errors++;
+						}	/* else it was just part of dz */
+					}
 					if (c) c[0] = '+';	/* Restore the modifier */
 				}
 				break;
@@ -700,12 +719,18 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[YHI], GMT_Y);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->T.active) {	/* Return -T string */
-				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
+				unsigned int save = gmt_get_column_type (GMT, GMT_OUT, Ctrl->T.col);	/* Remember what column type this is */
+				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;	/* Round min/max given the increment */
 				wesn[XHI]  = ceil  (xyzmax[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
 				sprintf (record, "-T");
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XLO], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XHI], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
+				if (save == GMT_IS_ABSTIME) gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, GMT_IS_FLOAT);	/* Must temporarily switch to float to typeset increment */
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
+				if (save == GMT_IS_ABSTIME) {	/* Append unit used */
+					gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, save);	/* Reset column type */
+					chrcat (record, GMT->current.setting.time_system.unit);
+				}
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
 				gmt_M_memcpy (Out->data, dchosen, ncol, double);
