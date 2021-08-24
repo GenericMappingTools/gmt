@@ -1483,6 +1483,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i, boost, f_lat_a, f_lat_b;
+	double E[3], R[3][3], R0[3][3], ds_radians, angle_radians;
 
 	if (GMT->current.proj.projection_GMT == GMT_POLAR) return (gmtvector_fix_up_path_polar (GMT, a_lon, a_lat, n, 1.0, mode));	/* r-theta stepping */
 
@@ -1636,24 +1637,42 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			/* Next point is now point i */
 		}
 		else if ((n_step = lrint (boost * theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
-			fraction = 1.0 / (double)n_step;
-			minlon = MIN (lon[i-1], lon[i]);
-			maxlon = MAX (lon[i-1], lon[i]);
-			meridian = doubleAlmostEqualZero (maxlon, minlon);	/* A meridian; make a gap so tests below will give right range */
-			for (j = 1; j < n_step; j++) {
-				c = j * fraction;
-				d = 1 - c;
-				for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
-				gmt_normalize3v (GMT, x);		/* Make unit vector */
-				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
-				gmt_cart_to_geo (GMT, &GMT->hidden.mem_coord[GMT_Y][n_new], &GMT->hidden.mem_coord[GMT_X][n_new], x, true);
-				if (meridian)
-					GMT->hidden.mem_coord[GMT_X][n_new] = minlon;
-				else if (GMT->hidden.mem_coord[GMT_X][n_new] < minlon)
-					GMT->hidden.mem_coord[GMT_X][n_new] += 360.0;
-				else if (GMT->hidden.mem_coord[GMT_X][n_new] > maxlon)
-					GMT->hidden.mem_coord[GMT_X][n_new] -= 360.0;
-				n_new++;
+			/* Do this by crossing the end point vectors to get a rotation pole, then rotate a towards b in equal angular steps */
+			if (GMT->hidden.sample_along_arc) {	/* Need accurate incremental spacing so do the slower along-arc approach */
+				gmt_cross3v (GMT, a, b, E);	/* Get pole E to plane trough a and b */
+				gmt_normalize3v (GMT, E);	/* Make sure E has unit length */
+				gmtlib_init_rot_matrix (R0, E);	/* Get partial rotation matrix since no actual angle is applied yet */
+				ds_radians = D2R * theta / n_step;
+				for (j = 1; j < n_step; j++) {
+					angle_radians = j * ds_radians;		/* The required rotation for this point relative to FZ origin */
+					gmt_M_memcpy (R, R0, 9, double);	/* Get a copy of the "0-angle" rotation matrix */
+					gmtlib_load_rot_matrix (angle_radians, R, E);	/* Build the actual rotation matrix for this angle */
+					gmt_matrix_vect_mult (GMT, 3U, R, a, x);	/* Rotate a along the arc towards b */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					gmt_cart_to_geo (GMT, &GMT->hidden.mem_coord[GMT_Y][n_new], &GMT->hidden.mem_coord[GMT_X][n_new], x, true);	/* Get lon/lat of this point along arc */
+					n_new++;
+				}
+			}
+			else {	/* Use the linear interpolation along the cord which is faster */
+				fraction = 1.0 / (double)n_step;
+				minlon = MIN (lon[i-1], lon[i]);
+				maxlon = MAX (lon[i-1], lon[i]);
+				meridian = doubleAlmostEqualZero (maxlon, minlon);	/* A meridian; make a gap so tests below will give right range */
+				for (j = 1; j < n_step; j++) {
+					c = j * fraction;
+					d = 1 - c;
+					for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
+					gmt_normalize3v (GMT, x);		/* Make unit vector */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					gmt_cart_to_geo (GMT, &GMT->hidden.mem_coord[GMT_Y][n_new], &GMT->hidden.mem_coord[GMT_X][n_new], x, true);
+					if (meridian)
+						GMT->hidden.mem_coord[GMT_X][n_new] = minlon;
+					else if (GMT->hidden.mem_coord[GMT_X][n_new] < minlon)
+						GMT->hidden.mem_coord[GMT_X][n_new] += 360.0;
+					else if (GMT->hidden.mem_coord[GMT_X][n_new] > maxlon)
+						GMT->hidden.mem_coord[GMT_X][n_new] -= 360.0;
+					n_new++;
+				}
 			}
 		}
 		gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */

@@ -122,7 +122,7 @@ Optional Arguments
 
 **-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
     Give a *titlepage* script that creates a static title page for the movie [no title].
-    Alternatively, *titlepage* can be a *PostScript* plot (file extension .ps) of dimensions exactly matching
+    Alternatively, *titlepage* can be a *PostScript* or *EPS* plot (file extension .ps) of dimensions exactly matching
     the canvas size set in **-C**. You control the duration of the title sequence with **+d** and specify
     the number of frames (or append **s** for a duration in seconds instead) [4s].
     Optionally, supply the fade length via **+f**\ *fade* (in frames or seconds [1s]) as well [no fading];
@@ -250,7 +250,7 @@ Optional Arguments
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
     so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
-    *background* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
+    *background* can be a *PostScript* or *EPS* plot layer of dimensions exactly matching the canvas size.
 
 .. _-Sf:
 
@@ -258,7 +258,7 @@ Optional Arguments
     The optional GMT modern mode *foreground* (written in the same scripting language as *mainscript*) can be
     used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
     positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
-    *foreground* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
+    *foreground* can be a *PostScript* or *EPS* plot layer of dimensions exactly matching the canvas size.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -589,9 +589,9 @@ Adding an Audio Track
 
 If you wish to add an *audio* track to the animation, say a narration that explains your animation,
 you can record your audio using a suitable tool and save it to a \*.mp3 or \*.m4a file.  The audio track
-should be approximately the same length as the video.  Then, simply combine the two with FFMpeg::
+should be approximately the same length as the video.  Then, simply combine the two with FFmpeg::
 
-    ffmpeg -loglevel warning -i yourslientmovie.mp4 -i narration.m4a final.mp4
+    ffmpeg -loglevel warning -i yourslientmovie.mp4 -y -i narration.m4a final.mp4
 
 For more information on audio manipulations, see the FFmpeg documentation.
 

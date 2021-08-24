@@ -809,14 +809,14 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 		if (GMT->current.map.frame.axis[k].item[GMT_ANNOT_UPPER].generated) GMT->current.map.frame.axis[k].item[GMT_ANNOT_UPPER].interval = 0.0;
 		if (GMT->current.map.frame.axis[k].item[GMT_GRID_UPPER].generated)  GMT->current.map.frame.axis[k].item[GMT_GRID_UPPER].interval  = 0.0;
 	}
-	save = GMT->current.io.col_type[GMT_IN][GMT_Y];
+	save = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
 	GMT->current.io.col_type[GMT_IN][GMT_Y] = GMT_IS_GEO;	/* Let y be geographic to get division fo 90 etc */
 	/* Update, if generated previously */
 	gmt_auto_frame_interval (GMT, GMT_X, GMT_ANNOT_UPPER);
 	gmt_auto_frame_interval (GMT, GMT_Y, GMT_ANNOT_UPPER);
 	/* Reset to what it was, i.e. Cartesian square box */
 	gmt_M_memcpy (GMT->common.R.wesn, wesn, 4U, double);
-	GMT->current.io.col_type[GMT_IN][GMT_Y] = save;	/* Reset */
+	gmt_set_column_type (GMT, GMT_IN, GMT_Y, save);	/* Reset */
 
 	if (GMT->current.map.frame.draw && !GMT->current.map.frame.no_frame && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_ANNOT_UPPER].interval) && gmt_M_is_zero (GMT->current.map.frame.axis[GMT_Y].item[GMT_GRID_UPPER].interval)) do_labels = false;
 

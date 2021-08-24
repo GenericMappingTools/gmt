@@ -32,7 +32,7 @@ Synopsis
 [ |-W|\ *scale* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *zfile* ]
+[ |-Z|\ *widthfile* ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]

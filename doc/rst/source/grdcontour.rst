@@ -33,7 +33,6 @@ Synopsis
 [ |-Z|\ [**+o**\ *shift*][**+p**][**+s**\ *factor*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
-[ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
 [ **-ho**\ [*n*] ]
 [ |SYN_OPT-l| ]
