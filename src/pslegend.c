@@ -373,6 +373,18 @@ GMT_LOCAL struct GMT_DATASEGMENT * pslegend_get_segment (struct GMT_DATASET **D,
 	return D[id]->table[0]->segment[seg];	/* Get next segment from first table */
 }
 
+GMT_LOCAL void pslegend_maybe_realloc_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T, uint64_t k, uint64_t n_rows) {
+	struct GMT_DATATABLE_HIDDEN *TH = gmt_get_DT_hidden (T);
+	unsigned int mode = (T->segment[0]->text) ? GMT_WITH_STRINGS : 0;
+	if (k < TH->n_alloc) return;	/* Not yet */
+	T->segment = gmt_M_memory (GMT, T->segment, TH->n_alloc + GMT_SMALL_CHUNK, struct GMT_DATASEGMENT *);
+	for (unsigned int seg = TH->n_alloc; seg < TH->n_alloc + GMT_SMALL_CHUNK; seg++) {
+		T->segment[seg] = gmt_get_segment (GMT);
+		gmt_alloc_segment (GMT, T->segment[seg], n_rows, T->n_columns, mode, true);
+	}
+	TH->n_alloc += GMT_SMALL_CHUNK;
+}
+
 GMT_LOCAL void pslegend_maybe_realloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	if (S->n_rows < SH->n_alloc) return;	/* Not yet */
@@ -477,6 +489,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	struct GMT_FONT ifont;
 	struct GMT_PEN current_pen;
 	struct PSLEGEND_TXT *legend_item = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASET *In = NULL, *INFO[2] = {NULL, NULL};
 	struct GMT_DATASET *D[N_DAT];
 	struct GMT_DATASEGMENT *S[N_DAT];
@@ -1138,7 +1151,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								pslegend_fillcell (GMT, Ctrl->D.refpoint->x, row_base_y-row_height, row_base_y+gap, x_off_col, &d_line_after_gap, n_columns, fill);
 								row_base_y -= row_height;
 								/* Build output segment */
-								if ((D[TXT] = pslegend_get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, GMT_LEN256, 2U, true)) == NULL) return (API->error);
+								if ((D[TXT] = pslegend_get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, GMT_SMALL_CHUNK, 2U, true)) == NULL) return (API->error);
 								S[TXT] = pslegend_get_segment (D, TXT, 0);	/* Since there will only be one table with one segment for each set, except for fronts */
 								S[TXT]->data[GMT_X][krow[TXT]] = Ctrl->D.refpoint->x + 0.5 * Ctrl->D.dim[GMT_X];
 								S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
@@ -1227,7 +1240,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 								x_off += (justify%4 == 1) ? Ctrl->C.off[GMT_X] : ((justify%4 == 3) ? (x_off_col[column_number+1]-x_off_col[column_number]) - Ctrl->C.off[GMT_X] : 0.5 * (x_off_col[column_number+1]-x_off_col[column_number]));
 								sprintf (buffer, "%s B%s %s", gmt_putfont (GMT, &ifont), key, text);
-								if ((D[TXT] = pslegend_get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, GMT_LEN256, 2U, true)) == NULL) return (API->error);
+								if ((D[TXT] = pslegend_get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, GMT_SMALL_CHUNK, 2U, true)) == NULL) return (API->error);
 								S[TXT] = pslegend_get_segment (D, TXT, 0);	/* Since there will only be one table with one segment for each set, except for fronts */
 								S[TXT]->data[GMT_X][krow[TXT]] = x_off;
 								S[TXT]->data[GMT_Y][krow[TXT]] = row_base_y + d_off;
@@ -1463,7 +1476,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								if (txt_c[0] != '-') {strcat (buffer, " -G"); strcat (buffer, txt_c);}
 								if (txt_d[0] != '-') {strcat (buffer, " -W"); strcat (buffer, txt_d);}
 								/* Prepare next output segment */
-								if ((D[FRONT] = pslegend_get_dataset_pointer (API, D[FRONT], GMT_IS_LINE, GMT_LEN256, 2U, 2U, false)) == NULL) return (API->error);
+								if ((D[FRONT] = pslegend_get_dataset_pointer (API, D[FRONT], GMT_IS_LINE, GMT_SMALL_CHUNK, 2U, 2U, false)) == NULL) return (API->error);
 								S[FRONT] = pslegend_get_segment (D, FRONT, n_fronts);	/* Next front segment */
 								S[FRONT]->header = strdup (buffer);
 								GMT_Report (API, GMT_MSG_DEBUG, "FRONT: %s\n", buffer);
@@ -1473,15 +1486,13 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								S[FRONT]->n_rows = 2;
 								D[FRONT]->n_records += 2;
 								n_fronts++;
-								if (n_fronts == GMT_SMALL_CHUNK) {
-									GMT_Report (API, GMT_MSG_ERROR, "Can handle max %d front lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
-									return (API->error);
-								}
+								D[FRONT]->n_segments++;
+								pslegend_maybe_realloc_table (GMT, D[FRONT]->table[0], n_fronts, 2U);
 							}
 							else if (symbol[0] == 'q') {	/* Quoted line is different, must plot as a line segment */
 								double length = Ctrl->S.scale * gmt_M_to_inch (GMT, size);	/* The length of the line */;
 
-								if ((D[QLINE] = pslegend_get_dataset_pointer (API, D[QLINE], GMT_IS_LINE, GMT_LEN256, 2U, 2U, false)) == NULL) return (API->error);
+								if ((D[QLINE] = pslegend_get_dataset_pointer (API, D[QLINE], GMT_IS_LINE, GMT_SMALL_CHUNK, 2U, 2U, false)) == NULL) return (API->error);
 								x = 0.5 * length;
 								/* Place pen and fill colors in segment header */
 								sprintf (buffer, "-S%s", symbol);
@@ -1495,15 +1506,13 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								S[QLINE]->n_rows = 2;
 								D[QLINE]->n_records += 2;
 								n_quoted_lines++;
-								if (n_quoted_lines == GMT_SMALL_CHUNK) {
-									GMT_Report (API, GMT_MSG_ERROR, "Can handle max %d quoted lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
-									return (API->error);
-								}
+								D[QLINE]->n_segments++;
+								pslegend_maybe_realloc_table (GMT, D[QLINE]->table[0], n_quoted_lines, 2U);
 							}
 							else if (symbol[0] == '~') {	/* Decorated line is different, must plot as a line segment */
 								double length = Ctrl->S.scale * gmt_M_to_inch (GMT, size);	/* The length of the line */;
 
-								if ((D[DLINE] = pslegend_get_dataset_pointer (API, D[DLINE], GMT_IS_LINE, GMT_LEN256, 2U, 2U, false)) == NULL) return (API->error);
+								if ((D[DLINE] = pslegend_get_dataset_pointer (API, D[DLINE], GMT_IS_LINE, GMT_SMALL_CHUNK, 2U, 2U, false)) == NULL) return (API->error);
 								x = 0.5 * length;
 								/* Place pen and fill colors in segment header */
 								sprintf (buffer, "-S%s", symbol);
@@ -1517,13 +1526,11 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								S[DLINE]->n_rows = 2;
 								D[DLINE]->n_records += 2;
 								n_decorated_lines++;
-								if (n_decorated_lines == GMT_SMALL_CHUNK) {
-									GMT_Report (API, GMT_MSG_ERROR, "Can handle max %d decorated lines.  Let us know if this is a problem.\n", GMT_SMALL_CHUNK);
-									return (API->error);
-								}
+								D[DLINE]->n_segments++;
+								pslegend_maybe_realloc_table (GMT, D[DLINE]->table[0], n_decorated_lines, 2U);
 							}
 							else {	/* Regular symbols */
-								if ((D[SYM] = pslegend_get_dataset_pointer (API, D[SYM], GMT_IS_POINT, GMT_LEN256, 1U, 6U, true)) == NULL) return (API->error);
+								if ((D[SYM] = pslegend_get_dataset_pointer (API, D[SYM], GMT_IS_POINT, GMT_SMALL_CHUNK, 1U, 6U, true)) == NULL) return (API->error);
 								S[SYM] = pslegend_get_segment (D, SYM, n_symbols);	/* Since there will only be one table with one segment for each single row */
 								S[SYM]->data[GMT_X][0] = x_off + off_ss;
 								S[SYM]->data[GMT_Y][0] = row_base_y;
@@ -1700,11 +1707,13 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								SH = gmt_get_DS_hidden (S[SYM]);
 								if (S[SYM]->n_rows == SH->n_alloc) S[SYM]->data = gmt_M_memory (GMT, S[SYM]->data, SH->n_alloc += GMT_SMALL_CHUNK, char *);
 								n_symbols++;
+								D[SYM]->n_segments++;
+								pslegend_maybe_realloc_table (GMT, D[SYM]->table[0], n_symbols, 1U);
 							}
 							/* Finally, print text; skip when empty */
 							row_base_y -= half_line_spacing;	/* Go back to bottom of box */
 							if (n_scan == 7) {	/* Place symbol text */
-								if ((D[TXT] = pslegend_get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, GMT_LEN256, 2U, true)) == NULL) return (API->error);
+								if ((D[TXT] = pslegend_get_dataset_pointer (API, D[TXT], GMT_IS_NONE, 1U, GMT_SMALL_CHUNK, 2U, true)) == NULL) return (API->error);
 								S[TXT] = pslegend_get_segment (D, TXT, 0);	/* Since there will only be one table with one segment for each set, except for fronts */
 								sprintf (buffer, "%gp,%d,%s BL %s", GMT->current.setting.font_annot[GMT_PRIMARY].size, GMT->current.setting.font_annot[GMT_PRIMARY].id, txtcolor, text);
 								S[TXT]->data[GMT_X][krow[TXT]] = x_off + off_tt;
@@ -1808,6 +1817,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* Time to plot any symbols, text, fronts, quoted lines, and paragraphs we collected in the loop */
 
 	if (D[FRONT]) {
+		TH = gmt_get_DT_hidden (D[FRONT]->table[0]);
 		/* Create option list, register D[FRONT] as input source */
 		D[FRONT]->table[0]->n_segments = n_fronts;	/* Set correct number of fronts */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D[FRONT], string) != GMT_NOERROR) {
@@ -1828,9 +1838,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			}
 		}
 #endif
-		D[FRONT]->table[0]->n_segments = GMT_LEN256;	/* Reset to allocation limit */
+		D[FRONT]->table[0]->n_segments = TH->n_alloc;	/* Reset to allocation limit */
 	}
 	if (D[QLINE]) {
+		TH = gmt_get_DT_hidden (D[QLINE]->table[0]);
 		/* Create option list, register D[QLINE] as input source */
 		D[QLINE]->table[0]->n_segments = n_quoted_lines;	/* Set correct number of lines */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D[QLINE], string) != GMT_NOERROR) {
@@ -1851,9 +1862,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			}
 		}
 #endif
-		D[QLINE]->table[0]->n_segments = GMT_LEN256;	/* Reset to allocation limit */
+		D[QLINE]->table[0]->n_segments = TH->n_alloc;	/* Reset to allocation limit */
 	}
 	if (D[DLINE]) {
+		TH = gmt_get_DT_hidden (D[DLINE]->table[0]);
 		/* Create option list, register D[DLINE] as input source */
 		D[DLINE]->table[0]->n_segments = n_decorated_lines;	/* Set correct number of lines */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D[DLINE], string) != GMT_NOERROR) {
@@ -1874,9 +1886,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			}
 		}
 #endif
-		D[DLINE]->table[0]->n_segments = GMT_LEN256;	/* Reset to allocation limit */
+		D[DLINE]->table[0]->n_segments = TH->n_alloc;	/* Reset to allocation limit */
 	}
 	if (D[SYM]) {
+		TH = gmt_get_DT_hidden (D[SYM]->table[0]);
 		D[SYM]->table[0]->n_segments = n_symbols;	/* Set correct number of segments */
 		/* Create option list, register D[SYM] as input source */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, D[SYM], string) != GMT_NOERROR) {
@@ -1898,9 +1911,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			}
 		}
 #endif
-		D[SYM]->table[0]->n_segments = GMT_LEN256;	/* Reset to allocation limit */
+		D[SYM]->table[0]->n_segments = TH->n_alloc;	/* Reset to allocation limit */
 	}
 	if (D[TXT]) {
+		TH = gmt_get_DT_hidden (D[TXT]->table[0]);
 		D[TXT]->table[0]->segment[0]->n_rows = D[TXT]->n_records = krow[TXT];
 		/* Create option list, register D[TXT] as input source */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, D[TXT], string) != GMT_NOERROR) {
@@ -1921,7 +1935,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			}
 		}
 #endif
-		D[TXT]->table[0]->segment[0]->n_rows = D[TXT]->n_records = GMT_LEN256;	/* To free what we allocated */
+		D[TXT]->table[0]->segment[0]->n_rows = D[TXT]->n_records = TH->n_alloc;	/* To free what we allocated */
 	}
 	if (D[PAR]) {
 		if (n_para >= 0) {	/* End of last paragraph for sure */
