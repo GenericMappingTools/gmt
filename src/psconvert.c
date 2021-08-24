@@ -103,25 +103,12 @@ struct PSCONVERT_CTRL {
 	struct PSCONVERT_In {	/* Input file info */
 		unsigned int n_files;
 	} In;
-	struct PSCONVERT_A {             /* -A[+f<fade>][+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[/<height>]][+u] */
+	struct PSCONVERT_A {             /* -A[+r][+u] */
 		bool active;
-		bool max;          /* Only scale if dim exceeds the given size */
-		bool round;        /* Round HiRes BB instead of ceil (+r) */
-		bool strip;        /* Remove the -U time-stamp (+u)*/
-		bool resize;       /* Resize to a user selected size */
-		bool rescale;      /* Resize to a user selected scale factor */
-		bool outline;      /* Draw frame around plot with selected pen (+p) [0.25p] */
-		bool paint;        /* Paint box behind plot with selected fill (+g) */
-		bool crop;         /* If true we must find the BB; turn off via -A+n */
-		bool fade;         /* If true we must fade out the plot to black */
-		bool media;        /* If true we must crop to current media size in PS_MEDIA. Only issued indirectly by gmt end */
-		double scale;      /* Scale factor to go along with the 'rescale' option */
-		double fade_level;      /* Fade to black at this level of transparency */
-		double new_size[2];
-		double margin[4];
-		double new_dpi_x, new_dpi_y;
-		struct GMT_PEN pen;
-		struct GMT_FILL fill;
+		bool crop;	/* Round HiRes BB instead of ceil (+r) */
+		bool round;	/* Round HiRes BB instead of ceil (+r) */
+		bool strip;	/* Remove the -U time-stamp (+u)*/
+		bool media;	/* If true we must crop to current media size in PS_MEDIA. Only issued indirectly by gmt end */
 	} A;
 	struct PSCONVERT_C {	/* -C<option> */
 		bool active;
@@ -143,14 +130,21 @@ struct PSCONVERT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct PSCONVERT_H {	/* -H<factor> */
+	struct PSCONVERT_H {	/* -H<scale> */
 		bool active;
 		int factor;
 	} H;
-	struct PSCONVERT_I {	/* -I */
+	struct PSCONVERT_I {	/* -I[+m<margins>][+s|S[m]<width>[/<height>]] */
 		bool active;
+		bool max;          /* Only scale if dim exceeds the given size */
+		bool resize;       /* Resize to a user selected size */
+		bool rescale;      /* Resize to a user selected scale factor */
+		double scale;      /* Scale factor to go along with the 'rescale' option */
+		double new_size[2];
+		double margin[4];
+		double new_dpi_x, new_dpi_y;
 	} I;
-	struct PSCONVERT_L {	/* -L<listfile> */
+	struct PSCONVERT_L {	/* -L<list> */
 		bool active;
 		char *file;
 	} L;
@@ -158,6 +152,16 @@ struct PSCONVERT_CTRL {
 		bool active;
 		char *file;
 	} M[2];
+	struct PSCONVERT_N {             /* -N[+f<fade>][+g<fill>][+i][+p<pen>] */
+		bool active;
+		bool outline;      /* Draw frame around plot with selected pen (+p) [0.25p] */
+		bool paint;        /* Paint box behind plot with selected fill (+g) */
+		bool fade;         /* If true we must fade out the plot to black */
+		bool use_ICC_profiles;
+		double fade_level;      /* Fade to black at this level of transparency */
+		struct GMT_PEN pen;
+		struct GMT_FILL fill;
+	} N;
 	struct PSCONVERT_P {	/* -P */
 		bool active;
 	} P;
@@ -174,12 +178,14 @@ struct PSCONVERT_CTRL {
 		int eps;	/* 1 if we want to make EPS, -1 with setpagedevice (possibly in addition to another format) */
 		int ps;		/* 1 if we want to save the final PS under "modern" setting */
 		int device;	/* May be negative */
+		int quality;	/* For JPG [90] */
 	} T;
 	struct PSCONVERT_W {	/* -W -- for world file production */
 		bool active;
 		bool folder;
 		bool warp;
 		bool kml;
+		bool no_crop;
 		unsigned int mode;	/* 0 = clamp at ground, 1 is relative to ground, 2 is absolute 3 is relative to seafloor, 4 is clamp at seafloor */
 		int min_lod, max_lod;	/* minLodPixels and maxLodPixels settings */
 		int min_fade, max_fade;	/* minFadeExtent and maxFadeExtent settings */
@@ -250,164 +256,256 @@ GMT_LOCAL void psconvert_pclose2 (struct popen2 **Faddr, int dir) {
 }
 #endif
 
-GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
-	/* Syntax:
-	 * New : -A[+f<fade>][+g<fill>][+m<margins>][+n][+p<pen>][+r][+s|S[m]<width>[/<height>]][+u]
-	 * Old : -A[-][u][<margins>][+g<fill>][+p<pen>][+r][+s|S[m]<width>[/<height>]]
+GMT_LOCAL int psconvert_parse_new_A_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
+	/* Syntax: -A[+r][+u] */
+
+	Ctrl->A.active = Ctrl->A.crop = true;
+
+	if (strstr (arg, "r"))
+		Ctrl->A.round = true;
+	if (strstr (arg, "u"))
+		Ctrl->A.strip = true;
+	if (strstr (arg, "M"))	/* +M is hidden and only issued by gmt end */
+		Ctrl->A.media = true;
+	return (GMT_NOERROR);
+}
+
+GMT_LOCAL int psconvert_parse_new_I_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
+	/* Syntax: I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]
+	 * Repeatable, so can use -I to deal with grayshades as before
 	 */
 
 	unsigned int pos = 0, error = 0;
-	int j, k = 0, trim_j = -1;
-	char txt[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
-	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
+	int k, j;
+	char p[GMT_LEN128] = {""}, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 
-	Ctrl->A.active = Ctrl->A.crop = true;	/* The default is to crop unless we get -A+n */
-
-	/* For historical reasons we may encounter -A-<stuff> or -Au- so check for both */
-
-	/* The next lines down to NEW is simply backwards compatible parsing */
-	if (arg[k] == 'u') {Ctrl->A.strip = true; k++;}		/* Eliminate GMT time stamp */
-	else if (arg[k] == '-') {Ctrl->A.crop = false; k++;}	/* No cropping requested */
-	/* If there are +modifiers later we need to temporarily disable them: */
-	for (j = k; arg[j] && arg[j] != '+'; j++);	/* Find position of first + */
-	if (arg[j] == '+') arg[j] = 0, trim_j = j;	/* Remember that position and chop off modifiers */
-	if (arg[k] && arg[k] != '+') {	/* Also specified desired margin(s) using the old syntax */
-		j = sscanf (&arg[k], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-		switch (j) {
-			case 1:	/* Got uniform margin */
-				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_a);
-				break;
-			case 2:	/* Got separate x/y margins */
-				Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_a);
-				Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_b);
-				break;
-			case 4:	/* Got different margins for all sides */
-				Ctrl->A.margin[XLO] = gmt_M_to_points (GMT, txt_a);
-				Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_b);
-				Ctrl->A.margin[YLO] = gmt_M_to_points (GMT, txt_c);
-				Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_d);
-				break;
-			default:
-				error++;
-				GMT_Report (Ctrl, GMT_MSG_ERROR, "-A: Must specify 1, 2, or 4 margins\n");
-				break;
+	if (arg[0] == '\0') {	/* This is the old -I option */
+		if (gmt_M_compat_check (GMT, 6)) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-I (no args) is deprecated; use -N+i instead.\n");
+			Ctrl->N.use_ICC_profiles = true;
 		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -I: No arguments given\n");
+			error = 1;
+		}
+		return (error);
 	}
-	if (trim_j >= 0) arg[trim_j] = '+';	/* Restore the chopped off section */
-	/* Here we are doing the NEW syntax parsing */
-	strncpy (txt, arg, GMT_LEN128-1);
-	while (!error && (gmt_strtok (txt, "+", &pos, p))) {
+
+	Ctrl->I.active = true;
+	while (gmt_getmodopt (GMT, 'N', arg, "msS", &pos, p, &error) && error == 0) {
 		switch (p[0]) {
-			case 'f':	/* Fade out */
-				Ctrl->A.fade = true;
-				if (!p[1]) {
-					GMT_Report (Ctrl, GMT_MSG_ERROR, "-A+f: Append the fade setting in 0-100 range.\n");
-					error++;
-				}
-				else if ((Ctrl->A.fade_level = atof (&p[1])) < 0.0 || Ctrl->A.fade_level > 100.0) {
-					GMT_Report (Ctrl, GMT_MSG_ERROR, "-A+f: Must specify fading in 0 (no fade) - 100 (fully faded) range.\n");
-					error++;
-				}
-				Ctrl->A.fade_level *= 0.01;	/* Normalized */
-				break;
-			case 'g':	/* Fill background */
-				Ctrl->A.paint = true;
-				if (!p[1]) {
-					GMT_Report (Ctrl, GMT_MSG_ERROR, "-A+g: Append the background fill\n");
-					error++;
-				}
-				else if (gmt_getfill (GMT, &p[1], &Ctrl->A.fill)) {
-					gmt_pen_syntax (GMT, 'A', NULL, "sets background fill attributes", 0);
-					error++;
-				}
-				break;
 			case 'm':	/* Margins */
 				j = sscanf (&p[1], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
 				switch (j) {
 					case 1:	/* Got uniform margin */
-						Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_a);
+						Ctrl->I.margin[XLO] = Ctrl->I.margin[XHI] = Ctrl->I.margin[YLO] = Ctrl->I.margin[YHI] = gmt_M_to_points (GMT, txt_a);
 						break;
 					case 2:	/* Got separate x/y margins */
-						Ctrl->A.margin[XLO] = Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_a);
-						Ctrl->A.margin[YLO] = Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_b);
+						Ctrl->I.margin[XLO] = Ctrl->I.margin[XHI] = gmt_M_to_points (GMT, txt_a);
+						Ctrl->I.margin[YLO] = Ctrl->I.margin[YHI] = gmt_M_to_points (GMT, txt_b);
 						break;
 					case 4:	/* Got different margins for all sides */
-						Ctrl->A.margin[XLO] = gmt_M_to_points (GMT, txt_a);
-						Ctrl->A.margin[XHI] = gmt_M_to_points (GMT, txt_b);
-						Ctrl->A.margin[YLO] = gmt_M_to_points (GMT, txt_c);
-						Ctrl->A.margin[YHI] = gmt_M_to_points (GMT, txt_d);
+						Ctrl->I.margin[XLO] = gmt_M_to_points (GMT, txt_a);
+						Ctrl->I.margin[XHI] = gmt_M_to_points (GMT, txt_b);
+						Ctrl->I.margin[YLO] = gmt_M_to_points (GMT, txt_c);
+						Ctrl->I.margin[YHI] = gmt_M_to_points (GMT, txt_d);
 						break;
 					default:
 						error++;
-						GMT_Report (Ctrl, GMT_MSG_ERROR, "-A+m: Must specify 1, 2, or 4 margins\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-I+m: Must specify 1, 2, or 4 margins\n");
 						break;
 				}
 				break;
-			case 'n':	/* No crop */
-				Ctrl->A.crop = false;
-				break;
-			case 'M':	/* Crop to media */
-				Ctrl->A.media = true;
-				break;
-			case 'p':	/* Draw outline */
-				Ctrl->A.outline = true;
-				if (!p[1])
-					Ctrl->A.pen = GMT->current.setting.map_default_pen;
-				else if (gmt_getpen (GMT, &p[1], &Ctrl->A.pen)) {
-					gmt_pen_syntax (GMT, 'A', NULL, "sets background outline pen attributes", 0);
-					error++;
-				}
-				break;
-			case 'r':	/* Round */
-				Ctrl->A.round = true;
-				break;
 			case 'S':	/* New size via a scale factor */
-				Ctrl->A.rescale = true;
-				Ctrl->A.scale = atof(&p[1]);
+				Ctrl->I.rescale = true;
+				Ctrl->I.scale = atof (&p[1]);
 				break;
 			case 's':	/* New size +s[m]<width>[/<height>] */
-				Ctrl->A.resize = true;
-				if (p[1] == 'm') { Ctrl->A.max = true, k = 2;} else k = 1;
+				Ctrl->I.resize = true;
+				if (p[1] == 'm') { Ctrl->I.max = true, k = 2;} else k = 1;
 				j = sscanf (&p[k], "%[^/]/%s", txt_a, txt_b);
 				switch (j) {
 					case 1:	/* Got width only. Height will be computed later */
-						Ctrl->A.new_size[0] = gmt_M_to_points (GMT, txt_a);
+						Ctrl->I.new_size[0] = gmt_M_to_points (GMT, txt_a);
 						break;
 					case 2:	/* Got separate width/height */
-						Ctrl->A.new_size[0] = gmt_M_to_points (GMT, txt_a);
-						Ctrl->A.new_size[1] = gmt_M_to_points (GMT, txt_b);
+						Ctrl->I.new_size[0] = gmt_M_to_points (GMT, txt_a);
+						Ctrl->I.new_size[1] = gmt_M_to_points (GMT, txt_b);
 						break;
 					default:
-						GMT_Report (Ctrl, GMT_MSG_ERROR, "Option -A+s[m]<width[/height]>: Wrong size parameters\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -I+s[m]<width[/height]>: Wrong size parameters\n");
 						error++;
 						break;
 					}
 				break;
-			case 'u':	/* Strip timestamp */
-				Ctrl->A.strip = true;
+			default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
 				break;
 		}
 	}
-	if (Ctrl->A.fade) Ctrl->A.paint = false;	/* With fading, the paint color is the terminal color */
-	if (Ctrl->A.rescale && Ctrl->A.resize) {
-		GMT_Report (Ctrl, GMT_MSG_ERROR, "Option -A+s|S: Cannot set both -A+s and -A+S\n");
+	if (Ctrl->I.rescale && Ctrl->I.resize) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -I+s|S: Cannot set both -I+s and -I+S\n");
 		error++;
 	}
-	else if (Ctrl->A.rescale)    /* But we can. This makes the coding simpler later on */
-		Ctrl->A.resize = true;
+	else if (Ctrl->I.rescale)    /* But we can. This makes the coding simpler later on */
+		Ctrl->I.resize = true;
 
 	return (error);
 }
 
+GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
+	/* Syntax: -N[+f<fade>][+g<fill>][+i][+p<pen>] */
+
+	unsigned int pos = 0, error = 0;
+	int j, k = 0;
+	char p[GMT_LEN128] = {""}, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
+
+	if (gmt_validate_modifiers (GMT, arg, 'N', "fgip", GMT_MSG_ERROR)) return (1);	/* Bail right away */
+
+	Ctrl->N.active = true;
+
+	while (gmt_getmodopt (GMT, 'N', arg, "fgip", &pos, p, &error) && error == 0) {
+		switch (p[0]) {
+			case 'f':	/* Fade out */
+				if (!p[1]) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N+f: Append the fade setting in 0-100 range.\n");
+					error++;
+				}
+				else if ((Ctrl->N.fade_level = atof (&p[1])) < 0.0 || Ctrl->N.fade_level > 100.0) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N+f: Must specify fading in 0 (no fade) - 100 (fully faded) range.\n");
+					error++;
+				}
+				Ctrl->N.fade_level *= 0.01;	/* Normalized */
+				Ctrl->N.fade = true;
+				break;
+			case 'g':	/* Fill background */
+				Ctrl->N.paint = true;
+				if (!p[1]) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N+g: Append the background fill\n");
+					error++;
+				}
+				else if (gmt_getfill (GMT, &p[1], &Ctrl->N.fill)) {
+					gmt_pen_syntax (GMT, 'N', NULL, "sets background fill attributes", NULL, 0);
+					error++;
+				}
+				break;
+			case 'i':	/* Formerly -I */
+				/* Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.
+				   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that
+				   and that is what psconvert does by default, unless option -I is set.
+				   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied
+				   to all but PDF format. We have no solution to offer other than ... upgrade GS. */
+				Ctrl->N.use_ICC_profiles = true;
+				break;
+			case 'p':	/* Draw outline */
+				Ctrl->N.outline = true;
+				if (!p[1])
+					Ctrl->N.pen = GMT->current.setting.map_default_pen;
+				else if (gmt_getpen (GMT, &p[1], &Ctrl->N.pen)) {
+					gmt_pen_syntax (GMT, 'N', NULL, "sets background outline pen attributes", NULL, 0);
+					error++;
+				}
+				break;
+			default:	/* These are caught in gmt_getmodopt so break is just for Coverity */
+				break;
+		}
+	}
+	if (Ctrl->N.fade) Ctrl->N.paint = false;	/* With fading, the paint color is the terminal color */
+
+	return (error);
+}
+
+GMT_LOCAL int psconvert_parse_A_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
+	/* Given there have been many syntax changes and most recently splitting of -A into -A, -I, -N we do
+	 * an initial assessment here and build -I -N -A option strings from old-style -A arguments and
+	 * call the -I -N parsers, if required, as well as the -A parser */
+	int k = 0, n_errors = 0, j;
+	char A_option[GMT_LEN128] = {""}, I_option[GMT_LEN128] = {""}, N_option[GMT_LEN128] = {""};
+	char string[GMT_LEN128] = {""};
+
+	/* Harvest -A arguments, if any */
+	if (arg[0] && strchr ("u-", arg[0])) {	/* Ancient -A syntax */
+		if (gmt_M_compat_check (GMT, 4)) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-A[-][u][<margin>][...] is deprecated, see -A -I -N syntax.\n");
+			if (arg[0] == '-') k++;	/* The old -A- no crop signal is now just skipped */
+			else if (arg[0] == 'u') {	/* The old way of +u */
+				strcat (A_option, "+u");
+				k++;
+			}
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Bad arguments %s.\n" ,arg);
+			n_errors++;
+		}
+	}
+	if (arg[k] && arg[k] != '+') {	/* Old-style margin directives no goes to -I instead */
+		for (j = k + 1; arg[j] && arg[j] != '+'; j++);	/* Wind to the end of margins */
+		strcat (I_option, "+m");
+		strncat (I_option, &arg[k], j-k);	/* Append margin argument */
+	}
+	/* These are newer -A modifiers */
+	if (gmt_get_modifier (arg, 'r', string))
+		strcat (A_option, "+r");
+	if (gmt_get_modifier (arg, 'u', string))
+		strcat (A_option, "+u");
+	if (gmt_get_modifier (arg, 'M', string))	/* Only issued by gmt end and movie */
+		strcat (A_option, "+M");
+	/* Note: If -A+n is given then we handle it via backwards compatibility */
+	if (gmt_get_modifier (arg, 'n', string)) {
+		if (gmt_M_compat_check (GMT, 6)) {
+			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-A+n (no args) is deprecated, use -W+c instead.\n");
+			Ctrl->W.no_crop = true;
+		}
+		else {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Unrecognized modifier +n.\n");
+			n_errors++;
+		}
+	}
+
+	/* Harvest -N arguments, if any */
+	if (gmt_get_modifier (arg, 'f', string)) {
+		strcat (N_option, "+f");
+		strcat (N_option, string);
+	}
+	if (gmt_get_modifier (arg, 'g', string)) {
+		strcat (N_option, "+g");
+		strcat (N_option, string);
+	}
+	if (gmt_get_modifier (arg, 'p', string)) {
+		strcat (N_option, "+p");
+		strcat (N_option, string);
+	}
+
+	/* Harvest -I arguments, if any */
+	if (gmt_get_modifier (arg, 'm', string)) {
+		strcat (I_option, "+m");
+		strcat (I_option, string);
+	}
+	if (gmt_get_modifier (arg, 's', string)) {
+		strcat (I_option, "+s");
+		strcat (I_option, string);
+	}
+	if (gmt_get_modifier (arg, 'S', string)) {
+		strcat (I_option, "+S");
+		strcat (I_option, string);
+	}
+	/* Now parse -A and possibly -I -N via backwards compatibility conversions */
+	n_errors += psconvert_parse_new_A_settings (GMT, A_option, Ctrl);
+	if (I_option[0])
+		n_errors += psconvert_parse_new_I_settings (GMT, I_option, Ctrl);
+	if (N_option[0])
+		n_errors += psconvert_parse_new_N_settings (GMT, N_option, Ctrl);
+	return (n_errors);
+}
+
 GMT_LOCAL int psconvert_parse_GE_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *C) {
-	/* Syntax: -W[+g][+k][+t<doctitle>][+n<layername>][+a<altmode>][+l<lodmin>/<lodmax>] */
+	/* Syntax: -W[+a<altmode>][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<layername>][+o<folder>][+t<doctitle>][+u<URL>] */
 
 	unsigned int pos = 0, error = 0;
 	char p[GMT_LEN256] = {""};
 	gmt_M_unused(GMT);
 
 	C->W.active = true;
-	while (gmt_getmodopt (GMT, 'W', arg, "afgklnotu", &pos, p, &error) && error == 0) {	/* Looking for +a, etc */
+	while (gmt_getmodopt (GMT, 'W', arg, "acfgklnotu", &pos, p, &error) && error == 0) {	/* Looking for +a, etc */
 		switch (p[0]) {
 			case 'a':	/* Altitude setting */
 				switch (p[1]) {	/* Check which altitude mode we selected */
@@ -430,10 +528,13 @@ GMT_LOCAL int psconvert_parse_GE_settings (struct GMT_CTRL *GMT, char *arg, stru
 						C->W.mode = KML_SEAFLOOR_ABS;
 						break;
 					default:
-						GMT_Report (C, GMT_MSG_ERROR, "Option -W+a<mode>[par]: Unrecognized altitude mode %c\n", p[1]);
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -W+a<mode>[par]: Unrecognized altitude mode %c\n", p[1]);
 						error++;
 						break;
 				}
+				break;
+			case 'c':	/* Used to be done by -A+n */
+				C->W.no_crop = true;
 				break;
 			case 'f':	/* Set fading options in KML */
 				sscanf (&p[1], "%d/%d", &C->W.min_fade, &C->W.max_fade);
@@ -465,7 +566,7 @@ GMT_LOCAL int psconvert_parse_GE_settings (struct GMT_CTRL *GMT, char *arg, stru
 				C->W.URL = gmt_assign_text (GMT, p);
 				break;
 			default:
-				GMT_Report (C, GMT_MSG_ERROR, "Option -W+<opt>: Unrecognized option selection %c\n", p[1]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -W+<opt>: Unrecognized option selection %c\n", p[1]);
 				error++;
 				break;
 		}
@@ -486,6 +587,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->G.file = strdup (GMT_GS_EXECUTABLE);
 #endif
 	C->D.dir = strdup (".");
+	C->T.quality = GMT_JPEG_DEF_QUALITY;	/* Default JPG quality */
 
 	C->W.doctitle = strdup ("GMT KML Document");
 	C->W.overlayname = strdup ("GMT Image Overlay");
@@ -520,145 +622,159 @@ GMT_LOCAL double psconvert_smart_ceil (double x) {
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
+	const char *Z = (API->GMT->current.setting.run_mode == GMT_CLASSIC) ? " [-Z]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <psfile1> <psfile2> <...> -A[+f<fade>][+g<fill>][+m<margins>][+n][+p[<pen>]][+r][+s[m]|S<width>[/<height>]][+u]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<gs_option>] [-D<dir>] [-E<resolution>] [-F<out_name>] [-G<gs_path>] [-H<factor>] [-I] [-L<listfile>] [-Mb|f<psfile>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m]] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[+a<mode>[<alt]][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]\n");
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
-		GMT_Message (API, GMT_TIME_NONE, "\t[-Z] ");
-	GMT_Message (API, GMT_TIME_NONE, "[%s]\n", GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <psfiles> [-A[+r][+u]] [-C<gs_option>] [-D<dir>] [-E<resolution>] "
+		"[-F<out_name>] [-G<gs_path>] [-H<scale>] [-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]] [-L<list>] [-Mb|f<psfile>] "
+		"[-N[+f<fade>][+g<fill>][+i][+p[<pen>]] [-P] [-Q[g|p|t]1|2|4] [-S] [-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]] [%s] "
+		"[-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]]%s "
+		"[%s]\n", name, GMT_V_OPT, Z, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tWorks by modifying the page size in order that the resulting\n");
-	GMT_Message (API, GMT_TIME_NONE, "\timage will have the size specified by the BoundingBox.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tAs an option, a tight BoundingBox may be computed.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<psfile(s)> PostScript file(s) to be converted.\n");
+	GMT_Usage (API, -1, "Works by modifying the page size in order that the resulting "
+		"image will have the size specified by the BoundingBox. "
+		"As an option, a tight BoundingBox may be computed.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<psfiles> One or more PostScript files to be converted.");
 	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\tTo access the current internal GMT plot, specify <psfile> as \"=\".\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust the BoundingBox to the minimum required by the image contents.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<fade> (0-100) to fade entire plot to black (100%% fade)[no fading].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +g<color> to change the fade color [black].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g<paint> to paint the BoundingBox [no paint].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +m<margin(s)> to enlarge the BoundingBox, with <margin(s)> being\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <off> for uniform margin for all 4 sides,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <xoff>/<yoff> for separate x- and y-margins, or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <woff>/<eoff>/<soff>/<noff> for separate w-,e-,s-,n-margins.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to leave the BoundingBox as is.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p[<pen>] to outline the BoundingBox [%s].\n",
-	             gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to force rounding of HighRes BoundingBox instead of ceil.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[m]<width>[/<height>] option the select a new image size\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     but maintaining the DPI set by -E (Ghostscript does the re-interpolation work).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +sm to only change size if figure size exceeds the new maximum size(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append measurement unit u (%s) [%c].\n",
-	             GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -A+S<scale> to scale the image by the <scale> factor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +u to strip out time-stamps (produced by GMT -U options).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a single, custom option that will be passed on to Ghostscript\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   as is. Repeat to add several options [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set an alternative output directory (which must exist)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is same directory as PS files].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -D. to place the output in the current directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set raster resolution in dpi [default = 720 for images in a PDF, 300 for other formats].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force the output file name. By default output names are constructed\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   using the input names as base, which are appended with an appropriate\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Use this option to provide a different name, but WITHOUT\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   extension. Extension is still determined and appended automatically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Full path to your Ghostscript executable.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   NOTE: Under Unix systems this is generally not necessary.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Under Windows, Ghostscript path is fished from the registry.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If this fails you can still add the GS path to system's path\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or give the full path here.\n");
+		GMT_Usage (API, -2, "Note: To access the current internal GMT plot, specify <psfiles> as \"=\".");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[+r][+u]");
+	GMT_Usage (API, -2, "Adjust the BoundingBox to the minimum required by the image contents. Optional modifiers:");
+	GMT_Usage (API, 3, "+r Force rounding of HighRes BoundingBox instead of ceil.");
+	GMT_Usage (API, 3, "+u Strip out time-stamps (produced by GMT -U options).");
+	GMT_Usage (API, 1, "\n-C<gs_option>");
+	GMT_Usage (API, -2, "Specify a single, custom option that will be passed on to Ghostscript "
+		"as is. Repeat to add several options [none].");
+	GMT_Usage (API, 1, "\n-D<dir>");
+	GMT_Usage (API, -2, "Set an alternative output directory (which must exist) "
+		"[Default is same directory as PS files]. "
+		"Use -D. to place the output in the current directory.");
+	GMT_Usage (API, 1, "\n-E<resolution>");
+	GMT_Usage (API, -2, "Set raster resolution in dpi [default = 720 for images in a PDF, 300 for other formats].");
+	GMT_Usage (API, 1, "\n-F<out_name>");
+	GMT_Usage (API, -2, "Force the output file name. By default output names are constructed "
+		"using the input names as base, which are appended with an appropriate "
+		"extension. Use this option to provide a different name, but WITHOUT "
+		"extension. Extension is still determined and appended automatically.");
+	GMT_Usage (API, 1, "\n-G<gs_path>");
+	GMT_Usage (API, -2, "Full path to your Ghostscript executable. "
+		"NOTE: Under Unix systems this is generally not necessary. "
+		"Under Windows, Ghostscript path is fished from the registry. "
+		"If this fails you can still add the GS path to system's path "
+		"or give the full path here, e.g., "
 #ifdef WIN32
-	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -Gc:\\programs\\gs\\gs9.27\\bin\\gswin64c).\n");
+		"-Gc:\\programs\\gs\\gs9.27\\bin\\gswin64c).");
 #else
-	GMT_Message (API, GMT_TIME_NONE, "\t   (e.g., -G/some/unusual/dir/bin/gs).\n");
+		"-G/some/unusual/dir/bin/gs).");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Temporarily increase dpi by integer <factor>, rasterize, then downsample [no downsampling].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Used to improve raster image quality, especially for lower raster resolutions.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Ghostscript versions >= 9.00 change gray-shades by using ICC profiles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   GS 9.05 and above provide the '-dUseFastColor=true' option to prevent that\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and that is what psconvert does by default, unless option -I is set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that for GS >= 9.00 and < 9.05 the gray-shade shifting is applied\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to all but PDF format. We have no solution to offer other than ... upgrade GS\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L The <listfile> is an ASCII file with names of files to be converted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Sandwich current psfile between background and foreground plots:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Mb Append the name of a background PostScript plot [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Mf Append name of foreground PostScript plot [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-P Force Portrait mode. All Landscape mode plots will be rotated back\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   so that they show unrotated in Portrait mode.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This is practical when converting to image formats or preparing\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   EPS or PDF plots for inclusion in documents.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4) of sub-sampling box.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For raster formats the defaults are -Qg4 -Qt4 unless overridden explicitly.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, use -Qp to create a GeoPDF (requires -Tf).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Apart from executing it, also writes the Ghostscript command to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   standard error and keeps all intermediate files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set output format [default is jpeg]:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   b means BMP.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e means EPS.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   E means EPS with setpagedevice command.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f means PDF.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   F means multi-page PDF (requires -F).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g means PNG.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   G means PNG (transparent where nothing is plotted).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   j means JPEG.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m means PPM.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s means SVG [if supported by your Ghostscript version].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t means TIF.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For b, g, j, and t, append +m to get a monochrome (grayscale) image [color].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The EPS format can be combined with any of the other formats.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For example, -Tef creates both an EPS and PDF file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-V Provide progress report [default is silent] and show the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   gdal_translate command, in case you want to use this program\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to create a geoTIFF file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Write a ESRI type world file suitable to make (e.g.,) .tif files\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   recognized as geotiff by software that know how to do it. Be aware,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   however, that different results are obtained depending on the image\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   contents and if the -B option has been used or not. The trouble with\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -B is that it creates a frame and very likely its ticks and annotations\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   introduces pixels outside the map data extent. As a consequence,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the map extent estimation will be wrong. To avoid this problem, use\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the --MAP_FRAME_TYPE=inside option which plots all annotation-related\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   items inside the image and therefore does not compromise the coordinate\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   computations. The world file naming follows the convention of jamming\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a 'w' in the file extension. So, if the output is tif (-Tt) the world\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   file is a .tfw, for jpeg a .jgw, and so on.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -W+g to do a system call to gdal_translate and produce a true\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   geoTIFF image right away. The output file will have the extension\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   .tiff. See the man page for other 'gotchas'. Automatically sets -A -P.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -W+k to create a minimalist KML file that allows loading the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   image in Google Earth. Note that for this option the image must be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in geographical coordinates. If not, a warning is issued but the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   KML file is created anyway.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Several modifiers allow you to specify the content in the KML file:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +a<altmode>[<altitude>] sets the altitude mode of this layer, where\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <altmode> is one of 5 recognized by Google Earth:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      G clamped to the ground [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      g Append altitude (in m) relative to ground.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      A Append absolute altitude (in m).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      s Append altitude (in m) relative to seafloor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      S clamped to the seafloor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     to transparent [no fading].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     active [always active]. Image goes inactive when there are fewer\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     than minLOD pixels or more than maxLOD pixels visible.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -1 means never invisible.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +n<layername> sets the name of this particular layer\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [\"GMT Image Overlay\"].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +o<foldername> sets the name of this particular folder\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [\"GMT Image Folder\"].  This yields a KML snipped without header/trailer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +t<doctitle> sets the document name [\"GMT KML Document\"].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +u<URL> prepands this URL to the name of the image referenced in the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     KML [local file].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Escape any +? modifier inside strings with \\.\n");
+	GMT_Usage (API, 1, "\n-H<scale>");
+	GMT_Usage (API, -2, "Temporarily increase dpi by integer <scale>, rasterize, then downsample [no downsampling]. "
+		"Used to improve raster image quality, especially for lower raster resolutions.");
+	GMT_Usage (API, 1, "\n-I[+m<margins>][+s[m]<width>[/<height>]][+S<scale>]");
+	GMT_Usage (API, -2, "Scale image and add margins. Optional modifiers:");
+	GMT_Usage (API, 3, "+m Append <margin(s)> to enlarge the BoundingBox, with <margin(s)> being "
+		"<off> for uniform margin for all 4 sides, "
+		"<xoff>/<yoff> for separate x- and y-margins, or "
+		"<woff>/<eoff>/<soff>/<noff> for separate w-,e-,s-,n-margins.");
+	GMT_Usage (API, 3, "+s Append [m]<width>[/<height>] the select a new image size "
+		"but maintaining the DPI set by -E (Ghostscript does the re-interpolation work). "
+		"Use +sm to only change size if figure size exceeds the new maximum size(s). "
+		"Append measurement unit u (%s) [%c].",
+		GMT_DIM_UNITS_DISPLAY, API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit][0]);
+	GMT_Usage (API, 3, "+S Scale the image by the appended <scale> factor.");
+	GMT_Usage (API, 1, "\n-L<list>");
+	GMT_Usage (API, -2, "The <list> is an ASCII file with names of files to be converted. ");
+	GMT_Usage (API, 1, "\n-Mb|f<psfile>");
+	GMT_Usage (API, -2, "Sandwich current psfile between background and foreground plots:");
+	GMT_Usage (API, 3, "b: Append the name of a background PostScript plot [none].");
+	GMT_Usage (API, 3, "f: Append name of foreground PostScript plot [none].");
+	GMT_Usage (API, 1, "\n-N[+f<fade>][+g<fill>][+i][+p[<pen>]]");
+	GMT_Usage (API, -2, "Specify painting, fading, or outline of the BoundingBox via optional modifiers:");
+	GMT_Usage (API, 3, "+f Append <fade> (0-100) to fade entire plot to black (100%% fade)[no fading]. "
+		"Use +g to change the fade color [black].");
+	GMT_Usage (API, 3, "+g Append <fill> to paint the BoundingBox [no fill].");
+	GMT_Usage (API, 3, "+i Change gray-shades by using ICC profiles [Default sets -dUseFastColor=true].");
+	GMT_Usage (API, 3, "+p Outline the BoundingBox, optionally append <pen> [%s].",
+		gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, 1, "\n-P Force Portrait mode. All Landscape mode plots will be rotated back "
+		"so that they show unrotated in Portrait mode. "
+		"This is practical when converting to image formats or preparing "
+		"EPS or PDF plots for inclusion in documents.");
+	GMT_Usage (API, 1, "\n-Q[g|p|t]1|2|4");
+	GMT_Usage (API, -2, "Anti-aliasing setting for (g)raphics or (t)ext; append size (1,2,4) of sub-sampling box. "
+		"For PDF and EPS output, default is no anti-aliasing, which is the same as specifying size 1. "
+		"For raster formats the defaults are -Qg4 -Qt4 unless overridden explicitly. "
+		"Optionally, use -Qp to create a GeoPDF (requires -Tf).");
+	GMT_Usage (API, 1, "\n-S Apart from executing it, also writes the Ghostscript command to "
+		"standard error and keeps all intermediate files.");
+	GMT_Usage (API, 1, "\n-Tb|e|E|f|F|g|G|j|m|s|t[+m][+q<quality>]");
+	GMT_Usage (API, -2, "Set output format [default is JPEG]:");
+	GMT_Usage (API, 3, "b: Select BMP.");
+	GMT_Usage (API, 3, "e: Select EPS.");
+	GMT_Usage (API, 3, "E: Select EPS with setpagedevice command.");
+	GMT_Usage (API, 3, "f: Select PDF.");
+	GMT_Usage (API, 3, "F: Select multi-page PDF (requires -F).");
+	GMT_Usage (API, 3, "g: Select PNG.");
+	GMT_Usage (API, 3, "G: Select PNG (transparent where nothing is plotted).");
+	GMT_Usage (API, 3, "j: Select JPEG.");
+	GMT_Usage (API, 3, "m: Select PPM.");
+	GMT_Usage (API, 3, "s: Select SVG [if supported by your Ghostscript version].");
+	GMT_Usage (API, 3, "t: Select TIF.");
+	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
+	GMT_Usage (API, 3, "+m For b, g, j, and t, make a monochrome (grayscale) image [color].");
+	GMT_Usage (API, 3, "+q Append quality in 0-100 for JPEG only [%d].", GMT_JPEG_DEF_QUALITY);
+	GMT_Usage (API, -2, "Note: The EPS format can be combined with any of the other formats. "
+		"For example, -Tef creates both an EPS and PDF file.");
+	GMT_Option (API, "V");
+	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
+		"to create a geoTIFF file.");
+	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
+	GMT_Usage (API, -2, "Write a ESRI type world file suitable to make (e.g.,) .tif files "
+		"recognized as geotiff by software that know how to do it. Be aware, "
+		"however, that different results are obtained depending on the image "
+		"contents and if the -B option has been used or not. The trouble with "
+		"-B is that it creates a frame and very likely its ticks and annotations "
+		"introduces pixels outside the map data extent. As a consequence, "
+		"the map extent estimation will be wrong. To avoid this problem, use "
+		"the --MAP_FRAME_TYPE=inside option which plots all annotation-related "
+		"items inside the image and therefore does not compromise the coordinate "
+		"computations. The world file naming follows the convention of jamming "
+		"a 'w' in the file extension. So, if the output is tif (-Tt) the world "
+		"file is a .tfw, for jpeg a .jgw, and so on.  A few modifiers are available:");
+	GMT_Usage (API, 3, "+g Do a system call to gdal_translate and produce a true "
+		"eoTIFF image right away. The output file will have the extension "
+		".tiff. See the man page for other 'gotchas'. Automatically sets -A -P.");
+	GMT_Usage (API, 3, "+k Create a minimalist KML file that allows loading the "
+		"image in Google Earth. Note that for this option the image must be "
+		"in geographical coordinates. If not, a warning is issued but the "
+		"KML file is created anyway.");
+	GMT_Usage (API, -2, "Additional modifiers allow you to specify the content in the KML file:");
+	GMT_Usage (API, 3, "+a Append <altmode>[<altitude>] to set the altitude mode of this layer, where "
+		"<altmode> is one of 5 recognized by Google Earth:");
+	GMT_Usage (API, 4, "G: Clamped to the ground [Default].");
+	GMT_Usage (API, 4, "g: Append altitude (in m) relative to ground.");
+	GMT_Usage (API, 4, "A: Append absolute altitude (in m).");
+	GMT_Usage (API, 4, "s: Append altitude (in m) relative to seafloor.");
+	GMT_Usage (API, 4, "S: Clamped to the seafloor.");
+	GMT_Usage (API, 3, "+c Do not crop [Default crops the image].");
+	GMT_Usage (API, 3, "+f Append <minfade>/<maxfade>] to set distances over which we fade from opaque "
+		"to transparent [no fading].");
+	GMT_Usage (API, 3, "+l Append <minLOD>/<maxLOD>] to set Level Of Detail when layer should be "
+		"active [always active]. Image goes inactive when there are fewer "
+		"than minLOD pixels or more than maxLOD pixels visible. "
+		"-1 means never invisible.");
+	GMT_Usage (API, 3, "+n Append <layername> of this particular layer "
+		"[\"GMT Image Overlay\"].");
+	GMT_Usage (API, 3, "+o Append <foldername> to name this particular folder "
+		"\"GMT Image Folder\"].  This yields a KML snipped without header/trailer.");
+	GMT_Usage (API, 3, "+t Append <doctitle> to set the document name [\"GMT KML Document\"].");
+	GMT_Usage (API, 3, "+u Append <URL> and prepend it to the name of the image referenced in the "
+		"KML [local file]. "
+		"Escape any +? modifier inside strings with \\.");
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)
-		GMT_Message (API, GMT_TIME_NONE, "\t-Z Remove input PostScript file(s) after successful conversion.\n");
+		GMT_Usage (API, 1, "\n-Z Remove input PostScript file(s) after successful conversion.");
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
@@ -674,6 +790,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, mode;
 	int j = 0;
 	bool grayscale = false, halfbaked = false;
+	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 
 	for (opt = options; opt; opt = opt->next) {
@@ -689,7 +806,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Adjust BoundingBox: -A[u][<margins>][+n][+r][+s<width>[/<height>]] */
+			case 'A':	/* Crop settings (plus backwards comptible parsing of older -A option syntax) */
 				n_errors += psconvert_parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'C':	/* Append extra custom GS options */
@@ -720,8 +837,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				Ctrl->H.active = true;
 				Ctrl->H.factor = atoi (opt->arg);
 				break;
-			case 'I':	/* Do not use the ICC profile when converting gray shades */
-				Ctrl->I.active = true;
+			case 'I':	/* Set margins/scale modifiers [Deprecated -I: Do not use the ICC profile when converting gray shades] */
+				n_errors += psconvert_parse_new_I_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'L':	/* Give list of files to convert */
 				Ctrl->L.active = true;
@@ -747,6 +864,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 						n_errors++;
 					}
 				}
+				break;
+			case 'N':	/* Set media paint, fade, outline */
+				n_errors += psconvert_parse_new_N_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'P':	/* Force Portrait mode */
 				Ctrl->P.active = true;
@@ -777,6 +897,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 					grayscale = true;
 				else if (strstr (opt->arg, "+m"))	/* Modern monochrome option (like -M in grdimage) */
 					grayscale = true;
+				if ((c = strstr (opt->arg, "+q"))) {	/* Got a quality setting for JPG */
+					Ctrl->T.quality = atoi (&c[2]);
+					c[0] = '\0';	/* Chop this modifier off for now */
+				}
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
 						case 'e':	/* EPS */
@@ -826,6 +950,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 							break;
 					}
 				}
+				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'W':	/* Save world file */
 				n_errors += psconvert_parse_GE_settings (GMT, opt->arg, Ctrl);
@@ -879,6 +1004,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_GEO] && Ctrl->T.device != GS_DEV_PDF,
 	                                   "Creating GeoPDF format requires -Tf\n");
+	n_errors += gmt_M_check_condition (GMT, (Ctrl->T.device == GS_DEV_JPG || Ctrl->T.device == GS_DEV_JPGG) && (Ctrl->T.quality < 0 || Ctrl->T.quality > 100),
+	                                   "JPG Quality value must be in 0-100 range [%d]\n", GMT_JPEG_DEF_QUALITY);
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.on[PSC_LINES] && (Ctrl->Q.bits[PSC_LINES] < 1 || Ctrl->Q.bits[PSC_LINES] > 4),
 	                                   "Anti-aliasing for graphics requires sub-sampling box of 1,2, or 4\n");
@@ -972,21 +1099,21 @@ GMT_LOCAL inline char *psconvert_alpha_bits (struct PSCONVERT_CTRL *Ctrl) {
 	return alpha;
 }
 
-GMT_LOCAL void psconvert_possibly_fill_or_outline_BB (struct GMT_CTRL *GMT, struct PSCONVERT_A *A, FILE *fp) {
+GMT_LOCAL void psconvert_possibly_fill_or_outline_BB (struct GMT_CTRL *GMT, struct PSCONVERT_N *N, FILE *fp) {
 	/* Check if user wanted to paint or outline the BoundingBox - otherwise do nothing */
 	char *ptr = NULL;
 	GMT->PSL->internal.dpp = PSL_DOTS_PER_INCH / 72.0;	/* Dots pr. point resolution of output device, set here since no PSL initialization */
-	if (A->paint) {	/* Paint the background of the page */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, A->fill.rgb));
-		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, A->fill.rgb));
-		ptr = PSL_makecolor (GMT->PSL, A->fill.rgb);
+	if (N->paint) {	/* Paint the background of the page */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, N->fill.rgb));
+		if (GMT->PSL->internal.comments) fprintf (fp, "%% Paint background BoundingBox using paint %s\n", gmt_putrgb (GMT, N->fill.rgb));
+		ptr = PSL_makecolor (GMT->PSL, N->fill.rgb);
 		fprintf (fp, "gsave clippath %s F N U\n", ptr);
 	}
-	if (A->outline) {	/* Draw the outline of the page */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Outline background BoundingBox using pen %s\n", gmt_putpen (GMT, &A->pen));
-		if (GMT->PSL->internal.comments) fprintf (fp, "%% Outline background BoundingBox using pen %s\n", gmt_putpen (GMT, &A->pen));
+	if (N->outline) {	/* Draw the outline of the page */
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Outline background BoundingBox using pen %s\n", gmt_putpen (GMT, &N->pen));
+		if (GMT->PSL->internal.comments) fprintf (fp, "%% Outline background BoundingBox using pen %s\n", gmt_putpen (GMT, &N->pen));
 		/* Double pen thickness since half will be clipped by BoundingBox */
-		ptr = PSL_makepen (GMT->PSL, 2.0*A->pen.width, A->pen.rgb, A->pen.style, A->pen.offset);
+		ptr = PSL_makepen (GMT->PSL, 2.0*N->pen.width, N->pen.rgb, N->pen.style, N->pen.offset);
 		fprintf (fp, "gsave %s clippath S U\n", ptr);
 	}
 }
@@ -1081,7 +1208,7 @@ GMT_LOCAL int psconvert_pipe_HR_BB(struct GMTAPI_CTRL *API, struct PSCONVERT_CTR
 		else
 			xt = -x0, yt = -y0, *w = x1-x0, *h = y1-y0, r = 0;
 
-		if (margin == 0) margin = Ctrl->A.margin[0];		/* We may have margins set via -A*/
+		if (margin == 0) margin = Ctrl->I.margin[0];		/* We may have margins set via -A*/
 	}
 	else {		/* Get the page size from original PS headers */
 		if ((pch = strstr(PS->data, "%%HiResB")) == NULL) {
@@ -1457,7 +1584,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	char **ps_names = NULL;
 	char ps_file[PATH_MAX] = "", no_U_file[PATH_MAX] = "", clean_PS_file[PATH_MAX] = "", tmp_file[PATH_MAX] = "",
-	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "";
+	     out_file[PATH_MAX] = "", BB_file[PATH_MAX] = "", resolution[GMT_LEN128] = "", jpeg_device[GMT_LEN16] = {""};
 	char *line = NULL, c1[20] = {""}, c2[20] = {""}, c3[20] = {""}, c4[20] = {""}, GSstring[GMT_LEN64] = {""},
 	     cmd[GMT_BUFSIZ] = {""}, proj4_name[20] = {""}, *quiet = NULL;
 	char *gs_BB = NULL, *proj4_cmd = NULL;
@@ -1582,6 +1709,11 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 	/* Parameters for all the formats available */
 
+	if (Ctrl->T.quality != GMT_JPEG_DEF_QUALITY) {	/* User wanted a specific JPG quality */
+		sprintf (jpeg_device, "-dJPEGQ=%d", Ctrl->T.quality);
+		device_options[Ctrl->T.device] = jpeg_device;	/* Use this one instead */
+	}
+
 	/* Artifex says that the -dSCANCONVERTERTYPE=2 new scan converter is faster (confirmed) and
    	   will be the default in a future release. Since it was introduced in 9.21 we start using it
    	   right now and remove this conditional once it becomes the default */
@@ -1603,8 +1735,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "As far as we know selected raster type is unsupported by GE.\n");
 	}
 
-	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A- is set ) */
-		if (!Ctrl->A.active) Ctrl->A.active = Ctrl->A.crop = true;
+	if (Ctrl->W.active) {	/* Implies -P and -A (unless -A+n is set ) */
+		if (!Ctrl->W.no_crop) Ctrl->A.active = Ctrl->A.crop = true;
 		Ctrl->P.active = true;
 	}
 
@@ -1638,35 +1770,35 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	if (GMT->current.setting.run_mode == GMT_MODERN) {	/* Need to complete the half-baked PS file */
 		if (Ctrl->In.n_files == 0) {	/* Add the default hidden PS file */
 			if ((k = gmt_set_psfilename (GMT)) == 0) {	/* Get hidden file name for current PS */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No hidden PS file %s found\n", GMT->current.ps.filename);
+				GMT_Report (API, GMT_MSG_ERROR, "No hidden PS file %s found\n", GMT->current.ps.filename);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Hidden PS file %s found\n", GMT->current.ps.filename);
+			GMT_Report (API, GMT_MSG_DEBUG, "Hidden PS file %s found\n", GMT->current.ps.filename);
 			ps_names = gmt_M_memory (GMT, NULL, 1, char *);
 			ps_names[0] = gmt_strdup_noquote (GMT->current.ps.filename);
 			Ctrl->In.n_files = 1;
 		}
 		if (access (ps_names[0], F_OK) == 0) {	/* File exist, so complete it */
 			struct stat buf;
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Complete partial PS file %s\n", ps_names[0]);
+			GMT_Report (API, GMT_MSG_DEBUG, "Complete partial PS file %s\n", ps_names[0]);
 			if (stat (ps_names[0], &buf))
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not determine size of file %s\n", ps_names[0]);
+				GMT_Report (API, GMT_MSG_ERROR, "Could not determine size of file %s\n", ps_names[0]);
 			else
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Size of half-baked PS file = %" PRIuS ".\n", buf.st_size);
+				GMT_Report (API, GMT_MSG_DEBUG, "Size of half-baked PS file = %" PRIuS ".\n", buf.st_size);
 			half_baked_size = buf.st_size;	/* Remember the original size */
 			if ((fp = PSL_fopen (GMT->PSL, ps_names[0], "a")) == NULL) {	/* Must open inside PSL DLL */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot append to file %s\n", ps_names[0]);
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot append to file %s\n", ps_names[0]);
 				gmt_M_str_free (ps_names[0]);
 				Return (GMT_RUNTIME_ERROR);
 			}
 			GMT->PSL->internal.call_level++;	/* Must increment here since PSL_beginplot not called, and PSL_endplot will decrement */
 			PSL_endplot (GMT->PSL, 1);	/* Finalize the PS plot */
 			if (PSL_fclose (GMT->PSL)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to close hidden PS file %s!\n", ps_names[0]);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to close hidden PS file %s!\n", ps_names[0]);
 				gmt_M_str_free (ps_names[0]);
 				Return (GMT_RUNTIME_ERROR);
 			}
-			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Fattened up PS file %s\n", ps_names[0]);
+			GMT_Report (API, GMT_MSG_DEBUG, "Fattened up PS file %s\n", ps_names[0]);
 		}
 	}
 
@@ -1687,7 +1819,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 	/* --------------------------------------------------------------------------------------------- */
 
 	/* Let gray 50 be rasterized as 50/50/50. See http://gmtrac.soest.hawaii.edu/issues/50 */
-	if (!Ctrl->I.active && ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
+	if (!Ctrl->N.use_ICC_profiles && ((gsVersion.major == 9 && gsVersion.minor >= 5) || gsVersion.major > 9))
 		add_to_list (Ctrl->C.arg, "-dUseFastColor=true");
 
 	/* --------------------------------------------------------------------------------------------- */
@@ -1747,7 +1879,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		if (Ctrl->M[0].active || Ctrl->M[1].active) {	/* Must sandwich file in-between one or two layers */
 			if (psconvert_wrap_the_PS_sandwich (GMT, ps_file, Ctrl->M[0].file, Ctrl->M[1].file)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to wrap %s inside optional back- and fore-ground layers!\n", ps_file);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to wrap %s inside optional back- and fore-ground layers!\n", ps_file);
 				if (fp) fclose (fp);
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -1823,6 +1955,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			y1 = GMT->current.setting.ps_def_page_size[1];
 			got_BB = got_HRBB = got_end = true;
 			GMT_Report (API, GMT_MSG_INFORMATION, "Crop to media BoundingBox [%g %g %g %g].\n", x0, y0, x1, y1);
+			x0 -= Ctrl->I.margin[XLO];	x1 += Ctrl->I.margin[XHI];	/* If not given, margin = 0/0/0/0 */
+			y0 -= Ctrl->I.margin[YLO];	y1 += Ctrl->I.margin[YHI];
 		}
 		else if (Ctrl->A.crop) {
 			char *psfile_to_use = NULL;
@@ -1867,8 +2001,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 					sscanf (&line[19], "%s %s %s %s", c1, c2, c3, c4);
 					x0 = atof (c1);		y0 = atof (c2);
 					x1 = atof (c3);		y1 = atof (c4);
-					x0 -= Ctrl->A.margin[XLO];	x1 += Ctrl->A.margin[XHI];	/* If not given, margin = 0/0/0/0 */
-					y0 -= Ctrl->A.margin[YLO];	y1 += Ctrl->A.margin[YHI];
+					x0 -= Ctrl->I.margin[XLO];	x1 += Ctrl->I.margin[XHI];	/* If not given, margin = 0/0/0/0 */
+					y0 -= Ctrl->I.margin[YLO];	y1 += Ctrl->I.margin[YHI];
 					if (x1 <= x0 || y1 <= y0) {
 						GMT_Report (API, GMT_MSG_ERROR, "Unable to decode BoundingBox file %s (maybe no non-white features were plotted?)\n", BB_file);
 						fclose (fpb);	fpb = NULL;            /* so we don't accidentally close twice */
@@ -2021,10 +2155,10 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		else
 			xt = -x0, yt = -y0, w = x1-x0, h = y1-y0, r = 0;
 
-		xt_bak = xt;	yt_bak = yt;		/* Needed when Ctrl->A.resize */
+		xt_bak = xt;	yt_bak = yt;		/* Needed when Ctrl->I.resize */
 
 		/* Set new height when width was set and no height given */
-		if (Ctrl->A.new_size[0] > 0.0 && Ctrl->A.new_size[1] == 0.0) Ctrl->A.new_size[1] = Ctrl->A.new_size[0] * h / w;
+		if (Ctrl->I.new_size[0] > 0.0 && Ctrl->I.new_size[1] == 0.0) Ctrl->I.new_size[1] = Ctrl->I.new_size[0] * h / w;
 
 		/* ****************************************************************** */
 		/*         Rewind the input file and start copying and replacing      */
@@ -2035,7 +2169,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		/* To produce non-PDF output from PS with transparency we must determine if transparency is requested in the PS */
 		look_for_transparency = Ctrl->T.device != GS_DEV_PDF && Ctrl->T.device != -GS_DEV_PDF;
 		has_transparency = transparency = add_grestore = false;
-		set_background = (Ctrl->A.paint || Ctrl->A.outline);
+		set_background = (Ctrl->N.paint || Ctrl->N.outline);
 		trans_line = 0;
 
 		while (psconvert_file_line_reader (GMT, &line, &line_size, fp, PS->data, &pos) != EOF) {
@@ -2116,8 +2250,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			if (!strncmp (line, "%%BoundingBox:", 14)) {
 				double w_t, h_t;
 				w_t = w;	h_t = h;
-				if (Ctrl->A.resize) {		/* Here the BB is the new size itself */
-					w_t = Ctrl->A.new_size[0];		h_t = Ctrl->A.new_size[1];
+				if (Ctrl->I.resize) {		/* Here the BB is the new size itself */
+					w_t = Ctrl->I.new_size[0];		h_t = Ctrl->I.new_size[1];
 				}
 				if (got_BB && !Ctrl->A.round)
 					fprintf (fpo, "%%%%BoundingBox: 0 0 %ld %ld\n", lrint (psconvert_smart_ceil(w_t)), lrint (psconvert_smart_ceil(h_t)));
@@ -2135,8 +2269,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			else if (!strncmp (line, "%%HiResBoundingBox:", 19)) {
 				double w_t, h_t;
 				w_t = w;	h_t = h;
-				if (Ctrl->A.resize) {		/* Here the BB is the new size itself */
-					w_t = Ctrl->A.new_size[0];		h_t = Ctrl->A.new_size[1];
+				if (Ctrl->I.resize) {		/* Here the BB is the new size itself */
+					w_t = Ctrl->I.new_size[0];		h_t = Ctrl->I.new_size[1];
 				}
 				if (got_HRBB)
 					fprintf (fpo, "%%%%HiResBoundingBox: 0 0 %.4f %.4f\n", w_t, h_t);
@@ -2161,7 +2295,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				xt = yt = 0.0;
 				r = 0;
 			}
-			else if (Ctrl->A.resize) {
+			else if (Ctrl->I.resize) {
 				/* We are going to trick Ghostscript to do what -dEPSFitPage was supposed to do but doesn't
 				   because it's bugged. For that we recompute a new scale, offsets and DPIs such that at the
 				   end we will end up with an image with the imposed size and the current -E dpi setting.
@@ -2206,26 +2340,26 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				}
 				else if (BeginPageSetup_here) {
 					BeginPageSetup_here = false;
-					Ctrl->A.resize = false;       /* Need to reset so it doesn't keep checking inside this branch */
+					Ctrl->I.resize = false;       /* Need to reset so it doesn't keep checking inside this branch */
 					/* Now we must calculate the new scale */
-					if (Ctrl->A.rescale)          /* except if it was set as an option */
-						r_x = Ctrl->A.scale;
-					else if (Ctrl->A.max) {	/* Check if plot size exceeds specified limits */
-						r_x = (w > Ctrl->A.new_size[0]) ? Ctrl->A.new_size[0] / w : 1.0;
-						if (Ctrl->A.new_size[1] / h < r_x) r_x = Ctrl->A.new_size[1] / h;	/* Pick the smallest scale */
+					if (Ctrl->I.rescale)          /* except if it was set as an option */
+						r_x = Ctrl->I.scale;
+					else if (Ctrl->I.max) {	/* Check if plot size exceeds specified limits */
+						r_x = (w > Ctrl->I.new_size[0]) ? Ctrl->I.new_size[0] / w : 1.0;
+						if (Ctrl->I.new_size[1] / h < r_x) r_x = Ctrl->I.new_size[1] / h;	/* Pick the smallest scale */
 					}
 					else
-						r_x = Ctrl->A.new_size[0] / w;
+						r_x = Ctrl->I.new_size[0] / w;
 
 					new_scale_x = new_scale_y = old_scale_x * r_x;
 					new_off_x = -xt_bak + xt_bak * r_x;     /* Need to recompute the new offsets as well */
 					new_off_y = -yt_bak + yt_bak * r_x;
-					Ctrl->A.new_dpi_x = Ctrl->A.new_dpi_y = Ctrl->E.dpi * r_x;
-					if (!Ctrl->A.max && Ctrl->A.new_size[1]) {
-						r_y = Ctrl->A.new_size[1] / h;
+					Ctrl->I.new_dpi_x = Ctrl->I.new_dpi_y = Ctrl->E.dpi * r_x;
+					if (!Ctrl->I.max && Ctrl->I.new_size[1]) {
+						r_y = Ctrl->I.new_size[1] / h;
 						new_scale_y = old_scale_y * r_y;
 						new_off_y = -yt_bak + yt_bak * r_y;
-						Ctrl->A.new_dpi_y = Ctrl->E.dpi * r_y;
+						Ctrl->I.new_dpi_y = Ctrl->E.dpi * r_y;
 					}
 					else
 						r_y = r_x;	/* Not sure of this. Added later to shut up a compiler warning of r_y potentially used uninitialized */
@@ -2239,14 +2373,14 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 						fprintf (fpo, "gsave %g %g scale\n", new_scale_x, new_scale_y);
 					set_background = false;
 					add_grestore = true;
-					psconvert_possibly_fill_or_outline_BB (GMT, &(Ctrl->A), fpo);
+					psconvert_possibly_fill_or_outline_BB (GMT, &(Ctrl->N), fpo);
 				}
 			}
 			else if (set_background) {
 				/* Paint or outline the background rectangle. */
 				if (!strncmp (line, "%%EndPageSetup", 14)) {
 					set_background = false;
-					psconvert_possibly_fill_or_outline_BB (GMT, &(Ctrl->A), fpo);
+					psconvert_possibly_fill_or_outline_BB (GMT, &(Ctrl->N), fpo);
 				}
 			}
 			else if (!strncmp (line, "%%Page:", 7)) {
@@ -2257,11 +2391,11 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 				xt = yt = 0.0;
 				r = 0;
 			}
-			else if (Ctrl->A.fade && !strncmp (line, "%%PageTrailer", 13) && Ctrl->A.fade_level > 0.0) {
+			else if (Ctrl->N.fade && !strncmp (line, "%%PageTrailer", 13) && Ctrl->N.fade_level > 0.0) {
 				/* Place a transparent black rectangle over everything, at level of transparency */
-				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->A.fill.rgb);
-				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->A.fill.rgb), irint (100.0*Ctrl->A.fade_level));
-				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->A.fade_level, Ctrl->A.fade_level);
+				char *ptr = PSL_makecolor (GMT->PSL, Ctrl->N.fill.rgb);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Append fading to %s at %d%%.\n", gmt_putrgb (GMT, Ctrl->N.fill.rgb), irint (100.0*Ctrl->N.fade_level));
+				fprintf (fpo, "V clippath %s %g %g /Normal PSL_transp F N U\n", ptr, Ctrl->N.fade_level, Ctrl->N.fade_level);
 				transparency = true;
 			}
 #ifdef HAVE_GDAL
@@ -2351,6 +2485,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16] = {""};
 			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
+			double w_new, h_new;
 
 			strncpy (tag, &ext[Ctrl->T.device][1], 15U);
 			gmt_str_toupper (tag);
@@ -2375,13 +2510,22 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			}
 			strcat (out_file, ext[Ctrl->T.device]);
 
-			if (Ctrl->A.new_dpi_x) {	/* We have a resize request (was Ctrl->A.resize = true;) */
-				pix_w = urint (psconvert_smart_ceil (w * Ctrl->A.new_dpi_x / 72.0));
-				pix_h = urint (psconvert_smart_ceil (h * Ctrl->A.new_dpi_y / 72.0));
+			if (Ctrl->I.new_dpi_x) {	/* We have a resize request (was Ctrl->I.resize = true;) */
+				w_new = w * Ctrl->I.new_dpi_x / 72.0;
+				h_new = h * Ctrl->I.new_dpi_y / 72.0;
 			}
 			else {
-				pix_w = urint (psconvert_smart_ceil (w * Ctrl->E.dpi / 72.0));
-				pix_h = urint (psconvert_smart_ceil (h * Ctrl->E.dpi / 72.0));
+				w_new = w * Ctrl->E.dpi / 72.0;
+				h_new = h * Ctrl->E.dpi / 72.0;
+
+			}
+			if (Ctrl->A.round) {
+				pix_w = urint (w_new);
+				pix_h = urint (h_new);
+			}
+			else {
+				pix_w = urint (psconvert_smart_ceil (w_new));
+				pix_h = urint (psconvert_smart_ceil (h_new));
 			}
 
 			if (Ctrl->H.active)	/* Rasterize at higher resolution, then downsample in gs */
@@ -2555,8 +2699,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 			if (gmtBB_width != 0) {			/* Got the BB via GMT internal message system. */
 				double dpi_x, dpi_y;
-				if (Ctrl->A.new_dpi_x) {
-					dpi_x = Ctrl->A.new_dpi_x;		dpi_y = Ctrl->A.new_dpi_y;
+				if (Ctrl->I.new_dpi_x) {
+					dpi_x = Ctrl->I.new_dpi_x;		dpi_y = Ctrl->I.new_dpi_y;
 				}
 				else {
 					dpi_x = Ctrl->E.dpi;		dpi_y = Ctrl->E.dpi;

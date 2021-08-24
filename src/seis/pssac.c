@@ -135,71 +135,76 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<saclist>|<SACfiles>] %s %s\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<t0>/<t1>]] [-D<dx>[/<dy>]] [-Ea|b|k|d|n[<n>]|u[<n>]] [-F[i][q][r]]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] %s[-M<size>/<alpha>] %s%s[-Q]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[i]<scale>] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t%s[%s]\n\t[%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_h_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\n");
+	GMT_Usage (API, 0, "usage: %s [<saclist>|<SACfiles>] %s %s [%s] [-C[<t0>/<t1>]] [-D<dx>[/<dy>]] "
+		"[-Ea|b|k|d|n[<n>]|u[<n>]] [-F[i][q][r]] [-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]] %s[-M<size>/<alpha>] "
+		"%s%s[-Q] [-S[i]<scale>] [-T[+t<tmark>][+r<reduce_vel>][+s<shift>]] [%s] [%s] [-W<pen>] "
+		"[%s] [%s] %s[%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT,
+		API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_h_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (EXIT_FAILURE);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<SACfiles> are the name of SAC files to plot on maps. Only evenly spaced SAC data is supported.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<saclist> is an ASCII file (or stdin) which contains the name of SAC files to plot and controlling parameters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Each record has 1, 3 or 4 items:  <filename> [<X> <Y> [<pen>]]. \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <filename> is the name of SAC file to plot.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <X> and <Y> are the position of seismograms to plot on a map.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      On linear plots, the default <X> is the begin time of SAC file, which will be adjusted if -T option is used, \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      the default <Y> is determined by -E option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      On geographic plots, the default <X> and <Y> are station longitude and latitude specified in SAC header.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      The <X> and <Y> given here will override the position determined by command line options.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <pen> is given, it will override the pen from -W option for current SAC file only.\n");
+	GMT_Usage (API, 1, "\n[<saclist>|<SACfiles>]");
+	GMT_Usage (API, -2, "<SACfiles> are the name of SAC files to plot on maps. Only evenly spaced SAC data is supported. "
+		"<saclist> is an ASCII file (or standard input) which contains the name of SAC files to plot and controlling parameters. "
+		"Each record has 1, 3 or 4 items:  <filename> [<X> <Y> [<pen>]]. "
+		"<filename> is the name of SAC file to plot. "
+		"<X> and <Y> are the position of seismograms to plot on a map. "
+		"On linear plots, the default <X> is the begin time of SAC file, which will be adjusted if -T option is used, "
+		"the default <Y> is determined by -E option. "
+		"On geographic plots, the default <X> and <Y> are station longitude and latitude specified in SAC header. "
+		"The <X> and <Y> given here will override the position determined by command line options. "
+		"If <pen> is given, it will override the pen from -W option for current SAC file only.");
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Read and plot seismograms in timewindow between <t0> and <t1> only. <t0> and <t1> are relative to a reference time specified by -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -T option is not specified, use the reference time (kzdate and kztime) defined in SAC header instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default to read and plot the whole trace. If only -C is used, t0 and t1 are determined from -R option\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset all traces by <dx>/<dy>. If <dy> is not given it is set equal to <dx>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Choose profile type (the type of Y axis). \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a: azimuth profile\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   b: back-azimuth profile\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   k: epicentral distance (in km) profile\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d: epicentral distance (in degree) profile \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n: trace number profile. The <Y> position of first trace is numbered as <n> [Default <n> is 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   u: user defined profile. The <Y> positions are determined by SAC header variable user<n>, default using user0.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Data preprocessing before plotting.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i: integral\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   q: square\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r: remove mean value\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i|q|r can repeat multiple times. -Frii will convert acceleration to displacement.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The order of i|q|r controls the order of the data processing.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint positive or negative portion of traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only -G is used, default to fill the positive portion black.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [p|n] controls the painting of positive portion or negative portion. Repeat -G option to specify fills for pos/neg portion, respectively.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +g<fill>: color to fill\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +t<t0>/<t1>: paint traces between t0 and t1 only. The reference time of t0 and t1 is determined by -T option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +z<zero>: define zero line. From <zero> to top is positive portion, from <zero> to bottom is negative portion.\n");
+	GMT_Usage (API, 1, "\n-C[<t0>/<t1>]");
+	GMT_Usage (API, -2, "Read and plot seismograms in timewindow between <t0> and <t1> only. <t0> and <t1> are relative to a reference time specified by -T. "
+		"If -T option is not specified, use the reference time (kzdate and kztime) defined in SAC header instead. "
+		"Default will read and plot the whole trace. If only -C is used, t0 and t1 are determined from -R option.");
+	GMT_Usage (API, 1, "\n-D<dx>[/<dy>]");
+	GMT_Usage (API, -2, "Offset all traces by <dx>/<dy>. If <dy> is not given it is set equal to <dx>.");
+	GMT_Usage (API, 1, "\n-Ea|b|k|d|n[<n>]|u[<n>]");
+	GMT_Usage (API, -2, "Choose profile type (the type of Y axis):");
+	GMT_Usage (API, 3, "a: azimuth profile.");
+	GMT_Usage (API, 3, "b: back-azimuth profile.");
+	GMT_Usage (API, 3, "k: epicentral distance (in km) profile.");
+	GMT_Usage (API, 3, "d: epicentral distance (in degree) profile.");
+	GMT_Usage (API, 3, "n: trace number profile. The <Y> position of first trace is numbered as <n> [Default <n> is 0].");
+	GMT_Usage (API, 3, "u: user defined profile. The <Y> positions are determined by SAC header variable user<n>, default using user0.");
+	GMT_Usage (API, 1, "\n-F[i][q][r]");
+	GMT_Usage (API, -2, "Perform data preprocessing before plotting. Append directive:");
+	GMT_Usage (API, 3, "i: integral.");
+	GMT_Usage (API, 3, "q: square.n");
+	GMT_Usage (API, 3, "r: remove mean value.");
+	GMT_Usage (API, -2, "Note: i|q|r can repeat multiple times. E.g., -Frii will convert acceleration to displacement. "
+		"The order of i|q|r controls the order of the data processing.");
+	GMT_Usage (API, 1, "\n-G[p|n][+g<fill>][+t<t0>/<t1>][+z<zero>]");
+	GMT_Usage (API, -2, "Paint positive or negative portion of traces. "
+		"If only -G is used, default to fill the positive portion black. "
+		"[p|n] controls the painting of positive portion or negative portion. Repeat -G option to specify fills for pos/neg portion, respectively.");
+	GMT_Usage (API, 3, "+g Append <fill>, color to fill.");
+	GMT_Usage (API, 3, "+t Append <t0>/<t1> to paint traces between t0 and t1 only. The reference time of t0 and t1 is determined by -T option.");
+	GMT_Usage (API, 3, "+z Append <zero> to define zero line. From <zero> to top is positive portion, from <zero> to bottom is negative portion.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Vertical scaling\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <size>: each trace will scaled to <size>. The default unit is PROJ_LENGTH_UNIT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      The scale factor is defined as yscale = size*(north-south)/(depmax-depmin)/map_height \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <size>/<alpha>: \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> < 0, use the same scaling factor for all traces. The scaling factor will scale the first trace to <size>[<u>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> = 0, multiply all traces by <size>. No unit is allowed. \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      <alpha> > 0, multiply all traces by size*r^alpha, r is the distance range in km.\n");
+	GMT_Usage (API, 1, "\n-M<size>/<alpha>");
+	GMT_Usage (API, -2, "Vertical scaling, with each trace will scaled to <size>. The default unit is PROJ_LENGTH_UNIT. "
+		"The scale factor is defined as yscale = size*(north-south)/(depmax-depmin)/map_height.  Specify <alpha>:");
+	GMT_Usage (API, 3, "%s <alpha> < 0, use the same scaling factor for all traces. The scaling factor will scale the first trace to <size>[<u>].", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <alpha> = 0, multiply all traces by <size>. No unit is allowed. ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <alpha> > 0, multiply all traces by size*r^alpha, r is the distance range in km.", GMT_LINE_BULLET);
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Plot traces vertically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets time scale in seconds per unit while plotting on geographic plots. \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c, i, or p to indicate cm, inch or points as the unit. Use PROJ_LENGTH_UNIT if unit is omitted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Si<scale> to give the reciprocal scale, i.e. cm per second or inch per second.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Time alignment. \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +t<tmark> align all trace along time mark. Choose <tmark> from -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +r<reduce_vel> reduce velocity in km/s.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +s<shift> shift all traces by <shift> seconds.\n");
+	GMT_Usage (API, 1, "\n-Q Plot traces vertically.");
+	GMT_Usage (API, 1, "\n-S[i]<scale>");
+	GMT_Usage (API, -2, "Set time scale in seconds per unit while plotting on geographic plots. "
+		"Append c, i, or p to indicate cm, inch or points as the unit. We use PROJ_LENGTH_UNIT if unit is omitted. "
+		"Use -Si<scale> to give the reciprocal scale, i.e. cm per second or inch per second.");
+	GMT_Usage (API, 1, "\n-T[+t<tmark>][+r<reduce_vel>][+s<shift>]");
+	GMT_Usage (API, -2, "Time alignment. Append suitable modifiers:");
+	GMT_Usage (API, 3, "+t Align all trace along time mark. Append <tmark> from -5(b), -4(e), -3(o), -2(a), 0-9(t0-t9).");
+	GMT_Usage (API, 3, "+r Reduce velocity in km/s by <reduce_vel>.");
+	GMT_Usage (API, 3, "+s Shift all traces by <shift> seconds.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", NULL, 0);
 	GMT_Option (API, "X,c,h,p,t");
 	GMT_Option (API, ".");
 
@@ -381,7 +386,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 			case 'W':		/* Set line attributes */
 				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, &opt->arg[0], &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
+					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);
 					n_errors++;
 				}
 				break;
@@ -574,7 +579,7 @@ GMT_LOCAL int pssac_init_list (struct GMT_CTRL *GMT, char **files, unsigned int 
 			if (nr == 4) {
 				L[n_files].custom_pen = true;
 				if (gmt_getpen (GMT, pen, &L[n_files].pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
+					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);
 				}
 			}
 			n_files++;

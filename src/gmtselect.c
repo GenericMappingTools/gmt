@@ -180,71 +180,70 @@ GMT_LOCAL int gmtselect_compare_x (const void *point_1, const void *point_2) {
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [%s]\n", name, GMT_A_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<ptfile|lon/lat>+d%s] [-D<resolution>][+f] [-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s]\n",
-	             GMT_DIST_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[cfglrsz] [-L<lfile>+d%s[+p]] [-N<info>] [%s]\n\t[%s] [-Z<min>[/<max>][+c<col>][+a][+i]] [%s] "
-	             "[%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-	             GMT_DIST_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT,
-				 GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [%s] [-C<ptfile>|<lon>/<lat>+d%s] [-D<resolution>[+f]] "
+		"[-E[f][n]] [-F<polygon>] [-G<gridmask>] [%s] [-Icfglrsz] [-L<lfile>+d%s[+p]] [-N<info>] "
+		"[%s] [%s] [-Z<min>[/<max>][+c<col>][+a][+i]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
+		"[%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_A_OPT, GMT_DIST_OPT, GMT_J_OPT, GMT_DIST_OPT,
+		GMT_Rgeo_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT,
+		GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_GSHHG_syntax (API->GMT, 'A');
-	GMT_Message (API, GMT_TIME_NONE, "\t   (ignored  unless -N is set).\n");
-	gmt_dist_syntax (API->GMT, 'C', "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 3rd column of <ptfile> has individual distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a single point you can instead specify <lon>/<lat>+d[unit].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].\n",
-	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions: (Ignored unless -N is set).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f - full resolution (may be very slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     h - high resolution (may be slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     i - intermediate resolution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     l - low resolution [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to use a lower resolution should the chosen one not be available [abort].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate if points exactly on a polygon boundary are inside or outside.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append f and/or n to modify the -F option or -N option, respectively,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to consider such points to be outside the feature [inside].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Pass locations that are inside the polygons in the ASCII <polygon> file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Pass locations that are inside the non-zero, non-NaN nodes of the grid <gridmask>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse the tests, i.e., pass locations outside the region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Supply a combination of cflrz where each flag means:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c will pass locations beyond the minimum distance to the points in -C.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f will pass locations outside the polygons in -F.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g will pass locations outside the grid mask in -G.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     l will pass locations beyond the minimum distance to the lines in -L.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r will pass locations outside the region given in -R [and -J].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s will pass locations that otherwise would be skipped in -N.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     z will pass locations outside the range given in -Z (single -Z required).\n");
+	GMT_Usage (API, -2, "Note: Ignored  unless -N is set.");
+	gmt_dist_syntax (API->GMT, "C<ptfile>|<lon>/<lat>+d" GMT_DIST_OPT , "Pass locations that are within <dist> of any point in the ASCII <ptfile>.");
+	GMT_Usage (API, -2, "Give distance as 0 if 3rd column of <ptfile> has individual distances. "
+		"For a single point you can instead specify <lon>/<lat>+d[unit]. "
+		"Use -R -J to compute mapped Cartesian distances in cm, inch, m, or points [%s].",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	gmt_GSHHG_resolution_syntax (API->GMT, 'D', "Ignored unless -N is set.");
+	GMT_Usage (API, 1, "\n-E[f][n]");
+	GMT_Usage (API, -2, "Indicate if points exactly on a polygon boundary are inside [Default] or outside. "
+		"Append f and/or n to modify the -F option or -N option, respectively, "
+		"to consider such points to be outside the feature.");
+	GMT_Usage (API, 1, "\n-F<polygon>");
+	GMT_Usage (API, -2, "Pass locations that are inside the polygons in the ASCII <polygon> file.");
+	GMT_Usage (API, 1, "\n-G<gridmask>");
+	GMT_Usage (API, -2, "Pass locations that are inside the non-zero, non-NaN nodes of the grid <gridmask>.");
+	GMT_Usage (API, 1, "\n-Icfglrsz");
+	GMT_Usage (API, -2, "Reverse the tests, i.e., pass locations outside the selection. "
+		"Supply any combination of cflrz where each flag means:");
+	GMT_Usage (API, 3, "c: Pass locations beyond the minimum distance to the points in -C.");
+	GMT_Usage (API, 3, "f: Pass locations outside the polygons in -F.");
+	GMT_Usage (API, 3, "g: Pass locations outside the grid mask in -G.");
+	GMT_Usage (API, 3, "l: Pass locations beyond the minimum distance to the lines in -L.");
+	GMT_Usage (API, 3, "r: Pass locations outside the region given in -R (and -J).");
+	GMT_Usage (API, 3, "s: Pass locations that otherwise would be skipped in -N.");
+	GMT_Usage (API, 3, "z: Pass locations outside the range given in -Z (single -Z required).");
 	GMT_Option (API, "J");
-	gmt_dist_syntax (API->GMT, 'L', "Pass locations that are within <dist> of any line in ASCII <linefile>.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give distance as 0 if 2nd column of segment headers have individual distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -R -J to compute mapped Cartesian distances in cm, inch, or points [%s].\n",
-	             API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, Append +p to exclude points projecting beyond a line's endpoints.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set if a point outside or inside a geographic feature should be s(kipped) or k(ept).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to let feature boundary be considered outside [Default is inside].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information with s or k using 1 of 2 formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -N<wet>/<dry>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   k means keep and s means skip [Default is s/k/s/k/s (i.e., s/k)].\n");
+	gmt_dist_syntax (API->GMT, "L<lfile>+d" GMT_DIST_OPT "[+p]", "Pass locations that are within <dist> of any line in ASCII <lfile>.");
+	GMT_Usage (API, -2, "Give distance as 0 if 2nd column of segment headers have individual distances. "
+		"Use -R -J to compute mapped Cartesian distances in cm, inch, or points [%s]. "
+		"Optionally, Append +p to exclude points projecting beyond a line's endpoints.",
+		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
+	GMT_Usage (API, 1, "\n-N<info>");
+	GMT_Usage (API, -2, "Determine if a point outside or inside a geographic feature should be s(kipped) or k(ept). "
+		"Specify this information with s or k using 1 of 2 formats:");
+	GMT_Usage (API, 3, "%s <wet>/<dry>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <ocean>/<land>/<lake>/<island>/<pond>.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "[Default is s/k/s/k/s (i.e., s/k)].");
 	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Assume the 3rd data column contains z-values and we want to keep records with\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<col> to select another column than the third [2].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <max> is not given we pass records whose z equal <min> within 5 ulps.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The -Z option is repeatable.  If given more than once then these modifiers may be useful:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +a: Pass the record if any of the tests are true [all tests must be true in order to pass].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +i: Reverse an individual test since -Iz only applies to a single test.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If +c is not given then it is incremented automatically, starting at 2.\n");
+	GMT_Usage (API, 1, "\n-Z<min>[/<max>][+c<col>][+a][+i]");
+	GMT_Usage (API, -2, "Assume the 3rd data column contains z-values and we want to keep records with "
+		"<min> <= z <= <max>.  Use - for <min> or <max> if there is no lower/upper limit. "
+		"If /<max> is not appended then we pass records whose z equal <min> within 5 ulps. "
+		"Append +c<col> to select another column than the third [2]. "
+		"The -Z option is repeatable.  If given more than once then these modifiers may be useful:");
+	GMT_Usage (API, 3, "+a Pass the record if any of the tests are true [all tests must be true in order to pass].");
+	GMT_Usage (API, 3, "+i Reverse an individual test since -Iz only applies to a single test.");
+	GMT_Usage (API, -2, "If +c is not given then it is incremented automatically, starting at 2.");
 	GMT_Option (API, "a,bi0");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 input columns (3 if -Z is used).\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 2 input columns (3 if -Z is used).");
 	GMT_Option (API, "bo,d,e,f,g,h,i");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Does not apply to files given via -C, -F, or -L.\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Does not apply to files given via -C, -F, or -L.");
 	GMT_Option (API, "o,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);

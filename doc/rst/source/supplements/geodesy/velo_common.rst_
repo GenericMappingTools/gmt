@@ -10,6 +10,15 @@ rotational wedges and their uncertainties, anisotropy bars,
 or strain crosses.  Symbol fills or their outlines may be colored
 based on constant parameters or via color lookup tables.
 
+.. figure:: /_images/GMT_velo.*
+   :width: 600 px
+   :align: center
+
+   You can make four different geodetic symbols: Rotational wedges,
+   velocity error ellipses with vector, anisotropy bars, and strain crosses.
+   The first two symbols allow you to select separate colors and pens for the main
+   symbol and its error component.
+
 Required Arguments
 ------------------
 
@@ -42,6 +51,7 @@ Required Arguments
         The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
         The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
         and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
+        **Note**: If *confidence* is nonzero and neither **-L** nor **-E** are set then we use **-W** (or default) to draw ellipse outlines.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -59,6 +69,7 @@ Required Arguments
 
         Anisotropy bars. The *barscale* sets the scaling of the bars.
         If *barscale* is not given the we read it from the data file as an extra column.
+        Unless **-A** is used to change it via modifier **+h**\ *shape*, the vector shape defaults to 0.1.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -75,6 +86,7 @@ Required Arguments
         The arrow will be drawn with the pen attributes specified by the |-W| option and arrow-head can be colored via |-G|.
         The ellipse will be filled with the color or shade specified by the |-E| option [default is transparent],
         and its outline will be drawn if |-L| is selected using the pen selected (by |-W| if not given by |-L|).
+        **Note**: If *confidence* is nonzero and neither **-L** nor **-E** are set then we use **-W** (or default) to draw ellipse outlines.
         Parameters are expected to be in the following columns:
 
             **1**,\ **2**:
@@ -143,9 +155,9 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *Sigma\_scale*
-    can be used to rescale the uncertainties of velocities (**-Se** and
-    **-Sr**) and rotations (**-Sw**). Can be combined with the *confidence* variable.
+**-D**\ *scale*
+    Can be used to rescale the uncertainties of velocities (**-Se** and
+    **-Sr**) and rotations (**-Sw**) [1].
 
 .. _-E:
 
@@ -223,7 +235,7 @@ Optional Arguments
 
 .. _-Z:
 
-**Z**\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**]
+**-Z**\ [**m**\|\ **e**\|\ **n**\|\ **u**\ ][**+e**]
     Select the quantity that will be used with the CPT given via **-C** to
     set the fill color.  Choose from **m**\ agnitude (vector magnitude or
     rotation magnitude), **e**\ ast-west velocity, **n**\ orth-south velocity,

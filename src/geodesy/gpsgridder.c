@@ -75,7 +75,7 @@ struct GPSGRIDDER_CTRL {
 		bool active;
 		char *file;
 	} T;
-	struct GPSGRIDDER_W {	/* -W[w] */
+	struct GPSGRIDDER_W {	/* -W[+s|w] */
 		bool active;
 		unsigned int mode;	/* 0 = got sigmas, 1 = got weights */
 	} W;
@@ -136,59 +136,70 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outfile> [-C[n]<val>[+f<file>]] [-Fd|f<val>] [-I<dx>[/<dy>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]%s[%s] [%s]\n\n", GMT_V_OPT,
-		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[n]<val>[+f<file>]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
+		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
+		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tChoose one of three ways to specify where to evaluate the spline:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t1. Specify a rectangular grid domain with options -R, -I [and optionally -r].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t2. Supply a mask file via -T whose values are NaN or 0.  The spline will then\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   only be evaluated at the nodes originally set to zero.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t3. Specify a set of output locations via the -N option.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> [or stdin] must contain x y u v [weight_u weight_v] records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify -fg to convert longitude, latitude to Flat Earth coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Give name of output file (if -N) or a gridfile name template that must.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   contain the format specifier \"%%s\" which will be replaced with u or v.\n");
+	GMT_Usage (API, 1, "Choose one of three ways to specify where to evaluate the spline:");
+	GMT_Usage (API, 2, "%s Specify a rectangular grid domain with options -R, -I [and optionally -r].", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "%s Supply a mask file via -T whose values are NaN or 0.  The spline will then "
+		"only be evaluated at the nodes originally set to zero.", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "%s Specify a set of output locations via the -N option.", GMT_LINE_BULLET);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table>");
+	GMT_Usage (API, -2, "<table> is one or more data files (in ASCII, binary, netCDF). "
+		"If no files are given, standard input is read. "
+		"The data must contain x y u v [weight_u weight_v] records. "
+		"Specify -fg to convert longitude, latitude to Flat Earth coordinates.");
+	GMT_Usage (API, 1, "\n-G<outfile>");
+	GMT_Usage (API, -2, "Give name of output file (if -N) or a gridfile name template that must "
+		"contain the format specifier \"%%s\" which will be replaced with u or v.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
-	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -C<val> to select only the largest <val> eigenvalues [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If <val> is in 0-1 range we assume it is the fraction of eigenvalues to use.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     (Note 1/4 of the total number of data constraints is a good starting point.) \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Fudging factor to avoid Green-function singularities.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Fd<del_radius> will add <del_radius> to all distances between nodes and points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     (For geographical specify <del_radius> in km. A value of 8 km is optimal for California.)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Ff<factor> will add <r_min>*<factor> to all distances between nodes and points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       where <r_min> is the shortest inter-point distance found.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       [Default is -Ff0.01].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify a regular set of output locations.  Give equidistant increment for each dimension.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -R for specifying the output domain.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Leave trend alone.  Do not remove least squares plane from data before spline fit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    [Default removes least squares plane, fits normalized residuals, and restores plane].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N ASCII file with desired output locations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The resulting ASCII coordinates and interpolation are written to file given in -G\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or stdout if no file specified (see -bo for binary output).\n");
+	GMT_Usage (API, 1, "\n-C[n]<val>[+f<file>]");
+	GMT_Usage (API, -2, "Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0]. "
+		"Optionally append +f<filename> to save the eigenvalues to this file. "
+		"A negative cutoff will stop execution after saving the eigenvalues. "
+		"Use -C<val> to select only the largest <val> eigenvalues [all]. "
+		"If <val> is in 0-1 range we assume it is the fraction of eigenvalues to use. "
+		"Note: ~1/4 of the total number of data constraints is a good starting point "
+		"[Default uses Gauss-Jordan elimination to solve the linear system].");
+	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
+	GMT_Usage (API, -2, "Evaluate spline at input locations and report statistics on the misfit. "
+		"If <misfitfile> is given then we write individual location misfits to that file.");
+	GMT_Usage (API, 1, "\n-Fd|f<val>");
+	GMT_Usage (API, -2, "Fudging factor to avoid Green-function singularities. Choose among two directives:");
+	GMT_Usage (API, 3, "d: Append <del_radius> to add to all distances between nodes and points "
+		"(For geographical specify <del_radius> in km. A value of 8 km is optimal for California.).");
+	GMT_Usage (API, 3, "f: Append <factor> and add <r_min>*<factor> to all distances between nodes and points, "
+		"where <r_min> is the shortest inter-point distance found [Default is -Ff0.01].");
+	GMT_Option (API, "I");
+	GMT_Usage (API, 1, "\n-L Leave trend alone.  Do not remove least squares plane from data before spline fit "
+		"[Default removes least squares plane, fits normalized residuals, and restores plane].");
+	GMT_Usage (API, 1, "\n-N<nodefile>");
+	GMT_Usage (API, -2, "ASCII file with desired output locations. "
+		"The resulting ASCII coordinates and interpolation are written to file given in -G "
+		"or standard output if no file specified (see -bo for binary output).");
 	GMT_Option (API, "R");
 	if (gmt_M_showusage (API)) {
-		GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  A gridfile may be given;\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
+		GMT_Usage (API, -2, "Requires -I for specifying equidistant increments.  A gridfile may be given; "
+			"this then also sets -I (and perhaps -r); use those options to override the grid settings.");
 	}
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Give effective 2-D Poisson's ratio [0.5]. (Note: 1.0 is incompressible in a 2-D formulation)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects two extra input columns with data errors sigma_x, sigma_y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate these columns carry weights instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via 1/sigma_x^2, 1/sigma_y^2].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note this option will only have an effect if -C is used.\n");
+	GMT_Usage (API, 1, "\n-S<nu>");
+	GMT_Usage (API, -2, "Give effective 2-D Poisson's ratio [0.5]. Note: 1.0 is incompressible in a 2-D formulation.");
+	GMT_Usage (API, 1, "\n-T<maskgrid>");
+	GMT_Usage (API, -2, "Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).");
+	GMT_Usage (API, 1, "\n-W[+s|w]");
+	GMT_Usage (API, -2, "Expects two extra input columns with either data weights or errors sigma_x, sigma_y):");
+	GMT_Usage (API, 3, "+s Read sigma-errors and make weights via 1/sigma_x^2, 1/sigma_y^2 [Default].");
+	GMT_Usage (API, 3, "+w Read weights directly [Default].");
+	GMT_Usage (API, -2, "Note: -W will only have an effect if -C is used.");
 	GMT_Option (API, "V,bi");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 4-6 input columns (see -W); use -i to select columns from any data table.\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 4-6 input columns (see -W); use -i to select columns from any data table.");
 	GMT_Option (API, "d,e,f,h,i,n,o,qi,r,s,x,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -299,7 +310,12 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				break;
 			case 'W':	/* Expect data weights in last two columns */
 				Ctrl->W.active = true;
-				if (opt->arg[0] == 'w') Ctrl->W.mode = GPS_GOT_W;	/* Got weights instead of sigmas */
+				if (opt->arg[0] == 'w')	/* Deprecated syntax -Ww */
+					Ctrl->W.mode = GPS_GOT_W;	/* Got weights instead of sigmas */
+				else if (strstr (opt->arg, "+w"))
+					Ctrl->W.mode = GPS_GOT_W;	/* Got weights instead of sigmas */
+				else if (opt->arg[0] == '\0' || strstr (opt->arg, "+s"))
+					Ctrl->W.mode = GPS_GOT_SIG;	/* Got sigmas instead of weights [Default] */
 				break;
 #ifdef DEBUG
 			case 'Z':	/* Dump matrices */

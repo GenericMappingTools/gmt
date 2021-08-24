@@ -83,52 +83,49 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDMASK_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[m|p|x|y|r|t]] [-N[z|Z|p|P][<values>]] [-S%s | <xlim>/<ylim>]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t%s[%s] [%s]\n\n",
-		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s %s [-A[m|p|x|y|r|t]] [-N[z|Z|p|P][<values>]] "
+		"[-S%s | <xlim>/<ylim>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s] [%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
 		GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output mask grid file.\n");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Specify file name for output mask grid file.");
 	GMT_Option (API, "I,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting geographic points using great circle arcs, i.e., connect by straight lines,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian data, use -Ax or -Ay to connect first in x, then y, or vice versa.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored if -S is used since input data are then considered to be points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   if -R is theta/r, use -At or -Ar to connect first in theta, then r, or vice versa.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set <out>/<edge>/<in> to use if node is outside, on the path, or inside.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/0/1.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, use -Nz (inside) or -NZ (inside & edge) to set the inside\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   nodes of a polygon to a z-value obtained as follows (in this order):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a) If OGR/GMT files, get z-value via -aZ=<name> for attribute <name>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     b) Interpret segment z-values (-Z<zval>) as the z-value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c) Interpret segment labels (-L<label>) as the z-value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, use -Np|P and append origin for running polygon IDs [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For -Nz|Z|p|P you may optionally append /<out [0].\n");
-	gmt_dist_syntax (API->GMT, 'S', "Set search radius to identify inside points.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Mask nodes are set to <in> or <out> depending on whether they are\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   inside the circle of specified radius [0] from the nearest data point.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give radius as 'z' if individual radii are provided via the 3rd data column\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and append a fixed unit unless Cartesian.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian grids with different x and y units you may append <xlim>/<ylim>;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   this sets all nodes within the rectangular area of the given half-widths to inside.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   One can also achieve the rectangular selection effect by using the -S<n_cells>c\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells around each data point. As an example,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -S0c means that only the cell where point lies is masked, -S1c masks one cell\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   beyond that (i.e. makes a 3x3 neighborhood), and so on.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to assume <table> contains polygons and use inside/outside searching].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[m|p|x|y|r|t]");
+	GMT_Usage (API, -2, "Suppress connecting geographic points using great circle arcs, i.e., connect by straight lines "
+		"unless m or p is appended to first follow meridian then parallel, or vice versa. For Cartesian data, use -Ax "
+		"or -Ay to connect first in x, then y, or vice versa. Ignored if -S is used since input data are then considered "
+		"to be points. If -R is theta/r, use -At or -Ar to connect first in theta, then r, or vice versa.");
+	GMT_Usage (API, 1, "\n-N[z|Z|p|P][<values>]");
+	GMT_Usage (API, -2, "Set <out>/<edge>/<in> to use if node is outside, on the path, or inside. NaN is a valid entry. "
+		"[Default values are 0/0/1]. Alternatively, use -Nz (inside) or -NZ (inside & edge) to set the inside nodes "
+		"of a polygon to a z-value obtained as follows (in this order):");
+	GMT_Usage (API, 3, "%s If OGR/GMT files, get z-value via -aZ=<name> for attribute <name>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Interpret segment z-values (-Z<zval>) as the z-value.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Interpret segment labels (-L<label>) as the z-value.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Finally, use -Np|P and append origin for running polygon IDs [0]. For -Nz|Z|p|P you may "
+		"optionally append /<out [0].");
+	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Set search radius to identify inside points.");
+	GMT_Usage (API, -2, "Mask nodes are set to <in> or <out> depending on whether they are inside the circle of "
+		"specified radius [0] from the nearest data point. Give radius as 'z' if individual radii are provided via the "
+		"3rd data column and append a fixed unit unless Cartesian. For Cartesian grids with different x and y units you "
+		"may append <xlim>/<ylim>; this sets all nodes within the rectangular area of the given half-widths to inside. "
+		"One can also achieve the rectangular selection effect by using the -S<n_cells>c form. Here n_cells means the "
+		"number of cells around each data point. As an example, -S0c means that only the cell where point lies is "
+		"masked, -S1c masks one cell beyond that (i.e. makes a 3x3 neighborhood), and so on. [Default is to assume "
+		"<table> contains polygons and use inside/outside searching].");
 	GMT_Option (API, "V,a,bi2,di,e,f,g,h,i,j");
 	if (gmt_M_showusage (API)) {
-		GMT_Message (API, GMT_TIME_NONE, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   g for geographic, p for periodic, and n for natural boundary conditions.\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   For p and n you may optionally append x or y [default is both]:\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t     x applies the boundary condition for x only\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t     y applies the boundary condition for y only\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   [Default: Natural conditions, unless grid is geographic].\n");
+		GMT_Usage (API, 1, "\n-n+b<BC>");
+		GMT_Usage (API, -2, "Set boundary conditions.  <BC> can be either: g for geographic, p for periodic, and n for "
+			"natural boundary conditions. For p and n you may optionally append x or y [default is both]: "
+			"x applies the boundary condition for x only y applies the boundary condition for y only [Default: Natural "
+			"conditions, unless grid is geographic].");
 	}
 	GMT_Option (API, "qi,r,s,w,x,:,.");
 

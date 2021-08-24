@@ -141,24 +141,29 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -N<n_model>[+r] [-D<diffgrid>] [%s]\n", name, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<trendgrid>] [%s] [-W<weightgrid>[+s]] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> -N<n_model>[+r] [-D<diffgrid>] [%s] [-T<trendgrid>] "
+		"[%s] [-W<weightgrid>[+s]] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of grid file to fit trend to.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3+r.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Model parameters order is given as follows; append +r for robust solution:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Supply filename to write grid file of differences (input - trend).\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is name of grid file to fit trend to.");
+	GMT_Usage (API, 1, "\n-N<n_model>[+r]");
+	GMT_Usage (API, -2, "Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3+r. "
+		"Model parameters order is given as follows; append +r for robust solution: "
+		"z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D<diffgrid>");
+	GMT_Usage (API, -2, "Supply filename to write grid file of differences (input - trend).");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Supply filename to write grid file of trend.\n");
+	GMT_Usage (API, 1, "\n-T<trendgrid>");
+	GMT_Usage (API, -2, "Supply filename to write grid file of trend.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Supply filename if you want to [read and] write grid file of weights.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <weightgrid> can be read at run, and if robust = false, weighted problem will be solved.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If robust = true, weights used for robust fit will be written to <weightgrid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to read standard deviations from file and compute weights as 1/s^2.\n");
+	GMT_Usage (API, 1, "\n-W<weightgrid>[+s]");
+	GMT_Usage (API, -2, "Supply filename if you want to [read and] write grid file of weights. "
+		"If <weightgrid> can be read at run-time, and if robust = false, weighted problem will be solved. "
+		"If robust = true, weights used for robust fit will be written to <weightgrid>. "
+		"Append +s to read standard deviations from file and compute weights as 1/s^2.");
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);

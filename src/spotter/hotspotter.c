@@ -131,7 +131,7 @@
 #define THIS_MODULE_PURPOSE	"Create CVA grid from seamount locations"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:>RVbdeghiqrs" GMT_OPT("FHMm")
+#define THIS_MODULE_OPTIONS "-:>RVbdeghiqr" GMT_OPT("FHMm")
 
 struct HOTSPOTTER_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -185,24 +185,29 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -E[+]<rottable> -G<CVAgrid> %s\n", name, GMT_Id_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-D<factor>] [-N<upper_age>] [-S] [-T] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] %s -G<outgrid> %s %s [-D<factor>] [-N<upper_age>] "
+		"[-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, SPOTTER_E_OPT, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_qi_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output CVA grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, "
+		"standard input is read. Expects (x,y,z,r,t) records, with t in Ma.");
+	spotter_rot_usage (API);
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Specify file name for output CVA grid.");
+	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
+	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
 	GMT_Option (API, "Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Scale affecting distance between points along flowline [0.5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set upper age in m.y. for seamounts whose plate age is NaN [180].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate all ages to max age in stage pole model [Default extrapolates].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D<factor>");
+	GMT_Usage (API, -2, "Scale affecting distance between points along flowline [0.5].");
+	GMT_Usage (API, 1, "\n-N<upper_age>");
+	GMT_Usage (API, -2, "Set upper age in m.y. for seamounts whose plate age is NaN [180].");
+	GMT_Usage (API, 1, "\n-S Normalize CVA grid to percentages of the CVA maximum.");
+	GMT_Usage (API, 1, "\n-T Truncate all ages to max age in stage pole model [Default extrapolates].");
 	GMT_Option (API, "V,bi5,di,e,h,i,qi,r,:,.");
 
 	return (GMT_MODULE_USAGE);

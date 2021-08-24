@@ -99,35 +99,41 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]]\n\t[%s] [-S<lon>/<lat>/<radius>[+n]] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n\n",
+	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> %s [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
 		name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is file to extract a subset from.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is file to extract a subset from.");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Specify output grid file.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Typically, the w/e/s/n you specify must be within the region of the input\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   grid.  If in doubt, run grdinfo first and check range of old file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, see -N below.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon table that describes the grid subset\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to extracted (nodes between grid boundary and polygons will be set to NaN).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +c to crop the grid to the polygon bounding box [leave region as is].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +i to invert what is set to Nan, i.e., the inside of the polygon.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-J Specify oblique projection and compute corresponding rectangular\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   region that needs to be extracted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Allow grid to be extended if new -R exceeds existing boundaries.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append value to initialize nodes outside current region [Default is NaN].\n");
+	GMT_Usage (API, -2, "Typically, the w/e/s/n you specify must be within the region of the input "
+		"grid.  If in doubt, run grdinfo first and check range of old file. "
+		"Alternatively, see -N below.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-F<polygontable>[+c][+i]");
+	GMT_Usage (API, -2, "Specify a multi-segment closed polygon table that describes the grid subset "
+		"to be extracted (nodes between grid boundary and polygons will be set to NaN).");
+	GMT_Usage (API, 3, "+c Crop the grid to the polygon bounding box [leave region as is].");
+	GMT_Usage (API, 3, "+i Invert what is set to Nan, i.e., the inside of the polygon.");
+	GMT_Usage (API, 1, "\n%s", GMT_J_OPT);
+	GMT_Usage (API, -2, "Specify oblique projection and compute corresponding rectangular "
+		"region that needs to be extracted.");
+	GMT_Usage (API, 1, "\n-N[<nodata>]");
+	GMT_Usage (API, -2, "Allow grid to be extended if new -R exceeds existing boundaries. "
+		"Optionally, append value to initialize nodes outside current region [Default is NaN].");
+	gmt_dist_syntax (API->GMT, "S<lon>/<lat>/<radius>[+n]", "Specify an origin and radius to find the corresponding rectangular area.");
+	GMT_Usage (API, -2, "Note: All nodes on or inside the radius are contained in the subset grid. "
+		"Append +n to set all nodes in the subset outside the circle to NaN.");
 	GMT_Option (API, "V");
-	gmt_dist_syntax (API->GMT, 'S', "Specify an origin and radius to find the corresponding rectangular area.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   All nodes on or inside the radius are contained in the subset grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to set all nodes in the subset outside the circle to NaN.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify an optional range and determine the corresponding rectangular region\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   so that all nodes outside this region are outside the range [-inf/+inf].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to consider NaNs to be outside the range. The resulting grid will be NaN-free.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +N to strip off outside rows and cols that are all populated with NaNs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to consider NaNs to be within the range [Default just ignores NaNs in decision].\n");
+	GMT_Usage (API, 1, "\n-Z[<min>/<max>][+n|N|r]");
+	GMT_Usage (API, -2, "Specify an optional range and determine the corresponding rectangular region "
+		"so that all nodes outside this region are outside the range [-inf/+inf]. Modifiers related to the treatment of NaNs:");
+	GMT_Usage (API, 3, "+n Consider NaNs to be outside the range. The resulting grid will be NaN-free.");
+	GMT_Usage (API, 3, "+N Strip off outside rows and cols that are all populated with NaNs.");
+	GMT_Usage (API, 3, "+r Consider NaNs to be within the range [Default just ignores NaNs in decision].");
 	GMT_Option (API, "f,.");
 
 	return (GMT_MODULE_USAGE);
@@ -140,7 +146,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	bool F_or_R;
+	bool F_or_R_or_J;
 	unsigned int n_errors = 0, k, n_files = 0;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -249,8 +255,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && Ctrl->F.crop, "Option -F: Modifier +c cannot be used with -R\n");
-	F_or_R = GMT->common.R.active[RSET] | Ctrl->F.active;
-	n_errors += gmt_M_check_condition (GMT, (F_or_R + Ctrl->S.active + Ctrl->Z.active) != 1,
+	F_or_R_or_J = GMT->common.R.active[RSET] | Ctrl->F.active | GMT->common.J.active;
+	n_errors += gmt_M_check_condition (GMT, (F_or_R_or_J + Ctrl->S.active + Ctrl->Z.active) != 1,
 	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
@@ -294,9 +300,13 @@ GMT_LOCAL unsigned int grdcut_count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID 
 	return ((row0 == row1 && col0 == col1) ? 0 : sum);	/* Return 0 if we run out of grid, else the sum */
 }
 
-GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], double inc[]) {
-	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Default is to take the -R as given */
-	if (GMT->common.R.oblique == false || GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
+GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *h) {
+	/* Se;ect a subset either via -R or combination or -R -J typically for non-rectangular projections */
+	double *inc = h->inc;
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double); /* Default is to take the -R if given */
+	if (GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
+	if (!GMT->common.R.active[RSET])	/* Need a -R with -J if no -R given */
+		gmt_M_memcpy (wesn, h->wesn, 4, double);
 
 	/* Here we got an oblique area and a projection; find the corresponding rectangular -R that covers this oblique area */
 
@@ -536,7 +546,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		while (wesn_new[XLO] > G->header->wesn[XHI]) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
 		wesn_new[YLO] = wesn_new[YHI] = Ctrl->S.lat;
 		/* First adjust the S and N boundaries */
-		radius = R2D * (Ctrl->S.radius / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.mean_radius;	/* Approximate radius in degrees */
+		if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got arc distance */
+			radius = (Ctrl->S.radius / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Radius in degrees */
+		else
+			radius = R2D * (Ctrl->S.radius / GMT->current.map.dist[GMT_MAP_DIST].scale) / GMT->current.proj.mean_radius;	/* Approximate radius in degrees */
 		wesn_new[YLO] -= radius;	/* Approximate south limit in degrees */
 		if (wesn_new[YLO] <= G->header->wesn[YLO]) {	/* Way south, reset to grid S limit */
 			wesn_new[YLO] = G->header->wesn[YLO];
@@ -647,7 +660,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
-		if (grdcut_set_rectangular_subregion (GMT, wesn_new, G->header->inc)) {
+		if (grdcut_set_rectangular_subregion (GMT, wesn_new, G->header)) {
 			Return (API->error);	/* Get header only */
 		}
 	}

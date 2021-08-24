@@ -15,13 +15,12 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
-[ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
+|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
-[ |-F|\ *format*\ [**+t**]\ [**+o**\ *options*]]
+[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**] ]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
-[ |-H|\ *factor*]
+[ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
 [ |-K|\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
 [ |-L|\ *labelinfo* ]
@@ -31,8 +30,9 @@ Synopsis
 [ |-Sb|\ *background* ]
 [ |-Sf|\ *foreground* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*workdir*] ]
+[ |-W|\ [*dir*] ]
 [ |-Z|\ [**s**] ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -48,8 +48,8 @@ animation job.  Instead, the user can focus on composing the main frame plot and
 parallel execution of frames and assembly of images into a movie take place in the background.
 Individual frames are converted from *PostScript* plots to lossless, transparent PNG images and optionally
 assembled into an animation (this last step requires external tools that must be present in
-your path; see Technical Details below).  For opaque PNG images, simply specify a background
-color via **-G**.
+your path; see Technical Details below). The user can add title sequences, fading, labels, and
+progress indicators as desired. 
 
 Required Arguments
 ------------------
@@ -91,16 +91,16 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
+**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
     Either specify how many image frames to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
     string into individual words that can be accessed via variables **MOVIE_WORD0**, **MOVIE_WORD1**,
-    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
-    as the valid separator(s).  The number of records equals
-    the number of frames. Note that the *background* script is allowed to create *timefile*,
+    etc. By default we look for either tabs or spaces to separate words.  Append *str* to select other character(s)
+    as the valid separator(s) instead. To just use TAB as the only valid separator use **+W** instead.
+    The number of records equals the number of frames. Note that the *background* script is allowed to create *timefile*,
     hence we check for its existence both before *and* after the background script has completed.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
     number via **+s**\ *first*.  **Note**: All frames are still included; this modifier only affects
@@ -113,15 +113,6 @@ Required Arguments
 Optional Arguments
 ------------------
 
-.. _-A:
-
-**-A**\ [**+l**\ [*n*]]\ [**+s**\ *stride*]
-    Build an animated GIF file.  You may specify if the movie should play more than once (i.e., loop)
-    via **+l** and if so append how many times to repeat [infinite].  If a video product is also
-    selected (**-F**) then you can limit the frames being used to make the GIF file.  Append **+s**\ *stride*
-    to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
-    20, 50, 100, 200, and 500.
-
 .. _-D:
 
 **-D**\ *displayrate*
@@ -131,7 +122,7 @@ Optional Arguments
 
 **-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
     Give a *titlepage* script that creates a static title page for the movie [no title].
-    Alternatively, *titlepage* can be a *PostScript* plot (file extension .ps) of dimensions exactly matching
+    Alternatively, *titlepage* can be a *PostScript* or *EPS* plot (file extension .ps) of dimensions exactly matching
     the canvas size set in **-C**. You control the duration of the title sequence with **+d** and specify
     the number of frames (or append **s** for a duration in seconds instead) [4s].
     Optionally, supply the fade length via **+f**\ *fade* (in frames or seconds [1s]) as well [no fading];
@@ -141,28 +132,33 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *format*\ [**+t**]\ [**+o**\ *options*]
-    Set the format of the final video product.  Repeatable.  Choose either **mp4** (MPEG-4 movie) or
-    **webm** (WebM movie).  You may optionally add additional FFmpeg encoding settings for this format
-    via the **+o** modifier (in quotes if more than one word). If **none** is chosen then no PNGs will
-    be created at all; this requires **-M**.  Choose **+t** to generate transparent PNG images [opaque].
+**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**]
+    Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
+    *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  You may optionally
+    add additional FFmpeg encoding settings for *mp4* and *webm* via the **+o** modifier (in quotes if more
+    than one word). Choose **+t** to generate transparent PNG images [opaque]. If just *png* is chosen then no
+    animation will be assembled.  For *gif* you may consider using modifier **+l** for turning on looping and
+    optionally append how many times to repeat [infinite].  If either a *mp4* or *webm* product has been
+    selected then you can limit the frames being used to make a GIF animation:  Append **+s**\ *stride*
+    to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
+    20, 50, 100, 200, and 500. No **-F** means no video products are created at all; this requires **-M**.
 
 .. _-G:
 
 **-G**\ [*fill*]\ [**+p**\ *pen*] :ref:`(more ...) <-Gfill_attrib>`
-    Set the canvas color or fill before plotting commences [none].
+    Set the canvas color or fill before plotting commences [no fill].
     Optionally, append **+p** to draw the canvas outline with *pen* [no outline].
 
 .. _-H:
 
-**-H**\ *factor*
+**-H**\ *scale*
     Given the finite dots-per-unit used to rasterize *PostScript* frames to PNGs, the quantizing of features
     to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings.  However,
     changes from frame to frame is outside the control of the individual frame rasterization and we
     find that, in particular, moving text may appear jittery when seen in the final animation.  You can mitigate
-    this effect by selecting a scale *factor* that, in effect, temporarily increases the effective dots-per-unit
-    by *factor*, rasterizes the frame, then downsamples the image by the same factor at the end.  The larger
-    the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
+    this effect by selecting an integer *scale* that, in effect, temporarily increases the effective dots-per-unit
+    by *scale*, rasterizes the frame, then down-samples the image by the same scale at the end.  The larger
+    the *scale*, the smoother the transitions.  Because processing time increases with *scale* we suggest you
     try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
     much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
     result to avoid aliasing [no downsampling].  This effect is called `subpixel <https://en.wikipedia.org/wiki/Subpixel_rendering>`_ rendering.
@@ -254,7 +250,7 @@ Optional Arguments
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
     so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
-    *background* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
+    *background* can be a *PostScript* or *EPS* plot layer of dimensions exactly matching the canvas size.
 
 .. _-Sf:
 
@@ -262,7 +258,7 @@ Optional Arguments
     The optional GMT modern mode *foreground* (written in the same scripting language as *mainscript*) can be
     used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
     positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
-    *foreground* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
+    *foreground* can be a *PostScript* or *EPS* plot layer of dimensions exactly matching the canvas size.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -271,9 +267,9 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*workdir*]
+**-W**\ [*dir*]
     By default, all temporary files and frame PNG file are created in the subdirectory *prefix* set via **-N**.
-    You can override that selection by giving another *workdir* as a relative or full directory path. If no
+    You can override that selection by giving another *dir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
     problems related to low space in the main directory.
@@ -285,6 +281,9 @@ Optional Arguments
     the temporary script files, parameter files, and layer *PostScript* files are all removed (but see **-Q**)].
     If your *mainscript* and all input scripts via **-E**, **-I**, and **-S** should be deleted as well then
     append **s**.
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
 
 .. _-cores:
 
@@ -316,7 +315,7 @@ In addition, the *mainscript* also has access to parameters that vary with the f
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicitly requested by **-T+w** or
-implicitly by selecting word labels in **-F** or **-P**) then
+implicitly by selecting word labels in **-L** or **-P**) then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
@@ -427,9 +426,9 @@ parameter file.  Using the **-Q** option will just produce these scripts which y
 **Note**: The *mainscript* is duplicated per frame and each copy is run simultaneously on all available cores.
 Multi-treaded GMT modules will therefore be limited to a single core as well.
 
-The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
+The conversion of PNG frames to an animated GIF (**-F**\ *gif*) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
-PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_.
+PNG frames to an MP4 (**-F**\ *mp4*) or WebM (**-F**\ *webm*) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_.
 
 Hints for Movie Makers
 ----------------------
@@ -442,7 +441,7 @@ require the frame number you will need to make a file that you can pass to **-T*
 then have all the values you need, per frame (i.e., row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
 will look shorter and cleaner if you offload those assignments to a separate *includefile* (**-I**).
-To test your movie, start by using options **-F**\ none **-Q -M** to ensure your master frame page looks correct.
+To test your movie, start by using options **-Q -M** to ensure your master frame page looks correct.
 This page shows you one frame of your movie (you can select which frame via the **-M** arguments).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove **-Q**.
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
@@ -512,7 +511,7 @@ To make an animated GIF movie based on the script globe.sh, which simply spins a
 frame number to serve as the view longitude, using a custom square 600 by 600 pixel canvas and 360 frames,
 place a frame counter in the top left corner, and place a progress indicator in the top right corner, try::
 
-    gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100 -Lf -P
+    gmt movie globe.sh -Nglobe -T360 -Fgif -C6ix6ix100 -Lf -P
 
 Here, the globe.sh bash script simply plots a map with :doc:`coast` but uses the frame number variable
 as the center longitude::
@@ -524,7 +523,7 @@ as the center longitude::
 As the automatic frame loop is executed the different frames will be produced with different
 longitudes.  The equivalent DOS batch script setup would be::
 
-    gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100 -Lf -P
+    gmt movie globe.bat -Nglobe -T360 -Fgif -C6ix6ix100 -Lf -P
 
 Now, the globe.bat DOS script is simply::
 
@@ -583,6 +582,18 @@ horizontally, then combine the two resulting strips vertically::
     ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex vstack=inputs=2 four_movies.mp4
 
 For more information on such manipulations, see the FFmpeg documentation.
+
+
+Adding an Audio Track
+---------------------
+
+If you wish to add an *audio* track to the animation, say a narration that explains your animation,
+you can record your audio using a suitable tool and save it to a \*.mp3 or \*.m4a file.  The audio track
+should be approximately the same length as the video.  Then, simply combine the two with FFmpeg::
+
+    ffmpeg -loglevel warning -i yourslientmovie.mp4 -y -i narration.m4a final.mp4
+
+For more information on audio manipulations, see the FFmpeg documentation.
 
 See Also
 --------

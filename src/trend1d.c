@@ -524,41 +524,54 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct TREND1D_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<xymrw|p|P|c> -N[p|P|f|F|c|C|s|S|x|X]<list-of-terms>[,...][+l<length>][+o<origin>][+r]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-C<condition_#>] [-I[<confidence>]] [%s] [-W[+s]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -F<xymrw>|p|P|c -N[p|P|f|F|c|C|s|S|x|X]<list-of-terms>[,...][+l<length>][+o<origin>][+r] "
+		"[-C<condition_#>] [-I[<confidence>]] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Choose at least 1, up to 5, any order, of xymrw for output to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x=x, y=y, m=model, r=residual=y-m, w=weight.  w determined iteratively if robust fit used.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively choose just p to output only the model coefficients (Polynomial form),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   P for normalized polynomial coefficients, and c for normalized Chebyshev coefficients.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify a polynomial, Fourier, or mixed model of any order; separate components by commas:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     p<n> adds complete polynomial (including intercept) up to degree <n>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     P<n> (or xx..x adds the component x^<n> only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f<n> adds the Fourier series components 1-n.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     F<n> adds just the <n>'th Fourier component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c<n> adds the cosine series components 1-n.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     C<n> adds just the <n>'th cosine component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s<n> adds the sine series components 1-n.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     S<n> adds just the <n>'th sine component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +o<orig> to set origin of x [mid-point of x].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +l<period> to set fundamental period of x [range of x].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +r for robust model. E.g., robust quadratic = -Np2+r.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with (x,y[,w]) data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Truncate eigenvalue spectrum so matrix has <condition_#> [Default = 1.0e06].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Iteratively Increase # model parameters, to a max of <n_model> so long as the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   reduction in variance is significant at the <confidence> level.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I without a number to default to 0.51 confidence level.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Usage (API, -2, "Note: Input must provide (x,y[,w]) records; see -W for weights.");
+	GMT_Usage (API, 1, "\n-F<xymrw|p|P|c>");
+	GMT_Usage (API, -2, "Choose at least 1, up to 5, any order, of xymrw for output to standard output:");
+	GMT_Usage (API, 3, "x: The x-coordinate.");
+	GMT_Usage (API, 3, "y: The y-value.");
+	GMT_Usage (API, 3, "m: The model prediction.");
+	GMT_Usage (API, 3, "r: The residual (y-m).");
+	GMT_Usage (API, 3, "w: The weight (determined iteratively if robust fit used).");
+	GMT_Usage (API, -2, "Alternatively, request output of model coefficients instead:");
+	GMT_Usage (API, 3, "p: Polynomial coefficients.");
+	GMT_Usage (API, 3, "P: Normalized polynomial coefficients.");
+	GMT_Usage (API, 3, "c: Normalized Chebyshev coefficients.");
+	GMT_Usage (API, 1, "\n -N[p|P|f|F|c|C|s|S|x|X]<list-of-terms>[,...][+l<length>][+o<origin>][+r]");
+	GMT_Usage (API, -2, "Specify a polynomial, Fourier, or mixed model of any order; separate components by commas:");
+	GMT_Usage (API, 3, "p: Append <n> to add complete polynomial (including intercept) up to degree <n>.");
+	GMT_Usage (API, 3, "P: Append <n> (or xx..x) to add the component x^<n> only.");
+	GMT_Usage (API, 3, "f: Append <n> to add the Fourier series components 1-n.");
+	GMT_Usage (API, 3, "F: Append <n> to add just the <n>'th Fourier component.");
+	GMT_Usage (API, 3, "c: Append <n> to add the cosine series components 1-n.");
+	GMT_Usage (API, 3, "C: Append <n> to add just the <n>'th cosine component.");
+	GMT_Usage (API, 3, "s: Append <n> to add the sine series components 1-n.");
+	GMT_Usage (API, 3, "S: Append <n> to add just the <n>'th sine component.");
+	GMT_Usage (API, -2, "A few modifiers control further behavior:");
+	GMT_Usage (API, 3, "+l Append <period> to set fundamental period of x [range of x].");
+	GMT_Usage (API, 3, "+o Append <orig> to set origin of x [mid-point of x].");
+	GMT_Usage (API, 3, "+r Request robust model. E.g., robust quadratic = -Np2+r.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<condition_#>");
+	GMT_Usage (API, -2, "Truncate eigenvalue spectrum so matrix has <condition_#> [Default = 1.0e06].");
+	GMT_Usage (API, 1, "\n-I[<confidence>]");
+	GMT_Usage (API, -2, "Iteratively Increase the number of model parameters, to a max of <n_model> so long as the "
+		"reduction in variance is significant at the <confidence> level [0.51].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Weighted input given, weights in 3rd column [Default is unweighted].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to read standard deviations and compute weights as 1/s^2.\n");
+	GMT_Usage (API, 1, "\n-W[+s|w]");
+	GMT_Usage (API, -2, " Weighted input given, weights in 3rd column [Default is unweighted]. Select modifier:");
+	GMT_Usage (API, 3, "+s Read standard deviations and compute weights as 1/s^2.");
+	GMT_Usage (API, 3, "+w Read weights directly [Default].");
 	GMT_Option (API, "bi");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2 (or 3 if -W is set) input columns.\n");
-	GMT_Option (API, "bo,d,e,h,i,q,s,w,:,.");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 2 (or 3 if -W is set) input columns.");
+	GMT_Option (API, "bo,d,e,f,h,i,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -611,7 +624,7 @@ static int parse (struct GMT_CTRL *GMT, struct TREND1D_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "sw", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.mode = (strstr (opt->arg, "+s")) ? 2 : 1;
 				break;
 

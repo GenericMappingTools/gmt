@@ -93,22 +93,28 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -T<TAG> [-C] [-D] [-F<fflags>] [-G] [-L[<list>][+i]] [-N<nflags>]\n\t[%s] [%s] [%s]\n\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s -T<TAG> [-C] [-D] [-F<flags>] [-G] [-L[<list>][+i]] [-N<flags>] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Report center of each tile with tracks instead of track listing [Default is track files].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Only report the track names and skip the report for each field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Comma-separated list of column field names that must ALL be present [Default is any field].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Report global flags per track [Default reports for segments inside region].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Setup mode: Return all pairs of tracks that might intersect given\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the bin distribution.  Optionally, give file with a list of tracks.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Then, only pairs with at least one track from the list is output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to include internal pairs in the list [external only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Comma-separated list of column field names that ALL must be missing.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C Report center of each tile with tracks instead of track listing [Default is track files].");
+	GMT_Usage (API, 1, "\n-D Only report the track names and skip the report for each field.");
+	GMT_Usage (API, 1, "\n-F<flags>");
+	GMT_Usage (API, -2, "Comma-separated list of column field names that must ALL be present [Default is any field].");
+	GMT_Usage (API, 1, "\n-G Report global flags per track [Default reports for segments inside region].");
+	GMT_Usage (API, 1, "\n-L[<list>][+i]");
+	GMT_Usage (API, -2, "Setup mode: Return all pairs of tracks that might intersect given "
+		"the bin distribution.  Optionally, give file with a list of tracks. "
+		"Then, only pairs with at least one track from the list is output. "
+		"Append +i to include internal pairs in the list [external only].");
+	GMT_Usage (API, 1, "\n-N<flags>");
+	GMT_Usage (API, -2, "Comma-separated list of column field names that ALL must be missing.");
 	GMT_Option (API, "R");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "[Default region is the entire data domain].");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);

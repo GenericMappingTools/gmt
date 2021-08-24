@@ -71,20 +71,22 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> [%s]\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]%s[%s]\n\n", GMT_Rgeo_OPT,
-		GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> [%s] [%s] [-T] [%s] [%s] [%s] [%s]%s[%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is data set to be resampled.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the name of the interpolated output grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is input grid to be resampled.");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Set the name of the interpolated output grid file.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "I");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   When omitted: grid spacing is copied from input grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a subregion [Default is old region].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Translate between grid registration and pixel registration.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Implies resampling halfway between nodes (a destructive change to the grid).\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "If -I is not given then grid spacing is copied from the input grid.");
+	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
+	GMT_Usage (API, -2, "Specify a subregion [Default is input grid region].");
+	GMT_Usage (API, 1, "\n-T Translate between grid registration and pixel registration. "
+		"Implies resampling halfway between nodes (a destructive change to the grid).");
 	GMT_Option (API, "V,f,n,r,x,.");
 
 	return (GMT_MODULE_USAGE);

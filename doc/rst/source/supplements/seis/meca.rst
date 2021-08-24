@@ -15,7 +15,7 @@ Synopsis
 **gmt meca** [ *table* ]
 |-J|\ *parameters*
 |SYN_OPT-R|
-|-S|\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+|-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
 [ |-A|\ [**+p**\ *pen*][**+s**\ *size*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
@@ -26,7 +26,6 @@ Synopsis
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [*pen*] ]
-[ |-M| ]
 [ |-N| ]
 [ |-T|\ *nplane*\ [/*pen*] ]
 [ |SYN_OPT-U| ]

@@ -643,7 +643,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
 		if (z_min == 1e50) {		/* We don't know yet the dataset Min/Max */
-			GDALComputeRasterMinMax(hBand, true, adfMinMax);		/* Trust on metadata min/max */
+			GDALComputeRasterMinMax(hBand, false, adfMinMax);		/* Unfortunately, cannot trust metadata min/max */
 			Ctrl->hdr[4] = adfMinMax[0];
 			Ctrl->hdr[5] = adfMinMax[1];
 		}

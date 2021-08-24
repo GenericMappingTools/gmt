@@ -44,7 +44,6 @@
 #define POL_BUFFER		7
 #define POL_CENTROID	8
 
-#define PW_TESTING
 #define MIN_AREA_DIFF		0.01;	/* If two polygons have areas that differ more than 1 % of each other then they are not the same feature */
 #define MIN_SEPARATION		0	/* If the two closest points for two features are > 0 units apart then they are not the same feature */
 #define MIN_CLOSENESS		0.01	/* If two close segments has an mean separation exceeding 1% of segment length, then they are not the same feature */
@@ -757,76 +756,88 @@ GMT_LOCAL struct NN_INFO *gmtspatial_NNA_update_info (struct GMT_CTRL *GMT, stru
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-#ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-L%s/<pnoise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sb<width>|h|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_DIST_OPT, GMT_Rgeo_OPT);
-#else
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[a<min_dist>]] [-C]\n\t[-D[+f<file>][+a<amax>][+d%s][+c|C<cmax>][+l][+s<sfact>][+p]]\n\t[-E+p|n] [-F[l]] [-I[i|e]] [-N<pfile>[+a][+p<ID>][+r][+z]]\n\t[-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] [-Sb<width>|h|i|j|s|u]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT);
-#endif
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<cpol>]] [%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[a<min_dist>]] [-C] [-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<sfact>]] [-E+n|p] "
+		"[-F[l]] [-I[i|e]] [-L%s/<noise>/<offset>] [-N<pfile>[+a][+p<ID>][+r][+z]] [-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]] [%s] "
+		"[-Sb<width>|h|i|j|s|u] [-T[<cpol>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_DIST_OPT, GMT_Rgeo_OPT,
 		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Nearest Neighbor (NN) Analysis. Compute minimum distances between NN point pairs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append unit used for NN distance calculation.  Returns minimum distances and point IDs for pairs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Aa to replace close neighbor pairs with their weighted average location until\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   no point pair has a NN distance less than the specified <min_dist> distance [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Considers 3rd column as z (if present) and 4th as w, if present [weight = 1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For truncation instead (possibly yielding open polygons, i.e., lines), see -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Look for (near-)duplicates in <table>, or append +f to compare <table> against <file>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Near-duplicates have a minimum point separation less than <dmax> [0] and a closeness\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   ratio (mean separation/length) less than <cmax> [0.01].  Use +d and +c to change these.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +C to use median separation instead [+c uses mean separation].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If near-duplicates have lengths that differ by <sfact> or more then they are subsets or supersets [2].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To flag duplicate polygons, the fractional difference in areas must be less than <amax> [0.01].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default we consider all points when comparing two lines.  Use +p to limit\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the comparison to points that project perpendicularly on to the other line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Orient all polygons to have the same handedness.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p for counter-clockwise (positive) or +n for clockwise (negative) handedness.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force all input segments to become closed polygons on output by adding repeated point if needed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fl instead to ensure input lines are not treated as polygons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Compute Intersection locations between input polygon(s).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append e or i for external or internal crossings only [Default is both].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use uppercase E or I to consider all segments within the same table as one entity [separate].\n");
-#ifdef PW_TESTING
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Remove tile Lines.  These are superfluous lines along the -R border.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <gap_dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].\n");
-#endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a) If OGR/GMT polygons, get polygon ID via -a for Z column, else\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     b) Interpret segment labels (-Z<value>) as polygon IDs, else\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c) Interpret segment labels (-L<label>) as polygon IDs, else\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     d) Append +p<ID> to set origin for auto-incrementing polygon IDs [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Modifier +a means all points of a feature (line, polygon) must be inside the ID polygon [mid point].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Modifier +z means append the ID as a new output data column [Default adds -Z<ID> to segment header].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Modifier +r means no table output; just reports which polygon a feature is inside.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Measure area and handedness of polygon(s) or length of line segments.  If -fg is used\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   you may append unit %s [k]; otherwise it will be based on the input Cartesian data unit.\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   We also compute polygon centroid or line mid-point.  See documentation for more information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c to limit output segments to those with area or length within specified range [output all segments].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     if <max> is not given then it defaults to infinity.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h to place the (area, handedness) or length result in the segment header on output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to consider all input as polygons and close them if necessary\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [only closed polygons are considered polygons].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l to consider all input as lines even if closed [closed polygons are considered polygons].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to sort segments based on area or length; append a for ascending or d for descending [ascending].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default only reports results to stdout].\n");
+	GMT_Usage (API, 1, "\n-A[a<min_dist>]");
+	GMT_Usage (API, -2, "Nearest Neighbor (NN) Analysis. Compute minimum distances between NN point pairs. "
+		"Append unit used for NN distance calculation.  Returns minimum distances and point IDs for pairs. "
+		"Use -Aa to replace close neighbor pairs with their weighted average location until "
+		"no point pair has a NN distance less than the specified <min_dist> distance [0]. "
+		"Considers 3rd column as z (if present) and 4th as w, if present [weight = 1].");
+	GMT_Usage (API, 1, "\n-C Clip polygons to the given region box (requires -R), possibly yielding new closed polygons. "
+		"For truncation instead (possibly yielding open polygons, i.e., lines), see -T.");
+	GMT_Usage (API, 1, "\n-D[+a<amax>][+c|C<cmax>][+d<dmax>][+f<file>][+p][+s<sfact>]");
+	GMT_Usage (API, -2, "Look for (near-)duplicate lines or polygons. Duplicate lines have a minimum point separation less than <dmax> and a closeness "
+		"ratio (mean separation/length) less than <cmax>.  "
+		"If near-duplicates have lengths that differ by <sfact> or more then they are subsets or supersets. "
+		"To flag duplicate polygons, the fractional difference in areas must be less than <amax>. "
+		"By default, we consider all points when comparing two lines. Change these settings via modifiers:");
+	GMT_Usage (API, 3, "+a Set limit of fractional difference of polygon areas [0.01].");
+	GMT_Usage (API, 3, "+c Set closeness ratio (mean separation/length) [0.01]. "
+		"Use +C to use median separation instead.");
+	GMT_Usage (API, 3, "+d Set minimum mean point separation [0].");
+	GMT_Usage (API, 3, "+f Compare <table> against <file> instead of itself.");
+	GMT_Usage (API, 3, "+p limit comparison to points that project perpendicularly on to the other line [all points].");
+	GMT_Usage (API, 3, "+s Set length ratio difference threshold [2].");
+	GMT_Usage (API, 1, "\n-E+n|p");
+	GMT_Usage (API, -2, "Orient all polygons to have the same handedness:");
+	GMT_Usage (API, 3, "+n Impose clockwise (negative) handedness.");
+	GMT_Usage (API, 3, "+p Impose counter-clockwise (positive) handedness.");
+	GMT_Usage (API, 1, "\n-F[l]");
+	GMT_Usage (API, -2, "Force all input segments to become closed polygons on output by adding repeated point if needed. "
+		"Use -Fl instead to ensure input lines are not treated as polygons.");
+	GMT_Usage (API, 1, "\n-I[i|e]");
+	GMT_Usage (API, -2, "Compute Intersection locations between input polygon(s). Optionally append a directive:");
+	GMT_Usage (API, 3, "e: Compute external crossings only [Default is both].");
+	GMT_Usage (API, 3, "i: Compute internal crossings only [Default is both].");
+	GMT_Usage (API, -2, "Use uppercase E or I to consider all segments within the same table as one entity [separate].");
+	GMT_Usage (API, 1, "\n-L%s/<noise>/<offset>", GMT_DIST_OPT);
+	GMT_Usage (API, -2, "Remove tile Lines.  These are superfluous lines along the -R border. "
+		"Append <dist> (in m) [0], coordinate noise [1e-10], and max offset from gridline [1e-10].");
+	GMT_Usage (API, 1, "\n-N<pfile>[+a][+p<ID>][+r][+z]");
+	GMT_Usage (API, -2, "Determine ID of polygon (in <pfile>) enclosing each input feature.  The ID is set as follows:");
+	GMT_Usage (API, 3, "%s If OGR/GMT polygons, get polygon ID via -a for Z column, else", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Interpret segment labels (-Z<value>) as polygon IDs, else", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Interpret segment labels (-L<label>) as polygon IDs, else", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Append +p<ID> to set origin for auto-incrementing polygon IDs [0].", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Additional modifiers are available:");
+	GMT_Usage (API, 3, "+a All points of a feature (line, polygon) must be inside the ID polygon [mid point].");
+	GMT_Usage (API, 3, "+r No table output; just reports which polygon a feature is inside.");
+	GMT_Usage (API, 3, "+z Append the ID as a new output data column [Default adds -Z<ID> to segment header].");
+	GMT_Usage (API, 1, "\n-Q[+c<min>[/<max>]][+h][+l][+p][+s[a|d]]");
+	GMT_Usage (API, -2, "Measure area and handedness of polygon(s) or length of line segments.  If -fg is used "
+		"you may append unit %s [k]; otherwise it will be based on the input Cartesian data unit. "
+		"We also compute polygon centroid or line mid-point.  See documentation for more information. Optional modifiers:", GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "+c Limit output segments to those with area or length within specified range [output all segments]. "
+		"If <max> is not given then it defaults to infinity.");
+	GMT_Usage (API, 3, "+h Place the (area, handedness) or length result in the segment header on output.");
+	GMT_Usage (API, 3, "+p Consider all input as polygons and close them if necessary "
+		"[only closed polygons are considered polygons].");
+	GMT_Usage (API, 3, "+l Consider all input as lines even if closed [closed polygons are considered polygons].");
+	GMT_Usage (API, 3, "+s Sort segments based on area or length; append a for ascending or d for descending [ascending].");
+	GMT_Usage (API, -2, "[Default only reports results to standard output].\n");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Spatial manipulation of polygons; choose among:\n");
+	GMT_Usage (API, 1, "\n-Sb<width>|h|i|j|s|u");
+	GMT_Usage (API, -2, "Spatial manipulation of polygons; choose a directive:");
 #ifdef HAVE_GEOS
-	GMT_Message (API, GMT_TIME_NONE, "\t     b<width> for computing buffer polygon around line/polygon. Append width of buffer zone\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       But be warned that this is a purely Cartesian operation so <width> must be in data units.\n");
+	GMT_Usage (API, 3, "b: Compute buffer polygon around line/polygon. Append <width> of buffer zone. "
+		"Note: this is a purely Cartesian operation so <width> must be in data units.");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t     h for detecting holes and reversing them relative to perimeters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     i for intersection [Not implemented yet].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     j for joining polygons that were split by the Dateline [Not implemented yet].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s for splitting polygons that straddle the Dateline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     u for union [Not implemented yet].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and clip against a polygon derived from the region border.\n");
+	GMT_Usage (API, 3, "h: Detect holes and reverse them relative to perimeters.");
+	GMT_Usage (API, 3, "i: Find intersection [Not implemented yet].");
+	GMT_Usage (API, 3, "j: Join polygons that were split by the Dateline [Not implemented yet].");
+	GMT_Usage (API, 3, "s: Split polygons that straddle the Dateline.");
+	GMT_Usage (API, 3, "u: Find union [Not implemented yet].");
+	GMT_Usage (API, 1, "\n-T[<cpol>]");
+	GMT_Usage (API, -2, "Truncate polygons against the clip polygon <cpol>; if <cpol> is not given we require -R "
+		"and clip against a polygon derived from the region border.");
 	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,j,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -940,7 +951,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				if (opt->arg[0] == 'e') Ctrl->I.mode = 4;
 				if (opt->arg[0] == 'E') Ctrl->I.mode = 8;
 				break;
-#ifdef PW_TESTING
 			case 'L':	/* Remove tile lines */
 				Ctrl->L.active = true;
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
@@ -948,7 +958,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 				if (n >= 2) Ctrl->L.path_noise = atof (txt_b);
 				if (n == 3) Ctrl->L.box_offset = atof (txt_c);
 				break;
-#endif
 			case 'N':	/* Determine containing polygons for features */
 				Ctrl->N.active = true;
 				if ((s = strchr (opt->arg, '+')) == NULL) {	/* No modifiers */

@@ -125,30 +125,35 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *C) {	/* D
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F<out>] [-G] [-M[<factor>]] [-N] [-S] [-T] [%s] [-W]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_h_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [+][-] <rotA> [[+][-] <rotB>] [[+][-] <rotC>] ... [-A] [-D] "
+		"[-Fs|t] [-G] [-M[<factor>]] [-N] [-S] [-T] [%s] [-W] [%s] [%s]\n", name, GMT_V_OPT, GMT_h_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<rotA>, <rotB>, etc. are total reconstruction or stage rotation pole files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give two plate IDs separated by a hyphen (e.g., PAC-MBL)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to extract that rotation from the GPlates rotation database (if installed)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Or, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   All rotation poles are assumed to be in geocentric coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rotations will be added/subtracted in the order given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Report angles as time [Default uses time].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Report all longitudes in -180/+180 range [Default is 0-360].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Set output file type: t for total reconstruction and s for stage rotations [Default is -Ft].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Write rotations using GPlates format [Default is spotter format].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Reduce opening angles for stage rotations by <factor> [0.5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Typically used to get half-rates needed for flowlines.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles/rates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles/rates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Transpose the result (i.e., change sign of final rotation angle).\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<rotA>, ... are total reconstruction or stage rotation pole files. "
+		"Alternatively, give two plate IDs separated by a hyphen (e.g., PAC-MBL) "
+		"to extract that rotation from the GPlates rotation database (if installed). "
+		"Or, they can be a single rotation in lon/lat[/tstart[/tstop]]/angle format. "
+		"All rotation poles are assumed to be in geocentric coordinates. "
+		"Rotations will be added/subtracted in the order given.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Report angles as time [Default uses time].");
+	GMT_Usage (API, 1, "\n-D Report all longitudes in -180/+180 range [Default is 0-360].");
+	GMT_Usage (API, 1, "\n-Fs|t");
+	GMT_Usage (API, -2, "Set output file directive:");
+	GMT_Usage (API, 3, "t: Total reconstruction [Default].");
+	GMT_Usage (API, 3, "s: Stage rotations.");
+	GMT_Usage (API, 1, "\n-G Write rotations using GPlates format [Default is spotter format].");
+	GMT_Usage (API, 1, "\n-M[<factor>]");
+	GMT_Usage (API, -2, "Reduce opening angles for stage rotations by <factor> [0.5]. "
+		"Typically used to get half-rates needed for flowlines.");
+	GMT_Usage (API, 1, "\n-N Ensure all poles are in northern hemisphere [Default ensures positive opening angles/rates].");
+	GMT_Usage (API, 1, "\n-S Ensure all poles are in southern hemisphere [Default ensures positive opening angles/rates].");
+	GMT_Usage (API, 1, "\n-T Transpose the result (i.e., change sign of final rotation angle).");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Ensure all rotations have negative opening angles/rates [Default ensures positive opening angles/rates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Only one of -N, -S, -W may be used at the same time.\n");
+	GMT_Usage (API, 1, "\n-W Ensure all rotations have negative opening angles/rates [Default ensures positive opening angles/rates].");
+	GMT_Usage (API, 1, "\nOnly one of -N, -S, -W may be used at the same time.");
 	GMT_Option (API, "h,.");
 
 	return (GMT_MODULE_USAGE);

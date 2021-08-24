@@ -92,24 +92,29 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/*
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrections>]] [-I<list>] "
+		"[%s] [-S] [%s] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Use any adjustment splines per track to redistribute COEs between tracks\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   according to their relative weight [no adjustments].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Add segment headers with track names between separate file output [no added segment headers].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Comma-separated list of column names to output [Default are all fields].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I List of tracks to ignore [Use all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Use any adjustment splines per track to redistribute COEs between tracks "
+		"according to their relative weight [no adjustments].");
+	GMT_Usage (API, 1, "\n-E Add segment headers with track names between separate file output [no added segment headers].");
+	GMT_Usage (API, 1, "\n-F<fields>");
+	GMT_Usage (API, -2, "Comma-separated list of column names to output [Default are all fields].");
+	GMT_Usage (API, 1, "\n-I<list>");
+	GMT_Usage (API, -2, "List of tracks to ignore [Use all tracks].");
+	GMT_Usage (API, 1, "\n-L[<corrections>]");
+	GMT_Usage (API, -2, "Subtract systematic corrections from the data. If no correction file is given, "
+		"the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: data columns exclude navigation (lon|x,lat|y,time) columns.)\n");
+	GMT_Usage (API, 1, "\n-S Suppress output records where all data columns are NaN [Output all records]. "
+		"Note: data columns exclude navigation (lon|x,lat|y,time) columns.");
 	GMT_Option (API, "V,bo,do,.");
 
 	return (GMT_MODULE_USAGE);

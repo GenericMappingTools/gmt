@@ -130,50 +130,61 @@ GMT_LOCAL double grdgradient_specular (double n_columns, double n_rows, double n
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]] "
+		"[-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]] "
+		"[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s] [-S<slopegrid>] [%s] "
+		"[-fg] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -A<azim>/<azim2> will compute two directions and select the one larger in magnitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  If <azim> is a grid we expect variable azimuths on a grid coregistered with <ingrid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Find the direction of the vector grad z (up-slope direction).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a to get the aspect instead (down-slope direction).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to report Cartesian angle (0-360 CCW from East (+x-axis)) [Default: azimuth].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to add 90 degrees to the values from c or o.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Provide the azimuth and elevation of the light vector.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append any of [+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     for parameters that control the reflectance properties of the surface\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default values are: +a0.55+d0.6p0.4+s10].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Es for a simpler Lambertian algorithm (note that with this algorithm\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     you only have to provide azimuth and elevation).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ep for the Peucker piecewise linear approximation (simpler but faster algorithm).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Em for another algorithm that gives results close to ESRI's 'hillshade' but faster\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     In this case the azimuth and elevation are hardwired to 315 and 45 degrees;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     if you provide other values they will be ignored.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Output file for results from -A or -D.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize gradients so that max |grad| = <amp> [1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +a<ambient> to add <ambient> to the result [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    For -Nt|e, optionally append +s<sigma> and/or +o<offset> to set\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    sigma and offset for the transform [Default estimates from the data].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    See -Q to use the same offset, sigma for multiple grid calculations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Control handling of -N arguments from previous calculations. Append code:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c: Create stat file and write the offset and sigma of this run.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r: Read offset and sigma of the previous run from stat file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     R: Remove & read.  As r but also removes the stat file after use.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The values obtained are used if +o and/or +s modifiers in -N are given no argument.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is name of input grid file.");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Output file for results from -A or -D.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<azim>[/<azim2>]");
+	GMT_Usage (API, -2, "Set azimuth (0-360 CW from North (+y)) for directional derivatives. "
+		"Appending /<azim2> will compute two directions and select the one larger in magnitude. "
+		"If <azim> is a grid we expect variable azimuths on a grid co-registered with <ingrid>.");
+	GMT_Usage (API, 1, "\n-D[a][c][o][n]");
+	GMT_Usage (API, -2, "Find the direction of the vector grad z (up-slope direction) given directive:");
+	GMT_Usage (API, 3, "a: Get the aspect instead (down-slope direction).");
+	GMT_Usage (API, 3, "c: Report Cartesian angle (0-360 CCW from East (+x-axis)) [Default: azimuth].");
+	GMT_Usage (API, 3, "o: Get bidirectional orientations [0-180] rather than directions [0-360].");
+	GMT_Usage (API, -2, "Append n to add 90 degrees to the values from c or o.");
+	GMT_Usage (API, 1, "\n-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]");
+	GMT_Usage (API, -2, "Compute Lambertian radiance appropriate to use with grdimage|grdview. "
+		"Provide the azimuth and elevation of the light vector. "
+		"Optionally, append modifiers to further control the reflectance properties of the surface:");
+	GMT_Usage (API, 3, "+a Set the <ambient> light value [0.55].");
+	GMT_Usage (API, 3, "+d Set the <diffuse> light value [0.6].");
+	GMT_Usage (API, 3, "+p Set <specular> value [0.4].");
+	GMT_Usage (API, 3, "+s Set <shine> value [10].");
+	GMT_Usage (API, -2, "Directives s|p|m can simplify the setup:");
+	GMT_Usage (API, 3, "s: Simpler Lambertian algorithm (only requires azimuth and elevation).");
+	GMT_Usage (API, 3, "p: Peucker piecewise linear approximation (simpler but faster algorithm).");
+	GMT_Usage (API, 3, "m: Similar to ESRI's 'hillshade' but faster. Note: azimuth and elevation are hardwired to 315 and 45 degrees; "
+		"if you provide other values they will be ignored.");
+	GMT_Usage (API, 1, "\n-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]");
+	GMT_Usage (API, -2, "Normalize gradients so that max |grad| = <amp> [1.0]. Optional directives:");
+	GMT_Usage (API, 3, "t: Make atan transform, then scale to <amp> [1.0].");
+	GMT_Usage (API, 3, "e: Make exp  transform, then scale to <amp> [1.0].");
+	GMT_Usage (API, -2, "Several modifiers can be used to affect the final result:");
+	GMT_Usage (API, 3, "+a Add <ambient> light [0].");
+	GMT_Usage (API, 3, "+o Offset gradients by <offset> [Default estimates <offset> from the data].");
+	GMT_Usage (API, 3, "+s Normalize gradients by <sigma> [Default estimates <sigma> from the data].");
+	GMT_Usage (API, -2, "See -Q to use the same offset, sigma for multiple grid calculations.");
+	GMT_Usage (API, 1, "\n-Qc|r|R");
+	GMT_Usage (API, -2, "Control handling of -N arguments from previous calculations. Append directive:");
+	GMT_Usage (API, 3, "c: Create statistics file and write the offset and sigma of this run.");
+	GMT_Usage (API, 3, "r: Read offset and sigma of the previous run from statistics file.");
+	GMT_Usage (API, 3, "R: Remove and read.  As r but also removes the statistics file after use.");
+	GMT_Usage (API, -2, "Note: The values obtained are used if +o and/or +s modifiers in -N are given no argument.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Output file for |grad z|; requires -D.\n");
+	GMT_Usage (API, 1, "\n-S<slopegrid>");
+	GMT_Usage (API, -2, "Output file for |grad z|; requires -D.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Usage (API, 1, "\n-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.");
 	GMT_Option (API, "n,.");
 
 	return (GMT_MODULE_USAGE);

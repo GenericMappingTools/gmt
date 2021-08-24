@@ -14,17 +14,17 @@ Synopsis
 
 **gmt gpsgridder** [ *table* ]
 |-G|\ *outfile*
-[ |SYN_OPT-I| ]
-[ |SYN_OPT-R| ]
 [ |-C|\ [**n**]\ *value*\ [**+f**\ *file*] ]
 [ |-E|\ [*misfitfile*] ]
 [ |-F|\ [**d**\|\ **f**]\ *fudge* ]
+[ |SYN_OPT-I| ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
+[ |SYN_OPT-R| ]
 [ |-S|\ *nu* ]
 [ |-T|\ *maskgrid* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**w**] ]
+[ |-W|\ [**+s**\|\ **w**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -153,13 +153,13 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**w**]
+**-W**\ [**+s**\|\ **w**]
    One-sigma data uncertainties for *u* and *v* are provided in the last two columns.
    We then compute least squares weights that are inversely proportional to the square
-   of the uncertainties.  Append **w** if weights are given instead of uncertainties,
-   in which case we just use the weights as provided (no squaring).  This results in
-   a weighted least squares fit.  Note that **-W** only has an effect if **-C** is used.
-   [Default uses no weights or uncertainties].
+   of the uncertainties [Default, or **+s**].  Instead, append **+w** if weights are
+   given instead of uncertainties, in which case we just use the weights as provided
+   (no squaring).  This results in a weighted least squares fit.  Note that **-W**
+   only has an effect if **-C** is used [Default uses no weights or uncertainties].
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_

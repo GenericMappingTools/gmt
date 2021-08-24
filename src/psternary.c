@@ -30,7 +30,7 @@
 #define THIS_MODULE_MODERN_NAME	"ternary"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Plot data on ternary diagrams"
-#define THIS_MODULE_KEYS	"<D{,>?},>DM,C-("
+#define THIS_MODULE_KEYS	"<D{,>X},>DM,CC("
 #define THIS_MODULE_NEEDS	"Jd"
 #define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy"
 
@@ -104,36 +104,43 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>] [-C<cpt>] [-G<fill>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-JX[-]<width>] %s[-L<a>/<b/<c> ] [-M] [-N] %s%s [-S[<symbol>][<size>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-R<amin>/<amax>/<bmin>/<bmax>/<cmin>/<cmax>] [%s] [%s] [-W[<pen>][<attr>]]\n", GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] %s[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <table> [-B<args> or -Ba<args> -Bb<args> -Bc<args>] [-C<cpt>] [-G<fill>] [-JX[-]<width>] "
+		"%s[-L<a>/<b/<c>] [-M] [-N] %s%s [-S[<symbol>][<size>]] [-R<amin>/<amax>/<bmin>/<bmax>/<cmin>/<cmax>] [%s] [%s] "
+		"[-W[<pen>][<attr>]] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT,
+		GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT,
+		GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data sets.  If none, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-B Specify axis annotations for the three axis a, b, c with separate\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ba<args> -Bb<args> -Bc<args> or a single -B<args> for all axes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT to assign symbol colors based on z-value in 3rd column (with -S), or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   specify contours to be drawn (with -Q).\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-B<args> or -Ba<args> -Bb<args> -Bc<args>");
+	GMT_Usage (API, -2, "Specify axis annotations for the three axis a, b, c with separate "
+		"-Ba<args> -Bb<args> -Bc<args> or a single -B<args> for all axes.");
+	GMT_Usage (API, 1, "\n-C<cpt>");
+	GMT_Usage (API, -2, "Use CPT to assign symbol colors based on z-value in 3rd column (with -S)");
+	//	"or specify contours to be drawn (with -Q).");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
-	GMT_Message (API, GMT_TIME_NONE, "\t-J Use -JX<width> to set the plot base width (axes are positive counter-clockwise).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give a negative width for clockwise positive axes direction.\n");
+	GMT_Usage (API, 1, "\n-JX[-]<width>>");
+	GMT_Usage (API, -2, "Use -JX<width> to set the plot base width (axes are positive counter-clockwise). "
+		"Give a negative width for clockwise positive axes direction.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Place labels where each of the three vertices reach 100%% [no labels].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify any label as - to skip that label only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Convert (a,b,c) to normalized (x,y) and write to standard output.  No plotting occurs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
+	GMT_Usage (API, 1, "\n-L<a>/<b/<c>");
+	GMT_Usage (API, -2, "Place labels where each of the three vertices reach 100%% [no labels]. "
+		"Specify any label as - to skip that label only.");
+	GMT_Usage (API, 1, "\n-M Convert (a,b,c) to normalized (x,y) and write to standard output.  No plotting occurs.");
+	GMT_Usage (API, 1, "\n-N Do not skip or clip symbols that fall outside the map border [clipping is on].");
 	GMT_Option (API, "O,P,R");
 	//GMT_Message (API, GMT_TIME_NONE, "\t-Q Selects contouring.  Optionally append <cut>.  If given, then we do not draw\n");
 	//GMT_Message (API, GMT_TIME_NONE, "\t   closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  See plot|psxy for full list of symbols.\n",
+	GMT_Usage (API, 1, "\n-S[<symbol>][<size>]");
+	GMT_Usage (API, -2, "Select symbol type and symbol size (in %s).  See plot|psxy documentation for full list of symbols.",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -S is not selected then we plot lines (requires -W) or polygons (requires -G or -C).\n");
+	GMT_Usage (API, -2, "Note: If -S is not selected then we plot lines (requires -W) or polygons (requires -G or -C).");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 15);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", NULL, 15);
 	GMT_Option (API, "X,bi2,c,di,e,f,g,h,i,p,qi,t,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -514,19 +521,6 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 	if (reverse) {	/* Flip what is positive directions */
 		for (k = 0; k <= GMT_Z; k++) sign[k] = - sign[k];
 	}
-	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
-		if (side[k] == 0) continue;	/* Did not want this axis drawn */
-		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
-		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, psternary_get_B_setting (boptions[k]));
-		gmt_init_B (GMT);
-		PSL_comment (PSL, "Draw axis %c with origin at %g, %g and rotation = %g\n", name[k], x_origin[k], y_origin[k], rot[k]);
-		PSL_setorigin (PSL, x_origin[k], y_origin[k], rot[k], PSL_FWD);
-		if ((error = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd))) {
-			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot %c axis\n", name[k]);
-			Return (API->error);
-		}
-		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
-	}
 
 	if (!Ctrl->S.active && (Ctrl->G.active || Ctrl->C.active)) {	/* Plot polygons before gridlines */
 		char vfile[GMT_VF_LEN] = {""};
@@ -566,6 +560,20 @@ EXTERN_MSC int GMT_psternary (void *V_API, int mode, void *args) {
 		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
 	}
 	if (clip_set) PSL_endclipping (PSL, 1);
+
+	for (k = 0; k <= GMT_Z; k++) {	/* Plot the 3 axes for -B settings that have been stripped of gridline requests */
+		if (side[k] == 0) continue;	/* Did not want this axis drawn */
+		code = (side[k] & 2) ? cmode[k] : (char)tolower (cmode[k]);
+		sprintf (cmd, "-R%g/%g/0/1 -JX%gi/%gi -O -K -B%c \"-B%s\"", wesn_orig[2*k], wesn_orig[2*k+1], sign[k]*width, height, code, psternary_get_B_setting (boptions[k]));
+		gmt_init_B (GMT);
+		PSL_comment (PSL, "Draw axis %c with origin at %g, %g and rotation = %g\n", name[k], x_origin[k], y_origin[k], rot[k]);
+		PSL_setorigin (PSL, x_origin[k], y_origin[k], rot[k], PSL_FWD);
+		if ((error = GMT_Call_Module (API, "psbasemap", GMT_MODULE_CMD, cmd))) {
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to plot %c axis\n", name[k]);
+			Return (API->error);
+		}
+		PSL_setorigin (PSL, -x_origin[k], -y_origin[k], -rot[k], PSL_INV);
+	}
 
 	for (k = 0; k <= GMT_Z; k++) {
 		if (GMT_Free_Option (API, &boptions[k])) {

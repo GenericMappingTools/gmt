@@ -87,28 +87,33 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> %s [-C[<dx>/<dy>]] [-D%s]\n",
-		name, GMT_J_OPT, GMT_inc_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<dpi>] [-F[%s|%s]] [-I] [-M%s] [%s] [%s]\n", GMT_LEN_UNITS2_DISPLAY,
-		GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> %s [-C[<dx>/<dy>]] [-D%s] "
+		"[-E<dpi>] [-F[%s|%s]] [-I] [-M%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_J_OPT, GMT_inc_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY,
+		GMT_DIM_UNITS_DISPLAY, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is data set to be projected.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of output grid\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is the grid to be projected.");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Set name of the output grid.");
 	GMT_Option (API, "J");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Coordinates are relative to projection center [Default is relative to lower left corner].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append dx/dy to add (or subtract if -I) (i.e., false easting & northing) [0/0].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[<dx>/<dy>]");
+	GMT_Usage (API, -2, "Coordinates are relative to projection center [Default is relative to lower left corner]. "
+		"Optionally append <dx>/<dy> to add (or subtract if -I) (i.e., false easting & northing) [0/0].");
 	gmt_inc_syntax (API->GMT, 'D', 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set dpi for output grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force projected values to be in actual distance units [Default uses the given map scale].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or i (inch), c (cm), or p (points) [e].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Inverse transformation from rectangular to geographical.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used if -F is set.\n");
+	GMT_Usage (API, 1, "\n-E<dpi>");
+	GMT_Usage (API, -2, "Set dpi for output grid.");
+	GMT_Usage (API, 1, "\n-F[%s|%s]", GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Force projected values to be in actual distance units [Default uses the given map scale]. "
+		"Specify unit by appending e (meter), f (foot) k (km), M (mile), n (nautical mile), u (survey foot), "
+		"or give map distance units i (inch), c (cm), or p (points) [e].");
+	GMT_Usage (API, 1, "\n-I Inverse transformation from rectangular to geographical.");
+	GMT_Usage (API, 1, "\n-M%s", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Temporarily reset PROJ_LENGTH_UNIT to be c (cm), i (inch), or p (point). "
+		"Cannot be used if -F is set.");
 	GMT_Option (API, "R");
 	GMT_Option (API, "V,n,r,.");
 

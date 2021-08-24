@@ -92,19 +92,24 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-G<outgrid>] [-C[<n_cells>]] [-D[<table>]] [-N[<norm>]] [-Q]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> [-C<n_cells>] [-D[<table>]] [-G<outgrid>] [-N[<norm>]] [-Q] "
+		"[%s] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set how many cells (divisions) of data range to make [16].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump level information to <table> or stdout if not given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Create an equalized output grid file called <outgrid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Use with -G to make an output grid file with standard normal scores.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <norm> to normalize the scores to <-1,+1>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use quadratic equalization scaling [Default is linear].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is name of input grid file.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<n_cells>");
+	GMT_Usage (API, -2, "Set how many cells (divisions) of data range to make [16].");
+	GMT_Usage (API, 1, "\n-D[<table>]");
+	GMT_Usage (API, -2, "Dump level information to <table> or standard output if not given.");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Create an equalized output grid file called <outgrid>.");
+	GMT_Usage (API, 1, "\n-N[<norm>]");
+	GMT_Usage (API, -2, "Use with -G to make an output grid file with standard normal scores. "
+		"Alternatively, append <norm> to normalize the scores to -<norm>/+<norm>.");
+	GMT_Usage (API, 1, "\n-Q Use quadratic equalization scaling [Default is linear].");
 	GMT_Option (API, "R,V,h,.");
 
 	return (GMT_MODULE_USAGE);

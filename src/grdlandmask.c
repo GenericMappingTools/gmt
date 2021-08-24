@@ -107,34 +107,30 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -G<outgrid> %s %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-D<resolution>][+f] [-E[<bordervalues>]]\n\t[-N<maskvalues>] [%s] [%s]%s [%s]\n\n", GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s -G<outgrid> %s %s [%s] [-D<resolution>[+f]] [-E[<bordervalues>]] [-N<maskvalues>] "
+		"[%s] [%s] %s [%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output mask grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Specify file name for output mask grid file.");
 	GMT_Option (API, "I,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_GSHHG_syntax (API->GMT, 'A');
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Choose one of the following resolutions:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a - auto: select best resolution given selected region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f - full resolution (may be very slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     h - high resolution (may be slow for large regions).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     i - intermediate resolution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     l - low resolution [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c - crude resolution, for tasks that need crude continent outlines only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f to use a lower resolution should the chosen one not be available [abort].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Indicate that nodes exactly on a polygon boundary are outside [inside].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append <border> or <cborder>/<lborder>/<iborder>/<pborder>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We will then trace lines through the grid and reset the cells crossed by\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the lines to the indicated values [Default is no line tracing].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This is a new option and is experimental.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Give values to use if a node is outside or inside a feature.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify this information using 1 of 2 formats:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -N<wet>/<dry>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -N<ocean>/<land>/<lake>/<island>/<pond>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   NaN is a valid entry.  Default values are 0/1/0/1/0 (i.e., 0/1).\n");
-	GMT_Option (API, "V,r,x.");
+	gmt_GSHHG_resolution_syntax (API->GMT, 'D', "Alternatively, choose (a)uto to automatically select the best "
+		"resolution given the chosen region.");
+	GMT_Usage (API, 1, "\n-E[<bordervalues>]");
+	GMT_Usage (API, -2, "Indicate that nodes exactly on a polygon boundary are outside [inside]. Optionally append "
+		"<border> or <cborder>/<lborder>/<iborder>/<pborder>. We will then trace lines through the grid and reset the "
+		"cells crossed by the lines to the indicated values [Default is no line tracing].");
+	GMT_Usage (API, 1, "\n-N<maskvalues>");
+	GMT_Usage (API, -2, "Give values to use if a node is outside or inside a feature. Specify this information using 1 "
+		"of 2 formats:");
+	GMT_Usage (API, 3, "%s <wet>/<dry>.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <ocean>/<land>/<lake>/<island>/<pond>.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "NaN is a valid entry. [Default values are 0/1/0/1/0 (i.e., 0/1)].");
+	GMT_Option (API, "V,r,x,.");
 
 	return (GMT_MODULE_USAGE);
 }

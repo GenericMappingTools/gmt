@@ -118,60 +118,69 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	static char type[3] = {'l', 'a', 'c'};
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile>\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n", GMT_GRDEDIT3D);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fl|a|c|n][+1|2] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Z[<levels>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cube> | <grd1> <grd2> <grd3> ... -G<outfile> [%s] "
+		"[-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]] "
+		"[-Fl|a|c|n[+1|2]] [%s] [-S<x>/<y>|<table>[+h<header>]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] "
+		"[-Z[<levels>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+			name,  GMT_GRDEDIT3D, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
+			GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<cube> is the name of the input 3D netCDF data cube.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   However, with -Z we instead expect a series of 2-D grids.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify a single output file name (or a filename format template; also see -S).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To write a series of 2-D grids instead of a cube, include a floating-point C-format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   statement in <outfile> set via -G for embedding the level in the file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+
+	GMT_Usage (API, 1, "\n<cube> is the name of the input 3D netCDF data cube. However, with -Z we instead expect a "
+		"series of 2-D grids.");
+	GMT_Usage (API, 1, "\n-G<outfile>");
+	GMT_Usage (API, -2, "Specify a single output file name (or a filename format template; also see -S) To write a "
+		"series of 2-D grids instead of a cube, include a floating-point C-format statement in <outfile> set via "
+		"-G for embedding the level in the file name.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_cube_info_syntax (API->GMT, 'D');
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set up a single crossection based on <file> or on the given <line1>[,<line2>,...]. Give start and stop\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   coordinates for each line segment.  The format of each <line> is <start>/<stop>, where <start> or <stop>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i<inc> to set the sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Instead of <start/stop>, give <origin> and append +a|o|l|n|r as required:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +a<az> defines a profiles from <origin> in <az> direction. Add +l<length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +g uses gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +o<az> is like +a but centers profile on <origin>. Add +l<length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +p means sample along the parallel if <line> has constant latitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +r<radius> defines a circle about <origin>. Add +i<inc> or +n<np>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +n<np> sets the number of output points and computes <inc> from <length>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +x follows a loxodrome (rhumbline) [great circle].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option,\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     so mixing of units is not allowed [Default unit is km, if grid is geographic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Set the grid interpolation mode.  Choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l Linear interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a Akima spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c Cubic spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n No interpolation (nearest point).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +1 for 1st derivative or +2 for 2nd derivative.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is -F%c].\n", type[API->GMT->current.setting.interpolant]);
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Give a fixed point for across-stack sampling [Default] or interpolation [with -T].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For multiple points, give a <table> of points instead (one point per record).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Output is a multi-segment table written to stdout unless -G is used to set a file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To write each series to separate files, let -G<outfile> contain a C-format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   integer specifier (e.g, %%d) for embedding the running point number.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a fixed header via +h<header> [trailing text per record in <table>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Interpolate the 3-D grid at given levels across the 3rd dimension\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Make evenly spaced output level steps from <min> to <max> by <inc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of levels to produce over the range instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output levels in the first column, or a comma-separated list.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: If -Z and no -T, -E, -S then we simply write the stack as a 3-D data cube.\n");
-	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Read or write 2-D grids that make up a virtual 3-D data cube.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To read a series of 2-D grids, give -Z<levels>, where <levels>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for each grid is set via <min>/<max>/<inc>, <zfile>, or a comma-separated list.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   No argument means let levels be 0, 1, 2, ...\n");
+	GMT_Usage (API, 1, "\n-E<file>|<line1>[,<line2>,...][+a<az>][+g][+i<step>][+l<length>][+n<np][+o<az>][+p][+r<radius>][+x]");
+	GMT_Usage (API, -2, "Set up a single cross-section based on <file> or on the given <line1>[,<line2>,...]. Give "
+		"start and stop coordinates for each line segment.  The format of each <line> is <start>/<stop>, where "
+		"<start> or <stop> are coordinate pairs, e.g., <lon1/lat1>/<lon2>/<lat2>. Append +i<inc> to set the "
+		"sampling increment [Default is 0.5 x min of grid's (x_inc, y_inc)] Instead of <start/stop>, give <origin> "
+		"and append +a|o|l|n|r as required:");
+	GMT_Usage (API, -3, "+a Define a profiles from <origin> in <az> direction. Add +l<length>.");
+	GMT_Usage (API, -3, "+g Use gridline coordinates (degree longitude or latitude) if <line> is so aligned [great circle].");
+	GMT_Usage (API, -3, "+o Define a profile centered on <origin> in <az> direction. Add +l<length>.");
+	GMT_Usage (API, -3, "+p Sample along the parallel if <line> has constant latitude.");
+	GMT_Usage (API, -3, "+r Define a circle about <origin> with given <radius>. Add +i<inc> or +n<np>.");
+	GMT_Usage (API, -3, "+n Set the number of output points as <np> and computes <inc> from <length>.");
+	GMT_Usage (API, -3, "+x Follow a loxodrome (rhumbline) [great circle].");
+	GMT_Usage (API, -2, "Note:  A unit is optional.  Only ONE unit type from %s can be used throughout this option, so "
+		"mixing of units is not allowed [Default unit is km, if grid is geographic].");
+	GMT_Usage (API, 1, "\n-Fl|a|c|n][+1|2]");
+	GMT_Usage (API, -2, "Set the grid interpolation mode.  Choose from:");
+	GMT_Usage (API, -3, "l: Linear interpolation.");
+	GMT_Usage (API, -3, "a: Akima spline interpolation.");
+	GMT_Usage (API, -3, "c: Cubic spline interpolation.");
+	GMT_Usage (API, -3, "n: No interpolation (nearest point).");
+	GMT_Usage (API, -2, "Optionally, append +1 for 1st derivative or +2 for 2nd derivative. [Default is -F%c].",
+		type[API->GMT->current.setting.interpolant]);
+	GMT_Option (API, "R");
+	GMT_Usage (API, 1, "\n-S<x>/<y>|<table>[+h<header>]");
+	GMT_Usage (API, -2, "Give a fixed point for across-stack sampling [Default] or interpolation [with -T]. For "
+		"multiple points, give a <table> of points instead (one point per record). Output is a multi-segment table "
+		"written to standard output unless -G is used to set a file name. To write each series to separate files, let "
+		"-G<outfile> contain a C-format integer specifier (e.g, %%d) for embedding the running point number. "
+		"Append a fixed header via +h<header> [trailing text per record in <table>].");
+	GMT_Usage (API, 1, "\n-T[<file>|<list>|<min>/<max>/<inc>[+b|i|l|n]]");
+		GMT_Usage (API, -2, "Interpolate the 3-D grid at given levels across the 3rd dimension. Make evenly spaced output "
+		"level steps from <min> to <max> by <inc>. Control setup via modifiers:");
+	GMT_Usage (API, 3, "+b Select log2 spacing in <inc>");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, 3, "+l Select log10 spacing via <inc> = 1,2,3.");
+	GMT_Usage (API, 3, "+n Let <inc> mean the number of points instead. of increment");
+	GMT_Usage (API, -2, "Alternatively, give a <file> with output times in the first column, or a comma-separated <list>.");
+	GMT_Option (API, "V");
+	GMT_Usage (API, 1, "\n-Z[<levels>]");
+	GMT_Usage (API, -2, "Read or write 2-D grids that make up a virtual 3-D data cube. To read a series of 2-D grids, "
+		"give -Z<levels>, where <levels> for each grid is set via <min>/<max>/<inc>, <zfile>, or a comma-separated "
+		"list. No argument means let levels be 0, 1, 2, ...");
+	GMT_Usage (API, -2, "Note: If -Z and no -T, -E, -S then we simply write the stack as a 3-D data cube.");
 	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,n,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);

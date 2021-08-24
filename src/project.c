@@ -323,67 +323,75 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+c|h]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>[unit][/<minor>/<azimuth>][+e|n]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+c|h]] "
+		"[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>[unit][/<minor>/<azimuth>][+e|n]] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT,
+		GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tproject will read stdin or file, and does not want input if -G option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tThe projection may be defined in (only) one of three ways:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (1) by a center -C and an azimuth -A,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (2) by a center -C and end point of the path -E,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (3) by a center -C and a roTation pole position -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In a spherical projection [default], all cases place the central meridian\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of the transformed coordinates (p,q) through -C (p = 0 at -C).  The equator\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of the (p,q) system (line q = 0) passes through -C and makes an angle\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <azimuth> with North (case 1), or passes through -E (case 2), or is\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   determined by the pole -T (case 3).  In (3), point -C need not be on equator.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   In a Cartesian [-N option] projection, p = q = 0 at -O in all cases;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (1) and (2) orient the p axis, while (3) orients the q axis.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the location of the center to be <ox>/<oy>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\nNote: project does not want input if -G option is given. "
+		"The projection may be defined in (only) one of three ways:");
+	GMT_Usage (API, 3, "1. By a center -C and an azimuth -A,");
+	GMT_Usage (API, 3, "2. By a center -C and end point of the path -E,");
+	GMT_Usage (API, 3, "3. By a center -C and a roTation pole position -T.");
+	GMT_Usage (API, -2, "In a spherical projection [default], all cases place the central meridian "
+		"of the transformed coordinates (p,q) through -C (p = 0 at -C).  The equator "
+		"of the (p,q) system (line q = 0) passes through -C and makes an angle "
+		"<azimuth> with North (case 1), or passes through -E (case 2), or is "
+		"determined by the pole -T (case 3).  In (3), point -C need not be on equator. "
+		"In a Cartesian [-N option] projection, p = q = 0 at -O in all cases; "
+		"(1) and (2) orient the p axis, while (3) orients the q axis.");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Set the option (1) Azimuth, (<azimuth> in degrees CW from North).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Force the location of the Discontinuity in the r coordinate;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Dd (dateline) means [-180 < r < 180], -Dg (greenwich) means [0 < r < 360].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The default does not check; in spherical case this usually results in [-180,180].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set the option (2) location of end point E to be <bx>/<by>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Indicate what output you want as one or more of xyzpqrs in any order;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   where x,y,[z] refer to input data locations and optional values,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p,q are the coordinates of x,y in the projection's coordinate system,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r,s is the projected position of x,y (taking q = 0) in the (x,y) coordinate system.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p,q may be scaled from degrees into kilometers by the -Q option.  See -L, -Q, -W.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note z refers to all input data columns beyond the required x,y\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is all fields, i.e., -Fxyzpqrs].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -G is set, -F is not available and output defaults to rsp.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Generate (r,s,p) points along profile every <dist> units. (No input data used.)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append /<colat> for a small circle path through C and E (requires -C -E),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or, if given -T and -C, append +c to compute and use <colat> of C [90].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Finally, append +h if you want information about the pole in a segment header [no header].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Check the Length along the projected track and use only certain points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw will use only those points Within the span from C to E (Must have set -E).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -L<l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default uses all points.  Note p = 0 at C and increases toward E in <azimuth> direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Flat Earth mode; a Cartesian projection is made.  Default is spherical.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Convert to Map units, so x,y,r,s are degrees,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   while p,q,dist,l_min,l_max,w_min,w_max are km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If not set, then p,q,dist,l_min,l_max,w_min,w_max are assumed to be in same units as x,y,r,s.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Output should be Sorted into increasing p value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the option (3) location of the roTation pole to the projection to be <px>/<py>.\n");
+	GMT_Usage (API, 1, "\n-C<ox>/<oy>");
+	GMT_Usage (API, -2, "Set the location of the center to be <ox>/<oy>.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<azimuth>");
+	GMT_Usage (API, -2, "Set the option (1) Azimuth, (<azimuth> in degrees CW from North).");
+	GMT_Usage (API, 1, "\n-E<bx>/<by>");
+	GMT_Usage (API, -2, "Set the option (2) location of end point E to be <bx>/<by>.");
+	GMT_Usage (API, 1, "\n-F<flags>");
+	GMT_Usage (API, -2, "Indicate what output you want as one or more of xyzpqrs in any order:");
+	GMT_Usage (API, 3, "%s x,y,[z] refer to input data locations and optional values.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s p,q are the coordinates of x,y in the projection's coordinate system.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s r,s is the projected position of x,y (taking q = 0) in the (x,y) coordinate system.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Note 1: p,q may be scaled from degrees into kilometers by the -Q option.  See -L, -Q, -W. "
+		"Note 2: z refers to all input data columns beyond the required x,y. "
+		"Note 3: If -G is set, -F is not available and output defaults to rsp "
+		"[Default is all fields, i.e., -Fxyzpqrs].");
+	GMT_Usage (API, 1, "\n-G<dist>[/<colat>][+c|h]");
+	GMT_Usage (API, -2, "Generate (r,s,p) points along profile every <dist> units. (No input data used.) "
+		"If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length. "
+		"Optionally, append /<colat> for a small circle path through C and E (requires -C -E). Some modifiers:");
+	GMT_Usage (API, 3, "+c If given -T and -C, compute and use <colat> of C [90].");
+	GMT_Usage (API, 3, "+h Place information about the pole in a segment header [no header].");
+	GMT_Usage (API, 1, "\n-L[w|<l_min>/<l_max>]");
+	GMT_Usage (API, -2, "Check the Length along the projected track and use only certain points:n");
+	GMT_Usage (API, 3, "%s Append w to only use those points Within the span from C to E (Must have set -E).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Append <l_min>/<l_max> will only use points whose p is [l_min <= p <= l_max].", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Default uses all points.  Note p = 0 at C and increases toward E in <azimuth> direction.");
+	GMT_Usage (API, 1, "\n-N Flat Earth mode; a Cartesian projection is made.  Default is spherical.");
+	GMT_Usage (API, 1, "\n-Q Convert to Map units, so x,y,r,s are degrees, "
+		"while p,q,dist,l_min,l_max,w_min,w_max are km. "
+		"If not set, then p,q,dist,l_min,l_max,w_min,w_max are assumed to be in same units as x,y,r,s.");
+	GMT_Usage (API, 1, "\n-S Output should be Sorted into increasing p value.");
+	GMT_Usage (API, 1, "\n-T<px>/<py>");
+	GMT_Usage (API, -2, "Set the option (3) location of the roTation pole to the projection to be <px>/<py>.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Check the width across the projected track and use only certain points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This will use only those points whose q is [w_min <= q <= w_max].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that q is positive to your LEFT as you walk from C toward E in the <azimuth> direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z With -G and -C, generate an ellipse of given major and minor axes and the azimuth of the major axis\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e for adjusting increment to fix perimeter exactly [use increment as given in -G].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n instead if -G specifies the number of unique perimeter points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a degenerate ellipse, i.e., circle, you may just give <major> only as the <diameter>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), d (arc degree),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m (arc minute), or s (arc second) to <major> [k]; we assume -G is in the same units (unless +n is used).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian ellipses, add -N and provide <direction> (CCW from horizontal) instead of <azimuth>.\n");
+	GMT_Usage (API, 1, "\n-W<w_min>/<w_max>");
+	GMT_Usage (API, -2, "Check the width across the projected track and use only certain points. "
+		"This will use only those points whose q is [w_min <= q <= w_max]. "
+		"Note: q is positive to your LEFT as you walk from C toward E in the <azimuth> direction.");
+	GMT_Usage (API, 1, "\n-Z<major>[unit][/<minor>/<azimuth>][+e|n]");
+	GMT_Usage (API, -2, "With -G and -C, generate an ellipse of given major and minor axes and the azimuth of the major axis.");
+	GMT_Usage (API, 3, "+e Adjust increment to fix perimeter exactly [use increment as given in -G].");
+	GMT_Usage (API, 3, "+n Indicate that increment in -G specifies the number of unique perimeter points instead.");
+	GMT_Usage (API, -2, "For a degenerate ellipse, i.e., circle, you may just give <major> only as the <diameter>. "
+		"Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), d (arc degree), "
+		"m (arc minute), or s (arc second) to <major> [k]; we assume -G is in the same units (unless +n is used). "
+		"For Cartesian ellipses, add -N and provide <direction> (CCW from horizontal) instead of <azimuth>.");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);

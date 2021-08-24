@@ -107,7 +107,7 @@ struct SURFACE_CTRL {
 		bool active;
 		char *file;
 	} W;
-	struct SURFACE_Z {	/* -Z<over_relaxation_parameter> */
+	struct SURFACE_Z {	/* -Z<over_relaxation> */
 		bool active;
 		double value;
 	} Z;
@@ -1629,65 +1629,78 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	unsigned int ppm;
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<aspect_ratio>|m] [-C<convergence_limit>]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll<limit>] [-Lu<limit>] [-M<radius>] [-N<n_iterations>] [-Q]\n", GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S<search_radius>[m|s]] [-T[i|b]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation_parameter>]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s\n\t[%s] [%s] [%s] [%s]\n\t%s[%s] [%s]\n\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s %s [-A<aspect_ratio>|m] [-C<convergence_limit>] "
+		"[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll|u<limit>] [-M<radius>] [-N<n_iterations>] [-Q] "
+		"[-S<search_radius>[m|s]] [-T[b|i]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation>] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s [%s] [%s] [%s] [%s] %s[%s] [%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT,
+		GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);	/* Default convergence criteria */
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid file name.\n");
-	GMT_Option (API, "I,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Set <aspect-ratio> [Default = 1 gives an isotropic solution],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <aspect_ratio> such that yinc = xinc / <aspect_ratio>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If gridding lon,lat use -Am to set <aspect_ratio> = cosine(middle of lat range).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set final convergence limit; iteration stops when max |change| < <convergence_limit>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default will choose %g of the rms of your z data after removing L2 plane (%u ppm precision).\n", SURFACE_CONV_LIMIT, ppm);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Enter your own convergence limit in the same units as your z data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Use xyz data in the <breakline> file as a 'soft breakline'.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To set a fixed z_level, append modifier +z[<z_level>] which overrides any z from the <breakline> file [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-J Select the data map projection. This projection is only used to add a CRS info to the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   grid formats that support it. E.g. netCDF, GeoTIFF, and others supported by GDAL.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Constrain the range of output values:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ll<limit> specifies lower limit; forces solution to be >= <limit>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Lu<limit> specifies upper limit; forces solution to be <= <limit>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <limit> can be any number, or the letter d for min (or max) input data value,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or the filename of a grid with bounding values.  [Default solution is unconstrained].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Example: -Ll0 enforces a non-negative solution.\n");
-	gmt_dist_syntax (API->GMT, 'M', "Set maximum radius for masking the grid away from data points [no masking].");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian grids with different x and y units you may append <xlim>/<ylim>;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   this fills all nodes within the rectangular area of the given half-widths.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   One can also achieve the rectangular selection effect by using the -M<n_cells>c\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   form. Here n_cells means the number of cells around the data point. As an example,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -M0c means that only the cell where point lies is retained, -M1c keeps one cell\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   beyond that (i.e. makes a 3x3 neighborhood), and so on.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set max <n_iterations> in the final cycle; default = %d.\n", SURFACE_MAX_ITERATIONS);
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set <search_radius> to initialize grid; default = 0 will skip this step.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This step is slow and not needed unless grid dimensions are pathological;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., have few or no common factors.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append m or s to give <search_radius> in minutes or seconds.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Add Tension to the gridding equation; use a value between 0 and 1.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default = 0 gives minimum curvature (smoothest; bicubic) solution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1 gives a harmonic spline solution (local max/min occur only at data points).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Typically, 0.25 or more is good for potential field (smooth) data;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   0.5-0.75 or so for topography.  We encourage you to experiment.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend b to set tension in boundary conditions only;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Prepend i to set tension in interior equations only;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   No appended letter sets tension for both to same value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Query for grid sizes that might run faster than your selected -R -I.\n");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Set output grid file name.");
+	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<aspect_ratio>|m");
+	GMT_Usage (API, -2, "Set <aspect-ratio> [Default = 1 gives an isotropic solution], "
+		"i.e., <xinc> and <yinc> are assumed to give derivatives of equal weight; if not, specify "
+		"<aspect_ratio> such that <yinc> = <xinc> / <aspect_ratio>. "
+		"If gridding lon,lat use -Am to set <aspect_ratio> = cosine(middle of lat range).");
+	GMT_Usage (API, 1, "\n-C<convergence_limit>");
+	GMT_Usage (API, -2, "Set final convergence limit; iteration stops when max |change| < <convergence_limit>. "
+		"Default will choose %g of the rms of your z data after removing L2 plane (%u ppm precision). "
+		"Enter your own convergence limit in the same units as your z data.", SURFACE_CONV_LIMIT, ppm);
+	GMT_Usage (API, 1, "\n-D<breakline>[+z[<zlevel>]]");
+	GMT_Usage (API, -2, "Use xyz data in the <breakline> file as a 'soft breakline'. Optional modifier:");
+	GMT_Usage (API, 3, "+z Override any z from the <breakline> file with the appended <z_level> [0].");
+	GMT_Usage (API, 1, "\n%s", GMT_J_OPT);
+	GMT_Usage (API, -2, "Select the data map projection. This projection is only used to add a CRS info to the "
+		"grid formats that support it, i.e., netCDF, GeoTIFF, and others supported by GDAL.");
+	GMT_Usage (API, 1, "\n-Ll|u<limit>");
+	GMT_Usage (API, -2, "Constrain the range of output values; append directive and value, repeatable:");
+	GMT_Usage (API, 3, "l: Set lower limit; forces solution to be >= <limit>.");
+	GMT_Usage (API, 3, "u: Set upper limit; forces solution to be <= <limit>.");
+	GMT_Usage (API, -2, "Note: <limit> can be any number, or the letter d for min (or max) input data value, "
+		"or the filename of a grid with bounding values [Default solution is unconstrained]. "
+		"Example: -Ll0 enforces a non-negative solution.");
+	gmt_dist_syntax (API->GMT, "M<radius>", "Set maximum radius for masking the grid away from data points [no masking].");
+	GMT_Usage (API, -2, "For Cartesian grids with different x and y units you may append <xlim>/<ylim>; "
+		"this fills all nodes within the rectangular area of the given half-widths. "
+		"One can also achieve the rectangular selection effect by using the -M<n_cells>c "
+		"form. Here <n_cells> means the number of cells around the data point. As an example, "
+		"-M0c means that only the cell where the point lies is retained, -M1c keeps one cell "
+		"beyond that (i.e. makes a 3x3 neighborhood), and so on.");
+	GMT_Usage (API, 1, "\n-N<n_iterations>");
+	GMT_Usage (API, -2, "Set maximum number of iterations in the final cycle; default = %d.", SURFACE_MAX_ITERATIONS);
+	GMT_Usage (API, 1, "\n-S<search_radius>[m|s]");
+	GMT_Usage (API, -2, "Set <search_radius> to initialize grid; default = 0 will skip this step. "
+		"This step is slow and not needed unless grid dimensions are pathological; "
+		"i.e., have few or no common factors. "
+		"Append m or s to give <search_radius> in minutes or seconds.");
+	GMT_Usage (API, 1, "\n-T[b|i]<tension>");
+	GMT_Usage (API, -2, "Add tension to the gridding equation; use a value between 0 and 1. "
+		"Default = 0 gives minimum curvature (smoothest; bicubic) solution. "
+		"1 gives a harmonic spline solution (local max/min occur only at data points). "
+		"Typically, 0.25 or more is good for potential field (smooth) data; "
+		"0.5-0.75 or so for topography.  We encourage you to experiment. Optional directives:");
+	GMT_Usage (API, 3, "b: Set tension in boundary conditions only.");
+	GMT_Usage (API, 3, "i: Set tension in interior equations only.n");
+	GMT_Usage (API, -2, "Note: Without a directive we set tension for both to same value.");
+	GMT_Usage (API, 1, "\n-Q Query for grid sizes that might run faster than your selected -R -I, then exit.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Write convergence information to log file [surface_log.txt]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set <over_relaxation parameter>.  Default = %g.  Use a value\n", SURFACE_OVERRELAXATION);
-	GMT_Message (API, GMT_TIME_NONE, "\t   between 1 and 2.  Larger number accelerates convergence but can be unstable.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use 1 if you want to be sure to have (slow) stable convergence.\n");
+	GMT_Usage (API, 1, "\n-W[<logfile>]");
+	GMT_Usage (API, -2, "Write convergence information to a log file [surface_log.txt].");
+	GMT_Usage (API, 1, "\n-Z<over_relaxation>");
+	GMT_Usage (API, -2, "Change over-relaxation parameter [Default = %g]. Use a value "
+		"between 1 and 2. Larger number accelerates convergence but can be unstable. "
+		"Use 1 if you want to be sure to have (slow) stable convergence.", SURFACE_OVERRELAXATION);
 	GMT_Option (API, "a,bi3,di,e,f,h,i,qi,r,s,w,x,:,.");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Note: Geographic data with 360-degree range use periodic boundary condition in longitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t(For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.)\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Note: Geographic data with 360-degree range use periodic boundary condition in longitude. "
+		"For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.");
 
 	return (GMT_MODULE_USAGE);
 }

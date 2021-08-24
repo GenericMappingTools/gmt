@@ -141,62 +141,77 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A[<min>/<max>/<inc>]+f[n|p]] [-C<level>] [-Ex|y|o|r] [-F<flags>] [-N1|2|r|w]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S[r]] [-T[<min>/<max>/]<inc>[+i|n] [%s] [-W[w][x][y][r]] [-Z<limit>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_w_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[<min>/<max>/<inc>][+f[n|p]]] [-C<level>] [-Ex|y|o|r] [-F<flags>] "
+		"[-N1|2|r|w] [-S[r]] [-T[<min>/<max>/]<inc>[+i|n]] [%s] [-W[w][x][y][r]] [-Z<limit>] [%s] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_o_OPT, GMT_q_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Examine E as function of line slope; give angle range and increment [-90/+90/1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Option -F is not required as no model will be returned; instead we return\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   records of (angle, E, slope, intercept) for all angles specified.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   However, with +f we force LMS regressions to only search in the given angle range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give +fn or +fp for negative or positive slopes only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Select level (in %%) to use in confidence band calculations (see -Fc) [95].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Regression type. Select how misfit should be measured:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     x : Horizontally from data point to regression line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     y : Vertically from data point to regression line [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     o : Orthogonally from data point to regression line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r : Use Reduced Major Axis area misfit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Append desired output columns in any order; choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     x : The x observations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     y : The y observations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     m : The estimated model values.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r : The estimated residuals.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c : The confidence limits (to add/subtract from m).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     z : The standardized residuals (z-scores).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     w : The outlier flags (1 or 0), or Reweighted Least Squares weights (for -Nw).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t         A value of 0 identifies an outlier.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Note: Cannot use y|r|z|w with -T. With -T, x means locations implied by -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is %s].\n", GMTREGRESS_FARGS);
-	GMT_Message (API, GMT_TIME_NONE, "\t     Alternatively, choose -Fp to output only the model parameters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     N meanX meanY angle misfit slope icept sigma_slope sigma_icept r R N_effective\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Append desired misfit norm; choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     1 : L-1 measure (mean absolute residuals).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     2 : L-2 measure (mean squared residuals) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r : LMS robust measure (median of squared residuals).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     w : RLS Reweighted L-2 measure (r followed by 2 after excluding outliers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Skip records identified as outliers on output. Append r to reverse mode and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   only output the outlier records. Cannot be used with -T [output all records].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Evaluate model at the equidistant points implied by the arguments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only -T<inc>[+n] is given we reset <min> and <max> to the extreme x-values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for each segment.  Append +n if <inc> is the number of t-values to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time data, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -T0 to bypass model evaluation entirely.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses locations of input data to evaluate the model].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[<min>/<max>/<inc>][+f[n|p]]");
+	GMT_Usage (API, -2, "Examine misfit E as function of line slope; give angle range and increment [-90/+90/1]. "
+		"Option -F is not required as no model will be returned; instead we return "
+		"records of (angle, E, slope, intercept) for all angles specified. Optional modifier:");
+	GMT_Usage (API, 3, "+f Force LMS regressions to only search in the given angle range. "
+		"Optionally, append n or p for negative or positive slopes only [both].");
+	GMT_Usage (API, 1, "\n-C<level>");
+	GMT_Usage (API, -2, "Select level (in %%) to use in confidence band calculations (see -Fc) [95].");
+	GMT_Usage (API, 1, "\n-Ex|y|o|r");
+	GMT_Usage (API, -2, "Regression type. Select how misfit should be measured:");
+	GMT_Usage (API, 3, "x: Horizontally from data point to regression line.");
+	GMT_Usage (API, 3, "y: Vertically from data point to regression line [Default].");
+	GMT_Usage (API, 3, "o: Orthogonally from data point to regression line.");
+	GMT_Usage (API, 3, "r: Use Reduced Major Axis area misfit.");
+	GMT_Usage (API, 1, "\n-F<flags>");
+	GMT_Usage (API, -2, "Append desired output columns in any order; choose from:");
+	GMT_Usage (API, 3, "x: The x observations.");
+	GMT_Usage (API, 3, "y: The y observations.");
+	GMT_Usage (API, 3, "m: The estimated model values.");
+	GMT_Usage (API, 3, "r: The estimated residuals.");
+	GMT_Usage (API, 3, "c: The confidence limits (to add/subtract from m).");
+	GMT_Usage (API, 3, "z: The standardized residuals (z-scores).");
+	GMT_Usage (API, 3, "w: The outlier flags (1 or 0), or Reweighted Least Squares weights (for -Nw). "
+		"A value of 0 identifies an outlier.");
+	GMT_Usage (API, -2, "Note: Cannot use y|r|z|w with -T. With -T, x means locations implied by -T "
+		"Default is %s].", GMTREGRESS_FARGS);
+	GMT_Usage (API, -2, "Alternatively, choose -Fp to output only the model parameters: "
+		"N meanX meanY angle misfit slope icept sigma_slope sigma_icept r R N_effective");
+	GMT_Usage (API, 1, "\n-N1|2|r|w");
+	GMT_Usage (API, -2, "Append desired misfit norm; choose from:");
+	GMT_Usage (API, 3, "1: L-1 measure (mean absolute residuals).");
+	GMT_Usage (API, 3, "2: L-2 measure (mean squared residuals) [Default].");
+	GMT_Usage (API, 3, "r: LMS robust measure (median of squared residuals).");
+	GMT_Usage (API, 3, "w: RLS Reweighted L-2 measure (r followed by 2 after excluding outliers.");
+	GMT_Usage (API, 1, "\n-S[r]");
+	GMT_Usage (API, -2, "Skip records identified as outliers on output. Append r to reverse mode and "
+		"only output the outlier records. Cannot be used with -T [output all records].");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[+i|n]");
+	GMT_Usage (API, -2, "Evaluate model at the equidistant points implied by the arguments. "
+		"If only -T<inc>[+i|n] is given we reset <min> and <max> to the extreme x-values "
+		"for each segment.");
+	GMT_Usage (API, 3, "+n Note that <inc> is the number of t-values to produce instead of increment.");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, -2, "For absolute time data, append a valid time unit (%s) to the increment. "
+		"Alternatively, give a file with output times in the first column, or a comma-separated list. "
+		"Use -T0 to bypass model evaluation entirely "
+		"[Default uses locations of input data to evaluate the model].", GMT_TIME_UNITS_DISPLAY);
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Supply individual 1-sigma uncertainties for data points [no weights].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append x for sigma_x, y for sigma_y, and r for x-y correlation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We then expect 1-3 extra columns with these data in the given order.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Given a sigma, the weight will be computed via weight = 1/sigma.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ww if weights are precomputed and not given as 1-sigma values.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Except for -N1 we square the weights when computing misfits.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set z-score absolute value cutoff for outlier detection [%g].\n", GMTREGRESS_ZSCORE_LIMIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   To only flag negative or positive outliers, specify a leading sign.\n");
+	GMT_Usage (API, 1, "\n-W[w][x][y][r]");
+	GMT_Usage (API, -2, "Supply individual 1-sigma uncertainties for data points [no weights]; append corresponding directives:");
+	GMT_Usage (API, 3, "x: Read sigma_x uncertainties.");
+	GMT_Usage (API, 3, "y: Read sigma_y uncertainties.");
+	GMT_Usage (API, 3, "r: Read r for x-y correlations.");
+	GMT_Usage (API, -2, "We then expect 1-3 extra columns with these data in the given order. "
+		"Given a sigma, the weight will be computed via weight = 1/sigma. "
+		"Use -Ww if weights are precomputed and not given as 1-sigma values. "
+		"Except for -N1 we square the weights when computing misfits.");
+	GMT_Usage (API, 1, "\n-Z<limit>");
+	GMT_Usage (API, -2, "Set z-score absolute value cutoff for outlier detection [%g]. "
+		"To only flag negative or positive outliers, specify a leading sign.", GMTREGRESS_ZSCORE_LIMIT);
 	GMT_Option (API, "a,bi,bo,d,e,g,h,i,o,q,w,.");
 
 	return (GMT_MODULE_USAGE);

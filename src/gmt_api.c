@@ -206,8 +206,11 @@
 #endif
 
 #ifdef WIN32	/* Special for Windows */
+#	include <windows.h>
 #	include <process.h>
 #	define getpid _getpid
+#else
+#	include <sys/ioctl.h>
 #endif
 
 #define GMTAPI_MAX_ID 999999	/* Largest integer that will fit in the %06d format */
@@ -325,6 +328,11 @@ GMT_LOCAL int gmtapi_skip_modern_module (const char *name) {
 	if (!strncmp (name, "end", 3U)) return 1;		/* Skip the end module */
 	return 0;	/* Display this one */
 }
+
+struct GMT_WORD {	/* Used by GMT_Wrap_Line only */
+	char *word;
+	unsigned int space;
+};
 
 EXTERN_MSC int gmt_nc_write_cube (struct GMT_CTRL *GMT, struct GMT_CUBE *C, double wesn[], const char *file);
 
@@ -1312,29 +1320,34 @@ GMT_LOCAL double gmtapi_select_record_value (struct GMT_CTRL *GMT, double *recor
 	return (val);
 }
 
-GMT_LOCAL unsigned int gmtapi_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col) {
-	/* Return the next column to be selected on input */
-	unsigned int col_pos;
-	if (GMT->common.i.select)	/* -i has selected some columns */
-        col_pos = GMT->current.io.col[GMT_IN][col].order; /* Which data column to pick */
-#if 0
-	else if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col < GMT_Z)	/* Worry about -: for lon,lat */
-		col_pos = 1 - col;	/* Read lat/lon instead of lon/lat */
-#endif
+unsigned int gmtlib_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col, unsigned int *col_pos_in) {
+    /* If -i is not active then we simply return col_pos_out = col_pos_in = col.  Done!
+     *
+     * With -i, we must return correct value for both the in and out column positions based on the info in the structure.
+     * Here, col is a loop variable that goes from 0 to number of desired output columns.  However, that col number
+     * is likely neither the input(col) we wish to get nor the output(col) where we want to place it in the output array.
+     * Instead, we set these two different columns via col_pos_in and col_pos_out so that output(col_pos_out) = input(col_pos_in).
+     * col_pos_out will uniquely touch the same values as col loops over, but col_pos_in may be outside that range
+     * and even have repeated column values (e.g., due to -i0,1,2,2+s5). */
+	unsigned int col_pos_out;
+	if (GMT->common.i.select) {	/* -i has selected some columns */
+        *col_pos_in = GMT->current.io.col[GMT_IN][col].col;   /* Which data column to take the value from input */
+        col_pos_out = GMT->current.io.col[GMT_IN][col].order; /* Which data column to place it on output */
+    }
 	else
-		col_pos = col;	/* Just goto that column */
-	return (col_pos);
+		col_pos_out = *col_pos_in = col;	/* They are all the same */
+	return (col_pos_out);
 }
 
 /*! . */
-GMT_LOCAL double gmtapi_get_record_value (struct GMT_CTRL *GMT, double *record, uint64_t col, uint64_t n_colums) {
+GMT_LOCAL double gmtapi_get_record_value (struct GMT_CTRL *GMT, double *record, uint64_t col, uint64_t n_colums, unsigned int *col_pos_out) {
 	/* For binary input of data record via external matrix, we must select correct col entry and possibly make adjustments */
 	double val;
-	unsigned int col_pos;
-	col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-	val = (col_pos >= n_colums) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], record[col_pos]);	/* If we request a column beyond length of array, return NaN */
+	unsigned int col_pos_in;
+	*col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+	val = (*col_pos_out >= n_colums) ? GMT->session.d_NaN : gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], record[col_pos_in]);	/* If we request a column beyond length of array, return NaN */
 	if (GMT->common.d.active[GMT_IN] && gmt_M_is_dnan (val)) val = GMT->common.d.nan_proxy[GMT_IN];	/* Write this value instead of NaNs */
-	if (gmt_M_is_type (GMT, GMT_IN, col_pos, GMT_IS_LON)) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
+	if (gmt_M_is_type (GMT, GMT_IN, *col_pos_out, GMT_IS_LON)) gmt_lon_range_adjust (GMT->current.io.geo.range, &val);	/* Set longitude range */
 	return (val);
 }
 
@@ -3504,7 +3517,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	 */
 
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
-	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode, type = GMT_READ_DATA;
+	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode, type = GMT_READ_DATA, col_pos_out;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
 	bool via = false, got_data = false, check_col_switch = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
@@ -3571,7 +3584,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 		geometry = (GMT->common.a.output) ? GMT->common.a.geometry : S_obj->geometry;	/* When reading GMT and writing OGR/GMT we must make sure we set this first */
 		method = gmtapi_set_method (S_obj);	/* Get the actual method to use */
         /* At the time an external vector was created via GMT_Open_VirtualFile there is not yet any knowledge if this data
-         * will be passed to a module with options -i that could require scaling, offseting, or taking the log of the data.
+         * will be passed to a module with options -i that could require scaling, offsetting, or taking the log of the data.
          * If that is the case then we cannot pass via reference but must switch method to duplicate. */
         if (method == (GMT_IS_REFERENCE|GMT_VIA_VECTOR) && gmtapi_vector_data_must_be_duplicated (API, S_obj->resource))
             method = GMT_IS_DUPLICATE|GMT_VIA_VECTOR;   /* We need to adjust at least one vector due to -i+s+o+l so must duplicate input rather than reference */
@@ -3626,7 +3639,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table from GMT_DATASET memory location\n");
 				check_col_switch = true;
-				D_obj = gmt_duplicate_dataset (GMT, Din_obj, GMT_ALLOC_NORMAL, NULL);
+				D_obj = gmt_duplicate_dataset (GMT, Din_obj, GMT_ALLOC_NORMAL|GMT_ALLOC_VIA_ICOLS, NULL);
 				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
 				if ((new_item = gmtlib_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
 					return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
@@ -3697,8 +3710,10 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 						}
 					}
 					else {	/* Found a data record */
-						for (col = 0; col < n_columns; col++)	/* Place the record into the dataset segment structure */
-							S->data[col][n_records] = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, M_obj->n_columns);
+						for (col = 0; col < n_columns; col++) {	/* Place the record into the dataset segment structure */
+							double val = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, M_obj->n_columns, &col_pos_out);
+							S->data[col_pos_out][n_records] = val;
+						}
 						got_data = true;	/* No longer before first data record */
 						if (smode) S->text[n_records] = strdup (M_obj->text[row]);
 						n_records++;	/* Update count of records in current segment */
@@ -3765,8 +3780,10 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 						}
 					}
 					else {	/* Data record */
-						for (col = 0; col < n_columns; col++)	/* Place the record into the structure */
-							S->data[col][n_records] = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, V_obj->n_columns);
+						for (col = 0; col < n_columns; col++) {	/* Place the record into the structure */
+							double val = gmtapi_get_record_value (GMT, GMT->current.io.curr_rec, col, V_obj->n_columns, &col_pos_out);
+							S->data[col_pos_out][n_records] = val;
+						}
 						if (smode) S->text[n_records] = strdup (V_obj->text[row]);
 						got_data = true;
 						n_records++;
@@ -3789,7 +3806,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				update = via = true;
 				break;
 
-		 	case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
+			case GMT_IS_REFERENCE|GMT_VIA_VECTOR:
 				if ((V_obj = S_obj->resource) == NULL) {
 					gmt_M_free (GMT, D_obj);	return_null (API, GMT_PTR_IS_NULL);
 				}
@@ -4019,7 +4036,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 				GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qo is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table to GMT_DATASET memory location\n");
 			D_copy = gmt_duplicate_dataset (GMT, D_obj, GMT_ALLOC_NORMAL, NULL);
-			gmtlib_change_dataset (GMT, D_copy);	/* Deal with any -o settings */
+			gmtlib_change_out_dataset (GMT, D_copy);	/* Deal with any -o settings */
 			gmtapi_switch_cols (GMT, D_copy, GMT_OUT);	/* Deals with -:, if it was selected */
 			S_obj->resource = D_copy;	/* Set resource pointer from object to this dataset */
 			break;
@@ -4029,7 +4046,7 @@ GMT_LOCAL int gmtapi_export_dataset (struct GMTAPI_CTRL *API, int object_ID, uns
 			if (GMT->common.q.mode == GMT_RANGE_ROW_OUT || GMT->common.q.mode == GMT_RANGE_DATA_OUT)
 				GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qo is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
 			GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table to GMT_DATASET memory location\n");
-			gmtlib_change_dataset (GMT, D_obj);	/* Deal with any -o settings */
+			gmtlib_change_out_dataset (GMT, D_obj);	/* Deal with any -o settings */
 			gmtapi_switch_cols (GMT, D_obj, GMT_OUT);	/* Deals with -:, if it was selected */
 			S_obj->resource = D_obj;		/* Set resource pointer from object to this dataset */
 			DH->alloc_level = S_obj->alloc_level;	/* Since we are passing it up to the caller */
@@ -7879,13 +7896,26 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	size_t len;
 	static char *unknown = "unknown";
 	char *dir = NULL;
+	/* Determine the width of the current terminal */
+#ifdef WIN32
+	CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo (GetStdHandle(STD_ERROR_HANDLE), &csbi);
+    int n_columns = csbi.srWindow.Right;
+#else
+	struct winsize w;
+	int err = 0;
+    if ((err = ioctl (STDERR_FILENO, TIOCGWINSZ, &w))) {
+ 		GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session: Unable to get terminal width via ioctl, err = %d\n", err);
+    }
+    int n_columns = w.ws_col;
+#endif
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	API->verbose = (mode >> 16);	/* Pick up any -V settings from gmt.c */
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
-	API->external = mode & GMT_SESSION_EXTERNAL;	/* if false|0 then we don't list read and write as modules */
+	API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;	/* if false|0 then we don't list read and write as modules */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
 	API->no_history = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */
@@ -7896,11 +7926,16 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 		gmt_M_str_free (tmptag);
 	}
 
-	if ((API->message = calloc (4*GMT_BUFSIZ, sizeof (char))) == NULL) {	/* Failed to allocate the message string */
+	if ((API->message = calloc (GMT_MSGSIZ, sizeof (char))) == NULL) {	/* Failed to allocate the message string */
 	 	gmt_M_str_free (API);	/* Not gmt_M_free since this item was allocated before GMT was initialized */
 		return_null (NULL, GMT_MEMORY_ERROR);
 	}
-
+	/* Ensure Windows terminal can handle UTF-8 characters */
+#ifdef WIN32
+	SetConsoleOutputCP (CP_UTF8);
+#endif
+	API->terminal_width = (n_columns > 24) ? n_columns : 100;	/* Character width of current terminal [100] */
+	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Create_Session: Terminal width = %d\n", API->terminal_width);
 	/* Set temp directory used by GMT */
 
 #ifdef WIN32
@@ -8654,6 +8689,7 @@ GMT_LOCAL bool gmtapi_matrix_data_conforms_to_dataset (struct GMT_MATRIX *M) {
 }
 
 GMT_LOCAL bool gmtapi_vector_data_conforms_to_dataset (struct GMTAPI_CTRL *API, struct GMT_VECTOR *V, enum GMT_enum_type type) {
+	gmt_M_unused(API);
 	/* Check if the vector data arrays matches the form of a GMT dataset (columns of doubles) */
 	if (type != GMT_DOUBLE) {	/* Only doubles can be passed or memcpy directly */
 		if (V->n_columns == 0) return (false);	/* Having nothing yet means we must duplicate */
@@ -8699,10 +8735,14 @@ GMT_LOCAL void gmtapi_maybe_change_method_to_duplicate (struct GMTAPI_CTRL *API,
 		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
 		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as vectors are not compatible with a GMT grid\n");
 	}
-	else if (S_obj->actual_family == GMT_IS_VECTOR && S_obj->family == GMT_IS_DATASET && !gmtapi_vector_data_conforms_to_dataset (API, S_obj->resource, S_obj->type)) {
-		S_obj->method = GMT_IS_DUPLICATE;	/* Must duplicate this resource */
-		GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input vectors are not compatible with a GMT dataset\n");
-	}
+    else if (S_obj->actual_family == GMT_IS_VECTOR && S_obj->family == GMT_IS_DATASET && !gmtapi_vector_data_conforms_to_dataset (API, S_obj->resource, S_obj->type)) {
+        S_obj->method = GMT_IS_DUPLICATE;   /* Must duplicate this resource */
+        GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input vectors are not compatible with a GMT dataset\n");
+    }
+    else if (S_obj->actual_family == GMT_IS_DATASET && S_obj->family == GMT_IS_DATASET && API->GMT->common.i.select) {
+        S_obj->method = GMT_IS_DUPLICATE;   /* Must duplicate this resource */
+        GMT_Report (API, GMT_MSG_INFORMATION, "GMT_Open_VirtualFile: Switch method to GMT_IS_DUPLICATE as input dataset needs to be operated on to become output GMT dataset\n");
+    }
 }
 
  /*! . */
@@ -9576,25 +9616,18 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 	}
 	else {	/* Read from the current resource */
 		struct GMT_MATRIX *M = API->current_get_M;
-		uint64_t col, ij, n_use, col_pos;
+		unsigned int col, n_use, col_pos_out, col_pos_in;
+		uint64_t ij;
 		int status;
 		S->status = GMT_IS_USING;				/* Mark as being read */
 		n_use = gmtapi_n_cols_needed_for_gaps (GMT, S->n_columns);
 		gmtapi_update_prev_rec (GMT, n_use);
 
-        col = 0;
-        while (col < API->current_get_n_columns) {
-            col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-            ij = API->current_get_M_index (S->rec, col_pos, M->dim);
-            API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
-            col++;           
-            while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
-                /* This input column is requested more than once */
-                col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
-                API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col]));
-                col++;
-            }
-       }
+		for (col = 0; col < API->current_get_n_columns; col++) {
+			col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+			ij = API->current_get_M_index (S->rec, col_pos_in, M->dim);
+			API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col_pos_out]));
+		}
 		S->rec++;
 		if ((status = gmtapi_bin_input_memory (GMT, S->n_columns, n_use)) < 0) {	/* Process the data record */
 			if (status == GMTAPI_GOT_SEGGAP)	 /* Since we inserted a segment header we must revisit this record as first in next segment */
@@ -9641,26 +9674,17 @@ struct GMT_RECORD *api_get_record_vector (struct GMTAPI_CTRL *API, unsigned int 
 	}
 	else {	/* Read from this resource */
 		struct GMT_VECTOR *V = API->current_get_V;
-		uint64_t n_use, col_pos;
+		unsigned int n_use, col_pos_out, col_pos_in;
 		int status;
 		S->status = GMT_IS_USING;				/* Mark as being read */
 		n_use = gmtapi_n_cols_needed_for_gaps (GMT, S->n_columns);
 		gmtapi_update_prev_rec (GMT, n_use);
 
-        col = 0;
-        while (col < API->current_get_n_columns) {
-            col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-            API->current_get_V_val[col_pos] (&(V->data[col_pos]), S->rec, &(GMT->current.io.curr_rec[col]));
-            GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], GMT->current.io.curr_rec[col]);
-           col++;           
-            while (GMT->common.i.select && col < GMT->common.i.n_cols && GMT->current.io.col[GMT_IN][col].col == GMT->current.io.col[GMT_IN][col-1].col) {
-                /* This input column is requested more than once */
-                col_pos = GMT->current.io.col[GMT_IN][col].order;    /* The data column that will receive this value */
-                API->current_get_V_val[col_pos] (&(V->data[col_pos]), S->rec, &(GMT->current.io.curr_rec[col]));
-                GMT->current.io.curr_rec[col] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col_pos], GMT->current.io.curr_rec[col]);
-                col++;
-            }
-        }
+		for (col = 0; col < API->current_get_n_columns; col++) {
+			col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+			API->current_get_V_val[col_pos_in] (&(V->data[col_pos_in]), S->rec, &(GMT->current.io.curr_rec[col_pos_out]));
+			GMT->current.io.curr_rec[col_pos_out] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[col_pos_out]);
+		}
 
 		S->rec++;
 		if ((status = gmtapi_bin_input_memory (GMT, S->n_columns, n_use)) < 0) {	/* Process the data record */
@@ -9685,15 +9709,15 @@ GMT_LOCAL struct GMT_RECORD * gmtapi_get_record_dataset (struct GMTAPI_CTRL *API
 	struct GMT_DATASET *D = API->current_get_D_set;	/* Get the current dataset */
 	struct GMT_RECORD *record = NULL;
 	int64_t *count = GMT->current.io.curr_pos[GMT_IN];	/* Shorthand used below */
-	uint64_t col, col_pos;
+	unsigned int col, col_pos_in, col_pos_out;
 	int status = gmtapi_wind_to_next_datarecord (count, D, mode);	/* Get current record status and wind counters if needed */
 
 	switch (status) {
 		case GMT_IO_DATA_RECORD:	/* Got a data record */
 			S->status = GMT_IS_USING;		/* Mark this resource as currently being read */
 			for (col = 0; col < API->current_get_n_columns; col++) {	/* Copy from row to curr_rec */
-				col_pos = gmtapi_pick_in_col_number (GMT, (unsigned int)col);
-				GMT->current.io.curr_rec[col] = D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[col_pos][count[GMT_ROW]];
+				col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
+				GMT->current.io.curr_rec[col_pos_out] = D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->data[col_pos_in][count[GMT_ROW]];
 			}
 			if (D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text && D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]])
 				strncpy (GMT->current.io.curr_trailing_text, D->table[count[GMT_TBL]]->segment[count[GMT_SEG]]->text[count[GMT_ROW]], GMT_BUFSIZ-1);
@@ -11402,44 +11426,43 @@ unsigned int GMT_FFT_Option (void *V_API, char option, unsigned int dim, const c
 	unsigned int d1 = dim - 1;	/* Index into the info text strings below for 1-D (0) and 2-D (1) case */
 	char *data_type[2] = {"table", "grid"}, *dim_name[2] = {"<n_columns>", "<n_columns>/<n_rows>"}, *trend_type[2] = {"line", "plane"};
 	char *dim_ref[2] = {"dimension", "dimensions"}, *linear_type[2] = {"linear", "planar"};
+    struct GMTAPI_CTRL *API = NULL;
 	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
 	if (dim > 2) return_error (V_API, GMT_DIM_TOO_LARGE);
 	if (dim == 0) return_error (V_API, GMT_DIM_TOO_SMALL);
+    API = gmtapi_get_api_ptr (V_API);
 	if (string && string[0] == ' ') GMT_Report (V_API, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	if (string)
-		GMT_Message (V_API, GMT_TIME_NONE, "\t-%c %s\n", option, string);
-	else
-		GMT_Message (V_API, GMT_TIME_NONE, "\t-%c Choose or inquire about suitable %s %s for %u-D FFT, and set modifiers.\n", option, data_type[d1], dim_ref[d1], dim);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t   Setting the FFT %s:\n", dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Na will select %s promising the most accurate results.\n", dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nf will force the FFT to use the %s of the %s.\n", dim_ref[d1], data_type[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nm will select %s using the least work storage.\n", dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Nr will select %s promising the most rapid calculation.\n", dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     -Ns will list Singleton's [1967] recommended %s, then exit.\n", dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     -N%s will do FFT on array size %s (Must be >= %s size).\n", dim_name[d1], dim_name[d1], data_type[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     Default chooses %s >= %s %s to optimize speed and accuracy of the FFT.\n", dim_ref[d1], data_type[d1], dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t   Append modifiers for removing a %s trend:\n", linear_type[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +d: Detrend data, i.e., remove best-fitting %s [Default].\n", trend_type[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +a: Only remove mean value.\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +h: Only remove mid value, i.e., 0.5 * (max + min).\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +l: Leave data alone.\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t   Append modifiers for extending the %s via symmetries:\n", data_type[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     If FFT %s > %s %s, data are extended via edge point symmetry\n", dim_ref[d1], data_type[d1], dim_ref[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     and tapered to zero.  Several modifiers can be set to change this behavior:\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +e: Extend data via edge point symmetry [Default].\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +m: Extend data via edge mirror symmetry.\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +n: Do NOT extend data.\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +t<w>: Limit tapering to <w> %% of the extended margins [100].\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     If +n is set then +t instead sets the boundary width of the interior\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     %s margin to be tapered [0].\n", data_type[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t   Append modifiers for saving modified %s before or after the %u-D FFT is called:\n", data_type[d1], dim);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +w[<suffix>] will write the intermediate %s passed to FFT after detrending/extension/tapering.\n", data_type[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t       File name will have _<suffix> [tapered] inserted before file extension.\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +z[p] will write raw complex spectrum to two separate %s files.\n", data_type[d1]);
-	GMT_Message (V_API, GMT_TIME_NONE, "\t       File name will have _real/_imag inserted before the file extensions.\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t       Append p to store polar forms, using _mag/_phase instead.\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t   Append modifiers for messages:\n");
-	GMT_Message (V_API, GMT_TIME_NONE, "\t     +v will report all suitable dimensions (except when -Nf is selected).\n");
+	GMT_Usage (API, 1, "\n-%c%s", option, GMT_FFT_OPT);
+	GMT_Usage (API, -2, "Choose or inquire about suitable %s %s for %u-D FFT, and set modifiers.", data_type[d1], dim_ref[d1], dim);
+	GMT_Usage (API, -2, "%s Setting the FFT %s. Append a directive:", GMT_LINE_BULLET, dim_ref[d1]);
+	GMT_Usage (API, 3, "a: Select %s promising the most accurate results.", dim_ref[d1]);
+	GMT_Usage (API, 3, "f: Force the FFT to use the %s of the %s.", dim_ref[d1], data_type[d1]);
+	GMT_Usage (API, 3, "m: Select %s using the least work storage.", dim_ref[d1]);
+	GMT_Usage (API, 3, "r: Select %s promising the most rapid calculation.", dim_ref[d1]);
+	GMT_Usage (API, 3, "s: List Singleton's [1967] recommended %s, then exit.", dim_ref[d1]);
+	GMT_Usage (API, -2, "Alternatively, append %s to do FFT on array size %s (Must be >= %s size) "
+	   "[Default chooses %s >= %s %s to optimize speed and accuracy of the FFT.]", dim_name[d1], dim_name[d1], data_type[d1], dim_ref[d1], data_type[d1], dim_ref[d1]);
+	GMT_Usage (API, -2, "%s Append modifiers for removing a %s trend:", GMT_LINE_BULLET, linear_type[d1]);
+	GMT_Usage (API, 3, "+d Detrend data, i.e., remove best-fitting %s [Default].", trend_type[d1]);
+	GMT_Usage (API, 3, "+a Only remove mean value.");
+	GMT_Usage (API, 3, "+h Only remove mid value, i.e., 0.5 * (max + min).");
+	GMT_Usage (API, 3, "+l Leave data alone.");
+	GMT_Usage (API, -2, "%s If FFT %s > %s %s, data are extended via edge point symmetry "
+	   "and tapered to zero.  Several modifiers can be set to change this behavior:", GMT_LINE_BULLET, dim_ref[d1], data_type[d1], dim_ref[d1]);
+	GMT_Usage (API, 3, "+e Extend data via edge point symmetry [Default].");
+	GMT_Usage (API, 3, "+m Extend data via edge mirror symmetry.");
+	GMT_Usage (API, 3, "+n Do NOT extend data.");
+	GMT_Usage (API, 3, "+t Limit tapering to <width> %% of the extended margins [100]. "
+	   "If +n is also set then +t instead sets the boundary width of the interior "
+	  "%s margin to be tapered [0].", data_type[d1]);
+	GMT_Usage (API, -2, "%s Append modifiers for saving modified %s before or after the %u-D FFT is called:", GMT_LINE_BULLET, data_type[d1], dim);
+	GMT_Usage (API, 3, "+w Write the intermediate %s passed to FFT after detrending/extension/tapering. "
+	  "File name will have _<suffix> [tapered] inserted before file extension.", data_type[d1]);
+	GMT_Usage (API, 3, "+z Write raw complex spectrum to two separate %s files. "
+	   "File name will have _real/_imag inserted before the file extensions. "
+	   "Alternatively, append p to store polar forms, using _mag/_phase instead.", data_type[d1]);
+	GMT_Usage (API, -2, "%s Append modifiers for messages:", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "+v Report all suitable dimensions (except when -Nf is selected).");
 
 	return_error (V_API, GMT_NOERROR);
 }
@@ -12185,8 +12208,8 @@ const char * gmt_show_name_and_purpose (void *V_API, const char *component, cons
 	mode_name = gmtlib_get_active_name (API, name);
 	lib = (component) ? component : core;
 	snprintf (full_name, GMT_LEN32, "gmt %s", mode_name);
-	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n\n", full_name, lib, GMT_version(), purpose);
-	GMT_Message (V_API, GMT_TIME_NONE, message);
+	snprintf (message, GMT_LEN256, "%s [%s] %s - %s\n", full_name, lib, GMT_version(), purpose);
+	GMT_Usage (V_API, 0, message);
 	gmtlib_set_KOP_strings (API);
 	return full_name;
 }
@@ -12808,14 +12831,22 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 	else if (!strncmp (module, "psevents", 8U)) {
 		type = ((opt = GMT_Find_Option (API, 'A', *head)) && opt->arg[0] == 'r' && opt->arg[1] && isdigit (opt->arg[1])) ? 'D' : 'X';	/* Giving -Ar<dpi> means we resample a line, else plotting */
 	}
-	/* 1t. Check if grdinfo is reading cubes or grids */
-	else if (!strncmp (module, "grdinfo", 7U)) {
-		type = ((opt = GMT_Find_Option (API, 'Q', *head))) ? 'U' : 'G';	/* Giving -Q means we are reading 3-D cubes */
-	}
-    /* 1u. Check if psternary is plotting or dumping */
-    else if (!strncmp (module, "psternary", 9U)) {
-        /* PostScript output unless -M */
-        type = (GMT_Find_Option (API, 'M', *head)) ? 'D' : 'X';  /* -M means dump (x,b,c) data */
+    /* 1t. Check if grdinfo is reading cubes or grids */
+    else if (!strncmp (module, "grdinfo", 7U)) {
+        type = ((opt = GMT_Find_Option (API, 'Q', *head))) ? 'U' : 'G'; /* Giving -Q means we are reading 3-D cubes */
+    }
+    /* 1u. Check if grdfill is writing grids or datasets */
+    else if (!strncmp (module, "grdfill", 7U)) {
+        type = ((opt = GMT_Find_Option (API, 'L', *head))) ? 'D' : 'G'; /* Giving -L means we are writing a table */
+    }
+    /* 1v. Check if spectrum1d uses stdout */
+    else if (!strncmp (module, "spectrum1d", 10U)) {
+         if ((opt = GMT_Find_Option (API, 'T', *head))) /* Giving -T deactivates stdout writing */
+            deactivate_output = true;   /* Turn off implicit output since none is in effect */
+    }
+    /* 1w. Check if coupe is plotting or returning data */
+    else if (!strncmp (module, "pscoupe", 7U)) {
+        type = ((opt = GMT_Find_Option (API, 'A', *head)) && strstr (opt->arg, "+c")) ? 'D' : 'X';
     }
 
 	/* 2a. Get the option key array for this module */
@@ -13450,6 +13481,192 @@ int GMT_Report_ (unsigned int *level, const char *format, int len) {
 	return (GMT_Report (GMT_FORTRAN, *level, format));
 }
 #endif
+
+GMT_LOCAL unsigned int gmtapi_hyphen (const char *line, unsigned int stop) {
+    /* Examine a few cases:
+     * 0) line[stop] is not a hyphen
+     * 1) -option : Start of an option is not hyphenation.
+     *    --PAR=value: Special case of option.
+     * 2) hyphen-word: Detected if text/numbers on each side.  Just break, no continuation character needed.
+     */
+    if (line[stop] != '-') return 0;    /* Not a hyphenated case */
+    if (stop == 0) return 2;    /* Nothing before the hyphen means option or negative number, cannot split */
+    if (line[stop-1] == '-') return 0;   /* --PAR case caught */
+    if (line[stop-1] == '[') return 0;   /*  [-option] case caught */
+    if (line[stop-1] == ' ') return 0;   /*  -option case caught */
+    //return (isalpha (line[stop+1]) && isalpha (line[stop-1]) ? 2 : 1);
+    return (2); /* Regular hyphenated word or number range or similar */
+}
+
+GMT_LOCAL struct GMT_WORD * gmtapi_split_words (const char *line) {
+	/* Split line into an array of words where words are separated by either
+	 * a space (like between options), the occurrence of "][" sequences, or
+	 * items separated by slashes "/", commas ",", bars "|" or hyphens "-".
+	 * These are the places where we are allowed to break the line. */
+	struct GMT_WORD *array = NULL;
+	unsigned int n = 0, c, start = 0, next, end, j, stop, space = 0, n_alloc = GMT_LEN256, hyphen = 0;
+	array = calloc (n_alloc, sizeof (struct GMT_WORD));
+	while (line[start]) {	/* More line to chop up */
+        hyphen = 0; /* Initialize */
+		/* Find the next break location */
+		stop = start;
+		while (line[stop] && !(strchr (" ,/|", line[stop]) || (line[stop] == ']' && line[stop+1] == '[') || (hyphen = gmtapi_hyphen (line, stop)))) stop++;
+		end = next = stop;	/* Mark likely end */
+		array[n].space = space;	/* Do we need a leading space (set via previous word)? */
+		if (line[stop] == ' ') {	/* Skip the space to start over at next word */
+			while (line[stop] == ' ') stop++;	/* In case there are more than one space */
+			next = stop; space = 1;
+		}
+        else if (line[stop] && strchr (",/|]", line[stop])) {   /* Include this char then break */
+            next = ++end, space = 0;
+        }
+        else if (line[stop] == '-') {   /* Include this char then break with no break symbol */
+            next = ++end, space = hyphen;
+        }
+		array[n].word = calloc (end - start + 1, sizeof (char));	/* Allocate space for word */
+		for (j = start, c = 0; j < end; j++, c++) array[n].word[c] = line[j];
+		n++;	/* Got another word */
+		if (n == n_alloc) {	/* Need more memory, must be a long line */
+			n_alloc += GMT_LEN256;
+			array = realloc (array, n_alloc*sizeof (struct GMT_WORD));
+		}
+		start = next;	/* Advance to start of next word */
+	}
+	/* Finalize array length - keep one extra to indicate end of array */
+	array = realloc (array, (n+1)*sizeof (struct GMT_WORD));
+#if 0	/* Left for possible debug in case there are unresolved issues of breaking things up into words */
+	fprintf (stderr, "Found %d words\n", n);
+	for (j = 0; j < n; j++)
+		fprintf (stderr, "%2.2d: [%d] %s\n", j, array[j].space, array[j].word);
+	fprintf (stderr, "\n");
+#endif
+
+	return (array);
+}
+
+GMT_LOCAL unsigned int gmtapi_space (unsigned int space) {
+    return (space == 2) ? 0 : space;
+}
+
+GMT_LOCAL void gmtapi_wrap_the_line (struct GMTAPI_CTRL *API, int level, FILE *fp, const char *in_line) {
+	/* Break the in_ine across multiple lines determined by the terminal line width API->terminal_width */
+	bool keep_same_indent = (level < 0), go = true, force = false;
+	int width, k, j, next_level, current_width = 0, try = 0;
+	static int gmtapi_indent[8] = {0, 2, 5, 7, 10, 13, 15, 0}; /* Last one is for custom negative values exceeding 6 */
+	struct GMT_WORD *W = gmtapi_split_words (in_line);	/* Create array of words */
+	char message[GMT_MSGSIZ] = {""};
+
+	/* Start with any fixed indent */
+	level = abs (level);	/* In case it was negative */
+    if (level > 6) {    /* Place custom level in last entry.  This is to help g**math issue wrapped operator messages */
+        gmtapi_indent[7] = level;
+        level = 7;
+        go = false;   /* Already indented and ready to go */
+    }
+	next_level = (keep_same_indent) ? level : level + 1;	/* Do we indent when we wrap or not */
+	for (j = 0; go && j < gmtapi_indent[level]; j++) strcat (message, " ");	/* Starting spaces */
+	current_width = gmtapi_indent[level];
+	for (k = 0; W[k].word; k++) {	/* As long as there are more words... */
+		width = (gmtapi_space (W[k+1].space)) ? API->terminal_width : API->terminal_width - 1;	/* May need one space for ellipsis at end */
+		if (force || (current_width + strlen (W[k].word) + W[k].space) < width) {	/* Word will fit on current line */
+			if (gmtapi_space (W[k].space))	/* This word requires a leading space */
+				strcat (message, " ");
+			strcat (message, W[k].word);
+			current_width += strlen (W[k].word) + gmtapi_space (W[k].space);	/* Update line width so far */
+			free (W[k].word);	/* Free the word we are done with */
+			if (W[k+1].word == NULL)	/* Finalize the last line */
+				strcat (message, "\n");
+            force = false;  /* In case it was set */
+		}
+		else {	/* Must split at the current break point and continue on next line */
+			if (W[k].space) { /* No break character needed since space separation is expected */
+				strcat (message, "\n");	/* Move to new line */
+				for (j = 0; j < gmtapi_indent[next_level]; j++) strcat (message, " ");	/* Initial indent plus possibly next indent*/
+				current_width = gmtapi_indent[next_level];	/* Indent plus next indent */
+			}
+			else {	/* Split in the middle of an option so append breakline and start new line with ellipsis after indent */
+				strcat (message, GMT_LINE_BREAK);
+				strcat (message, "\n");
+				for (j = 0; j < gmtapi_indent[next_level]; j++) strcat (message, " ");	/* Initial indent plus possibly next indent */
+				strcat (message, GMT_LINE_CONT);		/* And the ellipsis */
+				current_width = gmtapi_indent[next_level];	/* Indent plus the next indent */
+			}
+			W[k].space = 0;	/* Can be no leading space if starting a the line */
+			k--;	/* Since k will be incremented by loop and we did not write this word yet */
+            try++;
+            if (try == 2) /* Word is longer than effective terminal width - must force output (even if too long) to get past this stalemate */
+                force = true, try = 0;
+		}
+	}
+	free (W);	/* Free the structure array */
+	API->print_func (fp, message);	/* Do the printing */
+}
+
+/*! . */
+int GMT_Usage (void *V_API, int level, const char *format, ...) {
+	/* Wrapped usage message independent of verbosity.
+	 * level is the starting indent level of the line
+	 * format and optional args must be printed to a string first, then wrapped.
+	 *
+	 * Explanation for the use of level:
+	 * 0  : Only use for the synopsis message where we start all the way to the left.
+	 *      Once the first line wraps we indent all subsequent lines by the same amount.
+	 *      Below, | here means the start of the terminal's left margin and the number
+	 *      in braces {2} indicates which level was used for that line.
+	 *      |usage: gmt gmtsimplify [<table>] -T<tolerance>[<unit>] [-Q...]<return> {0}
+	 *      |  [-d[i|o]<nodata>] [-e[~]<pattern>] ...
+	 * 1  : First level is used for listing of options:
+	 *      |  -Rwest/east/south/north[+r]   {1}
+	 *      |     Set the region of the plot, blah blah...
+	 *      The text set with level = 1 that wraps will indent one more step
+	 * -1 : A negative level means no indent once the line wraps. Thus, multi-line
+	 *      wrapped text will all share the same left margin.
+	 *      |  Furthermore, this options is deadly because ... {-1}
+	 *      |  and that is why we skip this line.
+	 * 2  : Used for a paragraph under an option that should be wrapped and indented
+	 *      if it exceeds a line, e.g.
+	 *      |     You may optionally do this or that or this or that, for instance, {2}
+	 *      |       you could append a constant....
+	 * -2 : Same as -1 but for level 2.  No further indent, just stays at that level.
+	 * 3  : Used to indent separate modifiers under an option.  E.g. (for +a,b below):
+	 *      |  -Q<value][+a][+b]...   {1}
+	 *      |     Mess up the plot by random lines ... blah blah.  Available modifiers: {-1}
+	 *      |       +a Draw random lines from a Poisson distribution so that we get {3}
+	 *      |          a quirky plot.
+	 *      |       +b Add 7 to all answers just for fun.  {3}
+	 * -3:  Same as -1 but for level 3.  No further indent, just stay at that level.
+	 * etc, etc.
+	 */
+	struct GMTAPI_CTRL *API = NULL;
+	unsigned int k = 0;
+	FILE *err = stderr;
+	va_list args;
+
+	if (V_API == NULL) return_error (V_API, GMT_NOT_A_SESSION);
+	if (format == NULL) return GMT_PTR_IS_NULL;	/* Format cannot be NULL */
+	API = gmtapi_get_api_ptr (V_API);	/* Get the typecast structure pointer to API */
+	API->message[0] = '\0';	/* Start fresh */
+
+	va_start (args, format);
+	vsnprintf (API->message, GMT_MSGSIZ, format, args);
+	va_end (args);
+	assert (strlen (API->message) < GMT_MSGSIZ);
+	if (API->GMT) err = API->GMT->session.std[GMT_ERR];
+	if (API->message[0] == '\n') {
+		API->print_func (err, "\n");	/* Blank line to separate paragraphs */
+		k = 1;
+	}
+	gmtapi_wrap_the_line (API, level, err, &(API->message)[k]);
+	return_error (V_API, GMT_NOERROR);
+}
+
+#ifdef FORTRAN_API
+int GMT_Usage_ (unsigned int *level, const char *format, int len) {
+	/* Fortran version: We pass the global GMT_FORTRAN structure */
+	return (GMT_Usage (GMT_FORTRAN, *level, format));
+}
+#endif
+
 
 char * GMT_Error_Message (void *V_API) {
 	struct GMTAPI_CTRL *API = NULL;
@@ -14819,7 +15036,7 @@ int GMT_Put_Matrix (void *V_API, struct GMT_MATRIX *M, unsigned int type, int pa
 	MH->alloc_mode = GMT_ALLOC_EXTERNALLY;	/* Since it clearly is a user array */
 	MH->pad = pad;	/* Placing the pad argument here */
 	if ((item = gmtapi_get_item (API, GMT_IS_GRID, M)) != GMT_NOTSET)	/* Found in list, update type here as well */
-		API->object[item]->type = type;	
+		API->object[item]->type = type;
 
 	return GMT_NOERROR;
 }

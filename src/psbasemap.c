@@ -87,43 +87,45 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	bool classic = (API->GMT->current.setting.run_mode == GMT_CLASSIC);
 
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
 	if (classic) {
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-D%s] |\n\t[-D%s]\n", GMT_INSET_A_CL, GMT_INSET_B_CL);
-		GMT_Message (API, GMT_TIME_NONE, "\t[-F[d|l|t]%s] %s\n", GMT_PANEL, API->K_OPT);
+		GMT_Usage (API, 0, "usage: %s %s %s [-A[<file>]] [%s] [-D%s] | [-D%s] [-F[d|l|t]%s] %s "
+			"[-L%s] %s%s[-Td%s] [-Tm%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]\n",
+			name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_INSET_A_CL, GMT_INSET_B_CL, GMT_PANEL,
+			API->K_OPT, GMT_SCALE, API->O_OPT, API->P_OPT, GMT_TROSE_DIR, GMT_TROSE_MAG, GMT_U_OPT, GMT_V_OPT,
+			GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	}
 	else {
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A[<file>]] [-F[l|t]%s]\n", GMT_PANEL);
-		GMT_Message (API, GMT_TIME_NONE, "\t%s\n", API->K_OPT);
+		GMT_Usage (API, 0, "usage: %s %s %s [-A[<file>]] [%s] [-F[l|t]%s] %s [-L%s] "
+			"%s%s[-Td%s] [-Tm%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s]\n",
+			name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_PANEL, API->K_OPT, GMT_SCALE,
+			API->O_OPT, API->P_OPT, GMT_TROSE_DIR, GMT_TROSE_MAG, GMT_U_OPT, GMT_V_OPT,
+			GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 	}
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L%s]\n", GMT_SCALE);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s%s[-Td%s]\n", API->O_OPT, API->P_OPT, GMT_TROSE_DIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Tm%s]\n", GMT_TROSE_MAG);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] %s[%s]\n\t[%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
-		GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "JZ,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A No plotting, just write coordinates of the (possibly oblique) rectangular map boundary\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to given file (or stdout).  Requires -R and -J only.  Spacing along border\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].\n",
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n\n");
+	GMT_Usage (API, 1, "\n-A No plotting, just write coordinates of the (possibly oblique) rectangular map boundary "
+		"to given file (or standard output).  Requires -R and -J only.  Spacing along border "
+		"in projected coordinates is controlled by GMT default MAP_LINE_STEP [%gp].",
 		API->GMT->session.u2u[GMT_INCH][GMT_PT] * API->GMT->current.setting.map_line_step);
 	GMT_Option (API, "B");
 	if (classic) {
 		gmt_mapinset_syntax (API->GMT, 'D', "Draw a simple map inset box as specified below:");
 		gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map inset, scale or rose.", 3);
-		GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fd, -Fl, -Ft.\n");
+		GMT_Usage (API, -2, "For separate panel attributes, use -Fd, -Fl, -Ft.");
 	}
 	else {
 		gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the map scale or rose.", 3);
-		GMT_Message (API, GMT_TIME_NONE, "\t   For separate panel attributes, use -Fl, -Ft.\n");
+		GMT_Usage (API, -2, "For separate panel attributes, use -Fl, -Ft.");
 	}
 	GMT_Option (API, "K");
 	gmt_mapscale_syntax (API->GMT, 'L', "Draw a map scale at specified reference point.");
 	GMT_Option (API, "O,P");
-	gmt_maprose_syntax (API->GMT, 'T', "Draw a north-pointing map rose at specified reference point.");
+	gmt_maprose_syntax (API->GMT, 'd', "Draw a north-pointing directional map rose at specified reference point.");
+	gmt_maprose_syntax (API->GMT, 'm', "Draw a north-pointing magnetic map rose at specified reference point.");
 	GMT_Option (API, "U,V,X,c,f,p,t,.");
 
 	return (GMT_MODULE_USAGE);

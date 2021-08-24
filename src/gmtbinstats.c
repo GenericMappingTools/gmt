@@ -124,47 +124,48 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s -S%s [-E<empty>] [-N] [-T[h|r]] [%s] [-W[+s]]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G<outgrid> %s %s -S%s [-E<empty>] [-N] [-T[h|r]] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+			 name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Name of output grid.\n");
-	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify the statistic of data we should report per bin.  Choose from.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a: The mean (average)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d: The median absolute deviation (MAD)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g: The full data range (max-min)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i: The 25-75%% interquartile range\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l: The minimum (low)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   L: The minimum of all positive values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m: The median\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n: The number of values [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   o: The LMS scale\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p: The mode (maximum likelihood)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   q: The selected quantile value; append quantile [50%%]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r: The r.m.s.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s: The standard deviation\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   u: The maximum (upper)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   U: The maximum of all negative values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z: The sum\n");
-	GMT_Option (API, "R");
-	gmt_dist_syntax (API->GMT, 'S', "Compute statistics using points inside this search radius.");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty bins [Default is NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize the output by the area of the bins [no normalization].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Use area-covering tiling to set up non-overlapping bins. Choose binning scheme:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   h hexagonal binning, write non-equidistant table to standard output (or file named in -G).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r rectangular binning, writes equidistant grid (named via -G) [Default].\n");
+	GMT_Usage (API, 1, "\n-C Specify the statistic of data we should report per bin.  Choose from:");
+	GMT_Usage (API, -3, "a: The mean (average)");
+	GMT_Usage (API, -3, "d: The median absolute deviation (MAD)");
+	GMT_Usage (API, -3, "g: The full data range (max-min)");
+	GMT_Usage (API, -3, "i: The 25-75%% interquartile range");
+	GMT_Usage (API, -3, "l: The minimum (low)");
+	GMT_Usage (API, -3, "L: The minimum of all positive values");
+	GMT_Usage (API, -3, "m: The median");
+	GMT_Usage (API, -3, "n: The number of values [Default]");
+	GMT_Usage (API, -3, "o: The LMS scale");
+	GMT_Usage (API, -3, "p: The mode (maximum likelihood)");
+	GMT_Usage (API, -3, "q: The selected quantile value; append quantile [50%%]");
+	GMT_Usage (API, -3, "r: The r.m.s.");
+	GMT_Usage (API, -3, "s: The standard deviation");
+	GMT_Usage (API, -3, "u: The maximum (upper)");
+	GMT_Usage (API, -3, "U: The maximum of all negative values");
+	GMT_Usage (API, -3, "z: The sum");
+	GMT_Usage (API, 1, "\n-G Name of output grid.");
+	GMT_Option (API, "I");
+	GMT_Option (API, "R");
+	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Compute statistics using points inside this search radius.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-E Value to use for empty bins [Default is NaN].");
+	GMT_Usage (API, 1, "\n-N Normalize the output by the area of the bins [no normalization].");
+	GMT_Usage (API, 1, "\n-T Use area-covering tiling to set up non-overlapping bins. Choose binning scheme:");
+	GMT_Usage (API, -3, "h: hexagonal binning, write non-equidistant table to standard output (or file named in -G).");
+	GMT_Usage (API, -3, "r: rectangular binning, writes equidistant grid (named via -G) [Default].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Input <table> has observation weights in 4th column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We then compute the weighted version of selection in -C.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to read standard deviations s instead and compute weight = 1/s.\n");
+	GMT_Usage (API, 1, "\n-W[+s|w]");
+	GMT_Usage (API, -2, "Weighted input given, weights in 4th column; compute the weighted version "
+		"of selection in -C [Default is unweighted]. Select modifier:");
+	GMT_Usage (API, 3, "+s Read standard deviations and compute weights as 1/s.");
+	GMT_Usage (API, 3, "+w Read weights directly [Default].");
 	GMT_Option (API, "a,bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.");
 	GMT_Option (API, "di,e,f,h,i");
 	GMT_Option (API, "qi,r,s,w,:,.");
 
@@ -255,6 +256,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 				break;
 			case 'W':	/* Use weights */
 				Ctrl->W.active = true;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "sw", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.sigma = (strstr (opt->arg, "+s")) ? true : false;
 				break;
 			default:	/* Report bad options */

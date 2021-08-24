@@ -159,53 +159,73 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [infile(s)] -G<outgrid> %s\n\t%s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E] [-F[<flattening>]] [-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [-Z<base>] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
+		"[-E] [-F[<flattening>]] [-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>] "
+		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
+		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tInput contains x (or lon), y (or lat), radius, height for each seamount.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   With -E we expect lon, lat, azimuth, semi-major, semi-minor, height instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -F (with no argument) is given then an extra column with flattening (0-1) is expected.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -T is given then two extra columns with start and stop times are expected.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Build a mAsk grid, append outside/inside values [1/NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Here, height is ignored and -L, -N, -Q, -T and -Z are disallowed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Choose between c(one), d(isc), g(aussian), p(o)lynomial or p(arabola) model [gaussian].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is not given the we default to a Gaussian seamount model.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is given without argument then we expect to find c,d,g,o or p in the last input column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Specify horizontal distance unit used by input file if -fg is not used.  Choose among\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e (meter), f (foot) k (km), M (mile), n (nautical mile), or u (survey foot) [e].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Elliptical data format [Default is Circular].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Read lon, lat, azimuth, major, minor, height (m) for each seamount.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Seamounts are truncated.  Append flattening or expect it in an extra input column [no truncation].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Filename for output grdfile with constructed surface.  If -T is set then <outgrid>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file names.\n");
-	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L List area, volume, and mean height for each seamount; NO grid is created.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append the noise-floor cutoff level [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Give filename for output table with names of all grids produced.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename is given then we write the list to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grid so maximum grid height equals <norm>. Not allowed with -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Only used in conjunction with -T.  Append the two modes:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <bmode> to build either (c)umulative [Default] or (i)ncremental volume through time.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <fmode> to assume a (g)aussian [Default] or (c)onstant volume flux distribution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to build grids with increments as uniform discs [exact shapes].\n");
-	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets ad hoc scale factor for radii [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start>. unit is years; append k for kyr and M for Myr.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, append +l and specify n steps instead of time increment.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To read a list of times from the first column in a file instead, use -T<tfile>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies two extra input columns with start and stop time for each seamount's life span.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Q to select cumulative versus incremental construction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set the reference depth [0].  Not allowed for -Qi.\n");
-	GMT_Option (API, "V,bi,di,e");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units (lon, lat in degree, radius, major, minor in km).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is Cartesian - no units are implied; but see -D].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS (unless -L is used):\n");
+	GMT_Usage (API, 1, "\n<table>");
+	GMT_Usage (API, -2, "One or more data files (in ASCII, binary, netCDF). If no files are given, standard "
+		"input is read. Records contain x (or lon), y (or lat), radius, height for each seamount. "
+		"With -E we expect lon, lat, azimuth, semi-major, semi-minor, height instead. "
+		"If -F (with no argument) is given then an extra column with flattening (0-1) is expected. "
+		"If -T is given then two extra columns with start and stop times are expected.");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Filename for output grid with constructed surface. If -T is set then <outgrid> "
+		"must be a filename template that contains a floating point format (C syntax) and "
+		"we use the corresponding time (in units specified in -T) to generate the file names.");
+	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[<out>/<in>]");
+	GMT_Usage (API, -2, "Build a mAsk grid, append outside/inside values [1/NaN]. "
+		"Here, height is ignored and -L, -N, -Q, -T and -Z are disallowed.");
+	GMT_Usage (API, 1, "\n-C[c|d|g|o|p]");
+	GMT_Usage (API, -2, "Choose between a variety of shapes [Default is Gaussian]:");
+	GMT_Usage (API, 3, "c: Cone radial shape.");
+	GMT_Usage (API, 3, "d: Disc radial shape.");
+	GMT_Usage (API, 3, "g: Gaussian radial shape.");
+	GMT_Usage (API, 3, "o: Polynomial radial shape.");
+	GMT_Usage (API, 3, "p: Parabolic radial shape.");
+	GMT_Usage (API, -2, "Note: If -C is given without argument then we expect to read c,d,g,o or p from the trailing input text.");
+	GMT_Usage (API, 1, "\n-D%s", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Usage (API, -2, "Specify horizontal distance unit used by input file if -fg is not used.  Choose among "
+		"e (meter), f (foot) k (km), M (mile), n (nautical mile), or u (survey foot) [e].");
+	GMT_Usage (API, 1, "\n-E Elliptical data format [Default is Circular]. "
+		"Read lon, lat, azimuth, major, minor, height (m) for each seamount.");
+	GMT_Usage (API, 1, "\n-F[<flattening>]");
+	GMT_Usage (API, -2, "Seamounts are truncated. Append flattening or expect it in an extra input column [no truncation]. ");
+	GMT_Usage (API, 1, "\n-L[<hcut>]");
+	GMT_Usage (API, -2, "List area, volume, and mean height for each seamount; NO grid is created so -R -I are not required. "
+		"Optionally, append the noise-floor cutoff level [0].");
+	GMT_Usage (API, 1, "\n-M[<list>]");
+	GMT_Usage (API, -2, "Give filename for output table with names of all grids produced. "
+		"If no filename is given then we write the list to standard output.");
+	GMT_Usage (API, 1, "\n-N<norm>");
+	GMT_Usage (API, -2, "Normalize grid so maximum grid height equals <norm>. Not allowed with -T.");
+	GMT_Usage (API, 1, "\n-Q<bmode><fmode>[+d]");
+	GMT_Usage (API, -2, "Only used in conjunction with -T. Append the two modes:");
+	GMT_Usage (API, 3, "<bmode>: Build either (c)umulative [Default] or (i)ncremental volume through time.");
+	GMT_Usage (API, 3, "<fmode>: Assume a (g)aussian [Default] or (c)onstant volume flux distribution.");
+	GMT_Usage (API, -2, "Append +d to build grids with increments as uniform discs [exact shapes].");
+	GMT_Usage (API, 1, "\n-S<r_scale>");
+	GMT_Usage (API, -2, "Set ad hoc scale factor for radii [1].");
+	GMT_Usage (API, 1, "\n-T<t0>[/<t1>/<dt>[+l]]|<file>");
+	GMT_Usage (API, -2, "Specify start, stop, and time increments for sequence of calculations [one step, no time dependency]. "
+		"For a single specific time, just give <t0> (in years; append k for kyr and M for Myr).");
+	GMT_Usage (API, 3, "+l For a logarithmic time scale, interpret <dt> as n_steps instead of time increment.");
+	GMT_Usage (API, -2, "Alternatively, read a list of times from the first column in a file instead by appending <tfile>. "
+		"Note: This option implies two extra input columns with <start> and <stop> time for each seamount's life span. "
+		"Use -Q to select cumulative versus incremental construction.");
+	GMT_Option (API, "V");
+	GMT_Usage (API, 1, "\n-Z<base>");
+	GMT_Usage (API, -2, "Set the reference depth [0].  Not allowed for -Qi.");
+	GMT_Option (API, "bi,di,e");
+	GMT_Usage (API, 1, "\n-fg Map units (lon, lat in degree, radius, major, minor in km) "
+		"[Default is Cartesian - no units are implied; but see -D].");
 	GMT_Option (API, "h,i,r,:,.");
 
 	return (GMT_MODULE_USAGE);

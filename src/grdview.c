@@ -417,65 +417,73 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid|image> | -G<grd_r> -G<grd_g> -G<grd_b>]\n",
-	             name, GMT_J_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I<intensgrid>|<value>|<modifiers>] [%s] %s[-N<level>[+g<fill>]] %s%s[-Q<args>[+m]]\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<smooth>] [-T[+o[<pen>]][+s]]\n", GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<type><pen>] [%s]\n\t[%s] %s[%s] [%s]\n",
-	             GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <topogrid> %s [%s] [-C[<cpt>]] [-G<drapegrid> | <image> | -G<grd_r> -G<grd_g> -G<grd_b>] "
+		"[-I[<intensgrid>|<value>|<modifiers>]] [%s] %s[-N<level>[+g<fill>]] %s%s[-Q<args>[+m]] [%s] [-S<smooth>] "
+		"[-T[+o[<pen>]][+s]] [%s] [%s] [-W<type><pen>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_J_OPT, GMT_B_OPT, GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT,
+		GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<topogrid> is data set to be plotted.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<topogrid> is the grid surface to be plotted.");
 	GMT_Option (API, "J-Z");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert grid values to colors. Optionally, name a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", API->GMT->current.setting.cpt);
-	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify how to color the 3-D surface defined by <topogrid>:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2. Provide an image (<drapeimage>) and it will be draped over the surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3. Repeat -G for three grid files with separate red, green, and blue components in 0-255 range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Notes: 1) -JZ|z and -N always refers to the data in the <topogrid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t          2) The -G option requires the -Qi[<dpi>] option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <topogrid> instead, append +a<azim> [-45], +n<method> [t1], and +m<ambient> [0]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive from another grid than <topogrid>, give a filename as well.\n");
+	GMT_Usage (API, 1, "\n-C[<cpt>]");
+	GMT_Usage (API, -2, "Color palette file to convert grid values to colors. Optionally, name a master cpt "
+		"to automatically assign continuous colors over the data range [%s]; if so, "
+		"optionally append +i<dz> to quantize the range [the exact grid range]. "
+		"Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a "
+		"linear continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
+	GMT_Usage (API, 1, "\n-G<drapegrid> | <image> | -G<grd_r> -G<grd_g> -G<grd_b>");
+	GMT_Usage (API, -2, "Specify how to color the 3-D surface defined by <topogrid>:");
+	GMT_Usage (API, 3, "%s Provide a grid (<drapegrid>) and colors will be determined from it and the cpt.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Provide an image (<drapeimage>) and it will be draped over the surface.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Repeat -G for three grid files with separate red, green, and blue components in 0-255 range.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Notes: 1) -JZ|z and -N always refer to the data in the <topogrid>. "
+		"2) The -G option requires the -Qi[<dpi>] option.");
+	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
+	GMT_Usage (API, -2, "Apply directional illumination. Append name of an intensity grid, or "
+		"for a constant intensity (i.e., change the ambient light), just give a scalar. "
+		"To derive intensities from <topogrid> instead, append desired modifiers:");
+	GMT_Usage (API, 3, "+a Specify <azim> of illumination [-45].");
+	GMT_Usage (API, 3, "+n Set the <method> and <scale> to use [t1].");
+	GMT_Usage (API, 3, "+m Set <ambient> light to add [0].");
+	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
+		"To derive intensities from another grid than <topogrid>, give the alternative data grid with suitable modifiers.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Draw a horizontal plane at z = <level>. For rectangular projections, append +g<fill>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to paint the facade between the plane and the data perimeter.\n");
+	GMT_Usage (API, 1, "\n-N<level>[+g<fill>]");
+	GMT_Usage (API, -2, "Draw a horizontal plane at z = <level>. For rectangular projections, append +g<fill> "
+		"to paint the facade between the plane and the data perimeter.");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set plot request. Choose one of the following:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qm for Mesh plot [Default]. Append <color> for mesh paint [%s].\n",
+	GMT_Usage (API, 1, "\n-Q<args>[+m]");
+	GMT_Usage (API, -2, "Set plot type request. Choose one of the following directives:");
+	GMT_Usage (API, 3, "m: Mesh plot [Default]. Append <color> for mesh paint [%s]. "
+		"Alternatively, append x or -y for row or column \"waterfall\" profiles.",
 		gmt_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qmx or -Qmy do waterfall type plots (row or column profiles).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qs[m] for colored or shaded Surface. Append m to draw mesh-lines on the surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qi for scanline converting polygons to raster-image.  Append effective dpi [100].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qc. As -Qi but use PS Level 3 colormasking for nodes with z = NaN.  Append effective dpi [100].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To force a monochrome image using the gmt_M_yiq transformation, append +m.\n");
+	GMT_Usage (API, 3, "s: Colored or shaded Surface. Append m to draw mesh-lines on the surface.");
+	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpi [100].");
+	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpi [100].");
+	GMT_Usage (API, -2, "To force a monochrome image using the YIQ transformation, append +m.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours first (see grdview for <smooth> value info) [no smoothing].\n");
-	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles.\n"
-	                "\t   Append +s to skip tiles for nodes with z = NaN [Default paints all tiles].\n"
-	                "\t   Append +o[<pen>] to draw tile outline [Default uses no outline].", 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Jz|Z as it produces a flat image.\n");
+	GMT_Usage (API, 1, "\n-S<smooth>");
+	GMT_Usage (API, -2, "Smooth contours first (see grdcontour for <smooth> value info) [no smoothing].");
+	gmt_pen_syntax (API->GMT, 'T', NULL, "Image the data without interpolation by painting polygonal tiles in the form [+o[<pen>]][+s].", NULL, 0);
+	GMT_Usage (API, 3, "+s Skip tiles for nodes with z = NaN [Default paints all tiles].");
+	GMT_Usage (API, 3, "+o to draw tile outline; optionally append <pen> [Default uses no outline].");
+	GMT_Usage (API, -2, "Note: Cannot be used with -Jz|Z as it produces a flat image.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes for various features in form <type><pen>.", 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t   <type> can be c for contours, m for mesh, and f for facade.\n");
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes for various features in form <type><pen>.", NULL, 0);
+	GMT_Usage (API, -2, "Note: <type> can be c for contours, m for mesh, and f for facade:");
 	P = API->GMT->current.setting.map_default_pen;
-	GMT_Message (API, GMT_TIME_NONE, "\t   m sets attributes for mesh lines [%s].\n", gmt_putpen (API->GMT, &P));
-	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -Qm or -Qsm to take effect.\n");
+	GMT_Usage (API, 3, "m: Sets attributes for mesh lines [%s]. "
+		"Requires -Qm or -Qsm to take effect.", gmt_putpen (API->GMT, &P));
 	P.width *= 3.0;
-	GMT_Message (API, GMT_TIME_NONE, "\t   c draw contours on top of surface or mesh [Default is no contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Optionally append pen attributes [%s].\n", gmt_putpen (API->GMT, &P));
-	GMT_Message (API, GMT_TIME_NONE, "\t   f sets attributes for facade outline [%s].\n", gmt_putpen (API->GMT, &P));
-	GMT_Message (API, GMT_TIME_NONE, "\t     Requires -N to take effect.\n");
+	GMT_Usage (API, 3, "c: Draw contours on top of surface or mesh [Default is no contours]. "
+		"Optionally append pen attributes [%s].", gmt_putpen (API->GMT, &P));
+	GMT_Usage (API, 3, "f: Set attributes for facade outline [%s]. "
+		"Requires -N to take effect.", gmt_putpen (API->GMT, &P));
 	GMT_Option (API, "X,c,f,n,p,t,.");
 
 	return (GMT_MODULE_USAGE);
@@ -693,7 +701,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						Ctrl->T.skip = true;
 					if ((c = strstr (opt->arg, "+o"))) {
 						if (gmt_getpen (GMT, &c[2], &Ctrl->T.pen)) {
-							gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
+							gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 							n_errors++;
 						}
 						else
@@ -707,7 +715,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						Ctrl->T.outline = true;
 						k++;
 						if (opt->arg[k] && gmt_getpen (GMT, &opt->arg[k], &Ctrl->T.pen)) {
-							gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
+							gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 							n_errors++;
 						}
 					}
@@ -728,7 +736,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						id = (opt->arg[0] == 'f') ? 2 : ((opt->arg[0] == 'm') ? 1 : 0);
 				}
 				if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				if (j == 0)	/* Copy pen when using just -W */

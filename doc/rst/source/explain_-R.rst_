@@ -34,7 +34,7 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
 #. **-R**\ *code1,code2,...*\ [**+e**\ \|\ **r**\ \|\ **R**\ *incs*]. This indirectly supplies the region by consulting
    the DCW (Digital Chart of the World) database and derives the bounding regions for one or more countries given by
    the codes. Simply append one or more comma-separated countries using the two-character
-   `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)>`_.
+   `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2>`_.
    To select a state within a country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent,
    prepend **=** to any of the continent codes **AF** (Africa), **AN** (Antarctica), **AS** (Asia), **EU** (Europe),
    **OC** (Oceania), **NA** (North America), or **SA** (South America). The following modifiers can be appended:
@@ -59,3 +59,8 @@ and 2 are shown in panels a) and b) respectively of the Figure :ref:`Map region 
    and the :ref:`-p <option_-p>` option, where the z-range (*zmin*/*zmax*) is appended to the first method to indicate
    the third dimension. This is not used for :ref:`-p <option_-p>` without **-Jz**, in which case a perspective view of
    the place is plotted with no third dimension.
+
+#. **-Ra**\ [**uto**] or **-Re**\ [**xact**]. Under modern mode, and for *plotting* modules only, you can automatically
+   determine the region from the data used. You can either get the exact area using **-Re** [Default if no **-R**
+   is given] or a slightly larger area sensibly rounded outwards to the next multiple of increments that depend on
+   the data range using **-Ra**.

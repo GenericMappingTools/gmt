@@ -146,38 +146,44 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A<azimuth>/<tolerance>] [-C<course_change>] [-D<minimum_distance>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F<xy_filter>/<z_filter>] [-N<template>] [-Q<flags>] [-S] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A<azimuth>/<tolerance>] [-C<course_change>] [-D<minimum_distance>] "
+		"[-F<xy_filter>/<z_filter>] [-N<template>] [-Q<flags>] [-S] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tGive xy[z][dh]file name or read stdin.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Only write profile if mean direction is within +/- <tolerance>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   degrees of <azimuth> [Default = All].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Profile ends when change of heading exceeds <course_change> [ignore course changes].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Only write profile if length is at least <minimum_distance> [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Filter the data.  Give full widths of cosine arch filters for xy and z.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Defaults are both widths = 0, giving no filtering.  Use negative width for high-pass filter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Write individual segments to separate files [Default writes one\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   multisegment file to stdout].  Append file name template which MUST\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   contain a C-style format for a long integer (e.g., %%d) that represents\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a sequential segment number across all tables (if more than one table).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses gmtsplit_segment_%%d.txt (or .bin for binary)].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply a template with two long formats and we will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   replace them with the table number and table segment numbers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Indicate what output you want as one or more of xyzdh in any order;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   where x,y,z refer to input data locations and optional z-value(s),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and d,h are the distance and heading along track.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is all fields, i.e., -Qxyzdh (or -Qxydh if no z-column in the input)].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S d,h is supplied.  Input is 5 col x,y,z,d,h with d non-decreasing.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default input is 3 col x,y,z only and computes d,h from the data].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table>");
+	GMT_Usage (API, -2, "One or more data files (in ASCII, binary, netCDF) with 2, 3 or 5 columns. "
+		"If no files are given, standard input is read.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<azimuth>/<tolerance>");
+	GMT_Usage (API, -2, "Only write profile if mean direction is within +/- <tolerance> "
+		"degrees of <azimuth> [Default = All].");
+	GMT_Usage (API, 1, "\n-C<course_change>");
+	GMT_Usage (API, -2, "Profile ends when change of heading exceeds <course_change> [ignore course changes].");
+	GMT_Usage (API, 1, "\n-D<minimum_distance>");
+	GMT_Usage (API, -2, "Only write profile if length is at least <minimum_distance> [0].");
+	GMT_Usage (API, 1, "\n-F<xy_filter>/<z_filter>");
+	GMT_Usage (API, -2, "Filter the data: Give full widths of cosine arch filters for xy and z. "
+		"Use negative width for high-pass filter [Default is no filtering].");
+	GMT_Usage (API, 1, "\n-N<template>");
+	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one "
+		"multisegment file to standard output].  Append file name template which MUST "
+		"contain a C-style format code for a long integer (e.g., %%d) that represents "
+		"a sequential segment number across all tables (if more than one table) "
+		"[Default uses gmtsplit_segment_%%d.txt (or .bin for binary)]. "
+		"Alternatively, supply a template with two long format codes and we will "
+		"replace them with the table number and table segment numbers.");
+	GMT_Usage (API, 1, "\n-Q<flags>");
+	GMT_Usage (API, -2, "Indicate what output you want as one or more of xyzdh in any order, "
+		"where x,y,z refer to input data locations and optional z-value(s), "
+		"and d,h are the distance and heading along track "
+		"[Default is all fields, i.e., -Qxyzdh (or -Qxydh if no z-column in the input)].");
+	GMT_Usage (API, 1, "\n-S d,h is supplied: Input is 5 col x,y,z,d,h with d non-decreasing "
+		"[Default input is 3 col x,y,z only and computes d,h from the data].");
 	GMT_Option (API, "V,bi");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t     Default input columns is set via -S.\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default input columns is set via -S.");
 	GMT_Option (API, "bo,d,e,f,g,h,i,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);

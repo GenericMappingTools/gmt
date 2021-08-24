@@ -191,54 +191,66 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *C) {	/* D
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s grdfile_top [grdfile_bot] [-C<density>] [-D] [-E<thick>] [-F<xy_file>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<outfile>] [-H<...>] [%s] [-L<z_obs>]\n", GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] %s[%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grdfile_top> [<grdfile_bot>] [-C<density>] [-D] [-E<thickness>] [-F<xy_file>] "
+		"[-G<outgrid>] [-H<params>] [%s] [-L<z_obs>] [-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]] "
+		"[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] %s[%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tgrdfile_top is the grdfile whose gravity effect is to be computed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If two grids are provided then the gravity/magnetic effect of the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   volume between them is computed\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Sets body density in SI.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Passes file with locations where anomaly is going to be computed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grdfile.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Specifies that z is positive down [Default positive up].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Gives layer thickness in m [Default = 500 m].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Sets parameters for computation of magnetic anomaly (Can be used multiple times)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <f_dec>/<f_dip> -> geomagnetic declination/inclination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <m_int>/<m_dec>/<m_dip> -> body magnetic intensity/declination/inclination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  OR for a grid mode \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +m<magfile> where 'magfile' is the name of the magnetic intensity file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To compute a component, specify any of:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     x|X|e|E  to compute the E-W component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     y|Y|n|N  to compute the N-S component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     z|Z      to compute the Vertical component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     h|H      to compute the Horizontal component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t|T|f|F  to compute the total field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a variable inclination and declination use IGRF. Set any of -H+i|g|r|f|n to do that.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grdfile_top> is the grdfile whose gravity effect is to be computed. "
+		"If <grdfile_bot> is also provided then the gravity/magnetic effect of the "
+		"volume between them is computed.");
+	GMT_Usage (API, 1, "\n-C<density>");
+	GMT_Usage (API, -2, "Set body density in SI.");
+	GMT_Usage (API, 1, "\n-F<xy_file>");
+	GMT_Usage (API, -2, "Pass file with locations where anomaly is going to be computed.");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Set name of the output grdfile.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D Specifies that z is positive down [Default positive up].");
+	GMT_Usage (API, 1, "\n-E<thickness>");
+	GMT_Usage (API, -2, "Give layer thickness in m [Default = 500 m].");
+	GMT_Usage (API, 1, "\n-H<params>");
+	GMT_Usage (API, -2, "Set parameters for computation of magnetic anomaly (Can be repeated):");
+	GMT_Usage (API, 3, "%s <f_dec>/<f_dip> -> geomagnetic declination/inclination.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <m_int></m_dec>/<m_dip> -> body magnetic intensity/declination/inclination.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Alternatively, for a grid mode:");
+	GMT_Usage (API, 3, "+m Append <magfile>, the name of the magnetic intensity file.");
+	GMT_Usage (API, -2, "To compute a component, specify any of:");
+	GMT_Usage (API, 3, "x: Compute the E-W component (or e).");
+	GMT_Usage (API, 3, "y: Compute the N-S component (or n).");
+	GMT_Usage (API, 3, "z: Compute the Vertical component.");
+	GMT_Usage (API, 3, "h: Compute the Horizontal component.");
+	GMT_Usage (API, 3, "t: Compute the total field.");
+	GMT_Usage (API, -2, "If we want to compute the magnetic anomalies over a large region where the ambient "
+		"magnetic field can no longer be assumed to be constant we can set variable inclinations and declinations "
+		"via IGRF. Set any of -H+i|g|r|f|n to do that.");
 	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Sets level of observation [Default = 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Map units true; x,y in degrees, dist units in m [Default dist unit = x,y unit].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Extends the domain of computation with respect to output -R region.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Qn<N> artificially extends the width of the outer rim of cells to have a fake\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   width of N * dx[/dy].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<pad_dist> extend the region by west-pad, east+pad, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Q<region> Same syntax as -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R For new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the same region as the input grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets search radius in km (but only in the two grids mode) [Default = 30 km].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Sets z level of reference plane [Default = 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set -Zt or Zb to close the body at its top (bottom) plane.\n");
+	GMT_Usage (API, -2, "Note: The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).");
+	GMT_Usage (API, 1, "\n-L<z_obs>");
+	GMT_Usage (API, -2, "Set level of observation [Default = 0].");
+	GMT_Usage (API, 1, "\n-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]");
+	GMT_Usage (API, -2, "Extend the domain of computation with respect to output -R region; append:");
+	GMT_Usage (API, 3, "%s n<N> will artificially extends the width of the outer rim of cells to have a fake "
+		"width of N * dx[/dy].", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <pad_dist> extend the region by west-pad, east+pad, etc.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <region> set the extended region; same syntax as -R.", GMT_LINE_BULLET);
+	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
+	GMT_Usage (API, -2, "Set new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes "
+		"[Default uses the same region as the input grid].");
+	GMT_Usage (API, 1, "\n-S<radius>");
+	GMT_Usage (API, -2, "Set search radius in km (but only in the two grids mode) [Default = 30 km].");
+	GMT_Usage (API, 1, "\n-Z[<level>]|[t|p]");
+	GMT_Usage (API, -2, "Set z level of reference plane [Default = 0]. "
+		"Alternatively, set -Zt or Zb to close the body at its top (bottom) plane.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Usage (API, 1, "\n-fg Converts geographic grids to meters using a \"Flat Earth\" approximation.");
 #ifdef HAVE_GLIB_GTHREAD
 	GMT_Option (API, "x");
 #else
-	GMT_Message (API, GMT_TIME_NONE, "\t-x Not available since this binary was not build with multi-threading support.\n");
+	GMT_Usage (API, 1, "\n-x Not available since this binary was not build with multi-threading support.");
 #endif
 	GMT_Option (API, ":,.");
 
@@ -1778,4 +1790,3 @@ c    a,b,c:  the three direction cosines.
 	*b = cos(xincl) * sin(xdecl-xazim);
 	*c = sin(xincl);
 }
-

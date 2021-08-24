@@ -131,45 +131,53 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct TRIANGULATE_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Dx|y] [-C<slopegrid>] [-E<empty>] [-G<outgrid>]\n", name);
 #ifdef NNN_MODE
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-M] [-N] [-Q[n]]\n", GMT_I_OPT, GMT_J_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G<outgrid>] [%s] [%s] [-M] [-N] "
+		"[-Q[n]] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_I_OPT, 
+		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #else
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-M] [-N] [-Q]\n", GMT_I_OPT, GMT_J_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-C<slopegrid>] [-Dx|y] [-E<empty>] [-G<outgrid>] [%s] [%s] [-M] [-N] "
+		"[-Q] [%s] [-S] [-T] [%s] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_I_OPT, 
+		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [-T] [%s] [-Z] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute propagated uncertainty via CURVE algorithm. Give name of input slope grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The slope grid (in degrees) also sets -R -I [-r].  Expects (x,y,h,v) or (x,y,z,h,v) on input.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -G and annot be used with -D, -M, -N, -Q, -S, or -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Take derivative in the x- or y-direction (only with -G) [Default is z value].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Grid data. Give name of output grid file and specify -R -I [-r].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is used then output grids will hold propagated uncertainties and no -R -I [-r] is required.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<slopegrid>");
+	GMT_Usage (API, -2, "Compute propagated uncertainty via CURVE algorithm. Give name of input slope grid. The slope "
+		"grid (in degrees) also sets -R -I [-r]. Expects (x,y,h,v) or (x,y,z,h,v) on input. Requires -G and cannot be "
+		"used with -D, -M, -N, -Q, -S, or -T.");
+	GMT_Usage (API, 1, "\n-Dx|y");
+	GMT_Usage (API, -2, "Take derivative in the x- or y-direction (only with -G) [Default is z value].");
+	GMT_Usage (API, 1, "\n-E<empty>");
+	GMT_Usage (API, -2, "Value to use for empty nodes [Default is NaN].");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Grid data. Give name of output grid file and specify -R -I [-r]. If -C is used then output "
+		"grids will hold propagated uncertainties and no -R -I [-r] is required. Cannot be combined with -N.");
 #ifdef NNN_MODE
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Qn for natural nearest neighbors [Default is linear triangulation]\n");
+	GMT_Usage (API, -2, "Use -Qn for natural nearest neighbors [Default is linear triangulation]");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be combined with -N.\n");
 	GMT_Option (API, "I,J-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Output triangle edges as multiple segments separated by segment headers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is to output the indices of vertices for each Delaunay triangle].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Write indices of vertices to stdout when -G is used [only write the grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Compute Voronoi polygon edges instead (requires -R and Shewchuk algorithm) [Delaunay triangulation].\n");
+	GMT_Usage (API, 1, "\n-M Output triangle edges as multiple segments separated by segment headers. [Default is to "
+		"output the indices of vertices for each Delaunay triangle].");
+	GMT_Usage (API, 1, "\n-N Write indices of vertices to standard output when -G is used [only write the grid].");
+	GMT_Usage (API, 1, "\n-Q Compute Voronoi polygon edges instead (requires -R and Shewchuk algorithm) [Delaunay triangulation].");
 #ifdef NNN_MODE
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to produce closed Voronoi polygons.\n");
+	GMT_Usage (API, -2, "Append n to produce closed Voronoi polygons.");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Output triangle polygons as multiple segments separated by segment headers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -Q.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Output triangles or polygons even if gridding has been selected with -G.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default behavior is to produce a grid based on the triangles or polygons only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].\n");
-	GMT_Option (API, "R,V,bi2");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t-bo Write binary (double) index table [Default is ASCII i/o].\n");
+	GMT_Option (API, "R");
+	GMT_Usage (API, 1, "\n-S Output triangle polygons as multiple segments separated by segment headers. Cannot be used with -Q.");
+	GMT_Usage (API, 1, "\n-T Output triangles or polygons even if gridding has been selected with -G. Default behavior "
+		"is to produce a grid based on the triangles or polygons only.");
+	GMT_Option (API, "V");
+	GMT_Usage (API, 1, "\n-Z Expect (x,y,z) data on input (and output); automatically set if -G is used [Expect (x,y) data].");
+	GMT_Option (API, "bi2");
+	if (gmt_M_showusage (API))  GMT_Usage (API, 1, "\n-bo Write binary (double) index table [Default is ASCII i/o].");
 	GMT_Option (API, "d,e,f,h,i,qi,r,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);

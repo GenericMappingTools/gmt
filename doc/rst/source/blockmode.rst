@@ -17,12 +17,12 @@ Synopsis
 |SYN_OPT-R|
 [ |-A|\ *fields* ]
 [ |-C| ]
-[ |-D|\ [*width*]\ [**+c**][**+a**\|\ **+l**\|\ **+h** ]
-[ |-E|\ **r**\|\ **s**\ [**+l**\|\ **h**] ]
+[ |-D|\ [*width*]\ [**+c**][**+a**\|\ **l**\|\ **h** ]]
+[ |-E|\ [**r**\|\ **s**\ [**+l**\|\ **h**]] ]
 [ |-G|\ [*grdfile*] ]
 [ |-Q| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**\|\ **w**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -113,6 +113,7 @@ Optional Arguments
     block. Output order becomes
     *x*,\ *y*,\ *z*,\ *s*,\ *l*,\ *h*\ [,\ *w*]. Default outputs
     *x*,\ *y*,\ *z*\ [,\ *w*]. See **-W** for *w* output.
+
 **-E**\ **r**\|\ **s**\ [**+l**\|\ **h**]
     Provide source id **s** or record number **r** output, i.e., append
     the source id or record number associated with the modal value. If
@@ -145,7 +146,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**i**\|\ **o**][**+s**]
+**-W**\ [**i**\|\ **o**][**+s**\|\ **w**]
     Weighted modifier[s]. Unweighted input and output have 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted modal values for each
@@ -153,7 +154,8 @@ Optional Arguments
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
     input only, and **-Wo** for weighted output only. [Default uses unweighted i/o].
     If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma.
+    then append **+s** and we compute weight = 1/sigma.  Otherwise (or via **+w**
+    we use the weights directly).
 
 .. include:: explain_-aspatial.rst_
 

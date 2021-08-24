@@ -167,94 +167,105 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A[n|[+]<int>|<list>][<labelinfo>] [%s] [-C<contours>] [%s]\n", name, GMT_B_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p]\n", GMT_CONTG, API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[<cpt>]] %s%s[-Q[<cut>][+z]] [%s]\n", API->O_OPT, API->P_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S<smooth>] [%s]\n", GMT_CONTT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W[a|c]<pen>[+c[l|f]]]\n\t[%s] [%s] [-Z[+s<fact>][+o<shift>][+p]]\n",
-	                                 GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s] [%s]\n", GMT_bo_OPT, API->c_OPT, GMT_do_OPT, GMT_ho_OPT, GMT_l_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid> %s [-A[n|[+]<int>|<list>][<labelinfo>]] [%s] [-C<contours>] "
+		"[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p] [-N[<cpt>]] %s%s[-Q[<n>][+z]] [%s] "
+		"[-S<smooth>] [%s] [%s] [%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s] [-Z[+o<shift>][+p][+s<fact>]] "
+		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, GMT_CONTG, API->K_OPT, API->O_OPT,
+		API->P_OPT, GMT_Rgeoz_OPT, GMT_CONTT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT, API->c_OPT,
+		GMT_do_OPT, GMT_ho_OPT, GMT_l_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is the grid file to be contoured.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grid> is the grid file to be contoured.");
 	GMT_Option (API, "J-Z");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Annotation label settings [Default is no annotated contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give annotation interval or comma-separated list of contours.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     (for single contour append comma to be seen as list).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give -An to disable all contour annotations\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     implied by the information provided in -C.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <labelinfo> controls the specifics of the labels.  Choose from:\n");
-	gmt_label_syntax (API->GMT, 5, 1);
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[n|[+]<int>|<list>][<labelinfo>]");
+	GMT_Usage (API, -2, "Annotation label settings [Default is no annotated contours]. "
+		"Give annotation interval or comma-separated list of contours "
+		"(for single contour append comma to be seen as list). "
+		"Alternatively, give -An to disable all contour annotations "
+		"implied by the information provided in -C.");
+	GMT_Usage (API, -2, "<labelinfo> controls the specifics of the labels.  Choose from:");
+	gmt_label_syntax (API->GMT, 2, 1);
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Contours to be drawn can be specified in one of four ways:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1. Fixed contour interval.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   2. Comma-separated contours (for single contour append comma to be seen as list).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3. File with contour levels, types, and optional fixed annotation angle and/or pen:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        <contlevel> [<angle>] C|c|A|a [<pen>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      A|a for annotated contours, C|c for plain contours. If -T is used,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      only inner-most contours with upper case C or A will be ticked\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   4. Name of a CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [CPT contours are set to C unless the CPT flags are set;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use -A to force all to become A].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If neither -A nor -C are set then we auto-select the intervals.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump contours as data line segments; no plotting takes place.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append filename template which may contain C-format specifiers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename template is given we write all lines to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If filename has no specifiers then we write all lines to a single file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If a float format (e.g., %%6.2f) is found we substitute the contour z-value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If an char format (%%c) is found we substitute C or O for closed and open contours.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The 1-3 specifiers may be combined and appear in any order to produce the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the desired number of output files (e.g., just %%c gives two files, just %%f would.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   separate segments into one file per contour level, and %%d would write all segments.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to individual files; see module documentation for more examples.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force dumped contours to be oriented so that the higher z-values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the contour lines [Default is not oriented].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Control placement of labels along contours.  Choose from:\n");
-	gmt_cont_syntax (API->GMT, 3, 0);
+	GMT_Usage (API, 1, "\n-C<contours>");
+	GMT_Usage (API, -2, "Contours to be drawn can be specified in one of four ways:");
+	GMT_Usage (API, 3, "%s Fixed contour interval.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Comma-separated contours (for single contour append comma to be seen as list).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s File with contour levels, types, and optional fixed annotation angle and/or pen: "
+		"<contlevel> [<angle>] C|c|A|a [<pen>]. "
+		"Use A|a for annotated contours or C|c for plain contours. If -T is used, "
+		"only inner-most contours with upper case C or A will be ticked.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Name of a CPT. "
+		"[CPT contours are set to C unless the CPT flags are set; "
+		"Use -A to force all to become A].", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "If neither -A nor -C are set then we auto-select the intervals.");
+	GMT_Usage (API, 1, "\n-D<template>");
+	GMT_Usage (API, -2, "Dump contours as data line segments; no plotting takes place. "
+		"Append filename template which may contain C-format specifiers. "
+		"If no filename template is given we write all lines to standard output. "
+		"If filename has no specifiers then we write all lines to a single file. "
+		"If a float format (e.g., %%6.2f) is found we substitute the contour z-value. "
+		"If an integer format (e.g., %%06d) is found we substitute a running segment count. "
+		"If an char format (%%c) is found we substitute C or O for closed and open contours. "
+		"The 1-3 specifiers may be combined and appear in any order to produce the "
+		"the desired number of output files (e.g., just %%c gives two files, just %%f would. "
+		"separate segments into one file per contour level, and %%d would write all segments. "
+		"to individual files; see module documentation for more examples.");
+	GMT_Usage (API, 1, "\n-F[l|r]");
+	GMT_Usage (API, -2, "Force dumped contours to be oriented so that the higher z-values "
+		"are to the left (-Fl [Default]) or right (-Fr) as we move along "
+		"the contour lines [Default is not oriented].");
+	GMT_Usage (API, 1, "\n%s", GMT_CONTG);
+	GMT_Usage (API, -2, "Control placement of labels along contours.  Choose from:");
+	gmt_cont_syntax (API->GMT, 2, 0);
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Only contour inside specified range.  Alternatively, give -Ln or -Lp to just draw\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   negative or positive contours, respectively. Upper case N or P includes zero contour.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Fill area between contour with the colors in a discrete CPT. If <cpt> is given the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   we use that <cpt> for the fill, else -C<cpt> must be given and used instead [no fill].\n");
+	GMT_Usage (API, 1, "\n-L<low>/<high>|n|N|P|p");
+	GMT_Usage (API, -2, "Only contour inside specified range.  Alternatively, give -Ln or -Lp to just draw "
+		"negative or positive contours, respectively. Upper case N or P includes zero contour.");
+	GMT_Usage (API, 1, "\n-N[<cpt>]");
+	GMT_Usage (API, -2, "Fill area between contour with the colors in a discrete CPT. If <cpt> is given the "
+		"we use that <cpt> for the fill, else -C<cpt> must be given and used instead [no fill].");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not draw closed contours with less than <cut> points [Draw all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a minimum contour length and append a unit (%s, or c for Cartesian).\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Unit C means Cartesian distances after first projecting the input coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +z to skip tracing the zero-contour.\n");
+	GMT_Usage (API, 1, "\n-Q[<n>][+z]");
+	GMT_Usage (API, -2, "Do not draw closed contours with less than <n> points [Draw all contours]. "
+		"Alternatively, give a minimum contour length and append a unit (%s, or c for Cartesian). "
+		"Unit C means Cartesian distances after first projecting the input coordinates. "
+		"Optionally, append +z to skip tracing the zero-contour.", GMT_LEN_UNITS_DISPLAY);
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is extent of grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Smooth contours by interpolation at approximately gridsize/<smooth> intervals.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Will embellish innermost, closed contours with ticks pointing in\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the downward direction.  User may specify to tick only highs\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (-Th) or lows (-Tl) [-T implies both extrema]. Use +a to tick all closed contours.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d<spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].\n",
-	                                 TICKED_SPACING, TICKED_LENGTH);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +lXY (or +l\"low,high\") to place X and Y (or low and high) at the center\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of local lows and highs.  If no labels are given we default to - and +.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If two characters are passed (e.g., +lLH) we place them at local lows and highs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For string labels, simply give two strings separated by a comma (e.g., +llo,hi).\n");
+	GMT_Usage (API, -2, "[Default is extent of grid].");
+	GMT_Usage (API, 1, "\n-S<smooth>");
+	GMT_Usage (API, -2, "Smooth contours by interpolation at approximately <gridsize>/<smooth> intervals.");
+	GMT_Usage (API, 1, "\n%s", GMT_CONTT);
+	GMT_Usage (API, -2, "Embellish innermost, closed contours with ticks pointing in the downward direction. "
+		"User may specify to tick only highs (-Th) or lows (-Tl) [-T implies both extrema].");
+	GMT_Usage (API, 3, "+a Tick all closed contours.");
+	GMT_Usage (API, 3, "+d Append spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].",
+		TICKED_SPACING, TICKED_LENGTH);
+	GMT_Usage (API, 3, "+l Append two characters (e.g., LH) or two comma-separated strings (e.g., \"low,high\") to place labels at the center "
+		"of local lows and highs.  If no labels are given we default to - and +.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours", 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t   The default pen settings are\n");
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes. Append a<pen> for annotated or (default) c<pen> for regular contours", NULL, 0);
+	GMT_Usage (API, -2, "The default pen settings are:");
 	P = API->GMT->current.setting.map_default_pen;
-	GMT_Message (API, GMT_TIME_NONE, "\t   Contour pen:  %s.\n", gmt_putpen (API->GMT, &P));
+	GMT_Usage (API, 3, "%s Contour pen:  %s.", GMT_LINE_BULLET, gmt_putpen (API->GMT, &P));
 	P.width *= 3.0;
-	GMT_Message (API, GMT_TIME_NONE, "\t   Annotate pen: %s.\n", gmt_putpen (API->GMT, &P));
-	GMT_Message (API, GMT_TIME_NONE, "\t   +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append l to let pen colors follow the CPT setting (requires -C).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append f to let fill/font colors follow the CPT setting.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Default [+c] sets both effects.\n");
+	GMT_Usage (API, 3, "%s Annotate pen: %s.", GMT_LINE_BULLET, gmt_putpen (API->GMT, &P));
+	GMT_Usage (API, 3, "+c Controls how pens and fills are affected if a CPT is specified via -C: "
+		"Append l to let pen colors follow the CPT setting (requires -C). "
+		"Append f to let fill/font colors follow the CPT setting. "
+		"Default [+c] sets both effects.");
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> (via +o<shift> [0]) and multiply data by <fact> (via +s<fact> [1])\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   before contouring. Append + for z-data that are periodic in 360 (i.e., phase data).\n");
+	GMT_Usage (API, 1, "\n-Z[+o<shift>][+p][+s<fact>]");
+	GMT_Usage (API, -2, "Adjust grid prior to contouring, and flag periodic data:");
+	GMT_Usage (API, 3, "+o Add <shift> to all grid values [0]");
+	GMT_Usage (API, 3, "+p z-data are periodic in 360 (i.e., phase data)");
+	GMT_Usage (API, 3, "+s Multiply all grid values by <fact> [1]");
+	GMT_Usage (API, -2, "Note: Scaling by <fact> takes place prior to adding a shift");
 	GMT_Option (API, "bo3,c,do,f,h,l");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Normally, the annotated contour is selected; change this by specifying the label as\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [<annotcontlabel>][/<contlabel>] (use separator | if / is part of the label).\n");
+	GMT_Usage (API, -2, "Normally, the annotated contour is selected; change this by specifying the label as "
+		"[<annotcontlabel>][/<contlabel>] (use separator | if / is part of the label).");
 	GMT_Option (API, "p,t,.");
 
 	return (GMT_MODULE_USAGE);
@@ -441,7 +452,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				}
 				if (j == k && opt->arg[j]) {	/* Set both and gave argument */
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[PEN_CONT])) {
-						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 						n_errors++;
 					}
 					else
@@ -455,7 +466,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 					if (gmt_colorname2index (GMT, txt_a) >= 0) j = k;	/* Found a colorname; wind j back by 1 */
 					id = (opt->arg[k] == 'a') ? PEN_ANNOT : PEN_CONT;
 					if (gmt_getpen (GMT, &opt->arg[j], &Ctrl->W.pen[id])) {
-						gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 						n_errors++;
 					}
 					if (j == k) Ctrl->W.pen[PEN_ANNOT] = Ctrl->W.pen[PEN_CONT];	/* Must copy since it was not -Wc nor -Wa after all */

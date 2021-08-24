@@ -72,48 +72,49 @@ enum S_Modes {
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
+	const char *extra1[2] = {" [-G<grdfile>]", ""}, *extra2[2] = {" (requires -G)", ""};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s\n", name, GMT_I_OPT, GMT_Rgeo_OPT);
-	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[+p|P]] [-S[m|n|s|w]] [%s] [-W[i][o][+s]]\n", GMT_V_OPT);
-	else
-		GMT_Message (API, GMT_TIME_NONE, "\t[-A<fields>] [-C] [-E[+p|P]] [-G<grdfile>] [-S[m|n|s|w]] [%s] [-W[i][o][+s]]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A<fields>] [-C] [-E[+p|P]]%s [-S[m|n|s|w]] [%s] [-W[i][o][+s|w]] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, extra1[API->external], GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT,
+		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Option (API, "I,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	if (API->external)
-		GMT_Message (API, GMT_TIME_NONE, "\t-A List of fields to be written as individual grids. Choose from\n");
-	else
-		GMT_Message (API, GMT_TIME_NONE, "\t-A List of fields to be written as individual grids (requires -G). Choose from\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z, s, l, h, and w. s|l|h requires -E; w requires -W[o] [Default is z only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Output center of block and mean z-value [Default outputs (mean x, mean y) location]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Extend output with st.dev (s), low (l), and high (h) value per block, i.e.,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   output (x,y,z,s,l,h[,w]) [Default is (x,y,z[,w])]; see -W regarding the weight w.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -E+p is used it implies -Wi+s and s becomes the propagated error of the weighted mean z.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -E+P to instead obtain the propagated error on the simple mean z.\n");
+	GMT_Option (API, "I,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<fields>");
+	GMT_Usage (API, -2, "List of fields to be written as individual grids%s. Choose from "
+		"z, s, l, h, and w. s|l|h requires -E; w requires -W[o] [Default is z only].", extra2[API->external]);
+	GMT_Usage (API, 1, "\n-C Output center of block and mean z-value [Default outputs (mean x, mean y) location]");
+	GMT_Usage (API, 1, "\n-E[+p|P]");
+	GMT_Usage (API, -2, "Extend output with standard deviation (s), low (l), and high (h) value per block, i.e., "
+		"output (x,y,z,s,l,h[,w]) [Default is (x,y,z[,w])]; see -W regarding the optional weight w. "
+		"If -E+p is used it implies -Wi+s and s becomes the propagated error of the weighted mean z. "
+		"Use -E+P to instead obtain the propagated error on the simple mean z.");
 	if (!API->external) {
-		GMT_Message (API, GMT_TIME_NONE, "\t-G Specify output grid file name; no table results will be written to stdout.\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   If more than one field is set via -A then <grdfile> must contain  %%s to format field code.\n");
+		GMT_Usage (API, 1, "\n-G<grdfile>");
+		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to standard output. "
+			"If more than one field is set via -A then <grdfile> must contain %%s to format field code.");
 	}
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set the quantity to be reported per block as z; choose among:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Sm report [weighted if -W] mean values [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Sn report number of data points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Ss report data sums.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Sw reports weight sums.\n");
+	GMT_Usage (API, 1, "\n-S[m|n|s|w]");
+	GMT_Usage (API, -2, "Select the quantity to be reported per block as z:");
+	GMT_Usage (API, 3, "m: Report [weighted if -W] mean values [Default].");
+	GMT_Usage (API, 3, "n: Report number of data points.");
+	GMT_Usage (API, 3, "s: Report data sums.");
+	GMT_Usage (API, 3, "w: Reports weight sums.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set Weight options, select one:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Wi reads 4 cols (x,y,z,w) but writes only (x,y,z[,s,l,h]) output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Wo reads 3 cols (x,y,z) but writes sum (x,y,z[,s,l,h],w) output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -W with no modifier has both weighted Input and Output; Default is no weights used.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append +s to read standard deviations s instead and compute w = 1/s^2.\n");
+	GMT_Usage (API, 1, "\n-W[i|o][+s|w]");
+	GMT_Usage (API, -2, "Perform weighted calculations [no weights]. Optionally set weight directive:");
+	GMT_Usage (API, 3, "i: Read 4 cols (x,y,z,w) but skip w on output.");
+	GMT_Usage (API, 3, "o: Read 3 cols (x,y,z) but include weight sum (i.e., counts) on output.");
+	GMT_Usage (API, -2, "Default selects both weighted input and output. "
+		"Append +s to read standard deviations s instead and compute w = 1/s^2. Default (or +w) reads weights directly");
 	GMT_Option (API, "a,bi");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 columns (or 4 if -W[+s] is set), or 2 for -Sn.\n");
-	GMT_Option (API, "bo,d,e,f,h,i,o,q,r,:,w,.");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 3 columns (or 4 if -W[+s] is set), or 2 for -Sn.");
+	GMT_Option (API, "bo,d,e,f,h,i,o,q,r,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

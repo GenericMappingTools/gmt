@@ -13,16 +13,17 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt talwani2d** [ *table* ]
-[ |-A| ] [ |-D|\ *rho* ] ]
+[ |-A| ] [ |-D|\ *density* ] ]
 [ |-F|\ **f**\|\ **n**\ [*lat*]\|\ **v** ]
 [ |-M|\ [**h**]\ [**v**] ]
 [ |-N|\ *trackfile* ]
-[ |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list* ]
+[ |-T|\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**]\ \|\ *file*\|\ *list* ]
 [ |-Z|\ *level*\ [*ymin*\ /*ymax*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-x| ]
@@ -35,7 +36,7 @@ Description
 
 **talwani2d** will read the multi-segment *table* from file (or standard input).
 This file contains cross-sections of one or more 2-D bodies, with one polygon
-per segment.  The segment header must contain the parameter *rho*, which
+per segment.  The segment header must contain the parameter *density*, which
 states the the density of this body (individual body
 densities may be overridden by a fixed constant density contrast given via an optional **-D**).
 We can compute anomalies on an equidistant lattice (by specifying a lattice with
@@ -48,10 +49,11 @@ Required Arguments
 ------------------
 
 *table*
-    The file describing cross-sectional polygons of one or more bodies.  Polygons
+    One or more ASCII files describing cross-sectional polygons of one or more bodies.  Polygons
     will be automatically closed if not already closed, and repeated vertices will
     be eliminated.  The segment header for each body will be examined for a density
-    parameter in kg/m^3; see **-D** for overriding this value.
+    parameter in kg/m^3; see **-D** for overriding this value.  If no *table* is given then we
+    read standard input.
 
 Optional Arguments
 ------------------
@@ -63,7 +65,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *unit*
+**-D**\ *density*
     Sets a fixed density contrast that overrides any per-body settings in the model file, in kg/m^3.
 
 .. _-F:
@@ -83,11 +85,12 @@ Optional Arguments
 
 **-N**\ *trackfile*
     Specifies locations where we wish to compute the predicted value.  When this option
-    is used you cannot use **-T** to set an equidistant lattice. The output data records are written to stdout.
+    is used you cannot use **-T** to set an equidistant lattice. The output data records are written to
+    standard output (see **-bo** for binary output).
 
 .. _-T:
 
-**-T**\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
+**-T**\ *min*\ /*max*\ /\ *inc*\ [**+i**\|\ **n**]\ \|\ *file*\|\ *list*
     Specify an equidistant output lattice.
     For details on array creation, see `Generate 1D Array`_.
 

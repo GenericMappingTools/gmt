@@ -220,45 +220,49 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s -Z<scale>\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A[<azimuth>]] [%s] [-C<center>] [-D[g|j|J|n|x]<refpoint>+w<length>[+a][+j<justify>][+o<dx>[/<dy>]][+l<label>]]\n", GMT_B_OPT, GMT_Jz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G<fill>[+n][+p]] [-I<az>] [%s] %s%s%s[-T<trackpen>] [%s]\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W<outlinepen>] [%s] [%s]\n\t[%s] %s[%s] [%s] [%s] [%s]\n\t[%s] ",
-		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "[%s]\n\t[%s] [%s] [%s]\n\t[%s] %s] [%s] [%s]\n\n", GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -Z<scale>[<unit>] [-A[<azimuth>]] [%s] [-C<center>] [-D%s+w<length>[+a]%s%s[+l<label>]] "
+		"[-F%s] [-G<fill>[+n][+p]] [-I<az>] [%s] %s%s%s[-T<pen>] [%s] [%s] [-W<pen>] [%s] [%s] [%s] %s[%s] [%s] [%s] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_XYANCHOR, GMT_JUSTIFY, GMT_OFFSET, GMT_PANEL, GMT_Jz_OPT,
+		API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT,
+		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_t_OPT, GMT_w_OPT,
+		GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth for preferred positive wiggle orientation [0.0 (north)].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Normals to the track are mapped into a -90/+90 window centered on <azimuth>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no azimuth is given then we use the azimuths as they are computed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<,J-,R");
+	GMT_Usage (API, 1, "\n-Z<scale>[<unit>]");
+	GMT_Usage (API, -2, "Give the wiggle <scale> in data-units per %s. "
+		"Alternatively, append any unit from among %s [c].", API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit], GMT_DIM_UNITS_DISPLAY);
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[<azimuth>]");
+	GMT_Usage (API, -2, "Set <azimuth> for preferred positive wiggle orientation [0.0 (north)]. "
+		"Perpendiculars to the track are mapped into a -90/+90 window centered on <azimuth>. "
+		"If no azimuth is given then we use the azimuths as they are computed.");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set center value to be removed from z before plotting [0].\n");
-	gmt_refpoint_syntax (API->GMT, "D", "Specify position and dimensions of the vertical scale bar.", GMT_ANCHOR_VSCALE, 3);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w<length> to set the scale length in data z-units.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +a to move label to the opposite side of vertical scale bar.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +l to set the unit label of the z-values for the scale bar label [no label].\n");
+	GMT_Usage (API, 1, "\n-C<center>");
+	GMT_Usage (API, -2, "Set center value to be removed from z before plotting [0].");
+	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify position and dimensions of the vertical scale bar.", GMT_ANCHOR_VSCALE, 3);
+	GMT_Usage (API, 3, "+w Append <length> to set the scale length in data z-units.");
+	GMT_Usage (API, 3, "+a Move label to the opposite side of vertical scale bar.");
+	GMT_Usage (API, 3, "+l Set the unit label of the z-values for the scale bar label [no label].");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the vertical scale.", 4);
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color/pattern for positive and/or negative areas.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to fill positive areas only (Default).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to fill negative areas only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append both to fill positive and negative areas.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Set fixed projection azimuths for wiggles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Azimuths of the normals to the track are reset to <az>.\n");
-	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Fill negative wiggles instead [Default is positive].\n");
+	GMT_Usage (API, -2, "You can control which areas are to be painted:");
+	GMT_Usage (API, 3, "+p Fill positive areas only (Default).");
+	GMT_Usage (API, 3, "+n Fill negative areas only.");
+	GMT_Usage (API, -2, "Append both modifiers to fill positive and negative areas.");
+	GMT_Usage (API, 1, "\n-I<az>");
+	GMT_Usage (API, -2, "Set fixed projection azimuths for wiggles. "
+		"Azimuths of the perpendiculars to the track are reset to <az>.");
+	GMT_Option (API, "Z,K");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify track pen attributes. [Default is no track].\n");
+	GMT_Usage (API, 1, "\n-T<pen>");
+	GMT_Usage (API, -2, "Specify track pen attributes [Default draws no track].");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", NULL, 0);
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Give the wiggle scale in data-units per %s.\n",
-		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append any unit from among %s [c].\n", GMT_DIM_UNITS_DISPLAY);
 	GMT_Option (API, "bi3,c,di,e,f,g,h,i,p,qi,t,w,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -395,14 +399,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSWIGGLE_CTRL *Ctrl, struct GMT_O
 			case 'T':
 				Ctrl->T.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->T.pen)) {
-					gmt_pen_syntax (GMT, 'T', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'T', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;
 			case 'W':
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;

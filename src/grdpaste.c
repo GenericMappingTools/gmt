@@ -65,18 +65,20 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid1> <grid2> -G<outgrid> [%s] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid1> <grid2> -G<outgrid> [%s] [%s] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\twhere grids <grid1> and <grid2> are to be combined into <outgrid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid1> and <grid2> must have same dx,dy and one edge in common.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tIf in doubt, run grdinfo first and check your files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tUse grdpaste and/or grdsample to adjust files as necessary.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tIf grids are geographic and adds to full 360-degree range then grid1\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tdetermines west.  Use grdedit -S to rotate grid to another -Rw/e/s/n.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid file.\n");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grid1> and <grid2> are to be combined into <outgrid>. "
+		"They must have same increments and registration and one edge in common. "
+		"If in doubt, run grdinfo first and check your files. "
+		"Use grdpaste and/or grdsample to adjust files as necessary. "
+		"If grids are geographic and adds to full 360-degree range then <grid1> "
+		"determines west.  Use grdedit -S to rotate grid to another -Rw/e/s/n.");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Specify file name for output grid file.");
+	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,f,.");
 
 	return (GMT_MODULE_USAGE);

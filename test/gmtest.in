@@ -17,6 +17,13 @@ local_script=$(basename "${script_name}")
 script="@GMT_SOURCE_DIR@/${script_name}"
 src="@GMT_SOURCE_DIR@/${script_dir}"
 
+# Skip tests with label GMT_DISABLE_TEST
+skip_this_test=$(grep GMT_DISABLE_TEST "$script" -c)
+if [ $skip_this_test -gt 0 ]; then	# Do not run this script, probably PS is too alrge
+		echo "warning: test disabled for script ${script}." >&2
+		exit 0
+fi
+
 # Is it a modern mode or one-liner script
 modern=$(grep "gmt begin\| -ps " "$script" -c)
 
@@ -91,6 +98,7 @@ function psldemo()
 # Must have wrappers for all test programs not part of GMT distro:
 
 for apiprog in \
+	testapi_columns \
     testapi_cube \
     testapi_makecpt \
     testapi_matrix \

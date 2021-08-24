@@ -23,7 +23,7 @@
  * It has three modes of operation:
  *	1) Initialize a new figure with subplots, which determines dimensions and sets parameters:
  *	   gmt subplot begin <nrows>x<ncols> -F[f|s][<W/H>[+f<wfracs/hfracs>]] [-A<labels>]
- *		[-SC<layout>] [-SR<layout>] [-M<margins>] [-T<title>] [-R<region>] [-J<proj>] [-V]
+ *		[-J<proj>] [-M<margins>] [-R<region>] [-Sc|r[<layout>][<modifiers>]] [-T<title>] [-V]
  *	2) Select the current subplot window for plotting, usually so we can use -A or -C (since -crow,col is faster):
  *	   gmt subplot [set] <row>,<col>|<index> [-A<fixlabel>] [-C<side><clearance>] [-V]
  *	3) Finalize the figure:
@@ -133,10 +133,10 @@ struct SUBPLOT_CTRL {
 		char pen[GMT_LEN64];	/* Pen outline for the entire figure canvas */
 		char Lpen[GMT_LEN64];	/* Pen to draw midlines */
 	} F;
-	struct SUBPLOT_S {	/* -S[C|R]<layout> */
+	struct SUBPLOT_S {	/* -S[c|r][<layout>][<modifiers>] */
 		bool active;
 		bool has_label;		/* True if we want y labels */
-		char axes[4];		/* W|e|w|e|l|r for -SR,  S|s|N|n|b|t for -SC [Default is MAP_FRAME_AXES] */
+		char axes[4];		/* W|e|w|e|l|r for -Sr,  S|s|N|n|b|t for -Sc [Default is MAP_FRAME_AXES] */
 		char *b;		/* Any hardwired choice for afg settings for this axis [af] */
 		char *label[2];		/* The constant primary [and alternate] y labels */
 		char *extra;		/* Special -B frame args, such as fill */
@@ -192,67 +192,78 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+af|s][+c<gap>][+g<fill>][+p<pen>][+w<pen>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<autolabelinfo>] [-C[<side>]<clearance>] [-D] [%s] [-SC<layout>][+<mods>] [-SR<layout>][+<mods>]\n\t[-M<margins>] [%s] [-T<title>] [%s] [%s]\n\t[%s] [%s]\n\n",
-	 	GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s set [<row>,<col>|<index>] [-A<fixedlabel>] [-C[<side>]<clearance>] [%s]\n", name, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\tSet <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s end [%s]\n\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s begin <nrows>x<ncols> -F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+af|s][+c<dx>[/<dy>]][+g<fill>][+p<pen>][+w<pen>] "
+		"[-A<autotag>] [%s] [-C[<side>]<clearance>] [-D] [%s] [-M<margins>] [%s] [-Sc|r[<layout>][+<mods>]] [-T<title>] [%s] [%s] [%s] [%s]\n",
+	 	name, GMT_B_OPT, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s set [<row>,<col>|<index>] [-A<fixedtag>] [-C[<side>]<clearance>] [%s]", name, GMT_V_OPT);
+	GMT_Usage (API, -2, "Note: Set <row>,<col> in 0-(nrows-1),0-(ncols-1) range, or <index> in 0 to (nrows*ncols-1) range [next subplot].\n");
+	GMT_Usage (API, 0, "usage: %s end [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<nrows>x<ncols> is the number of rows and columns of subplots in this figure.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F or -Ff: Specify dimension of the whole figure plot area. Subplot sizes will be computed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +f<wfracs/hfracs> to variable widths and heights by giving comma-separated lists\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of relative values, one per row or column, which we scale to match figure dimension.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only columns or rows should have variable dimension you can set the other arg as 1.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Fs: Set dimensions of area that each multi-subplot figure may occupy.  If these\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   should differ from column to column or row to row you can give a comma-separated\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   list of widths and/or heights.  A single value means constant width or height.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   As an option the composite figure rectangle may be extended, drawn or filled.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This is most useful if you are not plotting any map frames in the subplots.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +as to scale fonts/pens to average panel size [Default (+af) scales to subplot size].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for extending the figure rectangle outwards [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the figure rectangle with <fill> color [no fill].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the figure rectangle using selected pen [no outline].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +w to draw dividing lines between interior subplots using selected pen [no lines].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify automatic tagging of each subplot. Append either a number or letter [a].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This sets the tag of the top-left subplot and others follow sequentially.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Surround number or letter by parentheses on any side if these should be typeset.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +j|J<refpoint> to specify where the tag should be plotted in the subplot [TL].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +j sets justification = <refpoint> while +J selects the mirror opposite.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c<dx>[/<dy>] for the clearance between tag and surrounding box.  Only used\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +g to fill the textbox with <fill> color [no fill].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +o<dx>[/<dy>] to offset tag in direction implied by <justify> [%d%% of font size].\n", GMT_TEXT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +p to draw the outline of the textbox using selected pen [no outline].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to set number using Roman numerals; use +R for uppercase [arabic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s[<dx>/<dy>][/<shade>] to plot a shadow behind the tag panel [Default is 2p/-2p/gray50].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v to number down columns [subplots are numbered across rows].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify a gap of dimension <clearance> to the <side> (w|e|s|n) of the plottable subplot.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Shrinks the size for the main plot to make room for scales, bars, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Repeatable for more than one side. Use <side> = x or y to set w|e or s|n, respectively.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   No specified <side> means set the same clearance on all sides [no clearances].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Use prevailing settings and chosen -B, -S options to determine panel sizes and spacings,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   but do not draw/annotate any panel frames [Draw and annotate frames as indicated].\n");
+	GMT_Usage (API, 1, "\n<nrows>x<ncols>");
+	GMT_Usage (API, -2, "Number of rows and columns of subplots in this figure.");
+	GMT_Usage (API, 1, "\n-F[f|s]<width(s)>/<height(s)>[+f<wfracs/hfracs>][+af|s][+c<dx>[/<dy>]][+g<fill>][+p<pen>][+w<pen>]");
+	GMT_Usage (API, -2, "Set plot dimensions in one of two ways, depending on directive:");
+	GMT_Usage (API, 3, "f: Specify dimension of the whole figure plot area. Subplot sizes will be computed. Optionally:");
+	GMT_Usage (API, 4, "+f Append <wfracs/hfracs> to set variable widths and heights by giving comma-separated lists "
+		"of relative values, one per row or column, which we scale to match figure dimension. "
+		"If only columns or rows should have variable dimension you can set the other arg as 1.");
+	GMT_Usage (API, 3, "s: Set dimensions of area that each multi-subplot figure may occupy.  If these "
+		"should differ from column to column or row to row you can give a comma-separated "
+		"list of widths and/or heights.  A single value means constant width or height.");
+	GMT_Usage (API, -2, "The composite figure rectangle may be extended, drawn or filled. "
+		"This is most useful if you are not plotting any map frames in the subplots. Control this via modifiers:");
+	GMT_Usage (API, 3, "+a Append s to scale fonts/pens to average panel size [Default (or +af) scales to subplot size].");
+	GMT_Usage (API, 3, "+c Append <dx>[/<dy>] for extending the figure rectangle outwards [0].");
+	GMT_Usage (API, 3, "+g Fill the figure rectangle with <fill> color [no fill].");
+	GMT_Usage (API, 3, "+p Draw the outline of the figure rectangle using selected pen [no outline].");
+	GMT_Usage (API, 3, "+w Draw dividing lines between interior subplots using selected pen [no lines].");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<autotag>");
+	GMT_Usage (API, -2, "Specify automatic tagging of each subplot. Append either a number or letter [a]. "
+		"This sets the tag of the top-left subplot and others follow sequentially. "
+		"Surround number or letter by parentheses on any side if these should be typeset as part of the tag");
+	GMT_Usage (API, 3, "+j Append <refpoint> to specify where the tag should be plotted inside the subplot [TL]. "
+		" Use uppercase +J to place the tag on the outside of the subplot instead.");
+	GMT_Usage (API, 3, "+c Append <dx>[/<dy>] for the clearance between tag and surrounding box.  Only used "
+		"if +g or +p are set.  Append units {%s} or %% of fontsize [%d%%].", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
+	GMT_Usage (API, 3, "+g Fill textbox with <fill> color [no fill].");
+	GMT_Usage (API, 3, "+o Append <dx>[/<dy>] to offset tag in direction implied by <justify> [%d%% of font size].", GMT_TEXT_OFFSET);
+	GMT_Usage (API, 3, "+p Draw the outline of the textbox using appended <pen> [no outline].");
+	GMT_Usage (API, 3, "+r Set number using Roman numerals; use +R for uppercase [arabic].");
+	GMT_Usage (API, 3, "+s Append [<dx>/<dy>][/<shade>] to plot a shadow behind the tag panel [Default is 2p/-2p/gray50].");
+	GMT_Usage (API, 3, "+v Number subplots down the columns [subplots are numbered across rows].");
+	GMT_Usage (API, -2, "Note: Use subplot set -A<fixedtag> to override the auto-tag system for one subplot.");
+	GMT_Option (API, "B-");
+	GMT_Usage (API, -2, "Note: Usually it is better to use -S to organize annotations and ticks than to use -B directly.");
+	GMT_Usage (API, 1, "\n-C[<side>]<clearance>");
+	GMT_Usage (API, -2, "Specify a gap of dimension <clearance> to the <side> (w|e|s|n) of the plottable subplot. "
+		"Shrinks the size for the main plot to make room for scales, bars, etc. "
+		"Repeatable for more than one side. Use <side> = x or y to set w&e or s&n, respectively. "
+		"No specified <side> means set the same clearance on all sides [no clearances].");
+	GMT_Usage (API, 1, "\n-D Use prevailing settings and chosen -B, -S options to determine panel sizes and spacings, "
+		"but do not draw/annotate any panel frames [Draw and annotate frames as indicated].");
 	GMT_Option (API, "J-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Adds space around each subplot. Append a uniform <margin>, separate <xmargin>/<ymargin>,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [%gp].\n", 0.5*API->GMT->current.setting.font_annot[GMT_PRIMARY].size);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Actual gap between interior subplots is always the sum of two opposing margins.\n");
+	GMT_Usage (API, 1, "\n-M<margins>");
+	GMT_Usage (API, -2, "Add space around each subplot. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
+		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [%gp]. "
+		"Actual gap between interior subplots is always the sum of two opposing margins.", 0.5*API->GMT->current.setting.font_annot[GMT_PRIMARY].size);
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set shared subplot layout for rows (-SR) and columns (-SC); can be overridden via -B:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-SC Each subplot Column shares a common x-range. First row (top axis) and last row (bottom axis) are annotated;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append t or b to select only one of those two axes annotations instead [both].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +l if annotated x-axes should have a label [none]; optionally append the label if it is fixed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Alternatively, you can also use +s.  If no label is given then you must set it when the subplot is plotted via -B.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +t to make space for individual titles for all subplots; use +tc for top row titles only [no subplot titles].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-SR Each subplot Row shares a common y-range. First column (left axis) and last column (right axis) are annotated;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append l or r to select only one of those two axes annotations instead [both].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +l if annotated y-axes will have a label [none]; optionally append the label if fixed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Alternatively, you can also use +s.  If no label is given then you msut set it when the subplot is plotted via -B.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +p if y-axes annotations should be parallel to axis [horizontal].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify a main heading to be centered above the figure [none].\n");
+	GMT_Usage (API, 1, "\n-Sc|r[<layout>][+<mods>]");
+	GMT_Usage (API, -2, "Set shared subplot layout for rows (-Sr) and columns (-Sc); can be overridden via -B. Select axis directive:");
+	GMT_Usage (API, 3, "c: Each subplot column shares a common x-range. First row (top axis) and last row (bottom axis) are annotated; "
+		"append t or b to annotate only one of these axes [both]. Optional modifiers:");
+	GMT_Usage (API, 4, "+l Annotated x-axes should have a label [none]; optionally append the label if it is fixed.");
+	GMT_Usage (API, 4, "+s Secondary x-axis label. If no label is given then you must set it when the subplot is plotted via -B.");
+	GMT_Usage (API, 4, "+t Make space for individual titles for all subplots; use +tc for top row titles only [no subplot titles].");
+	GMT_Usage (API, 3, "r: Each subplot row shares a common y-range. First column (left axis) and last column (right axis) are annotated; "
+		"append l or r to annotate only one of these axes [both]. Optional modifiers:");
+	GMT_Usage (API, 4, "+l Annotated y-axes will have a label [none]; optionally append the label if fixed.");
+	GMT_Usage (API, 4, "+s Secondary y-axis label. If no label is given then you must set it when the subplot is plotted via -B.");
+	GMT_Usage (API, 4, "+p The y-axes annotations should be parallel to axis [horizontal].");
+	GMT_Usage (API, 1, "\n-T<title>");
+	GMT_Usage (API, -2, "Specify a main heading to be centered above the figure [none].");
 	GMT_Option (API, "VX.");
 
 	return (GMT_MODULE_USAGE);
@@ -571,18 +582,18 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'S':	/* Layout */
-				switch (opt->arg[0]) {	/* Type of layout option selected [C(olumn) and R(ow) only] */
-					case 'C':	k = GMT_X;	break;	/* Shared column settings */
-					case 'R':	k = GMT_Y;	break;	/* Shared row settings */
+				switch (opt->arg[0]) {	/* Type of layout option selected [c(olumn) and r(ow) only] */
+					case 'C':	case 'c':	k = GMT_X;	break;	/* Shared column settings */
+					case 'R':	case 'r':	k = GMT_Y;	break;	/* Shared row settings */
 					default:	k = GMT_Z; 	break;	/* Bad option, see test below */
 				}
 				if (k == GMT_Z) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S requires C or R as first argument!\n");
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S requires c or r as first argument!\n");
 					n_errors++;
 					break;
 				}
 				if (Ctrl->S[k].active) {
-					char *flavor = "CR";
+					char *flavor = "cr";
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S%c already specified!\n", flavor[k]);
 					n_errors++;
 					break;
@@ -601,14 +612,14 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->S[k].has_label = true;
 					if (string[0]) Ctrl->S[k].label[GMT_SECONDARY] = strdup (string);
 				}
-				if (gmt_get_modifier (opt->arg, 't', string))	/* Want space for subplot titles, this could go with either -SR or -SC so accept it but save in -SC */
+				if (gmt_get_modifier (opt->arg, 't', string))	/* Want space for subplot titles, this could go with either -Sr or -Sc so accept it but save in -Sc */
 					Ctrl->S[GMT_X].ptitle = (string[0] == 'c') ? SUBPLOT_PANEL_COL_TITLE : SUBPLOT_PANEL_TITLE;
 				if (k == GMT_Y) {	/* Modifiers applicable for y-axis only */
 					if (gmt_get_modifier (opt->arg, 'p', string))	/* Want axis-parallel annotations [horizontal] */
 						Ctrl->S[k].parallel = 1;
 				}
-				else if (gmt_get_modifier (opt->arg, 'p', string)) {	/* Invalid, only for SR */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +p only allowed for -SR\n");
+				else if (gmt_get_modifier (opt->arg, 'p', string)) {	/* Invalid, only for -Sr */
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +p only allowed for -Sr\n");
 					n_errors++;
 				}
 				break;
@@ -660,7 +671,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 			if (gmt_map_setup (GMT, GMT->common.R.wesn)) n_errors++;
 			for (j = 0; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = GMT->current.map.height;
 		}
-		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -SR, -SC */
+		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -Sr, -Sc */
 			if (!noB) {
 				if ((Bxy && (Bx || By)) || (!Bxy && ((Bx && !By) || (By && !Bx)))) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Must either set -Bx and -By or -B that applies to both axes.\n");
@@ -730,7 +741,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		}
 		if (!Bframe) {	/* No override, examine the default frame setting instead */
 			gmt_set_undefined_axes (GMT, true);	/* We cannot have MAP_FRAME_AXES=auto in subplot during -B parsing, so do the update now */
-			if (Ctrl->S[GMT_X].active)	/* Automatic selection of row sides via -SR, so set to SN */
+			if (Ctrl->S[GMT_X].active)	/* Automatic selection of row sides via -Sr, so set to SN */
 				strcpy (Ctrl->S[GMT_X].axes, "SN");
 			else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
 				if (strchr (GMT->current.setting.map_frame_axes, 'S')) Ctrl->S[GMT_X].axes[px++] = 'S';
@@ -740,7 +751,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				else if (strchr (GMT->current.setting.map_frame_axes, 'n')) Ctrl->S[GMT_X].axes[px++] = 'n';
 				else if (strchr (GMT->current.setting.map_frame_axes, 't')) Ctrl->S[GMT_X].axes[px++] = 't';
 			}
-			if (Ctrl->S[GMT_Y].active)	/* Automatic selection of column sides via -SC, so set to WE */
+			if (Ctrl->S[GMT_Y].active)	/* Automatic selection of column sides via -Sc, so set to WE */
 				strcpy (Ctrl->S[GMT_Y].axes, "WE");
 			else {	/* Extract what the MAP_FRAME_AXES has for this axis instead */
 				if (strchr (GMT->current.setting.map_frame_axes, 'W')) Ctrl->S[GMT_Y].axes[py++] = 'W';
@@ -944,10 +955,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After correcting for inside subplot margins: fluff = {%g, %g}\n", fluff[GMT_X], fluff[GMT_Y]);
 
 		/* ROW SETTINGS:  Limit tick-marks to 1 or 2 W/E axes per row or per subplot */
-		/* Note: Usually, we will tick both the west and east side of a subplot.  With -SR in effect
+		/* Note: Usually, we will tick both the west and east side of a subplot.  With -Sr in effect
 		 * we will have selected either the left, right, or both end sides (i.e., the two outer subplots).
 		 * However, this can be overridden by selecting "l" and/or "r" in the general -B string which controls
-		 * all the axes not implicitly handled by -SR.  Hence, we assume two sides of ticks will need space
+		 * all the axes not implicitly handled by -Sr.  Hence, we assume two sides of ticks will need space
 		 * but override if users have turned any of those sides off with l or r */
 
 		nx = 2;	/* Default is ticks on both W and E */
@@ -956,8 +967,8 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		fluff[GMT_X] += (Ctrl->N.dim[GMT_X] - 1) * nx * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d rows of map ticks: fluff = {%g, %g}\n", nx, fluff[GMT_X], fluff[GMT_Y]);
 		/* Limit annotations/labels to 1 or 2 axes per row or per subplot */
-		if (Ctrl->S[GMT_Y].annotate)	/* Used -SR so check settings */
-			nx = 0;	/* For -SR there are no internal annotations, only ticks */
+		if (Ctrl->S[GMT_Y].annotate)	/* Used -Sr so check settings */
+			nx = 0;	/* For -Sr there are no internal annotations, only ticks */
 		else {	/* Must see what -B specified instead since that will apply to all subplots */
 			nx = 0;
 			if (strchr (Ctrl->S[GMT_Y].axes, 'W')) nx++;	/* All subplots need west annotations */
@@ -973,10 +984,10 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d row labels: fluff = {%g, %g}\n", nx, fluff[GMT_X], fluff[GMT_Y]);
 
 		/* COLUMN SETTINGS: Limit annotations/labels to 1 or 2 axes per column or per subplot */
-		/* Note: Usually, we will tick both the south and north side of a subplot.  With -SC in effect
+		/* Note: Usually, we will tick both the south and north side of a subplot.  With -Sc in effect
 		 * we will have selected either the bottom, top, or both end sides (i.e., the two outer subplots).
 		 * However, this can be overridden by selecting "b" and/or "t" in the general -B string which controls
-		 * all the axes not implicitly handled by -SC.  Hence, we assume two sides of ticks will need space
+		 * all the axes not implicitly handled by -Sc.  Hence, we assume two sides of ticks will need space
 		 * but override if users have turned any of those sides off with b or t */
 
 		ny = 2;	/* Default is ticks on both S and N */
@@ -985,7 +996,7 @@ EXTERN_MSC int GMT_subplot (void *V_API, int mode, void *args) {
 		else y_header_off += tick_height;
 		fluff[GMT_Y] += (Ctrl->N.dim[GMT_Y] - 1) * ny * tick_height;
 		GMT_Report (API, GMT_MSG_DEBUG, "Subplot: After %d col ticks: fluff = {%g, %g}\n", ny, fluff[GMT_X], fluff[GMT_Y]);
-		if (Ctrl->S[GMT_X].annotate) {	/* Gave -SC so check settings */
+		if (Ctrl->S[GMT_X].annotate) {	/* Gave -Sc so check settings */
 			ny = 0;	/* For -Sc there are no internal annotations, only ticks */
 		}
 		else {	/* Must see what -B specified instead since that will apply to all subplots */

@@ -227,85 +227,103 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[%%][+f<file>][+m|M]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<information>] [-E[<misfitfile>] [-I<dx>[/<dy>[/<dz>]] [-L] [-N<nodefile>] [-Q<az>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s]%s[%s] [%s]\n\n", GMT_V_OPT,
-		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[%%][+f<file>][+m|M]] "
+		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q<az>] "
+		"[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
+		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s [%s]%s[%s] [%s]\n",
+		name, GMT_V_OPT,GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_o_OPT, GMT_q_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tChoose one of three ways to specify where to evaluate the spline:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t1. Specify a rectangular grid domain with options -R, -I [and optionally -r].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t2. Supply a mask file via -T whose values are NaN or 0.  The spline will then\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   only be evaluated at the nodes originally set to zero.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t3. Specify a set of output locations via the -N option.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Output data. Give name of output file.\n");
-
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-
+	GMT_Usage (API, -1, "Choose one of three ways to specify where to evaluate the spline:");
+	GMT_Usage (API, 2, "%s Specify an equidistant 1- ,2-, or 3-D domain with options -R, -I [and optionally -r].", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "%s Specify a set of 1- ,2-, or 3-D output locations via the -N option.", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "%s Supply a mask grid file via -T whose values are NaN or 0.  The spline will then "
+		"only be evaluated at the nodes originally set to zero (2-D only).", GMT_LINE_BULLET);
+	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A ASCII file with surface gradients V to use in the modeling.  Specify format:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (0) For 1-D: x, slope, (1) X, Vmagnitude, Vazimuth(s), (2) X, Vazimuth(s), Vmagnitude,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (3) X, Vmagnitude, Vangle(s), (4) X, Vcomponents, or (5) X, Vunit-vector, Vmagnitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Here, X = (x, y[, z]) is the position vector, V is the gradient vector.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +f<filename> to save the eigenvalues to this file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   A negative cutoff will stop execution after saving the eigenvalues.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Cn to select only the largest <val> eigenvalues [all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use <val>%% to select a percentage of the eigenvalues instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses Gauss-Jordan elimination to solve the linear system]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The +m|M modifiers are valid for 2-D gridding only and will create a series of intermediate\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   grids for each eigenvalue holding the incremental (+m) or cumulative (+M) result.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -G with a filename template containing an integer C formatting specifier (e.g., %%d).\n");
+	GMT_Usage (API, 1, "\n-G<outfile>");
+	GMT_Usage (API, -2, "Output data. Append name of output file.");
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+
+	GMT_Usage (API, 1, "\n-A<gradientfile>+f<format>");
+	GMT_Usage (API, -2, "ASCII file with surface gradients V to use in the modeling.  Specify format:");
+	GMT_Usage (API, 3, "0: For 1-D: x, slope.");
+	GMT_Usage (API, 3, "1: X, Vmagnitude, Vazimuth(s).");
+	GMT_Usage (API, 3, "2: X, Vazimuth(s), Vmagnitude.");
+	GMT_Usage (API, 3, "3: X, Vmagnitude, Vangle(s).");
+	GMT_Usage (API, 3, "4: X, Vcomponents.");
+	GMT_Usage (API, 3, "5: X, Vunit-vector, Vmagnitude.");
+	GMT_Usage (API, -2, "Here, X = (x, y[, z]) is the position vector, V = (Vx, Vy[, Vz]) is the gradient vector.");
+	GMT_Usage (API, 1, "\n-C[n]<val>[%%][+f<file>][+m|M]");
+	GMT_Usage (API, -2, "Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0]. "
+		"A negative cutoff will stop execution after reporting the eigenvalues. "
+		"Use -Cn to select only the largest <val> eigenvalues [all]. "
+		"Use <val>%% to select a percentage of the eigenvalues instead "
+		"[Default uses Gauss-Jordan elimination to solve the linear system].");
+	GMT_Usage (API, 3, "+f Save the eigenvalues to <filename>.");
+	GMT_Usage (API, 3, "+m Valid for 2-D gridding only and will create a series of intermediate "
+		"grids for each eigenvalue holding the incremental result. Requires -G with a filename "
+		"template containing an integer C formatting specifier (e.g., %%d).");
+	GMT_Usage (API, 3, "+M Same, but for cumulative results.");
 	gmt_grdcube_info_syntax (API->GMT, 'D');
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Evaluate solution at input locations and report misfit statistics.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append filename to save all data with two extra columns for model and misfit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify a regular set of output locations.  Give equidistant increment for each dimension.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Requires -R for specifying the output domain.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Leave trend alone.  Do not remove least squares plane from data before spline fit.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Only applies to -D0-2.  [Default removes linear trend, fits residuals, and restores trend].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N ASCII file with desired output locations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The resulting ASCII coordinates and interpolation are written to file given in -G\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or stdout if no file specified (see -bo for binary output).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Calculate the directional derivative in the <az> direction and return it instead of surface elevation.\n");
+	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
+	GMT_Usage (API, -2, "Evaluate solution at input locations and report misfit statistics. "
+		"Append a filename to save all data with two extra columns for model and misfit.");
+	GMT_Usage (API, 1, "\nI<dx>[/<dy>[/<dz>]]");
+	GMT_Usage (API, -2, "Specify a regular set of output locations. Give equidistant increment for each dimension. "
+		"Requires -R for specifying the output domain.");
+	GMT_Usage (API, 1, "\n-L Leave trend alone. Do not remove least squares plane from data before spline fit. "
+		"Only applies to -D0-2 [Default removes linear trend, fits residuals, and restores trend].");
+	GMT_Usage (API, 1, "\n-N<nodefile>");
+	GMT_Usage (API, -2, "ASCII file with desired output locations. "
+		"The resulting ASCII coordinates and interpolation are written to file given in -G "
+		"or standard output if no file specified (see -bo for binary output).");
+	GMT_Usage (API, 1, "\n-Q<az>");
+	GMT_Usage (API, -2, "Calculate the directional derivative in the <az> direction and return it instead of surface elevation.");
 	GMT_Option (API, "R");
 	if (gmt_M_showusage (API)) {
-		GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a regular set of output locations.  Give min and max coordinates for each dimension.\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given;\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   this then also sets -I (and perhaps -r); use those options to override the grid settings.\n");
+		GMT_Usage (API, -2, "-R Specify a regular set of output locations.  Give min and max coordinates for each dimension. "
+			"Requires -I for specifying equidistant increments.  For 2D-gridding a gridfile may be given; "
+			"this then also sets -I (and perhaps -r); use those options to override the grid settings.");
 	}
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Specify which spline to use; except for c|p, append normalized <tension> between 0 and 1:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sc is minimum curvature spline (Sandwell, 1987) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sl is a linear (1-D) or bilinear (2-D) spline.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -St<tension>[/<scale>] is a Cartesian spline in tension (Wessel & Bercovici, 1998).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Optionally, specify a length-scale [Default is the given output spacing].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sr<tension> is a regularized spline in tension (Mitasova & Mitas, 1993).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Optionally, specify a length-scale [Default is given output spacing].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sp is a spherical surface spline (Parker, 1994); automatically sets -D4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sq is a spherical surface spline in tension (Wessel & Becker, 2008); automatically sets -D4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +e<error> to change maximum error in series truncation [%g].\n", SQ_TRUNC_ERROR);
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +n<n> to change the (odd) number of precalculated nodes for spline interpolation [%d].\n", SQ_N_NODES);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Expects one extra input column with data errors sigma_i.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append w to indicate this column carries weights instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default makes weights via w_i = 1/sigma_i^2] for the least squares solution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note this will only have an effect if -C is used.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Distance flag determines how we calculate distances between (x,y) points:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Options 0 apples to Cartesian 1-D spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Z0 x in user units, Cartesian distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Options 1-3 apply to Cartesian 2-D surface spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Z1 x,y in user units, Cartesian distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Z2 x,y in degrees, flat Earth distances in meters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Z3 x,y in degrees, spherical distances in meters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Option 4 applies to 2-D spherical surface spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Z4 x,y in degrees, use cosine of spherical distances in degrees.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Option 5 applies to Cartesian 3-D volume interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Z5 x,y,z in user units, Cartesian distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For option 3-4, use PROJ_ELLIPSOID to select geodesic or great circle arcs.\n");
+	GMT_Usage (API, 1, "\n-Sc|l|t|r|p|q[<pars>]");
+	GMT_Usage (API, -2, "Specify which spline to use; except for c|p, append normalized <tension> between 0 and 1:");
+	GMT_Usage (API, 3, "c: Minimum curvature spline (Sandwell, 1987) [Default].");
+	GMT_Usage (API, 3, "l: Linear (1-D) or bilinear (2-D) spline.");
+	GMT_Usage (API, 3, "t: Cartesian spline in tension (Wessel & Bercovici, 1998). Append <tension> and "
+		"optionally append /<scale> for length-scale [Default is the given output spacing].");
+	GMT_Usage (API, 3, "r: Regularized spline in tension (Mitasova & Mitas, 1993). Append <tension> and "
+		"optionally append /<scale> for length-scale [Default is given output spacing].");
+	GMT_Usage (API, 3, "p: Spherical surface spline (Parker, 1994); automatically sets -D4.");
+	GMT_Usage (API, 3, "q: Spherical surface spline in tension (Wessel & Becker, 2008); automatically sets -D4. Append <tension>. "
+		"Optionally, append +e<error> to change maximum error in series truncation [%g] and "
+		"+n<n> to change the (odd) number of precalculated nodes for spline interpolation [%d].", SQ_TRUNC_ERROR, SQ_N_NODES);
+	GMT_Usage (API, 1, "\n-T<maskgrid>");
+	GMT_Usage (API, -2, "Mask grid file whose values are NaN or 0; its header implicitly sets -R, -I (and -r).");
+	GMT_Usage (API, 1, "\n-W[w]");
+	GMT_Usage (API, -2, "Expect one extra input column with data errors sigma_i. "
+		"Append w to indicate this column carries weights instead "
+		"[Default makes weights via w_i = 1/sigma_i^2] for the least squares solution.");
+	GMT_Usage (API, -2, "Note: weights only have an effect if -C is used.");
+	GMT_Usage (API, 1, "\n-Z<mode>");
+	GMT_Usage (API, -2, "Distance <mode> determines how we calculate distances between (x,y) points. "
+		"Mode 0 applies to Cartesian 1-D spline interpolation:");
+	GMT_Usage (API, 3, "0: x in user units, Cartesian distances.");
+	GMT_Usage (API, -2, "Modes 1-3 apply to Cartesian 2-D surface spline interpolation:");
+	GMT_Usage (API, 3, "1: x,y in user units, Cartesian distances.");
+	GMT_Usage (API, 3, "2: x,y in degrees, flat Earth distances in meters.");
+	GMT_Usage (API, 3, "3: x,y in degrees, spherical distances in meters.");
+	GMT_Usage (API, -2, "Mode 4 applies to 2-D spherical surface spline interpolation:");
+	GMT_Usage (API, 3, "4: x,y in degrees, use cosine of spherical distances in degrees.");
+	GMT_Usage (API, -2, "Mode 5 applies to Cartesian 3-D volume interpolation:");
+	GMT_Usage (API, 3, "5: x,y,z in user units, Cartesian distances.");
+	GMT_Usage (API, -2, "Note: For modes 3-4, use PROJ_ELLIPSOID to select geodesic or great circle arcs.");
 	GMT_Option (API, "V,bi");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 2-5 input columns depending on dimensionality (see -Z) and weights (see -W).\n");
-	GMT_Option (API, "d,e,g,h,i,o,q,r,s,w,x,:,.");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 2-5 input columns depending on dimensionality (see -Z) and weights (see -W).");
+	GMT_Option (API, "d,e,f,g,h,i,o,q,r,s,w,x,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

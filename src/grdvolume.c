@@ -309,27 +309,33 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDVOLUME_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high> or -Cr<cval>] [-D] [-L<base>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-S<unit>] [-T[c|h]] [%s] [%s] [-Z<fact>[/<shift>]]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> [-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high> or -Cr<cval>] "
+		"[-D] [-L<base>] [%s] [-S<unit>] [-T[c|h]] [%s] [-Z<fact>[/<shift>]] [%s] [%s] [%s] [%s]\n",
+		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the name of the grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Find area, volume, and mean height inside the given <cval> contour,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   OR search using all contours from <low> to <high> in steps of <delta>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default returns cval=0, area, volume and mean height of entire grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   OR append r (-Cr) to compute 'outside' area and volume between <low> and <high>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or below <cval> and grid's minimum.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D In conjunction with -C<low>/<high>/<delta>, report slice volumes and area.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Add volume from <base> up to contour [Default is from contour and up only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S For geographic grids we convert degrees to \"Flat-Earth\" distances in meters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a unit from %s to select another distance unit.\n", GMT_LEN_UNITS2_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T (or -Th): Find the contour value that yields max average height (volume/area).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Tc to find contour that yields the max curvature of height vs contour.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is the name of the grid file.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<cval> or -C<low>/<high>/<delta> or -Cr<low>/<high> or -Cr<cval>");
+	GMT_Usage (API, -2, "Find area, volume, and mean height inside the given <cval> contour, "
+		"OR search using all contours from <low> to <high> in steps of <delta> "
+		"[Default returns cval=0, area, volume and mean height of entire grid]. "
+		"Alternatively, append r (-Cr) to compute 'outside' area and volume between <low> and <high>, "
+		"or below <cval> and grid's minimum.");
+	GMT_Usage (API, 1, "\n-D In conjunction with -C<low>/<high>/<delta>, report slice volumes and area.");
+	GMT_Usage (API, 1, "\n-L<base>");
+	GMT_Usage (API, -2, "Add volume from <base> up to contour [Default is from contour and up only].");
+	GMT_Usage (API, 1, "\n-S<unit>");
+	GMT_Usage (API, -2, "For geographic grids we convert degrees to \"Flat-Earth\" distances in meters. "
+		"Append a unit from %s to select another distance unit.", GMT_LEN_UNITS2_DISPLAY);
+	GMT_Usage (API, 1, "\n-T[c|h]");
+	GMT_Usage (API, -2, "Find the contour value that yields max average height (volume/area) [Default or -Th]. "
+		"Use -Tc to find contour that yields the max curvature of height versus contour value.");
 	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> and then multiply data by <fact> before processing [1/0].\n");
+	GMT_Usage (API, 1, "\n-Z<fact>[/<shift>]");
+	GMT_Usage (API, -2, "Subtract <shift> and then multiply data by <fact> before processing [1/0].");
 	GMT_Option (API, "f,h,o,.");
 
 	return (GMT_MODULE_USAGE);

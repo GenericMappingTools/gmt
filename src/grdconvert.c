@@ -75,32 +75,36 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid>[=<id>][+s<scale>][+o<offset>][+n<nan>]\n\t-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]]\n\t[-N] [%s] [%s]\n\t[-Z[+s<fact>][+o<shift>]] [%s] [%s]\n\n",
-		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid>[=<id>][+s<scale>][+o<offset>][+n<nan>] "
+		"-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]] [-N] [%s] [%s] "
+		"[-Z[+s<fact>][+o<shift>]] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid file to convert.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the new converted grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   scale and offset, if given, will multiply data by scale and add offset.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, +n designates an invalid grid value to act as NaN.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT write the header (for native grids only - ignored otherwise).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Useful when creating files to be used by external programs.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid>[=<id>][+s<scale>][+o<offset>][+n<nan>]");
+	GMT_Usage (API, -2, "The grid file to convert.");
+	GMT_Usage (API, 1, "\n-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]]");
+	GMT_Usage (API, -2, "The new converted grid file. <scale> and <offset>, if given, will multiply data by scale and "
+		"add offset. Optionally, +n designates an invalid grid value to act as NaN.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-N Do NOT write the header (for native grids only - ignored otherwise). Useful when creating "
+		"files to be used by external programs.");
 	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Subtract <shift> (via +o<shift> [0]) then multiply result by <fact>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (via +s<fact> [1]) before writing the output grid.\n");
+	GMT_Usage (API, 1, "\n-Z[+s<fact>][+o<shift>]");
+	GMT_Usage (API, -2, "Subtract <shift> (via +o<shift> [0]) then multiply result by <fact> (via +s<fact> [1]) "
+		"before writing the output grid.");
 	GMT_Option (API, "f,.");
-	GMT_Message (API, GMT_TIME_NONE, "\nThe following grid file formats are supported:\n");
+	GMT_Usage (API, -1, "\nThe following grid file formats are supported:");
 	for (i = 1; i < GMT_N_GRD_FORMATS; ++i) {
 		if (!strstr (grdformats[i], "not supported"))
-			GMT_Message (API, GMT_TIME_NONE, "\t%s\n", grdformats[i]);
+			GMT_Usage (API, -2, grdformats[i]);
 	}
 #ifdef HAVE_GDAL
-	GMT_Message (API, GMT_TIME_NONE, "\n\tWhen <id>=gd on output, the grid will be saved using the GDAL library.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tSpecify <driver> and optionally <dataType>. Driver names are as in GDAL\n\t(e.g., netCDF, GTiFF, etc.)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<dataType> is u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned\n\tinteger.  Default type is float32.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tBoth driver names and data types are case insensitive.\n");
+	GMT_Usage (API, -1, "When <id>=gd on output, the grid will be saved using the GDAL library. Specify <driver> and "
+		"optionally <dataType>. Driver names are as in GDAL (e.g., netCDF, GTiFF, etc.) <dataType> is "
+		"u8|u16|i16|u32|i32|float32; i|u denote signed|unsigned integer.  Default type is float32. Both driver "
+		"names and data types are case insensitive.");
 #endif
 	return (GMT_MODULE_USAGE);
 }

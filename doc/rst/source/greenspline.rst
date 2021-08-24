@@ -13,11 +13,11 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt greenspline** [ *table* ]
+|-G|\ *grdfile*
 [ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
 [ |-C|\ [**n**]\ *value*\ [%][**+f**\ *file*][**+m**\|\ **M**] ]
-[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+v**\ *vname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
+[ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*] ]
-[ |-G|\ *grdfile* ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
 [ |-L| ]
 [ |-N|\ *nodefile* ]
@@ -31,9 +31,13 @@ Synopsis
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
@@ -49,7 +53,6 @@ chosen spline and geometry to interpolate data at regular [or arbitrary]
 output locations. Choose between minimum curvature, regularized, or
 continuous curvature splines in tension for either 1-D, 2-D, or 3-D
 Cartesian coordinates or spherical surface coordinates. Mathematically, the solution is composed as
-
 
 .. math::
 
@@ -92,6 +95,24 @@ Required Arguments
     The name of one or more ASCII [or binary, see
     **-bi**] files holding the **x**, *w* data
     points. If no file is given then we read standard input instead.
+
+.. _-G:
+
+**-G**\ *grdfile*
+    Name of resulting output file. (1) If options **-R**, **-I**, and
+    possibly **-r** are set we produce an equidistant output table. This
+    will be written to stdout unless **-G** is specified. **Note**: For 2-D
+    grids the **-G** option is required. (2) If option **-T** is
+    selected then **-G** is required and the output file is a 2-D binary
+    grid file. Applies to 2-D interpolation only. (3) For 3-D cubes
+    the **-G** option is optional.  If set, it can be the name of a 3-D
+    cube file or a filename template with a floating-point C-format identifier
+    in it so that each layer is written to a 2-D grid file; otherwise
+    we write (*x, y, z, w*) records to stdout. (4) If **-N** is
+    selected then the output is an ASCII (or binary; see
+    **-bo**) table; if **-G** is not given then
+    this table is written to standard output. Ignored if **-C** or
+    **-C**\ 0 is given.
 
 Optional Arguments
 ------------------
@@ -150,24 +171,6 @@ Optional Arguments
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
     two extra columns holding the spline estimate and the misfit.
-
-.. _-G:
-
-**-G**\ *grdfile*
-    Name of resulting output file. (1) If options **-R**, **-I**, and
-    possibly **-r** are set we produce an equidistant output table. This
-    will be written to stdout unless **-G** is specified. **Note**: For 2-D
-    grids the **-G** option is required. (2) If option **-T** is
-    selected then **-G** is required and the output file is a 2-D binary
-    grid file. Applies to 2-D interpolation only. (3) For 3-D cubes
-    the **-G** option is optional.  If set, it can be the name of a 3-D
-    cube file or a filename template with a floating-point C-format identifier
-    in it so that each layer is written to a 2-D grid file; otherwise
-    we write (*x, y, z, w*) records to stdout. (4) If **-N** is
-    selected then the output is an ASCII (or binary; see
-    **-bo**) table; if **-G** is not given then
-    this table is written to standard output. Ignored if **-C** or
-    **-C**\ 0 is given.
 
 .. _-I:
 
@@ -273,7 +276,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ *mode*
-    Sets the distance flag that determines how we calculate distances
+    Sets the distance mode that determines how we calculate distances
     between data points. Select *mode* 0 for Cartesian 1-D spline
     interpolation: **-Z**\ 0 means (*x*) in user units, Cartesian
     distances, Select *mode* 1-3 for Cartesian 2-D surface spline

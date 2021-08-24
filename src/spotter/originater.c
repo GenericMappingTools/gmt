@@ -209,33 +209,41 @@ GMT_LOCAL int originater_comp_hs (const void *p1, const void *p2) {
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -E<rottable>[+i] -F<hotspottable>[+d] [-D<d_km>] [-H] [-L[<flag>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] %s -F<hotspottable>[+d] [-D<d_km>] [-H] [-L[l|t|w]] "
+		"[-N<upper_age>] [-Qr/t] [-S<n_hs>] [-T] [%s] [-W<maxdist>] [-Z] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, SPOTTER_E_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify file name for hotspot locations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d if we should look for hotspot drift tables.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If found then we interpolate to get hotspot location as a function of time [fixed].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   standard input is read.  Expects (x,y,z,r,t) records, with t in Ma.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set sampling interval in km along tracks [5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Output information for closest approach for nearest hotspot only (ignores -S).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Lt gives (time, dist, z) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Lw gives (omega, dist, z).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ll gives (lon, lat, time, dist, z).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   dist is in km; use upper case T,W,L to get dist in spherical degrees.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set age (in m.y.) for seafloor where age == NaN [180].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Input files has (x,y,z) only. Append constant r/t to use.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Report the <n_hs> closest hotSpots [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Truncate seamount ages exceeding the upper age set with -N [no truncation].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, "
+		"standard input is read. Expects (x,y,z,r,t) records, with t in Ma.");
+	spotter_rot_usage (API);
+	GMT_Usage (API, 1, "\n-F<hotspottable>[+d]");
+	GMT_Usage (API, -2, "Specify file name for hotspot locations. "
+		"Append +d if we should look for hotspot drift tables. "
+		"If found then we interpolate to get hotspot location as a function of time [fixed].");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D<d_km>");
+	GMT_Usage (API, -2, "Set sampling interval in km along tracks [5].");
+	GMT_Usage (API, 1, "\n-L[l|t|w]");
+	GMT_Usage (API, -2, "Output information for closest approach for nearest hotspot only (ignores -S). Select directive:");
+	GMT_Usage (API, 3, "l: Give (lon, lat, time, dist, z).");
+	GMT_Usage (API, 3, "t: Give (time, dist, z) [Default].");
+	GMT_Usage (API, 3, "w: Give (omega, dist, z).");
+	GMT_Usage (API, -2, "Note: dist is in km; use upper case L,T,W to get dist in spherical degrees.");
+	GMT_Usage (API, 1, "\n-N<upper_age>");
+	GMT_Usage (API, -2, "Set age (in m.y.) for seafloor where age == NaN [180].");
+	GMT_Usage (API, 1, "\n-Qr/t");
+	GMT_Usage (API, -2, "Input files has (x,y,z) only. Append constant r/t to append to input record.");
+	GMT_Usage (API, 1, "\n-S<n_hs>");
+	GMT_Usage (API, -2, "Report the <n_hs> closest hotSpots [1].");
+	GMT_Usage (API, 1, "\n-T Truncate seamount ages exceeding the upper age set with -N [no truncation].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Report seamounts whose closest encounter to a hotspot is less than <maxdist> km\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default reports for all seamounts].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Write hotspot ID number rather than hotspot TAG.\n");
+	GMT_Usage (API, 1, "\n-W<maxdist>");
+	GMT_Usage (API, -2, "Report seamounts whose closest encounter to a hotspot is less than <maxdist> km "
+		"[Default reports for all seamounts].");
+	GMT_Usage (API, 1, "\n-Z Write hotspot ID number rather than hotspot TAG.");
 	GMT_Option (API, "bi5,d,e,h,i,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);

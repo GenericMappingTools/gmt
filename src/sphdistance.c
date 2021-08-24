@@ -138,35 +138,39 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPHDISTANCE_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "\t==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s [-C] [-D] [-En|z|d[<dr>]]\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<unit>] [-N<nodetable>] [-Q<voronoitable>] [%s] [%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n", GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 1, "==> The hard work is done by algorithms 772 (STRIPACK) & 773 (SSRFPACK) by R. J. Renka [1997] <==\n");
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s [-C] [-D] [-En|z|d[<dr>]] "
+		"[-L<unit>] [-N<nodetable>] [-Q<voronoitable>] [%s] [%s] [%s] [%s] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		 name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT,
+		 GMT_i_OPT, GMT_j_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output distance grid file.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Usage (API, 1, "\n-G<grdfile>");
+	GMT_Usage (API, -2, "Specify file name for output distance grid file.");
 	GMT_Option (API, "I");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data file (in ASCII, binary, netCDF) with (x,y,z[,w]).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read (but see -Q).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress connecting Voronoi arcs using great circles, i.e., connect by straight lines,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   unless m or p is appended to first follow meridian then parallel, or vice versa.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Delete any duplicate points [Default assumes there are no duplicates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify the quantity that should be assigned to the grid nodes:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -En The Voronoi polygon ID.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ez The z-value of the Voronoi center node (natural NN gridding).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ed The distance to the nearest data point [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append resampling interval in spherical degrees for polygon arcs [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile,\n\t   or arc (s)econd [e].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Specify node filename for the Voronoi polygons (sphtriangulate -N output).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Specify table with Voronoi polygons in sphtriangulate -Qv format\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default performs Voronoi construction on input data first].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C Conserve memory (Converts lon/lat <--> x/y/z when needed) [store both in memory]. Not used with -Q.");
+	GMT_Usage (API, 1, "\n-D Delete any duplicate points [Default assumes there are no duplicates].");
+	GMT_Usage (API, 1, "\n-En|z|d[<dr>]");
+	GMT_Usage (API, -2, "Specify the quantity that should be assigned to the grid nodes:");
+	GMT_Usage (API, 3, "n: The Voronoi polygon ID.");
+	GMT_Usage (API, 3, "z: The z-value of the Voronoi center node (natural nearest-neighbor gridding).");
+	GMT_Usage (API, 3, "d: The distance to the nearest data point [Default].");
+	GMT_Usage (API, -2, "Optionally append resampling interval in spherical degrees for polygon arcs [1].");
+	GMT_Usage (API, 1, "\n-L<unit>");
+	GMT_Usage (API, -2, "Set distance unit arc (d)egree, m(e)ter, (f)eet, (k)m, arc (m)inute, (M)ile, (n)autical mile, or arc (s)econd [e].");
+	GMT_Usage (API, 1, "\n-N<nodetable>");
+	GMT_Usage (API, -2, "Specify node filename for the Voronoi polygons (i.e., sphtriangulate -N output or equivalent).");
+	GMT_Usage (API, 1, "\n-Q<voronoitable>");
+	GMT_Usage (API, -2, "Specify table with Voronoi polygons in sphtriangulate -Qv format "
+		"[Default performs Voronoi construction on input data first].");
 	GMT_Option (API, "Rg");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   If no region is specified we default to the entire world [-Rg].\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "If no region is specified we default to the entire world [-Rg].");
 	GMT_Option (API, "V,bi2,di,e,h,i,j,qi,r,s,:,.");
 
 	return (GMT_MODULE_USAGE);

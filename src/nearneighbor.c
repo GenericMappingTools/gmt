@@ -38,9 +38,10 @@
 #define THIS_MODULE_PURPOSE	"Grid table data using a \"Nearest neighbor\" algorithm"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVbdefghinqrsw" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:RVabdefhinqrsw" GMT_OPT("FH")
 
 #define NN_DEF_SECTORS	4
+#define GMT_n_OPT2 "-n+b<BC>"
 
 struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except common args) */
 	/* active is true if the option has been activated */
@@ -125,36 +126,42 @@ GMT_LOCAL void nearneighbor_free_node (struct GMT_CTRL *GMT, struct NEARNEIGHBOR
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t-N<sectors>[+m<min_sectors>]|n %s -S%s\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E<empty>] [%s] [-W] [%s] [%s] [%s] [%s]\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s %s -S%s [-E<empty>] [-N<sectors>[+m<min_sectors>]|n] "
+		"[%s] [-W] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT2, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Name of output grid.\n");
-	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set number of sectors and the minimum number of sectors with data required for averaging.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If modifier +m<min_sectors> is omitted it defaults to ~50%% of <sectors>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -N%d+m%d, i.e., a quadrant search, requiring all sectors to be filled.\n", NN_DEF_SECTORS, NN_DEF_SECTORS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, supply -Nn for plain NN algorithm via GDAL\n");
-	GMT_Option (API, "R");
-	gmt_dist_syntax (API->GMT, 'S', "Only consider points inside this search radius.");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty nodes [Default is NaN].\n");
+	GMT_Usage (API, 1, "\n-G<grdfile>");
+	GMT_Usage (API, -2, "Name of output grid.");
+	GMT_Option (API, "I");
+	GMT_Option (API, "R");
+	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Only consider points inside this search radius.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-E<empty>");
+	GMT_Usage (API, -2, "Value to use for empty nodes [Default is NaN].");
+	GMT_Usage (API, 1, "\n-N<sectors>[+m<min_sectors>]|n");
+	GMT_Usage (API, -2, "Set number of sectors and the minimum number of sectors with data required for averaging. "
+		"If modifier +m<min_sectors> is omitted it defaults to ~50%% of <sectors>. "
+		"Default is -N%d+m%d, i.e., a quadrant search, requiring all sectors to be filled. "
+		"Alternatively, supply -Nn for plain NN algorithm via GDAL.", NN_DEF_SECTORS, NN_DEF_SECTORS);
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Input <table> has observation weights in 4th column.\n");
-	GMT_Option (API, "bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
+	GMT_Usage (API, 1, "\n-W Input <table> has observation weights in 4th column.");
+	GMT_Option (API, "a,bi");
+	GMT_Usage (API, -2, "Default is 3 (or 4 if -W is set) columns.");
 	GMT_Option (API, "di,e,f,h,i");
 	if (gmt_M_showusage (API)) {
-		GMT_Message (API, GMT_TIME_NONE, "\t-n+b<BC> Set boundary conditions.  <BC> can be either:\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   g for geographic, p for periodic, and n for natural boundary conditions.\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   For p and n you may optionally append x or y [default is both]:\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t     x applies the boundary condition for x only\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t     y applies the boundary condition for y only\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   [Default: Natural conditions, unless grid is geographic].\n");
+		GMT_Usage (API, 1, "\n%s", GMT_n_OPT2);
+		GMT_Usage (API, -2, "Set boundary conditions.  <BC> can be either:");
+		GMT_Usage (API, 3, "g: Set geographic boundary conditions.");
+		GMT_Usage (API, 3, "p: Set periodic boundary conditions.");
+		GMT_Usage (API, 3, "n: Set natural boundary conditions.");
+		GMT_Usage (API, -2, "Note: For p and n you may optionally append x or y [Default is both]:");
+		GMT_Usage (API, 3, "x applies the boundary condition for x only.");
+		GMT_Usage (API, 3, "y applies the boundary condition for y only.");
+		GMT_Usage (API, -2, "[Default: Natural conditions, unless grid is geographic].");
 	}
 	GMT_Option (API, "qi,r,s,w,:,.");
 

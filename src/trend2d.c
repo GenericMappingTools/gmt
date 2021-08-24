@@ -421,30 +421,41 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct TREND2D_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<xyzmrw>|p -N<n_model>[+r] [-C<condition_#>] [-I[<confidence>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[+s]] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -F<xyzmrw>|p -N<n_model>[+r] [-C<condition_#>] [-I[<confidence>]] "
+		"[%s] [-W[+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Choose at least 1, up to 6, any order, of xyzmrw for ASCII output to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x=x, y=y, z=z, m=model, r=residual=z-m, w=weight (determined iteratively if robust fit used).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Fp by itself to report the model coefficients only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Fit a [robust] model with <n_model> terms.  <n_model> in [1,10].  E.g., robust planar = -N3+r.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Model parameters order is given as follows; append +r for robust solution:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more data files (in ASCII, binary, netCDF) with (x,y,z[,w]) data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Truncate eigenvalue spectrum so matrix has <condition_#> [Default = 1.0e06].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Iteratively Increase # model parameters, to a max of <n_model> so long as the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   reduction in variance is significant at the <confidence> level.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I without a number to default to 0.51 confidence level.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<");
+	GMT_Usage (API, -2, "Note: Input must provide (x,y,z[,w]) records; see -W for weights.");
+	GMT_Usage (API, 1, "\n-F<xyzmrw>|p");
+	GMT_Usage (API, -2, "Choose at least 1, up to 6, any order, of xyzmrw for output to standard output.:");
+	GMT_Usage (API, 3, "x: The x-coordinate.");
+	GMT_Usage (API, 3, "y: The y-coordinate.");
+	GMT_Usage (API, 3, "z: The z-value.");
+	GMT_Usage (API, 3, "m: The model prediction.");
+	GMT_Usage (API, 3, "r: The residual (z-m).");
+	GMT_Usage (API, 3, "w: The weight (determined iteratively if robust fit used).");
+	GMT_Usage (API, -2, "Alternatively, use -Fp by itself to report the model coefficients only.");
+	GMT_Usage (API, 1, "\n-N<n_model>[+r]");
+	GMT_Usage (API, -2, "Fit a [robust] model with <n_model> terms, with <n_model> in [1,10].  Model parameters order is given as follows: "
+		"z = m1 + m2*x + m3*y + m4*x*y + m5*x^2 + m6*y^2 + m7*x^3 + m8*x^2*y + m9*x*y^2 + m10*y^3.");
+	GMT_Usage (API, 3, "+r Require a robust solution. E.g., robust planar = -N3+r.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<condition_#>");
+	GMT_Usage (API, -2, "Truncate eigenvalue spectrum so matrix has <condition_#> [Default = 1.0e06].");
+	GMT_Usage (API, 1, "\n-I[<confidence>]");
+	GMT_Usage (API, -2, "Iteratively Increase # model parameters, to a max of <n_model> so long as the "
+		"reduction in variance is significant at the <confidence> level [0.51].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Weighted input given, weights in 4th column [Default is unweighted].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to read standard deviations and compute weights as 1/s^2.\n");
+	GMT_Usage (API, 1, "\n-W[+s|w]");
+	GMT_Usage (API, -2, "Weighted input given, weights in 4th column [Default is unweighted]. Select modifier:");
+	GMT_Usage (API, 3, "+s Read standard deviations and compute weights as 1/s^2.");
+	GMT_Usage (API, 3, "+w Read weights directly [Default].");
 	GMT_Option (API, "bi");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is 3 (or 4 if -W is set) columns.");
 	GMT_Option (API, "bo,d,e,f,h,i,q,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -497,7 +508,7 @@ static int parse (struct GMT_CTRL *GMT, struct TREND2D_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'W':
 				Ctrl->W.active = true;
-				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "s", GMT_MSG_ERROR)) n_errors++;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "sw", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.mode = (strstr (opt->arg, "+s")) ? 2 : 1;
 				break;
 

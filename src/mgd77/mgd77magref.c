@@ -84,75 +84,85 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-A+y+a<alt>+t<date>] [-C<cm4file>] [-D<dstfile>] [-E<f107file>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F<rthxyzdi[/[0|9]1234567]>] [-G] [-L<rtxyz[/1234]>] [-Sc|l<low>/<high>] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_o_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A+a<alt>+t<date>+y] [-C<cm4file>] [-D<dstfile>] [-E<f107file>] "
+		"[-Frthxyzdi[/[0|9]1234567]] [-G] [-Lrtxyz[/1234]] [-Sc|l<low>/<high>] [%s "
+		"[%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_o_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> contains records that must contain lon, lat, alt, time[, other cols].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   longitude and latitude is the geocentric position on the ellipsoid [but see -G].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   alt is the altitude in km positive above the ellipsoid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   time is the time of data acquisition, in <date>T<clock> format (but see -A+y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We read <stdin> if no input file is given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust how the input records are interpreted. Append\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +a<alt> to indicate a constant altitude [Default is 3rd column].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +t<time> to indicate a constant time [Default is 4th column].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +y to indicate times are given in decimal years [Default is ISO <date>T<clock> format].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Select an alternate file with coefficients for the CM4 model [%s/umdl.CM4].\n",
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table>");
+	GMT_Usage (API, -2, "File with records that must contain <lon>, <lat>, <alt>, <time>[, other cols]. "
+		"Here, (<lon>, <lat>) is the geocentric position on the ellipsoid [but see -G], "
+		"<alt> is the altitude in km positive above the ellipsoid, and "
+		"<time> is the time of data acquisition, in <date>T<clock> format (but see -A+y). "
+		"We read <stdin> if no input file is given.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A+a<alt>+t<date>+y");
+	GMT_Usage (API, -2, "Adjust how the input records are interpreted. Append modifiers:");
+	GMT_Usage (API, 3, "+a Append <alt> to indicate a constant altitude [Default is 3rd column].");
+	GMT_Usage (API, 3, "+t Append <time> to indicate a constant time [Default is 4th column].");
+	GMT_Usage (API, 3, "+y Indicate times are given in decimal years [Default is ISO <date>T<clock> format].");
+	GMT_Usage (API, 1, "\n-C<cm4file>");
+	GMT_Usage (API, -2, "Select an alternate file with coefficients for the CM4 model [%s/umdl.CM4].",
 		API->GMT->session.SHAREDIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Select an alternate file with hourly means of the Dst index for CM4 [%s/Dst_all.wdc],\n",
+	GMT_Usage (API, 1, "\n-D<dstfile>");
+	GMT_Usage (API, -2, "Select an alternate file with hourly means of the Dst index for CM4 [%s/Dst_all.wdc], "
+		"OR a single Dst index to apply for all records.",
 		API->GMT->session.SHAREDIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t   OR a single Dst index to apply for all records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Select an alternate file with monthly means of absolute F10.7 solar radio flux for CM4 [%s/F107_mon.plt],\n",
+	GMT_Usage (API, 1, "\n-E<f107file>");
+	GMT_Usage (API, -2, "Select an alternate file with monthly means of absolute F10.7 solar radio flux for CM4 [%s/F107_mon.plt], "
+		"OR a single solar radio flux to apply for all records.",
 		API->GMT->session.SHAREDIR);
-	GMT_Message (API, GMT_TIME_NONE, "\t   OR a single solar radio flux to apply for all records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Dataflags is a string made up of 1 or more of these characters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 r means output all input columns before adding the items below (all in nTesla).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 t means list total field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 h means list horizontal field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 x means list X component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 y means list Y component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 z means list Z component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 d means list declination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 i means list inclination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a number to indicate the requested field contribution(s):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 0 means Core field from IGRF only (no CM4 evaluation).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 1 means Core field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 2 means Lithospheric field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 3 Primary Magnetospheric field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 4 Induced Magnetospheric field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 5 Primary ionospheric field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 6 Induced ionospheric field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 7 Toroidal field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 9 means Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 1 AND 9.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append several numbers to add up the different contributions. For example,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Ft/12 computes the total field due to CM4 Core and Lithospheric sources.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Two special cases are allowed which mix which Core field from IGRF and other sources from CM4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Ft/934 computes Core field due to IGRF plus terms 3 and 4 from CM4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Fxyz/934 the same as above but output the field components.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 The data is written out in the order specified in <dataflags>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 [Default is -Frthxyzdi/1]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify that coordinates are geocentric [geodetic].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Compute J field vectors from certain external sources.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Dataflags is a string made up of 1 or more of these characters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 r means output all input columns before adding the items below (all in Ampers/m).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 t means list magnitude field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 x means list X component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 y means list Y component.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 z means list Z or current function Psi.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a number to indicate the requested J contribution(s)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 1 means Induced Magnetospheric field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 2 means Primary ionospheric field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 3 means Induced ionospheric field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t	 4 means Poloidal field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Limit the CM4 contributions from core and lithosphere to certain harmonic degree bands.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c(ore) or l(ithosphere) and the low and high degrees to use [-Sc1/13 -Sl14/65].\n");
+	GMT_Usage (API, 1, "\n-Frthxyzdi[/[0|9]1234567]");
+	GMT_Usage (API, -2, "Dataflags is a string made up of one or more of these codes:");
+	GMT_Usage (API, 3, "r: Output all input columns before adding the items below (all in nTesla).");
+	GMT_Usage (API, 3, "t: List total field.");
+	GMT_Usage (API, 3, "h: List horizontal field.");
+	GMT_Usage (API, 3, "x: List X component.");
+	GMT_Usage (API, 3, "y: List Y component.");
+	GMT_Usage (API, 3, "z: List Z component.");
+	GMT_Usage (API, 3, "d: List declination.");
+	GMT_Usage (API, 3, "i: List inclination.");
+	GMT_Usage (API, -2, "Optionally, append one or more numbers to indicate the requested field contribution(s):");
+	GMT_Usage (API, 3, "0: Core field from IGRF only (no CM4 evaluation).");
+	GMT_Usage (API, 3, "1: Core field.");
+	GMT_Usage (API, 3, "2: Lithospheric field.");
+	GMT_Usage (API, 3, "3: Primary Magnetospheric field.");
+	GMT_Usage (API, 3, "4: Induced Magnetospheric field.");
+	GMT_Usage (API, 3, "5: Primary ionospheric field.");
+	GMT_Usage (API, 3, "6: Induced ionospheric field.");
+	GMT_Usage (API, 3, "7: Toroidal field.");
+	GMT_Usage (API, 3, "9: Core field from IGRF and other contributions from CM4. DO NOT USE BOTH 1 AND 9.");
+	GMT_Usage (API, -2, "Note: Append several numbers to add up the different contributions. For example, "
+		"-Ft/12 computes the total field due to CM4 Core and Lithospheric sources. "
+		"Two special cases are allowed which mix Core field from IGRF and other sources from CM4: "
+		"-Ft/934 computes Core field due to IGRF plus terms 3 and 4 from CM4. "
+		"-Fxyz/934 the same as above but output the field components. "
+		"The data are written out in the order specified "
+		"[Default is -Frthxyzdi/1].");
+	GMT_Usage (API, 1, "\n-G Specify that coordinates are geocentric [geodetic].");
+	GMT_Usage (API, 1, "\n-Lrtxyz[/1234]");
+	GMT_Usage (API, -2, "Compute J field vectors from certain external sources. "
+		"Append a string made up of one or more of these codes:");
+		GMT_Usage (API, 3, "r: Output all input columns before adding the items below (all in Ampere/m).");
+		GMT_Usage (API, 3, "t: List magnitude field.");
+		GMT_Usage (API, 3, "x: List X component.");
+		GMT_Usage (API, 3, "y: List Y component.");
+		GMT_Usage (API, 3, "z: List Z or current function Psi.");
+	GMT_Usage (API, -2, "Optionally, append a number to indicate the requested J contribution(s):");
+	GMT_Usage (API, -2, "1: Induced Magnetospheric field.");
+	GMT_Usage (API, -2, "2: Primary ionospheric field.");
+	GMT_Usage (API, -2, "3: Induced ionospheric field.");
+	GMT_Usage (API, -2, "4: Poloidal field.");
+	GMT_Usage (API, 1, "\n-Sc|l<low>/<high>");
+	GMT_Usage (API, -2, "Limit the CM4 contributions from core and lithosphere to certain harmonic degree bands. "
+		"Append c(ore) or l(ithosphere) and the <low> and <high> degrees to use [-Sc1/13 -Sl14/65].");
 	GMT_Option (API, "V,bi0");
 	if (gmt_M_showusage (API)) {
-		GMT_Message (API, GMT_TIME_NONE, "\t   Default is 4 input columns (unless -A is used).  Note for binary input, absolute time must\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   be in the unix time-system (unless -A+y is used).\n");
+		GMT_Usage (API, -2, "Default is 4 input columns (unless -A is used).  Note for binary input, absolute time must "
+			"be in the UNIX time-system (unless -A+y is used).");
 	}
 	GMT_Option (API, "bo,d,h,o,:,.");
 

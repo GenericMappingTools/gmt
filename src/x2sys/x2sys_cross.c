@@ -50,6 +50,12 @@ enum x2sys_sets {
 	SET_B = 1
 };
 
+enum x2sys_types {
+	X2SYS_EXTERNAL = 1,
+	X2SYS_INTERNAL = 2,
+	X2SYS_BOTH = 3
+};
+
 struct X2SYS_CROSS_CTRL {
 	struct X2SYS_CROSS_A {	/* -A */
 		bool active;
@@ -115,37 +121,47 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A<combi.lis>] [-C[<fname>]] [-D[S|N]] [-Il|a|c] [-Qe|i]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\n", GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
-
-	GMT_Message (API, GMT_TIME_NONE, "\tOutput is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tIf time is not selected (or present) we use record numbers as proxies i1 i2\n\n");
+	GMT_Usage (API, 0, "usage: %s <files> -T<TAG> [-A<pairs>] [-C[<fname>]] [-D[S|N]] [-Il|a|c] [-Qe|i] "
+		"[%s] [-Sl|h|u<speed>] [%s] [-W<size>] [-Z] [%s] [%s] [%s]\n",
+		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Give list of file pairs that are ok to compare [Default is all combinations].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Print run time for each pair. Optionally append <fname> to save them in file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Control geographic coordinate conversions. By default we automatically convert\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   lon,lat to polar coordinates if within one hemisphere. -D turns this off, while\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -DS or -DN forces the conversion using the specified pole [auto-selected].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Set the interpolation mode.  Choose among:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     l Linear interpolation [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a Akima spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c Cubic spline interpolation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e for external crossovers.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append i for internal crossovers [Default is all crossovers].\n");
+	GMT_Usage (API, 1, "Note 1: Output is x y t1 t2 d1 d2 az1 az2 v1 v2 xval1 xmean1 xval2 xmean2 ...");
+	GMT_Usage (API, 1, "Note 2: If time is not selected (or present) we use record numbers as proxies i1 i2");
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<pairs>");
+	GMT_Usage (API, -2, "Give file with list of track pairs to process [Default processes all combinations].");
+	GMT_Usage (API, 1, "\n-C[<fname>]");
+	GMT_Usage (API, -2, "Print run time for each pair. Optionally append <fname> to writem them to that file.");
+	GMT_Usage (API, 1, "\n-D[S|N]");
+	GMT_Usage (API, -2, "Control geographic coordinate conversions. By default we automatically convert "
+		"lon,lat to polar coordinates if contained within one hemisphere. -D turns this off, while "
+		"-DS or -DN forces the conversion using the specified hemisphere [auto-selected].");
+	GMT_Usage (API, 1, "\n-Il|a|c");
+	GMT_Usage (API, -2, "Select an interpolation mode:");
+	GMT_Usage (API, 3, "l: Linear interpolation [Default].");
+	GMT_Usage (API, 3, "a: Akima spline interpolation.");
+	GMT_Usage (API, 3, "c: Cubic spline interpolation.");
+	GMT_Usage (API, 1, "\n-Qe|i");
+	GMT_Usage (API, -2, "Select a sub-group of crossovers [Default is both]:");
+	GMT_Usage (API, 3, "e: Find external crossovers.");
+	GMT_Usage (API, 3, "i: Find internal crossovers.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Set limits on lower and upper speeds (units determined by -Ns):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Sl sets lower speed [Default is 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Sh no headings should be computed if velocity drops below this value [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Su sets upper speed [Default is Infinity].\n");
+	GMT_Usage (API, 1, "\n-Sl|h|u<speed>");
+	GMT_Usage (API, -2, "Set limits on lower and upper speeds (units determined by -Ns):");
+	GMT_Usage (API, 3, "l: Set lower speed [Default is 0].");
+	GMT_Usage (API, 3, "h: No headings should be computed if velocity drops below this value [0].");
+	GMT_Usage (API, 3, "u: Set upper speed [Default is Infinity].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Set maximum points on either side of crossover to use in interpolation [Default is 3].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Return z-values for each track [Default is crossover and mean value].\n");
+	GMT_Usage (API, 1, "\n-W<size>");
+	GMT_Usage (API, -2, "Set maximum points on either side of crossover to use in interpolation [Default is 3].");
+	GMT_Usage (API, 1, "\n-Z Return z-values for each track [Default is crossover and mean value].");
 	GMT_Option (API, "bo,do,.");
 
 	return (GMT_MODULE_USAGE);
@@ -248,9 +264,9 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				break;
 			case 'Q':	/* Specify internal or external only */
 				Ctrl->Q.active = true;
-				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
-				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
-				else Ctrl->Q.mode = 3;
+				if (opt->arg[0] == 'e') Ctrl->Q.mode = X2SYS_EXTERNAL;
+				else if (opt->arg[0] == 'i') Ctrl->Q.mode = X2SYS_INTERNAL;
+				else Ctrl->Q.mode = X2SYS_BOTH;
 				break;
 			case 'Z':	/* Return z1, z1 rather than (z1-z1) and 0.5 * (z1 + z2) */
 				Ctrl->Z.active = true;
@@ -272,7 +288,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.width < 1, "Option -W: window must be at least 1\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.limit[VLO] > Ctrl->S.limit[VHI], "Option -S: lower speed cutoff higher than upper cutoff!\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Option -Q: Only one of -Qe -Qi can be specified!\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == X2SYS_BOTH, "Option -Q: Only one of -Qe -Qi can be specified!\n");
 
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
@@ -366,7 +382,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	bool external = true;			/* false if only internal xovers are needed */
 	bool do_project = false;		/* true if we must project first */
 	bool do_examine = false;		/* true if we should examine y-range to pick closest pole*/
-	bool is_geographic = false;		/* true if we must project to polar cartesian */
+	bool is_geographic = false;		/* true if we must project to polar Cartesian */
 	bool got_time = false;			/* true if there is a time column */
 	bool first_header = true;		/* true for very first crossover */
 	bool first_crossover;			/* true for first crossover between two data sets */
@@ -451,8 +467,8 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	GMT->current.setting.interpolant = Ctrl->I.mode;
 	if (Ctrl->Q.active) {
-		if (Ctrl->Q.mode == 1) internal = false;
-		if (Ctrl->Q.mode == 2) external = false;
+		if (Ctrl->Q.mode == X2SYS_EXTERNAL) internal = false;
+		if (Ctrl->Q.mode == X2SYS_INTERNAL) external = false;
 	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Files found: %" PRIu64 "\n", n_tracks);
@@ -526,7 +542,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	X2SYS_NaN = GMT->session.d_NaN;
 
-	if (GMT->current.setting.interpolant == 0) Ctrl->W.width = 1;
+	if (GMT->current.setting.interpolant == GMT_SPLINE_LINEAR) Ctrl->W.width = 1;
 	window_width = 2 * Ctrl->W.width;
 	n_data_col = x2sys_n_data_cols (GMT, s);
 	got_time = (s->t_col >= 0);
@@ -570,7 +586,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	/* PW: Cannot use gmt_proj_setup since all that stuff assumes lon,lat are now in cols
 	 * 0 and 1.  But that is not true in x2sys since it honors the *.def file layout.
 	 * Since gmt_crossover deals with periodic longitudes then we really do not need to
-	 * project to Cartesian anyway.  If -DS|N is given (or no -D) and geographice then we internally
+	 * project to Cartesian anyway.  If -DS|N is given (or no -D) and geographic then we internally
 	 * project via a r-theta schene to x,y get the crossings and project back afterwards.
 	 * We examine the latitude range to select the most suitable pole for the projection (unless set in -D),
 	 * This may have issues if data cover both hemispheres to high latitudes. The projection we use is

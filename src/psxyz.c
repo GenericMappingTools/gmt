@@ -157,158 +157,201 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *mod_name = &name[4];	/* To skip the leading gmt for usage messages */
+	const char *T[2] = {" [-T]", ""};
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-A[m|p|x|y|r|t]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] [-H[<scale>]] [-I[<intens>]] %s\n\t[-L[+b|d|D][+xl|r|x0][+yb|t|y0][+p<pen>]] [-N[c|r]] %s\n", GMT_Jz_OPT, API->K_OPT, API->O_OPT);
-	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
-		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]] [-T]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	else
-		GMT_Message (API, GMT_TIME_NONE, "\t%s[-Q] [-S[<symbol>][<size>][/size_y]]\n\t[%s] [%s] [-W[<pen>][<attr>]]\n", API->P_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-Z<value>|<file>[+f|l]] [%s]\n\t[%s] %s[%s] [%s] [%s]\n\t[%s] [%s]\n", GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT, API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n", GMT_i_OPT, GMT_l_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [%s] [%s] [-A[m|p|r|t|x|y]] [-C<cpt>] [-D<dx>/<dy>[/<dz>]] [-G<fill>] "
+		"[-H[<scale>]] [-I[<intens>]] %s [%s] [-N[c|r]] %s %s[-Q] [-S[<symbol>][<size>][/size_y]]%s [%s] [%s] [-W[<pen>][<attr>]] "
+		"[%s] [%s] [-Z<value>|<file>] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_Jz_OPT, API->K_OPT, PLOT_L_OPT, API->O_OPT, API->P_OPT,
+		T[API->GMT->current.setting.run_mode], GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_bi_OPT,
+		API->c_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_l_OPT, GMT_p_OPT,
+		GMT_qi_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Option (API, "J-Z,R3");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Suppress drawing geographic line segments as great circle arcs, i.e., draw\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   straight lines unless m or p is appended to first follow meridian\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then parallel, or vice versa. Note: -A requires constant z-coordinates.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Cartesian data, use -Ax or -Ay to draw x- or y-staircase curves.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For Polar projections, use -At or -Ar to draw theta- or r-staircase curves.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Use CPT (or specify -Ccolor1,color2[,color3,...]) to assign symbol\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   colors based on t-value in 4rd column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: requires -S.  Without -S, %s excepts lines/polygons\n", mod_name);
-	GMT_Message (API, GMT_TIME_NONE, "\t   and looks for -Z<value> options in each segment header.  Then, color is\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   applied for polygon fill (-L) or polygon pen (no -L).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Offset symbol or line positions by <dx>/<dy>[/<dz>] [no offset].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<,J-Z,R3");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Option (API, "B-");
+	GMT_Usage (API, 1, "\n-A[m|p|r|t|x|y]");
+	GMT_Usage (API, -2, "Suppress drawing geographic line segments as great circle arcs, i.e., draw "
+		"straight lines instead.  Six optional directives instead convert paths to staircase curves:");
+	GMT_Usage (API, 3, "m: First follow meridians, then parallels when connecting geographic points.");
+	GMT_Usage (API, 3, "p: First follow parallels, then meridians when connecting geographic point.");
+	GMT_Usage (API, 3, "r: First follow radius, then theta for staircase curves for Polar projection.");
+	GMT_Usage (API, 3, "t: First follow theta, then radius for staircase curves for Polar projection.");
+	GMT_Usage (API, 3, "x: First follow x, then y for staircase curves for Cartesian projections.");
+	GMT_Usage (API, 3, "y: First follow y, then x for staircase curves for Cartesian projections.");
+	GMT_Usage (API, 1, "\n-C<cpt>|<color1>,<color2>[,<color3>,...]");
+	GMT_Usage (API, -2, "Assign symbol colors based on z-value in 3rd column. "
+		"Note: requires -S. Without -S, %s excepts lines/polygons "
+		"and looks for -Z<value> options in each segment header. Then, color is "
+		"applied for polygon fill (-L) or polygon pen (no -L).", mod_name);
+	GMT_Usage (API, 1, "\n-D<dx>/<dy>.");
+	GMT_Usage (API, -2, "Offset symbol or line positions by <dx>/<dy> [no offset].");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [Default is no fill].");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -G is specified but not -S, then %s draws a filled polygon.\n", mod_name);
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Scale symbol sizes (set via -S or input column) by factors read from scale column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Use the intensity to modulate the fill color (requires -C or -G).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no intensity is given we expect it to follow symbol size in the data record.\n");
+	GMT_Usage (API, -2, "The -G option can be present in all segment headers (not with -S). "
+		"To assign fill color via -Z, give -G+z).");
+	GMT_Usage (API, 1, "\n-H[<scale>]");
+	GMT_Usage (API, -2, "Scale symbol sizes (set via -S or input column) by factors read from scale column. "
+		"The scale column follows the symbol size column.  Alternatively, append a fixed <scale>.");
+	GMT_Usage (API, 1, "\n-I[<intens>]");
+	GMT_Usage (API, -2, "Use the intensity to modulate the fill color (requires -C or -G). "
+		"If no intensity is given we expect it to follow symbol size in the data record.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Force closed polygons.  Alternatively, append modifiers to build constant-z polygon from a line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +d to build symmetrical envelope around y(x) using deviations dy(x) from col 4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +D to build asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 4-5.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to build asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from cols 4-5.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +xl|r|x0 to connect 1st and last point to anchor points at xmin, xmax, or x0, or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   append +yb|t|y0 to connect 1st and last point to anchor points at ymin, ymax, or y0.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Polygon may be painted (-G) and optionally outlined via +p<pen> [no outline].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not skip or clip symbols that fall outside the map border [clipping is on]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nr to turn off clipping and plot repeating symbols for periodic maps.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Nc to retain clipping but turn off plotting of repeating symbols for periodic maps.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will clip or skip symbols that fall outside and plot repeating symbols].\n");
+	GMT_Usage (API, 1, "\n%s", PLOT_L_OPT);
+	GMT_Usage (API, -2, "Force closed polygons, or append modifiers to build polygon from a line:");
+	GMT_Usage (API, 3, "+d Symmetrical envelope around y(x) using deviations dy(x) from col 4.");
+	GMT_Usage (API, 3, "+D Asymmetrical envelope around y(x) using deviations dy1(x) and dy2(x) from cols 4-5.");
+	GMT_Usage (API, 3, "+b Asymmetrical envelope around y(x) using bounds yl(x) and yh(x) from cols 4-5.");
+	GMT_Usage (API, 3, "+x Connect 1st and last point to anchor points at l (xmin), r (xmax), or x0.");
+	GMT_Usage (API, 3, "+y Connect 1st and last point to anchor points at b (ymin), t (ymax), or y0.");
+	GMT_Usage (API, 3, "+p Draw polygon outline with <pen> [no outline].");
+	GMT_Usage (API, -2, "The polygon created may be painted via -G.");
+	GMT_Usage (API, 1, "\n-N[c|r]");
+	GMT_Usage (API, -2, "Do Not skip or clip symbols that fall outside the map border [clipping is on]:");
+	GMT_Usage (API, 3, "r: Turn off clipping and plot repeating symbols for periodic maps.");
+	GMT_Usage (API, 3, "c: Retain clipping but turn off plotting of repeating symbols for periodic maps.");
+	GMT_Usage (API, -2, "[Default will clip or skip symbols that fall outside and plot repeating symbols].");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do NOT sort symbols based on distance to viewer before plotting.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Select symbol type and symbol size (in %s).  Choose between\n",
+	GMT_Usage (API, 1, "\n-Q Do NOT sort symbols based on distance to viewer before plotting.");
+	GMT_Usage (API, 1, "\n-S[<symbol>][<size>]");
+	GMT_Usage (API, -2, "Select symbol type and symbol size (in %s).  Choose from these symbols:",
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   -(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (f)ront, octa(g)on, (h)exagon (i)nvtriangle, (j)rotated rectangle,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (k)ustom, (l)etter, (m)athangle, pe(n)tagon, c(o)lumn, (p)oint,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (q)uoted line, (r)ectangle, (R)ounded rectangle, (s)quare, (t)riangle,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c(u)be, (v)ector, (w)edge, (x)cross, (y)dash, (z)dash, or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   =(geovector, i.e., great or small circle vectors).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no size is specified, then the 4th column must have sizes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no symbol is specified, then the last column must have symbol codes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Note: if -C is selected then 4th means 5th column, etc.]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   column and cube are true 3-D objects (give size as xsize/ysize);\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   all other symbols are shown in 2-D perspective only.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default, the 3-D symbols column and cube are shaded;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   use upper case O and U to disable this 3-D illumination.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Symbols A, C, D, F, H, I, N, S, T are adjusted to have same area\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of a circle of given diameter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Bar: Append +b[<base>] to give the y- (or z-) value of the base [Default = 0 (1 for log-scales)]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Use +B instead if heights are measured relative to base [relative to origin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Use -SB for horizontal bars; then <base> value refers to the x location.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      To read the <base> value from file, specify +b with no trailing argument.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band bars append +v<nbands>; then <nbands> values will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +i if value increments are given instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband bars requires -C with one color per band (values 0, 1, ...).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      For -SB the input band values are x (or dx) values instead of y (or dy).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Normally, multiband bars are stacked on top of each other.  For side-by-side placement instead,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      append +s[<gap>], where optional <gap> is gaps between bars in fraction (or percent) of <size> [no gap].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   3-D Column: Append +b[<base>] to give the z-value of the base of the column\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      [Default = 0 (1 for log-scales)]. Use +B if heights are measured relative to base [relative to origin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      To read the <base> value from file, specify +b with no trailing argument.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      For multi-band columns append +v<nbands>; then <nbands> z-values will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      be read from file instead of just one.  Use +i if dz increments are given instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Multiband columns requires -C with one color per band (values 0, 1, ...).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Ellipses: If not given, we read direction, major, and minor axis from columns 4-6.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If -SE rather than -Se is selected, %s will expect azimuth, and\n", mod_name);
-	GMT_Message (API, GMT_TIME_NONE, "\t     axes [in km], and convert azimuths based on map projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SE- for a degenerate ellipse (circle) with only diameter in km given.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     in column 4, or append a fixed diameter in km to -SE instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the axes [Default is k].\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a linear projection and -SE we scale the axes by the map scale.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rotatable Rectangle: If not given, we read direction, width and height from columns 4-6.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If -SJ rather than -Sj is selected, %s will expect azimuth, and\n", mod_name);
-	GMT_Message (API, GMT_TIME_NONE, "\t     dimensions [in km] and convert azimuths based on map projection.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use -SJ- for a degenerate rectangle (square w/no rotation) with only one dimension given\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     in column 4, or append a fixed dimension to -SJ instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to the dimensions [Default is k].\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     For a linear projection and -SJ we scale dimensions by the map scale.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Fronts: Give <tickgap>[/<ticklen>][+l|r][+<type>][+o<offset>][+p[<pen>]].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If <tickgap> is negative it means the number of gaps instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If <tickgap> has leading + then <tickgap> is used exactly [adjusted to fit line length].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     The <ticklen> defaults to 15%% of <tickgap> if not given.  Append\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +l or +r   : Plot symbol to left or right of front [centered]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +<type>    : +b(ox), +c(ircle), +f(ault), +s|S(lip), +t(riangle) [f]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     	      +s optionally accepts the arrow angle [20].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       box      : square when centered, half-square otherwise.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       circle   : full when centered, half-circle otherwise.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       fault    : centered cross-tick or tick only in specified direction.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       slip     : left-or right-lateral strike-slip arrows.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       Slip     : Same but with curved arrow-heads.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       triangle : diagonal square when centered, directed triangle otherwise.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +o<offset> : Plot first symbol when along-front distance is offset [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +p[<pen>]  : Alternate pen for symbol outline; if no <pen> then no outline [Outline with -W pen].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Kustom: Append <symbolname> immediately after 'k'; this will look for\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <symbolname>.def in the current directory, in $GMT_USERDIR,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     or in $GMT_SHAREDIR (searched in that order).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use upper case 'K' if your custom symbol refers a variable symbol, ?.\n");
+
+	GMT_Usage (API, 2, "\n%s Basic geometric symbol. Append one:", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "-(xdash), +(plus), st(a)r, (b|B)ar, (c)ircle, (d)iamond, (e)llipse, "
+		"(f)ront, octa(g)on, (h)exagon (i)nvtriangle, (j)rotated rectangle, "
+		"(k)ustom, (l)etter, (m)athangle, pe(n)tagon, c(o)lumn, (p)oint, "
+		"(q)uoted line, (r)ectangle, (R)ounded rectangle, (s)quare, (t)riangle, "
+		"c(u)be, (v)ector, (w)edge, (x)cross, (y)dash, (z)dash, or "
+		"=(geovector, i.e., great or small circle vectors).");
+
+	GMT_Usage (API, -3, "If no size is specified, then the 4th column must have sizes. "
+		"If no symbol is specified, then the last column must have symbol codes. "
+		"[Note: if -C is selected then 4th means 5th column, etc.]. "
+		"Both column and cube are true 3-D objects (give size as xsize/ysize); "
+		"all other symbols are shown in 2-D perspective only. "
+		"By default, the 3-D symbols column and cube are shaded; "
+		"use upper case O and U to disable this 3-D illumination. "
+		"Symbols A, C, D, F, H, I, N, S, T are adjusted to have same area "
+		"of a circle of given diameter.");
+
+	GMT_Usage (API, 2, "\n%s Bar: Append +b[<base>] to give the y- (or z-) value of the base [Default = 0 (1 for log-scales)]. "
+		"Use -SB for horizontal bars; then <base> value refers to the x location.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "+B Heights are measured relative to <base> [relative to origin].");
+	GMT_Usage (API, 3, "+b Set <base>. Alternatively, leave <base> off to read it from file.");
+	GMT_Usage (API, 3, "+i Increments are given instead or values for multiband bars.");
+	GMT_Usage (API, 3, "+s Side-by-side placement of multiband bars [stacked multiband bars]. "
+		"Optionally, append <gap> between bars in fraction (or percent) of <size> [no gap].");
+	GMT_Usage (API, 3, "+v For multi-band bars, append <nbands>; then <nbands> values will "
+		"be read from file instead of just one.");
+	GMT_Usage (API, -3, "Multiband bars requires -C with one color per band (values 0, 1, ...). "
+		"For -SB the input band values are x (or dx) values instead of y (or dy). ");
+
+	GMT_Usage (API, 2, "\n%s 3-D Column: Append +b[<base>] to give the z-value of the base of the column "
+		"[Default = 0 (1 for log-scales)].", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "+B Heights are measured relative to <base> [relative to origin].");
+	GMT_Usage (API, 3, "+b Set <base>. Alternatively, leave <base> off to read it from file.");
+	GMT_Usage (API, 3, "+v For multi-band columns, append <nbands>; then <nbands> z-values will "
+		"be read from file instead of just one.");
+	GMT_Usage (API, 3, "+i Increments dz are given instead or values for multiband bars.");
+	GMT_Usage (API, -3, "Multiband columns requires -C with one color per band (values 0, 1, ...).");
+
+	GMT_Usage (API, 2, "\n%s Ellipse: If not given, we read direction, major, and minor axis from columns 4-6. "
+		"If -SE rather than -Se is selected, %s will expect azimuth, and "
+		"axes [in km], and convert azimuths based on map projection. "
+		"Use -SE- for a degenerate ellipse (circle) with only diameter in km given. "
+		"in column 4, or append a fixed diameter in km to -SE instead. "
+		"Append any of the units in %s to the axes [Default is k]. "
+		"For a linear projection and -SE we scale the axes by the map scale.", GMT_LINE_BULLET, GMT_LEN_UNITS_DISPLAY, mod_name);
+
+	GMT_Usage (API, 2, "\n%s Rotatable Rectangle: If not given, we read direction, width and height from columns 4-6. "
+		"If -SJ rather than -Sj is selected, %s will expect azimuth, and "
+		"dimensions [in km] and convert azimuths based on map projection. "
+		"Use -SJ- for a degenerate rectangle (square w/no rotation) with only one dimension given "
+		"in column 4, or append a fixed dimension to -SJ instead. "
+		"Append any of the units in %s to the dimensions [Default is k]. "
+		"For a linear projection and -SJ we scale dimensions by the map scale.", GMT_LINE_BULLET, mod_name, GMT_LEN_UNITS_DISPLAY);
+
+	GMT_Usage (API, 2, "\n%s Front: -Sf<spacing>[/<ticklen>][+r+l][+f+t+s+c+b][+o<offset>][+p<pen>]", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "If <spacing> is negative it means the number of gaps instead. "
+		"If <spacing> has a leading + then <spacing> is used exactly [adjusted to fit line length]. "
+		"If not given, <ticklen> defaults to 15%% of <spacing>.  Append various modifiers:");
+	GMT_Usage (API, 3, "+l Plot symbol to the left of the front [centered].");
+	GMT_Usage (API, 3, "+r Plot symbol to the right of the front [centered].");
+	GMT_Usage (API, 3, "+i Make main front line invisible [drawn using pen settings from -W].");
+	GMT_Usage (API, 3, "+b Plot square when centered, half-square otherwise.");
+	GMT_Usage (API, 3, "+c Plot full circle when centered, half-circle otherwise.");
+	GMT_Usage (API, 3, "+f Plot centered cross-tick or tick only in specified direction [Default].");
+	GMT_Usage (API, 3, "+s Plot left-or right-lateral strike-slip arrows. Optionally append the arrow angle [20].");
+	GMT_Usage (API, 3, "+S Same as +s but with curved arrow-heads.");
+	GMT_Usage (API, 3, "+t diagonal square when centered, directed triangle otherwise.");
+	GMT_Usage (API, 3, "+o Plot first symbol when along-front distance is <offset> [0].");
+	GMT_Usage (API, 3, "+p Append <pen> for front symbol outline; if no <pen> then no outline [Outline with -W pen].");
+	GMT_Usage (API, -3, "Only one of +b|c|f|i|s|S|t may be selected.");
+
+	GMT_Usage (API, 2, "\n%s Kustom: -Sk|K<symbolname>[/<size>]", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "Append <symbolname> immediately after 'k|K'; this will look for "
+		"<symbolname>.def or <symbolname>.eps in the current directory, in $GMT_USERDIR, "
+		"or in $GMT_SHAREDIR (searched in that order). Give full path if located elsewhere. "
+		"Use upper case 'K' if your custom symbol refers a variable symbol, ?.");
 	gmt_list_custom_symbols (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Letter: append +t<string> after symbol size, and optionally +f<font> and +j<justify>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Mathangle: start/stop directions of math angle must be in columns 4-5.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.\n");
-	gmt_vector_syntax (API->GMT, 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Quoted line (z must be constant): Give [d|f|n|l|x]<info>[:<labelinfo>].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     <code><info> controls placement of labels along lines.  Select\n");
-	gmt_cont_syntax (API->GMT, 7, 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t     <labelinfo> controls the label attributes.  Choose from\n");
-	gmt_label_syntax (API->GMT, 7, 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rectangles: If not given, the x- and y-dimensions must be in columns 4-5.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Rounded rectangles: If not given, the x- and y-dimensions and corner radius must be in columns 3-5.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Vectors: Direction and length must be in columns 4-5.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If -SV rather than -Sv is use, %s will expect azimuth and\n", mod_name);
-	GMT_Message (API, GMT_TIME_NONE, "\t     length and convert azimuths based on the chosen map projection.\n");
-	gmt_vector_syntax (API->GMT, 19);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Wedges: Start and stop directions of wedge must be in columns 3-4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     If -SW rather than -Sw is selected, specify two azimuths instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -SW: Specify <size><unit> with units either from %s or %s [Default is k].\n", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Sw: Specify <size><unit> with units from %s [Default is %s].\n", GMT_DIM_UNITS_DISPLAY,
+
+	GMT_Usage (API, 2, "\n%s Letter: -Sl[<size>]+t<string>[+f<font>][+j<justify]", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "Specify <size> of letter; append required and optional modifiers:");
+	GMT_Usage (API, 3, "+t Specify <string> to use (required).");
+	GMT_Usage (API, 3, "+f Set specific <font> for text placement [FONT_ANNOT_PRIMARY].");
+	GMT_Usage (API, 3, "+j Change the text justification via <justify> [CM].");
+
+	GMT_Usage (API, 2, "\n%s Mathangle: radius, start, and stop directions of math angle must be in columns 4-5. "
+		"If -SM rather than -Sm is used, we draw straight angle symbol if 90 degrees.", GMT_LINE_BULLET);
+	gmt_vector_syntax (API->GMT, 0, 3);
+
+	GMT_Usage (API, 2, "\n%s Quoted line (z must be constant): -Sq[d|n|l|s|x]<info>[:<labelinfo>]" ,GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "The <code><info> settings control placement of labels along lines.  Select from these codes:");
+	gmt_cont_syntax (API->GMT, 3, 1);
+	GMT_Usage (API, 3, "<labelinfo> controls the label attributes.  Choose from these choices:");
+	gmt_label_syntax (API->GMT, 2, 1);
+
+	GMT_Usage (API, 2, "\n%s Rectangle: If not given, the x- and y-dimensions must be in columns 4-5. "
+		"Append +s if instead the diagonal corner coordinates are given in columns 4-5.", GMT_LINE_BULLET);
+
+	GMT_Usage (API, 2, "\n%s Rounded rectangle: If not given, the x- and y-dimensions and corner radius must be in columns 4-6.", GMT_LINE_BULLET);
+
+	GMT_Usage (API, 2, "\n%s Vector: -Sv|V<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "Direction and length must be in columns 4-5. "
+		"If -SV rather than -Sv is selected, %s will expect azimuth and "
+		"length and convert azimuths based on the chosen map projection.", mod_name);
+	gmt_vector_syntax (API->GMT, 19, 3);
+
+	GMT_Usage (API, 2, "\n%s Wedge: -Sw|W[<outerdiameter>[/<startdir>/<stopdir>]][+a[<dr>][+i<inner_diameter>][+r[<da>]]]", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "Append [<outerdiameter>[<startdir><stopdir>]] or we read these parameters from file from column 4. "
+		"If -SW rather than -Sw is selected, specify two azimuths instead of directions. "
+		"-SW: Specify <outerdiameter><unit> with units either from %s or %s [Default is k]. "
+		"-Sw: Specify <outerdiameter><unit> with units from %s [Default is %s].", GMT_LEN_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY,
 		API->GMT->session.unit_name[API->GMT->current.setting.proj_length_unit]);
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append +a[<dr>] to just draw arc(s) or +r[<da>] to just draw radial lines [wedge].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Geovectors: Azimuth and length must be in columns 3-4.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Append any of the units in %s to length [k].\n", GMT_LEN_UNITS_DISPLAY);
-	gmt_vector_syntax (API->GMT, 3);
+	GMT_Usage (API, 3, "+a Just draw arc(s), optionally specify <dr> increment [wedge].");
+	GMT_Usage (API, 3, "+i Append nonzero <innerdiameter>; we read it from file if not appended.");
+	GMT_Usage (API, 3, "+r Just draw radial lines, optionally specify <da> increment [wedge].");
+
+	GMT_Usage (API, 2, "\n%s Geovector: -S=<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]", GMT_LINE_BULLET);
+	GMT_Usage (API, -3, "Azimuth and length must be in columns 4-5. "
+		"Append any of the units in %s to length [k].", GMT_LEN_UNITS_DISPLAY);
+	gmt_vector_syntax (API->GMT, 3, 3);
+
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
-		GMT_Message (API, GMT_TIME_NONE, "\t-T Ignore all input files.\n");
+		GMT_Usage (API, 1, "\n-T Ignore all input files.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s]:", 0);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Implicitly draws symbol outline with this pen.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append l to let pen colors follow the CPT setting (requires -C).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append f to let fill/font colors follow the CPT setting.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Default is both effects.\n");
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Set pen attributes [Default pen is %s].", NULL, 8);
+	GMT_Usage (API, 2, "To assign pen outline color via -Z, append +z.");
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Use <value> with -C <cpt> to determine <color> instead of via -G<color> or -W<pen>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify <file> with z-values in the last data column instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +l for just pen color or +f for fill color [Default sets both].\n");
+	GMT_Usage (API, 1, "\n-Z<value>");
+	GMT_Usage (API, -2, "Use <value> with -C<cpt> to determine <color> instead of via -G<color> or -W<pen>. ");
+	GMT_Usage (API, 3, "%s To use <color> for fill, also select -G+z. ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s To use <color> for an outline pen, also select -W<pen>+z.", GMT_LINE_BULLET);
 	GMT_Option (API, "a,bi");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Default is the required number of columns.\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default <ncols> is the required number of columns.");
 	GMT_Option (API, "c,di,e,f,g,h,i,l,p,qi,T,w,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -319,10 +362,10 @@ GMT_LOCAL unsigned int gmt_get_z_bands (struct GMTAPI_CTRL *API, struct PSXYZ_CT
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
-		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 3);
-		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +cl to apply cpt color (-C) to the pen only.\n");
-		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +cf to apply cpt color (-C) to symbol fill.\n");
-		GMT_Report (API, GMT_MSG_ERROR, "\t   Append +c for both effects [none].\n");
+		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);
+		GMT_Usage (API, 3, "+c Append l to apply cpt color (-C) to the pen only.");
+		GMT_Usage (API, 3, "+c Append f to apply cpt color (-C) to symbol fill.");
+		GMT_Usage (API, -2, "Give +c with no arguments for both effects [none].");
 		n_errors++;
 	}
 	return n_errors;
@@ -433,7 +476,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 					Ctrl->L.polygon = true;
 				if ((c = strstr (opt->arg, "+p")) != NULL) {	/* Want outline */
 					if (c[2] && gmt_getpen (GMT, &c[2], &Ctrl->L.pen)) {
-						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [no outline]", 0);
+						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [no outline]", NULL, 0);
 						n_errors++;
 					}
 					Ctrl->L.outline = 1;
@@ -476,7 +519,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSXYZ_CTRL *Ctrl, struct GMT_OPTI
 					}
 				}
 				else if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 11);
+					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 11);
 					n_errors++;
 				}
 				if (Ctrl->W.pen.cptmode) Ctrl->W.cpt_effect = true;
@@ -1418,22 +1461,25 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							x_2 -= dx;		y_2 -= dy;
 						}
 					}
-					data[n].dim[0] = x_2, data[n].dim[1] = y_2;
+					data[n].dim[PSL_VEC_XTIP] = x_2;
+					data[n].dim[PSL_VEC_YTIP] = y_2;
 					s = (data[n].dim[1] < S.v.v_norm) ? data[n].dim[1] / S.v.v_norm : 1.0;
-					data[n].dim[2] = s * S.v.v_width;
-					data[n].dim[3] = s * S.v.h_length;
-					data[n].dim[4] = s * S.v.h_width;
+					data[n].dim[PSL_VEC_TAIL_WIDTH]  = s * S.v.v_width;
+					data[n].dim[PSL_VEC_HEAD_LENGTH] = s * S.v.h_length;
+					data[n].dim[PSL_VEC_HEAD_WIDTH]  = s * S.v.h_width;
 					if (S.v.parsed_v4) {	/* Parsed the old ways so plot the old ways... */
-						data[n].dim[4] *= 0.5;	/* Since it was double in the parsing */
+						data[n].dim[PSL_VEC_HEAD_WIDTH] *= 0.5;	/* Since it was double in the parsing */
 						data[n].symbol = GMT_SYMBOL_VECTOR_V4;
-						data[n].dim[5] = GMT->current.setting.map_vector_shape;
+						data[n].dim[PSL_VEC_HEAD_SHAPE] = GMT->current.setting.map_vector_shape;
 					}
 					else {
-						data[n].dim[5] = S.v.v_shape;
-						data[n].dim[6] = (double)S.v.status;
-						data[n].dim[7] = (double)S.v.v_kind[0];	data[n].dim[8] = (double)S.v.v_kind[1];
-						data[n].dim[9] = (double)S.v.v_trim[0];	data[n].dim[10] = (double)S.v.v_trim[1];
-						data[n].dim[11] = s * data[n].h.width;	/* Possibly shrunk head pen width */
+						data[n].dim[PSL_VEC_HEAD_SHAPE]      = S.v.v_shape;
+						data[n].dim[PSL_VEC_STATUS]          = (double)S.v.status;
+						data[n].dim[PSL_VEC_HEAD_TYPE_BEGIN] = (double)S.v.v_kind[0];
+						data[n].dim[PSL_VEC_HEAD_TYPE_END]   = (double)S.v.v_kind[1];
+						data[n].dim[PSL_VEC_TRIM_BEGIN]      = (double)S.v.v_trim[0];
+						data[n].dim[PSL_VEC_TRIM_END]        = (double)S.v.v_trim[1];
+						data[n].dim[PSL_VEC_HEAD_PENWIDTH]   = s * data[n].h.width;	/* Possibly shrunk head pen width */
 					}
 					break;
 				case GMT_SYMBOL_GEOVECTOR:
@@ -1459,23 +1505,25 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 				case PSL_MARC:
 					gmt_init_vector_param (GMT, &S, false, false, NULL, false, NULL);	/* Update vector head parameters */
 					S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-					data[n].dim[0] = in[ex1+S.read_size];	/* Radius */
-					data[n].dim[1] = in[ex2+S.read_size];	/* Start direction in degrees */
-					data[n].dim[2] = in[ex3+S.read_size];	/* Stop direction in degrees */
-					length = fabs (data[n].dim[2]-data[n].dim[1]);	/* Arc length in degrees */
+					data[n].dim[PSL_MATHARC_RADIUS]      = in[ex1+S.read_size];	/* Radius */
+					data[n].dim[PSL_MATHARC_ANGLE_BEGIN] = in[ex2+S.read_size];	/* Start direction in degrees */
+					data[n].dim[PSL_MATHARC_ANGLE_END]   = in[ex3+S.read_size];	/* Stop direction in degrees */
+					length = fabs (data[n].dim[PSL_MATHARC_ANGLE_END]-data[n].dim[PSL_MATHARC_ANGLE_BEGIN]);	/* Arc length in degrees */
 					if (gmt_M_is_dnan (length)) {
 						GMT_Report (API, GMT_MSG_WARNING, "Math angle arc length = NaN near line %d. Skipped\n", n_total_read);
 						continue;
 					}
 					s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
-					data[n].dim[3] = s * S.v.h_length;	/* Length of (shrunk) vector head */
-					data[n].dim[4] = s * S.v.h_width;	/* Width of (shrunk) vector head */
-					data[n].dim[5] = s * S.v.v_width;	/* Thickness of (shrunk) vector */
-					data[n].dim[6] = S.v.v_shape;
-					data[n].dim[7] = (double)S.v.status;	/* Vector tributes */
-					data[n].dim[8] = (double)S.v.v_kind[0];	data[n].dim[9] = (double)S.v.v_kind[1];
-					data[n].dim[10] = (double)S.v.v_trim[0];	data[n].dim[11] = (double)S.v.v_trim[1];
-					data[n].dim[12] = s * data[n].h.width;	/* Possibly shrunk head pen width */
+					data[n].dim[PSL_MATHARC_HEAD_LENGTH]     = s * S.v.h_length;	/* Length of (shrunk) vector head */
+					data[n].dim[PSL_MATHARC_HEAD_WIDTH]      = s * S.v.h_width;	/* Width of (shrunk) vector head */
+					data[n].dim[PSL_MATHARC_ARC_PENWIDTH]    = s * S.v.v_width;	/* Thickness of (shrunk) vector */
+					data[n].dim[PSL_MATHARC_HEAD_SHAPE]      = S.v.v_shape;
+					data[n].dim[PSL_MATHARC_STATUS]          = (double)S.v.status;	/* Vector tributes */
+					data[n].dim[PSL_MATHARC_HEAD_TYPE_BEGIN] = (double)S.v.v_kind[0];
+					data[n].dim[PSL_MATHARC_HEAD_TYPE_END]   = (double)S.v.v_kind[1];
+					data[n].dim[PSL_MATHARC_TRIM_BEGIN]      = (double)S.v.v_trim[0];
+					data[n].dim[PSL_MATHARC_TRIM_END]        = (double)S.v.v_trim[1];
+					data[n].dim[PSL_MATHARC_HEAD_PENWIDTH]   = s * data[n].h.width;	/* Possibly shrunk head pen width */
 					break;
 				case PSL_WEDGE:
 					col = ex1+S.read_size;
@@ -1484,25 +1532,25 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_WARNING, "Wedge outer diameter = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 						}
-						data[n].dim[0] = in[col++];
+						data[n].dim[PSL_WEDGE_RADIUS_O] = in[col++];
 					}
 					else	/* Set during -S parsing */
-						data[n].dim[0] = S.w_radius;
+						data[n].dim[PSL_WEDGE_RADIUS_O] = S.w_radius;
 					if (S.w_get_a) {	/* Must read from file */
 						if (gmt_M_is_dnan (in[col])) {
 							GMT_Report (API, GMT_MSG_WARNING, "Wedge start angle = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 						}
-						data[n].dim[1] = in[col++];
+						data[n].dim[PSL_WEDGE_ANGLE_BEGIN] = in[col++];
 						if (gmt_M_is_dnan (in[col])) {
 							GMT_Report (API, GMT_MSG_WARNING, "Wedge stop angle = NaN near line %d. Skipped\n", n_total_read);
 								continue;
 						}
-						data[n].dim[2] = in[col++];
+						data[n].dim[PSL_WEDGE_ANGLE_END] = in[col++];
 					}
 					else {	/* Angles were set during -S parsing */
-						data[n].dim[1] = S.size_x;
-						data[n].dim[2] = S.size_y;
+						data[n].dim[PSL_WEDGE_ANGLE_BEGIN] = S.size_x;
+						data[n].dim[PSL_WEDGE_ANGLE_END]   = S.size_y;
 					}
 					if (S.w_get_di) {	/* Must read from file else it was set during -S parsing */
 						if (gmt_M_is_dnan (in[col])) {
@@ -1514,26 +1562,26 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					if (S.convert_angles) {
 						if (gmt_M_is_cartesian (GMT, GMT_IN)) {
 							/* Note that the direction of the arc gets swapped when converting from azimuth */
-							data[n].dim[2] = 90.0 - data[n].dim[2];
-							data[n].dim[1] = 90.0 - data[n].dim[1];
+							data[n].dim[PSL_WEDGE_ANGLE_END]   = 90.0 - data[n].dim[PSL_WEDGE_ANGLE_END];
+							data[n].dim[PSL_WEDGE_ANGLE_BEGIN] = 90.0 - data[n].dim[PSL_WEDGE_ANGLE_BEGIN];
 						}
 						else {
-							data[n].dim[2] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[2]);
-							data[n].dim[1] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[1]);
+							data[n].dim[PSL_WEDGE_ANGLE_END] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[PSL_WEDGE_ANGLE_END]);
+							data[n].dim[PSL_WEDGE_ANGLE_BEGIN] = gmt_azim_to_angle (GMT, in[GMT_X], in[GMT_Y], 0.1, data[n].dim[PSL_WEDGE_ANGLE_BEGIN]);
 						}
 						gmt_M_double_swap (data[n].dim[1], data[n].dim[2]);	/* Must switch the order of the angles */
 					}
 					/* Load up the rest of the settings */
-					data[n].dim[3] = S.w_type;
-					data[n].dim[4] = S.w_radius_i;
-					data[n].dim[5] = S.w_dr;	/* In case there is a request for radially spaced arcs */
-					data[n].dim[6] = S.w_da;	/* In case there is a request for angularly spaced radial lines */
-					data[n].dim[7] = 0.0;	/* Reset */
-					if (fill_active || get_rgb) data[n].dim[7] = 1;	/* Lay down filled wedge */
-					if (outline_active) data[n].dim[7] += 2;	/* Draw wedge outline */
+					data[n].dim[PSL_WEDGE_STATUS]   = S.w_type;
+					data[n].dim[PSL_WEDGE_RADIUS_I] = S.w_radius_i;
+					data[n].dim[PSL_WEDGE_DR]       = S.w_dr;	/* In case there is a request for radially spaced arcs */
+					data[n].dim[PSL_WEDGE_DA]       = S.w_da;	/* In case there is a request for angularly spaced radial lines */
+					data[n].dim[PSL_WEDGE_ACTION]   = 0.0;	/* Reset */
+					if (fill_active || get_rgb) data[n].dim[PSL_WEDGE_ACTION] = 1;	/* Lay down filled wedge */
+					if (outline_active) data[n].dim[PSL_WEDGE_ACTION] += 2;	/* Draw wedge outline */
 					if (!S.w_active) {	/* Not geowedge so scale to radii */
-						data[n].dim[0] *= 0.5;
-						data[n].dim[4] *= 0.5;
+						data[n].dim[PSL_WEDGE_RADIUS_O] *= 0.5;
+						data[n].dim[PSL_WEDGE_RADIUS_I] *= 0.5;
 					}
 					break;
 				case GMT_SYMBOL_CUSTOM:
@@ -1769,7 +1817,7 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 						else
 							v4_rgb = GMT->session.no_rgb;
 						if (v4_outline) gmt_setpen (GMT, &Ctrl->W.pen);
-						v4_status = lrint (data[n].dim[6]);
+						v4_status = lrint (data[n].dim[PSL_VEC_STATUS]);
 						if (v4_status & PSL_VEC_BEGIN) v4_outline += 8;	/* Double-headed */
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						psl_vector_v4 (PSL, xpos[item], data[i].y, data[i].dim, v4_rgb, v4_outline);
@@ -1788,9 +1836,10 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 					case PSL_WEDGE:
 						gmt_plane_perspective (GMT, GMT_Z, data[i].z);
 						if (S.w_active)	{	/* Geo-wedge */
-							unsigned int status = lrint (data[i].dim[3]);
+							unsigned int status = lrint (data[i].dim[PSL_WEDGE_STATUS]);
 							gmt_xy_to_geo (GMT, &dx, &dy, data[i].y, data[i].y);	/* Just recycle dx, dy here */
-							gmt_geo_wedge (GMT, dx, dy, data[n].dim[4], S.w_radius, data[n].dim[5], data[i].dim[1], data[i].dim[2], data[n].dim[6], status, fill_active || get_rgb, outline_active);
+							gmt_geo_wedge (GMT, dx, dy, data[n].dim[PSL_WEDGE_RADIUS_I], S.w_radius, data[n].dim[PSL_WEDGE_DR], data[i].dim[PSL_WEDGE_ANGLE_BEGIN],
+								data[i].dim[PSL_WEDGE_ANGLE_END], data[n].dim[PSL_WEDGE_DA], status, fill_active || get_rgb, outline_active);
 						}
 						else
 							PSL_plotsymbol (PSL, xpos[item], data[i].y, data[i].dim, PSL_WEDGE);

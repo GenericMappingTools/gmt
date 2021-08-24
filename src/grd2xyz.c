@@ -76,41 +76,48 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-C[f|i]] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-W[a[+u<unit>]|<weight>]] [-Z[<flags>]] [%s] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_qo_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid> [-C[f|i]] [%s] [%s] [-W[a[+u<unit>]|<weight>]] "
+		"[-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT,
+		GMT_o_OPT, GMT_qo_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\t<grid> is one or more grid files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Write row, col instead of x,y.  Append f to start at 1, else 0 [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ci to write grid index instead of (x,y).\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grid>");
+	GMT_Usage (API, -2, "<grid> is one or more grid files.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[f|i]");
+	GMT_Usage (API, -2, "Write row,col instead of x,y. Append f to start at 1, else 0 [Default]. "
+		"Use -Ci to write grid index instead of (x,y).");
 	GMT_Option (API, "R,V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Write xyzw using supplied weight (or 1 if not given) [Default is xyz].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Select -Wa to compute weights equal to the node areas.  If a geographic grid\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   you may append +u<unit> from %s to set area unit [k]\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set exact specification of resulting 1-column output z-table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Then, append L or R to indicate starting point in row.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If data is in column format, state if first columns is L(left) or R(ight).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Then, append T or B to indicate starting point in column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To swap the byte-order of each word, append w.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify one of the following data types (all binary except a):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a  ASCII (one value per record).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c  int8_t, signed 1-byte character.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     u  uint8_t, unsigned 1-byte character.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     h  int16_t, signed short 2-byte integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     H  uint16_t, unsigned short 2-byte integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     i  int32_t, signed 4-byte integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     I  uint32_t, unsigned 4-byte integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     l  int64_t, signed long (8-byte) integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     L  uint64_t, unsigned long (8-byte) integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f  4-byte floating point single precision.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     d  8-byte floating point double precision.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
+	GMT_Usage (API, 1, "\n-W[a[+u<unit>]|<weight>]");
+	GMT_Usage (API, -2, "Write xyzw using supplied <weight> (or 1 if not given) [Default is xyz]. "
+		"Select -Wa to compute weights equal to the node areas.  If a geographic grid "
+		"you may append +u<unit> from %s to set area unit [k].", GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, 1, "\n-Z[<flags>]");
+	GMT_Usage (API, -2, "Set exact specification of resulting 1-column output z-table. "
+		"If data should be in row format, state if first row is at T(op) or B(ottom). "
+		"Then, append L or R to indicate left or right starting point in row. "
+		"If data should be in column format, state if first columns is L(left) or R(ight). "
+		"Then, append T or B to indicate starting point in column. "
+		"Now, append any of these three modes if they apply:");
+	GMT_Usage (API, 3, "w: Swap the byte-order of each word");
+	GMT_Usage (API, 3, "x: Gridline-registered, periodic data in x without repeating column at xmax.");
+	GMT_Usage (API, 3, "y: Gridline-registered, periodic data in y without repeating row at ymax.");
+	GMT_Usage (API, -2, "Finally, specify one of the following data types (all binary except a):");
+	GMT_Usage (API, 3, "a: ASCII (one value per record).");
+	GMT_Usage (API, 3, "c: int8_t, signed 1-byte character.");
+	GMT_Usage (API, 3, "u: uint8_t, unsigned 1-byte character.");
+	GMT_Usage (API, 3, "h: int16_t, signed short 2-byte integer.");
+	GMT_Usage (API, 3, "H: uint16_t, unsigned short 2-byte integer.");
+	GMT_Usage (API, 3, "i: int32_t, signed 4-byte integer.");
+	GMT_Usage (API, 3, "I: uint32_t, unsigned 4-byte integer.");
+	GMT_Usage (API, 3, "l: int64_t, signed long (8-byte) integer.");
+	GMT_Usage (API, 3, "L: uint64_t, unsigned long (8-byte) integer.");
+	GMT_Usage (API, 3, "f: 4-byte floating point single precision.");
+	GMT_Usage (API, 3, "d: 8-byte floating point double precision.");
+	GMT_Usage (API, -2, "[Default format is scanline orientation in ASCII representation: -ZTLa].");
 	GMT_Option (API, "bo,d,f,h,o,qo,s,:,.");
 
 	return (GMT_MODULE_USAGE);

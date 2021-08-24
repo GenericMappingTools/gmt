@@ -38,28 +38,35 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <prefix> [<formats>] [<psconvertoptions] [%s]\n\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s <prefix> [<formats>] [<psconvertoptions>] [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<prefix> is the prefix to use for the registered figure\'s name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<formats> contains one or more comma-separated formats [%s].\n", gmt_session_format[API->GMT->current.setting.graphics_format]);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Choose from these valid extensions:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     bmp:	MicroSoft BitMap.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     eps:	Encapsulated PostScript.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     jpg:	Joint Photographic Experts Group format.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     pdf:	Portable Document Format [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     png:	Portable Network Graphics.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     PNG:	Portable Network Graphics (with transparency layer).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     ppm:	Portable Pixel Map.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     ps:	PostScript.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     tif:	Tagged Image Format File.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<psconvertoptions> contains one or more comma-separated options that\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   will be passed to psconvert when preparing this figure [%s].\n", GMT_SESSION_CONVERT);
-	GMT_Message (API, GMT_TIME_NONE, "\t   The valid subset of psconvert options are\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   See the psconvert documentation for details.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<prefix>");
+	GMT_Usage (API, -2, "is the prefix to use for the registered figure\'s name.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<formats>");
+	GMT_Usage (API, -2, "Contains one or more comma-separated formats [%s].", gmt_session_format[API->GMT->current.setting.graphics_format]);
+	GMT_Usage (API, -2, "\nChoose from these valid extensions:");
+	GMT_Usage (API, 3, "bmp:	MicroSoft BitMap.");
+	GMT_Usage (API, 3, "eps:	Encapsulated PostScript.");
+	GMT_Usage (API, 3, "jpg:	Joint Photographic Experts Group format.");
+	GMT_Usage (API, 3, "pdf:	Portable Document Format [Default].");
+	GMT_Usage (API, 3, "png:	Portable Network Graphics.");
+	GMT_Usage (API, 3, "PNG:	Portable Network Graphics (with transparency layer).");
+	GMT_Usage (API, 3, "ppm:	Portable Pixel Map.");
+	GMT_Usage (API, 3, "ps:	PostScript.");
+	GMT_Usage (API, 3, "tif:	Tagged Image Format File.");
+	GMT_Usage (API, -2, "Two raster modifiers may be appended:");
+	GMT_Usage (API, 3, "+m For bmp, png, jpg, and tif, make a monochrome (grayscale) image [color].");
+	GMT_Usage (API, 3, "+q Append quality in 0-100 for jpg only [%d].", GMT_JPEG_DEF_QUALITY);
+	GMT_Usage (API, 1, "\n<psconvertoptions>");
+	GMT_Usage (API, -2,	"Contains one or more comma-separated options that"
+		" will be passed to psconvert when preparing this figure [%s].", GMT_SESSION_CONVERT);
+	GMT_Usage (API, -2, "\nThe valid subset of psconvert options are");
+	GMT_Usage (API, -3, "A[<args>],C<args>,D<dir>,E<dpi>,H<factor>,Mb|f<file>,Q<args>,S");
+	GMT_Usage (API, -2, "See the psconvert documentation for details.");
 	GMT_Option (API, "V,;");
 
 	return (GMT_MODULE_USAGE);
@@ -108,7 +115,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 				}
 			}
 			else {	/* Check if valid psconvert options */
-				if (!strchr ("ACDEHMQS", p[0])) {
+				if (!strchr (GMT_PSCONVERT_LIST, p[0])) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized psconvert option  -%s\n", p);
 					n_errors++;
 				}

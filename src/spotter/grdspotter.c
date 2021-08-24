@@ -210,36 +210,45 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -E[+]<rottable> -G<CVAgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A<agegrid>] [-D[i|p]<grdfile>] [-L<IDgrid>] [-M]\n", GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|-u<age>] [%s] [-W<n_try]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Z<z_min>[/<z_max>[/<z_inc>]]] [%s] [%s] [%s]\n\n", GMT_ho_OPT, GMT_r_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <ingrid> %s -G<outgrid> %s %s [-A<agegrid>] [-D[i|p]<grdfile>] "
+		"[-L<IDgrid>] [-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|u<age>] [%s] [-W<n_try>] [-Z<z_min>[/<z_max>[/<z_inc>]]] "
+		"[%s] [%s] [%s]\n", name, SPOTTER_E_OPT, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid with topo or gravity\n");
-	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output CVA convolution grid.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<ingrid> is the grid with topo or gravity.");
+	spotter_rot_usage (API);
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Specify file name for output CVA convolution grid.");
 	GMT_Option (API, "I,Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Co-registered grid with upper ages to use [Default is flowlines for all ages].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set optional output grids:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Di<file> Use flowlines to estimate data importance DI grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Dp<file> Use flowlines to estimate predicted ages at node locations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Co-registered grid with chain ID for each node [Default ignores IDs].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Do flowline calculations as needed rather than storing in memory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   You may have to use this option if -R is too large. Cannot be used with -W or -Z-slicing.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set upper age in m.y. for nodes whose plate age is NaN [180].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Either single ID to use or file with list of IDs [Default uses all IDs].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Each line would be TAG ID [w e s n] with optional zoom box.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Normalize CVA grid to percentages of the CVA maximum.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set upper ages.  Repeatable, choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Tt truncate all ages to max age in stage pole model [Default extrapolates].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Tu<age> After a node passes the -Z test, use this fixed age instead in CVA calculations.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<agegrid>");
+	GMT_Usage (API, -2, "Co-registered grid with upper ages to use [Default is flowlines for all ages].");
+	GMT_Usage (API, 1, "\n-D[i|p]<grdfile>");
+	GMT_Usage (API, -2, "Set optional output grids:");
+	GMT_Usage (API, 3, "i: Use flowlines to estimate and write data importance DI grid.");
+	GMT_Usage (API, 3, "p: Use flowlines to estimate and write predicted ages at node locations.");
+	GMT_Usage (API, 1, "\n-L<IDgrid>");
+	GMT_Usage (API, -2, "Co-registered grid with chain ID for each node [Default ignores IDs].");
+	GMT_Usage (API, 1, "\n-M Do flowline calculations as needed rather than storing in memory. "
+		"You may have to use this option if -R is too large. Cannot be used with -W or -Z-slicing.");
+	GMT_Usage (API, 1, "\n-N<upper_age>");
+	GMT_Usage (API, -2, "Set upper age in m.y. for nodes whose plate age is NaN [180].");
+	GMT_Usage (API, 1, "\n-Q<IDinfo>");
+	GMT_Usage (API, -2, "Give either single ID to use or file with list of IDs [Default uses all IDs]. "
+		"Each line would be TAG ID [w e s n] with optional zoom box.");
+	GMT_Usage (API, 1, "\n-S Normalize CVA grid to percentages of the CVA maximum.");
+	GMT_Usage (API, 1, "\n-Tt|u<age>");
+	GMT_Usage (API, -2, "Set upper ages.  Repeatable, choose from:");
+	GMT_Usage (API, 3, "t: Truncate all ages to max <age> in stage pole model [Default extrapolates].");
+	GMT_Usage (API, 3, "u: After a node passes the -Z test, use this fixed <age >instead in CVA calculations.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Get <n_try> bootstrap estimates of maximum CVA location [Default is no bootstrapping].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Ignore nodes with z-value lower than z_min [0] and optionally larger than z_max [Inf].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid].\n");
+	GMT_Usage (API, 1, "\n-W<n_try>");
+	GMT_Usage (API, -2, "Get <n_try> bootstrap estimates of maximum CVA location [Default is no bootstrapping].");
+	GMT_Usage (API, 1, "\n-Z<z_min>[/<z_max>[/<z_inc>]]");
+	GMT_Usage (API, -2, "Ignore nodes with z-value lower than z_min [0] and optionally larger than z_max [Inf]. "
+		"Give z_min/z_max/z_inc to make CVA grids for each z-slice {Default makes 1 CVA grid].");
 	GMT_Option (API, "h,r,.");
 
 	return (GMT_MODULE_USAGE);

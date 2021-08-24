@@ -44,6 +44,7 @@
  *	gmtlib_setparameter		Sets a default value given keyword,value-pair\n
  *	gmtlib_getparameter
  *	gmt_GSHHG_syntax
+ *  gmt_GSHHG_resolution_syntax
  *	gmt_label_syntax
  *	gmt_cont_syntax
  *	gmt_inc_syntax
@@ -101,23 +102,27 @@
 #	include <mex.h>
 #endif
 
-#define USER_MEDIA_OFFSET 1000
+/* These are used in gmtinit_init_custom_annot and gmtinit_decode_tinfo only */
+#define GMT_ITEM_ANNOT		0
+#define GMT_ITEM_INTVAL		1
+#define GMT_ITEM_TICK		2
+#define GMT_ITEM_GRID		3
+#define GMT_N_AXIS_ITEMS	4
 
-
-#define GMT_def_scale(case_val) GMT->session.u2u[GMT_INCH][gmtlib_unit_lookup(GMT, GMT->current.setting.given_unit[case_val], GMT->current.setting.proj_length_unit)]
-#define GMT_def_unit(case_val) GMT->current.setting.given_unit[case_val]
-
-#define GMT_more_than_once(GMT,active) (gmt_M_check_condition (GMT, active, "Option -%c given more than once\n", option))
-
+#define GMT_USER_MEDIA_OFFSET 1000
 #define GMT_COMPAT_INFO "Please see " GMT_DOC_URL "/changes.html#new-features-in-gmt-5 for more information.\n"
 #define GMT_COMPAT_WARN GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated.\n" GMT_COMPAT_INFO, GMT_keyword[case_val])
-#define GMT_COMPAT_CHANGE(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keyword[case_val], new_P)
-#define GMT_COMPAT_TRANSLATE(new_P) error = (gmt_M_compat_check (GMT, 4) ? GMT_COMPAT_CHANGE (new_P) + gmtlib_setparameter (GMT, new_P, value, core) : gmtinit_badvalreport (GMT, keyword))
-#define GMT_COMPAT_OPT(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
+
+#define gmt_M_compat_change(new_P) GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Parameter %s is deprecated. Use %s instead.\n" GMT_COMPAT_INFO, GMT_keyword[case_val], new_P)
+#define gmt_M_compat_translate(new_P) error = (gmt_M_compat_check (GMT, 4) ? gmt_M_compat_change (new_P) + gmtlib_setparameter (GMT, new_P, value, core) : gmtinit_badvalreport (GMT, keyword))
+#define gmt_M_compat_opt(new_P) if (strchr (list, option)) { GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -%c is deprecated. Use -%c instead.\n" GMT_COMPAT_INFO, option, new_P); option = new_P; }
+#define gmt_M_def_scale(case_val) GMT->session.u2u[GMT_INCH][gmtlib_unit_lookup(GMT, GMT->current.setting.given_unit[case_val], GMT->current.setting.proj_length_unit)]
+#define gmt_M_def_unit(case_val) GMT->current.setting.given_unit[case_val]
+#define gmt_M_more_than_once(GMT,active) (gmt_M_check_condition (GMT, active, "Option -%c given more than once\n", option))
 
 /* Leave a record that this keyword is no longer a default one
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
-#define GMT_KEYWORD_UPDATE(val) if (core) GMT_keyword_updated[val] = true
+#define gmt_M_keyword_update(val) if (core) GMT_keyword_updated[val] = true
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -712,7 +717,9 @@ GMT_LOCAL void gmtinit_translate_to_long_options (struct GMTAPI_CTRL *API, struc
 	 * may appear more than once after a section separator (e.g., '/' or ',').  The separator is an entry
 	 * in kw.separator, or it is 0 if the option does not take more than one section.
 	 */
-
+	gmt_M_unused (API);
+	gmt_M_unused (this_module_kw);
+	gmt_M_unused (options);
 	/* NOT CODED YET - INTENDED FOR TESTING OUR KEYWORD/VALUE TRANSLATIONS */
 }
 #endif
@@ -849,7 +856,7 @@ GMT_LOCAL int gmtinit_parse_h_option (struct GMT_CTRL *GMT, char *item) {
 GMT_LOCAL void gmtinit_setautopagesize (struct GMT_CTRL *GMT) {
 	/* In GMT modern mode we use the largest possible square page (~11x11 meters), portrait mode, and then crop automatically */
 	GMT->current.setting.ps_page_size[0] = GMT->current.setting.ps_page_size[1] = GMT_PAPER_DIM;	/* Max area in points */
-	GMT->current.setting.ps_media = -USER_MEDIA_OFFSET;
+	GMT->current.setting.ps_media = -GMT_USER_MEDIA_OFFSET;
 	GMT->current.setting.ps_orientation = PSL_PORTRAIT;
 }
 
@@ -1338,15 +1345,17 @@ GMT_LOCAL int gmtinit_parse_b_option (struct GMT_CTRL *GMT, char *text) {
 	return (error);
 }
 
-/*! Routine will decode the -f[i|o]<col>|<colrange>[t|T|g|c],... arguments */
+/*! Routine will decode the -f[i|o]<shortcut>|<cols>[d|f|s|t|T|x|y],... arguments */
 GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 
 	char copy[GMT_BUFSIZ] = {""}, p[GMT_BUFSIZ] = {""};
-	unsigned int dir, d, k = 1, c, pos = 0, code, *col = NULL;
+	unsigned int dir, k = 1, c, pos = 0, code, *col = NULL;
 	int64_t i, start = -1, stop = -1, inc;
 	enum gmt_enum_units unit = GMT_IS_METER;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -f requires an argument */
+
+	/* Determine if this is for input, output, or both */
 
 	if (arg[0] == 'i') {	/* Apply to input columns only */
 		dir = GMT_IN;
@@ -1363,9 +1372,9 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		strncpy (GMT->common.f.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	}
 
-	strncpy (copy, &arg[k], GMT_BUFSIZ-1);	/* arg should NOT have a leading i|o part */
+	strncpy (copy, &arg[k], GMT_BUFSIZ-1);	/* copy should NOT have a leading i|o part */
 
-	if (copy[0] == 'c') {	/* Got -f[i|o]c which is shorthand for -f[i|o]0f,1f (Cartesian) */
+	if (copy[0] == 'c') {	/* Got -f[i|o]c which is shorthand for -f[i|o]0:1f (Cartesian) */
 		if (dir == GMT_IO) {
 			gmt_set_cartesian (GMT, GMT_IN);
 			gmt_set_cartesian (GMT, GMT_OUT);
@@ -1377,7 +1386,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		pos = 1;
 		start = stop = 1;
 	}
-	else if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below) */
+	else if (copy[0] == 'g' || copy[0] == 'p') {	/* Got -f[i|o]g which is shorthand for -f[i|o]0x,1y, or -fp[<unit>] (see below for more action) */
 		if (dir == GMT_IO) {
 			gmt_set_geographic (GMT, GMT_IN);
 			gmt_set_geographic (GMT, GMT_OUT);
@@ -1401,39 +1410,28 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->current.proj.inv_coord_unit = unit;
 	}
 
-	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process it */
-		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);
+	/* Process each group of columns that shall have the same type */
+	while ((gmt_strtok (copy, ",", &pos, p))) {	/* While it is not empty, process the next group = <columns><type> */
+		if ((inc = gmtlib_parse_index_range (GMT, p, &start, &stop)) == 0) return (GMT_PARSE_ERROR);	/* Get column(s) or bust */
 		for (c = 0; p[c] && strchr ("0123456789-:", p[c]); c++);	/* Wind to position after the column or column range */
-		d = dir;
-		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, or f. */
-			case 'T':	/* Absolute calendar time */
-				code = GMT_IS_ABSTIME;
-				break;
-			case 't':	/* Relative time (units since epoch) */
-				code = GMT_IS_RELTIME;
-				break;
-			case 'x':	/* Longitude coordinates */
-				code = GMT_IS_LON;
-				break;
-			case 'y':	/* Latitude coordinates */
-				code = GMT_IS_LAT;
-				break;
-			case 'f':	/* Plain floating point coordinates */
-				code = GMT_IS_FLOAT;
-				break;
-			case 'd':	/* Length dimension (with possible unit) */
-				code = GMT_IS_DIMENSION;
-				break;
+		switch (p[c]) {	/* p[c] is the potential code T, t, x, y, f, d or s. */
+			case 'T':	code = GMT_IS_ABSTIME;	break;		/* Absolute calendar time */
+			case 't':	code = GMT_IS_RELTIME;	break;		/* Relative time (units since epoch) */
+			case 'x':	code = GMT_IS_LON;		break;		/* Longitude coordinates */
+			case 'y':	code = GMT_IS_LAT;		break;		/* Latitude coordinates */
+			case 'f':	code = GMT_IS_FLOAT;	break;		/* Plain floating point coordinates */
+			case 'd':	code = GMT_IS_DIMENSION;	break;	/* Length dimension (with possible unit) */
+			case 's':	code = GMT_IS_STRING;	break;		/* This must be start of trailing text */
 			default:	/* No suffix, consider it an error */
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Malformed -f argument [%s]\n", arg);
 				return 1;
 				break;
 		}
 
-		/* Now set the code for these columns */
+		/* Now set the code for this group of columns */
 
 		for (i = start; i <= stop; i += inc)
-			gmt_set_column_type (GMT, d, (unsigned int)i, code);
+			gmt_set_column_type (GMT, dir, (unsigned int)i, code);
 	}
 	return (GMT_NOERROR);
 }
@@ -2005,7 +2003,7 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 #define is_just(item,k)  (item[k] == 'j' && (strchr ("LCRBMT", item[k+1]) && strchr ("LCRBMT", item[k+2])))	/* Is +j<just> */
 #define is_off(item,k)   (item[k] == 'o' && strchr ("-+.0123456789", item[k+1]))	/* Looks like +onumber> */
 
-/*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o]<dx>/<dy>]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
+/*! Parse the -U option.  Full syntax: -U[<label>][+c][+j<just>][+o]<dx>[/<dy>]]  Old syntax was -U[[<just>]/<dx>/<dy>/][c|<label>] */
 GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	int just = 1, error = 0;
 
@@ -2498,7 +2496,7 @@ GMT_LOCAL int gmtinit_parse_w_option (struct GMT_CTRL *GMT, char *arg) {
 		if (GMT->current.io.cycle_col < 0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -w: Cannot give negative (or missing) column number (%s)\n", arg);
 			c[2] = '+';	/* Restore modifier before we return */
-			return (GMT_PARSE_ERROR);			
+			return (GMT_PARSE_ERROR);
 		}
 	}
 	else	/* Default column is the first (x) */
@@ -2553,27 +2551,27 @@ GMT_LOCAL void gmtinit_verify_encodings (struct GMT_CTRL *GMT) {
 	/* First check for degree symbol */
 
 	if (GMT->current.setting.ps_encoding.code[gmt_ring] == 32 && GMT->current.setting.ps_encoding.code[gmt_degree] == 32) {	/* Neither /ring or /degree encoded */
-		gmt_message (GMT, "Selected character encoding does not have suitable degree symbol - will use space instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have suitable degree symbol - will use space instead\n");
 	}
 	else if (GMT->current.setting.map_degree_symbol == gmt_ring && GMT->current.setting.ps_encoding.code[gmt_ring] == 32) {		/* want /ring but only /degree is encoded */
-		gmt_message (GMT, "Selected character encoding does not have ring symbol - will use degree symbol instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have ring symbol - will use degree symbol instead\n");
 		GMT->current.setting.map_degree_symbol = gmt_degree;
 	}
 	else if (GMT->current.setting.map_degree_symbol == gmt_degree && GMT->current.setting.ps_encoding.code[gmt_degree] == 32) {	/* want /degree but only /ring is encoded */
-		gmt_message (GMT, "Selected character encoding does not have degree symbol - will use ring symbol instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have degree symbol - will use ring symbol instead\n");
 		GMT->current.setting.map_degree_symbol = gmt_ring;
 	}
 
 	/* Then single quote for minute symbol... */
 
 	if (GMT->current.setting.map_degree_symbol < 2 && GMT->current.setting.ps_encoding.code[gmt_squote] == 32) {
-		gmt_message (GMT, "Selected character encoding does not have minute symbol (single quote) - will use space instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have minute symbol (single quote) - will use space instead\n");
 	}
 
 	/* ... and double quote for second symbol */
 
 	if (GMT->current.setting.map_degree_symbol < 2 && GMT->current.setting.ps_encoding.code[gmt_dquote] == 32) {
-		gmt_message (GMT, "Selected character encoding does not have second symbol (double quote) - will use space instead\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Selected character encoding does not have second symbol (double quote) - will use space instead\n");
 	}
 }
 
@@ -3566,30 +3564,30 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	struct GMT_DATASEGMENT *S = NULL;
 
 	/* Temporarily change what data type col one is */
-	save_coltype = GMT->current.io.col_type[GMT_IN][GMT_X];
+	save_coltype = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 	save_trailing = GMT->current.io.trailing_text[GMT_IN];
 	save_max_cols_to_read = GMT->current.io.max_cols_to_read;
-	GMT->current.io.col_type[GMT_IN][GMT_X] = gmt_M_type (GMT, GMT_IN, A->id);
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, gmt_M_type (GMT, GMT_IN, A->id));
 	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
 	GMT->current.io.record_type[GMT_IN] = GMT_READ_MIXED;
 	GMT->current.io.trailing_text[GMT_IN] = true;
 	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
-		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (1);
 	}
 	if (D->n_records == 0) {
 		GMT_Destroy_Data (GMT->parent, &D);
-		GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (1);
 	}
-	GMT->current.io.col_type[GMT_IN][GMT_X] = save_coltype;
+	gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
 	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
-	gmt_M_memset (n_int, 4, int);
+	gmt_M_memset (n_int, GMT_N_AXIS_ITEMS, int);
 	S = D->table[0]->segment[0];	/* All we got */
 
 	for (row = 0; row < S->n_rows; row++) {
@@ -3602,16 +3600,16 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 		for (k = 0; type[k]; k++) {
 			switch (type[k]) {
 				case 'a':	/* Regular annotation */
-					n_int[0]++;
+					n_int[GMT_ITEM_ANNOT]++;
 					break;
 				case 'i':	/* Interval annotation */
-					n_int[1]++;
+					n_int[GMT_ITEM_INTVAL]++;
 					break;
 				case 'f':	/* Tick placement */
-					n_int[2]++;
+					n_int[GMT_ITEM_TICK]++;
 					break;
 				case 'g':	/* Gridline placement */
-					n_int[3]++;
+					n_int[GMT_ITEM_GRID]++;
 					break;
 				default:
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized type (%c) at row %d in custom file %s.\n", type[k], (int)row, A->file_custom);
@@ -3623,7 +3621,7 @@ GMT_LOCAL int gmtinit_init_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_A
 	GMT_Destroy_Data (GMT->parent, &D);
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Processed custom annotations via %s for axis %d.\n", A->file_custom, A->id);
-	if (n_int[0] && n_int[1]) {
+	if (n_int[GMT_ITEM_ANNOT] && n_int[GMT_ITEM_INTVAL]) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot mix interval and regular annotations in custom file %s.\n", A->file_custom);
 		n_errors++;
 	}
@@ -3790,24 +3788,24 @@ GMT_LOCAL int gmtinit_decode_tinfo (struct GMT_CTRL *GMT, int axis, char flag, c
 	if (!in) return (GMT_NOERROR);	/* NULL pointer passed */
 
 	if (flag == 'c') {	/* Custom annotation arrangement */
-		int k, n_int[4];
+		int k, n_int[GMT_N_AXIS_ITEMS];
 		char *list = "aifg";
 		if (!(gmt_access (GMT, &in[1], R_OK))) {
 			gmt_M_str_free (A->file_custom);
 			A->file_custom = strdup (&in[1]);
 			A->special = GMT_CUSTOM;
 			if (gmtinit_init_custom_annot (GMT, A, n_int)) return (-1);	/* See what ticks, anots, gridlines etc are requested */
-			for (k = 0; k < 4; k++) {
+			for (k = 0; k < GMT_N_AXIS_ITEMS; k++) {
 				if (n_int[k] == 0) continue;
 				flag = list[k];
 				if (!GMT->current.map.frame.primary) flag = (char)toupper ((int)flag);
 				if ((error = gmtinit_set_titem (GMT, A, "0", flag, str[axis], true)))	/* Store the findings for this segment */
 					return (error);
 			}
-			if (n_int[0]) A->item[GMT_ANNOT_UPPER].special = true;	/* custom  annotations */
-			if (n_int[1]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom interval annotations */
-			if (n_int[2]) A->item[GMT_TICK_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom tick annotations */
-			if (n_int[3]) A->item[GMT_GRID_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom gridline annotations */
+			if (n_int[GMT_ITEM_ANNOT])  A->item[GMT_ANNOT_UPPER].special = true;	/* custom annotations selected */
+			if (n_int[GMT_ITEM_INTVAL]) A->item[GMT_ANNOT_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom interval annotations selected */
+			if (n_int[GMT_ITEM_TICK])   A->item[GMT_TICK_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom tick annotations selected */
+			if (n_int[GMT_ITEM_GRID])   A->item[GMT_GRID_UPPER+!GMT->current.map.frame.primary].special = true;	/* custom gridlines selected */
 			if (axis == GMT_Z)
 				GMT->current.map.frame.drawz = true;
 			else
@@ -5342,10 +5340,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			GMT->current.proj.pars[4] = GMT->current.proj.pars[5] = GMT->current.proj.pars[6] = GMT->current.proj.pars[7] = GMT->current.proj.pars[8] = GMT->current.proj.pars[9] = 0.0;
 
 			if (GMT->current.proj.g_debug > 1) {
-				gmt_message (GMT, "genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, j);
-				gmt_message (GMT, "initial error %d\n", error);
-				gmt_message (GMT, "j = %d\n", j);
-				gmt_message (GMT, "width_given %d\n", width_given);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, j);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper:  initial error %d  j = %d  width_given %d\n", error, j, width_given);
 			}
 
 			n = sscanf(args+i, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s",
@@ -5355,7 +5351,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 
 			if (GMT->current.proj.g_debug > 1) {
 				for (i = 0 ; i < n ; i ++) {
-					gmt_message (GMT, "txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
 				}
 				fflush (NULL);
 			}
@@ -5367,7 +5363,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 					GMT->current.proj.pars[2] = 1.0 / (GMT->current.proj.pars[2] * GMT->current.proj.unit);
 				}
 				error += (m == 0) ? 1 : 0;
-				if (error) gmt_message (GMT, "scale entered but couldn't read\n");
+				if (error) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: scale entered but couldn't read\n");
 			}
 			else  if (width_given) {
 				GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-1][0]));
@@ -5382,12 +5378,12 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				}
 				else
 					error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
-				if (error) gmt_message (GMT, "error in reading last lat value\n");
+				if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "genper: error in reading last lat value\n");
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &(txt_arr[0][0]), GMT_IS_LON, &GMT->current.proj.pars[0]), &(txt_arr[0][0]));
-			if (error) gmt_message (GMT, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[1][0]), GMT_IS_LAT, &GMT->current.proj.pars[1]), &(txt_arr[1][0]));
-			if (error) gmt_message (GMT, "error reading latitude '%s'\n", &(txt_arr[1][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading latitude '%s'\n", &(txt_arr[1][0]));
 
 			/* g_alt    GMT->current.proj.pars[4] = atof(txt_c); */
 			nlen = (int)strlen(&(txt_arr[2][0]));
@@ -5396,7 +5392,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				txt_arr[2][nlen-1] = 0;
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &(txt_arr[2][0]), GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &(txt_arr[2][0]));
-			if (error) gmt_message (GMT, "error reading altitude '%s'\n", &(txt_arr[2][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading altitude '%s'\n", &(txt_arr[2][0]));
 
 			/* g_az    GMT->current.proj.pars[5] = atof(txt_d); */
 			nlen = (int)strlen(&(txt_arr[3][0]));
@@ -5405,7 +5401,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				txt_arr[3][nlen-1] = 0;
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[3][0]), GMT_IS_GEO, &GMT->current.proj.pars[5]), &(txt_arr[3][0]));
-			if (error) gmt_message (GMT, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
 
 			/* g_tilt    GMT->current.proj.pars[6] = atof(txt_e); */
 			nlen = (int)strlen(&(txt_arr[4][0]));
@@ -5414,7 +5410,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				txt_arr[4][nlen-1] = 0;
 			}
 			error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[4][0]), GMT_IS_GEO, &GMT->current.proj.pars[6]), &(txt_arr[4][0]));
-			if (error) gmt_message (GMT, "error reading tilt '%s'\n", &(txt_arr[4][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading tilt '%s'\n", &(txt_arr[4][0]));
 
 			if (n > 6) {
 				/*g_twist   GMT->current.proj.pars[7] = atof(txt_f); */
@@ -5424,22 +5420,22 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 					txt_arr[5][nlen-1] = 0;
 				}
 				error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[5][0]), GMT_IS_GEO, &GMT->current.proj.pars[7]), &(txt_arr[5][0]));
-				if (error) gmt_message (GMT, "error reading twist '%s'\n", &(txt_arr[5][0]));
+				if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading twist '%s'\n", &(txt_arr[5][0]));
 
 				/*g_width   GMT->current.proj.pars[8] = atof(txt_f); */
 				if (n > 7) {
 					error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[6][0]), GMT_IS_GEO, &GMT->current.proj.pars[8]), &(txt_arr[6][0]));
-					if (error) gmt_message (GMT, "error reading width '%s'\n", &(txt_arr[6][0]));
+					if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading width '%s'\n", &(txt_arr[6][0]));
 
 					if (n > 8) {
 						/* g_height  GMT->current.proj.pars[9] = atof(txt_g); */
 						error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[7][0]), GMT_IS_GEO, &GMT->current.proj.pars[9]), &(txt_arr[7][0]));
-						if (error) gmt_message (GMT, "error height '%s'\n", &(txt_arr[7][0]));
+						if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error height '%s'\n", &(txt_arr[7][0]));
 					}
 				}
 			}
 			error += (GMT->current.proj.pars[2] <= 0.0 || (k >= 0 && width_given));
-			if (error) gmt_message (GMT, "final error %d\n", error);
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "final error %d\n", error);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
 
@@ -5505,7 +5501,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 					case '-':	/* Enforce Southern hemisphere convention for y */
 						GMT->current.proj.utm_hemisphere = -1;
 						break;
-					case '+':	/* Enforce Norther hemisphere convention for y */
+					case '+':	/* Enforce Northern hemisphere convention for y */
 						GMT->current.proj.utm_hemisphere = +1;
 						break;
 					default:	/* Decide in gmt_map_setup based on -R */
@@ -5548,9 +5544,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	return (error > 0);
 }
 
-/*! Converts c, i, and p into 0,1,3 */
-GMT_LOCAL int gmtinit_get_unit (struct GMT_CTRL *GMT, char c) {
-
+/*! Converts c, i, and p into GMT_CM (0),GMT_INCH (1), or GMT_PT (3) */
+int gmt_get_dim_unit (struct GMT_CTRL *GMT, char c) {
 	int i;
 	switch ((int)c) {
 		case 'c':	/* cm */
@@ -5565,13 +5560,13 @@ GMT_LOCAL int gmtinit_get_unit (struct GMT_CTRL *GMT, char c) {
 				i = GMT_M;
 			}
 			else	/* error */
-				i = -1;
+				i = GMT_NOTSET;
 			break;
 		case 'p':	/* point */
 			i = GMT_PT;
 			break;
 		default:	/* error */
-			i = -1;
+			i = GMT_NOTSET;
 			break;
 	}
 	return (i);
@@ -6911,34 +6906,40 @@ GMT_LOCAL struct GMT_CTRL *gmtinit_new_GMT_ctrl (struct GMTAPI_CTRL *API, const 
  */
 
 GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
-	gmt_message (GMT, "\t-R Specify the min/max coordinates of your data region in user units.\n");
-	gmt_message (GMT, "\t   Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds].\n");
-	gmt_message (GMT, "\t   Use -R<xmin/xmax/ymin/ymax>+u<unit> for regions given in projected coordinates.\n");
-	gmt_message (GMT, "\t     with <unit> selected from %s.\n", GMT_LEN_UNITS2_DISPLAY);
-	gmt_message (GMT, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes.\n");
-	gmt_message (GMT, "\t   Append +r if -R specifies the coordinates of the lower left and\n");
-	gmt_message (GMT, "\t     upper right corners of a rectangular area.\n");
-	if (GMT->current.setting.run_mode == GMT_MODERN)
-		gmt_message (GMT, "\t   Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable).\n");
-	gmt_message (GMT, "\t   Use -R<gridfile> to use its limits (and increments if applicable).\n");
-	gmt_message (GMT, "\t   Use -Rg and -Rd as shorthands for -R0/360/-90/90 and -R-180/180/-90/90.\n");
-	gmt_message (GMT, "\t   Derive region from closed polygons from the Digital Chart of the World (DCW):\n");
-	gmt_message (GMT, "\t     Append a comma-separated list of ISO 3166 codes for countries to set region, i.e.,\n");
-	gmt_message (GMT, "\t     <code1>,<code2>,... etc., using the 2-character ISO country codes (see pscoast -E+l for list).\n");
-	gmt_message (GMT, "\t     To select a state of a country (if available), append .state, e.g, US.TX for Texas.\n");
-	gmt_message (GMT, "\t     To select a whole continent, give =AF|AN|AS|EU|OC|NA|SA as <code>.\n");
-	gmt_message (GMT, "\t     Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
-	gmt_message (GMT, "\t     to round region to these multiples; use +R to extend region by those increments instead,\n");
-	gmt_message (GMT, "\t     or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
+	GMT_Usage (API, -2, "Specify the min/max coordinates of your data region in user units. "
+		"Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds]. "
+		"Use -R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] for regions given in projected coordinates, "
+		"with <unit> selected from %s. [e] "
+		"Use [yyyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. "
+		"Append +r if -R specifies the coordinates of the lower left and "
+		"upper right corners of a rectangular area.", GMT_LEN_UNITS2_DISPLAY);
+	if (GMT->current.setting.run_mode == GMT_MODERN) {
+		GMT_Usage (API, -2, "Use -Re and -Ra to set exact or approximate regions based on your input data (if applicable). "
+		"Use -R<gridfile> to use its limits (and increments if applicable). "
+		"Use -Rg and -Rd as shorthand for -R0/360/-90/90 and -R-180/180/-90/90. "
+		"Derive region from closed polygons from the Digital Chart of the World (DCW): "
+		"Append a comma-separated list of ISO 3166 codes for countries to set region, i.e., "
+		"<code1>,<code2>,... etc., using the 2-character ISO country codes (see pscoast -E+l for list). "
+		"To select a state of a country (if available), append .state, e.g, US.TX for Texas. "
+		"To select a whole continent, give =AF|AN|AS|EU|OC|NA|SA as <code>. "
+		"Use +r to modify the region from polygon(s): Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
+		"to round region to these multiples; use +R to extend region by those increments instead, "
+		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.", GMT_REGION_INCFACTOR);
+	}
 }
 
 void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
-	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = "qewticd";
+	char u, *GMT_choice[2] = {"OFF", "ON"}, *V_code = GMT_VERBOSE_CODES;
+#ifdef GMT_MP_ENABLED
+	int cores = 0;
+#endif
 	double s;
 	unsigned int k;
 	size_t s_length;
-
+	struct GMTAPI_CTRL *API = GMT->parent;
 	if (!options) return;
 	if (GMT->common.synopsis.extended) return;	/* Only want to list module-specific options, i.e gave + instead of - */
 	u = GMT->session.unit_name[GMT->current.setting.proj_length_unit][0];
@@ -6951,331 +6952,335 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'B':	/* Tickmark option */
 
-			gmt_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
-			gmt_message (GMT, "\t   Frame settings are modified via an optional single invocation of\n");
-			gmt_message (GMT, "\t     -B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]\n");
-			gmt_message (GMT, "\t   Axes parameters are specified via one or more invocations of\n");
-			gmt_message (GMT, "\t     -B[p|s][x|y|z]<info>\n\n");
-			gmt_message (GMT, "\t   1. Frame settings control which axes to plot, frame fill, title (and subtitle), and type of gridlines:\n");
-			gmt_message (GMT, "\t     <axes> is a combination of W,E,S,N,Z and plots those axes only [Default is WESNZ (all)].\n");
-			gmt_message (GMT, "\t     Use lower case w,e,s,n,z just to draw and tick (but not annotate) those axes,\n");
-			gmt_message (GMT, "\t     and use l,r,b,t,u just to draw (but not annotate and tick) those axes.\n");
-			gmt_message (GMT, "\t     Append +g<fill> to paint the inside of the map region before further plotting [no fill].\n");
-			gmt_message (GMT, "\t     Append +i<val> to annotate along parallel or meridian <val> [0] when no such axes can be plotted.\n");
-			gmt_message (GMT, "\t     Append +n to have no frame and annotations whatsoever [Default is controlled by WESNZ/wesnz].\n");
-			gmt_message (GMT, "\t     Append +o<plon>/<plat> to draw oblique gridlines about this pole [regular gridlines].\n");
-			gmt_message (GMT, "\t     Note: the +o modifier is ignored unless gridlines are specified via the axes parameters (below).\n");
-			gmt_message (GMT, "\t     Append +t<title> to place a title over the map frame [no title]. Optionally also set +s<subtitle>.\n");
-			gmt_message (GMT, "\t     Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"<break>\" to mark breaks.\n");
-			gmt_message (GMT, "\t     A single-line <title> and <subtitle> may contain LaTeX code enclosed by @[ .... @[ (or alternatively <math> ... </math>).\n");
-			gmt_message (GMT, "\t     Using LaTeX expressions require you to have a functioning latex and dvips installation, including required fonts.\n");
-			gmt_message (GMT, "\t     For 3-D plots the Z|z[<corners>] controls the vertical axis.  The <corners> specifies\n");
-			gmt_message (GMT, "\t     at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner,\n");
-			gmt_message (GMT, "\t     2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis].\n");
-			gmt_message (GMT, "\t     The +w draws the outline of the xz and yz planes [no outlines].\n");
-			gmt_message (GMT, "\t     The +x|y|z[<fill>] paint the yz, xz, xy planes [no fill]. The +g<fill> sets all three planes.\n");
-			gmt_message (GMT, "\t     In addition, +b will erect a 3-D frame box to outline the 3-D domain [no frame box].\n");
-			gmt_message (GMT, "\t   2. Axes settings control the annotation, tick, and grid intervals and labels.\n");
-			gmt_message (GMT, "\t     The full axes specification is\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
-			gmt_message (GMT, "\t     Alternatively, you may break this syntax into two separate -B options:\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z][+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>\n");
-			gmt_message (GMT, "\t     There are two levels of annotations: Primary and secondary (most situations only require primary).\n");
-			gmt_message (GMT, "\t     The -B[p] sets (p)rimary (more frequent) annotations while -Bs sets (s)econdary (less frequent) annotations.\n");
-			gmt_message (GMT, "\t     The [x|y|z] selects which axes the settings apply to.  If none are given we default to xy.\n");
-			gmt_message (GMT, "\t     To specify different settings for different axes you must repeat the -B axes option for\n");
-			gmt_message (GMT, "\t     each dimension., i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings.\n");
-			gmt_message (GMT, "\t     To prepend a prefix to each annotation (e.g., $ 10, $ 20 ...), add +p<prefix>.\n");
-			gmt_message (GMT, "\t     To append a unit to each annotation (e.g., 5 km, 10 km ...), add +u<unit>.\n");
-			gmt_message (GMT, "\t     Cartesian x-axis takes optional +a<angle> for slanted or +an for orthogonal annotations [+ap].\n");
-			gmt_message (GMT, "\t     Cartesian y- and z-axes take optional +a<angle> for slanted or +ap for parallel annotations [+an].\n");
-			gmt_message (GMT, "\t     Geographic axes take optional +f for \"fancy\" annotations with W|E|S|N suffices.\n");
-			gmt_message (GMT, "\t     To label an axis, add +l<label>.  Use +L to enforce horizontal labels for y-axes.\n");
-			gmt_message (GMT, "\t     For another axis label on the opposite axis, use +s|S as well.\n");
-			gmt_message (GMT, "\t     Use quotes if any of the <label>, <prefix> or <unit> have spaces.\n");
-			gmt_message (GMT, "\t     For Cartesian axes you can have different labels on the left vs right or bottom vs top\n");
-			gmt_message (GMT, "\t     by separating the two labels with ||, e.g., +l\"Left label||Right label\".\n");
-			gmt_message (GMT, "\t     A <label> may contain LaTeX code enclosed by @[ .... @[  (or alternatively <math> ... </math>).\n");
-			gmt_message (GMT, "\t     Using LaTeX expressions require you to have a functioning latex and dvips installation, including required fonts.\n");
-			gmt_message (GMT, "\t     Geographic map annotations will automatically have degree, minute, seconds units.\n");
-			gmt_message (GMT, "\t     The <intervals> setting controls the annotation spacing and is a textstring made up of one or\n");
-			gmt_message (GMT, "\t     more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a\n");
-			gmt_message (GMT, "\t     indicates annotation and major tick interval, f minor tick interval, and g grid interval.\n");
-			gmt_message (GMT, "\t     Here, <stride> is the spacing between ticks or annotations, the (optional, and with required sign)\n");
-			gmt_message (GMT, "\t     <phase> specifies phase-shifted annotations/ticks by that amount, and the (optional)\n");
-			gmt_message (GMT, "\t     <unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be\n");
-			gmt_message (GMT, "\t     no spaces between the substrings; just append items to make one very long string.\n");
-			gmt_message (GMT, "\t     For custom annotations or intervals, let <intervals> be c<intfile>; see man page for details.\n");
-			gmt_message (GMT, "\t     The optional <unit> modifies the <stride> value accordingly.  For geographic maps you may use\n");
-			gmt_message (GMT, "\t       d: arc degree [Default].\n");
-			gmt_message (GMT, "\t       m: arc minute.\n");
-			gmt_message (GMT, "\t       s: arc second.\n");
-			gmt_message (GMT, "\t     For time axes, several units are recognized:\n");
-			gmt_message (GMT, "\t       Y: year - plot using all 4 digits.\n");
-			gmt_message (GMT, "\t       y: year - plot only last 2 digits.\n");
-			gmt_message (GMT, "\t       O: month - format annotation according to FORMAT_DATE_MAP.\n");
-			gmt_message (GMT, "\t       o: month - plot as 2-digit integer (1-12).\n");
-			gmt_message (GMT, "\t       U: ISO week - format annotation according to FORMAT_DATE_MAP.\n");
-			gmt_message (GMT, "\t       u: ISO week - plot as 2-digit integer (1-53).\n");
-			gmt_message (GMT, "\t       r: Gregorian week - 7-day stride from chosen start of week (%s).\n",
+			GMT_Usage (API, 1, "\n-B Specify both (1) basemap frame settings and (2) axes parameters. ");
+			GMT_Usage (API, 2, "Frame settings are modified via an optional single invocation of "
+				 "-B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]");
+			GMT_Usage (API, 2, "Axes parameters are specified via one or more invocations of "
+				"-B[p|s][x|y|z]<info>\n");
+			GMT_Usage (API, -2, "Frame settings control which axes to plot, frame fill, title (and subtitle), and type of gridlines. "
+				"<axes> is a combination of W,E,S,N,Z and plots those axes only [Default is WESNZ (all)]. "
+				"Use lower case w,e,s,n,z just to draw and tick (but not annotate) those axes, "
+				"and use l,r,b,t,u just to draw (but not annotate and tick) those axes. "
+				"For 3-D plots the Z|z[<corners>] controls the vertical axis.  The <corners> specifies "
+				"at which corner(s) to erect the z-axis via a combination of 1,2,3,4; 1 means lower left corner, "
+				"2 is lower right, etc., in a counter-clockwise order [Default automatically selects one axis]. Optional modifiers:");
+			GMT_Usage (API, 3, "+b Erect a 3-D frame box to outline the 3-D domain [no frame box].");
+			GMT_Usage (API, 3, "+g Paint the inside of the map region with <fill> before further plotting [no fill].");
+			GMT_Usage (API, 3, "+i Annotate along parallel or meridian <val> [0] when no such axes can be plotted.");
+			GMT_Usage (API, 3, "+n No frame and annotations whatsoever [Default is controlled by WESNZ/wesnz].");
+			GMT_Usage (API, 3, "+o Draw oblique gridlines about <plon>/<plat> [regular gridlines]. "
+				"Note: The +o modifier is ignored unless gridlines are specified via the axes parameters (below).");
+			GMT_Usage (API, 3, "+s Place a <subtitle> over the map frame [no subtitle]. Requires +t as well.");
+			GMT_Usage (API, 3, "+t Place a <title> over the map frame [no title]. "
+				"Note: Both <title> and <subtitle> can be set across multiple lines by using \"@^\" or \"<break>\" to mark breaks. "
+				"A single-line <title> and <subtitle> may contain LaTeX code enclosed by @[ .... @[ (or alternatively <math> ... </math>). "
+				"Using LaTeX expressions requires you to have a functioning latex and dvips installation, including required fonts.");
+			GMT_Usage (API, 3, "+w Draw the outline of the xz and yz planes [no outlines].");
+			GMT_Usage (API, 3, "+x|y|z[<fill>] paint the yz, xz, xy planes [no fill]. The +g<fill> sets all three planes. ");
+			GMT_Usage (API, -2, "Axes settings control the annotation, tick, and grid intervals and labels. "
+				"The full axes specification is");
+			GMT_Usage (API, 3, "-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>");
+			GMT_Usage (API, -2, "Alternatively, you may break this syntax into two separate -B options:");
+			GMT_Usage (API, 3, "-B[p|s][x|y|z][+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>]");
+			GMT_Usage (API, 3, "-B[p|s][x|y|z]<intervals>");
+			GMT_Usage (API, -2, "There are two levels of annotations: Primary and secondary (most situations only require primary). "
+				"The -B[p] sets (p)rimary (more frequent) annotations while -Bs sets (s)econdary (less frequent) annotations. "
+				"The [x|y|z] selects which axes the settings apply to.  If none are given we default to xy. "
+				"To specify different settings for different axes you must repeat the -B axes option for "
+				"each dimension, i.e., provide separate -B[p|s]x, -B[p|s]y, and -B[p|s]z settings. "
+				"The <intervals> setting controls the annotation spacing and is a textstring made up of one or "
+				"more substrings of the form [a|f|g][<stride>[+-<phase>]], where the (optional) a "
+				"indicates annotation and major tick interval, f minor tick interval, and g grid interval. "
+				"Here, <stride> is the spacing between ticks or annotations, the (optional, and with required sign)"
+				"<phase> specifies phase-shifted annotations/ticks by that amount, and the (optional) "
+				"<unit> specifies the <stride> unit [Default is the unit implied in -R]. There can be "
+				"no spaces between the substrings; just append items to make one very long string. "
+				"For custom annotations or intervals, let <intervals> be c<intfile>; see documentation for details. "
+				"The optional <unit> modifies the <stride> value accordingly. For geographic maps you may use:");
+			GMT_Usage (API, 3, "d: arc degree [Default].");
+			GMT_Usage (API, 3, "m: arc minute.");
+			GMT_Usage (API, 3, "s: arc second.");
+			GMT_Usage (API, -2, "For time axes, several units are recognized:");
+			GMT_Usage (API, 3, "Y: year - plot using all 4 digits.");
+			GMT_Usage (API, 3, "y: year - plot only last 2 digits.");
+			GMT_Usage (API, 3, "O: month - format annotation according to FORMAT_DATE_MAP.");
+			GMT_Usage (API, 3, "o: month - plot as 2-digit integer (1-12).");
+			GMT_Usage (API, 3, "U: ISO week - format annotation according to FORMAT_DATE_MAP.");
+			GMT_Usage (API, 3, "u: ISO week - plot as 2-digit integer (1-53).");
+			GMT_Usage (API, 3, "r: Gregorian week - 7-day stride from chosen start of week (%s).",
 			             GMT_weekdays[GMT->current.setting.time_week_start]);
-			gmt_message (GMT, "\t       K: ISO weekday - plot name of weekdays in selected language [%s].\n", GMT->current.setting.language);
-			gmt_message (GMT, "\t       k: weekday - plot number of the day in the week (see TIME_WEEK_START).\n");
-			gmt_message (GMT, "\t       D: day - format annotation according to FORMAT_DATE_MAP, which also determines whether\n");
-			gmt_message (GMT, "\t                we should plot day of month (1-31) or day of year (1-366).\n");
-			gmt_message (GMT, "\t       d: day - plot as 2- (day of month) or 3- (day of year) integer.\n");
-			gmt_message (GMT, "\t       R: Same as d but annotates from start of Gregorian week.\n");
-			gmt_message (GMT, "\t       H: hour - format annotation according to FORMAT_CLOCK_MAP.\n");
-			gmt_message (GMT, "\t       h: hour - plot as 2-digit integer (0-23).\n");
-			gmt_message (GMT, "\t       M: minute - format annotation according to FORMAT_CLOCK_MAP.\n");
-			gmt_message (GMT, "\t       m: minute - plot as 2-digit integer (0-59).\n");
-			gmt_message (GMT, "\t       S: second - format annotation according to FORMAT_CLOCK_MAP.\n");
-			gmt_message (GMT, "\t       s: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).\n");
-			gmt_message (GMT, "\t     Cartesian intervals take no units.\n");
-			gmt_message (GMT, "\t     When <stride> is omitted, a reasonable value will be determined automatically, e.g., -Bafg.\n");
-			gmt_message (GMT, "\t     Log10 axis: Append l to annotate log10 (value) or p for 10^(log10(value)) [Default annotates value].\n");
-			gmt_message (GMT, "\t     Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear].\n");
-			gmt_message (GMT, "\t     See basemap man pages for more details and examples of all settings.\n");
+			GMT_Usage (API, 3, "K: ISO weekday - plot name of weekdays in selected language [%s].", GMT->current.setting.language);
+			GMT_Usage (API, 3, "k: weekday - plot number of the day in the week (see TIME_WEEK_START).");
+			GMT_Usage (API, 3, "D: day - format annotation according to FORMAT_DATE_MAP, which also determines whether "
+				"we should plot day of month (1-31) or day of year (1-366).");
+			GMT_Usage (API, 3, "d: day - plot as 2- (day of month) or 3- (day of year) integer.");
+			GMT_Usage (API, 3, "R: Same as d but annotates from start of Gregorian week.");
+			GMT_Usage (API, 3, "H: hour - format annotation according to FORMAT_CLOCK_MAP.");
+			GMT_Usage (API, 3, "h: hour - plot as 2-digit integer (0-23).");
+			GMT_Usage (API, 3, "M: minute - format annotation according to FORMAT_CLOCK_MAP.");
+			GMT_Usage (API, 3, "m: minute - plot as 2-digit integer (0-59).");
+			GMT_Usage (API, 3, "S: second - format annotation according to FORMAT_CLOCK_MAP.");
+			GMT_Usage (API, 3, "s: second - plot as 2-digit integer (0-59; 60-61 if leap seconds are enabled).");
+			GMT_Usage (API, -2, "Cartesian intervals take no units. "
+				"When <stride> is omitted, a reasonable value will be determined automatically, e.g., -Bafg. "
+				"Log10 axis: Append l to annotate log10 (value) or p for 10^(log10(value)) [Default annotates value]. "
+				"Power axis: Append p to annotate value at equidistant pow increments [Default is nonlinear]. Optional modifiers: ");
+			GMT_Usage (API, 3, "+p Prepend <prefix> to each annotation (e.g., $ 10, $ 20 ...).");
+			GMT_Usage (API, 3, "+u Append <unit> to each annotation (e.g., 5 km, 10 km ...).");
+			GMT_Usage (API, 3, "+a Append <angle> for slanted or use +an|p for orthogonal|parallel annotations [+ap].");
+			GMT_Usage (API, 3, "+f Let geographic axes place \"fancy\" annotations with W|E|S|N suffices.");
+			GMT_Usage (API, 3, "+l Place <label> for the axis.  Use +L to enforce horizontal labels for y-axes. "
+				"For another axis label on the opposite axis, use +s|S as well. "
+				"Use quotes if any of the <label>, <prefix> or <unit> have spaces. "
+				"For Cartesian axes you can have different labels on the left vs right or bottom vs top "
+				"by separating the two labels with ||, e.g., +l\"Left label||Right label\". "
+				"A <label> may contain LaTeX code enclosed by @[ .... @[  (or alternatively <math> ... </math>). "
+				"Using LaTeX expressions requires you to have a functioning latex and dvips installation, including required fonts. "
+				"Geographic map annotations will automatically have degree, minute, seconds units.");
+			GMT_Usage (API, -2, "See basemap documentation for more details and examples of all settings.");
 			break;
 
 		case 'b':	/* Condensed tickmark option */
 
-			gmt_message (GMT, "\t-B Specify both (1) basemap frame settings and (2) axes parameters.\n");
-			gmt_message (GMT, "\t   (1) Frame settings are modified via an optional single invocation of\n");
-			gmt_message (GMT, "\t       -B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]\n");
-			gmt_message (GMT, "\t   (2) Axes parameters are specified via one or more invocations of\n");
-			gmt_message (GMT, "\t       -B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>\n");
-			gmt_message (GMT, "\t   <intervals> is composed of concatenated [<type>]<stride>[l|p] sub-strings\n");
-			gmt_message (GMT, "\t   See basemap man page for more details and examples of all settings.\n");
+			GMT_Usage (API, 1, "\n-B Specify both (1) basemap frame settings and (2) axes parameters.");
+			GMT_Usage (API, 2, "Frame settings are modified via an optional single invocation of "
+				"-B[<axes>][+b][+g<fill>][+i[<val>]][+n][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]");
+			GMT_Usage (API, 2, "Axes parameters are specified via one or more invocations of "
+				"-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+f][+l|L<label>][+p<prefix>][+s|S<secondary_label>][+u<unit>");
+			GMT_Usage (API, -2, "<intervals> is composed of concatenated [<type>]<stride>[l|p] sub-strings. "
+				"See basemap documentation for more details and examples of all settings.");
 			break;
 
 		case 'J':	/* Map projection option */
 
-			gmt_message (GMT, "\t-J Select the map proJection. The projection type is identified by a 1- or\n");
-			gmt_message (GMT, "\t   2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash\n");
-			gmt_message (GMT, "\t   (e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either\n");
-			gmt_message (GMT, "\t   as 1:<xxxx> or in %s/degree along the standard parallel. Alternatively, when\n",
+			GMT_Usage (API, 1, "\n-J Select the map proJection. The projection type is identified by a 1- or "
+				"2-character ID (e.g. 'm' or 'kf') or by an abbreviation followed by a slash "
+				"(e.g. 'cyl_stere/'). When using a lower-case ID <scale> can be given either "
+				"as 1:<xxxx> or in %s/degree along the standard parallel. Alternatively, when "
+				"the projection ID is Capitalized, <scale>|<width> denotes the width of the "
+				"plot in %s. Optional modifiers:",
+					GMT->session.unit_name[GMT->current.setting.proj_length_unit],
+					GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			GMT_Usage (API, 3, "+dh Specifying map height.");
+			GMT_Usage (API, 3, "+du Specifying maximum map dimension.");
+			GMT_Usage (API, 3, "+dl Specifying minimum map dimension.");
+			GMT_Usage (API, 3, "+dw Specifying map width [Default].");
+			GMT_Usage (API, -2, "When the central meridian (lon0) is optional and omitted, the center of the "
+				"longitude range set by -R is used. The default standard parallel is the equator. "
+				"Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given. Available projections:");
+
+			GMT_Usage (API, 2, "-Ja|A<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Lambert Azimuthal Equal Area). "
+				"<lon0>/<lat0> is the center of the projection, and "
+				"<horizon> is max distance from center of the projection (<= 180, default 90). "
+				"The <scale> can also be given as <radius>/<lat>, where <radius> is the distance "
+				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+
+			GMT_Usage (API, 2, "-Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Albers Equal-Area Conic). "
+				"Give origin, two standard parallels, and true <scale>.");
+
+			GMT_Usage (API, 2, "-Jc|C<lon0>/<lat0>/<scale>|<width> (Cassini). Give central point and <scale>.");
+
+			GMT_Usage (API, 2, "-Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Stereographic). "
+				"Optionally give central meridian and standard parallel and <scale>. Common parallels: "
+				"<lat0> = 66.159467 (Miller's modified Gall), 55 (Kamenetskiy's First), "
+				"45 (Gall Stereographic), 30 (Bolshoi Sovietskii Atlas Mira), and 0 (Braun) [Default].");
+
+			GMT_Usage (API, 2, "-Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Equidistant Conic). "
+				"Give origin, two standard parallels, and true <scale>.");
+
+			GMT_Usage (API, 2, "-Je|E<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Azimuthal Equidistant). "
+				"<lon0>/<lat0> is the center of the projection, and "
+				"<horizon> is max distance from center of the projection (<= 180, default 180). "
+				"The <scale> can also be given as <radius>/<lat>, where <radius> is the distance "
+				"in %s to the oblique parallel <lat0>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+
+			GMT_Usage (API, 2, "-Jf|F<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Gnomonic). "
+				"<lon0>/<lat0> is the center of the projection, and "
+				"<horizon> is max distance from center of the projection (< 90, default 60). "
+				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance "
+				"in %s to the oblique parallel <lat0>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+
+			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scale>|<width> (Orthographic). "
+				"<lon0>/<lat0> is the center of the projection. "
+				"<scale> can also be given as <radius>/<lat>, where <radius> is distance"
+				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+
+			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective). "
+				"<lon0>/<lat0> is the center of the projection, while "
+				"<altitude> is the height (in km) of the viewpoint above local sea level."
+				"If <altitude> less than 10 then it is the distance "
+				"from center of earth to viewpoint in earth radii. "
+				"If <altitude> has a suffix of 'r' then it is the radius "
+				"from the center of earth in kilometers. "
+				"<azimuth> is azimuth east of North of view, "
+				"<tilt> is the upward tilt of the plane of projection; "
+				"if <tilt> < 0 then viewpoint is centered on the horizon, "
+				"<twist> is the CW twist of the viewpoint in degree, "
+				"<Width> is width of the viewpoint in degree, and "
+				"<Height> is the height of the viewpoint in degrees. "
+				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance "
+				"in %s to the oblique parallel <lat0>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+
+			GMT_Usage (API, 2, "-Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff). Give optional central meridian and <scale>.");
+
+			GMT_Usage (API, 2, "-Ji|I[<lon0>/]<scale>|<width> (Sinusoidal). Give optional central meridian and <scale>.");
+
+			GMT_Usage (API, 2, "-Jj|J[<lon0>/]<scale>|<width> (Miller). Give optional central meridian and <scale>.");
+
+			GMT_Usage (API, 2, "-Jkf|Kf[<lon0>/]<scale>|<width> (Eckert IV). Give optional central meridian and <scale>).");
+
+			GMT_Usage (API, 2, "-Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI). Give optional central meridian and <scale>.");
+
+			GMT_Usage (API, 2, "-Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Lambert Conformal Conic). "
+				"Give origin, 2 standard parallels, and true scale.");
+
+			GMT_Usage (API, 2, "-Jm|M[<lon0>/[<lat0>/]]<scale>|<width> (Mercator). "
+				"Give optional central meridian and true scale parallel, and <scale>.");
+
+			GMT_Usage (API, 2, "-Jn|N[<lon0>/]<scale>|<width> (Robinson projection). Give optional central meridian and <scale>.");
+
+			GMT_Usage (API, 2, "-Jo|O<parameters>[+v] (Oblique Mercator).  Specify one of three definitions:");
+			GMT_Usage (API, 3, "-Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scale>|<width>. "
+				"Give origin, azimuth of oblique equator, and scale at oblique equator");
+			GMT_Usage (API, 3, "-Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>. "
+				"Give origin, second point on oblique equator, and scale at oblique equator.");
+			GMT_Usage (API, 3, "-Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>."
+				"Give origin, pole of projection, and scale at oblique equator.");
+			GMT_Usage (API, -3, "Specify region in oblique degrees OR use -R<...>+r. "
+				"Uppercase A|B|C removes enforcement of a northern hemisphere pole. "
+				"Append +v to make the oblique Equator the y-axis [x-axis].");
+
+			GMT_Usage (API, 2, "-Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius)). "
+				"Linear scaling for polar coordinates.  Give <scale> in %s/units. Optional modifiers:",
 			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   the projection ID is Capitalized, <scale>|<width> denotes the width of the\n");
-			gmt_message (GMT, "\t   plot in %s. Append +dh for map height, +du for maximum map dimension, or +dl\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   for minimum map dimension [Default +dw is width].\n");
-			gmt_message (GMT, "\t   When the central meridian (lon0) is optional and omitted, the center of the\n");
-			gmt_message (GMT, "\t   longitude range set by -R is used. The default standard parallel is the equator.\n");
-			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>+r is given.\n\n");
+			GMT_Usage (API, 3, "+a Use azimuths (CW from North) instead of directions (CCW from East) [Default].");
+			GMT_Usage (API, 3, "+f Flip radial direction so south is on the outside and north is at the center. "
+				"Append e to indicate data are elevations in degrees (s/n must be in 0-90 range). "
+				"Append p to set r = current planetary radius to be the center. "
+				"Append <radius> to indicate the radius at the center.");
+			GMT_Usage (API, 3, "+r Offset the radial values [0].");
+			GMT_Usage (API, 3, "+t Set <origin> value for angles or azimuths [0].");
+			GMT_Usage (API, 3, "+z Annotate depths rather than radius [Default]. Alternatively, if you provided depths "
+				"then append p (planetary radius) or <radius> to annotate r = radius - z instead.");
 
-			gmt_message (GMT, "\t   -Ja|A<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Lambert Azimuthal Equal Area)\n");
-			gmt_message (GMT, "\t     <lon0>/<lat0> is the center of the projection.\n");
-			gmt_message (GMT, "\t     <horizon> is max distance from center of the projection (<= 180, default 90).\n");
-			gmt_message (GMT, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is the distance\n");
-			gmt_message (GMT, "\t     in %s to the oblique parallel <lat>.\n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			GMT_Usage (API, 2, "-Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic). "
+				"Give optional central meridian and reference parallel [Default is equator], and <scale>.");
 
-			gmt_message (GMT, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Albers Equal-Area Conic)\n");
-			gmt_message (GMT, "\t     Give origin, 2 standard parallels, and true scale\n");
+			GMT_Usage (API, 2, "-Jq|Q[<lon0>/[<lat0>/]]<scale>|<width> (Equidistant Cylindrical). "
+				"Give optional central meridian and standard parallel, and <scale>. Common parallels: "
+				"<lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular), "
+				"45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann), "
+				"37.5 (Min. overall distortion), and 0 (Plate Carree [Default]).");
 
-			gmt_message (GMT, "\t   -Jc|C<lon0>/<lat0>/<scale>|<width> (Cassini)\n\t     Give central point and scale\n");
+			GMT_Usage (API, 2, "-Jr|R[<lon0>/]<scale>|<width> (Winkel Tripel). Give optional central meridian and <scale>.");
 
-			gmt_message (GMT, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Stereographic)\n");
-			gmt_message (GMT, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
-			gmt_message (GMT, "\t     <lat0> = 66.159467 (Miller's modified Gall), 55 (Kamenetskiy's First),\n");
-			gmt_message (GMT, "\t     45 (Gall Stereographic), 30 (Bolshoi Sovietskii Atlas Mira), 0 (Braun)\n");
+			GMT_Usage (API, 2, "-Js|S<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Stereographic). "
+				"<lon0>/<lat0> is the center or the projection, "
+				"<horizon> is max distance from center of the projection (< 180, default 90), and "
+				"<scale> is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>) "
+				"or <radius>/<lat> (distance in %s to the (oblique) parallel <lat0>.",
+					GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
-			gmt_message (GMT, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Equidistant Conic)\n");
-			gmt_message (GMT, "\t     Give origin, 2 standard parallels, and true scale\n");
+			GMT_Usage (API, 2, "-Jt|T<lon0>/[<lat0>/]<scale>|<width> (Transverse Mercator). Give central meridian and scale. "
+				"Optionally, also give the central parallel [Default is equator].");
 
-			gmt_message (GMT, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Azimuthal Equidistant)\n");
-			gmt_message (GMT, "\t     <lon0>/<lat0> is the center of the projection.\n");
-			gmt_message (GMT, "\t     <horizon> is max distance from center of the projection (<= 180, default 180).\n");
-			gmt_message (GMT, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is the distance\n");
-			gmt_message (GMT, "\t     in %s to the oblique parallel <lat>. \n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			GMT_Usage (API, 2, "-Ju|U<zone>/<scale>|<width> (UTM). "
+				"Give zone (A,B,Y,Z, or 1-60 (negative for S hemisphere) or append code C-X) and <scale>. "
+				"Or, give -Ju|U<scale>|<width> to have the UTM zone determined from the region.");
 
-			gmt_message (GMT, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Gnomonic)\n");
-			gmt_message (GMT, "\t     <lon0>/<lat0> is the center of the projection.\n");
-			gmt_message (GMT, "\t     <horizon> is max distance from center of the projection (< 90, default 60).\n");
-			gmt_message (GMT, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is distance\n");
-			gmt_message (GMT, "\t     in %s to the oblique parallel <lat>. \n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			GMT_Usage (API, 2, "-Jv|V[<lon0>/]<scale>|<width> (van der Grinten). Give optional central meridian  and <scale>.");
 
-			gmt_message (GMT, "\t   -Jg|G<lon0>/<lat0>/<scale>|<width> (Orthographic)\n");
-			gmt_message (GMT, "\t     <lon0>/<lat0> is the center of the projection.\n");
-			gmt_message (GMT, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is distance\n");
-			gmt_message (GMT, "\t     in %s to the oblique parallel <lat>. \n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			GMT_Usage (API, 2, "-Jw|W[<lon0>/]<scale>|<width> (Mollweide). Give optional central meridian and <scale>.");
 
-			gmt_message (GMT, "\t   -Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective)\n");
-			gmt_message (GMT, "\t     <lon0>/<lat0> is the center of the projection.\n");
-			gmt_message (GMT, "\t     <altitude> is the height (in km) of the viewpoint above local sea level\n");
-			gmt_message (GMT, "\t        1. If <altitude> less than 10 then it is the distance\n");
-			gmt_message (GMT, "\t           from center of earth to viewpoint in earth radii\n");
-			gmt_message (GMT, "\t        2. If <altitude> has a suffix of 'r' then it is the radius\n");
-			gmt_message (GMT, "\t           from the center of earth in kilometers\n");
-			gmt_message (GMT, "\t     <azimuth> is azimuth east of North of view\n");
-			gmt_message (GMT, "\t     <tilt> is the upward tilt of the plane of projection\n");
-			gmt_message (GMT, "\t       if <tilt> < 0 then viewpoint is centered on the horizon\n");
-			gmt_message (GMT, "\t     <twist> is the CW twist of the viewpoint in degree\n");
-			gmt_message (GMT, "\t     <width> is width of the viewpoint in degree\n");
-			gmt_message (GMT, "\t     <height> is the height of the viewpoint in degrees\n");
-			gmt_message (GMT, "\t     <scale> can also be given as <radius>/<lat>, where <radius> is distance\n");
-			gmt_message (GMT, "\t     in %s to the oblique parallel <lat>. \n", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			GMT_Usage (API, 2, "-Jy|Y[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Equal-area). "
+				"Give optional central meridian and standard parallel, and <scale>. Common parallels:  "
+				"<lat0> = 50 (Balthasart), 45 (Gall), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards), "
+				"37.0666 (Caster), 30 (Behrmann), and 0 (Lambert [Default])");
 
-			gmt_message (GMT, "\t   -Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff)\n\t     Give central meridian (opt) and scale\n");
-
-			gmt_message (GMT, "\t   -Ji|I[<lon0>/]<scale>|<width> (Sinusoidal)\n\t     Give central meridian (opt) and scale\n");
-
-			gmt_message (GMT, "\t   -Jj|J[<lon0>/]<scale>|<width> (Miller)\n\t     Give central meridian (opt) and scale\n");
-
-			gmt_message (GMT, "\t   -Jkf|Kf[<lon0>/]<scale>|<width> (Eckert IV)\n\t     Give central meridian (opt) and scale\n");
-			gmt_message (GMT, "\t   -Jk|K[s][<lon0>/]<scale>|<width> (Eckert VI)\n\t     Give central meridian (opt) and scale\n");
-
-			gmt_message (GMT, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scale>|<width> (Lambert Conformal Conic)\n");
-			gmt_message (GMT, "\t     Give origin, 2 standard parallels, and true scale\n");
-
-			gmt_message (GMT, "\t   -Jm|M[<lon0>/[<lat0>/]]<scale>|<width> (Mercator).\n");
-			gmt_message (GMT, "\t     Give central meridian (opt), true scale parallel (opt), and scale\n");
-
-			gmt_message (GMT, "\t   -Jn|N[<lon0>/]<scale>|<width> (Robinson projection)\n\t     Give central meridian (opt) and scale\n");
-
-			gmt_message (GMT, "\t   -Jo|O<parameters>[+v] (Oblique Mercator).  Specify one of three definitions:\n");
-			gmt_message (GMT, "\t     -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scale>|<width>\n");
-			gmt_message (GMT, "\t       Give origin, azimuth of oblique equator, and scale at oblique equator\n");
-			gmt_message (GMT, "\t     -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scale>|<width>\n");
-			gmt_message (GMT, "\t       Give origin, second point on oblique equator, and scale at oblique equator\n");
-			gmt_message (GMT, "\t     -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scale>|<width>\n");
-			gmt_message (GMT, "\t       Give origin, pole of projection, and scale at oblique equator\n");
-			gmt_message (GMT, "\t       Specify region in oblique degrees OR use -R<...>+r\n");
-			gmt_message (GMT, "\t       Upper-case A|B|C removes enforcement of a northern hemisphere pole.\n");
-			gmt_message (GMT, "\t       Append +v to make the oblique Equator the y-axis [x-axis].\n");
-
-			gmt_message (GMT, "\t   -Jp|P<scale>|<width>[+a][+f[e|p|<radius>]][+k<kind>][+r<offset>][+t<origin>][+z[p|<radius>]] (Polar (theta,radius))\n");
-			gmt_message (GMT, "\t     Linear scaling for polar coordinates.  Give scale in %s/units.\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t     Append +a to use azimuths (CW from North) instead of directions (CCW from East) [Default].\n");
-			gmt_message (GMT, "\t     Append +f to flip radial direction so that south is on the outside and north is at the center.\n");
-			gmt_message (GMT, "\t       Append e to indicate data are elevations in degrees (s/n must be in 0-90 range).\n");
-			gmt_message (GMT, "\t       Append p to set r = current planetary radius to be the center.\n");
-			gmt_message (GMT, "\t       Append <radius> to indicate the radius at the center.\n");
-			gmt_message (GMT, "\t     Append +k to specify angular kind [angles].\n");
-			gmt_message (GMT, "\t       Append x to indicate angles should be formatted as longitude.\n");
-			gmt_message (GMT, "\t       Append y to indicate angles should be formatted as latitude.\n");
-			gmt_message (GMT, "\t     Append +r to offset the radial values [0].\n");
-			gmt_message (GMT, "\t     Append +t to set <origin> value for angles or azimuths [0].\n");
-			gmt_message (GMT, "\t     Append +z to annotate depths rather than radius [Default]. Alternatively, if you provided depths\n");
-			gmt_message (GMT, "\t       append p (planetary radius) or <radius> to annotate r = radius - z instead.\n");
-
-			gmt_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scale>|<width> ((American) Polyconic)\n");
-			gmt_message (GMT, "\t     Give central meridian (opt), reference parallel (opt, default = equator), and scale\n");
-
-			gmt_message (GMT, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scale>|<width> (Equidistant Cylindrical)\n");
-			gmt_message (GMT, "\t     Give central meridian (opt), standard parallel (opt), and scale\n");
-			gmt_message (GMT, "\t     <lat0> = 61.7 (Min. linear distortion), 50.5 (R. Miller equirectangular),\n");
-			gmt_message (GMT, "\t     45 (Gall isographic), 43.5 (Min. continental distortion), 42 (Grafarend & Niermann),\n");
-			gmt_message (GMT, "\t     37.5 (Min. overall distortion), 0 (Plate Carree, default)\n");
-
-			gmt_message (GMT, "\t   -Jr|R[<lon0>/]<scale>|<width> (Winkel Tripel)\n\t     Give central meridian and scale\n");
-
-			gmt_message (GMT, "\t   -Js|S<lon0>/<lat0>[/<horizon>]/<scale>|<width> (Stereographic)\n");
-			gmt_message (GMT, "\t     <lon0>/<lat0> is the center or the projection.\n");
-			gmt_message (GMT, "\t     <horizon> is max distance from center of the projection (< 180, default 90).\n");
-			gmt_message (GMT, "\t     <scale> is either <1:xxxx> (true at pole) or <slat>/<1:xxxx> (true at <slat>)\n");
-			gmt_message (GMT, "\t     or <radius>/<lat> (distance in %s to the [oblique] parallel <lat>.\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-
-			gmt_message (GMT, "\t   -Jt|T<lon0>/[<lat0>/]<scale>|<width> (Transverse Mercator).\n\t         Give central meridian and scale\n");
-			gmt_message (GMT, "\t     Optionally, also give the central parallel (default = equator)\n");
-
-			gmt_message (GMT, "\t   -Ju|U<zone>/<scale>|<width> (UTM)\n");
-			gmt_message (GMT, "\t     Give zone (A,B,Y,Z, or 1-60 (negative for S hemisphere) or append GMT-X) and scale\n");
-			gmt_message (GMT, "\t     Or give -Ju|U<scale>|<width> to have the UTM zone determined from the region.\n");
-
-			gmt_message (GMT, "\t   -Jv|V[<lon0>/]<scale>|<width> (van der Grinten)\n\t     Give central meridian (opt) and scale\n");
-
-			gmt_message (GMT, "\t   -Jw|W[<lon0>/]<scale>|<width> (Mollweide)\n\t     Give central meridian (opt) and scale\n");
-
-			gmt_message (GMT, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scale>|<width> (Cylindrical Equal-area)\n");
-			gmt_message (GMT, "\t     Give central meridian (opt), standard parallel (opt) and scale\n");
-			gmt_message (GMT, "\t     <lat0> = 50 (Balthasart), 45 (Gall), 37.5 (Hobo-Dyer), 37.4 (Trystan Edwards),\n");
-			gmt_message (GMT, "\t              37.0666 (Caster), 30 (Behrmann), 0 (Lambert, default)\n");
-
-			gmt_message (GMT, "\t   -Jx|X<x-scale|<width>[/<y-scale|height>] (Linear, log, power scaling)\n");
-			gmt_message (GMT, "\t     <scale> in %s/units (or 1:xxxx). Optionally, append to <x-scale> and/or <y-scale>:\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t       d         Geographic coordinate (in degrees)\n");
-			gmt_message (GMT, "\t       l         Log10 projection\n");
-			gmt_message (GMT, "\t       p<power>  x^power projection\n");
-			gmt_message (GMT, "\t       t         Calendar time projection using relative time coordinates\n");
-			gmt_message (GMT, "\t       T         Calendar time projection using absolute time coordinates\n");
-			gmt_message (GMT, "\t     Use / to specify separate x/y scaling (e.g., -Jx0.5c/0.3c).  If 1:xxxxx is used it implies -R is in meters.\n");
-			gmt_message (GMT, "\t     If -JX is used then give axes lengths rather than scales.\n");
+			GMT_Usage (API, 2, "-Jx|X<x-scale|<width>[/<y-scale|height>] (Linear, log, power scaling). "
+				"<scale> in %s/units (or 1:xxxx). Optionally, append to <x-scale> and/or <y-scale> one of "
+				"d for Geographic coordinate (in degrees), "
+				"l for Log10 projection, "
+				"p<power> for x^power projection, "
+				"t for calendar time projection using relative time coordinates, "
+				"or T for Calendar time projection using absolute time coordinates. "
+				"Use / to specify separate x/y scaling (e.g., -Jx0.5c/0.3c).  If 1:xxxxx is used it implies -R is in meters. "
+				"If -JX is used then give axes lengths rather than scales.",
+					GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
 		case 'j':	/* Condensed version of J */
 
-			gmt_message (GMT, "\t-J Select map proJection. (<scale> in %s/degree, <width> in %s)\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit],
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   Append +dh for map height, +du for max (upper) or +dl for min (lower) map dimension [+dw for width].\n");
-			gmt_message (GMT, "\t   Azimuthal projections set -Rg unless polar aspect or -R<...>+r is set.\n\n");
+			GMT_Usage (API, 1, "\n-J Select map proJection (<scale> in %s/degree, <width> in %s). Modifiers:",
+				GMT->session.unit_name[GMT->current.setting.proj_length_unit],
+				GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			GMT_Usage (API, 3, "+dh Specifying map height.");
+			GMT_Usage (API, 3, "+du Specifying maximum map dimension.");
+			GMT_Usage (API, 3, "+dl Specifying minimum map dimension.");
+			GMT_Usage (API, 3, "+dw Specifying map width [Default].");
+			GMT_Usage (API, -2, "Azimuthal projections set -Rg unless polar aspect or -R<...>+r is set.");
 
-			gmt_message (GMT, "\t   -Ja|A<lon0>/<lat0>[/<hor>]/<scl> (or <radius>/<lat>)|<width> (Lambert Azimuthal EA)\n");
+			GMT_Usage (API, 2, "-Ja|A<lon0>/<lat0>[/<hor>]/<scl> (or <radius>/<lat>)|<width> (Lambert Azimuthal Equal-area)");
 
-			gmt_message (GMT, "\t   -Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Albers Conic EA)\n");
+			GMT_Usage (API, 2, "-Jb|B<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Albers Conic Equal-area)");
 
-			gmt_message (GMT, "\t   -Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<lat1>/<lat2>/<scl>|<width> (Cylindrical Stereographic)\n");
+			GMT_Usage (API, 2, "-Jcyl_stere|Cyl_stere/[<lon0>/[<lat0>/]]<lat1>/<lat2>/<scl>|<width> (Cylindrical Stereographic)");
 
-			gmt_message (GMT, "\t   -Jc|C<lon0>/<lat0><scl>|<width> (Cassini)\n");
+			GMT_Usage (API, 2, "-Jc|C<lon0>/<lat0><scl>|<width> (Cassini)");
 
-			gmt_message (GMT, "\t   -Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Equidistant Conic)\n");
+			GMT_Usage (API, 2, "-Jd|D<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Equidistant Conic)");
 
-			gmt_message (GMT, "\t   -Je|E<lon0>/<lat0>[/<horizon>]/<scl> (or <radius>/<lat>)|<width>  (Azimuthal Equidistant)\n");
+			GMT_Usage (API, 2, "-Je|E<lon0>/<lat0>[/<horizon>]/<scl> (or <radius>/<lat>)|<width> (Azimuthal Equidistant)");
 
-			gmt_message (GMT, "\t   -Jf|F<lon0>/<lat0>[/<horizon>]/<scl> (or <radius>/<lat>)|<width>  (Gnomonic)\n");
+			GMT_Usage (API, 2, "-Jf|F<lon0>/<lat0>[/<horizon>]/<scl> (or <radius>/<lat>)|<width> (Gnomonic)");
 
-			gmt_message (GMT, "\t   -Jg|G<lon0>/<lat0>/<scl> (or <radius>/<lat>)|<width>  (Orthographic)\n");
+			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scl> (or <radius>/<lat>)|<width> (Orthographic)");
 
-			gmt_message (GMT, "\t   -Jg|G[<lon0>/]<lat0>[/<horizon>|/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scl>|<width> (General Perspective)\n");
+			GMT_Usage (API, 2, "-Jg|G[<lon0>/]<lat0>[/<horizon>|/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scl>|<width> (General Perspective)");
 
-			gmt_message (GMT, "\t   -Jh|H[<lon0>/]<scl>|<width> (Hammer-Aitoff)\n");
+			GMT_Usage (API, 2, "-Jh|H[<lon0>/]<scl>|<width> (Hammer-Aitoff)");
 
-			gmt_message (GMT, "\t   -Ji|I[<lon0>/]<scl>|<width> (Sinusoidal)\n");
+			GMT_Usage (API, 2, "-Ji|I[<lon0>/]<scl>|<width> (Sinusoidal)");
 
-			gmt_message (GMT, "\t   -Jj|J[<lon0>/]<scl>|<width> (Miller)\n");
+			GMT_Usage (API, 2, "-Jj|J[<lon0>/]<scl>|<width> (Miller)");
 
-			gmt_message (GMT, "\t   -Jkf|Kf[<lon0>/]<scl>|<width> (Eckert IV)\n");
+			GMT_Usage (API, 2, "-Jkf|Kf[<lon0>/]<scl>|<width> (Eckert IV)");
 
-			gmt_message (GMT, "\t   -Jks|Ks[<lon0>/]<scl>|<width> (Eckert VI)\n");
+			GMT_Usage (API, 2, "-Jks|Ks[<lon0>/]<scl>|<width> (Eckert VI)");
 
-			gmt_message (GMT, "\t   -Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Lambert Conformal Conic)\n");
+			GMT_Usage (API, 2, "-Jl|L<lon0>/<lat0>/<lat1>/<lat2>/<scl>|<width> (Lambert Conformal Conic)");
 
-			gmt_message (GMT, "\t   -Jm|M[<lon0>/[<lat0>/]]<scl>|<width> (Mercator)\n");
+			GMT_Usage (API, 2, "-Jm|M[<lon0>/[<lat0>/]]<scl>|<width> (Mercator)");
 
-			gmt_message (GMT, "\t   -Jn|N[<lon0>/]<scl>|<width> (Robinson projection)\n");
+			GMT_Usage (API, 2, "-Jn|N[<lon0>/]<scl>|<width> (Robinson projection)");
 
-			gmt_message (GMT, "\t   -Jo|O (Oblique Mercator).  Specify one of three definitions:\n");
-			gmt_message (GMT, "\t      -Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scl>|<width>[+v]\n");
-			gmt_message (GMT, "\t      -Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>[+v]\n");
-			gmt_message (GMT, "\t      -Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>[+v]\n");
+			GMT_Usage (API, 2, "-Jo|O (Oblique Mercator).  Specify one of three definitions:");
+			GMT_Usage (API, 3, "-Jo|O[a|A]<lon0>/<lat0>/<azimuth>/<scl>|<width>[+v]");
+			GMT_Usage (API, 3, "-Jo|O[b|B]<lon0>/<lat0>/<lon1>/<lat1>/<scl>|<width>[+v]");
+			GMT_Usage (API, 3, "-Jo|Oc|C<lon0>/<lat0>/<lonp>/<latp>/<scl>|<width>[+v]");
 
-			gmt_message (GMT, "\t   -Jpoly|Poly/[<lon0>/[<lat0>/]]<scl>|<width> ((American) Polyconic)\n");
+			GMT_Usage (API, 2, "-Jpoly|Poly/[<lon0>/[<lat0>/]]<scl>|<width> ((American) Polyconic)");
 
-			gmt_message (GMT, "\t   -Jq|Q[<lon0>/[<lat0>/]]<scl>|<width> (Equidistant Cylindrical)\n");
+			GMT_Usage (API, 2, "-Jq|Q[<lon0>/[<lat0>/]]<scl>|<width> (Equidistant Cylindrical)");
 
-			gmt_message (GMT, "\t   -Jr|R[<lon0>/]<scl>|<width> (Winkel Tripel)\n");
+			GMT_Usage (API, 2, "-Jr|R[<lon0>/]<scl>|<width> (Winkel Tripel)");
 
-			gmt_message (GMT, "\t   -Js|S<lon0>/<lat0>/[<horizon>/]<scl> (or <slat>/<scl> or <radius>/<lat>)|<width> (Stereographic)\n");
+			GMT_Usage (API, 2, "-Js|S<lon0>/<lat0>/[<horizon>/]<scl> (or <slat>/<scl> or <radius>/<lat>)|<width> (Stereographic)");
 
-			gmt_message (GMT, "\t   -Jt|T<lon0>/[<lat0>/]<scl>|<width> (Transverse Mercator)\n");
+			GMT_Usage (API, 2, "-Jt|T<lon0>/[<lat0>/]<scl>|<width> (Transverse Mercator)");
 
-			gmt_message (GMT, "\t   -Ju|U[<zone>/]<scl>|<width> (UTM)\n");
+			GMT_Usage (API, 2, "-Ju|U[<zone>/]<scl>|<width> (UTM)");
 
-			gmt_message (GMT, "\t   -Jv|V<lon0>/<scl>|<width> (van der Grinten)\n");
+			GMT_Usage (API, 2, "-Jv|V<lon0>/<scl>|<width> (van der Grinten)");
 
-			gmt_message (GMT, "\t   -Jw|W<lon0>/<scl>|<width> (Mollweide)\n");
+			GMT_Usage (API, 2, "-Jw|W<lon0>/<scl>|<width> (Mollweide)");
 
-			gmt_message (GMT, "\t   -Jy|Y[<lon0>/[<lat0>/]]<scl>|<width> (Cylindrical Equal-area)\n");
+			GMT_Usage (API, 2, "-Jy|Y[<lon0>/[<lat0>/]]<scl>|<width> (Cylindrical Equal-area)");
 
-			gmt_message (GMT, "\t   -Jp|P<scl>|<width>[+a][+f[e|p|<radius>]][+k<kind>][+r<offset>][+t<origin][+z[p|<radius>]] (Polar [azimuth] (theta,radius))\n");
+			GMT_Usage (API, 2, "-Jp|P<scl>|<width>[+a][+f[e|p|<radius>]][+k<kind>][+r<offset>][+t<origin][+z[p|<radius>]] (Polar [azimuth] (theta,radius)).");
 
-			gmt_message (GMT, "\t   -Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)\n");
-			gmt_message (GMT, "\t   (See basemap for more details on projection syntax)\n");
+			GMT_Usage (API, 2, "-Jx|X<x-scl>|<width>[d|l|p<power>|t|T][/<y-scl>|<height>[d|l|p<power>|t|T]] (Linear, log, and power projections)");
+			GMT_Usage (API, 2, "(See basemap for more details on projection syntax)");
 			break;
 
 		case 'I':	/* Near-common option for grid increments */
@@ -7284,26 +7289,27 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 		case 'K':	/* Append-more-PostScript-later */
 			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -K don't exist in modern mode */
-				gmt_message (GMT, "\t-K Allow for more plot code to be appended later.\n");
+				GMT_Usage (API, 1, "\n-K Allow for more plot code to be appended later.");
 			break;
 
 		case 'O':	/* Overlay plot */
 
 			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -O don't exist in modern mode */
-				gmt_message (GMT, "\t-O Set Overlay plot mode, i.e., append to an existing plot.\n");
+				GMT_Usage (API, 1, "\n-O Set Overlay plot mode, i.e., append to an existing plot.");
 			break;
 
 		case 'P':	/* Portrait or landscape */
 
 			if (GMT->current.setting.run_mode == GMT_CLASSIC && !GMT->current.setting.use_modern_name)	/* -P don't exist in modern mode */
-				gmt_message (GMT, "\t-P Set Portrait page orientation [%s].\n", GMT_choice[GMT->current.setting.ps_orientation]);
+				GMT_Usage (API, 1, "\n-P Set Portrait page orientation [%s].", GMT_choice[GMT->current.setting.ps_orientation]);
 			break;
 
 		case 'S':	/* CarteSian Region option */
 
-			gmt_message (GMT, "\t-R Specify the xmin/xmax/ymin/ymax coordinates of data region in user units.\n");
-			gmt_message (GMT, "\t   Use [yyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time coordinates.\n");
-			gmt_message (GMT, "\t   Or, give a gridfile to use its region (and increments, registration if applicable).\n");
+			GMT_Usage (API, 1, "\n%s", GMT_Rx_OPT);
+			GMT_Usage (API, -2, "Specify the coordinates of data region in user units. "
+				"Use [yyyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time coordinates. "
+				"Or, give a <gridfile> to use its region (and increments, registration if applicable).");
 			break;
 
 		case 'G':	/* Geographic Region option */
@@ -7314,94 +7320,101 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'R':	/* Generic [Default] Region option */
 
 			gmtinit_explain_R_geo (GMT);
-			gmt_message (GMT, "\t   Or use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where\n");
-			gmt_message (GMT, "\t     <code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right)\n");
-			gmt_message (GMT, "\t     and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).\n");
+			GMT_Usage (API, -2, "Alternatively, use -R<code><x0>/<y0>/<n_columns>/<n_rows> for origin and grid dimensions, where "
+				"<code> is a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) "
+				"and grid spacing must be specified via -I<dx>[/<dy>] (also see -r).");
 			break;
 
 		case 'z':	/* Region addition for 3-D */
 
-			gmt_message (GMT, "\t   Append /zmin/zmax coordinates for the vertical domain limits.\n");
+			GMT_Usage (API, -2, "Append /zmin/zmax coordinates for the vertical domain limits.");
 			break;
 
 		case 'r':	/* Region option for 3-D */
 
-			gmt_message (GMT, "\t-R Specify the xyz min/max coordinates of the plot window in user units.\n");
-			gmt_message (GMT, "\t   Use dd:mm[:ss] for regions given in degrees, minutes [and seconds].\n");
-			gmt_message (GMT, "\t   Append +r if first 4 arguments to -R specify the longitudes/latitudes\n");
-			gmt_message (GMT, "\t   of the lower left and upper right corners of a rectangular area.\n");
-			gmt_message (GMT, "\t   Or, give a gridfile to use its limits (and increments if applicable).\n");
+			GMT_Usage (API, 1, "\n-R Specify the xyz min/max coordinates of the plot window in user units. "
+				"Use dd:mm[:ss] for regions given in degrees, minutes [and seconds]. "
+				"Append +r if first 4 arguments to -R specify the longitudes/latitudes"
+				"of the lower left and upper right corners of a rectangular area. "
+				"Or, give a gridfile to use its limits (and increments if applicable).");
 			break;
 
 		case 'U':	/* Plot time mark and [optionally] command line */
 
-			gmt_message (GMT, "\t-U Plot GMT Unix System Time stamp [and optionally appended text or command line].\n");
-			gmt_message (GMT, "\t   Set the justification point via +j<code> [BL] and an optional offset [-54p/-54p].\n");
-			gmt_message (GMT, "\t   [Add +c to have the command line plotted [%s].\n", GMT_choice[GMT->current.setting.map_logo]);
+			GMT_Usage (API, 1, "\n%s", GMT_U_OPT);
+			GMT_Usage (API, -2, "Plot GMT Unix System Time stamp and optionally append a <label>. Optional modifiers:");
+			GMT_Usage (API, 3, "+c Use the command line as the label [%s].", GMT_choice[GMT->current.setting.map_logo]);
+			GMT_Usage (API, 3, "+j Set frame justification point [BL].");
+			GMT_Usage (API, 3, "+o Offset stamp by <dx>[/<dy>] [-54p/-54p].");
 			break;
 
 		case 'V':	/* Verbose */
 
-			gmt_message (GMT, "\t-V Change the verbosity level (currently %c).\n", V_code[GMT->current.setting.verbose]);
-			gmt_message (GMT, "\t   Choose among 7 levels; each level adds more messages:\n");
-			gmt_message (GMT, "\t     q - Quiet, not even fatal error messages.\n");
-			gmt_message (GMT, "\t     e - Error messages only.\n");
-			gmt_message (GMT, "\t     w - Warnings [Default].\n");
-			gmt_message (GMT, "\t     t - Timings (time-intensive operations only).\n");
-			gmt_message (GMT, "\t     i - Informational messages (or just -V).\n");
-			gmt_message (GMT, "\t     c - Compatibility warnings.\n");
-			gmt_message (GMT, "\t     d - Debugging messages.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_V_OPT);
+			GMT_Usage (API, -2, "Change the verbosity level (currently %c). "
+				"Choose among 7 levels; each level adds more detailed messages:", V_code[GMT->current.setting.verbose]);
+			GMT_Usage (API, 3, "q: Quiet, not even fatal error messages.");
+			GMT_Usage (API, 3, "e: Error messages only.");
+			GMT_Usage (API, 3, "w: Warnings [Default].");
+			GMT_Usage (API, 3, "t: Timings (time-intensive operations only).");
+			GMT_Usage (API, 3, "i: Informational messages (or just -V).");
+			GMT_Usage (API, 3, "c: Compatibility warnings.");
+			GMT_Usage (API, 3, "d: Debugging messages.");
 			break;
 
 		case 'X':
 		case 'Y':	/* Reset plot origin option */
 
-			gmt_message (GMT, "\t-X -Y Shift origin of plot to (<xshift>, <yshift>).\n");
-			gmt_message (GMT, "\t   Prepend r for shift relative to current point (default), prepend a for temporary\n");
-			gmt_message (GMT, "\t   adjustment of origin, prepend f to position relative to lower left corner of page,\n");
-			gmt_message (GMT, "\t   prepend c for offset of center of plot to center of page.\n");
-			gmt_message (GMT, "\t   For overlays (-O), the default setting is [r0], otherwise [f%g%c].\n",
-			             GMT->current.setting.map_origin[GMT_Y] * s, u);
+			GMT_Usage (API, 1, "\n%s %s", GMT_X_OPT, GMT_Y_OPT);
+			GMT_Usage (API, -2, "Shift origin of plot to (<xshift>, <yshift>). "
+				"Prepend r for shift relative to current point [Default], prepend a for temporary "
+				"adjustment of origin, prepend f to position relative to lower left corner of page, "
+				"prepend c for offset of center of plot to center of page. "
+				"For overlays (-O), the default setting is [r0], otherwise [f%g%c].", GMT->current.setting.map_origin[GMT_Y] * s, u);
 			break;
 
 		case 'x':	/* Just linear -Jx|X allowed for this program */
-
-			gmt_message (GMT, "\t-Jx|X for linear projection.  Scale in %s/units (or width in %s).\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit],
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t    Use / to specify separate x/y scaling.\n");
-			gmt_message (GMT, "\t    If -JX is used then give axes lengths in %s rather than scales.\n",
-			             GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+			GMT_Usage (API, 1, "\n-Jx|X<scl>|<height>[d|l|p<power>|t|T][/<scl>|<height>[d|l|p<power>|t|T]]");
+			GMT_Usage (API, -2, "Scaling for linear projection.  Scale in %s/units (or width in %s). "
+				"Use / to specify separate x/y scaling. If -JX is used then give axes lengths in %s rather than scales.",
+				GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->session.unit_name[GMT->current.setting.proj_length_unit],
+				GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
 #ifdef GMT_MP_ENABLED
 		case 'y':	/* Number of threads (reassigned from -x in GMT_Option) */
-			gmt_message (GMT, "\t-x Limit the number of cores used in multi-threaded algorithms.\n");
-			gmt_message (GMT, "\t   Default uses all available cores [%d].\n", gmtlib_get_num_processors());
-			gmt_message (GMT, "\t   -x<n>  Select <n> cores (up to all available).\n");
-			gmt_message (GMT, "\t   -x-<n> Select (all - <n>) cores (or at least 1).\n");
+			cores = gmtlib_get_num_processors();
+			GMT_Usage (API, 1, "\n%s.", GMT_x_OPT);
+			GMT_Usage (API, -2, "Limit the number of cores used in multi-threaded algorithms [Default uses all %d cores]. "
+				"If <n> is negative then we select (%d - <n>) cores (or at least 1).", cores, cores);
 			break;
 #endif
 		case 'Z':	/* Vertical scaling for 3-D plots */
 
-			gmt_message (GMT, "\t   -JZ|z For z component of 3-D projections.  Same syntax as -JX|x, i.e.,\n");
-			gmt_message (GMT, "\t   -Jz|Z<z-scl>|<height>[d|l|p<power>|t|T] (Linear, log, and power projections)\n");
+			GMT_Usage (API, 1, "\n-Jz|Z<z-scl>|<height>[d|l|p<power>|t|T]");
+			GMT_Usage (API, -2, "Scaling for z-component of 3-D projections.  Same syntax as -JX|x for Linear, log, and power projections.");
 			break;
 
 		case 'a':	/* -a option for aspatial field substitution into data columns */
 
-			gmt_message (GMT, "\t-a Give one or more comma-separated <col>=<name> associations\n");
-			gmt_message (GMT, "\t   [Default selects all aspatial fields].\n");
+			GMT_Usage (API, 1, "\n%s", GMT_a_OPT);
+			GMT_Usage (API, -2, "Aspatial data selection.  Give one or more comma-separated [<col>=]<name> associations "
+				"[Default selects all aspatial fields].");
 			break;
 
 		case 'C':	/* -b binary option with input only */
 
-			gmt_message (GMT, "\t-bi For binary input; [<n>]<type>[w][+l|b]; <type> = c|u|h|H|i|I|l|L|f|D.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_bi_OPT);
+			GMT_Usage (API, -2, "Select native binary table input; <record> is comma-separated  groups of [<ncols>][<type>][w]; "
+				"<ncols> is number of consecutive columns of given <type> from c|u|h|H|i|I|l|L|f|d [d]. "
+				"A group may be byte-swapped by appending w. Available modifiers: ");
+			GMT_Usage (API, 3, "+b Read table assuming big-endian byte-order.");
+			GMT_Usage (API, 3, "+l Read table assuming little-endian byte-order.");
 			break;
 
 		case '0':	/* -bi/-bo addendum when input format is unknown */
 
-			gmt_message (GMT, "\t    Prepend <n> for the number of columns for each <type>.\n");
+			/* Nothing anymore, but leave case since may still be requested by a module */
 			break;
 
 		case '1':	/* -bi/-bo addendum when input format is unknown */
@@ -7412,240 +7425,300 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case '6':
 		case '7':
 
-			gmt_message (GMT, "\t    Prepend <n> for the number of columns for each <type> in binary file(s) [%c].\n", options[k]);
+			GMT_Usage (API, -2, "Note: If <ncols> is not given we default to %c.", options[k]);
 			break;
 
 		case 'D':	/* -b binary option with output only */
 
-			gmt_message (GMT, "\t-bo For binary output; append <type>[w][+l|b]; <type> = c|u|h|H|i|I|l|L|f|D..\n");
+			GMT_Usage (API, 1, "\n%s", GMT_bo_OPT);
+			GMT_Usage (API, -2, "Select native binary table output; <record> is comma-separated groups of [<ncols>][<type>][w]; "
+				"<ncols> is number of consecutive columns of given <type> from c|u|h|H|i|I|l|L|f|d [d]. "
+				"A group may be byte-swapped by appending w. Available modifiers: ");
+			GMT_Usage (API, 3, "+b Write table in big-endian byte-order.");
+			GMT_Usage (API, 3, "+l Write table in little-endian byte-order.");
 			break;
 
 		case 'c':	/* -c option advances subplot panel focus under modern mode */
 
-			if (GMT->current.setting.run_mode == GMT_MODERN || GMT->current.setting.use_modern_name)	/* -c has no use in classic */
-				gmt_message (GMT, "\t-c Move to next subplot panel or append row,col or index of desired panel.\n");
+			if (GMT->current.setting.run_mode == GMT_MODERN || GMT->current.setting.use_modern_name) {	/* -c has no use in classic */
+				GMT_Usage (API, 1, "\n%s", GMT_c0_OPT);
+				GMT_Usage (API, -2, "Move to next subplot panel [Default] or append <row>,<col> or <index> of desired panel.");
+			}
 			break;
 
 		case 'd':	/* -d option to tell GMT the relationship between NaN and a nan-proxy for input/output */
 
-			gmt_message (GMT, "\t-d On input, replace <nodata> with NaN; on output do the reverse.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_d_OPT);
+			GMT_Usage (API, -2, "On (i)nput, replace <nodata> values with NaN; on (o)utput do the reverse.");
 			break;
 
 		case 'e':	/* -e option for ASCII grep operation on data records */
 
-			gmt_message (GMT, "\t-e Only accept input data records that contain the string \"pattern\".\n");
-			gmt_message (GMT, "\t   Use -e~\"pattern\" to only accept data records that DO NOT contain this pattern.\n");
-			gmt_message (GMT, "\t   If your pattern begins with ~, escape it with \\~.  To match against\n");
-			gmt_message (GMT, "\t   extended regular expressions use -e[~]/regexp/[i] (i for case-insensitive).\n");
-			gmt_message (GMT, "\t   Give +f<file> for a file list with such patterns, one per line.\n");
-			gmt_message (GMT, "\t   To give a single pattern starting with +f, escape it with \\+f.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_e_OPT);
+			GMT_Usage (API, -2, "Only accept input data records that contain the string \"pattern\". "
+				"Use -e~\"pattern\" to only accept data records that do NOT contain this pattern. "
+				"If your pattern begins with ~, escape it with \\~.  To match against "
+				"extended regular expressions use -e[~]/<regexp>/[i] (i for case-insensitive). "
+				"Use +f<file> to read patterns from a file instead, one pattern per line.");
+			GMT_Usage (API, -2, "Note: To give a single pattern starting with +f, escape it with \\+f.");
 			break;
 
 		case 'k':	/* -di option to tell GMT the relationship between NaN and a nan-proxy for input */
 
-			gmt_message (GMT, "\t-di Replace any <nodata> in input data with NaN.\n");
+			GMT_Usage (API, 1, "\n%s Replace any <nodata> values in input data with NaN.", GMT_di_OPT);
 			break;
 
 		case 'l':	/* -l option to set up auto-legend items*/
 
-			gmt_message (GMT, "\t-l Add symbol, line or polygon to the legend. Optionally, append label and any of the legend codes\n");
-			gmt_message (GMT, "\t   +D<pen>, +G<gap>, +H<header>, +L[<just>/]<txt>, +N<cols>, +S<size>, +V[<pen>].\n");
-			gmt_message (GMT, "\t   You may also use set +f<font> to override the font used for the label.\n");
-			gmt_message (GMT, "\t   Change frame fill, pen, offset with +g<fill> [white], +p<pen> [1p], +o<off> [0.2c].\n");
-			gmt_message (GMT, "\t   You can also choose legend placement codes +j<just> and +s<scale>, corresponding\n");
-			gmt_message (GMT, "\t   to legend command line options -Dj|J<just> and -S<scale>, respectively.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_l_OPT);
+			GMT_Usage (API, -2, "Add symbol, line or polygon to the legend. Optionally, append <label> and any of the optional legend codes:");
+			GMT_Usage (API, 3, "+D Draw horizontal line with specified <pen>.");
+			GMT_Usage (API, 3, "+G Add a vertical <gap> of given height.");
+			GMT_Usage (API, 3, "+H Place a <header> in the legend.");
+			GMT_Usage (API, 3, "+L Place a <label> with optional justification [L].");
+			GMT_Usage (API, 3, "+N Set current number of columns for symbols.");
+			GMT_Usage (API, 3, "+S Set the current symbol <size>.");
+			GMT_Usage (API, 3, "+V Enable vertical lines between columns, optionally append <pen>].");
+			GMT_Usage (API, 3, "+f Set <font> used for the label.");
+			GMT_Usage (API, 3, "+g Set a frame fill <fill> [white].");
+			GMT_Usage (API, 3, "+j Set the justification of the legend [BL].");
+			GMT_Usage (API, 3, "+o Shift legend placement from reference point by <dx>[/<dy>] [0.2c].");
+			GMT_Usage (API, 3, "+p Draw frame outline, optionally append <pen> [1p].");
+			GMT_Usage (API, 3, "+s Set an overall symbol scale [1].");
+			GMT_Usage (API, 3, "+w Set a specific legend width [auto].");
 			break;
 
 		case 'm':	/* -do option to tell GMT the relationship between NaN and a nan-proxy for output */
 
-			gmt_message (GMT, "\t-do Replace any NaNs in output data with <nodata>.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_do_OPT);
+			GMT_Usage (API, -2, "Replace any NaNs in output data with <nodata>.");
 			break;
 
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
 
-			gmt_message (GMT, "\t-f Special formatting of input/output columns (time or geographical).\n");
-			gmt_message (GMT, "\t   Specify i(nput) or o(utput) [Default is both input and output].\n");
-			gmt_message (GMT, "\t   Give one or more columns (or column ranges) separated by commas.\n");
-			gmt_message (GMT, "\t   Append T (Calendar format), t (time relative to TIME_EPOCH),\n");
-			gmt_message (GMT, "\t   f (floating point), x (longitude), y (latitude) to each item.\n");
-			gmt_message (GMT, "\t   -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates).\n");
-			gmt_message (GMT, "\t   -f[i|o]c means -f[i|o]0-1f (Cartesian coordinates).\n");
-			gmt_message (GMT, "\t   -fp[<unit>] means input x,y are in projected coordinates.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_f_OPT);
+			GMT_Usage (API, -2, "Indicate content of input/output columns. Optionally append i(nput) or o(utput) [Default is both]. "
+				"Append <colinfo> as one or more comma-separated groups of <cols><type>, where <cols> is a column (or column ranges) "
+				"and <type> is the column type, chosen from T (Calendar format), t (time relative to TIME_EPOCH), f (floating point), "
+				"x (longitude), y (latitude), or d (dimension). You may also use s (string) to indicate the start column of trailing text. "
+				"Shortcuts: -f[i|o]g means -f[i|o]0x,1y (geographic, i.e., lon/lat coordinates), -f[i|o]c means -f[i|o]0:1f (Cartesian coordinates), "
+				"while -fp[<unit>] means input x,y are already in projected coordinates in <unit> [e].");
 			break;
 
 		case 'g':	/* -g option to tell GMT to identify data gaps based on point separation */
 
-			gmt_message (GMT, "\t-g Use data point separations to determine if there are data gaps.\n");
-			gmt_message (GMT, "\t   Append x|X or y|Y to identify data gaps in x or y coordinates,\n");
-			gmt_message (GMT, "\t   respectively, and append d|D for distance gaps.  Upper case X|Y|D means\n");
-			gmt_message (GMT, "\t   we first project the points (requires -J).  Append <gap>[+n|p]; +n uses\n");
-			gmt_message (GMT, "\t   d=prev-curr, +p uses d=curr-prev [d=|curr-prev|]; d must exceed <gap> to detect a gap.\n");
-			gmt_message (GMT, "\t   For geographic data: choose from %s [Default is meter (%c)].\n", GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT);
-			gmt_message (GMT, "\t   For gaps based on mapped coordinates: choose unit from %s [%s].\n",
-			             GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
-			gmt_message (GMT, "\t   For time data: the unit is controlled by TIME_UNIT.\n");
-			gmt_message (GMT, "\t   For generic data: the unit is as the data implies (user units).\n");
-			gmt_message (GMT, "\t   Repeat the -g option to specify multiple criteria, and add -ga\n");
-			gmt_message (GMT, "\t   to indicate that all criteria must be met [just one must be met].\n");
+			GMT_Usage (API, 1, "\n%s", GMT_g_OPT);
+			GMT_Usage (API, -2, "Use data point separations to identify data gaps. "
+				"Append x, y, or z to identify data gaps in x, y or z coordinates, "
+				"respectively, or append d for distance gaps.  Use upper case X|Y|D to "
+				"first project the points (requires -R -J).  Optional modifiers:");
+			GMT_Usage (API, 3, "+a All criteria must be met to declare a gap [Just one criterion must be met].");
+			GMT_Usage (API, 3, "+c Set alternative z-coordinate column [2].");
+			GMT_Usage (API, 3, "+n Let d = prev-curr; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
+			GMT_Usage (API, 3, "+p Let d = curr-prev; d must exceed <gap> to detect a gap [Default is d=|curr-prev|].");
+			GMT_Usage (API, -2, "For geographic data: Append <unit> from %s [Default is meter (%c)]. "
+				"For gaps based on projected coordinates: Append unit from %s [%s]. "
+				"For time data the unit is determined by TIME_UNIT. "
+				"For Cartesian data a unit is not specified. "
+				"Repeat the -g option to specify multiple criteria.",
+				GMT_LEN_UNITS2_DISPLAY, GMT_MAP_DIST_UNIT, GMT_DIM_UNITS_DISPLAY, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 			break;
 
 		case 'h':	/* Header */
 
-			gmt_message (GMT, "\t-h[i|o][<n>][+c][+d][+m<segheader>][+r<remark>][+t<title>] Input/output file has [%d] Header record(s) [%s]\n",
-			             GMT->current.setting.io_n_header_items, GMT_choice[GMT->current.setting.io_header[GMT_IN]]);
-			gmt_message (GMT, "\t   Optionally, append i for input or o for output only and/or number of header records [0].\n");
-			gmt_message (GMT, "\t     -hi turns off the writing of all headers on output since none will be read.\n");
-			gmt_message (GMT, "\t   Append +c to add header record with column information [none].\n");
-			gmt_message (GMT, "\t   Append +d to delete headers before adding new ones [Default will append headers].\n");
-			gmt_message (GMT, "\t   Append +m to insert a new segment header and <segheader> contentafter the headers [none].\n");
-			gmt_message (GMT, "\t   Append +r to add a <remark> comment to the output [none].\n");
-			gmt_message (GMT, "\t   Append +t to add a <title> comment to the output [none].\n");
-			gmt_message (GMT, "\t     (these last two strings may contain \\n to indicate line-breaks)\n");
-			gmt_message (GMT, "\t   For binary files, <n> is considered to mean number of bytes.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_h_OPT);
+			GMT_Usage (API, -2, "Input/output file has <nrecs> header record(s) [%s]. "
+				"Optionally, append i for input or o for output only and number of expected header records [%d]. "
+				"Note: -hi turns off the writing of all headers on output since none will be read.  Optional modifiers:",
+				GMT_choice[GMT->current.setting.io_header[GMT_IN]], GMT->current.setting.io_n_header_items);
+			GMT_Usage (API, 3, "+c Add header record with column information [none].");
+			GMT_Usage (API, 3, "+d Delete headers before adding new ones [Default will append headers].");
+			GMT_Usage (API, 3, "+m Insert a new segment header and <segheader> content after the headers [none].");
+			GMT_Usage (API, 3, "+r Add a <remark> comment to the output [none].");
+			GMT_Usage (API, 3, "+t Add a <title> comment to the output [none].");
+			GMT_Usage (API, -2, "Note: <remark> and <title> may contain \\n to indicate line-breaks. "
+				"For binary files, <nrecs> is considered to mean number of bytes instead of records.");
 			break;
 
 		case 'i':	/* -i option for input column order */
 
-			gmt_message (GMT, "\t-i Set alternate input column order and optional transformations [Default reads all columns in original order].\n");
-			gmt_message (GMT, "\t   Append list of columns; t[<word>] = trailing text; use <word> to pick a word from the text.\n");
-			gmt_message (GMT, "\t   Use -in for considering numerical input only.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_i_OPT);
+			GMT_Usage (API, -2, "Set alternate input column order and optional transformations [Default reads all columns in original order]. "
+				"Append list or ranges of columns; t[<word>] selects the trailing text; append <word> to pick a word from the text. Use -in to select numerical input only. "
+				"Optional modifiers per column or column group:");
+			GMT_Usage (API, 3, "+l Take log10 of column before any other transformations.");
+			GMT_Usage (API, 3, "+d Divide column by appended <divisor>.");
+			GMT_Usage (API, 3, "+o Add to column the appended <offset>.");
+			GMT_Usage (API, 3, "+s Multiply column by appended <scale>.");
 			break;
 
 		case 'A':	/* -j option for spherical distance calculation mode */
 
-			gmt_message (GMT, "\t-j Set spherical distance calculation mode for modules that offer that flexibility.\n");
-			gmt_message (GMT, "\t   Append f for Flat Earth, g for Great Circle [Default], and e for Ellipsoidal mode.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_j_OPT);
+			GMT_Usage (API, -2, "Set spherical distance calculation mode for modules that offer that flexibility. "
+				"Append e for Ellipsoidal, f for Flat, or g for Spherical Earth (Great Circle) [Default].");
 			break;
 
 		case 'n':	/* -n option for grid resampling parameters in BCR */
 
-			gmt_message (GMT, "\t-n[b|c|l|n][+a][+b<BC>][+c][+t<threshold>] Specify the grid interpolation mode.\n");
-			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default is bicubic].\n");
+			GMT_Usage (API, 1, "\n%s", GMT_n_OPT);
+			GMT_Usage (API, -2, "Specify a grid interpolation directive:");
+			GMT_Usage (API, 3, "b: B-spline.");
+			GMT_Usage (API, 3, "c: Bicubic spline [Default].");
+			GMT_Usage (API, 3, "l: Bilinear spline.");
+			GMT_Usage (API, 3, "n: Nearest-neighbor value, i.e., no spline at all.");
+			GMT_Usage (API, -2, "Optional modifiers:");
 #ifdef DEBUG
-			gmt_message (GMT, "\t   Append +A to save the anti-aliasing counter to a grid for debugging.\n");
+				GMT_Usage (API, 3, "+A Save the anti-aliasing counter to nz_grd_counter.grd for debugging.");
 #endif
-			gmt_message (GMT, "\t   Append +a to switch off anti-aliasing (except for l) [Default: on].\n");
-			gmt_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
-			gmt_message (GMT, "\t     g for geographic, p for periodic, and n for natural boundary conditions.\n");
-			gmt_message (GMT, "\t     For p and n you may optionally append x or y [default is both]:\n");
-			gmt_message (GMT, "\t       x for periodic boundary conditions on x,\n");
-			gmt_message (GMT, "\t       y for periodic boundary conditions on y.\n");
-			gmt_message (GMT, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
-			gmt_message (GMT, "\t   Append +c to clip interpolated grid to input z-min/max [Default may exceed limits].\n");
-			gmt_message (GMT, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
-			gmt_message (GMT, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
-			gmt_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
+				GMT_Usage (API, 3, "+a Switch off anti-aliasing (except for linear) [Default is ON].");
+				GMT_Usage (API, 3, "+b Change boundary conditions, where <BC> can be either "
+					"g for geographic, p for periodic, or n for natural boundary conditions. "
+					"For p and n you may optionally append x or y [Default is both]: "
+					"x for periodic boundary conditions on x, "
+					"y for periodic boundary conditions on y "
+					"[Default is Natural conditions, unless grid is known to be geographic].");
+				GMT_Usage (API, 3, "+c Clip interpolated grid to input z-min/max [Default may exceed limits].");
+				GMT_Usage (API, 3, "+t Change the minimum weight in vicinity of NaNs. A <threshold> of "
+					"1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate "
+					"about half way from a non-NaN to a NaN node [Default is 0.5].");
 			break;
 
 		case 'o':	/* -o option for output column order */
 
-			gmt_message (GMT, "\t-o Set alternate output column order [Default writes all columns in order].\n");
-			gmt_message (GMT, "\t   Append list of columns; t[<word>] = trailing text; use <word> for writing a single word from the text.\n");
-			gmt_message (GMT, "\t   Use -on for numerical output only.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_o_OPT);
+			GMT_Usage (API, -2, "Set alternate output column order [Default writes all columns in normal order]. "
+				"Append list or ranges of columns; t[<word>] selects the trailing text; append <word> for writing a single word from the text. "
+				"Use -on to select numerical output only.");
 			break;
 
 		case 'p':	/* Enhanced pseudo-perspective 3-D plot settings */
 		case 'E':	/* GMT4: For backward compatibility */
 			if (gmt_M_compat_check (GMT, 4) || options[k] == 'p') {
-				gmt_message (GMT, "\t-%c Select a 3-D pseudo perspective view.  Append the\n", options[k]);
-				gmt_message (GMT, "\t   <azimuth>/<elevation> of the viewpoint [180/90].\n");
-				gmt_message (GMT, "\t   When used with -Jz|Z, optionally add /<zlevel> for frame level [bottom of z-axis].\n");
-				gmt_message (GMT, "\t   Prepend x or y to plot against the \"wall\" x = level or y = level [z].\n");
-				gmt_message (GMT, "\t   Optionally, append +w<lon0>/<lat0>[/<z0>] to specify a fixed coordinate point\n");
-				gmt_message (GMT, "\t   or +v<x0>/<y0> for a fixed projected point [region center and page center].\n");
-				gmt_message (GMT, "\t   For a plain rotation about the z-axis, give rotation angle only\n");
-				gmt_message (GMT, "\t   and optionally use +w or +v to select location of axis [plot origin].\n");
+				GMT_Usage (API, 1, "\n%s", GMT_p_OPT);
+				GMT_Usage (API, -2, "Select a 3-D pseudo perspective view.  Append the "
+					"<azimuth>/<elevation> of the viewpoint [180/90], and "
+					"when used with -Jz|Z, optionally add /<zlevel> for basemap level [bottom of z-axis]. "
+					"Prepend x or y to plot against the \"wall\" x = level or y = level [z]. "
+					"For a plain rotation about the z-axis, give rotation angle only "
+					"and optionally use modifiers +w or +v to select location of axis:");
+				GMT_Usage (API, 3, "+w Specify a fixed coordinate point [region center].");
+				GMT_Usage (API, 3, "+v Set a fixed projected point [panel center].");
 			}
 			break;
 
 		case 'q':	/* -q option for input/output row selection */
 
-			gmt_message (GMT, "\t-q Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows].\n");
-			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.\n");
-			gmt_message (GMT, "\t   Append +f or +s to reset row counters per table or segment [per set (+a)].\n");
-			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data limits for column <col>.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_q_OPT);
+			GMT_Usage (API, -2, "Select input (-q or -qi) or output (-qo) rows to process [Default reads or writes all rows]. "
+				"Append comma-separated lists or ranges of rows; prepend ~ to exclude those ranges instead. Optional modifiers:");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified column <col> instead.");
+			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
+			GMT_Usage (API, 3, "+f Reset row counters per file.");
+			GMT_Usage (API, 3, "+s Reset row counters per segment.");
 			break;
 
 		case 'u':	/* -qi option for input only */
 
-			gmt_message (GMT, "\t-qi Select input rows to process [Default reads all rows].\n");
-			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.\n");
-			gmt_message (GMT, "\t   Append +f or +s to reset row counters per table or segment [per set (+a)].\n");
-			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data limits for input column <col>.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_qi_OPT);
+			GMT_Usage (API, -2, "Select input rows to process [Default reads all rows]. "
+				"Append comma-separated lists or ranges of rows; prepend ~ to exclude those ranges instead. Optional modifiers:");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified input column <col> instead.");
+			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
+			GMT_Usage (API, 3, "+f Reset row counters per file.");
+			GMT_Usage (API, 3, "+s Reset row counters per segment.");
 			break;
 
 		case 'v':	/* -qo option for output only */
 
-			gmt_message (GMT, "\t-qo Select output rows to process [Default writes all rows].\n");
-			gmt_message (GMT, "\t   Append comma-separated lists of rows or row ranges; prepend ~ to exclude those ranges instead.\n");
-			gmt_message (GMT, "\t   Append +f or +s to reset row counters per table or segment [per set (+a)].\n");
-			gmt_message (GMT, "\t   For limits on data values instead, append +c<col> and give data limits for output column <col>.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_qo_OPT);
+			GMT_Usage (API, -2, "Select output rows to process [Default writes all rows]. "
+				"Append comma-separated lists or ranges of rows; prepend ~ to exclude those ranges instead. Optional modifiers:");
+			GMT_Usage (API, 3, "+c Set limits on data values for specified output column <col> instead.");
+			GMT_Usage (API, 3, "+a Reset row counters per data set [Default].");
+			GMT_Usage (API, 3, "+f Reset row counters per file.");
+			GMT_Usage (API, 3, "+s Reset row counters per segment.");
 			break;
 
 		case 'w':	/* -w option for cyclicity */
 
-			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified cyclicity:\n");
-			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
-			gmt_message (GMT, "\t   Alternatively, append c<period>[/<phase>] for custom cyclicity.\n");
-			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_w_OPT);
+			GMT_Usage (API, -2, "Wrap selected column [0] with specified cyclicity. "
+				"Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles. "
+				"Alternatively, append c<period>[/<phase>] for custom cyclicity [Default <phase> = 0].");
+			GMT_Usage (API, 3, "+c<col> Select another column than 0 (first) for wrapping.");
 			break;
 
 		case 's':	/* Output control for records where z are NaN */
 
-			gmt_message (GMT, "\t-s Suppress output of data records whose z-value(s) equal NaN [Default prints all records].\n");
-			gmt_message (GMT, "\t   Append <cols> to test all specified column(s) [2].\n");
-			gmt_message (GMT, "\t   Append +a to suppress records where any column equals NaN [all columns must equal NaN].\n");
-			gmt_message (GMT, "\t   Append +r to reverse the test (only output record that fail the NaN-test).\n");
+			GMT_Usage (API, 1, "\n%s", GMT_s_OPT);
+			GMT_Usage (API, -2, "Suppress output of data records whose z-value(s) equal NaN [Default prints all records]. "
+				"Append <cols> to test all specified column(s) [2]. Optional modifiers:");
+			GMT_Usage (API, 3, "+a Suppress records where any column equals NaN [all columns must equal NaN].");
+			GMT_Usage (API, 3, "+r Reverse the test (only output record that fail the NaN-test).");
 			break;
 
-		case 'F':	/* -r Pixel registration option  */
+		case 'F':	/* -r grid registration option  */
 
-			gmt_message (GMT, "\t-r Set (g)ridline- or (p)ixel-registration [Just -r sets pixel registration].\n");
-			gmt_message (GMT, "\t   If not given we default to gridline registration.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_r_OPT);
+			GMT_Usage (API, -2, "Set (g)ridline- or (p)ixel-registration (-r with no argument sets pixel registration). "
+				"If -r is not given then we default to gridline registration.");
 			break;
 
 		case 't':	/* -t layer transparency option  */
 
-			gmt_message (GMT, "\t-t Set the layer transparency from 0-100 [Default is 0; opaque].\n");
-			gmt_message (GMT, "\t   Requires conversion to PDF or raster formats.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_t_OPT);
+			GMT_Usage (API, -2, "Set layer transparency from 0-100 [Default is 0; opaque]. "
+				"For separate transparencies for fill and stroke, append /<transp2> [Default is same for both]. Optional modifiers:");
+			GMT_Usage (API, 3, "+f Let <transp> apply to fill only.");
+			GMT_Usage (API, 3, "+s Let <transp> apply to stroke only.");
+			GMT_Usage (API, -2, "Note: Transparency requires conversion to PDF or raster formats to take effect.");
 			break;
 
 		case 'T':	/* Same -t but with extension for variable fill/stroke transparency option  */
 
-			gmt_message (GMT, "\t-t Set the layer transparency from 0-100 [Default is 0; opaque].\n");
-			gmt_message (GMT, "\t   Requires conversion to PDF or raster formats.\n");
-			gmt_message (GMT, "\t   For separate transparency for fill and stroke, append /<transp2> as well.\n");
-			gmt_message (GMT, "\t   For plotting symbols with variable transparency read from file, append no value\n");
-			gmt_message (GMT, "\t   and give the transparency as the last numerical value in the data record.\n");
-			gmt_message (GMT, "\t   Use the +f and +s modifiers to indicate which one or if we expect one or two transparencies.\n");
+			GMT_Usage (API, 1, "\n%s", GMT_tv_OPT);
+			GMT_Usage (API, -2, "Set layer transparency from 0-100 [Default is 0; opaque]. "
+				"For separate transparencies for fill and stroke, append /<transp2>. "
+				"For plotting symbols with variable transparency read from file, append no values "
+				"and give the transparency as the last numerical value(s) in the data record. Optional modifiers:");
+			GMT_Usage (API, 3, "+f Let transparency apply to fills only.");
+			GMT_Usage (API, 3, "+s Let transparency apply to strokes only.");
+			GMT_Usage (API, -2, "If no transparency is given then use +f, +s to tell if we expect one or two transparencies from file [1].");
+			GMT_Usage (API, -2, "Note: Transparency requires conversion to PDF or raster formats to take effect.");
 			break;
 
 		case ':':	/* lon/lat [x/y] or lat/lon [y/x] */
 
-			gmt_message (GMT, "\t-: Swap 1st and 2nd column on input and/or output [%s/%s].\n",
-			             GMT_choice[GMT->current.setting.io_lonlat_toggle[GMT_IN]], GMT_choice[GMT->current.setting.io_lonlat_toggle[GMT_OUT]]);
+			GMT_Usage (API, 1, "\n%s Swap 1st and 2nd column on input and/or output [%s/%s].", GMT_colon_OPT,
+				GMT_choice[GMT->current.setting.io_lonlat_toggle[GMT_IN]], GMT_choice[GMT->current.setting.io_lonlat_toggle[GMT_OUT]]);
 			break;
 
 		case '.':	/* Trailer message */
 
-			gmt_message (GMT, "\t-^ (or -) Print short synopsis message.\n");
-			gmt_message (GMT, "\t-+ (or +) Print longer synopsis message.\n");
-			gmt_message (GMT, "\t-? (or no arguments) Print this usage message.\n");
-			gmt_message (GMT, "\t--PAR=<value> Temporarily override GMT default setting(s) (repeatable).\n");
-			gmt_message (GMT, "\t(See %s man page for GMT default parameters).\n", GMT_SETTINGS_FILE);
+			GMT_Usage (API, 1, "\n-^ (or -) Print short synopsis message.");
+			GMT_Usage (API, 1, "-+ (or +) Print longer synopsis message.");
+			GMT_Usage (API, 1, "-? (or no arguments) Print this usage message.");
+			GMT_Usage (API, 1, "--PAR=<value> Temporarily override GMT default setting(s) (repeatable).");
+			GMT_Usage (API, -2, "(See %s documentation for GMT default parameters).", GMT_SETTINGS_FILE);
 			break;
 
 		case ';':	/* Trailer message without --PAR=value etc */
 
-			gmt_message (GMT, "\t-^ (or -) Print short synopsis message.\n");
-			gmt_message (GMT, "\t-+ (or +) Print longer synopsis message.\n");
-			gmt_message (GMT, "\t-? (or no arguments) Print this usage message.\n");
+			GMT_Usage (API, 1, "\n-^ (or -) Print short synopsis message.");
+			GMT_Usage (API, 1, "-+ (or +) Print longer synopsis message.");
+			GMT_Usage (API, 1, "-? (or no arguments) Print this usage message.");
 			break;
 
 		case '<':	/* Table input */
 
-			gmt_message (GMT, "\t<table> is one or more data files (in ASCII, binary, netCDF).\n");
-			gmt_message (GMT, "\t   If no files are given, standard input is read.\n");
+			GMT_Usage (API, 1, "\n<table> is one or more data files (in ASCII, binary, netCDF). "
+				"If no files are given, standard input is read.");
+			break;
+
+		case '-':	/* --PAR=arg message */
+			GMT_Usage (API, 1, "\n--PAR=<value> Temporarily override GMT default setting(s) (repeatable).");
+			GMT_Usage (API, -2, "(See %s documentation for GMT default parameters).", GMT_SETTINGS_FILE);
 			break;
 
 		default:	/* Pass through, no error, might be things like -y not available */
@@ -7660,16 +7733,40 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 	\param option ...
 */
 void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
- 	gmt_message (GMT, "\t-%c Place limits on coastline features from the GSHHG data base.\n", option);
-	gmt_message (GMT, "\t   Features smaller than <min_area> (in km^2) or of levels (0-4) outside the min-max levels\n");
-	gmt_message (GMT, "\t   will be skipped [0/4 (4 means lake inside island inside lake)].\n");
-	gmt_message (GMT, "\t   Select +a and one or two codes to control how Antarctica is handled:\n");
-	gmt_message (GMT, "\t     Add g to use shelf ice grounding line for Antarctica coastline, or\n");
-	gmt_message (GMT, "\t     Add i to use ice/water front for Antarctica coastline [Default].\n");
-	gmt_message (GMT, "\t     Add s to skip Antarctica (all data south of %dS) [use all], or\n", abs(GSHHS_ANTARCTICA_LIMIT));
-	gmt_message (GMT, "\t     Add S to skip anything BUT Antarctica (all data north of %dS) [use all].\n", abs(GSHHS_ANTARCTICA_LIMIT));
-	gmt_message (GMT, "\t   Append +r to only get riverlakes from level 2, or +l to only get lakes [both].\n");
-	gmt_message (GMT, "\t   Append +p<percent> to exclude features whose size is < <percent>%% of the full-resolution feature [use all].\n");
+	struct GMTAPI_CTRL *API = GMT->parent;
+	gmt_M_unused (option);
+ 	GMT_Usage (API, 1, "\n%s", GMT_A_OPT);
+ 	GMT_Usage (API, -2, "Place limits on coastline features from the GSHHG data base. "
+		"Features smaller than <min_area> (in km^2) or of levels (0-4) outside the <min_level>/<max_level> "
+		"range will be skipped [Default is 0/4 (0 is ocean and 4 means lake inside island inside lake)]. Optional modifiers:");
+		GMT_Usage (API, 3, "+a Control how Antarctica is handled: "
+		"Append g to use shelf ice grounding line for Antarctica coastline, or "
+		"append i to use ice/water front instead [Default]. "
+		"Append s to skip Antarctica (all data south of %dS), or "
+		"S to skip anything BUT Antarctica (all data north of %dS) [use all data]. ",
+			abs(GSHHS_ANTARCTICA_LIMIT), abs(GSHHS_ANTARCTICA_LIMIT));
+		GMT_Usage (API, 3, "+l Only get lakes from level 2 [riverlakes and lakes].");
+		GMT_Usage (API, 3, "+p Exclude features whose size is < <percent>%% of the full-resolution feature [use all features].");
+		GMT_Usage (API, 3, "+r Only get riverlakes from level 2  [riverlakes and lakes]");
+}
+
+/*! GSHHG resolution specification */
+/*! .
+	\param GMT ...
+	\param option ...
+	\param string ...
+*/
+void gmt_GSHHG_resolution_syntax  (struct GMT_CTRL *GMT, char option, char *string) {
+	struct GMTAPI_CTRL *API = GMT->parent;
+	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
+	GMT_Usage (API, 1, "\n-%c<resolution>[+f]", option);
+	GMT_Usage (API, -2, "Choose one of the following resolutions:");
+	GMT_Usage (API, 3, "f: Full resolution (may be very slow for large regions).");
+	GMT_Usage (API, 3, "h: High resolution (may be slow for large regions).");
+	GMT_Usage (API, 3, "i: Intermediate resolution.");
+	GMT_Usage (API, 3, "l: Low resolution [Default].");
+	GMT_Usage (API, 3, "c: Crude resolution, for tasks that need crude continent outlines only.");
+	GMT_Usage (API, -2, "Append +f to use a lower resolution should the chosen one not be available [abort]. %s", string);
 }
 
 /*! Contour/line specifications in *contour and psxy[z] */
@@ -7679,59 +7776,66 @@ void gmt_GSHHG_syntax (struct GMT_CTRL *GMT, char option) {
 	\param kind  kind = 0 for *contour and 1 for psxy[z]
 */
 void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind) {
-	unsigned int i;
-	char pad[16], *type[3] = {"Contour", "Line", "Decorated line"};
-	char *feature[3] = {"label", "label", "symbol"};
-
-	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
-	gmt_message (GMT, "%s +a<angle> will place all %s at a fixed angle.\n", pad, feature[kind]);
-	gmt_message (GMT, "%s Or, specify +an (line-normal) or +ap (line-parallel) [Default].\n", pad);
+	struct GMTAPI_CTRL *API = GMT->parent;
+	static char *type[3] = {"Contour", "Line", "Decorated line"};
+	static char *feature[3] = {"label", "label", "symbol"};
+	indent++;
 	if (kind == 0) {
-		gmt_message (GMT, "%s   For +ap, you may optionally append u for up-hill\n", pad);
-		gmt_message (GMT, "%s   and d for down-hill cartographic annotations.\n", pad);
+		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
+			"Or, specify +an (line-normal) or +ap (line-parallel) [Default]. "
+			"For +ap, you may optionally append u for up-hill"
+			"and d for down-hill cartographic annotations.\n", feature[kind]);
 	}
-	if (kind < 2) gmt_message (GMT, "%s +c<dx>[/<dy>] sets clearance between label and text box [15%%].\n", pad);
-	gmt_message (GMT, "%s +d turns on debug which draws helper points and lines; optionally add a pen [%s]\n", pad, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
-	if (kind < 2) gmt_message (GMT, "%s +e delays the plotting of the text as text clipping is set instead.\n", pad);
-	if (kind < 2) gmt_message (GMT, "%s +f sets specified label font [Default is %s].\n", pad, gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
+	else {
+		GMT_Usage (API, indent, "+a Place all %s at a fixed <angle>. "
+			"Or, specify +an (line-normal) or +ap (line-parallel) [Default].", feature[kind]);
+	}
+	if (kind < 2) GMT_Usage (API, indent, "+c Set clearance <dx>[/<dy>] between label and text box [15%%].");
+	GMT_Usage (API, indent, "+d Debug mode which draws helper points and lines; optionally add a pen [%s].", gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+	if (kind < 2) GMT_Usage (API, indent, "+e Delay plotting of text as text clipping is set instead.");
+	if (kind < 2) GMT_Usage (API, indent, "+f Set specified label <font> [Default is %s].", gmt_putfont (GMT, &GMT->current.setting.font_annot[GMT_PRIMARY]));
 	if (kind < 2)
-		gmt_message (GMT, "%s +g[<color>] paints text box [transparent]; append color [white].\n", pad);
+		GMT_Usage (API, indent, "+g Paint text box [transparent]; optionally append <color> [white].");
 	else
-		gmt_message (GMT, "%s +g<fill> sets the fill for the symbol [transparent]\n", pad);
-	if (kind) gmt_message (GMT, "%s +i makes the main line invisible [drawn using pen settings from -W].\n", pad);
-	if (kind < 2) gmt_message (GMT, "%s +j<just> sets %s justification [Default is MC].\n", pad, feature[kind]);
+		GMT_Usage (API, indent, "+g Set the <fill> for the symbol [transparent]");
+	if (kind) GMT_Usage (API, indent, "+i Make the main line invisible [drawn using pen settings from -W].");
+	if (kind < 2) GMT_Usage (API, indent, "+j Set %s <justification> [Default is MC].", feature[kind]);
 	if (kind == 1) {
-		gmt_message (GMT, "%s +l<text> Use text as label (quote text if containing spaces).\n", pad);
-		gmt_message (GMT, "%s +L<d|D|f|h|n|N|x> Sets label according to given flag:\n", pad);
-		gmt_message (GMT, "%s   d Cartesian plot distance; append a desired unit from %s.\n", pad, GMT_DIM_UNITS_DISPLAY);
-		gmt_message (GMT, "%s   D Map distance; append a desired unit from %s.\n", pad, GMT_LEN_UNITS_DISPLAY);
-		gmt_message (GMT, "%s   f Label is last column of given label location file.\n", pad);
-		gmt_message (GMT, "%s   h Use segment header labels (via -Lstring).\n", pad);
-		gmt_message (GMT, "%s   n Use the current segment number (starting at 0).\n", pad);
-		gmt_message (GMT, "%s   N Use current file number / segment number (starting at 0/0).\n", pad);
-		gmt_message (GMT, "%s   x Like h, but us headers in file with crossing lines instead.\n", pad);
+		GMT_Usage (API, indent, "+l Use <text> as label (quote text if containing spaces).");
+		GMT_Usage (API, indent, "+L Set label according to given flag: "
+			"d: Cartesian plot distance; append a desired unit from %s, "
+			"D: Map distance; append a desired unit from %s, "
+			"f: Use given label location file with label in last column, "
+			"h: Use segment header labels (via -Lstring), "
+			"n: Use the current segment number (starting at 0), "
+			"N: Use current file number / segment number (starting at 0/0), or "
+			"x: Like h, but use headers in file with crossing lines instead.", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	}
 	if (kind < 2)
-		gmt_message (GMT, "%s +n<dx>[/<dy>] to nudge label along line (+N for along x/y axis); ignored with +v.\n", pad);
+		GMT_Usage (API, indent, "+n Nudge label by <dx>[/<dy>] along line (+N for along x/y axis); ignored with +v.");
 	else
-		gmt_message (GMT, "%s +n<dx>[/<dy>] to nudge symbol along line (+N for along x/y axis).\n", pad);
-	if (kind < 2)gmt_message (GMT, "%s +o to use rounded rectangular text box [Default is rectangular].\n", pad);
-	gmt_message (GMT, "%s +p[<pen>] draw outline of textbox [Default is no outline].\n", pad);
-	gmt_message (GMT, "%s   Optionally append a pen [Default is default pen].\n", pad);
-	if (kind == 2) gmt_message (GMT, "%s +s<symbol><size> specifies the decorative symbol and its size.\n", pad);
+		GMT_Usage (API, indent, "+n Nudge symbol by <dx>[/<dy>] along line (+N for along x/y axis).");
+	if (kind < 2) GMT_Usage (API, indent, "+o Use rounded rectangular text box [Default is rectangular].");
+	GMT_Usage (API, indent, "+p Draw outline of textbox [Default is no outline]. "
+		"Optionally append a <pen> [Default is default pen].");
+	if (kind == 2) GMT_Usage (API, indent, "+s Specify the decorative <symbol> and its <size>.");
 	if (kind < 2) {
-		gmt_message (GMT, "%s +r<rmin> skips labels where radius of curvature < <rmin> [0].\n", pad);
-		gmt_message (GMT, "%s +t[<file>] saves (x y angle label) to <file> [%s_labels.txt].\n", pad, type[kind%2]);
-		gmt_message (GMT, "%s +u<unit> to append unit to all labels.\n", pad);
+		GMT_Usage (API, indent, "+r Skip labels where radius of curvature < <rmin> [0].");
+		GMT_Usage (API, indent, "+t Save (x y angle label) to <file> [%s_labels.txt].", type[kind%2]);
 	}
-	if (kind == 0) gmt_message (GMT, "%s  If z is appended we use the z-unit from the grdfile [no unit].\n", pad);
-	if (kind < 2) gmt_message (GMT, "%s +v for placing curved text along path [Default is straight].\n", pad);
-	gmt_message (GMT, "%s +w<n> sets how many (x,y) points to use for angle calculation [auto].\n", pad);
+	if (kind == 0) {
+		GMT_Usage (API, indent, "+u Append <unit> to all labels. "
+			"If z is appended we use the z-unit from the grdfile [no unit].");
+	}
+	else
+		GMT_Usage (API, indent, "+u Append <unit> to all labels.");
+	if (kind < 2) GMT_Usage (API, indent, "+v Place curved text along path [Default is straight].");
+	GMT_Usage (API, indent, "+w Specify <n> (x,y) points to use for angle calculation [auto].");
 	if (kind == 1) {
-		gmt_message (GMT, "%s +x[first,last] adds <first> and <last> to these two labels [,'].\n", pad);
-		gmt_message (GMT, "%s   This modifier is only allowed if -SqN2 is used.\n", pad);
+		GMT_Usage (API, indent, "+x Add <first>,<last> to these two labels [,']. "
+			"This modifier is only allowed if -SqN2 is used.");
 	}
-	if (kind < 2) gmt_message (GMT, "%s +=<prefix> to give all labels a prefix.\n", pad);
+	if (kind < 2) GMT_Usage (API, indent, "+= Give all labels a <prefix>.");
 }
 
 /*! Contour/line label placement specifications in *contour and psxy[z] */
@@ -7741,52 +7845,66 @@ void gmt_label_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int k
 	\param kind  kind = 0 for *contour and 1 for psxy[z]
 */
 void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind) {
-	unsigned int i;
 	double gap;
-	char pad[16];
 	char *type[3] = {"contour", "quoted line", "decorated line"};
 	char *feature[3] = {"label", "label", "symbol"};
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	gap = (GMT->current.setting.proj_length_unit == GMT_CM) ? 10.0 / 2.54 : 4.0;
 	gap *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
 
-	pad[0] = '\t';	for (i = 1; i <= indent; i++) pad[i] = ' ';	pad[i] = '\0';
-	gmt_message (GMT, "%sd<dist>[%s] or D<dist>[%s]  [Default is d%g%c].\n",
-		pad, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0]);
-	gmt_message (GMT, "%s   d: Give distance between %ss with specified map unit in %s.\n", pad, feature[kind], GMT_DIM_UNITS_DISPLAY);
-	gmt_message (GMT, "%s   D: Specify geographic distance between %ss in %s,\n", pad, feature[kind], GMT_LEN_UNITS_DISPLAY);
-	gmt_message (GMT, "%s   The first %s appears at <frac>*<dist>; change by appending /<frac> [0.25].\n", pad, feature[kind]);
-	gmt_message (GMT, "%sf<file.d> reads file <file.d> and places %ss at locations\n", pad, feature[kind]);
-	gmt_message (GMT, "%s   that match individual points along the %ss.\n", pad, type[kind]);
-	gmt_message (GMT, "%sl|L<line1>[,<line2>,...] Give start and stop coordinates for\n", pad);
-	gmt_message (GMT, "%s   straight line segments; %ss will be placed where these\n", pad, feature[kind]);
-	gmt_message (GMT, "%s   lines intersect %ss.  The format of each <line>\n", pad, type[kind]);
-	gmt_message (GMT, "%s   is <start>/<stop>, where <start> or <stop> = <lon/lat> or a\n", pad);
-	gmt_message (GMT, "%s   2-character XY key that uses the \"pstext\"-style justification\n", pad);
-	gmt_message (GMT, "%s   format to specify a point on the map as [LCR][BMT].\n", pad);
+	GMT_Usage (API, indent, "d: Append distance <dist> between %ss with specified map unit in %s  [Default is d%g%c]. "
+		"The first %s will appear at <frac>*<dist>; change this by appending /<frac> [0.25].",
+			feature[kind], GMT_DIM_UNITS_DISPLAY, gap, GMT->session.unit_name[GMT->current.setting.proj_length_unit][0], feature[kind]);
+	GMT_Usage (API, indent, "D: Same as +d, but append geographic distance between %ss with specified unit in %s.", feature[kind], GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, indent, "f: Append <file> with locations of individual points along the %ss where %ss should be placed.", type[kind], feature[kind]);
 	if (kind == 0) {
-		gmt_message (GMT, "%s   In addition, you can use Z-, Z+ to mean the global\n", pad);
-		gmt_message (GMT, "%s   minimum and maximum locations in the grid.\n", pad);
+		GMT_Usage (API, indent, "l: Append <line1>[,<line2>,...] to set coordinates for "
+		"straight line segments; %ss will be placed where these "
+		"lines intersect %ss.  The format of each <line> "
+		"is <start>/<stop>, where <start> or <stop> is either <lon/lat> or a "
+		"2-character key that uses the standard text justification codes "
+		"to specify a point on the map as [LCR][BMT]. In addition, you can use Z-, Z+ "
+		"to mean the global minimum and maximum locations in the grid.", feature[kind], type[kind]);
 	}
-	gmt_message (GMT, "%s   L Let point pairs define great circles [Straight lines].\n", pad);
-	gmt_message (GMT, "%sn|N<n_%s> sets number of equidistant %ss per %s.\n", pad, feature[kind], feature[kind], type[kind]);
-	gmt_message (GMT, "%s   N: Starts %s exactly at the start of %s\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s     [Default centers the %ss on the %s].\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s   N-1 places a single %s at start of the %s, while\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s   N+1 places a single %s at the end of the %s.\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s   Append /<min_dist> to enforce a minimum spacing between\n", pad);
-	gmt_message (GMT, "%s   consecutive %ss [0]\n", pad, feature[kind]);
+	else {
+		GMT_Usage (API, indent, "l: Append <line1>[,<line2>,...] to set start and stop coordinates for "
+		"straight line segments; %ss will be placed where these "
+		"lines intersect %ss.  The format of each <line> "
+		"is <start>/<stop>, where <start> or <stop> is either <lon/lat> or a "
+		"2-character key that uses the standard text justification codes "
+		"to specify a point on the map as [LCR][BMT].", feature[kind], type[kind]);
+	}
+	GMT_Usage (API, indent, "L: Same as +l, but the point pairs define great circles instead of straight lines.");
+	GMT_Usage (API, indent, "n: Append number of centered equidistant %ss per %s. "
+		"Optionally, append /<min_dist> to enforce a minimum spacing between consecutive %ss [0].", feature[kind], type[kind], feature[kind]);
+	GMT_Usage (API, indent, "N: Same as +n, but start %s exactly at the start of %s. "
+		"Special cases: N-1 will place a single %s at start of the %s, while "
+		"N+1 will place a single %s at the end of the %s.",
+			feature[kind], type[kind], feature[kind], type[kind], feature[kind], type[kind]);
 	if (kind == 1) {
-		gmt_message (GMT, "%ss|S<n_%s> sets number of equidistant %s per segmented %s.\n", pad, feature[kind], feature[kind], type[kind]);
-		gmt_message (GMT, "%s   Same as n|N but splits input lines to series of 2-point segments first.\n", pad);
+		GMT_Usage (API, indent, "s: Append number of equidistant %ss per segmented %s. "
+			"Similar to +n, but splits input lines into a series of 2-point segments first.", feature[kind], type[kind]);
+		GMT_Usage (API, indent, "S: Same as +s, but with %s placement as described for +N.", feature[kind]);
 	}
-	gmt_message (GMT, "%sx|X<xfile.d> reads the multi-segment file <xfile.d> and places\n", pad);
-	gmt_message (GMT, "%s   %ss at intersections between %ss and lines in\n", pad, feature[kind], type[kind]);
-	gmt_message (GMT, "%s   <xfile.d>.  Use X to resample the lines first.\n", pad);
+	GMT_Usage (API, indent, "x: Append name of a multi-segment <file> and place "
+		"%ss at intersections between %ss and lines in <file>.", feature[kind], type[kind]);
+	GMT_Usage (API, indent, "X: Same as +x, but will resample the lines first.");
 	if (kind < 2) {
-		gmt_message (GMT, "%s   For all options, append +r<radius> to specify minimum\n", pad);
-		gmt_message (GMT, "%s   radial separation between labels [0]\n", pad);
+		GMT_Usage (API, -indent, "For all placement selections, append +r<radius> to specify minimum "
+			"radial separation between labels [0].");
 	}
+}
+
+void gmt_innercont_syntax (struct GMT_CTRL *GMT) {
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, -2, "Embellish innermost, closed contours with ticks pointing in the downward direction. "
+ 		"User may specify to tick only highs (-Th) or lows (-Tl) [-T implies both extrema].");
+ 	GMT_Usage (API, 3, "+a Tick all closed contours.");
+ 	GMT_Usage (API, 3, "+d Append <spacing>[/<ticklength>] (with units) to change defaults [%gp/%gp].",
+ 		GMT_TICKED_SPACING, GMT_TICKED_LENGTH);
+ 	GMT_Usage (API, 3, "+l Append two characters (e.g., LH) or two comma-separated strings (e.g., \"low,high\") "
+ 		"to place labels at the center of local lows and highs [-+].");
 }
 
 /*! Widely used in most programs that need grid increments to be set */
@@ -7796,16 +7914,17 @@ void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int ki
 	\param error ...
 */
 void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
+	struct GMTAPI_CTRL *API = GMT->parent;
 	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c Specify increment(s) and optionally append units or flags.\n", option);
-	gmt_message (GMT, "\t   Full syntax is <xinc>[%s][+e|n][/<yinc>[%s][+e|n]]]\n", GMT_LEN_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
-	gmt_message (GMT, "\t   For geographic regions in degrees you can optionally append units from this list:\n");
-	gmt_message (GMT, "\t   (d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.\n");
-	gmt_message (GMT, "\t   Append +e to adjust the region to fit increments [Adjust increment to fit domain].\n");
-	gmt_message (GMT, "\t   Alternatively, specify number of nodes by appending +n. Then, the increments\n");
-	gmt_message (GMT, "\t   are calculated from the given domain and node-registration settings\n");
-	gmt_message (GMT, "\t   (see Appendix B for details).  Note: If -R<grdfile> was used then -%c\n", option);
-	gmt_message (GMT, "\t   (and -R and maybe -r) have been set; use -%c to override those increments.\n", option);
+	GMT_Usage (API, 1, "\n-%c%s", option, GMT_inc_OPT);
+	GMT_Usage (API, -2, "Specify increment(s) and optionally append units or modifiers. "
+		"For geographic regions in degrees you can optionally append units from this list: "
+		"(d)egree [Default], (m)inute, (s)econd, m(e)ter, (f)oot, (k)ilometer, (M)ile, (n)autical mile, s(u)rvey foot.");
+	GMT_Usage (API, 3, "+e Adjust the region to fit increments [Adjust increment to fit domain].");
+	GMT_Usage (API, 3, "+n Increment specifies the number of nodes instead. Then, the actual increments "
+		"are calculated from the given domain and node-registration settings (see Appendix B for details).");
+	GMT_Usage (API, -2, "Note: If -R<grdfile> was used then -%c "
+		"(and -R and maybe -r) have been set; use -%c to override those increments.", option, option);
 }
 
 /*! .
@@ -7814,6 +7933,7 @@ void gmt_inc_syntax (struct GMT_CTRL *GMT, char option, bool error) {
 	\param string ...
 */
 void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string) {
+	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') {
 		if (longoption)
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%s parsing failure.  Correct syntax:\n", longoption);
@@ -7821,19 +7941,21 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	}
 	if (longoption)
-		gmt_message (GMT, "\t-%s<fill> ", longoption);
+		GMT_Usage (API, 1, "\n-%s<fill>", longoption);
 	else
-		gmt_message (GMT, "\t-%c<fill> ", option);
-	gmt_message (GMT, "%s Specify <fill> as one of:\n", string);
-	gmt_message (GMT, "\t   1) <gray> or <red>/<green>/<blue>, all in the range 0-255;\n");
-	gmt_message (GMT, "\t   2) #rrggbb, all in the range 0-255 using hexadecimal numbers;\n");
-	gmt_message (GMT, "\t   3) <c>/<m>/<y>/<k> in range 0-100%%;\n");
-	gmt_message (GMT, "\t   4) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
-	gmt_message (GMT, "\t   5) any valid color name;\n");
-	gmt_message (GMT, "\t   6) P|p<pattern>[+b<color>][+f<color>][+r<dpi>];\n");
-	gmt_message (GMT, "\t      Give <pattern> number from 1-90 or a filename, optionally add +r<dpi> [%d].\n", PSL_DOTS_PER_INCH_PATTERN);
-	gmt_message (GMT, "\t      Optionally, use +f<color> or +b<color> to change fore- or background colors (no <color> sets transparency).\n");
-	gmt_message (GMT, "\t   For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].\n");
+		GMT_Usage (API, 1, "\n-%c<fill>", option);
+	GMT_Usage (API, -2, "%s Specify <fill> as one of:", string);
+	GMT_Usage (API, 3, "%s <gray> or <red>/<green>/<blue>, all in the range 0-255.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s #rrggbb, all in the range 0-255 using hexadecimal numbers.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <cyan>/<magenta>/<yellow>/<black> in range 0-100%%.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s A valid color name.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s P|p<pattern>[+b<color>][+f<color>][+r<dpi>]. "
+		"Give <pattern> number from 1-90 or a filename. Optional modifiers:", GMT_LINE_BULLET);
+	GMT_Usage (API, 4, "+r Specify the <dpi> of the pattern [%g]. ", PSL_DOTS_PER_INCH_PATTERN);
+	GMT_Usage (API, 4, "+b Change the background <color> (no <color> sets transparency).");
+	GMT_Usage (API, 4, "+f Change the foreground <color> (no <color> sets transparency).");
+	GMT_Usage (API, -2, "For PDF fill transparency, append @<transparency> in the range 0-100 [0 = opaque].");
 }
 
 /*! .
@@ -7841,56 +7963,68 @@ void gmt_fill_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char 
 	\param option ...
 	\param string ...
 */
-void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, unsigned int mode) {
+void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *string, char *prefix, unsigned int mode) {
 	/* mode = 1 (bezier option), 2 = end trim, 4 = vector heads, 7 = all, 8 = CPT interactions */
+	struct GMTAPI_CTRL *API = GMT->parent;
+	char msg[GMT_LEN256] = {""};
+	char *args = (mode) ? "[<width>[c|i|p]],[<color>],[<style>[c|i|p]][+c[f|l][+o<offset><unit>][+s][+v[b|e]<specs>]" : "[<width>[c|i|p]],[<color>],[<style>[c|i|p]]";
 	if (string[0] == ' ') {
 		if (longoption)
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%s parsing failure.  Correct syntax:\n", longoption);
 		else
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
 	}
-	if (longoption)
-		gmt_message (GMT, "\t-%s ", longoption);
-	else
-		gmt_message (GMT, "\t-%c ", option);
 	if (strstr (string, "%s"))
-		gmt_message (GMT, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
+		sprintf (msg, string, gmt_putpen (GMT, &GMT->current.setting.map_default_pen));
 	else
-		gmt_message (GMT, string);
-	gmt_message (GMT, "\n\t   <pen> is a comma-separated list of three optional items in the order:\n");
-	gmt_message (GMT, "\t       <width>[%s], <color>, and <style>[%s].\n", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
-	gmt_message (GMT, "\t   <width> >= 0.0 sets pen width (default units are points); alternatively a pen\n");
-	gmt_message (GMT, "\t             name: Choose among faint, default, or [thin|thick|fat][er|est], or wide.\n");
-	gmt_message (GMT, "\t   <color> = (1) <gray> or <red>/<green>/<blue>, all in range 0-255;\n");
-	gmt_message (GMT, "\t             (2) #rrggbb, all in the range 0-255 using hexadecimal numbers;\n");
-	gmt_message (GMT, "\t             (3) <c>/<m>/<y>/<k> in 0-100%% range;\n");
-	gmt_message (GMT, "\t             (4) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
-	gmt_message (GMT, "\t             (5) any valid color name.\n");
-	gmt_message (GMT, "\t   <style> = (1) pattern of dashes (-) and dots (.), scaled by <width>;\n");
-	gmt_message (GMT, "\t             (2) \"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\";\n");
-	gmt_message (GMT, "\t             (3) <pattern>[:<offset>]; <pattern> holds lengths (default unit points)\n");
-	gmt_message (GMT, "\t                 of any number of lines and gaps separated by underscores.\n");
-	gmt_message (GMT, "\t                The optional <offset> shifts elements from start of the line [0].\n");
-	gmt_message (GMT, "\t   For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
+		strcpy (msg, string);
+	if (longoption) {
+		if (prefix)
+			GMT_Usage (API, 1, "\n-%s=%s%s", longoption, prefix, args);
+		else
+			GMT_Usage (API, 1, "\n-%s=%s", longoption, args);
+	}
+	else {
+		if (prefix)
+			GMT_Usage (API, 1, "\n-%c%s%s", option, prefix, args);
+		else
+			GMT_Usage (API, 1, "\n-%c%s", option, args);
+	}
+	GMT_Usage (API, -2, "%s", msg);
+	GMT_Usage (API, 2, "<pen> is a comma-separated list of three optional items in the order: "
+		"<width>[%s], <color>, and <style>[%s].", GMT_DIM_UNITS_DISPLAY, GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "<width> >= 0.0 sets pen width (Default unit is point); alternatively, give a pen "
+		"name: Choose from faint, default, [thin|thick|fat][er|est] or wide.");
+	GMT_Usage (API, 3, "<color> = <gray> or <red>/<green>/<blue>, each in the range 0-255; "
+		"#rrggbb, each in the range 00-FF using hexadecimal numbers; "
+		"<cyan>/<magenta>/<yellow>/<black> each in 0-100%% range; "
+		"<hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1, respectively; "
+		"a valid color name.");
+	GMT_Usage (API, 3, "<style> = pattern of dashes (-) and dots (.), scaled by <width>; "
+		"\"dashed\", \"dotted\", \"dashdot\", \"dotdash\", or \"solid\"; "
+		"<pattern>[:<offset>]; <pattern> holds lengths [Default unit is points] "
+		"of any number of lines and gaps separated by underscores. "
+		"The optional <offset> phase-shifts elements from start of the line [0].");
+	GMT_Usage (API, -2, "For PDF stroke transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
 	if (mode)
-		gmt_message (GMT, "\t   Additional line attribute modifiers are also available.  Choose from:\n");
+		GMT_Usage (API, -2, "Additional line attribute modifiers are also available:");
+	if (mode & 8) {
+		GMT_Usage (API, 3, "+c Control how pens and fills are affected if a CPT is specified via -C: "
+			"Append l to let pen colors follow the CPT setting, or "
+			"append f to let fill/font colors follow the CPT setting. "
+			"Default activates both effects.");
+	}
 	if (mode & 2) {
-		gmt_message (GMT, "\t     +o<offset> Trim the line from the end inward by the specified amount.\n");
-		gmt_message (GMT, "\t        Choose <unit> as plot distances (%s) or map distances (%s) [Cartesian].\n", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
-		gmt_message (GMT, "\t        To trim the two ends differently, give two offsets separated by a slash (/).\n");
+		GMT_Usage (API, 3, "+o Trim the line from the end inward by the specified amount. "
+			"Choose <unit> in plot distances (%s) or map distances (%s) [Cartesian]. "
+			"To trim the two ends differently, give two offsets separated by a slash (/).", GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
 	}
 	if (mode & 1)
-		gmt_message (GMT, "\t     +s Draw line using a Bezier spline through projected coordinates [Linear spline].\n");
+		GMT_Usage (API, 3, "+s Draw line using a Bezier spline through projected coordinates [Linear spline].");
 	if (mode & 4) {
-		gmt_message (GMT, "\t     +v[b|e]<vecspecs> Add vector head with the given specs at the ends of lines.\n");
-		gmt_message (GMT, "\t        Use +ve and +vb separately to give different endings (+v applies to both).\n");
-		gmt_message (GMT, "\t        See vector specifications for details. Note: +v must be last modifier for a pen.\n");
-	}
-	if (mode & 8) {
-		gmt_message (GMT, "\t     +c Controls how pens and fills are affected if a CPT is specified via -C:\n");
-		gmt_message (GMT, "\t          Append l to let pen colors follow the CPT setting.\n");
-		gmt_message (GMT, "\t          Append f to let fill/font colors follow the CPT setting.\n");
-		gmt_message (GMT, "\t          Default activates both effects.\n");
+		GMT_Usage (API, 3, "+v Add vector head with the given <specs> at the ends of lines. "
+			"Use +ve and +vb separately to give different endings (+v applies to both). "
+			"See vector specifications for details. Note: +v must be the last modifier for a pen.");
 	}
 }
 
@@ -7900,38 +8034,43 @@ void gmt_pen_syntax (struct GMT_CTRL *GMT, char option, char *longoption, char *
 	\param string ...
 */
 void gmt_rgb_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c<color> %s Specify <color> as one of:\n", option, string);
-	gmt_message (GMT, "\t   1) <gray> or <red>/<green>/<blue>, all in range 0-255;\n");
-	gmt_message (GMT, "\t   2) <c>/<m>/<y>/<k> in range 0-100%%;\n");
-	gmt_message (GMT, "\t   3) <hue>-<sat>-<val> in ranges 0-360, 0-1, 0-1;\n");
-	gmt_message (GMT, "\t   4) any valid color name.\n");
-	gmt_message (GMT, "\t   For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].\n");
+	GMT_Usage (API, 1, "\n-%c<color>", option);
+	GMT_Usage (API, 2, "%s Specify <color> as one of: ", string);
+	GMT_Usage (API, 3, "%s <gray> or <red>/<green>/<blue>, all in range 0-255; ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <cyan>/<magenta>/<yellow>/<black> in range 0-100%%; ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s <hue>-<saturation>-<value> in ranges 0-360, 0-1, 0-1; ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Any valid color name.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "For PDF fill transparency, append @<transparency> in the range 0-100%% [0 = opaque].");
 }
-
 
 void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part) {
 	/* For -Dg|j|J|n|x */
-	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "inset", "map scale", "map rose", "vertical scale"}, *tab[2] = {"", "     "};
+	struct GMTAPI_CTRL *API = GMT->parent;
+	char *type[GMT_ANCHOR_NTYPES] = {"logo", "image", "legend", "color-bar", "inset", "map scale", "map rose", "vertical scale"};
 	unsigned int shift = (kind == GMT_ANCHOR_INSET) ? 1 : 0;	/* Add additional "tab" to front of message */
+	shift = 0;
 	if (part & 1) {	/* Here string is message, or NULL */
-		if (string) gmt_message (GMT, "\t-%s %s\n", option, string);
-		gmt_message (GMT, "\t   %sPositioning is specified via one of four coordinate systems:\n", tab[shift]);
-		gmt_message (GMT, "\t   %s  Use -%sg to specify <refpoint> with map coordinates.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  Use -%sj or -%sJ to specify bounding-box <refpoint> with 2-char justification code (BL, MC, etc).\n", tab[shift], option, option);
-		gmt_message (GMT, "\t   %s  Use -%sn to specify <refpoint> with normalized coordinates in 0-1 range.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  Use -%sx to specify <refpoint> with plot coordinates.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %sAll except -%sx require the -R and -J options to be set.\n", tab[shift], option);
-		gmt_message (GMT, "\t   %sUse J if item should be placed outside the map frame and j if inside.\n", tab[shift]);
+		if (string) GMT_Usage (API, 1+shift, "%s %s", option, string);
+		GMT_Usage (API, 2+shift, "Positioning is specified via one of four coordinate systems:");
+		GMT_Usage (API, 3+shift, "g: Give <refpoint> in map coordinates.");
+		GMT_Usage (API, 3+shift, "j: Set inside-the-box <refpoint> via justification code (BL, MC, etc).");
+		GMT_Usage (API, 3+shift, "J: Set outside-the-box refpoint> via justification code (BL, MC, etc).");
+		GMT_Usage (API, 3+shift, "n: Give <refpoint> in normalized coordinates in 0-1 range.");
+		GMT_Usage (API, 3+shift, "x: Give <refpoint> in plot coordinates.");
 	}
 	/* May need to place other things in the middle */
 	if (part & 2) {	/* Here string is irrelevant */
 		char *just[GMT_ANCHOR_NTYPES] = {"BL", "BL", "BL", "BL", "BL", "MC", "MC", "ML"};
-		gmt_message (GMT, "\t   %sAppend 2-char +j<justify> code to associate that anchor point on the %s with <refpoint>.\n", tab[shift], type[kind]);
-		gmt_message (GMT, "\t   %sIf +j<justify> is not given then <justify> will default to the same as <refpoint> (with -%sj),\n", tab[shift], option);
-		gmt_message (GMT, "\t   %s  or the mirror opposite of <refpoint> (with -%sJ), or %s (else).\n", tab[shift], option, just[kind]);
-		gmt_message (GMT, "\t   %sOptionally, append +o<dx>[/<dy>] to offset %s from <refpoint> in direction implied by <justify> [0/0].\n", tab[shift], type[kind]);
+		GMT_Usage (API, -(2+shift), "All systems except x require the -R and -J options to be set. Refpoint modifiers:");
+		GMT_Usage (API, 3+shift, "+j Append 2-char <justify> code to associate that anchor point on the %s with <refpoint>. "
+			"If +j<justify> is not given then <justify> will default to the same as <refpoint> (with j), "
+			"or the mirror opposite of <refpoint> (with -J), or %s (otherwise).", type[kind], just[kind]);
+		GMT_Usage (API, 3+shift, "+o Offset %s from <refpoint> by <dx>[/<dy>] in direction implied by <justify> [0/0].", type[kind]);
 	}
+	else
+		GMT_Usage (API, -(2+shift), "All systems except x require the -R and -J options to be set. ");
 }
 
 /*! .
@@ -7940,21 +8079,22 @@ void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsi
 	\param string ...
 */
 void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c %s\n", option, string);
-	gmt_message (GMT, "\t     Specify the map inset region using one of three specifications:\n");
-	gmt_message (GMT, "\t     a) Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels.\n");
-	gmt_message (GMT, "\t        Append +r if coordinates are the lower left and upper right corners of a rectangular area.\n");
-	gmt_message (GMT, "\t     b) Give <xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] of bounding rectangle in projected coordinates [meters].\n");
-	gmt_message (GMT, "\t     c) Set reference point and dimensions of the inset:\n");
+	GMT_Usage (API, 1, "\n-%c %s", option, string);
+	GMT_Usage (API, 2, "Specify the map inset region using one of three specifications:");
+	GMT_Usage (API, 3, "%s Give <west>/<east>/<south>/<north> of geographic rectangle bounded by meridians and parallels. "
+		"Append +r if coordinates are the lower left and upper right corners of a rectangular area. ", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Give <xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] of bounding rectangle in projected coordinates [meters].", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Set reference point and dimensions of the inset:", GMT_LINE_BULLET);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 1);
-	gmt_message (GMT, "\t        Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).\n", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "Append +w<width>[<u>]/<height>[<u>] of bounding rectangle (<u> is a unit from %s).", GMT_DIM_UNITS_DISPLAY);
 	gmt_refpoint_syntax (GMT, "D", NULL, GMT_ANCHOR_INSET, 2);
 	if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-		gmt_message (GMT, "\t     Append +s<file> to save inset lower left corner and dimensions to <file>.\n");
-		gmt_message (GMT, "\t     Append +t to translate plot origin to the lower left corner of the inset.\n");
+		GMT_Usage (API, 2, "Append +s<file> to save inset lower left corner and dimensions to <file>.");
+		GMT_Usage (API, 2, "Append +t to translate plot origin to the lower left corner of the inset.");
 	}
-	gmt_message (GMT, "\t   Set panel attributes separately via the -F option.\n");
+	GMT_Usage (API, 2, "Set panel attributes separately via the -F option.");
 }
 
 /*! .
@@ -7964,19 +8104,23 @@ void gmt_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 */
 void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	/* Used in psbasemap and pscoast */
+	struct GMTAPI_CTRL *API = GMT->parent;
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c %s\n", option, string);
+	GMT_Usage (API, 1, "\n-%c%s", option, GMT_SCALE);
+	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "L", NULL, GMT_ANCHOR_MAPSCALE, 3);
-	gmt_message (GMT, "\t   Set scale length with +w<length> and (for geographic projection) append a unit from %s [km].\n", GMT_LEN_UNITS2_DISPLAY);
-	gmt_message (GMT, "\t   Several modifiers are optional:\n");
-	gmt_message (GMT, "\t   Use +c to control where on a geographic map the map scale should apply [Default is at scale bar placement].\n");
-	gmt_message (GMT, "\t   Use +c with no arguments to select the center of the map as map scale origin.\n");
-	gmt_message (GMT, "\t   Use +c<slat> (with central longitude) or +c<slon>/<slat> to specify map scale origin.\n");
-	gmt_message (GMT, "\t   Add +f to draw a \"fancy\" scale [Default is plain].\n");
-	gmt_message (GMT, "\t   By default, the scale label equals the distance unit name and is placed on top [+at].  Use the +l<label>\n");
-	gmt_message (GMT, "\t   and +a<align> mechanisms to specify another label and placement (t,b,l,r).  For the fancy scale,\n");
-	gmt_message (GMT, "\t   +u appends units to annotations while for plain scale it uses unit abbreviation instead of name as label.\n");
-	gmt_message (GMT, "\t   To get a vertical scale instead for Cartesian plots, append +v.\n");
+	GMT_Usage (API, -2, "Set required scale via +w<length>, and (for geographic projection) append a unit from %s [km]. Other scale modifiers are optional:",
+		GMT_LEN_UNITS2_DISPLAY);
+	GMT_Usage (API, 3, "+a Append label alignment (choose among l(eft), r(ight), t(op), and b(ottom)) [t].");
+	GMT_Usage (API, 3, "+c Control where the map scale should apply. "
+		"If no arguments we select the center of the map. "
+		"Alternatively, give +c<slat> (with central longitude) or +c<slon>/<slat> [Default is at scale bar placement].");
+	GMT_Usage (API, 3, "+f Draw a \"fancy\" scale [Default is plain].");
+	GMT_Usage (API, 3, "+l Set scale <label> to use [By default, the label equals the distance unit name and is placed on top [+at].  Use the +l<label> "
+		"and +a<align> mechanisms to specify another label and placement.  For the fancy scale, "
+		"+u appends units to annotations while for plain scale it uses unit abbreviation instead of name as label.");
+	GMT_Usage (API, 3, "+u Append unit set by +w to all distance annotations (for the plain scale, +u will select unit to be appended to the distance length.");
+	GMT_Usage (API, 3, "+v Select a vertical scale instead for Cartesian plots.");
 }
 
 /*! .
@@ -7984,28 +8128,36 @@ void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 	\param option ...
 	\param string ...
 */
-void gmt_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string) {
-	/* Used in psbasemap and pscoast */
-	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c %s\n", option, string);
-	gmt_message (GMT, "\t   Choose between a directional (-Td) or magnetic (-Tm) rose.\n");
-	gmt_message (GMT, "\t   Both share most modifiers for locating and sizing the rose.\n");
+void gmt_maprose_syntax (struct GMT_CTRL *GMT, char type, char *string) {
+	/* Used in psbasemap and pscoast -T option.  pass type as m or d */
+	struct GMTAPI_CTRL *API = GMT->parent;
+	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T%c parsing failure.  Correct syntax:\n", type);
+	if (type == 'm')
+		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_MAG);
+	else
+		GMT_Usage (API, 1, "\n-T%c%s", type, GMT_TROSE_DIR);
+	GMT_Usage (API, -2, "%s", string);
 	gmt_refpoint_syntax (GMT, "Td|m", NULL, GMT_ANCHOR_MAPROSE, 3);
-	gmt_message (GMT, "\t   Set the diameter of the rose with modifier +w<width>.\n");
-	gmt_message (GMT, "\t   Several modifiers are optional:\n");
-	gmt_message (GMT, "\t   Add labels with +l, which places the letters W, E, S, N at the cardinal points.\n");
-	gmt_message (GMT, "\t     Optionally, append comma-separated west, east, south, north labels instead.\n");
-	gmt_message (GMT, "\t   Directional rose: Add +f to draws a \"fancy\" rose [Default is plain].\n");
-	gmt_message (GMT, "\t     Optionally, add <level> of fancy rose: 1 draws E-W, N-S directions [Default],\n");
-	gmt_message (GMT, "\t     2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW directions.\n");
-	gmt_message (GMT, "\t   Magnetic compass rose:  Optional add +d<dec>[/<dlabel>], where <dec> is the\n");
-	gmt_message (GMT, "\t     magnetic declination and <dlabel> is an optional label for the magnetic compass needle.\n");
-	gmt_message (GMT, "\t     If +d does not include <dlabel> we default to \"delta = <declination>\".\n");
-	gmt_message (GMT, "\t     Set <dlabel> to \"-\" to disable the declination label.\n");
-	gmt_message (GMT, "\t     Append +p<pen> to draw outline of secondary (outer) circle [no circle].\n");
-	gmt_message (GMT, "\t     Append +i<pen> to draw outline of primary (inner) circle [no circle].\n");
-	gmt_message (GMT, "\t     Append +t<pint>[/<sint>] to override default primary and secondary annotation/tick interval(s) [30/5/1].\n");
-	gmt_message (GMT, "\t   If the North label = \'*\' then a north star is plotted instead of the label.\n");
+	GMT_Usage (API, -2, "Set required size of the rose via +w<diameter>. Other rose modifiers are optional:");
+	if (type == 'm') {
+		GMT_Usage (API, 3, "+d Set magnetic <declination>[/<dlabel>], where "
+			"<dlabel> is an optional label for the magnetic compass needle. "
+			"If +d does not include <dlabel> we default to \"delta = <declination>\". "
+			"Set <dlabel> to \"-\" to disable the declination label. ");
+		GMT_Usage (API, 3, "+i Draw outline of primary (inner) circle with <pen> [no circle].");
+		GMT_Usage (API, 3, "+l Place the letters W, E, S, N at the cardinal points. "
+			"Optionally, append comma-separated west, east, south, north custom labels instead.");
+		GMT_Usage (API, 3, "+p Draw outline of secondary (outer) circle with <pen> [no circle].");
+		GMT_Usage (API, 3, "+t Override default annotation and primary and secondary tick internals [30/5/1].");
+	}
+	else {
+		GMT_Usage (API, 3, "+f Draws a \"fancy\" rose [Default is plain]. "
+			"Optionally, add <level> of fancy rose: 1 draws E-W, N-S directions [Default], "
+			"2 adds NW-SE and NE-SW, while 3 adds WNW-ESE, NNW-SSE, NNE-SSW, and ENE-WSW directions.");
+		GMT_Usage (API, 3, "+l Place the letters W, E, S, N at the cardinal points. "
+			"Optionally, append comma-separated west, east, south, north custom labels instead.");
+	}
+	GMT_Usage (API, -2, "Note: If the North label = \'*\' then a north star is plotted instead of the label.");
 }
 
 /*! .
@@ -8015,41 +8167,45 @@ void gmt_maprose_syntax (struct GMT_CTRL *GMT, char option, char *string) {
 */
 void gmt_mappanel_syntax (struct GMT_CTRL *GMT, char option, char *string, unsigned int kind) {
 	/* Called by gmtlogo, psimage, pslegend, psscale */
-	char *type[5] = {"logo", "image", "legend", "scale", "vertical scale"};
+	struct GMTAPI_CTRL *API = GMT->parent;
+	static char *type[5] = {"logo", "image", "legend", "scale", "vertical scale"};
 	assert (kind < 5);
 	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c %s\n", option, string);
-	gmt_message (GMT, "\t   Without further options: draw border around the %s panel (using MAP_FRAME_PEN)\n", type[kind]);
-	gmt_message (GMT, "\t     [Default is no border].\n");
-	gmt_message (GMT, "\t   Append +c<clearance> where <clearance> is <gap>, <xgap/ygap>, or <lgap/rgap/bgap/tgap> [%gp].\n", GMT_FRAME_CLEARANCE);
-	gmt_message (GMT, "\t     Note: For a map inset the default clearance is zero.\n");
+	GMT_Usage (API, 1, "\n-%c%s", option, GMT_PANEL);
+	GMT_Usage (API, -2, "%s", string);
+	GMT_Usage (API, -2, "Without further options: draw frame around the %s panel (using MAP_FRAME_PEN) "
+		"[Default is no frame].  Available modifiers:", type[kind]);
+	GMT_Usage (API, 3, "+c Set <clearance> as either <gap>, <xgap>/<ygap>, or <lgap>/<rgap>/<bgap>/<tgap> [%gp]. "
+		"Note: For a map inset the default <clearance> is zero.", GMT_FRAME_CLEARANCE);
 #ifdef DEBUG
-	gmt_message (GMT, "\t   Append +d to draw guide lines for debugging.\n");
+	GMT_Usage (API, 3, "+d Draw guide lines for debugging.");
 #endif
-	gmt_message (GMT, "\t   Append +g<fill> to set the fill for the %s panel [Default is no fill].\n", type[kind]);
-	gmt_message (GMT, "\t   Append +i[[<gap>/]<pen>] to add a secondary inner frame boundary [Default gap is %gp].\n", GMT_FRAME_GAP);
-	gmt_message (GMT, "\t   Append +p[<pen>] to draw the border and optionally change the border pen [%s].\n",
-		gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
-	gmt_message (GMT, "\t   Append +r[<radius>] to plot rounded rectangles instead [Default radius is %gp].\n", GMT_FRAME_RADIUS);
-	gmt_message (GMT, "\t   Append +s[<dx>/<dy>/][<shade>] to plot a shadow behind the %s panel [Default is %gp/%gp/gray50].\n", type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+	GMT_Usage (API, 3, "+g Set the <fill> for the %s panel [Default is no fill].", type[kind]);
+	GMT_Usage (API, 3, "+i Draw secondary inner frame boundary [Default gap is %gp].", GMT_FRAME_GAP);
+	GMT_Usage (API, 3, "+p Draw the border and optionally change the border <pen> [%s]. ", gmt_putpen (GMT, &GMT->current.setting.map_frame_pen));
+	GMT_Usage (API, 3, "+r Draw rounded rectangles instead [Default <radius> is %gp].", GMT_FRAME_RADIUS);
+	GMT_Usage (API, 3, "+s Place a shadow behind the %s panel [Default is %gp/%gp/gray50].",
+		type[kind], GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 }
 /*! .
 	\param GMT ...
 	\param option ...
 	\param string ...
 */
-void gmt_dist_syntax (struct GMT_CTRL *GMT, char option, char *string) {
+void gmt_dist_syntax (struct GMT_CTRL *GMT, char *option, char *string) {
 	/* Used by many modules */
-	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option);
-	gmt_message (GMT, "\t-%c %s\n", option, string);
-	gmt_message (GMT, "\t   Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot)\n");
-	gmt_message (GMT, "\t   d (arc degree), m (arc minute), or s (arc second) [%c].\n", GMT_MAP_DIST_UNIT);
-	gmt_message (GMT, "\t   Spherical distances are based on great-circle calculations;\n");
-	gmt_message (GMT, "\t   see -j<mode> for other modes of measurements.\n");
+	struct GMTAPI_CTRL *API = GMT->parent;
+	if (string[0] == ' ') GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure.  Correct syntax:\n", option[0]);
+	GMT_Usage (API, 1, "\n-%s", option);
+	GMT_Usage (API, -2, "%s "
+		"Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), "
+		"d (arc degree), m (arc minute), or s (arc second) [%c]. "
+		"Spherical distances are based on great-circle calculations; "
+		"see -j<mode> for other modes of measurements.", string, GMT_MAP_DIST_UNIT);
 }
 
 /*! Use mode to control which options are displayed */
-void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
+void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 	/* Mode is composed of bit-flags to control which lines are printed.
 	 * Items without if-test are common to all vectors.
 	 * 1	= Accepts +j (not mathangle)
@@ -8058,385 +8214,81 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode) {
 	 * 8	= Accepts +g (not mathangle)
 	 * 16	= Accepts +z (not mathangle, geovector)
 	 */
-	gmt_message (GMT, "\t   Append length of vector head, with optional modifiers:\n");
-	gmt_message (GMT, "\t   [Left and right are defined by looking from start to end of vector]\n");
-	gmt_message (GMT, "\t     +a<angle> to set angle of the vector head apex [30]\n");
-	gmt_message (GMT, "\t     +b to place a vector head at the beginning of the vector [none].\n");
-	gmt_message (GMT, "\t       Append t for terminal, c for circle, s for square, a for arrow [Default],\n");
-	gmt_message (GMT, "\t       i for tail, A for plain arrow, and I for plain tail.\n");
-	gmt_message (GMT, "\t       Append l|r to only draw left or right side of this head [both sides].\n");
-	gmt_message (GMT, "\t     +e to place a vector head at the end of the vector [none].\n");
-	gmt_message (GMT, "\t       Append t for terminal, c for circle, s for square, a for arrow [Default],\n");
-	gmt_message (GMT, "\t       i for tail, A for plain arrow, and I for plain tail.\n");
-	gmt_message (GMT, "\t       Append l|r to only draw left or right side of this head [both sides].\n");
-	if (mode & 8) gmt_message (GMT, "\t     +g<fill> to set head fill; oexclude <fill> to turn off fill [default fill].\n");
-	gmt_message (GMT, "\t     +h sets the vector head shape in -2/2 range [%g].\n", GMT->current.setting.map_vector_shape);
-	if (mode & 1) gmt_message (GMT, "\t     +j<just> to justify vector at (b)eginning [default], (e)nd, or (c)enter.\n");
-	gmt_message (GMT, "\t     +l to only draw left side of all specified vector heads [both sides].\n");
-	gmt_message (GMT, "\t     +m[f|r] to place vector head at mid-point of segment [Default expects +b|+e].\n");
-	gmt_message (GMT, "\t       Specify f or r for forward|reverse direction [forward].\n");
-	gmt_message (GMT, "\t       Append t for terminal, c for circle, s for square, or a for arrow [Default].\n");
-	gmt_message (GMT, "\t       Append l|r to only draw left or right side of this head [both sides].\n");
-	gmt_message (GMT, "\t     +n<norm> to shrink attributes if vector length < <norm> [none].\n");
-	gmt_message (GMT, "\t     +o[<plon/plat>] sets pole [north pole] for great or small circles; only give length via input.\n");
-	if (mode & 4) gmt_message (GMT, "\t     +p[<pen>] to set pen attributes, exclude <pen> to turn off head outlines [default pen and outline].\n");
-	gmt_message (GMT, "\t     +q if start and stop opening angle is given instead of (azimuth,length) on input.\n");
-	gmt_message (GMT, "\t     +r to only draw right side of all specified vector heads [both sides].\n");
-	if (mode & 2) gmt_message (GMT, "\t     +s if (x,y) coordinates of tip is given instead of (azimuth,length) on input.\n");
-	gmt_message (GMT, "\t     +t[b|e]<trim(s)> to shift begin or end position along vector by given amount [no shifting].\n");
-	if (mode & 16) gmt_message (GMT, "\t     +z if (dx,dy) vector components are given instead of (azimuth,length) on input.\n");
-	if (mode & 16) gmt_message (GMT, "\t       Append <scale> to convert components to length in given unit.\n");
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, -level, "Append length of vector head. Note: "
+		"Left and right sides are defined by looking from start to end of vector. Optional modifiers:");
+	GMT_Usage (API, level, "+a Set <angle> of the vector head apex [30]");
+	GMT_Usage (API, level, "+b Place a vector head at the beginning of the vector [none]. "
+		"Append t for terminal, c for circle, s for square, a for arrow [Default], "
+		"i for tail, A for plain arrow, and I for plain tail. "
+		"Append l|r to only draw left or right side of this head [both sides].");
+	GMT_Usage (API, level, "+e Place a vector head at the end of the vector [none]. "
+		"Append t for terminal, c for circle, s for square, a for arrow [Default], "
+		"i for tail, A for plain arrow, and I for plain tail. "
+		"Append l|r to only draw left or right side of this head [both sides].");
+	if (mode & 8) GMT_Usage (API, level, "+g Set head <fill>; exclude <fill> to turn off fill [Default fill].");
+	GMT_Usage (API, level, "+h Set vector head shape in -2/2 range [%g].", GMT->current.setting.map_vector_shape);
+	if (mode & 1) GMT_Usage (API, level, "+j Justify vector at (b)eginning [Default], (e)nd, or (c)enter.");
+	GMT_Usage (API, level, "+l Only draw left side of all specified vector heads [both sides].");
+	GMT_Usage (API, level, "+m Place vector head at mid-point of segment [Default expects +b|+e]. "
+		"Append f or r for forward|reverse direction [forward]. "
+		"Append t for terminal, c for circle, s for square, or a for arrow [Default]. "
+		"Append l|r to only draw left or right side of this head [both sides].");
+	GMT_Usage (API, level, "+n Shrink attributes if vector length < <norm> [none].");
+	GMT_Usage (API, level, "+o Set pole <plon/plat> [Default is north pole] for great or small circles; only give length via input.");
+	if (mode & 4) GMT_Usage (API, level, "+p Set pen attributes; exclude <pen> to turn off head outlines [Default pen and outline].");
+	GMT_Usage (API, level, "+q Start and stop opening angles are given instead of (azimuth,length) on input.");
+	GMT_Usage (API, level, "+r Only draw right side of all specified vector heads [both sides].");
+	if (mode & 2) GMT_Usage (API, level, "+s Give (x,y) coordinates of tip instead of (azimuth,length) on input.");
+	GMT_Usage (API, level, "+t Shift (b)egin or (e)nd position along vector by given <trim(s)> [no shifting].");
+	if (mode & 16) GMT_Usage (API, level, "+z Give (dx,dy) vector components instead of (azimuth,length) on input. "
+		"Append <scale> to convert components to length in given unit.");
 }
 
 /*! Use mode to control which options are displayed */
 void gmt_segmentize_syntax (struct GMT_CTRL *GMT, char option, unsigned int mode) {
 	/* mode == 0 for formatting and 1 for plotting */
+	struct GMTAPI_CTRL *API = GMT->parent;
 	char *verb[2] = {"Form", "Draw"}, *count[2] = {"four", "three"};
-	gmt_message (GMT, "\t-%c Alter the way points are connected and the data are segmented.\n", option);
-	gmt_message (GMT, "\t    Append one of %s line connection schemes:\n", count[mode]);
-	gmt_message (GMT, "\t     c: %s continuous line segments for each group [Default].\n", verb[mode]);
-	gmt_message (GMT, "\t     r: %s line segments from a reference point reset for each group.\n", verb[mode]);
-	gmt_message (GMT, "\t     n: %s networks of line segments between all points in each group.\n", verb[mode]);
-	if (mode == 0) gmt_message (GMT, "\t     v: Form vector line segments suitable for psxy -Sv|=<size>+s\n");
-	gmt_message (GMT, "\t     Optionally, append one of five ways to define a \"group\":\n");
-	gmt_message (GMT, "\t       a: All data is consider a single group; reference point is first point in the group.\n");
-	gmt_message (GMT, "\t       f: Each file is a separate group; reference point is reset to first point in the group.\n");
-	gmt_message (GMT, "\t       s: Each segment is a group; reference point is reset to first point in the group [Default].\n");
-	gmt_message (GMT, "\t       r: Each segment is a group, but reference point is reset to each point in the group.\n");
-	gmt_message (GMT, "\t          Only available with the -%cr scheme.\n", option);
-	gmt_message (GMT, "\t       <refpoint> : Specify a fixed external reference point instead.\n");
+	char *syntax = (mode) ? GMT_SEGMENTIZE3 : GMT_SEGMENTIZE4;
+	GMT_Usage (API, 1, "\n-%c%s", option, syntax);
+	GMT_Usage (API, -2, "Alter the way points are connected and the data are segmented. "
+		"Append one of %s line connection schemes: ", count[mode]);
+	GMT_Usage (API, 3, "c: %s continuous line segments for each group [Default].", verb[mode]);
+	GMT_Usage (API, 3, "p: %s line segments from a reference point reset for each group.", verb[mode]);
+	GMT_Usage (API, 3, "n: %s networks of line segments between all points in each group.", verb[mode]);
+	if (mode == 0) GMT_Usage (API, 3, "v: Form vector line segments suitable for psxy -Sv|=<size>+s");
+	GMT_Usage (API, 2, "Optionally, append one of five ways to define a \"group\":");
+	GMT_Usage (API, 3, "a: Data set is considered a single group; reference point is first point in the group.");
+	GMT_Usage (API, 3, "f: Each file is a separate group; reference point is reset to first point in the group.");
+	GMT_Usage (API, 3, "s: Each segment is a group; reference point is reset to first point in the group [Default].");
+	GMT_Usage (API, 3, "r: Each segment is a group, but reference point is reset to each point in the group.");
+	GMT_Usage (API, 3, "Alternatively, append a fixed external reference point instead.");
 }
 
 /*! For programs that can read *.img grids */
-void gmt_img_syntax (struct GMT_CTRL *GMT) {
-	gmt_message (GMT, "\t      Give filename and append comma-separated scale, mode, and optionally max latitude.\n");
-	gmt_message (GMT, "\t      The scale (typically 0.1 or 1) is used to multiply after read; give mode as follows:\n");
-	gmt_message (GMT, "\t        0 = img file with no constraint code, interpolate to get data at track.\n");
-	gmt_message (GMT, "\t        1 = img file with constraints coded, interpolate to get data at track.\n");
-	gmt_message (GMT, "\t        2 = img file with constraints coded, gets data only at constrained points, NaN elsewhere.\n");
-	gmt_message (GMT, "\t        3 = img file with constraints coded, gets 1 at constraints, 0 elsewhere.\n");
-	gmt_message (GMT, "\t        For mode 2|3 you may want to consider the -n+t<threshold> setting.\n");
+void gmt_img_syntax (struct GMT_CTRL *GMT, int indent) {
+	struct GMTAPI_CTRL *API = GMT->parent;
+	GMT_Usage (API, indent, "Give filename and append comma-separated scale, mode, and optionally max latitude. "
+		"The scale (typically 0.1 or 1) is used to multiply after read; give mode as follows:");
+	GMT_Usage (API, indent+1, "0: img file with no constraints coded, interpolate to get data at track.");
+	GMT_Usage (API, indent+1, "1: img file with constraints coded, interpolate to get data at track.");
+	GMT_Usage (API, indent+1, "2: img file with constraints coded, gets data only at constrained points, NaN elsewhere.");
+	GMT_Usage (API, indent+1, "3: img file with constraints coded, gets 1 at constraints, 0 elsewhere.");
+	GMT_Usage (API, -indent, "For mode 2|3 you may want to consider the -n+t<threshold> setting.");
 }
 
 /*! . */
 void gmt_syntax (struct GMT_CTRL *GMT, char option) {
 	/* The function print to stderr the syntax for the option indicated by
-	 * the variable <option>.  Only the common parameter options are covered
+	 * the variable <option>.  Only the common parameter options are covered.
+	 * It basically selects the shorter version of -B -J and calls GMT_Option.
 	 */
-
-	char *u = GMT->session.unit_name[GMT->current.setting.proj_length_unit];
-
+	char arg[3] = {""};
+	arg[0] = option;
+	if (strchr ("BJ", option)) arg[1] = '-';	/* Get short version of these two */
 	GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c parsing failure. Correct syntax:\n", option);
-
-	switch (option) {
-
-		case 'B':	/* Tickmark option */
-			gmt_message (GMT, "\t-B[p|s][x|y|z]<intervals>[+a<angle>|n|p][+l|L<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>] OR\n");
-			gmt_message (GMT, "\t-B[p|s][x|y|z][a|f|g]<tick>[m][l|p] -B[p|s][x|y|z][+l<label>][+p<prefix>][+u<unit>] -B[<axes>][+b][+g<fill>][+o<lon>/<lat>][+s<subtitle>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]\n");
-			break;
-
-		case 'J':	/* Map projection option */
-			switch (GMT->current.proj.projection_GMT) {
-				case GMT_LAMB_AZ_EQ:
-					gmt_message (GMT, "\t-Ja<lon0>/<lat0>[/<horizon>]/<scale> OR -JA<lon0>/<lat0>[/<horizon>]/<width>\n");
-					gmt_message (GMT, "\t  <horizon> is distance from center to perimeter (<= 180, default 90)\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
-					break;
-				case GMT_ALBERS:
-					gmt_message (GMT, "\t-Jb<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JB<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_CASSINI:
-					gmt_message (GMT, "\t-Jc<lon0>/<lat0><scale> OR -JC<lon0>/<lat0><width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree ,or use <width> in %s\n", u, u);
-					break;
-				case GMT_CYL_STEREO:
-					gmt_message (GMT, "\t-Jcyl_stere/[<lon0>/[<lat0>/]]<scale> OR -JCyl_stere/[<lon0>/[<lat0>/]]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_ECONIC:
-					gmt_message (GMT, "\t-Jd<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JD<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_AZ_EQDIST:
-					gmt_message (GMT, "\t-Je<lon0>/<lat0>[/<horizon>]/<scale> OR -JE<lon0>/<lat0>[/<horizon>/<width>\n");
-					gmt_message (GMT, "\t  <horizon> is distance from center to perimeter (<= 180, default 180)\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
-					break;
-				case GMT_GNOMONIC:
-					gmt_message (GMT, "\t-Jf<lon0>/<lat0>[/<horizon>]/<scale> OR -JF<lon0>/<lat0>[/<horizon>]/<width>\n");
-					gmt_message (GMT, "\t  <horizon> is distance from center to perimeter (< 90, default 60)\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
-					break;
-				case GMT_ORTHO:
-					gmt_message (GMT, "\t-Jg<lon0>/<lat0>[/<horizon>]/<scale> OR -JG<lon0>/<lat0>[/<horizon>]/<width>\n");
-					gmt_message (GMT, "\t  <horizon> is distance from center to perimeter (<= 90, default 90)\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
-					break;
-				case GMT_GENPER:
-					gmt_message (GMT, "\t-Jg<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale> OR\n\t-JG<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
-					break;
-				case GMT_HAMMER:
-					gmt_message (GMT, "\t-Jh[<lon0>/]<scale> OR -JH[<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_SINUSOIDAL:
-					gmt_message (GMT, "\t-Ji[<lon0>/]<scale> OR -JI[<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_MILLER:
-					gmt_message (GMT, "\t-Jj[<lon0>/]<scale> OR -JJ[<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_ECKERT4:
-					gmt_message (GMT, "\t-Jkf[<lon0>/]<scale> OR -JKf[<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_ECKERT6:
-					gmt_message (GMT, "\t-Jk[s][<lon0>/]<scale> OR -JK[s][<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_LAMBERT:
-					gmt_message (GMT, "\t-Jl<lon0>/<lat0>/<lat1>/<lat2>/<scale> OR -JL<lon0>/<lat0>/<lat1>/<lat2>/<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_MERCATOR:
-					gmt_message (GMT, "\t-Jm[<lon0>/[<lat0>/]]<scale> OR -JM[<lon0>/[<lat0>/]]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_ROBINSON:
-					gmt_message (GMT, "\t-Jn[<lon0>/]<scale> OR -JN[<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_OBLIQUE_MERC:
-					gmt_message (GMT, "\t-Jo[a]<lon0>/<lat0>/<azimuth>/<scale> OR -JO[a]<lon0>/<lat0>/<azimuth>/<width>\n");
-					gmt_message (GMT, "\t-Jo[b]<lon0>/<lat0>/<b_lon>/<b_lat>/<scale> OR -JO[b]<lon0>/<lat0>/<b_lon>/<b_lat>/<width>\n");
-					gmt_message (GMT, "\t-Joc<lon0>/<lat0>/<lonp>/<latp>/<scale> OR -JOc<lon0>/<lat0>/<lonp>/<latp>/<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/oblique degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_WINKEL:
-					gmt_message (GMT, "\t-Jr[<lon0>/]<scale> OR -JR[<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_POLYCONIC:
-					gmt_message (GMT, "\t-Jpoly/[<lon0>/[<lat0>/]]<scale> OR -JPoly/[<lon0>/[<lat0>/]]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_CYL_EQDIST:
-					gmt_message (GMT, "\t-Jq[<lon0>/[<lat0>/]]<scale> OR -JQ[<lon0>/[<lat0>/]]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_STEREO:
-					gmt_message (GMT, "\t-Js<lon0>/<lat0>[/<horizon>]/<scale> OR -JS<lon0>/<lat0>[/<horizon>]/<width>\n");
-					gmt_message (GMT, "\t  <horizon> is distance from center to perimeter (< 180, default 90)\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx>, <lat>/<1:xxxx>, or <radius> (in %s)/<lat>, or use <width> in %s\n", u, u);
-					break;
-				case GMT_TM:
-					gmt_message (GMT, "\t-Jt<lon0>/[<lat0>/]<scale> OR -JT<lon0>/[<lat0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_UTM:
-					gmt_message (GMT, "\t-Ju<zone>/<scale> OR -JU<zone>/<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					gmt_message (GMT, "\t  <zone is A, B, 1-60[w/ optional C-X except I, O], Y, Z\n");
-					break;
-				case GMT_VANGRINTEN:
-					gmt_message (GMT, "\t-Jv<lon0>/<scale> OR -JV[<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_MOLLWEIDE:
-					gmt_message (GMT, "\t-Jw[<lon0>/]<scale> OR -JW[<lon0>/]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_CYL_EQ:
-					gmt_message (GMT, "\t-Jy[<lon0>/[<lat0>/]]<scale> OR -JY[<lon0>/[<lat0>/]]<width>\n");
-					gmt_message (GMT, "\t  <scale> is <1:xxxx> or %s/degree, or use <width> in %s\n", u, u);
-					break;
-				case GMT_POLAR:
-					gmt_message (GMT, "\t-Jp<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]] OR -JP<scale>|<width>[+a][+f[e|p|<radius>]][+r<offset>][+t<origin>][+z[p|<radius>]]\n");
-					gmt_message (GMT, "\t  <scale> is %s/units, or use <width> in %s.  Optionally,\n", u, u);
-					gmt_message (GMT, "\t  append +a for azimuths, +r for radial offset [0], +t for angular origin [0], +f to reverse\n");
-					gmt_message (GMT, "\t  radial coordinates (e for elevation, p for planetary radius), and +z for annotating depth.\n");
-					gmt_message (GMT, "\t  (append p for planetary radius or another radius to annotate r = radius - z).\n");
-					break;
-				case GMT_LINEAR:
-					gmt_message (GMT, "\t-Jx<x-scale>|<width>[d|l|p<power>|t|T][/<y-scale>|<height>[d|l|p<power>|t|T]], scale in %s/units\n", u);
-					gmt_message (GMT, "\t-Jz<z-scale>[l|p<power>], scale in %s/units\n", u);
-					gmt_message (GMT, "\tUse / to specify separate x/y scaling (e.g., -Jx0.5/0.3.).  Not allowed with 1:xxxxx\n");
-					gmt_message (GMT, "\tUse -JX (and/or -JZ) to give axes lengths rather than scales\n");
-					break;
-				default:
-					gmt_message (GMT, "\tProjection not recognized!\n");
-					break;
-			}
-			break;
-
-		case 'K':
-			gmt_message (GMT, "\t-%c More PostScript content will follow\n", option);
-			break;
-
-		case 'O':
-			gmt_message (GMT, "\t-%c This is a PostScript overlay\n", option);
-			break;
-
-		case 'P':
-			gmt_message (GMT, "\t-%c Turn on portrait mode\n", option);
-			break;
-
-		case 'R':	/* Region option */
-			gmt_message (GMT, "\t-R<xmin>/<xmax>/<ymin>/<ymax>[/<zmin>/<zmax>]\n");
-			gmt_message (GMT, "\t  Append +r if giving lower left and upper right coordinates\n");
-			gmt_message (GMT, "\t-Rg or -Rd for global domain\n");
-			gmt_message (GMT, "\t-R<grdfile> to take the domain from a grid file\n");
-			break;
-
-		case 'U':	/* Set time stamp option */
-			gmt_message (GMT, "\t%s\n", GMT_U_OPT);
-			gmt_message (GMT, "\t   Plot the time stamp and optional command line or text.\n");
-			break;
-
-		case 'X':
-			gmt_message (GMT, "\t%s\n", GMT_X_OPT);
-			gmt_message (GMT, "\tPrepend a for temporary adjustment, c for center of page reference,\n");
-			gmt_message (GMT, "\tf for lower left corner of page reference, r (or none) for relative to\n");
-			gmt_message (GMT, "\tcurrent position; u is unit (c, i, p).\n");
-			break;
-
-		case 'Y':
-			gmt_message (GMT, "\t%s\n", GMT_Y_OPT);
-			gmt_message (GMT, "\tPrepend a for temporary adjustment, c for center of page reference,\n");
-			gmt_message (GMT, "\tf for lower left corner of page reference, r (or none) for relative to\n");
-			gmt_message (GMT, "\tcurrent position; u is unit (c, i, p).\n");
-			break;
-
-		case 'Z':
-			if (gmt_M_compat_check (GMT, 4)) {
-				gmt_message (GMT, "\t-Z<zlevel> set zlevel of basemap\n");
-			}
-			break;
-
-		case 'a':	/* -a option for aspatial field substitution into data columns */
-
-			gmt_message (GMT, "\t%s\n", GMT_a_OPT);
-			gmt_message (GMT, "\t  Specify the aspatial field information.\n");
-			break;
-
-		case 'b':	/* Binary i/o option  */
-			gmt_message (GMT, "\t%s\n", GMT_b_OPT);
-			gmt_message (GMT, "\t   Binary data, add i for input, o for output [Default is both].\n");
-			gmt_message (GMT, "\t   Here, t is c|u|h|H|i|I|l|L|f|d [Default is d (double)].\n");
-			gmt_message (GMT, "\t   Prepend the number of data columns.\n");
-			gmt_message (GMT, "\t   Append w to byte swap an item; append +L|B to fix endianness of file.\n");
-			break;
-
-		case 'f':	/* Column information option  */
-			gmt_message (GMT, "\t%s\n", GMT_f_OPT);
-			gmt_message (GMT, "\t   Column information, add i for input, o for output [Default is both].\n");
-			gmt_message (GMT, "\t   <colinfo> is <colno>|<colrange>u, where column numbers start at 0\n");
-			gmt_message (GMT, "\t   a range is given as <first>-<last>, e.g., 2-5., u is type:\n");
-			gmt_message (GMT, "\t   t: relative time, T: absolute time, f: floating point,\n");
-			gmt_message (GMT, "\t   x: longitude, y: latitude, g: short for 0x,1y.\n");
-			break;
-
-		case 'g':
-			gmt_message (GMT, "\t%s\n", GMT_g_OPT);
-			gmt_message (GMT, "\t   (Consult manual)\n");
-			break;
-
-		case 'h':	/* Header */
-
-			gmt_message (GMT, "\t%s\n", GMT_h_OPT);
-			gmt_message (GMT, "\t   Specify if Input/output file has header record(s)\n");
-			gmt_message (GMT, "\t   Optionally, append i for input only and/or number of header records [0].\n");
-			gmt_message (GMT, "\t     -hi turns off the writing of all headers on output.\n");
-			gmt_message (GMT, "\t   Append +c to add header record with column information [none].\n");
-			gmt_message (GMT, "\t   Append +d to delete headers before adding new ones [Default will append headers].\n");
-			gmt_message (GMT, "\t   Append +r to add a <remark> comment to the output [none].\n");
-			gmt_message (GMT, "\t   Append +t to add a <title> comment to the output [none].\n");
-			gmt_message (GMT, "\t     (these strings may contain \\n to indicate line-breaks)\n");
-			gmt_message (GMT, "\t   For binary files, <n> is considered to mean number of bytes.\n");
-			break;
-
-		case 'i':	/* -i option for input column order */
-
-			gmt_message (GMT, "\t%s\n", GMT_i_OPT);
-			gmt_message (GMT, "\t   Set alternate numerical input column order and optional translations. Append ,t to include trailing text.\n");
-			gmt_message (GMT, "\t   [Default reads all numerical columns in order, followed by any trailing text].\n");
-			break;
-
-		case 'n':	/* -n option for grid resampling parameters in BCR */
-
-			gmt_message (GMT, "\t%s\n", GMT_n_OPT);
-			gmt_message (GMT, "\t   Determine the grid interpolation mode.\n");
-			gmt_message (GMT, "\t   (b = B-spline, c = bicubic, l = bilinear, n = nearest-neighbor) [Default: bicubic].\n");
-			gmt_message (GMT, "\t   Append +a switch off antialiasing (except for l) [Default: on].\n");
-			gmt_message (GMT, "\t   Append +b<BC> to change boundary conditions.  <BC> can be either:\n");
-			gmt_message (GMT, "\t   g for geographic boundary conditions, or one or both of\n");
-			gmt_message (GMT, "\t   x for periodic boundary conditions on x,\n");
-			gmt_message (GMT, "\t   y for periodic boundary conditions on y.\n");
-			gmt_message (GMT, "\t   [Default: Natural conditions, unless grid is known to be geographic].\n");
-			gmt_message (GMT, "\t   Append +c to clip interpolated grid to input z-min/max [Default may exceed limits].\n");
-			gmt_message (GMT, "\t   Append +t<threshold> to change the minimum weight in vicinity of NaNs. A threshold of\n");
-			gmt_message (GMT, "\t   1.0 requires all nodes involved in interpolation to be non-NaN; 0.5 will interpolate\n");
-			gmt_message (GMT, "\t   about half way from a non-NaN to a NaN node [Default: 0.5].\n");
-			break;
-
-		case 'o':	/* -o option for output column order */
-
-			gmt_message (GMT, "\t%s\n", GMT_o_OPT);
-			gmt_message (GMT, "\t   Set alternate numerical output column order; end with [,]t[<word>] to output trailing text.\n");
-			gmt_message (GMT, "\t   [Default writes all numerical columns in order, followed by any trailing text].\n");
-			break;
-
-		case 'p':
-			gmt_message (GMT, "\t%s\n", GMT_p_OPT);
-			gmt_message (GMT, "\t   Azimuth and elevation (and zlevel) of the viewpoint [180/90/bottom z-axis].\n");
-			gmt_message (GMT, "\t   Append +w and +v to set coordinates to a fixed viewpoint\n");
-			break;
-
-		case 's':	/* Skip records with NaN as z */
-			gmt_message (GMT, "\t%s\n", GMT_s_OPT);
-			gmt_message (GMT, "\t   Skip records whose <col> [2] output is NaN.\n");
-			gmt_message (GMT, "\t   a skips if ANY columns is NaN, while r reverses the action.\n");
-			break;
-
-		case 't':	/* -t layer transparency option  */
-			gmt_message (GMT, "\t%s\n", GMT_t_OPT);
-			gmt_message (GMT, "\t   Set the layer PDF transparency from 0-100 [Default is 0; opaque].\n");
-			break;
-
-		case 'x':	/* Number of threads */
-			gmt_message (GMT, "\t%s\n", GMT_x_OPT);
-			gmt_message (GMT, "\t   Control the number of processors used in multi-threading.\n");
-			gmt_message (GMT, "\t   -x+a Use all available processors.\n");
-			gmt_message (GMT, "\t   -xn Use n processors (not more than max available off course).\n");
-			gmt_message (GMT, "\t   -x-n Use (all - n) processors.\n");
-			break;
-
-		case 'w':	/* -w option for cyclicity */
-
-			gmt_message (GMT, "\t%s\n", GMT_w_OPT);
-			gmt_message (GMT, "\t-w Wrapped selected column [0] with specified cyclicity:\n");
-			gmt_message (GMT, "\t   Absolute time: Append y|a|w|d|h|m|s for year, annual (by month), week, day, hour, minute, or second cycles.\n");
-			gmt_message (GMT, "\t   Alternatively append c<period>[/<phase>] for custom cyclicity.\n");
-			gmt_message (GMT, "\t   Select another column than x via +c<col>.\n");
-			break;
-
-		case ':':	/* lon/lat vs lat/lon i/o option  */
-			gmt_message (GMT, "\t%s\n", GMT_colon_OPT);
-			gmt_message (GMT, "\t   Interpret first two columns, add i for input, o for output [Default is both].\n");
-			gmt_message (GMT, "\t   Swap 1st and 2nd column on input and/or output.\n");
-			break;
-
-		case '-':	/* --PAR=value  */
-			gmt_message (GMT, "\t--<PARAMETER>=<value>.\n");
-			gmt_message (GMT, "\t   See %s for list of parameters.\n", GMT_SETTINGS_FILE);
-			break;
-
-		default:
-			break;
-	}
+	GMT_Option (GMT->parent, arg);
 }
 
 int gmt_default_error (struct GMT_CTRL *GMT, char option) {
@@ -8448,9 +8300,9 @@ int gmt_default_error (struct GMT_CTRL *GMT, char option) {
 
 	switch (option) {
 
-		case '-': break;	/* Skip indiscriminently */
-		case '=': break;	/* Skip indiscriminently */
-		case '>': break;	/* Skip indiscriminently since dealt with internally */
+		case '-': break;	/* Skip indiscriminately */
+		case '=': break;	/* Skip indiscriminately */
+		case '>': break;	/* Skip indiscriminately since dealt with internally */
 		case 'B': error += (GMT->common.B.active[GMT_PRIMARY] == false && GMT->common.B.active[GMT_SECONDARY] == false); break;
 		case 'J': error += GMT->common.J.active == false; break;
 		case 'K': error += GMT->common.K.active == false; break;
@@ -9008,6 +8860,7 @@ unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
 	for (dir = first; dir <= last; dir++) {
 		GMT->common.d.active[dir] = true;
 		GMT->common.d.nan_proxy[dir] = atof (c);
+		/* Need to know if 0 is used as NaN proxy since we must use a different comparison macro later */
 		GMT->common.d.is_zero[dir] = doubleAlmostEqualZero (0.0, GMT->common.d.nan_proxy[dir]);
 	}
 	if (first == GMT_IN) strncpy (GMT->common.d.string, arg, GMT_LEN64-1);	/* Verbatim copy */
@@ -9371,7 +9224,7 @@ GMT_LOCAL int gmtinit_parse_q_option_r (struct GMT_CTRL *GMT, unsigned int direc
 	/* Parsing of <rows> sequences */
 	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process another range */
 		if (p[0] == '~') {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is allowed before the first range in -q\n");
 			return (GMT_PARSE_ERROR);
 		}
 		/* We can process A or A: or A- or A/ or A:B or A-B or A/B or :B or -B or /B */
@@ -9400,7 +9253,7 @@ GMT_LOCAL int gmtinit_parse_q_option_z (struct GMT_CTRL *GMT, unsigned int direc
 	/* Parsing of <range> sequences */
 	while ((gmt_strtok (&arg[j], ",", &pos, p))) {	/* While it is not empty, process another range */
 		if (p[0] == '~') {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is required before the first range in -q\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Only one reverse-the-test sign (~) is allowed before the first range in -q\n");
 			return (GMT_PARSE_ERROR);
 		}
 		/* We can process A or A/ or A/B or /B */
@@ -9468,9 +9321,9 @@ int gmt_parse_model (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned i
 unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_arg, unsigned int mode, struct GMT_SEGMENTIZE *S) {
 	/* Parse segmentizing options in gmt convert (mode == 0) or psxy (mode == 1).
 	 * Syntax is given below (assuming option = -F here):
-	 * -F[c|n|r|v][a|f|s|R] or -Fr<origin>
-	 * where c = continuous [Defuult], n = network, r = reference point, and v = vectors.
-	 * a = all files, f = per file, s = per segment [Default], r = per record.
+	 * -F<scheme><method: i.e., -F[c|n|p[<origin>|v][a|f|s|r] or -Fp<origin>
+	 * where <scheme> is c = continuous [Default], n = network, r = reference point, and v = vectors.
+	 * and impact is a = all files, f = per file, s = per segment [Default], r = per record.
 	 * Four different segmentizing schemes:
 	 * 1) -Fc: Continuous lines.  By default, lines are drawn on a segment by segment basis.
 	 *    Thus, -F or -Fc or -Fcs or -Fs is the standard default.  However, if we use
@@ -9483,7 +9336,7 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	 *   network for each segment, with f we group all segments in a file and construct a
 	 *   network for all those points, while with a with consider all points in the dataset
 	 *   to be one group. So only a|f|s is allowed.
-	 * 3) -Fr: Ref point.  Here, we construct line segments from the given reference point to
+	 * 3) -Fp: Ref point.  Here, we construct line segments from the given reference point to
 	 *   each of the points in the file.  If refpoint is given as two slash-separated coordinates
 	 *   then the refpoint is fixed throughout this construction.  However, refpoint may also be
 	 *   given as a, f, s and if so we pick the first point in the dataset, or first point in each
@@ -9497,13 +9350,13 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 	switch (in_arg[0]) {	/* First set method */
 		case 'c': k = 1;	S->method  = SEGM_CONTINUOUS;	break;
 		case 'n': k = 1;	S->method  = SEGM_NETWORK;	break;
-		case 'r': k = 1;	S->method  = SEGM_REFPOINT;	break;
+		case 'p': case 'r': k = 1;	S->method  = SEGM_REFPOINT;	break;	/* Backwards support for r for refpoint, now p for point */
 		case 'v': k = 1;	S->method  = SEGM_VECTOR;	break;
 		default:  k = 0;	S->method  = SEGM_CONTINUOUS;	break;
 	}
 
 	switch (in_arg[k]) {	/* Now set level */
-		case 's': case '\0': S->level = SEGM_SEGMENT;	break;
+		case 's': case '\0': S->level = SEGM_SEGMENT;	break;	/* Default is segment */
 		case 'a': S->level = SEGM_DATASET;	break;
 		case 'f': S->level = SEGM_TABLE;	break;
 		case 'r': S->level = SEGM_RECORD;	break;
@@ -9523,7 +9376,7 @@ unsigned int gmt_parse_segmentize (struct GMT_CTRL *GMT, char option, char *in_a
 		errors++;
 	}
 	if (S->method != SEGM_REFPOINT && S->level == SEGM_RECORD) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Only -Fr may accept refpoint = r\n", option);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Only -Fp may accept refpoint = r\n", option);
 		errors++;
 	}
 	if (mode == 1 && S->method == SEGM_VECTOR)	/* Only available for gmtconvert */
@@ -9577,10 +9430,11 @@ int gmt_check_binary_io (struct GMT_CTRL *GMT, uint64_t n_req) {
 
 /*! . */
 int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
-	int i, kk, k = 0, c, gap = 0;
+	int i, kk, k = 0, c, gap = 0, z_col = GMT_Z;
 	char *t = NULL;
 	/* Process the GMT gap detection option for parameters (leading [+|-] for gap is deprecated) */
-	/* Syntax, e.g., -g[x|X|y|Y|d|D|[<col>]z]<gap>[d|m|s|e|f|k|M|n|c|i|p][+n|p] or -ga */
+	/* Syntax, e.g., -gx|y|z|d|X|Y|D<gap>[d|m|s|e|f|k|M|n|c|i|p][+a][+c<col>][+n|p] */
+	/* Deprecated: -gx|X|y|Y|d|D|[<col>]z<gap>[d|m|s|e|f|k|M|n|c|i|p][+n|p] or -ga */
 
 	if (!txt || !txt[0]) return (GMT_PARSE_ERROR);	/* -g requires an argument */
 	if ((i = GMT->common.g.n_methods) == GMT_N_GAP_METHODS) {
@@ -9591,19 +9445,32 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 
 	gmt_set_segmentheader (GMT, GMT_OUT, true);	/* -g gap checking implies -mo if not already set */
 
-	if (txt[0] == 'a') {	/* For multiple criteria, specify that all criteria be met [default is any] */
+	if (txt[0] == 'a') {	/* Deprecated syntax for multiple criteria, specify that all criteria be met [Default is any] */
 		k++;
 		GMT->common.g.match_all = true;
 		if (!txt[k]) return (1);	/* Just a single -ga */
 	}
 
-	if ((t = strstr (txt, "+n"))) {	/* Gave modifier +n for negative gap check */
-		gap = -1;
-		t[0] = '\0';	/* Chop off modifier */
-	}
-	else if ((t = strstr (txt, "+p"))) {	/* Gave modifier +p for positive gap check */
-		gap = +1;
-		t[0] = '\0';	/* Chop off modifier */
+	if ((t = gmt_first_modifier (GMT, txt, "acnp"))) {	/* Process any modifiers */
+		char p[GMT_LEN16] = {""};
+		unsigned int pos = 0, n_errors = 0;
+		while (gmt_getmodopt (GMT, 'g', t, "acnp", &pos, p, &n_errors) && n_errors == 0) {
+			switch (p[0]) {
+				case 'a':	GMT->common.g.match_all = true;	break;	/* All criteria must be met */
+				case 'c':	/* Specify alternate z-column */
+					z_col = (p[1]) ? atoi (&p[1]) : GMT_Z;
+					if (z_col < GMT_Z) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -g: +c<col> given a <col> less than 2, which is x,y territory\n");
+						n_errors++;
+					}
+					break;
+				case 'n':	gap = -1;	break;	/* prev - current */
+				case 'p':	gap = +1;	break;	/* current - prev */
+				default:
+					break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		t[0] = '\0';	/* Chop off the modifiers */
 	}
 
 	/* Check if we have deprecated syntax and if that is allowed by the compatibility setting */
@@ -9647,9 +9514,9 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			break;
 		case 'z':	/* Difference in user's z-coordinates used for test */
 			GMT->common.g.method[i] = (gap == -1) ? GMT_NEGGAP_IN_COL : ((gap == +1) ? GMT_POSGAP_IN_COL : GMT_ABSGAP_IN_COL);
-			GMT->common.g.col[i] = 2;
+			GMT->common.g.col[i] = z_col;
 			break;
-		case '1':	/* Difference in a specified column's coordinates used for test */
+		case '1':	/* Difference in a specified z-column's coordinates used for test [Deprecated: Use +c<col> instead] */
 		case '2':
 		case '3':
 		case '4':
@@ -9662,7 +9529,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			c = k;
 			while (txt[k] && isdigit ((int)txt[k])) k++;	/* Skip past until we find z */
 			if (txt[k] != 'z') {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[k]);
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|z\n", txt[k]);
 				if (t) t[0] = '+';	/* Restore modifiers */
 				return (1);
 			}
@@ -9670,7 +9537,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			GMT->common.g.col[i] = atoi (&txt[c]);
 			break;
 		default:
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|[<col>]z\n", txt[0]);
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad gap selector (%c).  Choose from x|y|d|X|Y|D|z\n", txt[0]);
 			if (t) t[0] = '+';	/* Restore modifiers */
 			return (1);
 			break;
@@ -9707,7 +9574,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			break;	/* Already set, or will be reset below  */
 	}
 	k++;	/* Skip to start of gap value */
-	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip sign */
+	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip deprected sign */
 	if ((GMT->common.g.gap[i] = atof (&txt[k])) == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gap value must be non-zero\n");
 		if (t) t[0] = '+';	/* Restore modifiers */
@@ -9805,9 +9672,9 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file, bool theme
 		if (!theme) {	/* Must check validity and version */
 			if (rec != 2) { /* Nothing */ }
 			else if (strlen (line) < 7 || (ver = strtol (&line[6], NULL, 10)) < 5 )
-				gmt_message (GMT, "Your %s file (%s) may not be GMT %d compatible\n", GMT_SETTINGS_FILE, file, gmt_version_major);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your %s file (%s) may not be GMT %d compatible\n", GMT_SETTINGS_FILE, file, gmt_version_major);
 			else if (!strncmp (&line[6], "5.0.0", 5))
-				gmt_message (GMT, "Your %s file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", GMT_SETTINGS_FILE, file, file);
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your %s file (%s) is of version 5.0.0 and may need to be updated. Use \"gmtset -G%s\"\n", GMT_SETTINGS_FILE, file, file);
 		}
 		if (line[0] == '#') continue;	/* Skip comments */
 		if (line[0] == '\0') continue;	/* Skip Blank lines */
@@ -9828,7 +9695,7 @@ GMT_LOCAL int gmtinit_loaddefaults (struct GMT_CTRL *GMT, char *file, bool theme
 
 	gmtinit_verify_encodings (GMT);
 
-	if (error) gmt_message (GMT, "%d GMT Defaults conversion errors in file %s!\n", error, file);
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "%d GMT Defaults conversion errors in file %s!\n", error, file);
 
 	return (GMT_NOERROR);
 }
@@ -9850,7 +9717,7 @@ GMT_LOCAL int gmtinit_update_theme (struct GMT_CTRL *GMT) {
 		error = gmtinit_loaddefaults (GMT, theme_file, true);
 	}
 	else
-		gmt_message (GMT, "Theme %s file not found - ignored\n", GMT->current.setting.theme);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Theme %s file not found - ignored\n", GMT->current.setting.theme);
 	return (error);
 }
 
@@ -9919,6 +9786,8 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 		}
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Given view angle = %g, set MAP_FRAME_AXES = %s\n", az, axes);
 	}
+	else if (!strncmp (GMT->init.module_name, "psternary", 9U))	/* Make exception for ternary diagrams since S,E,W are the three sides of triangle */
+		strcpy (axes, "WEStZ");
 	else	/* Default modern mode setting */
 		strcpy (axes, "WrStZ");
 	gmtlib_setparameter (GMT, "MAP_FRAME_AXES", axes, conf_update);
@@ -10216,56 +10085,56 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 	switch (case_val) {
 		/* FORMAT GROUP */
 		case GMTCASE_INPUT_CLOCK_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_CLOCK_IN");
+			gmt_M_compat_translate ("FORMAT_CLOCK_IN");
 			break;
 		case GMTCASE_FORMAT_CLOCK_IN:
 			strncpy (GMT->current.setting.format_clock_in, value, GMT_LEN64-1);
 			error = gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_in, &GMT->current.io.clock_input, 0);
 			break;
 		case GMTCASE_INPUT_DATE_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_DATE_IN");
+			gmt_M_compat_translate ("FORMAT_DATE_IN");
 			break;
 		case GMTCASE_FORMAT_DATE_IN:
 			strncpy (GMT->current.setting.format_date_in, value, GMT_LEN64-1);
 			error = gmtlib_date_C_format (GMT, GMT->current.setting.format_date_in, &GMT->current.io.date_input, 0);
 			break;
 		case GMTCASE_OUTPUT_CLOCK_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_CLOCK_OUT");
+			gmt_M_compat_translate ("FORMAT_CLOCK_OUT");
 			break;
 		case GMTCASE_FORMAT_CLOCK_OUT:
 			strncpy (GMT->current.setting.format_clock_out, value, GMT_LEN64-1);
 			gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_out, &GMT->current.io.clock_output, 1);
 			break;
 		case GMTCASE_OUTPUT_DATE_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_DATE_OUT");
+			gmt_M_compat_translate ("FORMAT_DATE_OUT");
 			break;
 		case GMTCASE_FORMAT_DATE_OUT:
 			strncpy (GMT->current.setting.format_date_out, value, GMT_LEN64-1);
 			error = gmtlib_date_C_format (GMT, GMT->current.setting.format_date_out, &GMT->current.io.date_output, 1);
 			break;
 		case GMTCASE_OUTPUT_DEGREE_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_GEO_OUT");
+			gmt_M_compat_translate ("FORMAT_GEO_OUT");
 			break;
 		case GMTCASE_FORMAT_GEO_OUT:
 			strncpy (GMT->current.setting.format_geo_out, value, GMT_LEN64-1);
 			error = gmtlib_geo_C_format (GMT);	/* Can fail if FORMAT_FLOAT_OUT not yet set, but is repeated at the end of gmt_begin */
 			break;
 		case GMTCASE_PLOT_CLOCK_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_CLOCK_MAP");
+			gmt_M_compat_translate ("FORMAT_CLOCK_MAP");
 			break;
 		case GMTCASE_FORMAT_CLOCK_MAP:
 			strncpy (GMT->current.setting.format_clock_map, value, GMT_LEN64-1);
 			gmtlib_clock_C_format (GMT, GMT->current.setting.format_clock_map, &GMT->current.plot.calclock.clock, 2);
 			break;
 		case GMTCASE_PLOT_DATE_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_DATE_MAP");
+			gmt_M_compat_translate ("FORMAT_DATE_MAP");
 			break;
 		case GMTCASE_FORMAT_DATE_MAP:
 			strncpy (GMT->current.setting.format_date_map, value, GMT_LEN64-1);
 			error = gmtlib_date_C_format (GMT, GMT->current.setting.format_date_map, &GMT->current.plot.calclock.date, 2);
 			break;
 		case GMTCASE_PLOT_DEGREE_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_GEO_MAP");
+			gmt_M_compat_translate ("FORMAT_GEO_MAP");
 			break;
 		case GMTCASE_FORMAT_GEO_MAP:
 			strncpy (GMT->current.setting.format_geo_map, value, GMT_LEN64-1);
@@ -10276,19 +10145,19 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			        gmtlib_setparameter (GMT, "FORMAT_TIME_SECONDARY_MAP", value, core);
 			break;
 		case GMTCASE_TIME_FORMAT_PRIMARY:
-			GMT_COMPAT_TRANSLATE ("FORMAT_TIME_PRIMARY_MAP");
+			gmt_M_compat_translate ("FORMAT_TIME_PRIMARY_MAP");
 			break;
 		case GMTCASE_FORMAT_TIME_PRIMARY_MAP:
 			strncpy (GMT->current.setting.format_time[GMT_PRIMARY], value, GMT_LEN64-1);
 			break;
 		case GMTCASE_TIME_FORMAT_SECONDARY:
-			GMT_COMPAT_TRANSLATE ("FORMAT_TIME_SECONDARY_MAP");
+			gmt_M_compat_translate ("FORMAT_TIME_SECONDARY_MAP");
 			break;
 		case GMTCASE_FORMAT_TIME_SECONDARY_MAP:
 			strncpy (GMT->current.setting.format_time[GMT_SECONDARY], value, GMT_LEN64-1);
 			break;
 		case GMTCASE_D_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_FLOAT_OUT");
+			gmt_M_compat_translate ("FORMAT_FLOAT_OUT");
 			break;
 		case GMTCASE_FORMAT_FLOAT_OUT:
 			gmtinit_parse_format_float_out (GMT, value);
@@ -10297,7 +10166,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			strncpy (GMT->current.setting.format_float_map, value, GMT_LEN64-1);
 			break;
 		case GMTCASE_UNIX_TIME_FORMAT:
-			GMT_COMPAT_TRANSLATE ("FORMAT_TIME_STAMP");
+			gmt_M_compat_translate ("FORMAT_TIME_STAMP");
 			break;
 		case GMTCASE_FORMAT_TIME_STAMP:
 			strncpy (GMT->current.setting.format_time_stamp, value, GMT_LEN256-1);
@@ -10320,7 +10189,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			        gmtlib_setparameter (GMT, "FONT_ANNOT_SECONDARY", value, core);
 			break;
 		case GMTCASE_ANNOT_FONT_PRIMARY:
-			GMT_COMPAT_TRANSLATE ("FONT_ANNOT_PRIMARY");
+			gmt_M_compat_translate ("FONT_ANNOT_PRIMARY");
 			break;
 		case GMTCASE_FONT_ANNOT_PRIMARY:
 			if (value[0] == '+') {
@@ -10375,7 +10244,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 		case GMTCASE_ANNOT_FONT_SECONDARY:
-			GMT_COMPAT_TRANSLATE ("FONT_ANNOT_SECONDARY");
+			gmt_M_compat_translate ("FONT_ANNOT_SECONDARY");
 			break;
 		case GMTCASE_FONT_ANNOT_SECONDARY:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_annot[GMT_SECONDARY])) error = true;
@@ -10393,7 +10262,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_tag)) error = true;
 			break;
 		case GMTCASE_LABEL_FONT:
-			GMT_COMPAT_TRANSLATE ("FONT_LABEL");
+			gmt_M_compat_translate ("FONT_LABEL");
 			break;
 		case GMTCASE_FONT_LABEL:
 			if (gmt_getfont (GMT, value, &GMT->current.setting.font_label)) error = true;
@@ -10406,11 +10275,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 
 		case GMTCASE_ANNOT_FONT_SIZE_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_COMPAT_CHANGE ("FONT_ANNOT_PRIMARY");
+				gmt_M_compat_change ("FONT_ANNOT_PRIMARY");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0) {
 					GMT->current.setting.font_annot[GMT_PRIMARY].size = dval;
-					GMT_KEYWORD_UPDATE (GMTCASE_FONT_ANNOT_PRIMARY);
+					gmt_M_keyword_update (GMTCASE_FONT_ANNOT_PRIMARY);
 				}
 				else
 					error = true;
@@ -10420,11 +10289,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_ANNOT_FONT_SIZE_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_COMPAT_CHANGE ("FONT_ANNOT_SECONDARY");
+				gmt_M_compat_change ("FONT_ANNOT_SECONDARY");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0) {
 					GMT->current.setting.font_annot[GMT_SECONDARY].size = dval;
-					GMT_KEYWORD_UPDATE (GMTCASE_FONT_ANNOT_SECONDARY);
+					gmt_M_keyword_update (GMTCASE_FONT_ANNOT_SECONDARY);
 				}
 				else
 					error = true;
@@ -10434,11 +10303,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_HEADER_FONT_SIZE:
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_COMPAT_CHANGE ("FONT_TITLE");
+				gmt_M_compat_change ("FONT_TITLE");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0) {
 					GMT->current.setting.font_title.size = dval;
-					GMT_KEYWORD_UPDATE (GMTCASE_FONT_TITLE);
+					gmt_M_keyword_update (GMTCASE_FONT_TITLE);
 				}
 				else
 					error = true;
@@ -10448,11 +10317,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_LABEL_FONT_SIZE:
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_COMPAT_CHANGE ("FONT_LABEL");
+				gmt_M_compat_change ("FONT_LABEL");
 				dval = gmt_convert_units (GMT, value, GMT_PT, GMT_PT);
 				if (dval > 0.0) {
 					GMT->current.setting.font_label.size = dval;
-					GMT_KEYWORD_UPDATE (GMTCASE_FONT_LABEL);
+					gmt_M_keyword_update (GMTCASE_FONT_LABEL);
 				}
 				else
 					error = true;
@@ -10464,7 +10333,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* MAP GROUP */
 
 		case GMTCASE_ANNOT_OFFSET_PRIMARY:
-			GMT_COMPAT_TRANSLATE ("MAP_ANNOT_OFFSET_PRIMARY");
+			gmt_M_compat_translate ("MAP_ANNOT_OFFSET_PRIMARY");
 			break;
 		case GMTCASE_MAP_ANNOT_OFFSET:
 			error = gmtlib_setparameter (GMT, "MAP_ANNOT_OFFSET_PRIMARY", value, core) +
@@ -10474,13 +10343,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT->current.setting.map_annot_offset[GMT_PRIMARY] = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_ANNOT_OFFSET_SECONDARY:
-			GMT_COMPAT_TRANSLATE ("MAP_ANNOT_OFFSET_SECONDARY");
+			gmt_M_compat_translate ("MAP_ANNOT_OFFSET_SECONDARY");
 			break;
 		case GMTCASE_MAP_ANNOT_OFFSET_SECONDARY:
 			GMT->current.setting.map_annot_offset[GMT_SECONDARY] = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_OBLIQUE_ANNOTATION:
-			GMT_COMPAT_TRANSLATE ("MAP_ANNOT_OBLIQUE");
+			gmt_M_compat_translate ("MAP_ANNOT_OBLIQUE");
 			break;
 		case GMTCASE_MAP_ANNOT_OBLIQUE:
 			ival = gmtinit_parse_map_annot_oblique (GMT, value);
@@ -10492,7 +10361,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_ANNOT_MIN_ANGLE:
-			GMT_COMPAT_TRANSLATE ("MAP_ANNOT_MIN_ANGLE");
+			gmt_M_compat_translate ("MAP_ANNOT_MIN_ANGLE");
 			break;
 		case GMTCASE_MAP_ANNOT_MIN_ANGLE:
 			dval = atof (value);
@@ -10502,7 +10371,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_annot_min_angle = dval;
 			break;
 		case GMTCASE_ANNOT_MIN_SPACING:
-			GMT_COMPAT_TRANSLATE ("MAP_ANNOT_MIN_SPACING");
+			gmt_M_compat_translate ("MAP_ANNOT_MIN_SPACING");
 			break;
 		case GMTCASE_MAP_ANNOT_MIN_SPACING:
 			if (value[0] == '-')	/* Negative */
@@ -10514,14 +10383,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_Y_AXIS_TYPE:
 			if (gmt_M_compat_check (GMT, 4)) {
-				GMT_COMPAT_CHANGE ("MAP_ANNOT_ORTHO");
+				gmt_M_compat_change ("MAP_ANNOT_ORTHO");
 				if (!strcmp (lower_value, "ver_text")) {
 					strncpy (GMT->current.setting.map_annot_ortho, "", 5U);
-					GMT_KEYWORD_UPDATE (GMTCASE_MAP_ANNOT_ORTHO);
+					gmt_M_keyword_update (GMTCASE_MAP_ANNOT_ORTHO);
 				}
 				else if (!strcmp (lower_value, "hor_text")) {
 					strncpy (GMT->current.setting.map_annot_ortho, "we", 5U);
-					GMT_KEYWORD_UPDATE (GMTCASE_MAP_ANNOT_ORTHO);
+					gmt_M_keyword_update (GMTCASE_MAP_ANNOT_ORTHO);
 				}
 				else
 					error = true;
@@ -10533,7 +10402,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			strncpy (GMT->current.setting.map_annot_ortho, lower_value, 5U);
 			break;
 		case GMTCASE_DEGREE_SYMBOL:
-			GMT_COMPAT_TRANSLATE ("MAP_DEGREE_SYMBOL");
+			gmt_M_compat_translate ("MAP_DEGREE_SYMBOL");
 			break;
 		case GMTCASE_MAP_DEGREE_SYMBOL:
 			if (value[0] == '\0' || !strcmp (lower_value, "degree"))	/* Default */
@@ -10549,7 +10418,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			error += gmtlib_plot_C_format (GMT);	/* Update format statement since degree symbol may have changed */
 			break;
 		case GMTCASE_BASEMAP_AXES:
-			GMT_COMPAT_TRANSLATE ("MAP_FRAME_AXES");
+			gmt_M_compat_translate ("MAP_FRAME_AXES");
 			break;
 		case GMTCASE_MAP_FRAME_AXES:
 			strncpy (GMT->current.setting.map_frame_axes, value, 5U);
@@ -10557,7 +10426,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 
 		case GMTCASE_BASEMAP_FRAME_RGB:
-			GMT_COMPAT_TRANSLATE ("MAP_DEFAULT_PEN");
+			gmt_M_compat_translate ("MAP_DEFAULT_PEN");
 			break;
 		case GMTCASE_MAP_DEFAULT_PEN:
 			i = (value[0] == '+') ? 1 : 0;	/* If plus is added, copy color to MAP_*_PEN settings */
@@ -10571,7 +10440,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 		case GMTCASE_FRAME_PEN:
-			GMT_COMPAT_TRANSLATE ("MAP_FRAME_PEN");
+			gmt_M_compat_translate ("MAP_FRAME_PEN");
 			break;
 		case GMTCASE_MAP_FRAME_PEN:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_frame_pen);
@@ -10584,7 +10453,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_frame_percent = dval;
 			break;
 		case GMTCASE_BASEMAP_TYPE:
-			GMT_COMPAT_TRANSLATE ("MAP_FRAME_TYPE");
+			gmt_M_compat_translate ("MAP_FRAME_TYPE");
 			break;
 		case GMTCASE_MAP_FRAME_TYPE:
 			if (!strcmp (lower_value, "plain"))
@@ -10621,13 +10490,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_FRAME_WIDTH:
-			GMT_COMPAT_TRANSLATE ("MAP_FRAME_WIDTH");
+			gmt_M_compat_translate ("MAP_FRAME_WIDTH");
 			break;
 		case GMTCASE_MAP_FRAME_WIDTH:
 			GMT->current.setting.map_frame_width = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_PRIMARY:
-			GMT_COMPAT_TRANSLATE ("MAP_GRID_CROSS_SIZE_PRIMARY");
+			gmt_M_compat_translate ("MAP_GRID_CROSS_SIZE_PRIMARY");
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE:
 			error = gmtlib_setparameter (GMT, "MAP_GRID_CROSS_SIZE_PRIMARY", value, core) +
@@ -10640,7 +10509,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT->current.setting.map_grid_cross_type[GMT_PRIMARY] = ival;
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
-			GMT_COMPAT_TRANSLATE ("MAP_GRID_CROSS_SIZE_SECONDARY");
+			gmt_M_compat_translate ("MAP_GRID_CROSS_SIZE_SECONDARY");
 			break;
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
 			dval = gmt_M_to_inch (GMT, value);
@@ -10653,13 +10522,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			        gmtlib_setparameter (GMT, "MAP_GRID_PEN_SECONDARY", value, core);
 			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
-			GMT_COMPAT_TRANSLATE ("MAP_GRID_PEN_PRIMARY");
+			gmt_M_compat_translate ("MAP_GRID_PEN_PRIMARY");
 			break;
 		case GMTCASE_MAP_GRID_PEN_PRIMARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_PRIMARY]);
 			break;
 		case GMTCASE_GRID_PEN_SECONDARY:
-			GMT_COMPAT_TRANSLATE ("MAP_GRID_PEN_SECONDARY");
+			gmt_M_compat_translate ("MAP_GRID_PEN_SECONDARY");
 			break;
 		case GMTCASE_MAP_GRID_PEN_SECONDARY:
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_grid_pen[GMT_SECONDARY]);
@@ -10684,7 +10553,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 		case GMTCASE_LABEL_OFFSET:
-			GMT_COMPAT_TRANSLATE ("MAP_LABEL_OFFSET");
+			gmt_M_compat_translate ("MAP_LABEL_OFFSET");
 			break;
 		case GMTCASE_MAP_LABEL_OFFSET:
 			if ((i = sscanf (value, "%[^/]/%s", txt_a, txt_b)) == 2) {	/* Separate settings for x and y */
@@ -10695,7 +10564,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.map_label_offset[GMT_X] = GMT->current.setting.map_label_offset[GMT_Y] = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_LINE_STEP:
-			GMT_COMPAT_TRANSLATE ("MAP_LINE_STEP");
+			gmt_M_compat_translate ("MAP_LINE_STEP");
 			break;
 		case GMTCASE_MAP_LINE_STEP:
 			if ((GMT->current.setting.map_line_step = gmt_M_to_inch (GMT, value)) <= 0.0) {
@@ -10704,13 +10573,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			}
 			break;
 		case GMTCASE_UNIX_TIME:
-			GMT_COMPAT_TRANSLATE ("MAP_LOGO");
+			gmt_M_compat_translate ("MAP_LOGO");
 			break;
 		case GMTCASE_MAP_LOGO:
 			error = gmtinit_true_false_or_error (lower_value, &GMT->current.setting.map_logo);
 			break;
 		case GMTCASE_UNIX_TIME_POS:
-			GMT_COMPAT_TRANSLATE ("MAP_LOGO_POS");
+			gmt_M_compat_translate ("MAP_LOGO_POS");
 			break;
 		case GMTCASE_MAP_LOGO_POS:
 			i = sscanf (value, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_c);
@@ -10729,19 +10598,19 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_X_ORIGIN:
-			GMT_COMPAT_TRANSLATE ("MAP_ORIGIN_X");
+			gmt_M_compat_translate ("MAP_ORIGIN_X");
 			break;
 		case GMTCASE_MAP_ORIGIN_X:
 			GMT->current.setting.map_origin[GMT_X] = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_Y_ORIGIN:
-			GMT_COMPAT_TRANSLATE ("MAP_ORIGIN_Y");
+			gmt_M_compat_translate ("MAP_ORIGIN_Y");
 			break;
 		case GMTCASE_MAP_ORIGIN_Y:
 			GMT->current.setting.map_origin[GMT_Y] = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_POLAR_CAP:
-			GMT_COMPAT_TRANSLATE ("MAP_POLAR_CAP");
+			gmt_M_compat_translate ("MAP_POLAR_CAP");
 			break;
 		case GMTCASE_MAP_POLAR_CAP:
 			if (!strcmp (lower_value, "none")) {	/* Means reset to no cap -> lat = 90, dlon = 0 */
@@ -10772,13 +10641,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_TICK_LENGTH:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
-				GMT_COMPAT_CHANGE ("MAP_TICK_LENGTH");
+				gmt_M_compat_change ("MAP_TICK_LENGTH");
 				GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] = gmt_M_to_inch (GMT, value);
 				GMT->current.setting.map_tick_length[GMT_TICK_UPPER]  = 0.50 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 				GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] = 3.00 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
 				GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  = 0.75 * GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER];
-				GMT_KEYWORD_UPDATE (GMTCASE_MAP_TICK_LENGTH_PRIMARY);
-				GMT_KEYWORD_UPDATE (GMTCASE_MAP_TICK_LENGTH_SECONDARY);
+				gmt_M_keyword_update (GMTCASE_MAP_TICK_LENGTH_PRIMARY);
+				gmt_M_keyword_update (GMTCASE_MAP_TICK_LENGTH_SECONDARY);
 			}
 			else	/* Not recognized so give error message */
 				error = gmtinit_badvalreport (GMT, keyword);
@@ -10798,7 +10667,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT->current.setting.map_tick_length[GMT_TICK_LOWER]  = (i > 1) ? gmt_M_to_inch (GMT, txt_b) : 0.25 * GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER];
 			break;
 		case GMTCASE_TICK_PEN:
-			GMT_COMPAT_TRANSLATE ("MAP_TICK_PEN");
+			gmt_M_compat_translate ("MAP_TICK_PEN");
 			break;
 		case GMTCASE_MAP_TICK_PEN:
 			error = gmtlib_setparameter (GMT, "MAP_TICK_PEN_PRIMARY", value, core) +
@@ -10811,13 +10680,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			error = gmt_getpen (GMT, value, &GMT->current.setting.map_tick_pen[GMT_SECONDARY]);
 			break;
 		case GMTCASE_HEADER_OFFSET:
-			GMT_COMPAT_TRANSLATE ("MAP_TITLE_OFFSET");
+			gmt_M_compat_translate ("MAP_TITLE_OFFSET");
 			break;
 		case GMTCASE_MAP_TITLE_OFFSET:
 			GMT->current.setting.map_title_offset = gmt_M_to_inch (GMT, value);
 			break;
 		case GMTCASE_VECTOR_SHAPE:
-			GMT_COMPAT_TRANSLATE ("MAP_VECTOR_SHAPE");
+			gmt_M_compat_translate ("MAP_VECTOR_SHAPE");
 			break;
 		case GMTCASE_MAP_VECTOR_SHAPE:
 			dval = atof (value);
@@ -10875,7 +10744,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			error = gmt_getrgb (GMT, value, GMT->current.setting.color_patch[GMT_NAN]);
 			break;
 		case GMTCASE_HSV_MIN_SATURATION:
-			GMT_COMPAT_TRANSLATE ("COLOR_HSV_MIN_S");
+			gmt_M_compat_translate ("COLOR_HSV_MIN_S");
 			break;
 		case GMTCASE_COLOR_HSV_MIN_S:
 			dval = atof (value);
@@ -10885,7 +10754,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.color_hsv_min_s = dval;
 			break;
 		case GMTCASE_HSV_MAX_SATURATION:
-			GMT_COMPAT_TRANSLATE ("COLOR_HSV_MAX_S");
+			gmt_M_compat_translate ("COLOR_HSV_MAX_S");
 			break;
 		case GMTCASE_COLOR_HSV_MAX_S:
 			dval = atof (value);
@@ -10895,7 +10764,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.color_hsv_max_s = dval;
 			break;
 		case GMTCASE_HSV_MIN_VALUE:
-			GMT_COMPAT_TRANSLATE ("COLOR_HSV_MIN_V");
+			gmt_M_compat_translate ("COLOR_HSV_MIN_V");
 			break;
 		case GMTCASE_COLOR_HSV_MIN_V:
 			dval = atof (value);
@@ -10905,7 +10774,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.color_hsv_min_v = dval;
 			break;
 		case GMTCASE_HSV_MAX_VALUE:
-			GMT_COMPAT_TRANSLATE ("COLOR_HSV_MAX_V");
+			gmt_M_compat_translate ("COLOR_HSV_MAX_V");
 			break;
 		case GMTCASE_COLOR_HSV_MAX_V:
 			dval = atof (value);
@@ -10952,7 +10821,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* PS GROUP */
 
 		case GMTCASE_CHAR_ENCODING:
-			GMT_COMPAT_TRANSLATE ("PS_CHAR_ENCODING");
+			gmt_M_compat_translate ("PS_CHAR_ENCODING");
 			break;
 		case GMTCASE_PS_CHAR_ENCODING:
 			strncpy (GMT->current.setting.ps_encoding.name, value, GMT_LEN64-1);
@@ -10960,7 +10829,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			error = gmtlib_plot_C_format (GMT);	/* Since a chance in char set chances what is degree, ring, etc. */
 			break;
 		case GMTCASE_PS_COLOR:
-			GMT_COMPAT_TRANSLATE ("PS_COLOR_MODEL");
+			gmt_M_compat_translate ("PS_COLOR_MODEL");
 			break;
 		case GMTCASE_PS_COLOR_MODEL:
 			if (!strcmp (lower_value, "rgb"))
@@ -11055,13 +10924,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_PAGE_COLOR:
-			GMT_COMPAT_TRANSLATE ("PS_PAGE_COLOR");
+			gmt_M_compat_translate ("PS_PAGE_COLOR");
 			break;
 		case GMTCASE_PS_PAGE_COLOR:
 			error = gmt_getrgb (GMT, value, GMT->current.setting.ps_page_rgb);
 			break;
 		case GMTCASE_PAGE_ORIENTATION:
-			GMT_COMPAT_TRANSLATE ("PS_PAGE_ORIENTATION");
+			gmt_M_compat_translate ("PS_PAGE_ORIENTATION");
 			break;
 		case GMTCASE_PS_PAGE_ORIENTATION:
 			if (!strcmp (lower_value, "landscape"))
@@ -11072,7 +10941,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_PAPER_MEDIA:
-			GMT_COMPAT_TRANSLATE ("PS_MEDIA");
+			gmt_M_compat_translate ("PS_MEDIA");
 			break;
 		case GMTCASE_PS_MEDIA:
 			if (GMT->current.setting.run_mode == GMT_MODERN && !strcmp (lower_value, "auto")) {
@@ -11100,7 +10969,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else if (gmtinit_load_user_media (GMT) &&
 				(pos = gmtinit_key_lookup (lower_value, GMT->session.user_media_name, GMT->session.n_user_media)) < GMT->session.n_user_media) {
 				/* Use a user-specified format */
-					GMT->current.setting.ps_media = pos + USER_MEDIA_OFFSET;
+					GMT->current.setting.ps_media = pos + GMT_USER_MEDIA_OFFSET;
 					GMT->current.setting.ps_page_size[0] = GMT->session.user_media[pos].width;
 					GMT->current.setting.ps_page_size[1] = GMT->session.user_media[pos].height;
 				}
@@ -11117,14 +10986,14 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 					GMT->current.setting.ps_page_size[1] = gmt_convert_units (GMT, txt_b, GMT_PT, GMT_PT);
 				if (GMT->current.setting.ps_page_size[0] <= 0.0) error = true;
 				if (GMT->current.setting.ps_page_size[1] <= 0.0) error = true;
-				GMT->current.setting.ps_media = -USER_MEDIA_OFFSET;
+				GMT->current.setting.ps_media = -GMT_USER_MEDIA_OFFSET;
 			}
 			if (!error && manual) GMT->current.setting.ps_page_size[0] = -GMT->current.setting.ps_page_size[0];
 			GMT->current.setting.ps_def_page_size[0] = GMT->current.setting.ps_page_size[0];
 			GMT->current.setting.ps_def_page_size[1] = GMT->current.setting.ps_page_size[1];
 			break;
 		case GMTCASE_GLOBAL_X_SCALE:
-			GMT_COMPAT_TRANSLATE ("PS_SCALE_X");
+			gmt_M_compat_translate ("PS_SCALE_X");
 			break;
 		case GMTCASE_PS_SCALE_X:
 			dval = atof (value);
@@ -11134,7 +11003,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_GLOBAL_Y_SCALE:
-			GMT_COMPAT_TRANSLATE ("PS_SCALE_Y");
+			gmt_M_compat_translate ("PS_SCALE_Y");
 			break;
 		case GMTCASE_PS_SCALE_Y:
 			dval = atof (value);
@@ -11156,7 +11025,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			strncpy (GMT->current.setting.ps_convert, value, GMT_LEN256-1);
 			break;
 		case GMTCASE_PS_VERBOSE:
-			GMT_COMPAT_TRANSLATE ("PS_COMMENTS");
+			gmt_M_compat_translate ("PS_COMMENTS");
 			break;
 		case GMTCASE_PS_COMMENTS:
 			if (!GMT->PSL) return (0);	/* Not using PSL in this session */
@@ -11167,7 +11036,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		/* IO GROUP */
 
 		case GMTCASE_FIELD_DELIMITER:
-			GMT_COMPAT_TRANSLATE ("IO_COL_SEPARATOR");
+			gmt_M_compat_translate ("IO_COL_SEPARATOR");
 			break;
 		case GMTCASE_IO_COL_SEPARATOR:
 			if (value[0] == '\0' || !strcmp (lower_value, "tab"))	/* DEFAULT */
@@ -11198,13 +11067,13 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_GRIDFILE_FORMAT:
-			GMT_COMPAT_TRANSLATE ("IO_GRIDFILE_FORMAT");
+			gmt_M_compat_translate ("IO_GRIDFILE_FORMAT");
 			break;
 		case GMTCASE_IO_GRIDFILE_FORMAT:
 			strncpy (GMT->current.setting.io_gridfile_format, value, GMT_LEN64-1);
 			break;
 		case GMTCASE_GRIDFILE_SHORTHAND:
-			GMT_COMPAT_TRANSLATE ("IO_GRIDFILE_SHORTHAND");
+			gmt_M_compat_translate ("IO_GRIDFILE_SHORTHAND");
 			break;
 		case GMTCASE_IO_GRIDFILE_SHORTHAND:
 			error = gmtinit_true_false_or_error (lower_value, &GMT->current.setting.io_gridfile_shorthand);
@@ -11232,7 +11101,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			if (gmtinit_check_markers (GMT)) error = true;
 			break;
 		case GMTCASE_N_HEADER_RECS:
-			GMT_COMPAT_TRANSLATE ("IO_N_HEADER_RECS");
+			gmt_M_compat_translate ("IO_N_HEADER_RECS");
 			break;
 		case GMTCASE_IO_N_HEADER_RECS:
 			ival = atoi (value);
@@ -11242,7 +11111,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.io_n_header_items = ival;
 			break;
 		case GMTCASE_NAN_RECORDS:
-			GMT_COMPAT_TRANSLATE ("IO_NAN_RECORDS");
+			gmt_M_compat_translate ("IO_NAN_RECORDS");
 			break;
 		case GMTCASE_IO_NAN_RECORDS:
 			if (!strcmp (lower_value, "pass"))
@@ -11280,7 +11149,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_XY_TOGGLE:
-			GMT_COMPAT_TRANSLATE ("IO_LONLAT_TOGGLE");
+			gmt_M_compat_translate ("IO_LONLAT_TOGGLE");
 			break;
 		case GMTCASE_IO_LONLAT_TOGGLE:
 			if (!gmtinit_true_false_or_error (lower_value, &GMT->current.setting.io_lonlat_toggle[GMT_IN]))
@@ -11367,7 +11236,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 
 		case GMTCASE_ELLIPSOID:
-			GMT_COMPAT_TRANSLATE ("PROJ_ELLIPSOID");
+			gmt_M_compat_translate ("PROJ_ELLIPSOID");
 			break;
 		case GMTCASE_PROJ_ELLIPSOID:
 			ival = gmt_get_ellipsoid (GMT, value);
@@ -11392,7 +11261,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 
 		case GMTCASE_MEASURE_UNIT:
-			GMT_COMPAT_TRANSLATE ("PROJ_LENGTH_UNIT");
+			gmt_M_compat_translate ("PROJ_LENGTH_UNIT");
 			break;
 		case GMTCASE_PROJ_LENGTH_UNIT:
 			if (gmt_set_length_unit (GMT, lower_value[0]) == GMT_NOTSET)
@@ -11415,7 +11284,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 
 		case GMTCASE_MAP_SCALE_FACTOR:
-			GMT_COMPAT_TRANSLATE ("PROJ_SCALE_FACTOR");
+			gmt_M_compat_translate ("PROJ_SCALE_FACTOR");
 			break;
 		case GMTCASE_PROJ_SCALE_FACTOR:
 			if (!strncmp (value, "def", 3U)) /* Default scale for chosen projection */
@@ -11617,7 +11486,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.graphics_format = ival;
 			break;
 		case GMTCASE_HISTORY:
-			GMT_COMPAT_TRANSLATE ("GMT_HISTORY");
+			gmt_M_compat_translate ("GMT_HISTORY");
 			break;
 		case GMTCASE_GMT_HISTORY:
 			if (!strcmp (lower_value, "1") || !strcmp (lower_value, "true"))
@@ -11630,7 +11499,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				error = true;
 			break;
 		case GMTCASE_INTERPOLANT:
-			GMT_COMPAT_TRANSLATE ("GMT_INTERPOLANT");
+			gmt_M_compat_translate ("GMT_INTERPOLANT");
 			break;
 		case GMTCASE_GMT_INTERPOLANT:
 			if (!strcmp (lower_value, "linear"))
@@ -11677,11 +11546,11 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_VERBOSE:
 			if (gmt_M_compat_check (GMT, 4)) {	/* GMT4: */
-				GMT_COMPAT_CHANGE ("GMT_VERBOSE");
+				gmt_M_compat_change ("GMT_VERBOSE");
 				ival = atoi (value) + 2;
 				if (ival >= GMT_MSG_QUIET && ival <= GMT_MSG_DEBUG) {
 					GMT->current.setting.verbose = ival;
-					GMT_KEYWORD_UPDATE (GMTCASE_GMT_VERBOSE);
+					gmt_M_keyword_update (GMTCASE_GMT_VERBOSE);
 				}
 				else
 					error = true;
@@ -11769,10 +11638,10 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			GMT->current.setting.time_interval_fraction = atof (value);
 			break;
 		case GMTCASE_TIME_LANGUAGE:
-			GMT_COMPAT_TRANSLATE ("GMT_LANGUAGE");
+			gmt_M_compat_translate ("GMT_LANGUAGE");
 			break;
 		case GMTCASE_WANT_LEAP_SECONDS:
-			GMT_COMPAT_TRANSLATE ("TIME_LEAP_SECONDS");
+			gmt_M_compat_translate ("TIME_LEAP_SECONDS");
 			break;
 		case GMTCASE_TIME_LEAP_SECONDS:
 			error = gmtinit_true_false_or_error (lower_value, &GMT->current.setting.time_leap_seconds);
@@ -11794,8 +11663,8 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		case GMTCASE_TIME_SYSTEM:
 			error = gmt_get_time_system (GMT, lower_value, &GMT->current.setting.time_system);
 			(void) gmt_init_time_system_structure (GMT, &GMT->current.setting.time_system);
-			GMT_KEYWORD_UPDATE (GMTCASE_TIME_UNIT);
-			GMT_KEYWORD_UPDATE (GMTCASE_TIME_EPOCH);
+			gmt_M_keyword_update (GMTCASE_TIME_UNIT);
+			gmt_M_keyword_update (GMTCASE_TIME_EPOCH);
 			break;
 		case GMTCASE_TIME_WEEK_START:
 			ival = gmtinit_key_lookup (value, GMT_weekdays, 7);
@@ -11807,7 +11676,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 				GMT->current.setting.time_week_start = ival;
 			break;
 		case GMTCASE_Y2K_OFFSET_YEAR:
-			GMT_COMPAT_TRANSLATE ("TIME_Y2K_OFFSET_YEAR");
+			gmt_M_compat_translate ("TIME_Y2K_OFFSET_YEAR");
 			break;
 		case GMTCASE_TIME_Y2K_OFFSET_YEAR:
 			if ((ival = atoi (value)) < 0) error = true;
@@ -11850,7 +11719,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 		if (error)
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s given illegal value (%s)!\n", keyword, value);
 		else
-			GMT_KEYWORD_UPDATE (case_val);
+			gmt_M_keyword_update (case_val);
 	}
 	return ((error) ? 1 : 0);
 }
@@ -11859,7 +11728,7 @@ GMT_LOCAL void gmtinit_place_value (struct GMT_CTRL *GMT, double dim, int kase, 
 	if (gmt_M_is_dnan (dim))
 		snprintf (value, GMT_LEN256, "auto");
 	else
-		snprintf (value, GMT_LEN256, "%g%c", dim * GMT_def_scale(kase), GMT_def_unit(kase));
+		snprintf (value, GMT_LEN256, "%g%c", dim * gmt_M_def_scale(kase), gmt_M_def_unit(kase));
 }
 
 /*! . */
@@ -12198,7 +12067,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY:
-			snprintf (value, GMT_LEN256, "%s%g%c", PRE[GMT->current.setting.map_grid_cross_type[GMT_PRIMARY]], GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
+			snprintf (value, GMT_LEN256, "%s%g%c", PRE[GMT->current.setting.map_grid_cross_type[GMT_PRIMARY]], GMT->current.setting.map_grid_cross_size[GMT_PRIMARY] * gmt_M_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY), gmt_M_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_PRIMARY));
 			break;
 		case GMTCASE_GRID_CROSS_SIZE_SECONDARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -12206,7 +12075,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY:
-			snprintf (value, GMT_LEN256, "%s%g%c", PRE[GMT->current.setting.map_grid_cross_type[GMT_PRIMARY]], GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] * GMT_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY), GMT_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
+			snprintf (value, GMT_LEN256, "%s%g%c", PRE[GMT->current.setting.map_grid_cross_type[GMT_PRIMARY]], GMT->current.setting.map_grid_cross_size[GMT_SECONDARY] * gmt_M_def_scale(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY), gmt_M_def_unit(GMTCASE_MAP_GRID_CROSS_SIZE_SECONDARY));
 			break;
 		case GMTCASE_GRID_PEN_PRIMARY:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -12246,8 +12115,8 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			if (doubleAlmostEqualZero (GMT->current.setting.map_label_offset[GMT_X], GMT->current.setting.map_label_offset[GMT_Y]))
 				gmtinit_place_value (GMT, GMT->current.setting.map_label_offset[GMT_X], GMTCASE_MAP_LABEL_OFFSET, value);
 			else {
-				snprintf (value, GMT_LEN256, "%g%c/%g%c", GMT->current.setting.map_label_offset[GMT_X] * GMT_def_scale(GMTCASE_MAP_LABEL_OFFSET), GMT_def_unit(GMTCASE_MAP_LABEL_OFFSET),
-					 GMT->current.setting.map_label_offset[GMT_Y] * GMT_def_scale(GMTCASE_MAP_LABEL_OFFSET), GMT_def_unit(GMTCASE_MAP_LABEL_OFFSET));
+				snprintf (value, GMT_LEN256, "%g%c/%g%c", GMT->current.setting.map_label_offset[GMT_X] * gmt_M_def_scale(GMTCASE_MAP_LABEL_OFFSET), gmt_M_def_unit(GMTCASE_MAP_LABEL_OFFSET),
+					 GMT->current.setting.map_label_offset[GMT_Y] * gmt_M_def_scale(GMTCASE_MAP_LABEL_OFFSET), gmt_M_def_unit(GMTCASE_MAP_LABEL_OFFSET));
 			}
 			break;
 		case GMTCASE_LINE_STEP:
@@ -12256,7 +12125,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_LINE_STEP:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_line_step * GMT_def_scale(GMTCASE_MAP_LINE_STEP), GMT_def_unit(GMTCASE_MAP_LINE_STEP));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_line_step * gmt_M_def_scale(GMTCASE_MAP_LINE_STEP), gmt_M_def_unit(GMTCASE_MAP_LINE_STEP));
 			break;
 		case GMTCASE_UNIX_TIME:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -12273,8 +12142,8 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			/* Intentionally fall through */
 		case GMTCASE_MAP_LOGO_POS:
 			snprintf (value, GMT_LEN256, "%s/%g%c/%g%c", GMT_just_string[GMT->current.setting.map_logo_justify],
-			GMT->current.setting.map_logo_pos[GMT_X] * GMT_def_scale(GMTCASE_MAP_LOGO_POS), GMT_def_unit(GMTCASE_MAP_LOGO_POS),
-			GMT->current.setting.map_logo_pos[GMT_Y] * GMT_def_scale(GMTCASE_MAP_LOGO_POS), GMT_def_unit(GMTCASE_MAP_LOGO_POS));
+			GMT->current.setting.map_logo_pos[GMT_X] * gmt_M_def_scale(GMTCASE_MAP_LOGO_POS), gmt_M_def_unit(GMTCASE_MAP_LOGO_POS),
+			GMT->current.setting.map_logo_pos[GMT_Y] * gmt_M_def_scale(GMTCASE_MAP_LOGO_POS), gmt_M_def_unit(GMTCASE_MAP_LOGO_POS));
 			break;
 		case GMTCASE_X_ORIGIN:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -12282,7 +12151,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_ORIGIN_X:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_X] * GMT_def_scale(GMTCASE_MAP_ORIGIN_X), GMT_def_unit(GMTCASE_MAP_ORIGIN_X));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_X] * gmt_M_def_scale(GMTCASE_MAP_ORIGIN_X), gmt_M_def_unit(GMTCASE_MAP_ORIGIN_X));
 			break;
 		case GMTCASE_Y_ORIGIN:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -12290,7 +12159,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_MAP_ORIGIN_Y:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_Y] * GMT_def_scale(GMTCASE_MAP_ORIGIN_Y), GMT_def_unit(GMTCASE_MAP_ORIGIN_Y));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_origin[GMT_Y] * gmt_M_def_scale(GMTCASE_MAP_ORIGIN_Y), gmt_M_def_unit(GMTCASE_MAP_ORIGIN_Y));
 			break;
 		case GMTCASE_POLAR_CAP:
 			if (gmt_M_compat_check (GMT, 4))	/* GMT4: */
@@ -12306,7 +12175,7 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				snprintf (value, GMT_LEN256, "%g/%g", GMT->current.setting.map_polar_cap[0], GMT->current.setting.map_polar_cap[1]);
 			break;
 		case GMTCASE_MAP_SCALE_HEIGHT:
-			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_scale_height * GMT_def_scale(GMTCASE_MAP_SCALE_HEIGHT), GMT_def_unit(GMTCASE_MAP_SCALE_HEIGHT));
+			snprintf (value, GMT_LEN256, "%g%c", GMT->current.setting.map_scale_height * gmt_M_def_scale(GMTCASE_MAP_SCALE_HEIGHT), gmt_M_def_unit(GMTCASE_MAP_SCALE_HEIGHT));
 			break;
 		case GMTCASE_MAP_TICK_LENGTH:
 		case GMTCASE_TICK_LENGTH:
@@ -12319,8 +12188,8 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				snprintf (value, GMT_LEN256, "auto");
 			else {
 				snprintf (value, GMT_LEN256, "%g%c/%g%c",
-				GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] * GMT_def_scale(GMTCASE_MAP_TICK_LENGTH_PRIMARY), GMT_def_unit(GMTCASE_MAP_TICK_LENGTH_PRIMARY),
-				GMT->current.setting.map_tick_length[GMT_TICK_UPPER] * GMT_def_scale(GMTCASE_MAP_TICK_LENGTH_PRIMARY), GMT_def_unit(GMTCASE_MAP_TICK_LENGTH_PRIMARY));
+				GMT->current.setting.map_tick_length[GMT_ANNOT_UPPER] * gmt_M_def_scale(GMTCASE_MAP_TICK_LENGTH_PRIMARY), gmt_M_def_unit(GMTCASE_MAP_TICK_LENGTH_PRIMARY),
+				GMT->current.setting.map_tick_length[GMT_TICK_UPPER] * gmt_M_def_scale(GMTCASE_MAP_TICK_LENGTH_PRIMARY), gmt_M_def_unit(GMTCASE_MAP_TICK_LENGTH_PRIMARY));
 			}
 			break;
 		case GMTCASE_MAP_TICK_LENGTH_SECONDARY:
@@ -12328,8 +12197,8 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				snprintf (value, GMT_LEN256, "auto");
 			else {
 				snprintf (value, GMT_LEN256, "%g%c/%g%c",
-				GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] * GMT_def_scale(GMTCASE_MAP_TICK_LENGTH_SECONDARY), GMT_def_unit(GMTCASE_MAP_TICK_LENGTH_SECONDARY),
-				GMT->current.setting.map_tick_length[GMT_TICK_LOWER] * GMT_def_scale(GMTCASE_MAP_TICK_LENGTH_SECONDARY), GMT_def_unit(GMTCASE_MAP_TICK_LENGTH_SECONDARY));
+				GMT->current.setting.map_tick_length[GMT_ANNOT_LOWER] * gmt_M_def_scale(GMTCASE_MAP_TICK_LENGTH_SECONDARY), gmt_M_def_unit(GMTCASE_MAP_TICK_LENGTH_SECONDARY),
+				GMT->current.setting.map_tick_length[GMT_TICK_LOWER] * gmt_M_def_scale(GMTCASE_MAP_TICK_LENGTH_SECONDARY), gmt_M_def_unit(GMTCASE_MAP_TICK_LENGTH_SECONDARY));
 			}
 			break;
 		case GMTCASE_MAP_TICK_PEN:
@@ -12539,10 +12408,10 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 			else { error = gmtinit_badvalreport (GMT, keyword); break; }	/* Not recognized so give error message */
 			/* Intentionally fall through */
 		case GMTCASE_PS_MEDIA:
-			if (GMT->current.setting.ps_media == -USER_MEDIA_OFFSET)
+			if (GMT->current.setting.ps_media == -GMT_USER_MEDIA_OFFSET)
 				snprintf (value, GMT_LEN256, "%gx%g", fabs (GMT->current.setting.ps_page_size[0]), fabs (GMT->current.setting.ps_page_size[1]));
-			else if (GMT->current.setting.ps_media >= USER_MEDIA_OFFSET)
-				snprintf (value, GMT_LEN256, "%s", GMT->session.user_media_name[GMT->current.setting.ps_media-USER_MEDIA_OFFSET]);
+			else if (GMT->current.setting.ps_media >= GMT_USER_MEDIA_OFFSET)
+				snprintf (value, GMT_LEN256, "%s", GMT->session.user_media_name[GMT->current.setting.ps_media-GMT_USER_MEDIA_OFFSET]);
 			else if (GMT->current.setting.ps_media < GMT_N_MEDIA)
 				snprintf (value, GMT_LEN256, "%s", GMT_media_name[GMT->current.setting.ps_media]);
 			if (GMT->current.setting.ps_page_size[0] < 0.0)
@@ -13948,7 +13817,7 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 	return true;	/* Remaining PostScript producing modules always write PostScript */
 }
 
-GMT_LOCAL void gmtinit_round_wesn (double wesn[], bool geo) {	/* Use data range to round to nearest reasonable multiples */
+void gmt_round_wesn (double wesn[], bool geo) {	/* Use data range to round to nearest reasonable multiples */
 	bool set[2] = {false, false};
 	unsigned int side, item;
 	double mag, inc, range[2] = {0.0, 0.0};
@@ -14030,7 +13899,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 					return API->error;	/* Failure to read grid header */
 				gmt_M_memcpy (wesn, G->header->wesn, 4, double);	/* Copy over the grid region */
 				HH = gmt_get_H_hidden (G->header);
-				if (!exact) gmtinit_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
+				if (!exact) gmt_round_wesn (wesn, HH->grdtype > 0);	/* Use grid w/e/s/n to round to nearest reasonable multiples */
 				if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) return API->error;	/* Failure to destroy the temporary grid structure */
 			}
 			break;
@@ -14161,7 +14030,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 			if (GMT_Destroy_Data (API, &Out) != GMT_OK)
 				return (API->error);
 			geo = gmt_M_is_geographic (API->GMT, GMT_IN);
-			if (!exact) gmtinit_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
+			if (!exact) gmt_round_wesn (wesn, geo);	/* Use data range to round to nearest reasonable multiples */
 			/* Safety valve if w == e or s == n */
 			if (doubleAlmostEqualZero (wesn[XLO], wesn[XHI])) {
 				if (gmt_M_is_zero (wesn[XLO]))	/* No info to do anything other than this */
@@ -14490,7 +14359,7 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 			sprintf (newarg, "%s?", arg);
 		else {
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
-			return false;		
+			return false;
 		}
 	}
 	else if ((strchr ("pP", arg[0]) && !strncmp (&arg[1], "oly", 3U)) || strchr ("hHiIjJkKmMnNqQrRvVwWyYuU", arg[0])) {	/* These may or may not have a trailing slash */
@@ -14502,7 +14371,7 @@ GMT_LOCAL bool gmtinit_replace_missing_with_questionmark (struct GMTAPI_CTRL *AP
 				sprintf (newarg, "%s?", arg);
 			else {
 				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_replace_missing_with_questionmark: -J%s has no trailing slash. Assumed to be a complete geographic projection\n", arg);
-				return false;		
+				return false;
 			}
 		}
 	}
@@ -15696,7 +15565,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				break;
 			case 'n':	/* Vector shrinking head */
 				len = strlen (p);
-				j = (symbol == 'v' || symbol == 'V') ? gmtinit_get_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
+				j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
 				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
 				if (symbol == '=') {	/* Since norm distance is in km we convert to spherical degrees */
 					if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS2, p[len-1]) && p[len-1] != 'k') {
@@ -15949,7 +15818,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (text[k] && strchr (GMT_DIM_UNITS, (int) text[k])) {	/* No size given, only unit information */
 			if (p->size_x == 0.0) p->size_x = p->given_size_x;
 			if (p->size_y == 0.0) p->size_y = p->given_size_y;
-			if ((j = gmtinit_get_unit (GMT, text[k])) < 0) decode_error++; else { p->u = j; p->u_set = true;}
+			if ((j = gmt_get_dim_unit (GMT, text[k])) < 0) decode_error++; else { p->u = j; p->u_set = true;}
 			col_off++;
 			if (cmd) p->read_size_cmd = true;
 		}
@@ -15971,7 +15840,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 		if (p->size_x == 0.0) p->size_x = p->given_size_x;
 		if (p->size_y == 0.0) p->size_y = p->given_size_y;
 		if (text[1]) {	/* Gave unit information */
-			if ((j = gmtinit_get_unit (GMT, text[1])) < 0)
+			if ((j = gmt_get_dim_unit (GMT, text[1])) < 0)
 				decode_error++;
 			else {
 				p->u = j; p->u_set = true;
@@ -16613,7 +16482,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 				for (j = one; text[j] && text[j] != 'n'; j++);
 				len = (int)strlen(text) - 1;
 				if (text[j] == 'n') {	/* Normalize option used */
-					k = gmtinit_get_unit (GMT, text[len]);
+					k = gmt_get_dim_unit (GMT, text[len]);
 					p->v.v_norm = (float)atof (&text[j+1]);
 					if (k >= GMT_CM)	/* Convert length from given units to inch */
 						p->v.v_norm *= GMT->session.u2u[k][GMT_INCH];
@@ -16633,7 +16502,7 @@ int gmt_parse_symbol_option (struct GMT_CTRL *GMT, char *text, struct GMT_SYMBOL
 					 */
 
 					if (isalpha ((int)text[len]) && isalpha ((int)text[len-1])) {
-						k = gmtinit_get_unit (GMT, text[len]);
+						k = gmt_get_dim_unit (GMT, text[len]);
 						if (k >= 0) { p->u = k; p->u_set = true;}
 						text[len] = 0;
 					}
@@ -16884,7 +16753,7 @@ unsigned int gmt_check_scalingopt (struct GMT_CTRL *GMT, char option, char unit,
 int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit) {
 	int k;
 
-	if ((k = gmtinit_get_unit (GMT, unit)) < 0) {
+	if ((k = gmt_get_dim_unit (GMT, unit)) < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad plot measure selected (%c); use c, i, or p.\n", unit);
 		return (GMT_MAP_BAD_MEASURE_UNIT);
 	}
@@ -17104,16 +16973,16 @@ GMT_LOCAL int gmtinit_parse_proj4 (struct GMT_CTRL *GMT, char *item, char *dest)
  */
 int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, char *item) {
 
-	int error = 0, i = 0, q = 0;	/* The i and i+= GMT_more_than_once are there to avoid compiler warnings... */
+	int error = 0, i = 0, q = 0;	/* The i and i+= gmt_M_more_than_once are there to avoid compiler warnings... */
 
 	if (!list || !strchr (list, option)) return (0);	/* Not a common option we accept */
 
 	if (gmt_M_compat_check (GMT, 4)) {
 		/* Translate some GMT4 options */
 		switch (option) {
-			case 'E': GMT_COMPAT_OPT ('p'); break;
-			case 'F': GMT_COMPAT_OPT ('r'); break;
-			case 'H': GMT_COMPAT_OPT ('h'); break;
+			case 'E': gmt_M_compat_opt ('p'); break;
+			case 'F': gmt_M_compat_opt ('r'); break;
+			case 'H': gmt_M_compat_opt ('h'); break;
 		}
 	}
 
@@ -17235,18 +17104,18 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'K':
-			i += GMT_more_than_once (GMT, GMT->common.K.active);
+			i += gmt_M_more_than_once (GMT, GMT->common.K.active);
 			GMT->common.K.active = true;
 			break;
 
 		case 'O':
-			i += GMT_more_than_once (GMT, GMT->common.O.active);
+			i += gmt_M_more_than_once (GMT, GMT->common.O.active);
 			GMT->common.O.active = true;
 			break;
 
 		case 'P':
 			if (GMT->current.setting.run_mode == GMT_CLASSIC) {
-				i += GMT_more_than_once (GMT, GMT->common.P.active);
+				i += gmt_M_more_than_once (GMT, GMT->common.P.active);
 				GMT->common.P.active = true;
 			}
 			else {
@@ -17268,17 +17137,17 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'R':
-			error += (GMT_more_than_once (GMT, GMT->common.R.active[RSET]) || gmt_parse_R_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.R.active[RSET]) || gmt_parse_R_option (GMT, item));
 			GMT->common.R.active[RSET] = true;
 			break;
 
 		case 'U':
-			error += (GMT_more_than_once (GMT, GMT->common.U.active) || gmtinit_parse_U_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.U.active) || gmtinit_parse_U_option (GMT, item));
 			GMT->common.U.active = true;
 			break;
 
 		case 'V':
-			i += GMT_more_than_once (GMT, GMT->common.V.active);
+			i += gmt_M_more_than_once (GMT, GMT->common.V.active);
 			GMT->common.V.active = true;
 			if (item && item[0]) {	/* Specified a verbosity level */
 				if (gmtinit_parse_V_option (GMT, item[0])) {
@@ -17291,12 +17160,12 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'X':
-			error += (GMT_more_than_once (GMT, GMT->common.X.active) || gmtinit_parse_X_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.X.active) || gmtinit_parse_X_option (GMT, item));
 			GMT->common.X.active = true;
 			break;
 
 		case 'Y':
-			error += (GMT_more_than_once (GMT, GMT->common.Y.active) || gmtinit_parse_Y_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.Y.active) || gmtinit_parse_Y_option (GMT, item));
 			GMT->common.Y.active = true;
 			break;
 
@@ -17316,7 +17185,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'a':
-			error += (GMT_more_than_once (GMT, GMT->common.a.active) || gmtinit_parse_a_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.a.active) || gmtinit_parse_a_option (GMT, item));
 			GMT->common.a.active = true;
 			break;
 
@@ -17356,7 +17225,7 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'e':
-			error += (GMT_more_than_once (GMT, GMT->common.e.active) || gmtinit_parse_e_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.e.active) || gmtinit_parse_e_option (GMT, item));
 			GMT->common.e.active = true;
 			break;
 
@@ -17390,22 +17259,22 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'h':
-			error += (GMT_more_than_once (GMT, GMT->common.h.active) || gmtinit_parse_h_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.h.active) || gmtinit_parse_h_option (GMT, item));
 			GMT->common.h.active = true;
 			break;
 
 		case 'i':
-			error += (GMT_more_than_once (GMT, GMT->common.i.active) || gmt_parse_i_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.i.active) || gmt_parse_i_option (GMT, item));
 			GMT->common.i.active = true;
 			break;
 
 		case 'j':
-			error += (GMT_more_than_once (GMT, GMT->common.j.active) || gmt_parse_j_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.j.active) || gmt_parse_j_option (GMT, item));
 			GMT->common.j.active = true;
 			break;
 
 		case 'l':
-			error += (GMT_more_than_once (GMT, GMT->common.l.active) || gmtinit_parse_l_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.l.active) || gmtinit_parse_l_option (GMT, item));
 			GMT->common.l.active = true;
 			break;
 
@@ -17421,35 +17290,35 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 'n':
-			error += (GMT_more_than_once (GMT, GMT->common.n.active) || gmtinit_parse_n_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.n.active) || gmtinit_parse_n_option (GMT, item));
 			GMT->common.n.active = true;
 			break;
 
 		case 'o':
-			error += (GMT_more_than_once (GMT, GMT->common.o.active) || gmt_parse_o_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.o.active) || gmt_parse_o_option (GMT, item));
 			GMT->common.o.active = true;
 			break;
 
 		case 'p':
-			error += (GMT_more_than_once (GMT, GMT->common.p.active) || gmtinit_parse_p_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.p.active) || gmtinit_parse_p_option (GMT, item));
 			GMT->common.p.active = true;
 			break;
 
 		case 'q':
 			switch (item[0]) {
 				case 'o':
-					error += (GMT_more_than_once (GMT, GMT->common.q.active[GMT_OUT]) || gmtinit_parse_q_option (GMT, item));
+					error += (gmt_M_more_than_once (GMT, GMT->common.q.active[GMT_OUT]) || gmtinit_parse_q_option (GMT, item));
 					GMT->common.q.active[GMT_OUT] = true;
 					break;
 				default:
-					error += (GMT_more_than_once (GMT, GMT->common.q.active[GMT_IN]) || gmtinit_parse_q_option (GMT, item));
+					error += (gmt_M_more_than_once (GMT, GMT->common.q.active[GMT_IN]) || gmtinit_parse_q_option (GMT, item));
 					GMT->common.q.active[GMT_IN] = true;
 					break;
 			}
 			break;
 
 		case 'r':
-			error += GMT_more_than_once (GMT, GMT->common.R.active[GSET]);
+			error += gmt_M_more_than_once (GMT, GMT->common.R.active[GSET]);
 			GMT->common.R.active[GSET] = true;
 			if (item[0]) {	/* Gave argument for specific registration */
 				switch (item[0]) {
@@ -17466,27 +17335,27 @@ int gmt_parse_common_options (struct GMT_CTRL *GMT, char *list, char option, cha
 			break;
 
 		case 's':
-			error += (GMT_more_than_once (GMT, GMT->common.s.active) || gmt_parse_s_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.s.active) || gmt_parse_s_option (GMT, item));
 			GMT->common.s.active = true;
 			break;
 
 		case 't':
-			error += GMT_more_than_once (GMT, GMT->common.t.active) || gmtinit_parse_t_option (GMT, item);
+			error += gmt_M_more_than_once (GMT, GMT->common.t.active) || gmtinit_parse_t_option (GMT, item);
 			break;
 
 		case 'w':
-			error += GMT_more_than_once (GMT, GMT->common.w.active) || gmtinit_parse_w_option (GMT, item);
+			error += gmt_M_more_than_once (GMT, GMT->common.w.active) || gmtinit_parse_w_option (GMT, item);
 			break;
 
 #ifdef GMT_MP_ENABLED
 		case 'x':
-			error += (GMT_more_than_once (GMT, GMT->common.x.active) || gmtinit_parse_x_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.x.active) || gmtinit_parse_x_option (GMT, item));
 			GMT->common.x.active = true;
 			break;
 #endif
 
 		case ':':
-			error += (GMT_more_than_once (GMT, GMT->common.colon.active) || gmtinit_parse_colon_option (GMT, item));
+			error += (gmt_M_more_than_once (GMT, GMT->common.colon.active) || gmtinit_parse_colon_option (GMT, item));
 			GMT->common.colon.active = true;
 			break;
 
@@ -17541,38 +17410,34 @@ int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM
 
 	/* Check the unit sanity */
 	switch (time_system->unit) {
-		case 'y':
-		case 'Y':
+		case 'y':	case 'Y':
 			/* This is a kludge: we assume all years are the same length, thinking that a user
 			with decimal years doesn't care about precise time.  To do this right would
 			take an entirely different scheme, not a simple unit conversion. */
 			time_system->scale = GMT_YR2SEC_F;
 			break;
-		case 'o':
-		case 'O':
+		case 'o':	case 'O':
 			/* This is also a kludge: we assume all months are the same length, thinking that a user
 			with decimal years doesn't care about precise time.  To do this right would
 			take an entirely different scheme, not a simple unit conversion. */
 			time_system->scale = GMT_MON2SEC_F;
 			break;
-		case 'd':
-		case 'D':
+		case 'w':	case 'W':
+			time_system->scale = GMT_WEEK2SEC_F;
+			break;
+		case 'd':	case 'D':
 			time_system->scale = GMT_DAY2SEC_F;
 			break;
-		case 'h':
-		case 'H':
+		case 'h':	case 'H':
 			time_system->scale = GMT_HR2SEC_F;
 			break;
-		case 'm':
-		case 'M':
+		case 'm':	case 'M':
 			time_system->scale = GMT_MIN2SEC_F;
 			break;
-		case 's':
-		case 'S':
+		case 's':	case 'S':
 			time_system->scale = 1.0;
 			break;
-		case 'c':
-		case 'C':
+		case 'c':	case 'C':
 			if (gmt_M_compat_check (GMT, 4)) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c (seconds) is deprecated; use s instead.\n");
 				time_system->scale = 1.0;
@@ -17592,9 +17457,9 @@ int gmt_init_time_system_structure (struct GMT_CTRL *GMT, struct GMT_TIME_SYSTEM
 	if (gmtinit_scanf_epoch (GMT, time_system->epoch, &time_system->rata_die, &time_system->epoch_t0)) error += 2;
 
 	if (error & 1) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "TIME_UNIT is invalid.  Default assumed.\n");
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Choose one only from y o d h m s\n");
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Corresponding to year month day hour minute second\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "TIME_UNIT is invalid.  Default second is assumed.\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Choose one only from %s\n", GMT_TIME_UNITS_DISPLAY);
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Corresponding to year month week day hour minute second\n");
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Note year and month are simply defined (365.2425 days and 1/12 of a year)\n");
 	}
 	if (error & 2) {
@@ -18016,7 +17881,7 @@ GMT_LOCAL FILE *gmtinit_open_figure_file (struct GMTAPI_CTRL *API, unsigned int 
 int gmt_get_graphics_id (struct GMT_CTRL *GMT, const char *format) {
 	int code = 0;
 	gmt_M_unused(GMT);
-	while (gmt_session_format[code] && strcmp (format, gmt_session_format[code]))
+	while (gmt_session_format[code] && strncmp (format, gmt_session_format[code], strlen (gmt_session_format[code])))
 		code++;
 	return (gmt_session_format[code]) ? code : -1;
 }
@@ -18144,7 +18009,7 @@ GMT_LOCAL int gmtinit_put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 		unsigned int bad = 0, pos = 0;
 		char p[GMT_LEN256] = {""};
 		while (gmt_strtok (&c[1], ",", &pos, p)) {	/* Check args to determine what kind it is */
-			if (!strchr ("ACDEHMQS", p[0])) {	/* Check if valid psconvert options */
+			if (!strchr (GMT_PSCONVERT_LIST, p[0])) {	/* Check if valid psconvert options */
 				bad++;
 			}
 		}
@@ -18161,16 +18026,26 @@ GMT_LOCAL int gmtinit_put_session_name (struct GMTAPI_CTRL *API, char *arg) {
 	return GMT_NOERROR;
 }
 
-GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fmt[], int gcode[]) {
+GMT_LOCAL int gmtinit_get_graphics_formats (struct GMT_CTRL *GMT, char *formats, char fmt[], int gcode[], int *quality, int *monochrome) {
 	/* Count up how many graphics formats were selected and what their codes were.
 	 * We know the arguments are all valid formats since checked by figure or begin */
 	int k, n = 0;
 	unsigned int pos = 0;
-	char p[GMT_LEN32] = {""};
+	char p[GMT_LEN32] = {""}, *c = NULL;
+
 	while ((gmt_strtok (formats, ",", &pos, p))) {
 		if ((k = gmt_get_graphics_id (GMT, p)) != GMT_NOTSET) {	/* Valid code */
 			gcode[n] = k;
 			fmt[n++] = gmt_session_code[k];
+			if (gmt_session_code[k] == 'j' && (c = strstr (p, "+q"))) {	/* Check for modifier =q for JPG */
+				*quality = atoi (&c[2]);
+				if (*quality < 0 || *quality > 100) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad JPEG quality argument (%s} - reset to %d\n", c, GMT_JPEG_DEF_QUALITY);
+					*quality = GMT_JPEG_DEF_QUALITY;
+				}
+			}
+			if (strchr ("bgjt", gmt_session_code[k]) && strstr (p, "+m"))	/* Want monochrome image */
+				*monochrome = 1;
 		}
 	}
 	return (n);
@@ -18205,16 +18080,24 @@ GMT_LOCAL bool gmtinit_A_was_given (char *text) {
 	return false;
 }
 
+GMT_LOCAL bool gmtinit_cannot_crop (char *p) {
+	if (p[0] != 'A') return false;	/* Not -A option */
+	if (strstr (p, "+n")) return false;	/* No cropping allowed */
+	if (p[1] == '+') return false;	/* Gave a modifier unrelated to cropping */
+	return true;	/* Cannot do cropping via -A when a specific media size was given */
+}
+
 GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 	/* Loop over all registered figures and their selected formats and
 	 * convert the hidden PostScript figures to selected graphics.
-	 * If show is not NULL then we display them via gmt docs */
+	 * If show is not NULL then we display the first graphics listed (if more than one) via gmt docs */
 
-	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark, *c = NULL;
-	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
+	char cmd[GMT_BUFSIZ] = {""}, fmt[GMT_LEN16] = {""}, option[GMT_LEN256] = {""}, p[GMT_LEN256] = {""}, dir[PATH_MAX] = {""}, legend_justification[4] = {""}, mark;
+	char pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""}, device_extra[GMT_LEN8] = {""}, *do_gray[2] = {"", "+m"};
+	char *copy = NULL, *ptr = NULL, *format = NULL, *c = NULL;
 	struct GMT_FIGURE *fig = NULL;
 	bool not_PS, auto_size;
-	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16];
+	int error, k, f, nf, n_figs, n_orig, gcode[GMT_LEN16], jpeg_quality = GMT_JPEG_DEF_QUALITY, monochrome = 0;
 	unsigned int pos = 0;
 	double legend_width = 0.0, legend_scale = 1.0;
 
@@ -18238,7 +18121,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 		if (!strcmp (fig[k].prefix, "-")) continue;	/* Unnamed outputs are left for manual psconvert calls by external APIs */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing GMT figure #%d [%s %s %s]\n", fig[k].ID, fig[k].prefix, fig[k].formats, fig[k].options);
 		/* Go through the format list and build array for -T arguments */
-		nf = gmtinit_get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode);
+		nf = gmtinit_get_graphics_formats (API->GMT, fig[k].formats, fmt, gcode, &jpeg_quality, &monochrome);
 		if (n_orig && k) {	/* Specified one or more figs via gmt figure so must switch to the current figure and update the history */
 			if ((error = GMT_Call_Module (API, "figure", GMT_MODULE_CMD, fig[k].prefix))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to switch to figure%s\n", fig[k].prefix);
@@ -18247,7 +18130,12 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			}
 			gmtinit_get_history (API->GMT);	/* Make sure we have the latest history for this figure */
 		}
+		copy = strdup (fig[k].formats);	ptr = copy;
 		for (f = 0; f < nf; f++) {	/* Loop over all desired output formats */
+			format = strsep (&ptr, ",");	/* Name of next format as user specified it */
+			device_extra[0] = '\0';	/* Reset device arguments */
+			if (fmt[f] == 'j' && jpeg_quality != GMT_JPEG_DEF_QUALITY)
+				sprintf (device_extra, "+q%d", jpeg_quality);	/* Need to pass quality modifier */
 			mark = '-';	/* This is the last char in extension for a half-baked GMT PostScript file */
 			snprintf (cmd, GMT_BUFSIZ, "%s/gmt_%d.ps%c", API->gwf_dir, fig[k].ID, mark);	/* Check if the file exists */
 			if (access (cmd, F_OK)) {	/* No such file, check if the fully baked file is there instead */
@@ -18266,6 +18154,7 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				if ((error = GMT_Call_Module (API, "legend", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to place auto-legend on figure %s\n", fig[k].prefix);
 					gmt_M_free (API->GMT, fig);
+					gmt_M_str_free (copy);
 					return error;
 				}
 				API->GMT->common.l.active = active;
@@ -18276,11 +18165,11 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if ((c = strrchr (fig[k].prefix, '/'))) {	/* Must pass any leading directory in the file name via -D and file prefix via -F */
 				char *file_only = &c[1];	/* The file name */
 				c[0] = '\0';		/* Temporarily chop off the file to yield directory only */
-				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c -D%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix, file_only);
+				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c%s%s -D%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], device_extra, do_gray[monochrome], fig[k].prefix, file_only);
 				c[0] = '/';		/* Restore last slash */
 			}
 			else	/* Place products in current directory */
-				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c -F%s", API->gwf_dir, fig[k].ID, fmt[f], fig[k].prefix);
+				snprintf (cmd, GMT_BUFSIZ, "'%s/gmt_%d.ps-' -T%c%s%s -F%s", API->gwf_dir, fig[k].ID, fmt[f], device_extra, do_gray[monochrome], fig[k].prefix);
 			gmt_filename_get (fig[k].prefix);
 			not_PS = (fmt[f] != 'p');	/* Do not add convert options if plain PS */
 			/* Append psconvert optional settings */
@@ -18289,30 +18178,32 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if (fig[k].options[0]) {	/* Append figure-specific psconvert settings */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (fig[k].options, ",", &pos, p))) {
-					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
-					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
+					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media [deprecated] */
+					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given, unless crop is off via +n */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the format */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 						if (p[0] == 'D') strncpy (dir, &p[1], GMT_LEN1024-1);	/* Needed in show */
 					}
 				}
-				if (not_PS && auto_size && !gmtinit_A_was_given (fig[k].options))	/* Must always add -A if not PostScript unless when media size is given, unless crop is off via +n */
-					strcat (cmd, " -A");
+				if (not_PS && !gmtinit_A_was_given (fig[k].options)) {	/* -A not given and not PostScript */
+					strcat (cmd, (auto_size) ? " -A" : " -A+M");	/* Must always add -A unless when media size is given */
+				}
 			}
 			else if (API->GMT->current.setting.ps_convert[0]) {	/* Supply chosen session settings for psconvert */
 				pos = 0;	/* Reset position counter */
 				while ((gmt_strtok (API->GMT->current.setting.ps_convert, ",", &pos, p))) {
 					if (!strcmp (p, "A+n")) p[2] = 'M';	/* This means crop to media */
-					if (!auto_size && (p[0] == 'A' && !strstr (p, "+n"))) continue;	/* Cannot do cropping when a specific media size was given */
+					if (!auto_size && gmtinit_cannot_crop (p)) continue;	/* Cannot do cropping when a specific media size was given */
 					if (not_PS || p[0] == 'M') {	/* Only -M is allowed if PS is the formst */
 						snprintf (option, GMT_LEN256, " -%s", p);	/* Create proper ps_convert option syntax */
 						strcat (cmd, option);
 						if (p[0] == 'D') strcpy (dir, &p[1]);	/* Needed in show */
 					}
 				}
-				if (not_PS && auto_size && !gmtinit_A_was_given (API->GMT->current.setting.ps_convert))	/* Must always add -A if not PostScript unless when media size is given */
-					strcat (cmd, " -A");
+				if (not_PS && !gmtinit_A_was_given (API->GMT->current.setting.ps_convert)) {	/* -A not given and not PostScript */
+					strcat (cmd, (auto_size) ? " -A" : " -A+M");	/* Must always add -A unless when media size is given */
+				}
 			}
 			else if (not_PS && auto_size) /* No specific settings but must always add -A if not PostScript unless when media size is given */
 				strcat (cmd, " -A");
@@ -18320,10 +18211,27 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 			if ((error = GMT_Call_Module (API, "psconvert", GMT_MODULE_CMD, cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Failed to call psconvert\n");
 				gmt_M_free (API->GMT, fig);
+				gmt_M_str_free (copy);
 				return error;
 			}
+			if (!strncmp (format, "jpeg", 4U) || !strncmp (format, "tiff", 4U)) {	/* Must rename file to have .jpeg or .tiff extensions */
+				/* Since psconvert cannot tell from j and t if the extensions should be 3 or 4 characters... */
+				char old_name[PATH_MAX] = {""}, new_name[PATH_MAX] = {""}, ext[GMT_LEN8] = {""};
+				strcpy (ext, format);	/* Set extension */
+				ext[2] = ext[3];	ext[3] = '\0';	/* Shorten to what psconvert used */
+				if (dir[0]) {
+					snprintf (old_name, PATH_MAX, "%s/%s.%s", dir, fig[k].prefix, ext);
+					snprintf (new_name, PATH_MAX, "%s/%s.%s", dir, fig[k].prefix, format);
+				}
+				else {
+					snprintf (old_name, PATH_MAX, "%s.%s", fig[k].prefix, ext);
+					snprintf (new_name, PATH_MAX, "%s.%s", fig[k].prefix, format);
+				}
+				if (gmt_rename_file (API->GMT, old_name, new_name, GMT_RENAME_FILE))	/* Rename newly copied file to existing file */
+					GMT_Report (API, GMT_MSG_WARNING, "Failed to rename file from %s to %s\n", old_name, new_name);
+			}
 
-			if (show) {	/* Open the plot in the viewer via call to gmt docs */
+			if (show && f == 0) {	/* Open the first plot in the viewer via call to gmt docs */
 				size_t start = 0, end = strlen (fig[k].prefix) - 1;
 				char ext[GMT_LEN8] = {""};
 				strcpy (ext, gmt_session_format[gcode[f]]);	/* Set extension */
@@ -18339,10 +18247,12 @@ GMT_LOCAL int gmtinit_process_figures (struct GMTAPI_CTRL *API, char *show) {
 				if ((error = GMT_Call_Module (API, "docs", GMT_MODULE_CMD, cmd))) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failed to call docs\n");
 					gmt_M_free (API->GMT, fig);
+					gmt_M_str_free (copy);
 					return error;
 				}
 			}
 		}
+		gmt_M_str_free (copy);
 	}
 	gmt_M_free (API->GMT, fig);
 
@@ -18766,6 +18676,18 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
 		if (S->size_x > 0.0 && S->size_y > 0.0 && S->symbol == PSL_RECT)
 			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		else if (S->symbol == 'q') {	/* Quoted line [Experimental] */
+			char scode[GMT_LEN64] = {""};
+			sprintf (scode, "qn1:+ltext");
+			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}
+		else if (S->symbol == '~') {	/* Decorated line [Experimental] */
+			char scode[GMT_LEN64] = {""};
+			sprintf (scode, "~n1:+s%s%s", S->D.symbol_code, S->D.size);
+			if (S->D.pen[0])  strcat (scode, "+p"), strcat (scode, S->D.pen);
+			if (S->D.fill[0]) strcat (scode, "+g"), strcat (scode, S->D.fill);
+			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		}
 		else
 			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}

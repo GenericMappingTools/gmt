@@ -147,79 +147,83 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *C) {	/* Deall
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
-	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
-	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	if (API->external) {	/* External interface */
-		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid>|<image> %s [%s] [-A] [-C<cpt>]\n", name, GMT_J_OPT, GMT_B_OPT);
-		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
-	}
-	else {
 #ifdef HAVE_GDAL
-		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid>|<image> %s [%s] [-A<out_img>[=<driver>]] [-C<cpt>]\n",
-		             name, GMT_J_OPT, GMT_B_OPT);
-		GMT_Message (API, GMT_TIME_NONE, "\t[-D[r]] [-Ei|<dpi>] [-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers]] %s[-M] [-N] %s%s[-Q[<color>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	const char *A = " [-A<out_img>[=<driver>]]";
 #else
-		GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid>|<image> %s [%s] [-C<cpt>] [-Ei[|<dpi>]]\n",
-		             name, GMT_J_OPT, GMT_B_OPT);
-		GMT_Message (API, GMT_TIME_NONE, "\t[-G[f|b]<rgb>] [-I[<intensgrid>|<value>|<modifiers]] %s[-M] [-N] %s%s[-Q[<color>]]\n", API->K_OPT, API->O_OPT, API->P_OPT);
+	const char *A = " [-A]";
 #endif
-	}
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s]\n\t[%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-	             GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
+	const char *extra[2] = {A, " [-A]"};
+	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
+	GMT_Usage (API, 0, "usage: %s <grid>|<image> %s%s [%s] [-C<cpt>] [-D[r]] [-Ei|<dpi>] "
+		"[-G<rgb>[+b|f]] [-I[<intensgrid>|<value>|<modifiers>]] %s[-M] [-N] %s%s[-Q[<color>]] "
+		"[%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_J_OPT, extra[API->external], GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT,
+		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_f_OPT, GMT_n_OPT, GMT_p_OPT, GMT_t_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is data set to be plotted.  Its z-values are in user units and will be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  converted to rgb colors via the CPT.  Alternatively, give a raster image.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  If the image is plain (e.g., JPG, PNG, GIF) you must also give a corresponding -R.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grid>|<image>");
+	GMT_Usage (API, -2, "Data set to be plotted.  Its z-values are in user units and will be "
+		"converted to rgb colors via the CPT.  Alternatively, give a raster image. "
+		"If the image is plain (e.g., JPG, PNG, GIF) you must also give a corresponding -R.");
 	if (API->external)	/* External interface */
-		GMT_Message (API, GMT_TIME_NONE, "\t  If -D is used then <grid> is instead expected to be an image.\n");
-
+		GMT_Usage (API, -2, "If -D is used then <grid> is instead expected to be an image.");
 	GMT_Option (API, "J-");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	if (API->external)	/* External interface */
-		GMT_Message (API, GMT_TIME_NONE, "\t-A Return a GMT raster image instead of a PostScript plot.\n");
+		GMT_Usage (API, 1, "\n-A Return a GMT raster image instead of a PostScript plot.");
 	else {
 #ifdef HAVE_GDAL
-		GMT_Message (API, GMT_TIME_NONE, "\t-A Save image in a raster format (.bmp, .gif, .jpg, .png, .tif) instead of PostScript.\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   If filename does not have any of these extensions then append =<driver> to select\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   the desired image format. The 'driver' is the driver code name used by GDAL.\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   See GDAL documentation for available drivers. Note: any vector elements are lost. \n");
+		GMT_Usage (API, 1, "\n-A<out_img>[=<driver>]");
+		GMT_Usage (API, -2, "Save image in a raster format (.bmp, .gif, .jpg, .png, .tif) instead of PostScript. "
+			"If filename does not have any of these extensions then append =<driver> to select "
+			"the desired image format. The 'driver' is the driver code name used by GDAL. "
+			"See GDAL documentation for available drivers. Note: any vector elements are lost.");
 #else
-		GMT_Message (API, GMT_TIME_NONE, "\t-A Save image in a PPM format (give .ppm extension) instead of PostScript.\n");
+		GMT_Usage (API, 1, "\n-A Save image in a PPM format (give .ppm extension) instead of PostScript.");
 #endif
 	}
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert grid values to colors. Optionally, name a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", API->GMT->current.setting.cpt);
-	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
+	GMT_Usage (API, 1, "\n-C<cpt>");
+	GMT_Usage (API, -2, "Color palette file to convert grid values to colors. Optionally, name a master cpt "
+		"to automatically assign continuous colors over the data range [%s]; if so, "
+		"optionally append +i<dz> to quantize the range [the exact grid range]. "
+		"Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a "
+		"linear continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
+	GMT_Usage (API, 1, "\n-D[r]");
 	if (API->external)	/* External interface */
-		GMT_Message (API, GMT_TIME_NONE, "\t-D <image> is an image instead of a grid. Append r to equate image region to -R region.\n");
+		GMT_Usage (API, -2, "Input is an image instead of a grid. Append r to equate image region to -R region.");
 #ifdef HAVE_GDAL
 	else {
-		GMT_Message (API, GMT_TIME_NONE, "\t-D GMT automatically detects standard image formats. For non-standard formats you must\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t   use -D to force it to be seen as an image. Append r to equate image region with -R region.\n");
+		GMT_Usage (API, -2, "GMT automatically detects standard image formats. For non-standard formats you must "
+			"use -D to force it to be seen as an image. Append r to equate image region with -R region.");
 	}
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Set dpi for the projected grid which must be constructed [100]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   if -Jx or -Jm is not selected [Default gives same size as input grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give i to do the interpolation in PostScript at device resolution (invalid with -Q).\n");
-	gmt_rgb_syntax (API->GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images.\n\t  ");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to set background or +f to set foreground color [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), just give a value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grid> instead, append +a<azim> [-45], +n<method> [t1], and +m<ambient> [0]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive from another grid than <grid>, give an alternative data grid with modifiers.\n");
+	GMT_Usage (API, 1, "\n-Ei|<dpi>");
+	GMT_Usage (API, -2, "Set dpi for the projected grid which must be constructed [100] "
+		"if -J implies a nonlinear graticule [Default gives same size as input grid]. "
+		"Alternatively, append i to do the interpolation in PostScript at device resolution (invalid with -Q).");
+	gmt_rgb_syntax (API->GMT, 'G', "Set transparency color for images that otherwise would result in 1-bit images. ");
+	GMT_Usage (API, 3, "+b Set background color.");
+	GMT_Usage (API, 3, "+f Set foreground color [Default].");
+	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
+	GMT_Usage (API, -2, "Apply directional illumination. Append name of an intensity grid, or "
+		"for a constant intensity (i.e., change the ambient light), just give a scalar. "
+		"To derive intensities from <grid> instead, append desired modifiers:");
+	GMT_Usage (API, 3, "+a Specify <azim> of illumination [-45].");
+	GMT_Usage (API, 3, "+n Set the <method> and <scale> to use [t1].");
+	GMT_Usage (API, 3, "+m Set <ambient> light to add [0].");
+	GMT_Usage (API, -2, "Alternatively, use -I+d to accept the default values (see grdgradient for more details). "
+		"To derive intensities from another grid than <grid>, give the alternative data grid with suitable modifiers.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Force a monochrome (gray-scale) image.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip image at the map boundary.\n");
+	GMT_Usage (API, 1, "\n-M Force a monochrome (gray-scale) image.");
+	GMT_Usage (API, 1, "\n-N Do Not clip image at the map boundary.");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Use colormasking to make grid nodes with z = NaN or black image pixels transparent.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a color to change the transparent pixel for images [black].\n");
+	GMT_Usage (API, 1, "\n-Q[<color>]");
+	GMT_Usage (API, -2, "Use color-masking to make grid nodes with z = NaN or black image pixels transparent. "
+		"Append an alternate <color> to change the transparent pixel for images [black].");
 	GMT_Option (API, "R");
 	GMT_Option (API, "U,V,X,c,f,n,p,t,x,.");
 
@@ -1415,12 +1419,36 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		double *region = (got_data_tiles) ? header_work->wesn : wesn;	/* Region to pass to grdgradient */
 		struct GMT_GRID *I_data = NULL;
 
-		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Derive intensity grid from data grid %s\n", (Ctrl->I.file) ? Ctrl->I.file : data_grd);
 		/* Create a virtual file to hold the intensity grid */
 		if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_grd))
 			Return (API->error);
 		if (Ctrl->I.file) {	/* Gave a file to derive from. In case it is a tiled grid we read it in here */
-			if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->I.file, NULL)) == NULL)	/* Get grid data */
+			if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, Ctrl->I.file, NULL)) == NULL)	/* Get grid data header*/
+				Return (API->error);
+			/* If dimensions don't match the data grid we must resample this secondary z-grid */
+			if (Grid_orig && (I_data->header->n_columns != Grid_orig->header->n_columns || I_data->header->n_rows != Grid_orig->header->n_rows)) {
+				char int_z_grd[GMT_VF_LEN] = {""}, *res = "gp";
+				if (I_data->header->wesn[XLO] > region[XLO] || I_data->header->wesn[XHI] < region[XHI] || I_data->header->wesn[YLO] > region[YLO] || I_data->header->wesn[YHI] < region[YHI]) {
+					GMT_Report (API, GMT_MSG_ERROR, "Your secondary data grid given via -I does not cover the same area as the primary grid - aborting\n");
+					Return (GMT_GRDIO_DOMAIN_VIOLATION);
+				}
+				if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_OUT|GMT_IS_REFERENCE, NULL, int_z_grd))
+					Return (API->error);
+				sprintf (cmd, "%s -R%.16g/%.16g/%.16g/%.16g -I%.16g/%.16g -r%c -G%s --GMT_HISTORY=readonly ",
+					Ctrl->I.file, region[XLO], region[XHI], region[YLO], region[YHI], Grid_orig->header->inc[GMT_X], Grid_orig->header->inc[GMT_Y], res[Grid_orig->header->registration], int_z_grd);
+				/* Call the grdsample module */
+				GMT_Report (API, GMT_MSG_INFORMATION, "Calling grdsample with args %s\n", cmd);
+				if (GMT_Call_Module (API, "grdsample", GMT_MODULE_CMD, cmd))
+					Return (API->error);
+				/* Destroy the header we read so we can get the revised on from grdsample */
+				if (GMT_Destroy_Data (API, &I_data) != GMT_NOERROR)
+					Return (API->error);
+				/* Obtain the resampled data from the virtual file */
+				if ((I_data = GMT_Read_VirtualFile (API, int_z_grd)) == NULL)
+					Return (API->error);
+			}
+			else if ((I_data = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->I.file, I_data)) == NULL)	/* Get grid data */
 				Return (API->error);
 			if (GMT_Open_VirtualFile (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_IN|GMT_IS_REFERENCE, I_data, int4_grd))
 				Return (API->error);

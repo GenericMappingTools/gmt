@@ -111,7 +111,6 @@
 /* Global variables used by X2SYS functions */
 
 char *X2SYS_HOME;
-static char *X2SYS_program;
 
 struct MGD77_CONTROL M;
 
@@ -226,9 +225,9 @@ GMT_LOCAL int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return (err);
 	/* When error code is non-zero: print error message and pass error code on */
 	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, " %s [%s]\n", x2sys_strerror(GMT, err), file);
 	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", x2sys_strerror(GMT, err));
 	return (err);
 }
 
@@ -1662,9 +1661,9 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return X2SYS_NOERROR;
 	/* When error code is non-zero: print error message and exit */
 	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s [%s]\n", x2sys_strerror(GMT, err), file);
 	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", x2sys_strerror(GMT, err));
 	return GMT_RUNTIME_ERROR;
 }
 

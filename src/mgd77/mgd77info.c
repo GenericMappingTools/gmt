@@ -85,30 +85,39 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <cruise(s)> [-C[m|e]] [-E[m|e]] [-I<code>] [-Mf[<item>]|r|e|h] [-L[v]]\n\t[%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <cruise(s)> [-C[m|e]] [-E[m|e]] [-Ia|c|m|t] [-Mf[<item>]|r|e|h] [-L[v]] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	MGD77_Init (API->GMT, &M);		/* Initialize MGD77 Machinery */
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	MGD77_Cruise_Explain (API->GMT);
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C List abbreviations of all columns present for each cruise.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append m for listing just the MGD77 columns present.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append e for listing just any extra columns present.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Give the information summary of each cruise's geographical/temporal extent.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append m for counting just the number of non-NaN values for each MGD77 field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append e for counting just the of non-NaN values for each extra field.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Print header items (and MGD77+ history).  Append type of presentation:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f: Print header items individually, one per line.  Append name of a particular\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        item (e.g., Port_of_Departure), all [Default], or - to see a list of items.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        You can also use the number of the item.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r: Display raw original MGD77 header records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     e: Display the MGD77+ file's E77 status.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     h: Display the MGD77+ file's history.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Ignore certain data file formats from consideration. Append combination of act to ignore\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (a) MGD77 ASCII, (c) MGD77+ netCDF, (m) MGD77T ASCII, or (t) plain table files [Default ignores none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L List all the institutions and their 2-character GEODAS codes only.  Append v to also\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   display the vessels and their 4-character codes for each institution.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[m|e]");
+	GMT_Usage (API, -2, "List abbreviations of all columns present for each cruise:");
+	GMT_Usage (API, 3, "m: List just the MGD77 columns present");
+	GMT_Usage (API, 3, "e: List just any extra columns present");
+	GMT_Usage (API, 1, "\n-E[m|e]");
+	GMT_Usage (API, -2, "Give the information summary of each cruise's geographical/temporal extent:");
+	GMT_Usage (API, 3, "m: Count just the number of non-NaN values for each MGD77 field.");
+	GMT_Usage (API, 3, "e: Count just the of non-NaN values for each extra field.");
+	GMT_Usage (API, 1, "\n-Mf[<item>]|r|e|h");
+	GMT_Usage (API, -2, "Print header items (and MGD77+ history).  Append type of presentation:");
+	GMT_Usage (API, 3, "f: Print header items individually, one per line.  Append name of a particular "
+		"item (e.g., Port_of_Departure), all [Default], or - to see a list of items. "
+		"You can also use the number of the item.");
+	GMT_Usage (API, 3, "r: Display raw original MGD77 header records.");
+	GMT_Usage (API, 3, "e: Display the MGD77+ file's E77 status.");
+	GMT_Usage (API, 3, "h: Display the MGD77+ file's history.");
+	GMT_Usage (API, 1, "\n-Ia|c|m|t");
+	GMT_Usage (API, -2, "Ignore certain data file formats from consideration. Append combination of acmt to ignore [Default ignores none]:");
+	GMT_Usage (API, 3, "a: MGD77 ASCII table.");
+	GMT_Usage (API, 3, "c: MGD77+ netCDF table.");
+	GMT_Usage (API, 3, "m: MGD77T ASCII table.");
+	GMT_Usage (API, 3, "t: Plain table.");
+	GMT_Usage (API, 1, "\n-L[v]");
+	GMT_Usage (API, -2, "List all the institutions and their 2-character GEODAS codes only.  Append v to also "
+		"display the vessels and their 4-character codes for each institution.");
 	GMT_Option (API, "V,.");
 
 	MGD77_end (API->GMT, &M);	/* Close machinery */

@@ -753,49 +753,65 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFLEXURE_CTRL *Ctrl, struct GMT
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[/<te2>]] -G<outgrid> [-A<Nx/Ny/Nxy>] [-C[p|y]<value] [-F<nu_a>[/<h_a>/<nu_m>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<list>] [-M<tm>] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>]|<file>|<n>[+l]]]\n\t[%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n\n", GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <topogrid> -D<rhom>/<rhol>[/<rhoi>]/<rhow> -E[<te>[k][/<te2>[k]]] -G<outgrid> [-A<Nx/Ny/Nxy>] [-Cp|y<value] [-F<nu_a>[/<h_a>[k]/<nu_m>]] "
+		"[-L<list>] [-M<tm>[k|M]] [-N%s] [-Q] [-S<beta>] [-T<t0>[/<t1>/<dt>[+l]]|<file>] [%s] [-W<wd>[k]] [-Z<zm>[k]] [-fg] [%s]\n",
+		name, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<topogrid> is the input grdfile with topography (load) values, in meters. If -T is used,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <topogrid> may be a filename template with a floating point format (C syntax) and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a different load file name will be set and loaded for each time step.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Time steps with no corresponding load file are allowed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give =<flist> where <flist> contains a list of load grids and load times.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density of mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3 or g/cm^3.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default of 0 km may be used with -F for a pure viscous response (no plate rigidity).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Select General Linear Viscoelastic model by giving initial and final elastic thicknesses (requires -M).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G filename for output grdfile with flexed surface.  If -T is set then <outgrid>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   must be a filename template that contains a floating point format (C syntax) and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   we use the corresponding time (in units specified in -T) to generate the file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If the floating point format is followed by %%c then we scale time to unit in -T and append the unit.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<topogrid> is the input grdfile with topography (load) values, in meters. If -T is used, "
+		"<topogrid> may be a filename template with a floating point format (C syntax) and "
+		"a different load file name will be set and loaded for each time step. "
+		"Time steps with no corresponding load file are allowed. "
+		"Alternatively, give =<flist> where <flist> contains a list of load grids and load times.");
+	GMT_Usage (API, 1, "\n-D<rhom>/<rhol>[/<rhoi>]/<rhow>");
+	GMT_Usage (API, -2, "Set density of mantle, load(crust), optional moat infill [same as load], and water|air in kg/m^3 or g/cm^3.");
+	GMT_Usage (API, 1, "\n-E[<te>[k][/<te2>[k]]]");
+	GMT_Usage (API, -2, "Sets elastic plate thickness in m; append k for km.  If Te > 1e10 it will be interpreted n"
+		"as the flexural rigidity [Default computes D from Te, Young's modulus, and Poisson's ratio]. "
+		"Default of 0 km may be used with -F for a pure viscous response (no plate rigidity). "
+		"Select General Linear Viscoelastic model by giving initial and final elastic thicknesses (requires -M).");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Filename for output grid with flexed surface.  If -T is set then <outgrid> "
+		"must be a filename template that contains a floating point format (C syntax) and "
+		"we use the corresponding time (in units specified in -T) to generate the file name. "
+		"If the floating point format is followed by %%c then we scale time to unit in -T and append the unit.");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Sets in-plane force components Nx, Ny and shear force Nxy in Pa*m [isotropic deformation].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Negative values mean compression, positive values mean extensional forces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C use -Cy<Young> or -Cp<poisson> to change Young's modulus [%g] or Poisson's ratio [%g].\n", YOUNGS_MODULUS, POISSONS_RATIO);
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets upper mantle viscosity, and optionally its thickness and lower mantle viscosity.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Viscosity units in Pa s; thickness in meter (append k for km).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Give filename for output table with names of all grids (and model times) produced.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename is given then we write the list to standard output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Set Maxwell time for viscoelastic flexure (in years; append k for kyr and M for Myr).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<Nx/Ny/Nxy>");
+	GMT_Usage (API, -2, "Set in-plane force components <Nx>, <Ny> and shear force <Nxy> in Pa*m [isotropic deformation]. "
+		"Negative values mean compression, positive values mean extensional forces.");
+	GMT_Usage (API, 1, "\n-Cp|y<value>");
+	GMT_Usage (API, -2, "Set rheological constants given the directive (repeatable):");
+	GMT_Usage (API, 3, "y: Append a value to change Young's modulus [%g].", YOUNGS_MODULUS);
+	GMT_Usage (API, 3, "p: Append a value to change Poisson's ratio [%g].", POISSONS_RATIO);
+	GMT_Usage (API, 1, "\n-F<nu_a>[/<h_a>[k]/<nu_m>]");
+	GMT_Usage (API, -2, "Set upper mantle viscosity, and optionally its thickness and lower mantle viscosity. "
+		"Viscosity units in Pa s; thickness in meter (append k for km).");
+	GMT_Usage (API, 1, "\n-L<list>");
+	GMT_Usage (API, -2, "Give filename for output table with names of all grids (and model times) produced. "
+		"If no filename is given then we write the list to standard output.");
+	GMT_Usage (API, 1, "\n-M<tm>[k|M]");
+	GMT_Usage (API, -2, "Set Maxwell time for viscoelastic flexure (in years; append k for kyr and M for Myr).");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q No flexure. Evaluate and write the chosen response functions Q(k[,t]) for parameters lambda =\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   1-3000 km, Te = 1,2,5,10,20,50 km, and t = 1k,2k,5k,10k,20k,50k,100k,200k,500k,1M,2M,5M years.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Starved moat fraction ranging from 0 (no infill) to 1 (fully filled) [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Specify start, stop, and time increments for sequence of calculations [one step, no time dependency].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a single specific time, just give <start> (in years; append k for kyr and M for Myr).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a logarithmic time scale, append +l and specify n steps instead of time increment.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To read a list of times from the first column in a file instead, use -T<tfile>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that time axis is positive back in time.\n");
+	GMT_Usage (API, 1, "\n-Q No flexure. Evaluate and write the chosen response functions Q(k[,t]) for parameters lambda = "
+		"1-3000 km, Te = 1,2,5,10,20,50 km, and t = 1k,2k,5k,10k,20k,50k,100k,200k,500k,1M,2M,5M years.");
+	GMT_Usage (API, 1, "\n-S<beta>");
+	GMT_Usage (API, -2, "Starved moat fraction ranging from 0 (no infill) to 1 (fully filled) [1].");
+	GMT_Usage (API, 1, "\n-T<t0>[/<t1>/<dt>[+l]]|<file>");
+	GMT_Usage (API, -2, "Specify start, stop, and time increments for sequence of calculations [one step, no time dependency]. "
+		"For a single specific time, just give <t0> (in years; append k for kyr and M for Myr).");
+	GMT_Usage (API, 3, "+l For a logarithmic time scale, interpret <dt> as n_steps instead of time increment.");
+	GMT_Usage (API, -2, "Alternatively, read a list of times from the first column in a file instead by appending <tfile>. "
+		"Note: The time axis is positive back in time.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth in m; append k for km.  Must be positive.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Subaerial topography will be scaled by -D to account for density differences.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify reference depth to flexed surface in m; append k for km.  Must be positive.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Usage (API, 1, "\n-W<wd>[k]");
+	GMT_Usage (API, -2, "Specify water depth in m; append k for km.  Must be positive. "
+		"Subaerial topography will be scaled via -D to account for density differences.");
+	GMT_Usage (API, 1, "\n-Z<zm>[k]");
+	GMT_Usage (API, -2, "Specify reference depth to flexed surface in m; append k for km.  Must be positive.");
+	GMT_Usage (API, 1, "\n-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.");
 	GMT_Option (API, ".");
 	return (GMT_MODULE_USAGE);
 }

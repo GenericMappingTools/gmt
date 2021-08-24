@@ -14,7 +14,7 @@ Synopsis
 
 **gmt mgd77sniffer** *GEODAS-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
 [ |-C|\ *maxspd* ]
-[ |-D|\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [*r*] ]
+[ |-D|\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [**r**] ]
 [ |-E| ]
 [ |-G|\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* or |-G|\ *fieldabbrev*,\ *grid* ]
 [ |-H| ]
@@ -74,11 +74,11 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [*r*]
+**-D**\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [**r**]
     Suppress default warning output and only dump cruise data row-by-row
     such as values, gradients, grid-cruise differences, E77 error
     summaries for each record, re-created MGD77 records or sniffer
-    limits. Append *r* to include all records (default omits records where
+    limits. Append **r** to include all records (default omits records where
     navigation errors were detected).
 
     **-Dd** output differences between cruise and grid data. Requires

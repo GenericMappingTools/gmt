@@ -14,10 +14,11 @@ Synopsis
 
 **gmt spatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
-[ |-D|\ [**+f**\ *file*][**+a**\ *amax*][**+d**\ *dmax*][**+c\|C**\ *cmax*][**+s**\ *fact*] ]
+[ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*] ]
 [ |-E|\ **+p**\|\ **n** ]
 [ |-F|\ [**l**] ]
 [ |-I|\ [**e**\|\ **i**] ]
+[ -L|\ *dist*\ /*noise*\ /*offset* ]
 [ |-N|\ *pfile*\ [**+a**][**+p**\ *start*][**+r**][**+z**] ]
 [ |-Q|\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]] ]
 [ |SYN_OPT-R| ]
@@ -80,7 +81,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ [**+f**\ *file*][**+a**\ *amax*][**+d**\ *dmax*][**+c\|C**\ *cmax*][**+s**\ *fact*]
+**-D**\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*]
     Check for duplicates among the input lines or polygons, or, if
     *file* is given via **+f**, check if the input features already
     exist among the features in *file*. We consider the cases of exact
@@ -125,6 +126,13 @@ Optional Arguments
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
     between pairs of polygons) crossovers [Default is both].
+
+.. _-L:
+
+**-L**\ *dist*\ /*noise*\ /*offset*
+    Remove tile Lines.  These are superfluous lines that were digitized with a
+    polygon but that all fall along the rectangular **-R** border and should be removed.
+    Append *dist* (in m) [0], coordinate *noise* [1e-10], and max *offset* from gridlines [1e-10].
 
 .. _-N:
 
@@ -288,6 +296,14 @@ To truncate polygons A.txt against polygon B.txt, resulting in an open line segm
    ::
 
     gmt spatial A.txt -TB.txt > line.txt
+
+If you want to plot a polygon with holes (donut polygon) from a multiple segment file
+which contains both perimeters and holes, it could be necessary first to reorganize the file
+so it can plotted with plot. To do this, run
+
+   ::
+
+    gmt spatial file.txt -Sh > organized_file.txt
 
 Notes
 -----

@@ -86,63 +86,66 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[d|f|l|m|n|r|S|s|u|z]]\n\t[%s]\n", GMT_Rgeo_OPT, GMT_GRDEDIT2D);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S[<zfile]] [%s] [-Z[<flags>]] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_J_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s %s [-A[d|f|l|m|n|r|S|s|u|z]] [%s] [%s] [-S[<zfile>]] [%s] "
+		"[-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT,
+		GMT_GRDEDIT2D, GMT_J_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets name of the output grid file.\n");
-	GMT_Option (API, "IR");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Determine what to do if multiple entries are found for a node:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ad: Compute the range (between min and max) of multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Af: Keep first value if multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Al: Keep lower (minimum) value if multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Am: Compute mean of multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -An: Count number of multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ar: Compute RMS of multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -AS: Compute standard deviation of multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -As: Keep last value if multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Au: Keep upper (maximum) value if multiple entries per node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Az: Sum multiple entries at the same node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default will compute mean values].\n");
+	GMT_Usage (API, 1, "\n-G<outgrid>");
+	GMT_Usage (API, -2, "Sets name of the output grid file.");
+	GMT_Option (API, "IR");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[d|f|l|m|n|r|S|s|u|z]");
+	GMT_Usage (API, -2, "Determine what to do if multiple entries are found for a node [Default will compute mean values]:");
+	GMT_Usage (API, 3, "d: Compute the range (between min and max) of multiple entries per node.");
+	GMT_Usage (API, 3, "f: Keep first value if multiple entries per node.");
+	GMT_Usage (API, 3, "l: Keep lower (minimum) value if multiple entries per node.");
+	GMT_Usage (API, 3, "m: Compute mean of multiple entries per node.");
+	GMT_Usage (API, 3, "n: Count number of multiple entries per node.");
+	GMT_Usage (API, 3, "r: Compute RMS of multiple entries per node.");
+	GMT_Usage (API, 3, "S: Compute standard deviation of multiple entries per node.");
+	GMT_Usage (API, 3, "s: Keep last value if multiple entries per node.");
+	GMT_Usage (API, 3, "u: Keep upper (maximum) value if multiple entries per node.");
+	GMT_Usage (API, 3, "z: Sum multiple entries at the same node.");
 	gmt_grd_info_syntax (API->GMT, 'D');
 	GMT_Option (API, "J");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Swap the byte-order of the input data and write result to <zfile>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (or stdout if no file given).  Requires -Z, and no grid file created!\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For this option, only one input file (or stdin) is allowed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: Cannot handle swapping of 64-bit integers.\n");
+	GMT_Usage (API, 1, "\n-S[<zfile>]");
+	GMT_Usage (API, -2, "Swap the byte-order of the input data and write result to <zfile> (or standard output if no "
+		"file given).  Requires -Z, and no grid file created! For this option, only one input file (or standard input) "
+		"is allowed. Note: Cannot handle swapping of 64-bit integers.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Set exact specification of incoming 1-column z-table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Unless -S is used, append two chars that indicate file organization:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If data is in row format, state if first row is at T(op) or B(ottom).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Then, append L or R to indicate starting point in row.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If data is in column format, state if first columns is L(left) or R(ight).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Then, append T or B to indicate starting point in column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To skip a header of size <n> bytes, append s<n> [<n> = 0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To swap the byte-order of each word, append w.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append x if gridline-registered, periodic data in x without repeating column at xmax.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append y if gridline-registered, periodic data in y without repeating row at ymax.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify one of the following data types (all binary except a):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     A  ASCII (multiple floating point values per record).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a  ASCII (one value per record).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c  int8_t, signed 1-byte character.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     u  uint8_t, unsigned 1-byte character.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     h  int16_t, signed 2-byte integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     H  uint16_t, unsigned 2-byte integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     i  int32_t, signed 4-byte integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     I  uint32_t, unsigned 4-byte integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     l  int64_t, signed long (8-byte) integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     L  uint64_t, unsigned long (8-byte) integer.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f  4-byte floating point single precision.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     d  8-byte floating point double precision.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default format is scanline orientation in ASCII representation: -ZTLa].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This option assumes all nodes have data values.\n");
+	GMT_Usage (API, 1, "\n-Z[<flags>]");
+	GMT_Usage (API, -2, "Set exact specification of incoming 1-column z-table. Unless -S is used, append two chars that "
+		"indicate file organization:");
+	GMT_Usage (API, 3, "%s If data is in row format, state if first row is at T(op) or B(ottom). Then, append L or R to "
+		"indicate starting point in row.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s If data is in column format, state if first columns is L(left) or R(ight). Then, append T or "
+		"B to indicate starting point in column.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s To skip a header of size <n> bytes, append s<n> [<n> = 0].", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s To swap the byte-order of each word, append w.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Append x if gridline-registered, periodic data in x without repeating column at xmax.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Append y if gridline-registered, periodic data in y without repeating row at ymax.", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Specify one of the following data types (all binary except a):");
+	GMT_Usage (API, 3, "A:  ASCII (multiple floating point values per record).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "a:  ASCII (one value per record).");
+	GMT_Usage (API, 3, "c:  int8_t, signed 1-byte character.");
+	GMT_Usage (API, 3, "u:  uint8_t, unsigned 1-byte character.");
+	GMT_Usage (API, 3, "h:  int16_t, signed 2-byte integer.");
+	GMT_Usage (API, 3, "H:  uint16_t, unsigned 2-byte integer.");
+	GMT_Usage (API, 3, "i:  int32_t, signed 4-byte integer.");
+	GMT_Usage (API, 3, "I:  uint32_t, unsigned 4-byte integer.");
+	GMT_Usage (API, 3, "l:  int64_t, signed long (8-byte) integer.");
+	GMT_Usage (API, 3, "L:  uint64_t, unsigned long (8-byte) integer.");
+	GMT_Usage (API, 3, "f:  4-byte floating point single precision.");
+	GMT_Usage (API, 3, "d:  8-byte floating point double precision.");
+	GMT_Usage (API, -2, "[Default format is scanline orientation in ASCII representation: -ZTLa]. This option assumes "
+		"all nodes have data values.");
 	GMT_Option (API, "bi3,di");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Also sets value for nodes without input xyz triplet [Default is NaN].\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Also sets value for nodes without input xyz triplet [Default is NaN].");
 	GMT_Option (API, "e,f,h,i,qi,r,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);

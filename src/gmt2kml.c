@@ -200,71 +200,85 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E[+e][+s]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<col>|t|<template>|<name>] [-O] [-Q[a|i]<az>] [-Qs<scale>] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<title>[/<foldername>] [%s] [-W[<pen>][<attr>]] [-Z<opts>] [%s]\n", GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-Aa|g|s[<altitude>|x<scale>]] [-C<cpt>] [-D<descriptfile>] [-E[+e][+s]] "
+		"[-Fe|s|t|l|p|w] [-G[<color>][+f|n]] [-I<icon>] [-K] [-L<name1>,<name2>,...] [-N<col>|t|<template>|<name>] [-O] "
+		"[-Qa|i|s<arg>] [-Re|<w>/<e>/<s>/n>] [-Sc|n<scale>] [-T<title>[/<foldername>]] [%s] [-W[<pen>][<attr>]] "
+		"[-Z[+a<alt_min>/<alt_max>][+f<minfade>/<maxfade>][+l<minLOD>/<maxLOD>][+o][+v]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT,
+		GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Altitude mode, choose among three modes:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a Absolute altitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g Altitude relative to sea surface or ground.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s Altitude relative to seafloor or ground.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Append color palette name to color symbols by third column z-value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or via -Z<value> lookup for lines and polygons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D File with HTML snippets to use for data description [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Control parameters of lines and polygons:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +e to extend feature down to the ground [no extrusion].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to connect points with straight lines [tessellate onto surface].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Feature type; choose from (e)vent, (s)ymbol, (t)imespan, (l)ine, (p)olygon, or (w)iggle [s].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   All features expect lon, lat in the first two columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Value or altitude is given in the third column (see -A and -C).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Event requires a timestamp in the next column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Timespan requires begin and end ISO timestamps in the next two columns\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (use NaN for unlimited begin and/or end times).\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-Aa|g|s[<altitude>|x<scale>]");
+	GMT_Usage (API, -2, "Altitude mode, choose among three modes:");
+	GMT_Usage (API, 3, "a: Absolute altitude.");
+	GMT_Usage (API, 3, "g: Altitude relative to sea surface or ground.");
+	GMT_Usage (API, 3, "s: Altitude relative to seafloor or ground.");
+	GMT_Usage (API, -2, "Optionally, append fixed <altitude>, or x<scale> [g0: Clamped to sea surface or ground].");
+	GMT_Usage (API, 1, "\n-C<cpt>");
+	GMT_Usage (API, -2, "Append color palette name to color symbols by third column z-value "
+		"or via -Z<value> lookup for lines and polygons.");
+	GMT_Usage (API, 1, "\n-D<descriptfile>");
+	GMT_Usage (API, -2, "Append file with HTML snippets to use for data description [none].");
+	GMT_Usage (API, 1, "\n-E[+e][+s]");
+	GMT_Usage (API, -2, "Control parameters of lines and polygons:");
+	GMT_Usage (API, 3, "+e Extend feature down to the ground [no extrusion].");
+	GMT_Usage (API, 3, "+s Connect points with straight lines [tessellate onto surface].");
+	GMT_Usage (API, 1, "\n-Fe|s|t|l|p|w");
+	GMT_Usage (API, -2, "Feature type; choose from (e)vent, (s)ymbol, (t)imespan, (l)ine, (p)olygon, or (w)iggle [s]. "
+		"All features expect lon, lat in the first two columns. "
+		"Value or altitude is given in the third column (see -A and -C). "
+		"Event requires a timestamp in the next column. "
+		"Timespan requires begin and end ISO timestamps in the next two columns "
+		"(use NaN for unlimited begin and/or end times).");
 	gmt_rgb_syntax (API->GMT, 'G', "Set color for symbol/polygon fill (-G<color>[+f]) or label font (-G<color>+n).");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default polygon fill is lightorange with 75%% transparency; use -G+f for no fill.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default text label font color is white; use -G+n to turn off labels.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I URL to an alternative icon used for the symbol [Google circle].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If URL starts with + we will prepend http://maps.google.com/mapfiles/kml/.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -I- to not place any icons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default is a local icon with no directory path].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-K Allow for more KML code to be appended later [OFF].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Supply extended named data columns via <name1>,<name2>,... [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Control the feature labels.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   By default, -L\"label\" statements in the segment header are used. Alternatively,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     1. Specify -N<col> to use a column from the data record a single-word label (-Fe|s|t only).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     2. Specify -Nt if the trailing record text should be used as label (-Fe|s|t only).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     3. Append a string that may contain the format %%d for a running feature count.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     4. Give no argument to indicate no labels.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-O Append the KML code to an existing document [OFF].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Set properties in support of wiggle plots (-Fw):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qa Set preferred azimuth +|-90 for wiggle direction [0], or\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qi Instead, set fixed azimuth for wiggle direction [variable].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qs Set wiggle scale in z-data units per map unit.  Append %s [e].\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t-R Issue Region tag.  Append w/e/s/n to set a particular region or give -Re to use the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   exact domain of the data (single file only) [no region specified].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Scale for (c)ircle icon size or (n)ame label [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Append KML document title name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append /<foldername> to name folder when used with\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -O and -K to organize features into groups.\n");
+	GMT_Usage (API, -2, "Default polygon fill is lightorange with 75%% transparency; use -G+f for no fill. "
+		"Default text label font color is white; use -G+n to turn off labels.");
+	GMT_Usage (API, 1, "\n-I<icon>");
+	GMT_Usage (API, -2, "URL to an alternative icon used for the symbol [Google circle]. "
+		"If URL starts with + we will prepend http://maps.google.com/mapfiles/kml/. "
+		"Give -I- to not place any icons "
+		"[Default is a local icon with no directory path].");
+	GMT_Usage (API, 1, "\n-K Allow for more KML code to be appended later [OFF].");
+	GMT_Usage (API, 1, "\n-L<name1>,<name2>,...");
+	GMT_Usage (API, -2, "Supply extended named data columns via <name1>,<name2>,... [none].");
+	GMT_Usage (API, 1, "\n-N<col>|t|<template>|<name>");
+	GMT_Usage (API, -2, "Control the feature labels. "
+		"By default, -L\"label\" statements in the segment header are used. Alternatively:");
+	GMT_Usage (API, 3, "%s Specify -N<col> to use a column from the data record a single-word label (-Fe|s|t only).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Specify -Nt if the trailing record text should be used as label (-Fe|s|t only).", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Append a string that may contain the format %%d for a running feature count.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s Give no argument to indicate no labels.", GMT_LINE_BULLET);
+	GMT_Usage (API, 1, "\n-O Append the KML code to an existing document [OFF].");
+	GMT_Usage (API, 1, "\n-Qa|i|s<arg>" );
+	GMT_Usage (API, -2, "Set properties in support of wiggle plots (-Fw). Both -Qa|i and -Qs are required:");
+	GMT_Usage (API, 3, "a: Append preferred <azimuth> +|-90 for wiggle direction [0].");
+	GMT_Usage (API, 3, "i: Instead, append fixed <azimuth> for wiggle direction [variable].");
+	GMT_Usage (API, 3, "s: Append wiggle <scale> in z-data units per map unit; append a unit in %s [e].", GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, 1, "\n-Re|<w>/<e>/<s>/n>" );
+	GMT_Usage (API, -2, "Issue Region tag.  Append w/e/s/n to set a particular region or give -Re to use the "
+		"exact domain of the data (single file only) [no region specified].");
+	GMT_Usage (API, 1, "\n-Sc|n<scale>" );
+	GMT_Usage (API, -2, "Scale for (c)ircle icon size or (n)ame label [1].");
+	GMT_Usage (API, 1, "\n-T<title>[/<foldername>]" );
+	GMT_Usage (API, -2, "Append KML document title name. "
+		"Optionally, append /<foldername> to name folder when used with "
+		"-O and -K as you organize features into groups.");
 	GMT_Option (API, "V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen attributes for lines and polygon outlines [Default is %s].\n", 8);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give width in pixels and append p.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Control visibility of features.  Append one or more modifiers:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +a<alt_min>/<alt_max> inserts altitude limits [no limit].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +l<minLOD>/<maxLOD>] sets Level Of Detail when layer should be active [always active].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     layer goes inactive when there are fewer than minLOD pixels or more\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     than maxLOD pixels visible.  -1 means never invisible.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +f<minfade>/<maxfade>] sets distances over which we fade from opaque.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     to transparent [no fading].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +v turns off visibility [feature is visible].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +o open document or folder when loaded [closed].\n");
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify pen attributes for lines and polygon outlines [Default is %s].", NULL, 8);
+	GMT_Usage (API, -2, "Note: Give width in pixels and append p.");
+	GMT_Usage (API, 1, "\n-Z[+a<alt_min>/<alt_max>][+f<minfade>/<maxfade>][+l<minLOD>/<maxLOD>][+o][+v]");
+	GMT_Usage (API, -2, "Control visibility of features.  Append one or more modifiers:");
+	GMT_Usage (API, 3, "+a Insert altitude limits [no limits].");
+	GMT_Usage (API, 3, "+f Set distances over which we fade from opaque to transparent [no fading].");
+	GMT_Usage (API, 3, "+l Set Level Of Detail when layer should be active [always active]. "
+		"A layer goes inactive when there are fewer than minLOD pixels or more "
+		"than maxLOD pixels visible.  -1 means never invisible.");
+	GMT_Usage (API, 3, "+o Open document or folder when loaded in Google Earth [closed].");
+	GMT_Usage (API, 3, "+v Turn off visibility [feature is visible].");
 	GMT_Option (API, "a,bi2,di,e,f,g,h,i,qi,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -275,7 +289,7 @@ GMT_LOCAL unsigned int gmt2kml_old_W_parser (struct GMTAPI_CTRL *API, struct GMT
 	if (text[j] == '-') {Ctrl->W.pen.cptmode = 1; j++;}
 	if (text[j] == '+') {Ctrl->W.pen.cptmode = 3; j++;}
 	if (text[j] && gmt_getpen (API->GMT, &text[j], &Ctrl->W.pen)) {
-		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 8);
+		gmt_pen_syntax (API->GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 8);
 		n_errors++;
 	}
 	return n_errors;
@@ -464,7 +478,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'i': Ctrl->Q.mode = 1; Ctrl->Q.value[1] = atof (&opt->arg[1]); break;
-					case 'q': Ctrl->Q.mode = 0; Ctrl->Q.value[0] = atof (&opt->arg[1]); break;
+					case 'a': Ctrl->Q.mode = 0; Ctrl->Q.value[0] = atof (&opt->arg[1]); break;
 					case 's': strncpy (p, &opt->arg[1],GMT_LEN256-1);
 						k = (unsigned int)strlen (p); if (k > 0) k--; /* was k = (unsigned int)strlen(p) - 1, but Coverity screamed */
 						if (!strchr (GMT_LEN_UNITS, p[k])) strcat (p, "e");	/* Force meters as default unit */
@@ -485,7 +499,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				else if (opt->arg[0] == 'n')
 					Ctrl->S.scale[N_ID] = atof (&opt->arg[1]);
 				else {
-					GMT_Report (API, GMT_MSG_ERROR, "-S requires c or n, then nondimensional scale\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-S requires c or n, followed by a non-dimensional scale\n");
 					n_errors++;
 				}
 				break;
@@ -513,7 +527,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT2KML_CTRL *Ctrl, struct GMT_OP
 				}
 				else if (opt->arg[0]) {
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", 11);
+						gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 11);
 						n_errors++;
 					}
 				}

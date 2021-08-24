@@ -12,9 +12,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt coupe** [ *table* ] |-J|\ *parameters*
-|SYN_OPT-R| |-A|\ *parameters*
-|-S|\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**gmt coupe**
+[ *table* ]
+|-J|\ *parameters*
+|SYN_OPT-R|
+|-A|\ **a**\|\ **b**\|\ **c**\|\ **d**\ *params*\ [**+c**\ [**n**\|\ **t**]][**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
+|-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *fill* ]
@@ -23,7 +26,7 @@ Synopsis
 [ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-L|\ [*pen*] ]
-[ |-M| ] [ |-N| ]
+[ |-N| ]
 [ |-Q| ]
 [ |-T|\ *nplane*\ [/*pen*] ]
 [ |SYN_OPT-U| ]

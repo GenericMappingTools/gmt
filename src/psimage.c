@@ -92,33 +92,34 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>]\n", name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F%s]\n", GMT_PANEL);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G[<color>][+b|f|t]] [-I] [%s] %s[-M] %s\n", GMT_J_OPT, API->K_OPT, API->O_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s[%s] [%s]\n", API->P_OPT, GMT_Rgeoz_OPT, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t%s[%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <imagefile> [%s] [-D%s+w[-]<width>[/<height>][+n<n_columns>[/<n_rows>]]%s+r<dpi>] [-F%s] "
+		"[-G[<color>][+b|f|t]] [-I] [%s] %s[-M] %s%s[%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s]\n",
+		name, GMT_B_OPT, GMT_XYANCHOR, GMT_OFFSET, GMT_PANEL, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT,
+		GMT_Rgeoz_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, API->c_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<imagefile> is an EPS or raster image file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "B");
-	gmt_refpoint_syntax (API->GMT, "D", "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Set width (and height) of image with +w<width>/[/<height>].  If <height> = 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then the original aspect ratio is maintained.  If <width> < 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then we use absolute value as width and interpolate image in PostScript.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, set image dpi (dots per inch) with +r.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use +n to replicate image <n_columns> by <n_rows> times [Default is no replication].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<imagefile> is an EPS or raster image file.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Option (API, "B-");
+	gmt_refpoint_syntax (API->GMT, "\n-D", "Specify reference point for the image", GMT_ANCHOR_IMAGE, 3);
+	GMT_Usage (API, -2, "Set width (and height) of image with +w<width>/[/<height>].  If <height> = 0 "
+		"then the original aspect ratio is maintained.  If <width> < 0 "
+		"then we use absolute value as width and interpolate image in PostScript. Alternatively:");
+	GMT_Usage (API, 3, "+r Append image dpi (dots per inch).");
+	GMT_Usage (API, 3, "+n Append <n_columns>[/<n_rows>] to replicate image <n_columns> by <n_rows> times [Default is no replication].");
 	gmt_mappanel_syntax (API->GMT, 'F', "Specify a rectangular panel behind the image", 1);
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Change some pixels to given <color> depending on selected modifier (repeatable).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b for replacing background and +f for foreground color (1-bit images only).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no color was given we make those pixels transparent [Default is black and white].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +t to indicate the given <color> should be made transparent [no transparency].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Invert 1-bit images (does not affect 8 or 24-bit images).\n");
+	GMT_Usage (API, 1, "\n-G[<color>][+b|f|t]");
+	GMT_Usage (API, -2, "Change some pixels to be transparent (or to optional <color>) depending on selected modifier (repeatable):");
+	GMT_Usage (API, 3, "+b Replace background color by <color> or make it transparent (1-bit images only).");
+	GMT_Usage (API, 3, "+f Replace foreground color by <color> or make it transparent (1-bit images only).");
+	GMT_Usage (API, 3, "+t Indicate the given <color> should be made transparent [no transparency].");
+	GMT_Usage (API, 1, "\n-I Invert 1-bit images (does not affect 8 or 24-bit images).");
 	GMT_Option (API, "J-Z,K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Force color -> monochrome image using YIQ-transformation.\n");
+	GMT_Usage (API, 1, "\n-M Force color -> monochrome image using YIQ-transformation.");
 	GMT_Option (API, "O,P,R,U,V,X,c,p");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   (Requires -R and -J for proper functioning).\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Note: Requires -R and -J for proper functioning.");
 	GMT_Option (API, "t,.");
 
 	return (GMT_MODULE_USAGE);

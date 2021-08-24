@@ -93,32 +93,37 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTPMODELER_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s [-F<polygontable>]\n", name, SPOTTER_E_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N<upper_age>] [-SadrswxyXY] [-T<time>] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <table> %s [-F<polygontable>] [-N<upper_age>] [-SadrswxyXY] [-T<time>] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, SPOTTER_E_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_q_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is a data table with geographic coordinates and optionally crustal ages.\n");
-	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon file that describes the area\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   of the data table to work on [Default works on the entire table].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Extend earliest stage pole back to <upper_age> [no extension].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table> is a data table with geographic coordinates and optionally crustal ages.");
+	spotter_rot_usage (API);
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-F<polygontable>");
+	GMT_Usage (API, -2, "Specify a multi-segment closed polygon file that describes the area "
+		"of the data table to work on [Default works on the entire table].");
+	GMT_Usage (API, 1, "\n-N<upper_age>");
+	GMT_Usage (API, -2, "Extend earliest stage pole back to <upper_age> [no extension].");
 	GMT_Option (API, "Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Select one or more model predictions as a function of crustal age.  Choose from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a : Plate spreading azimuth.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d : Distance to origin of crust in km.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r : Plate motion rate in mm/yr or km/Myr.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s : Plate motion stage ID (1 is youngest).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   w : Rotation rate in degrees/Myr.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x : Change in longitude since formation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   y : Change in latitude since formation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   X : Longitude at origin of crust.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Y : Latitude at origin of crust.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default writes lon,lat,age,<adrswxyXY> to standard output\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set fixed time of reconstruction to override any input ages.\n");
-	GMT_Option (API, "bi3,bo,d,e,h,i,o,q,s,:,.");
+	GMT_Usage (API, 1, "\n-SadrswxyXY");
+	GMT_Usage (API, -2, "Select one or more model predictions as a function of crustal age. Choose from:");
+	GMT_Usage (API, 3, "a: Plate spreading azimuth.");
+	GMT_Usage (API, 3, "d: Distance to origin of crust in km.");
+	GMT_Usage (API, 3, "r: Plate motion rate in mm/yr or km/Myr.");
+	GMT_Usage (API, 3, "s: Plate motion stage ID (1 is youngest).");
+	GMT_Usage (API, 3, "w: Rotation rate in degrees/Myr.");
+	GMT_Usage (API, 3, "x: Change in longitude since formation.");
+	GMT_Usage (API, 3, "y: Change in latitude since formation.");
+	GMT_Usage (API, 3, "X: Longitude at origin of crust.");
+	GMT_Usage (API, 3, "Y: Latitude at origin of crust.");
+	GMT_Usage (API, -2, "Default writes lon,lat,age,<adrswxyXY> to standard output.");
+	GMT_Usage (API, 1, "\n-T<time>");
+	GMT_Usage (API, -2, "Set fixed time of reconstruction to override any input ages.");
+	GMT_Option (API, "bi3,bo,d,e,f,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

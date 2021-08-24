@@ -12,13 +12,15 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdredpol** *anom_grd* |-G|\ *rtp_grd* [|-C|\ *dec/dip*]
-[ |-E|\ **i**\ *inc_grd*]
-[ |-E|\ **d**\ *dec_grd*]
-[ |-F|\ *m/n*]
-[ |-M|\ *m\|r*]
+**gmt grdredpol** *anom_grd*
+|-G|\ *rtp_grd*
+[ |-C|\ *dec/dip* ]
+[ |-E|\ **i**\ *inc_grd* ]
+[ |-E|\ **d**\ *dec_grd* ]
+[ |-F|\ *m/n* ]
+[ |-M|\ **m**\|\ **r** ]
 [ |-N| ]
-[ |-W|\ *win_width*]
+[ |-W|\ *win_width* ]
 [ |SYN_OPT-V| ]
 [ |-T|\ *year* ]
 [ |-Z|\ *filtergrd* ]
@@ -73,20 +75,20 @@ Optional Arguments
 
 **-Ei**\ *inc_grd* **-Ed**\ *dec_grd*
     Get magnetization *INCLINATION* and *DECLINATION* from these grids
-    [default: use IGRF for each of the above parameters not provided via grid].
-    Note that these two grids do not need to have the same resolution as
+    [Default uses IGRF for each of the above parameters not provided via grid].
+    **Note**: These two grids do not need to have the same resolution as
     the anomaly grid. They can be coarser.
 
 .. _-F:
 
 **-F**\ *m/n*
-    The filter window size in terms of row/columns. The default value is 25x25.
+    The filter window size in terms of row/columns [Default value is 25/25].
 
 .. _-M:
 
-**-M**\ *m\|r*
-    Set boundary conditions. m\|r stands for mirror or replicate edges
-    (Default is zero padding).
+**-M**\ **m**\|\ **r**
+    Set the boundary conditions. Directives **m**\|\ **r** stands for mirror or replicate edges
+    [Default is zero padding].
 
 .. _-N:
 
@@ -96,13 +98,13 @@ Optional Arguments
 .. _-R:
 
 **-R**\ *west*/*east*/*south*/*north*
-    defines the Region of the output points. [Default: Same as input.]
+    defines the Region of the output points [Default: Same as input].
 
 .. _-T:
 
 **-T**\ *year*
     Decimal year used by the IGRF routine to compute the declination and
-    inclination at each point [default: 2000]
+    inclination at each point [Default is 2000].
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: /explain_-V.rst_
@@ -147,7 +149,7 @@ vectors collinear and computed from IGRF :
 Reference
 ---------
 
-Luis, J.L. and Miranda, J.M. (2008), Reevaluation of magnetic chrons in
+Luis, J.L. and Miranda, J.M., 2008, Reevaluation of magnetic chrons in
 the North Atlantic between 35N and 47N: Implications for the formation
 of the Azores Triple Junction and associated plateau. *JGR*, VOL.
 **113**, B10105, doi:10.1029/2007JB005573

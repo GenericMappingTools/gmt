@@ -204,6 +204,8 @@ Optional Arguments
 
 .. include:: explain_-qi.rst_
 
+.. include:: explain_-s.rst_
+
 .. include:: explain_-t.rst_
 
 .. include:: explain_-w.rst_

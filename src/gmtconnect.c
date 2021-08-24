@@ -117,32 +117,37 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<listfile>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t-T[%s[+s<sdist>]] [%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_DIST_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-C<closedfile>] [-D[<template>]] [-L[<linkfile>]] [-Q<listfile>] "
+		"[-T[%s[+s<sdist>]]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_DIST_OPT, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT,
+		GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Write already-closed polygons to a separate <closedfile> [gmtconnect_closed.txt],\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   with the remaining open segments written separately to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [All segments are written to a single output file; but see -D].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Write individual segments to separate files [Default writes one multisegment file to stdout].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append file name template which MUST contain a C-format specifier for an integer (e.g., %%d).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If the format also includes a %%c string BEFORE the %%d part we replace it with C(losed) or O(pen)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses gmtconnect_segment_%%d.txt].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Write link information (seg id, begin/end nearest seg id, end, and distance) to file [gmtconnect_link.txt].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Link output excludes duplicates and segments already forming a closed polygon.\n");
-	GMT_Option (API, "V");
-	gmt_dist_syntax (API->GMT, 'T', "Set minimum <dist> to determine if a segment is closed [0].");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If two lines have endpoints closer than <dist> then they will be joined.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +s<sdist> which adds the requirement that the second closest\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   match must exceed <sdist> to connect (use same units as for <dist>).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no arguments are given the we close all polygons regardless of the gaps.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Used with -D to write names of files to a list.  Optionally give listfile name [gmtconnect_list.txt].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).\n");
-	GMT_Option (API, "a,bi2,bo,d,e,f,g,h,i,o,q,s,:,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<closedfile>");
+	GMT_Usage (API, -2, "Write already-closed polygons to a separate <closedfile> [gmtconnect_closed.txt], "
+		"with the remaining open segments written separately to standard output "
+		"[All segments are written to a single output file; but see -D].");
+	GMT_Usage (API, 1, "\n-D[<template>]");
+	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one multisegment file to standard output]. "
+		"Append file name template which MUST contain a C-format specifier for an integer (e.g., %%d). "
+		"If the format also includes a %%c string BEFORE the %%d part we replace it with C(losed) or O(pen) "
+		"[Default uses gmtconnect_segment_%%d.txt].");
+	GMT_Usage (API, 1, "\n-L[<linkfile>]");
+	GMT_Usage (API, -2, "Write link information (seg id, begin/end nearest seg id, end, and distance) to file [gmtconnect_link.txt]. "
+		"Link output excludes duplicates and segments already forming a closed polygon.");
+	GMT_Usage (API, 1, "\n-Q<listfile>");
+	GMT_Usage (API, -2, "Used with -D to write names of files to a list.  Optionally give listfile name [gmtconnect_list.txt]. "
+		"Embed %%c in the list name to write two separate lists: one for C(losed) and one for O(pen).");
+	gmt_dist_syntax (API->GMT, "T[" GMT_DIST_OPT "[+s<sdist>]]", "Set minimum <dist> to determine if a segment is closed [0].");
+	GMT_Usage (API, -2, "If two lines have endpoints closer than <dist> then they will be joined. "
+		"Optionally, append +s<sdist> which adds the requirement that the second closest "
+		"match must exceed <sdist> to connect (use same units as for <dist>). "
+		"If no arguments are given the we close all polygons regardless of the gaps.");
+	GMT_Option (API, "V,a,bi2,bo,d,e,f,g,h,i,o,q,s,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -935,4 +940,3 @@ EXTERN_MSC int GMT_gmtstitch (void *V_API, int mode, void *args) {
 	GMT_Report (API, GMT_MSG_ERROR, "Shared GMT module not found: gmtstitch\n");
 	return (GMT_NOT_A_VALID_MODULE);
 }
-

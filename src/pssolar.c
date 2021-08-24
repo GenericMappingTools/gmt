@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Plot day-light terminators and other sunlight parameters"
 #define THIS_MODULE_KEYS	">X},>DI,>DM"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbpto" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbopt" GMT_OPT("c")
 
 struct SUN_PARAMS {
 	double EQ_time;
@@ -117,36 +117,40 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-C] [-G[<fill>]] [-I[lon/lat][+d<date>][+z<TZ>]] [%s] %s\n", name, GMT_B_OPT, GMT_J_OPT, API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M] [-N] %s ", API->O_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "%s[-T<dcna>[+d<date>][+z<TZ>]] [%s]\n", API->P_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [-W<pen>]\n\t[%s] [%s] [%s]\n\t%s[%s] [%s] [%s] [%s]\n\n", GMT_U_OPT, GMT_V_OPT,
-	             GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_o_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [%s] [-C] [-G[<fill>]] [-I[<lon>/<lat>][+d<date>][+z<TZ>]] [%s] %s [-M] [-N] "
+		"%s%s[%s] [-Tdcna[+d<date>][+z<TZ>]] [%s] [%s] [-W<pen>] [%s] [%s] [%s] %s [%s] [%s] [%s] [%s]\n",
+		name, GMT_B_OPT, GMT_J_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rgeo_OPT, GMT_U_OPT, GMT_V_OPT,
+		GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_o_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "B");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Format report selected via -I in a single line of numbers only.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Option (API, "B-");
+	GMT_Usage (API, 1, "\n-C Format report selected via -I in a single line of numbers only.");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Specify color or pattern [no fill].");
-	GMT_Message (API, GMT_TIME_NONE, "\t   6) leave off <fill> to issue clip paths instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Print current sun position. Append lon/lat to print also the times of\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Sunrise, Sunset, Noon and length of the day.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute sun parameters\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
-	GMT_Option (API, "J,K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) polygons to standard output. No plotting occurs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Use the outside of the polygons and the map boundary as clip paths.\n");
+	GMT_Usage (API, 3, "%s Leave off <fill> to issue clip paths instead.", GMT_LINE_BULLET);
+	GMT_Usage (API, 1, "\n-I[<lon>/<lat>][+d<date>][+z<TZ>]");
+	GMT_Usage (API, -2, "Print current sun position. Optionally append <lon>/<lat> to print also the times of "
+		"Sunrise, Sunset, Noon and length of the day for that location.");
+	GMT_Usage (API, 3, "+d Append <date> in ISO format, e.g, +d2000-04-25, to compute sun parameters "
+		"for this date [today].");
+	GMT_Usage (API, 3, "+z Append time zone <TZ> if necessary.");
+	GMT_Option (API, "J-,K");
+	GMT_Usage (API, 1, "\n-M Write terminator(s) as a multisegment ASCII (or binary, see -bo) polygons to standard output. No plotting occurs.");
+	GMT_Usage (API, 1, "\n-N Use the outside of the polygons and the map boundary as clip paths.");
 	GMT_Option (API, "O,P,R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <dcna> Plot (or dump; see -M) one or more terminators defined via these flags:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d means day/night terminator.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c means civil twilight.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n means nautical twilight.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a means astronomical twilight.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Add +d<date> in ISO format, e.g, +d2000-04-25, to compute terminators\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for this date. If necessary, append time zone via +z<TZ>.\n");
+	GMT_Usage (API, 1, "\n-Tdcna[+d<date>][+z<TZ>]");
+	GMT_Usage (API, -2, "Plot (or dump; see -M) one or more terminators defined via these directives:");
+	GMT_Usage (API, 3, "d: Select day/night terminator.");
+	GMT_Usage (API, 3, "c: Select civil twilight.");
+	GMT_Usage (API, 3, "n: Select nautical twilight.");
+	GMT_Usage (API, 3, "a: Select astronomical twilight.");
+	GMT_Usage (API, -2, "Two optional modifiers are available:");
+	GMT_Usage (API, 3, "+d Append <date> in ISO format, e.g, +d2000-04-25, to compute terminators "
+		"for this date [today].");
+	GMT_Usage (API, 3, "+z Append time zone <TZ> if necessary.");
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Specify outline pen attributes [Default is no outline].", NULL, 0);
 	GMT_Option (API, "X,b,c,o,p");
 	GMT_Option (API, "t,.");
 
@@ -186,7 +190,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				}
 				break;
-			case 'I':		/* Infos -I[x/y][+d<date>][+z<TZ>] */
+			case 'I':		/* Infos -I[<lon>/<lat>][+d<date>][+z<TZ>] */
 				Ctrl->I.active = true;
 				if (opt->arg[0]) {	/* Also gave location */
 					Ctrl->I.position = true;
@@ -194,7 +198,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 						n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->I.lon, &Ctrl->I.lat) != 2,
 					                                     "Expected -I[<lon>/<lat>]\n");
 					}
-					if ((pch = strchr(opt->arg, '+')) != NULL) {		/* Have one or two extra options */
+					if ((pch = strchr(opt->arg, '+')) != NULL) {	/* Have one or two extra options */
 						pssolar_parse_date_tz(pch, &date, &TZ);
 						Ctrl->I.TZ = TZ;
 						if (date) {
@@ -244,7 +248,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 			case 'W':		/* Pen */
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, " ", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
 					n_errors++;
 				}
 				break;

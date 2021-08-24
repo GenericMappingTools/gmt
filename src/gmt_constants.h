@@ -89,7 +89,9 @@
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
 #define GMT_PAPER_MARGIN_AUTO	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) for auto-size mode */
-#define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (12.7 centimeter) for fixed-size mode */
+#define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (2.54 centimeter) for fixed-size mode */
+
+#define GMT_JPEG_DEF_QUALITY	90	/* Default JPG quality value for psconvert -Tj */
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
@@ -192,12 +194,14 @@ enum GMT_time_period {
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
 #define GMT_ARC_UNITS	"dms"		/* Distances in arc-{degree,minute,second}t */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
+#define GMT_TIME_FIX_UNITS	"wdhms"	/* Fixed time increment units */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
 #define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */
 #define GMT_DIM_UNITS_DISPLAY	"c|i|p"			/* Same, used to display as options */
 #define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n|u"	/* Same, used to display as options */
 #define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n|u"		/* Same, used to display as options */
 #define GMT_TIME_UNITS_DISPLAY	"y|o|w|d|h|m|s"		/* Same, used to display as options */
+#define GMT_TIME_FIX_UNITS_DISPLAY	"w|d|h|m|s"		/* Same, used to display as options */
 #define GMT_DEG2SEC_F	3600.0
 #define GMT_DEG2SEC_I	3600
 #define GMT_SEC2DEG	(1.0 / GMT_DEG2SEC_F)
@@ -212,6 +216,9 @@ enum GMT_time_period {
 #define GMT_HR2DAY	(1.0 / GMT_DAY2HR_F)
 #define GMT_WEEK2DAY_F	7.0
 #define GMT_WEEK2DAY_I	7
+#define GMT_WEEK2SEC_F	604800.0
+#define GMT_WEEK2SEC_I	604800
+#define GMT_SEC2WEEK	(1.0 / GMT_WEEK2SEC_F)
 #define GMT_DAY2WEEK	(1.0 / GMT_WEEK2DAY_F)
 #define GMT_DAY2MIN_F	1440.0
 #define GMT_DAY2MIN_I	1440
@@ -263,11 +270,15 @@ enum GMT_time_period {
 #define GMT_CPT_INDEX_LBL		0	/* Index into hidden alloc_mode_text[] for labels */
 #define GMT_CPT_INDEX_KEY		1	/* Index into hidden alloc_mode_text[] for keys */
 
+/* Ticked contour settings */
+#define GMT_TICKED_SPACING	15.0		/* Spacing between ticked contour ticks (in points) */
+#define GMT_TICKED_LENGTH	3.0		/* Length of ticked contour ticks (in points) */
+
 /* Default CPT if nothing specified or overruled by remote dataset preferences */
 #define GMT_DEFAULT_CPT_NAME	"turbo"
 /* Default color list (or cpt) for automatic, sequential color choices */
 #define GMT_DEFAULT_COLOR_SET	"#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F"
-	
+
 /* CPT extension is pretty fixed */
 #define GMT_CPT_EXTENSION	".cpt"
 #define GMT_CPT_EXTENSION_LEN	4U
@@ -313,6 +324,15 @@ enum GMT_time_period {
  * +U<unit> converts z-values from meter to given unit
  */
 #define GMT_CPTFILE_MODIFIERS "hiuU"
+
+/* Valid options to psconvert from figure and begin */
+#define GMT_PSCONVERT_LIST "ACDEHIMNQS"
+
+/* Settings for usage message indents and break/continue characters */
+
+#define GMT_LINE_BREAK	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
+#define GMT_LINE_CONT	"\xe2\x80\xa6"	/* Ellipsis for continue symbol in UTF-8 */
+#define GMT_LINE_BULLET "\xe2\x80\xa2"	/* Bullet glyph */
 
 /*! Codes for grdtrack */
 enum GMT_enum_tracklayout {

@@ -287,98 +287,114 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level & PSTEXT_SHOW_FONTS) show_fonts = true, level -= PSTEXT_SHOW_FONTS;	/* Deal with the special bitflag for showing the fonts */
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] %s %s [-A]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-C[<dx>/<dy>][+to|O|c|C]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]\n", GMT_B_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] %s\n", API->K_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-G[<color>][+n]] [-L] [-M] [-N] %s%s[-Q<case>] [-S[<dx>/<dy>/][<shade>] [%s]\n", API->O_OPT, API->P_OPT, GMT_U_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W[<pen>] [%s] [%s] [-Z]\n", GMT_X_OPT, GMT_Y_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] %s[%s] [%s]\n\t[%s] [-it<word>]\n", GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\tReads (x,y[,fontinfo,angle,justify],text) from <table> [or stdin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tOR (with -M) one or more text paragraphs with formatting info in the segment header.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tBuilt-in escape sequences:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @~ toggles between current font and Symbol font.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @%%<no>%% switches to font number <no>; @%%%% resets font.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @:<size>: switches font size; @:: resets font size.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @;<color>; switches font color; @;; resets font color.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @+ toggles between normal and superscript mode.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @- toggles between normal and subscript mode.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @# toggles between normal and Small Caps mode.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @_ toggles between normal and underlined text.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @!<char1><char2> makes one composite character.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @. prints the degree symbol.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @@ prints the @ sign itself.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   @[<LaTeX expression>@[ may be used (except for -M).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use @a|c|e|i|n|o|s|u|A|C|E|N|O|U for accented European characters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t(See module documentation for more information).\n\n");
+	GMT_Usage (API, 0, "usage: %s [<table>] %s %s [-A] [%s] [-C[<dx>/<dy>][+tc|C|o|O]] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
+		"[-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]] %s "
+		"[-G[<color>][+n]] [-L] [-M] [-N] %s%s[-Ql|u] [-S[<dx>/<dy>/][<shade>]] [%s] [%s] [-W<pen>] [%s] [%s] [-Z] "
+		"[%s] %s[%s] [%s] [%s] [-it<word>] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_U_OPT, GMT_X_OPT, GMT_Y_OPT,
+		GMT_V_OPT, GMT_a_OPT, API->c_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_tv_OPT,
+		GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, -2, "Note: Reads <x,y[,fontinfo,angle,justify],text> records from <table> [or standard input], "
+		"OR (with -M) one or more text paragraphs with formatting info in the segment headers. "
+		"Built-in escape sequences:");
+	GMT_Usage (API, 3, "%s @~ toggles between current font and Symbol font.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @%%<no>%% switches to font number <no>; @%%%% resets font.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @:<size>: switches font size; @:: resets font size.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @;<color>; switches font color; @;; resets font color.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @+ toggles between normal and superscript mode.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @- toggles between normal and subscript mode.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @# toggles between normal and Small Caps mode.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @_ toggles between normal and underlined text.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @!<char1><char2> makes one composite character.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @. prints the degree symbol.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @@ prints the @ sign itself.", GMT_LINE_BULLET);
+	GMT_Usage (API, 3, "%s @[<LaTeX expression>@[ may be used (except for -M).", GMT_LINE_BULLET);
+	GMT_Usage (API, -2, "Use @a|c|e|i|n|o|s|u|A|C|E|N|O|U for accented European characters. "
+		"See module documentation for more information.\n");
 
 	if (show_fonts) {	/* List fonts */
 		unsigned int i;
-		GMT_Message (API, GMT_TIME_NONE, "\n\tFont #	Font Name\n");
-		GMT_Message (API, GMT_TIME_NONE, "\t------------------------------------\n");
-		for (i = 0; i < API->GMT->session.n_fonts; i++)
-			GMT_Message (API, GMT_TIME_NONE, "\t%3ld\t%s\n", i, API->GMT->session.font[i].name);
-		GMT_Message (API, GMT_TIME_NONE, "For additional fonts, see \"Using non-default fonts with GMT\" in the documentation.\n");
+		char divider[38] = {"------------------------------------"};
+		int L = MAX (MIN (API->terminal_width-5, 37), 0);	/* Number of dashes to print in divider line */
+		divider[L] = '\0';	/* Truncate the line */
+		GMT_Usage (API, -2, "Font Number and Name:");
+		gmt_message (API->GMT, "     %s\n", divider);
+		for (i = 0; i < API->GMT->session.n_fonts; i++) {
+			gmt_message (API->GMT, "%7ld: ", i);
+			GMT_Usage (API, -9, "%s", API->GMT->session.font[i].name);
+		}
+		gmt_message (API->GMT, "     %s\n", divider);
+		GMT_Usage (API, -2, "For additional fonts, see \"Using non-default fonts with GMT\" in the documentation.");
 	}
 
 	if (show_fonts) return (GMT_NOERROR);
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<table> is one or more ASCII files with text to be plotted. If no files are given, standard input is read.");
 	GMT_Option (API, "J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<table> is one or more ASCII files with text to be plotted.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no files are given, standard input is read.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Angles given as azimuths; convert to directions using current projection.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Angles given as azimuths; convert to directions using current projection.");
 	GMT_Option (API, "B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Set the clearance between characters and surrounding box.  Only used\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   if -W has been set.  Append units {%s} or %% of fontsize [%d%%].\n", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append +t<shape> when -G and/or -W is used. Select o for rectangle [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or O for rectangle with rounded corners.  For -M you can also set c for concave and C for convex rectangle.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Add <add_x>,<add_y> to the text origin AFTER projecting with -J [0/0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Dj to move text origin away from point (direction determined by text's justification).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case -DJ will shorten diagonal shifts at corners by sqrt(2).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +v[<pen>] to draw line from text to original point.  If <add_y> is not given it equals <add_x>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify values for text attributes that apply to all text records:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +a[<angle>] specifies the baseline angle for all text [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Use +A to force text-baselines in the -90/+90 range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +c<justify> get the corresponding coordinate from the -R string instead of a given (x,y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   +f[<fontinfo>] sets the size, font, and optionally the text color [%s].\n",
+	GMT_Usage (API, 1, "\n-C[<dx>/<dy>][+tc|C|o|O]");
+	GMT_Usage (API, -2, "Set the clearance between characters and surrounding box. Only used "
+		"if -W has been set. Append units {%s} or %% of fontsize [%d%%]. "
+		"Optionally append +t<shape> when -G and/or -W is used. Append a shape:", GMT_DIM_UNITS_DISPLAY, GMT_TEXT_CLEARANCE);
+	GMT_Usage (API, 3, "c: Concave rectangle (requires -M).");
+	GMT_Usage (API, 3, "C: Convex rectangle (requires -M).");
+	GMT_Usage (API, 3, "o: Rectangle [Default].");
+	GMT_Usage (API, 3, "O: Rectangle with rounded corners.");
+	GMT_Usage (API, 1, "\n-D[j|J]<dx>[/<dy>][+v[<pen>]]");
+	GMT_Usage (API, -2, "Add <dx>,<dy> to the text origin AFTER projecting with -J. If <dy> is not given it equals <dx> [0/0]. "
+		"Use -Dj to move text origin away from point (direction determined by text's justification). "
+		"Upper case -DJ will shorten diagonal shifts at corners by sqrt(2). Optional modifier:");
+	GMT_Usage (API, 3, "+v: Draw line from text to original point; optionally append a <pen> [%s].", gmt_putpen (API->GMT, &API->GMT->current.setting.map_default_pen));
+	GMT_Usage (API, 1, "\n-F[+a[<angle>]][+c[<justify>]][+f[<font>]][+h|l|r[<first>]|+t<text>|+z[<fmt>]][+j[<justify>]]");
+	GMT_Usage (API, -2, "Specify values for text attributes that apply to all text records:");
+	GMT_Usage (API, 3, "+a Specify baseline <angle> for all text [0].");
+	GMT_Usage (API, 3, "+A As +a but force text-baselines in the -90/+90 range.");
+	GMT_Usage (API, 3, "+c Append <justify> to get the corresponding coordinate from the -R string instead of a given (x,y).");
+	GMT_Usage (API, 3, "+f Set size, font, and optionally the text color [%s].",
 		gmt_putfont (API->GMT, &API->GMT->current.setting.font_annot[GMT_PRIMARY]));
-	GMT_Message (API, GMT_TIME_NONE, "\t   +j[<justify>] sets text justification relative to given (x,y) coordinate.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Normally, the text is read from the data records.  Alternative ways to provide text:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +h will use as text the most recent segment header.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +l will use as text the label specified via -L<label> in the most recent segment header.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +r[<first>] will use the current record number, starting at <first> [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +t<text> will use the specified text as is. Add modifier last if text contains + characters.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     +z[<fmt>] will use formatted input z values (but see -Z) via format <fmt> [FORMAT_FLOAT_MAP].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If the modifiers +f|a|j is not followed by a value we read the information from the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   data file in the order given by the -F option.  Only one of +h or +l can be specified.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note: +h|l modifiers cannot be used in paragraph mode (-M).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Paint the box underneath the text with specified color [Default is no paint].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give no fill to plot text then activate clip paths based on text (and -C).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to NOT plot the text and only then activate clipping.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use psclip -C to deactivate the clipping.  Cannot be used with paragraph mode (-M).\n");
+	GMT_Usage (API, 3, "+j Set text justification relative to given (x,y) coordinate. "
+		"Give a 2-char combo from [T|M|B][L|C|R] (top/middle/bottom/left/center/right) [CM].");
+	GMT_Usage (API, -2, "Normally, the text is read from the data records.  Alternative ways to provide text:");
+	GMT_Usage (API, 3, "+h Use as text the most recent segment header.");
+	GMT_Usage (API, 3, "+l Use as text the label specified via -L<label> in the most recent segment header.");
+	GMT_Usage (API, 3, "+r Use the current record number, starting at <first> [0].");
+	GMT_Usage (API, 3, "+t Use the appended <text> as is. Add modifier last if text contains + characters.");
+	GMT_Usage (API, 3, "+z Use formatted input z values (but see -Z) via format <fmt> [FORMAT_FLOAT_MAP].");
+	GMT_Usage (API, -2, "Note: If modifiers +f|a|j are not followed by a value then we read the information from the "
+		"data file in the order given by the -F option.  Only one of +h or +l can be specified "
+		"and neither can be used in paragraph mode (-M).");
+	GMT_Usage (API, 1, "\n-G[<color>][+n]");
+	GMT_Usage (API, -2, "Paint the box underneath the text with specified color [Default is no paint]. "
+		"Alternatively, give no fill to plot text then activate clip paths based on text (and -C). "
+		"Use [ps]clip -C to deactivate the clipping.  Cannot be used with paragraph mode (-M).");
+	GMT_Usage (API, 3, "+n Do NOT plot the text but only activate clipping.");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L List the font-numbers and font-names available, then exits.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Set paragraph text mode [Default is single item mode].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Expects (x y fontinfo angle justify linespace parwidth parjust) in segment header\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   followed by lines with one or more paragraphs of text.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   parjust is one of (l)eft, (c)enter, (r)ight, or (j)ustified.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do Not clip text that exceeds the map boundaries [Default will clip].\n");
+	GMT_Usage (API, 1, "\n-L List the font-numbers and font-names available, then exits.");
+	GMT_Usage (API, 1, "\n-M Set paragraph text mode [Default is single item mode]. "
+		"Expects <x y fontinfo angle justify linespace parwidth parjust> in segment header "
+		"followed by lines with one or more paragraphs of text. "
+		"<parjust> is one of (l)eft, (c)enter, (r)ight, or (j)ustified.");
+	GMT_Usage (API, 1, "\n-N Do Not clip text that exceeds the map boundaries [Default will clip].");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q For all text to be (l)lower or (u)pper-case [Default leaves text as is].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Plot a shadow behind the text box.  Requires -G<color> to be given as well.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <dx>/<dy> to change offset [%gp/%gp] and/or <shade> to change the shade [gray50].\n", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
+	GMT_Usage (API, 1, "\n-Ql|u");
+	GMT_Usage (API, -2, "Force all text to be (l)lower or (u)pper-case [Default leaves text as is].");
+	GMT_Usage (API, 1, "\n-S[<dx>/<dy>/][<shade>]");
+	GMT_Usage (API, -2, "Plot a shadow behind the text box. Requires -G<color> to be given as well. "
+		"Append <dx>/<dy> to change offset [%gp/%gp] and/or <shade> to change the shade [gray50].", GMT_FRAME_CLEARANCE, -GMT_FRAME_CLEARANCE);
 	GMT_Option (API, "U,V");
-	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw a box around the text with the specified pen [Default pen is %s].", 0);
+	gmt_pen_syntax (API->GMT, 'W', NULL, "Draw a box around the text with the specified pen [Default pen is %s].", NULL, 0);
 	GMT_Option (API, "X");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z For 3-D plots: expect records to have a z value in the 3rd column (i.e., x y z ...).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Note that -Z also sets -N.  Note: if -F+z is used the text is based on the 4th data column.\n");
+	GMT_Usage (API, 1, "\n-Z For 3-D plots: Expect records to have a z-value in the 3rd column (i.e., x y z ...). "
+		"Note 1: -Z also sets -N.  Note 2: If -F+z is used the text is based on the 4th data column.");
 	GMT_Option (API, "a,c,e,f,h");
-	GMT_Message (API, GMT_TIME_NONE, "\t-i Append t<word> to use word number <word> (0 is first) in the text as the label [all the text].\n");
+	GMT_Usage (API, 1, "\n-it<word>");
+	GMT_Usage (API, -2, "Append -it<word> to use word number <word> (0 is first) in the text as the label [all the text].");
 	GMT_Option (API, "p,qi,t");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For plotting text with variable transparency read from file, give no value.\n");
+	GMT_Usage (API, -2, "Note: For plotting text with variable transparency read from file, give no value.");
 	GMT_Option (API, "w,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -606,7 +622,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 					GMT_Report (API, GMT_MSG_COMPAT, "-S<pen> option is deprecated; use font pen setting instead.\n");
 					Ctrl->S_old.active = true;
 					if (gmt_getpen (GMT, opt->arg, &Ctrl->S_old.pen)) {
-						gmt_pen_syntax (GMT, 'S', NULL, "draws outline of characters.  Append pen attributes [Default pen is %s]", 0);
+						gmt_pen_syntax (GMT, 'S', NULL, "draws outline of characters.  Append pen attributes [Default pen is %s]", NULL, 0);
 						n_errors++;
 					}
 				}
@@ -630,7 +646,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSTEXT_CTRL *Ctrl, struct GMT_OPT
 			case 'W':
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
-					gmt_pen_syntax (GMT, 'W', NULL, "draws a box around the text with the specified pen [Default pen is %s]", 0);
+					gmt_pen_syntax (GMT, 'W', NULL, "draws a box around the text with the specified pen [Default pen is %s]", NULL, 0);
 					n_errors++;
 				}
 				break;
