@@ -609,13 +609,18 @@ EXTERN_MSC int GMT_grdtrend (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	weighted = (Ctrl->N.robust || Ctrl->W.active);
-	trivial = (Ctrl->N.value < 5 && !weighted);
-	if (Ctrl->N.x_only)
+	if (Ctrl->N.x_only) {
 		eval = grdtrend_load_pstuff_xonly;
-	else if (Ctrl->N.y_only)
+		trivial = (Ctrl->N.value < 3 && !weighted);
+	}
+	else if (Ctrl->N.y_only) {
 		eval = grdtrend_load_pstuff_yonly;
-	else
+		trivial = (Ctrl->N.value < 3 && !weighted);
+	}
+	else {
 		eval = grdtrend_load_pstuff_xy;
+		trivial = (Ctrl->N.value < 5 && !weighted);
+	}
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Current -R setting, if any */
 	if ((G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
