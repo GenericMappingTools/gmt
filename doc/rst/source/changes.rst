@@ -449,7 +449,7 @@ summary of these changes:
    Pablo Valdés during the GMT4 era. These are now complemented by new custom
    symbols for structural geology designed by José A. Álvarez-Gómez.
 
-*  The :doc:`PSL <postscriptlight>` library no longer needs run-time files to configure the
+*  The :doc:`PSL </devdocs/postscriptlight>` library no longer needs run-time files to configure the
    list of standard fonts and character encodings, reducing the number of configure
    files required.
 
@@ -1153,7 +1153,7 @@ New Features in GMT 5
 GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding over 200 new features
 to an already extensive bag of tricks.  Our PostScript library
-:doc:`PSL <postscriptlight>` has seen a complete rewrite as well
+:doc:`PSL </devdocs/postscriptlight>` has seen a complete rewrite as well
 and produce shorter and more compact PostScript. However, the big news
 is aimed for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level

@@ -63,7 +63,7 @@ Applications).  Xcode may change as versions change; the images below is for Xco
    gmt.c itself or you need to examine the code that creates the session via a call to GMT_Create_Session
    earlier in the program.
 
-#. Now we need to specify the particular command we wish to debug.  Let's pretend that :doc:`pstext`
+#. Now we need to specify the particular command we wish to debug.  Let's pretend that :doc:`/pstext`
    crashes when we run the command::
 
     gmt pstext my_text.txt -R0/30/-10/20 -JM15c -Baf -F+f16p > text.ps

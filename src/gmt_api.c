@@ -12835,13 +12835,18 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
     else if (!strncmp (module, "grdinfo", 7U)) {
         type = ((opt = GMT_Find_Option (API, 'Q', *head))) ? 'U' : 'G'; /* Giving -Q means we are reading 3-D cubes */
     }
-    /* 1t. Check if grdfill is writing grids or datasets */
+    /* 1u. Check if grdfill is writing grids or datasets */
     else if (!strncmp (module, "grdfill", 7U)) {
         type = ((opt = GMT_Find_Option (API, 'L', *head))) ? 'D' : 'G'; /* Giving -L means we are writing a table */
     }
+    /* 1v. Check if spectrum1d uses stdout */
     else if (!strncmp (module, "spectrum1d", 10U)) {
          if ((opt = GMT_Find_Option (API, 'T', *head))) /* Giving -T deactivates stdout writing */
             deactivate_output = true;   /* Turn off implicit output since none is in effect */
+    }
+    /* 1w. Check if coupe is plotting or returning data */
+    else if (!strncmp (module, "pscoupe", 7U)) {
+        type = ((opt = GMT_Find_Option (API, 'A', *head)) && strstr (opt->arg, "+c")) ? 'D' : 'X';
     }
 
 	/* 2a. Get the option key array for this module */

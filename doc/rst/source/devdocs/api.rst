@@ -35,9 +35,9 @@ environments since access to GMT tools could only be achieved via
 system calls [1]_. Consequently, all data i/o had to be done via
 temporary files. The design also prevented the GMT developers
 themselves from taking advantage of these modules directly. For
-instance, the tool :doc:`legend` needed to
-make extensive use of system calls to :doc:`plot` and
-:doc:`text` in order to plot the lines,
+instance, the tool :doc:`/legend` needed to
+make extensive use of system calls to :doc:`/plot` and
+:doc:`/text` in order to plot the lines,
 symbols and text that make up a map legend, making it a very awkward
 program to maintain.
 
@@ -53,7 +53,7 @@ program to maintain.
 Starting with GMT version 5, all standard GMT programs have been
 rewritten into separate function "modules" invoked by a single
 driver program called ``gmt.c``.
-The :doc:`gmt` executable simply calls the corresponding
+The :doc:`/gmt` executable simply calls the corresponding
 GMT modules; it is these modules that do all the work. These new
 functions have been placed in a new GMT high-level API library and can
 be called from a variety of environments (C/C++, Fortran, Julia, Python,
@@ -62,7 +62,7 @@ program ``blockmean.c`` has been reconfigured as a high-level function
 ``GMT_blockmean()``, which does the actual spatial averaging and can
 pass the result back to the calling program (or write it to file). The
 previous behavior of ``blockmean.c`` is achieved by calling ``gmt blockmean``,
-i.e., the module is now just the first argument to the :doc:`gmt` executable.
+i.e., the module is now just the first argument to the :doc:`/gmt` executable.
 For backwards compatibility with older GMT (4) scripts we optionally
 install numerous symbolic links to the gmt executable with names such
 as blockmean, plot, surface, etc.  The gmt executable is smart enough to
@@ -156,10 +156,10 @@ For the purpose of this documentation a few definitions are needed:
 
 #. "Standard GMT program" refers to one of the traditional stand-alone
    command-line executables known to all GMT users, e.g.,
-   :doc:`blockmean`, :doc:`plot`,
-   :doc:`grdimage`, etc. Prior to version 5,
+   :doc:`/blockmean`, :doc:`/plot`,
+   :doc:`/grdimage`, etc. Prior to version 5,
    these were the only GMT executables available.  In GMT 5 and up, these are
-   accessed via the :doc:`gmt` executable.
+   accessed via the :doc:`/gmt` executable.
 
 #. "\ GMT module" refers to the function in the GMT API library that
    is responsible for all the action taken by the corresponding
@@ -174,7 +174,7 @@ For the purpose of this documentation a few definitions are needed:
 #. "\ GMT plugin library" refers to a collection of one or more new custom
    GMT-like modules that are presented as a plugin library.  It such libraries
    are placed in the official GMT plugin directory or their path is added to
-   the GMT defaults parameter :term:`GMT_CUSTOM_LIBS` then the :doc:`gmt` executable can find them.
+   the GMT defaults parameter :term:`GMT_CUSTOM_LIBS` then the :doc:`/gmt` executable can find them.
 
 #. "Family" refers to one of the many high-level GMT data types (e.g., grids, CPTs)
    and is typically a required argument to some API functions.
@@ -193,11 +193,11 @@ For the purpose of this documentation a few definitions are needed:
    expects.
 
 In version 5, the standard GMT programs are themselves simple invocations
-of the :doc:`gmt` application with the function name as argument.
+of the :doc:`/gmt` application with the function name as argument.
 However, some of these modules, such as
-:doc:`legend`, :doc:`gmtconvert`,
-:doc:`grdblend`,
-:doc:`grdfilter` and others may call several additional modules.
+:doc:`/legend`, :doc:`/gmtconvert`,
+:doc:`/grdblend`,
+:doc:`/grdfilter` and others may call several additional modules.
 
 API changes from GMT5 to GMT 6
 ------------------------------
@@ -382,7 +382,7 @@ GMT images
 
 GMT images are used to represent bit-mapped images typically obtained
 via the GDAL bridge. These can be reprojected internally, such as when
-used in :doc:`grdimage`. Since images and grids share the concept of a header,
+used in :doc:`/grdimage`. Since images and grids share the concept of a header,
 we use the same header structure for grids as for images; however, some
 additional metadata attributes are also needed. Finally, the image
 itself may be of any data type and have more than one band (channel).
@@ -390,7 +390,7 @@ Both image and header information are passed via a ``struct`` :ref:`GMT_IMAGE <s
 which is a container that holds both items. Thus, the arguments to
 GMT API functions that handle GMT images expect this type of
 variable. Unlike the other objects, writing images has only partial
-support via :doc:`grdimage` [3]_.
+support via :doc:`/grdimage` [3]_.
 For the full definition, see :ref:`GMT_IMAGE <struct-image>`.
 
 .. _struct-image2:
@@ -414,7 +414,7 @@ are represented by a single grid header.  Thus, all nodes along the third
 dimension are coregistered and in the horizontal plane they are, like all
 GMT grids, equidistant.  However, the spacing in the third dimension (which
 is typically depth or time) does not have to be equidistant.  At this moment,
-only :doc:`greenspline` and :doc:`grdinterpolate` can produce 3-D cubes while
+only :doc:`/greenspline` and :doc:`/grdinterpolate` can produce 3-D cubes while
 the latter can also read them (other grid modules can read individual layers
 of a cube as a single grid).
 We use the same header structure as for grids. However, some
@@ -678,7 +678,7 @@ gcc:
 
 This obviously assumes you have already installed GMT and that it is in your path.
 If you run example1 it will take a moment (this is mostly due to the gridding
-performed by :doc:`greenspline`) and then it stops.  You should find the resulting
+performed by :doc:`/greenspline`) and then it stops.  You should find the resulting
 grid junk.nc in the current directory.  Plot it to see if it makes sense, e.g.
 
 .. _example-view:
@@ -1372,7 +1372,7 @@ in which case we expect an array of strings with numbers, longitudes, latitudes,
 or ISO datetime strings and we do the conversion to internal numerical values and
 allocate a vector to hold the result in the given ``col``.  By default that vector
 will be assigned to type **GMT_DOUBLE** but you can add another primary data type
-for the conversion if you prefer (e.g., **GMT_TEXT**\|\ **GMT_LONG** to get final 
+for the conversion if you prefer (e.g., **GMT_TEXT**\|\ **GMT_LONG** to get final
 internal absolute time in integer seconds). For the special data type **GMT_TEXT** GMT
 allocates internal memory to hold the converted data and ``vector`` is not used
 any further.
@@ -1953,7 +1953,7 @@ by the specified ``mode``. There are 11 different modes available to
 programmers; for a list see Table :ref:`IO-status <tbl-iostatus>` For an example of how
 these may be used, see the test program ``testgmtio.c``. Developers who plan to import
 data on a record-by-record basis may also consult the source code of,
-say, :doc:`blockmean` or :doc:`text`, to see examples of working code.
+say, :doc:`/blockmean` or :doc:`/text`, to see examples of working code.
 
 .. _tbl-iostatus:
 
@@ -2267,7 +2267,7 @@ may be actual files of memory locations, of course.
 PostScript Access
 ~~~~~~~~~~~~~~~~~
 
-The GMT module :doc:`psconvert` is normally given one or more PostScript files that may be
+The GMT module :doc:`/psconvert` is normally given one or more PostScript files that may be
 converted to other formats.  When accessed by the API it may also be given the special
 file name "=", which means we are to use the internal PostScript string produced by
 the latest GMT plotting instead of any actual file name.  The module can access this
@@ -2850,7 +2850,7 @@ Call a module
 One of the advantages of programming with the API is that you
 have access to the high-level GMT modules. For example, if your
 program must compute the distance from a node to all other nodes in the grid
-then you can simply set up options and call :doc:`grdmath` to do it
+then you can simply set up options and call :doc:`/grdmath` to do it
 for you and accept the result back as an input grid. All the module
 interfaces are identical and are called via
 
@@ -2861,7 +2861,7 @@ interfaces are identical and are called via
     int GMT_Call_Module (void *API, const char *module, int mode, void *args);
 
 Here, ``module`` is the name of any of the GMT modules, such as
-:doc:`plot` or :doc:`grdvolume`.  All GMT modules may be called with one of
+:doc:`/plot` or :doc:`/grdvolume`.  All GMT modules may be called with one of
 three sets of ``args`` depending on ``mode``. The three modes differ in
 how the options are passed to the module:
 
@@ -3161,11 +3161,11 @@ rule says that all required input data items must be listed before any
 secondary input data items, and all primary output items must be listed
 on the left hand side before any secondary output items.
 There are three situations where the parsing will need further help;
-(1) Specifying the positions of memory arguments given to :doc:`gmtmath`,
-(2) specifying the positions of memory arguments given to :doc:`grdmath`,
+(1) Specifying the positions of memory arguments given to :doc:`/gmtmath`,
+(2) specifying the positions of memory arguments given to :doc:`/grdmath`,
 and (3) using -R? when passing a memory grid to the -R option (since just -R
 means use the previous region in the command history).
-Thus, in the :doc:`gmtmath` call we we needed to specify where
+Thus, in the :doc:`/gmtmath` call we we needed to specify where
 the specific arguments should be placed among the operators.
 API developers will rely on GMT_Open_VirtualFile_ to convert the
 above syntax to correct options for GMT_Call_Module_.
@@ -3293,7 +3293,7 @@ previously returned by GMT_FFT_Parse_. Depending on the option string you passed
 GMT_FFT_Parse_, the data may have a constant level or a trend
 removed, mirror reflected and extended by various symmetries, padded and
 tapered to desired transform dimensions, and possibly
-temporary files are written out before the transform takes place. See the :doc:`grdfft`
+temporary files are written out before the transform takes place. See the :doc:`/grdfft`
 man page for a full explanation of the options presented by GMT_FFT_Option_.
 
 Taking the FFT

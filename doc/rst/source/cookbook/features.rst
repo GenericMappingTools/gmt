@@ -698,9 +698,9 @@ binary metafile plot systems since such files cannot easily be modified
 after they have been created. GMT programs also write many comments to
 the plot file which make it easier for users to orient themselves should
 they need to edit the file (e.g., % Start of x-axis) [16]_. All
-GMT programs create PostScript code by calling the :doc:`PSL </postscriptlight>` plot
+GMT programs create PostScript code by calling the :doc:`PSL </devdocs/postscriptlight>` plot
 library (The user may call these functions from his/her own C or FORTRAN
-plot programs. See the manual pages for :doc:`PSL </postscriptlight>` syntax). Although
+plot programs. See the manual pages for :doc:`PSL </devdocs/postscriptlight>` syntax). Although
 GMT programs can create very individualized plot code, there will
 always be cases not covered by these programs. Some knowledge of
 PostScript will enable the user to add such features directly into the
