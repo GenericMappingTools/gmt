@@ -569,14 +569,14 @@ GMT_LOCAL bool grdfft_parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_inf
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> [<ingrid2>] [-A<azimuth>] [-C<zlevel>] [-D[<scale>|g]] "
+	GMT_Usage (API, 0, "usage: %s %s [<ingrid2>] [-A<azimuth>] [-C<zlevel>] [-D[<scale>|g]] "
 		"[-E[r|x|y][+w[k]][+n]] [-F[r|x|y]<parameters>] [-G<outgrid>|<table>] [-I[<scale>|g]] [-N%s] [-Q] "
-		"[-S<scale>|d] [%s] [-fg] [%s] [%s]\n", name, GMT_FFT_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+		"[-S<scale>|d] [%s] [-fg] [%s] [%s]\n", name, GMT_INGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is the input grid file.  For cross-spectrum also supply <ingrid2>.");
+	gmt_ingrid_syntax (API, 0, "Name of input grid.  For cross-spectrum also supply <ingrid2> (same modifiers apply)");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<azimuth>");
 	GMT_Usage (API, -2, "Take azimuthal derivative along line <azimuth> degrees CW from North.");

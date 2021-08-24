@@ -103,15 +103,15 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <grid> [-A] [-C] [%s] [-E[a|e|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] "
-		"[-N<table>] [%s] [-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_GRDEDIT2D,
+	GMT_Usage (API, 0, "usage: %s %s [-A] [-C] [%s] [-E[a|e|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] "
+		"[-N<table>] [%s] [-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_GRDEDIT2D,
 		GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<grid> is file to be modified.");
+	gmt_ingrid_syntax (API, 0, "Name of grid to be modified");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A Adjust dx/dy to be compatible with the file domain (or new -R).");
 	GMT_Usage (API, 1, "\n-C Remove the command history from the header.");

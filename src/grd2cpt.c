@@ -148,16 +148,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <grid> [-A<transparency>[+a]] [-C<cpt>] [-D[i|o]] [-E[<nlevels>][+c][+f<file>]] "
+	GMT_Usage (API, 0, "usage: %s %s [-A<transparency>[+a]] [-C<cpt>] [-D[i|o]] [-E[<nlevels>][+c][+f<file>]] "
 		"[-F[R|r|h|c][+c[<label>]]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-L<min_limit>/<max_limit>] [-M] [-N] [-Q[i|o]] "
 		"[%s] [-Sh|l|m|u] [-T<start>/<stop>/<inc>|<n>] [%s] [-W[w]] [-Z] [%s] [%s] [%s] [%s]\n",
-		name, H_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+		name, GMT_INGRID, H_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<grid>");
-	GMT_Usage (API, -2, "<grid> is the name of one or more grid files.");
+	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<transparency>[+a]");
 	GMT_Usage (API, -2, "Set constant transparency for all colors; append +a to also include back-, for-, and nan-colors [0].");
