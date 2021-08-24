@@ -122,7 +122,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "s: Scan for spots [Default].  This mode offers two optional modifiers:");
 	GMT_Usage (API, 4, "+l Dump all great circles to standard output [none].");
 	GMT_Usage (API, 4, "+c Save all great circle intersections to appended file <xfile> [no crossings].");
-	GMT_Usage (API, 3, "p: Scan for poles.  Writes a misfit grid to <grid>.");
+	GMT_Usage (API, 3, "p: Scan for poles.  Writes a misfit grid to <outgrid>.");
 	GMT_Usage (API, 3, "l: Scan for compatible lines given appended <plon>/<plat> trial pole. "
 		"Append +m to report misfit for each midpoint.");
 	GMT_Option (API, "V");

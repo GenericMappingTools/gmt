@@ -8139,6 +8139,100 @@ struct GMT_DATASEGMENT * gmt_duplicate_segment (struct GMT_CTRL *GMT, struct GMT
 	return (Sout);
 }
 
+/* gmt_realloc_dataset as not yet been tested and is not used anywhere !!!!!!!!!!!!!!!! */
+/*! . */
+unsigned int gmt_realloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t dim[]) {
+	/* Reallocate this dataset given desired dimensions in dim.  Note: a dim of 0 means no change.
+	 * If the new dimension(s) are smaller than before then we free memory, else we allocate. */
+	uint64_t tbl, seg, col, n_seg, n_col, n_row;
+	unsigned int mode = 0;
+	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASEGMENT *S;
+
+	if (D == NULL) return GMT_NOERROR;
+	if (D->table[0]->segment[0]->text) mode = GMT_WITH_STRINGS;
+	/* 1. First we eliminate anything no longer wanted */
+	if (dim[GMT_TBL] && dim[GMT_TBL] < D->n_tables) {	/* Remove unneeded tables and reallocate array */
+		for (tbl = dim[GMT_TBL]; tbl < D->n_tables; tbl++)
+			gmt_free_table (GMT, D->table[tbl]);
+		gmt_M_memory (GMT, D->table, dim[GMT_TBL], struct GMT_DATATABLE *);
+		D->n_tables = dim[GMT_TBL];
+	}
+	/* Here, any tables not needed have been removed */
+	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* Loop over the tables we have kept */
+		T = D->table[tbl];	/* Short-cut */
+		n_seg = (dim[GMT_SEG] == 0) ? T->n_segments : dim[GMT_SEG];
+		n_col = (dim[GMT_COL] == 0) ? T->n_columns  : dim[GMT_COL];
+		if (dim[GMT_SEG] && dim[GMT_SEG] < T->n_segments) {	/* Remove unneeded segments and reallocate array for this table */
+			for (seg = dim[GMT_SEG]; seg < T->n_segments; seg++)
+				gmt_free_segment (GMT, &(T->segment[seg]));
+			gmt_M_memory (GMT, T->segment, dim[GMT_SEG], struct GMT_DATASEGMENT *);
+			T->n_segments = dim[GMT_SEG];
+			/* This table now has max dim[SEG] segments but might have fewer */
+		}
+		else if (dim[GMT_SEG] > T->n_segments) {	/* Want to add more segments */
+			gmt_M_memory (GMT, T->segment, dim[GMT_SEG], struct GMT_DATASEGMENT *);
+			for (seg = T->n_segments; seg < dim[GMT_SEG]; seg++) {
+				S = T->segment[seg];	/* Short-cut */
+				n_row = (dim[GMT_ROW] == 0) ? S->n_rows : dim[GMT_ROW];
+				T->segment[seg] = gmt_get_segment (GMT);
+				gmt_alloc_segment (GMT, T->segment[seg], n_row, n_col, mode, false);
+				S->n_rows = n_row;
+			}
+		}
+
+		for (seg = 0; seg < T->n_segments; seg++) {	/* Check each of the segments of this table */
+			S = T->segment[seg];	/* Short-cut */
+			n_row = (dim[GMT_ROW] == 0) ? S->n_rows : dim[GMT_ROW];
+			if (dim[GMT_COL] && dim[GMT_COL] < T->n_columns) {	/* Remove unneeded columns and reallocate array of columns */
+				for (col = dim[GMT_COL]; col < T->n_columns; col++)
+					gmt_M_free (GMT, S->data[col]);
+				S->n_columns = dim[GMT_COL];
+				gmt_M_memory (GMT, S->data, dim[GMT_COL], double *);
+				gmt_M_memory (GMT, S->min,  dim[GMT_COL], double *);
+				gmt_M_memory (GMT, S->max,  dim[GMT_COL], double *);
+				if (seg == 0) {	/* Only do this once for the table */
+					gmt_M_memory (GMT, T->min, dim[GMT_COL], double *);
+					gmt_M_memory (GMT, T->max, dim[GMT_COL], double *);
+					if (tbl == 0) {/* Only do this once for the dataset */
+						gmt_M_memory (GMT, D->min, dim[GMT_COL], double *);
+						gmt_M_memory (GMT, D->max, dim[GMT_COL], double *);
+					}
+				}
+			}
+			else if (dim[GMT_COL] > T->n_columns) {	/* Add new columns and reallocate arrays */
+				gmt_M_memory (GMT, S->data, dim[GMT_COL], double *);
+				gmt_M_memory (GMT, S->min,  dim[GMT_COL], double *);
+				gmt_M_memory (GMT, S->max,  dim[GMT_COL], double *);
+				for (col = T->n_columns; col < dim[GMT_COL]; col++)	/* Allocate the new data arrays */
+					gmt_M_memory (GMT, S->data[col], n_row, double);
+			}
+			if (dim[GMT_ROW] && dim[GMT_ROW] < S->n_rows) {	/* Remove unneeded rows by reallocating arrays */
+				for (col = dim[GMT_COL]; col < S->n_columns; col++)
+					gmt_M_memory (GMT, S->data[col], dim[GMT_ROW], double);
+				if (S->text)
+					gmt_M_memory (GMT, S->text, dim[GMT_ROW], char *);
+				S->n_rows = dim[GMT_ROW];
+			}
+		}
+		T->n_columns = S->n_columns;	/* This has either changed or not */
+	}
+
+	/* 2. Now we can expand anything that should grow */
+	if (dim[GMT_TBL] > D->n_tables) {	/* Add new tables and reallocate array */
+		gmt_M_memory (GMT, D->table, dim[GMT_TBL], struct GMT_DATATABLE *);
+		for (tbl = D->n_tables; tbl < dim[GMT_TBL]; tbl++) {
+			if ((D->table[tbl] = gmt_create_table (GMT, n_seg, n_row, n_col, mode, false)) == NULL)
+				return (GMT_MEMORY_ERROR);
+		}
+		D->n_tables = dim[GMT_TBL];
+	}
+
+	gmt_set_dataset_minmax (GMT, D);	/* Update all stats */
+
+	return (GMT_NOERROR);
+}
+
 /*! . */
 struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_rows, uint64_t n_columns, unsigned int mode) {
 	/* Allocate new dataset structure with same # of tables, segments and rows/segment as input data set.

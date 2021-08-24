@@ -99,13 +99,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> -G<outgrid> %s [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
-		name, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -G<outgrid> %s [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
+		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is file to extract a subset from.");
+	gmt_ingrid_syntax (API, 0, "Name of grid to extract a subset from");
 	GMT_Usage (API, 1, "\n-G<outgrid>");
 	GMT_Usage (API, -2, "Specify output grid file.");
 	GMT_Option (API, "R");

@@ -383,13 +383,13 @@ GMT_LOCAL int gmtgrdio_parse_grd_format_scale_old (struct GMT_CTRL *Ctrl, struct
 }
 
 GMT_LOCAL int gmtgrdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
-	/* parses format string after = suffix: ff[+f<scale>][+o<offset>/][+n<invalid>]
+	/* parses format string after = suffix: ff[+d<divisor>][+s<scale>][+o<offset>/][+n<invalid>]
 	 * ff:      can be one of [abcegnrs][bsifd]
 	 * scale:   can be any non-zero normalized number or 'a' for scale and
 	 *          offset auto-adjust, defaults to 1.0 if omitted
 	 * offset:  can be any finite number or 'a' for offset auto-adjust, defaults to 0 if omitted
 	 * invalid: can be any finite number, defaults to NaN if omitted
-	 * scale and offset may be left empty (e.g., ns//a will auto-adjust the offset only)
+	 * E.g., ns+oa will auto-adjust the offset only.
 	 */
 
 	char type_code[3];
@@ -409,9 +409,14 @@ GMT_LOCAL int gmtgrdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct 
 			return err;
 	}
 
-	while (gmt_getmodopt (GMT, 0, format, "bnos", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +n, +o, +s */
+	while (gmt_getmodopt (GMT, 0, format, "bdnos", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +d, +n, +o, +s */
 		switch (p[0]) {
-			case 'b':	/* bands */
+			case 'b':	/* bands - not parsed here */
+				break;
+			case 'd':	/* parse divisor */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtgrdio_parse_grd_format_scale_new: Setting divisor as %s\n", &p[1]);
+				header->z_scale_factor = 1.0 / atof (&p[1]);	/* Just convert to a scale */
+				HH->z_scale_given = true;
 				break;
 			case 'n':	/* Nan value */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtgrdio_parse_grd_format_scale_new: Using %s to represent missing value (NaN)\n", &p[1]);
@@ -451,7 +456,7 @@ GMT_LOCAL int gmtgrdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct 
 
 GMT_LOCAL int gmtgrdio_parse_grd_format_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
 	int code;
-	if (strstr(format, "+s") || strstr(format, "+o") || strstr(format, "+n"))
+	if (strstr(format, "+s") || strstr(format, "+o") || strstr(format, "+n") || strstr(format, "+d") || strstr(format, "+b"))
 		code = gmtgrdio_parse_grd_format_scale_new (GMT, header, format);
 	else
 		code = gmtgrdio_parse_grd_format_scale_old (GMT, header, format);
