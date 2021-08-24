@@ -249,9 +249,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTREND_CTRL *Ctrl, struct GMT_O
 
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify an input grid file\n");
 	if (Ctrl->N.x_only || Ctrl->N.y_only)
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 3, "Option -N: Specify 1-4 model parameters when +x or +y are active\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.value == 0 || Ctrl->N.value > 4, "Option -N: Specify 1-4 model parameters when +x or +y are active\n");
 	else
-		n_errors += gmt_M_check_condition (GMT, Ctrl->N.value <= 0 || Ctrl->N.value > 10, "Option -N: Specify 1-10 model parameters\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->N.value == 0 || Ctrl->N.value > 10, "Option -N: Specify 1-10 model parameters\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
