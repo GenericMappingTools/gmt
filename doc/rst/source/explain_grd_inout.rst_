@@ -16,6 +16,7 @@ data. In case the *ID* is not provided, as in **+s**\ *scale*, then a
 *ID*\ **=**\ *nf* is assumed. When reading grids, the format is generally
 automatically recognized from almost all of those formats that GMT and GDAL
 combined offer. If not, the same suffix can be added to input grid file names.
+If reading an image as a grid you can select the band via **+b**.
 See :doc:`grdconvert </grdconvert>` and Section :ref:`grid-file-format`
 of the GMT Technical Reference and Cookbook for more information.
 

@@ -33,7 +33,7 @@
 #define GMT_SYNOPSIS_H
 
 /* Full syntax of input grids */
-#define GMT_INGRID   "<ingrid>[=<ID>][+d<divisor>][+n<invalid>][+o<offset>][+s<scale>]"
+#define GMT_INGRID   "<ingrid>[=<ID>|?<varname>][+b<band>][+d<divisor>][+n<invalid>][+o<offset>][+s<scale>]"
 
 #define GMT_inc_OPT	"<xinc>[+e|n][/<yinc>[+e|n]]"
 #define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
