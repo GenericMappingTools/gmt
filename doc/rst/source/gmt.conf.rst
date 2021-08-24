@@ -1230,8 +1230,8 @@ Calendar/Time Parameters
     **TIME_UNIT**
         Specifies the units of relative time data since epoch (see
         :term:`TIME_EPOCH`). Choose **y** (year - assumes all years are 365.2425
-        days), **o** (month - assumes all months are of equal length y/12), **d**
-        (day), **h** (hour), **m** (minute), or **s** (second) [default is **s**].
+        days), **o** (month - assumes all months are of equal length y/12), *ww*
+        (week) **d** (day), **h** (hour), **m** (minute), or **s** (second) [default is **s**].
 
     **TIME_WEEK_START**
         When weeks are indicated on time axes, this parameter determines the

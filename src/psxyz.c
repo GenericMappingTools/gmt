@@ -351,7 +351,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "%s To use <color> for fill, also select -G+z. ", GMT_LINE_BULLET);
 	GMT_Usage (API, 3, "%s To use <color> for an outline pen, also select -W<pen>+z.", GMT_LINE_BULLET);
 	GMT_Option (API, "a,bi");
-	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default is the required number of columns.");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Default <ncols> is the required number of columns.");
 	GMT_Option (API, "c,di,e,f,g,h,i,l,p,qi,T,w,:,.");
 
 	return (GMT_MODULE_USAGE);

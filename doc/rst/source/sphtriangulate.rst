@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-j| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -135,6 +136,8 @@ Optional Arguments
 .. include:: explain_distcalc.rst_
 
 .. include:: explain_-qi.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
 

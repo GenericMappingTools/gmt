@@ -165,7 +165,7 @@ the build directory you have to run CMake again manually.
 ## Debugging GMT
 
 Guides for debugging GMT are provided in the
-[developer resources section](https://docs.generic-mapping-tools.org/dev/debug.html) of the GMT documentation.
+[developer resources section](https://docs.generic-mapping-tools.org/dev/devdocs/debug.html) of the GMT documentation.
 
 ## Using build and test aliases
 

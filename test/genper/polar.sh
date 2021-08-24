@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 # Check that odd gridline clipping due to bad mapjump call don't resurface
 ps=polar.ps
 lon0=210.651901558

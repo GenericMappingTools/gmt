@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
@@ -163,6 +164,8 @@ Optional Arguments
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
 

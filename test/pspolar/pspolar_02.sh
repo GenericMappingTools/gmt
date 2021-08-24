@@ -16,7 +16,7 @@ while [  $COUNTER -lt 10 ]; do
      #echo COUNTER $COUNTER STRIKE $STRIKEF DIP $DIP
 
 # plot planes
-gmt psmeca -R -J -P -M -Sa6i -N -W1p -O -K -h4 -C -T << EOF >> $ps
+gmt psmeca -R -J -P -Sa6i+m -N -W1p -O -K -h4 -C -T << EOF >> $ps
 #a) Focal mechanism in Aki & Richard's convention:
 #  0   1    2       3     4      5  6      7     8       9
 #  X,  Y, depth, strike,   dip, rake, mag, newX, newY, event_title

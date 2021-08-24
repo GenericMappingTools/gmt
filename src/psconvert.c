@@ -280,7 +280,7 @@ GMT_LOCAL int psconvert_parse_new_I_settings (struct GMT_CTRL *GMT, char *arg, s
 	char p[GMT_LEN128] = {""}, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
 
 	if (arg[0] == '\0') {	/* This is the old -I option */
-		if (gmt_M_compat_check (GMT, 4)) {
+		if (gmt_M_compat_check (GMT, 6)) {
 			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-I (no args) is deprecated; use -N+i instead.\n");
 			Ctrl->N.use_ICC_profiles = true;
 		}
@@ -2485,6 +2485,7 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 		if (Ctrl->T.device != GS_DEV_EPS) {
 			char tag[16] = {""};
 			int dest_device = Ctrl->T.device;	/* Keep copy in case of temp change below */
+			double w_new, h_new;
 
 			strncpy (tag, &ext[Ctrl->T.device][1], 15U);
 			gmt_str_toupper (tag);
@@ -2510,12 +2511,21 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 			strcat (out_file, ext[Ctrl->T.device]);
 
 			if (Ctrl->I.new_dpi_x) {	/* We have a resize request (was Ctrl->I.resize = true;) */
-				pix_w = urint (psconvert_smart_ceil (w * Ctrl->I.new_dpi_x / 72.0));
-				pix_h = urint (psconvert_smart_ceil (h * Ctrl->I.new_dpi_y / 72.0));
+				w_new = w * Ctrl->I.new_dpi_x / 72.0;
+				h_new = h * Ctrl->I.new_dpi_y / 72.0;
 			}
 			else {
-				pix_w = urint (psconvert_smart_ceil (w * Ctrl->E.dpi / 72.0));
-				pix_h = urint (psconvert_smart_ceil (h * Ctrl->E.dpi / 72.0));
+				w_new = w * Ctrl->E.dpi / 72.0;
+				h_new = h * Ctrl->E.dpi / 72.0;
+
+			}
+			if (Ctrl->A.round) {
+				pix_w = urint (w_new);
+				pix_h = urint (h_new);
+			}
+			else {
+				pix_w = urint (psconvert_smart_ceil (w_new));
+				pix_h = urint (psconvert_smart_ceil (h_new));
 			}
 
 			if (Ctrl->H.active)	/* Rasterize at higher resolution, then downsample in gs */
