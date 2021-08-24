@@ -58,8 +58,8 @@ Required Arguments
     Append **+r** for robust fit.  As an option, append either **+x** or **+y** to only
     fit a model that depends on *x* or *y* terms, respectively. This means we either fit
     :math:`m_1 + m_2x + m_3x^2 + m_4x^3` or :math:`m_1 + m_2y + m_3y^2 + m_4y^3`.
-    Note that the meaning of *n_model* remains the same, so -N10+y is needed to fit a
-    four-term cubic trend in the *y*-direction only.
+    Note that *n_model* may only be 1-4 for the one-dimensional fits but may be 1-10
+    for the two-dimensional surface fits.
 
 Optional Arguments
 ------------------
@@ -104,7 +104,7 @@ basis functions are built from Legendre polynomials. These have a
 numerical advantage in the form of the matrix which must be inverted and
 allow more accurate solutions. NOTE: The model parameters listed with
 **-V** are Legendre polynomial coefficients; they are not numerically
-equivalent to the m#s in the equation described above. The description
+equivalent to the :math:`m_j` in the equation described above. The description
 above is to allow the user to match **-N** with the order of the
 polynomial surface. See :doc:`grdmath` if you need to evaluate the trend
 using the reported coefficients.
