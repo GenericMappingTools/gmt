@@ -37,7 +37,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: sac_common.rst_
+.. include:: sac.rst
+    :start-after: [ |SYN_OPT--| ]
+    :end-before: Examples
 
 .. include:: ../../common_classic.rst_
 
