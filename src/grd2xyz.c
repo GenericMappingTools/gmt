@@ -104,8 +104,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use -Ci to write grid index instead of (x,y).");
 	GMT_Usage (API, 1, "\n-Lc|r|x|y<value>");
 	GMT_Usage (API, -2, "Limit output to a single vector. Specify which one:");
-	GMT_Usage (API, 3, "c: Append a column (0 to nx-1)");
-	GMT_Usage (API, 3, "r: Append a row (0 to ny-1)");
+	GMT_Usage (API, 3, "c: Append a column number (0 to nx-1)");
+	GMT_Usage (API, 3, "r: Append a row number (0 to ny-1)");
 	GMT_Usage (API, 3, "x: Append a column coordinate (xmin to xmax)");
 	GMT_Usage (API, 3, "y: Append a row coordinate (ymin to ymax)");
 	GMT_Usage (API, -2, "Note: Selections outside the grid will result in no output.");
