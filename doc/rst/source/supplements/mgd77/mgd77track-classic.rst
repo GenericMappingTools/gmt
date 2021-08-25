@@ -38,7 +38,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: mgd77track_common.rst_
+.. include:: mgd77track.rst
+    :start-after: [ |SYN_OPT--| ]
+    :end-before: Examples
 
 .. include:: ../../common_classic.rst_
 
