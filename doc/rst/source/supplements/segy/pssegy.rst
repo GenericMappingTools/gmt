@@ -30,7 +30,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: segy_common.rst_
+.. include:: segy.rst
+    :start-after: [ |SYN_OPT--| ]
+    :end-before: Examples
 
 .. include:: ../../common_classic.rst_
 
