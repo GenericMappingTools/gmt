@@ -46,7 +46,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: coupe_common.rst_
+.. include:: coupe.rst
+    :start-after: [ |SYN_OPT--| ]
+    :end-before: Examples
 
 .. include:: ../../common_classic.rst_
 
