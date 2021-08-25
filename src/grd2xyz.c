@@ -89,7 +89,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-C[f|i]] [%s] [%s] [-W[a[+u<unit>]|<weight>]] "
+	GMT_Usage (API, 0, "usage: %s %s [-C[f|i]] [-Lc|r|x|y<value>] [%s] [%s] [-W[a[+u<unit>]|<weight>]] "
 		"[-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT,
 		GMT_o_OPT, GMT_qo_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -102,6 +102,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-C[f|i]");
 	GMT_Usage (API, -2, "Write row,col instead of x,y. Append f to start at 1, else 0 [Default]. "
 		"Use -Ci to write grid index instead of (x,y).");
+	GMT_Usage (API, 1, "\n-Lc|r|x|y<value>");
+	GMT_Usage (API, -2, "Limit output to a single vector. Specify which one:");
+	GMT_Usage (API, 3, "c: Append a column (0 to nx-1)");
+	GMT_Usage (API, 3, "r: Append a row (0 to ny-1)");
+	GMT_Usage (API, 3, "x: Append a column coordinate (xmin to xmax)");
+	GMT_Usage (API, 3, "y: Append a row coordinate (ymin to ymax)");
+	GMT_Usage (API, -2, "Note: Selections outside the grid will result in no output.");
 	GMT_Option (API, "R,V");
 	GMT_Usage (API, 1, "\n-W[a[+u<unit>]|<weight>]");
 	GMT_Usage (API, -2, "Write xyzw using supplied <weight> (or 1 if not given) [Default is xyz]. "
