@@ -499,12 +499,12 @@ GMT_LOCAL void grdtrend_write_model_parameters (struct GMT_CTRL *GMT, struct GRD
 
 GMT_LOCAL void grdtrend_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID *G, double *xval, double *yval, double *pstuff, double *gtg, double *gtd, unsigned int n_model, struct GMT_GRID *W, bool weighted, p_to_eval_func eval) {
 	/* Routine to load the matrix G'G (gtg) and vector G'd (gtd)
-	for the normal equations.  Routine uses indices i,j to refer
+	for the normal equations.  Routine uses indices row,col to refer
 	to the grid file of data, and k,l to refer to the k_row, l_col
 	of the normal equations matrix.  We need sums of [weighted]
 	data and model functions in gtg and gtd.  We save time by
 	loading only lower triangular part of gtg and then filling
-	by symmetry after i,j loop.  */
+	by symmetry after row,col loop.  */
 
 	unsigned int row, col, k, l, n_used = 0;
 	uint64_t ij;
@@ -548,12 +548,13 @@ GMT_LOCAL void grdtrend_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID 
 				}
 			}	/* End if  */
 		}
-	}	/* End of loop over data i,j  */
+	}	/* End of loop over data row,col  */
 
 	/* Now if !weighted, use more accurate sum for gtg[0], and set symmetry */
 
 	if (!weighted) gtg[0] = (double)n_used;
 
+	/* Fill in upper triangular part of normal equation matrix G'*G */
 	for (k = 0; k < n_model; k++) {
 		for (l = 0; l < k; l++) gtg[l + k*n_model] = gtg[k + l*n_model];
 	}
