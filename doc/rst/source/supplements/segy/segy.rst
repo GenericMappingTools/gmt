@@ -30,6 +30,8 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
+.. module_common_begins
+
 Description
 -----------
 
@@ -190,6 +192,8 @@ Optional Arguments
 
 .. include:: ../../explain_-t.rst_
 .. include:: ../../explain_help.rst_
+
+.. module_common_ends
 
 Examples
 --------

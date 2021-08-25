@@ -43,6 +43,8 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
+.. module_common_begins
+
 Description
 -----------
 
@@ -230,6 +232,8 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: seis_extra_cols.rst_
+
+.. module_common_ends
 
 Examples
 --------

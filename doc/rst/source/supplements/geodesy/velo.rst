@@ -43,6 +43,8 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
+.. module_common_begins
+
 Description
 -----------
 
@@ -324,6 +326,8 @@ where *symbol-columns* represent the normally required data columns, and items
 given in brackets are optional and under the control of the stated options
 (the trailing text is always optional).  **Note**:  You can use **-i** to
 rearrange your data record to match the expected format.
+
+.. module_common_ends
 
 Examples
 --------

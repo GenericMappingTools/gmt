@@ -44,6 +44,8 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
+.. module_common_begins
+
 Description
 -----------
 
@@ -285,8 +287,7 @@ Optional Arguments
 
 .. include:: seis_extra_cols.rst_
 
-Examples
---------
+.. module_common_ends
 
 .. include:: meca_notes.rst_
 

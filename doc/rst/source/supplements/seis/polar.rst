@@ -40,6 +40,8 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
+.. module_common_begins
+
 Description
 -----------
 
@@ -202,6 +204,8 @@ Optional Arguments
 .. include:: ../../explain_help.rst_
 
 .. include:: ../../explain_vectors.rst_
+
+.. module_common_ends
 
 Examples
 --------
