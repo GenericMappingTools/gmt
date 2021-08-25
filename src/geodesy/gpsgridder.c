@@ -155,8 +155,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If no files are given, standard input is read. "
 		"The data must contain x y u v [weight_u weight_v] records. "
 		"Specify -fg to convert longitude, latitude to Flat Earth coordinates.");
-	GMT_Usage (API, 1, "\n-G<outfile>");
-	GMT_Usage (API, -2, "Give name of output file (if -N) or a gridfile name template that must "
+	gmt_outgrid_syntax (API, 'G', "Give name of output file (if -N) or a gridfile name template that must "
 		"contain the format specifier \"%%s\" which will be replaced with u or v.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 

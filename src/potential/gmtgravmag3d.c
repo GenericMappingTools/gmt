@@ -177,9 +177,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<xyz_file>] -Tv<vert_file> | -Tr|s<raw_file> | -M+s<body>/<pars> [-C<density>] [-E<thickness>] "
-		"[-F<xy_file>] [-G<outgrid>] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [%s] [-L<z_observation>] [%s] "
+		"[-F<xy_file>] [-G%s] [-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>] [%s] [-L<z_observation>] [%s] "
 		"[-S<radius>] [-Z<level>] [%s] [-fg] [%s] [%s]\n",
-		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -223,8 +223,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Give layer thickness in m [Default = 0 m].");
 	GMT_Usage (API, 1, "\n-F<xy_file>");
 	GMT_Usage (API, -2, "Pass locations where anomaly is going to be computed.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Set name of the output grdfile.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	GMT_Usage (API, 1, "\n-H<f_dec>/<f_dip>/<m_int></m_dec>/<m_dip>");
 	GMT_Usage (API, -2, "Append parameters for computation of magnetic anomaly:");
 	GMT_Usage (API, 3, "%s <f_dec>/<f_dip> -> geomagnetic declination/inclination.", GMT_LINE_BULLET);
