@@ -586,19 +586,13 @@ iterative solutions, and the like. Since these messages are written to
 may optionally choose among six models of *verbosity*; each mode adds
 more messages with an increasing level of details. The modes are
 
-  **q** Complete silence, not even fatal error messages.
-
-  **e** Errors messages only.
-
-  **w** Warnings [Default].
-
-  **t** Timings (for time-intensive algorithms only).
-
-  **i** Informational messages.
-
-  **c** Compatibility warnings about deprecated usage (if compiled for compatibility).
-
-  **d** Debugging messages (mostly of interest to developers).
+  - **q** - Quiet, not even fatal error messages are produced.
+  - **e** - Error messages only.
+  - **w** - Warnings (same as running without **-V**)
+  - **t** - Timings (report runtimes for time-intensive algorithms).
+  - **i** - Informational messages (same as **-V** only).
+  - **c** - Compatibility warnings (if compiled with backward-compatibility).
+  - **d** - Debugging messages (mostly of interest to developers).
 
 The verbosity is cumulative, i.e., mode **w** means all messages of mode
 **e** as well will be reported.
