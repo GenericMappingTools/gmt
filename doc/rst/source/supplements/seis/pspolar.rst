@@ -41,7 +41,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: polar_common.rst_
+.. include:: polar.rst
+    :start-after: [ |SYN_OPT--| ]
+    :end-before: Examples
 
 .. include:: ../../common_classic.rst_
 
