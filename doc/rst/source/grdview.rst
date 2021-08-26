@@ -241,7 +241,21 @@ topo_intens.nc, and looking from the SE, run
 
     gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt -Qs -p140/30 -Itopo_intens.nc -pdf draped3D
 
-.. include:: grdview_notes.rst_
+.. module_note_begins
+
+Notes
+-----
+
+For the **-Qs** option: The PostScript language has no mechanism for smoothly varying
+colors within a polygon, so colors can only vary from polygon to
+polygon. To obtain smooth images this way you may resample the grid
+file(s) using :doc:`grdsample` or use a finer grid size when running
+gridding programs like :doc:`surface` or :doc:`nearneighbor`. Unfortunately,
+this produces huge PostScript files. The alternative is to use the
+**-Qi** option, which computes bilinear or bicubic continuous color
+variations within polygons by using scanline conversion to image the polygons.
+
+.. module_note_ends
 
 See Also
 --------
