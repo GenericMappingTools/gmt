@@ -58,7 +58,9 @@ using a length scale of 200 km per data unit and only plot every 3rd node in eit
 
     gmt grdvector comp_x.nc comp_y.nc -Ix3 -JH0/20c -Q0.1i+e+jc -S200k > globe.ps
 
-.. include:: grdvector_notes.rst_
+.. include:: grdvector.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------
