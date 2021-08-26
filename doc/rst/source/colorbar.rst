@@ -290,7 +290,25 @@ Mercator map produced by a previous call, ensuring a 2 cm offset from the map fr
 
     gmt colorbar -DjCT+w4i+o0/2c+h -Ccolors.cpt -Baf
 
-.. include:: colorbar_notes.rst_
+.. module_note_begins
+
+Notes
+-----
+
+#. When the CPT is discrete and no illumination is specified, the
+   color bar will be painted using polygons. For all other cases we must
+   paint with an image. Some color printers may give slightly different
+   colors for the two methods given identical RGB values.  See option **-N**
+   for affecting these decisions.  Also note that for years now, Apple's
+   Preview insists on smoothing deliberately course CPT color images to a blur.
+   Use another PDF viewer if this bothers you.
+#. For cyclic (wrapping) color tables the cyclic symbol is plotted to the right
+   of the color bar.  If annotations are specified there then we place the cyclic
+   symbol at the left, unless **+n** was used in which case we center of the color bar instead.
+#. Discrete CPTs may have transparency applied to all or some individual slices.
+   Continuous CPTs may have transparency applied to all slices, but not just some.
+
+.. module_note_ends
 
 See Also
 --------

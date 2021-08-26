@@ -74,7 +74,9 @@ Mercator map produced by a previous call, ensuring a 2 cm offset from the map fr
 
     gmt psscale -DjCT+w4i+o0/2c+h -O -Ccolors.cpt -Baf -R -J >> map.ps
 
-.. include:: colorbar_notes.rst_
+.. include:: colorbar.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------
