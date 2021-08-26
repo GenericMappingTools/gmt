@@ -285,8 +285,8 @@ GMT_LOCAL void grdtrend_load_pstuff_xonly (double *pstuff, unsigned int n_model,
 
 	if (newx) {
 		if (n_model > 1) pstuff[1] = x;
-		if (n_model > 2) pstuff[2] = 0.5*(3.0*pstuff[1]*pstuff[1] - 1.0);
-		if (n_model > 3) pstuff[3] = (5.0*pstuff[1]*pstuff[2] - 2.0*pstuff[1])/3.0;
+		if (n_model > 2) pstuff[2] = 0.5 * (3.0 * x * x - 1.0);
+		if (n_model > 3) pstuff[3] = 0.5 * (5.0 * pow (x, 3.0) - 3.0 * x);
 	}
 
 	return;
@@ -299,8 +299,8 @@ GMT_LOCAL void grdtrend_load_pstuff_yonly (double *pstuff, unsigned int n_model,
 
 	if (newy) {
 		if (n_model > 1) pstuff[1] = y;
-		if (n_model > 2) pstuff[2] = 0.5*(3.0*pstuff[1]*pstuff[1] - 1.0);
-		if (n_model > 3) pstuff[3] = (5.0*pstuff[1]*pstuff[2] - 2.0*pstuff[1])/3.0;
+		if (n_model > 2) pstuff[2] = 0.5 * (3.0 * y * y - 1.0);
+		if (n_model > 3) pstuff[3] = 0.5 * (5.0 * pow (y, 3.0) - 3.0 * y);
 	}
 
 	return;
@@ -468,21 +468,21 @@ GMT_LOCAL void grdtrend_write_model_parameters (struct GMT_CTRL *GMT, struct GRD
 	unsigned int i;
 	char pbasis[10][16], format[GMT_BUFSIZ];
 
-	sprintf (pbasis[0], "Mean");
+	sprintf (pbasis[0], "P0");
 	if (!Ctrl->N.y_only)
-		sprintf (pbasis[1], "X");
+		sprintf (pbasis[1], "P1(x)");
 	if (Ctrl->N.x_only) {
 		sprintf (pbasis[2], "P2(x)");
 		sprintf (pbasis[3], "P3(x)");
 	}
 	else if (Ctrl->N.y_only) {
-		sprintf (pbasis[1], "Y");
+		sprintf (pbasis[1], "P1(y)");
 		sprintf (pbasis[2], "P2(y)");
 		sprintf (pbasis[3], "P3(y)");
 	}
 	else {
-		sprintf (pbasis[2], "Y");
-		sprintf (pbasis[3], "X*Y");
+		sprintf (pbasis[2], "P1(y)");
+		sprintf (pbasis[3], "P1(x)*P1(y)");
 		sprintf (pbasis[4], "P2(x)");
 		sprintf (pbasis[5], "P2(y)");
 		sprintf (pbasis[6], "P3(x)");
@@ -534,17 +534,19 @@ GMT_LOCAL void grdtrend_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID 
 				gtg[0] += W->data[ij];			/* Implicitly multiply by pstuff[0] which is 1 */
 				for (k = 1; k < n_model; k++) {
 					gtd[k] += (G->data[ij] * W->data[ij] * pstuff[k]);
-					gtg[k] += (W->data[ij] * pstuff[k]);
-					for (l = k; l < n_model; l++) gtg[k + l*n_model] += (pstuff[k]*pstuff[l]*W->data[ij]);
+					gtg[k*n_model] += (W->data[ij] * pstuff[k]);
+					for (l = 1; l <= k; l++)
+						gtg[k*n_model + l] += (pstuff[k]*pstuff[l]*W->data[ij]);
 				}
 			}
 			else {	/* If !weighted  */
-				/* Loop over all gtg and gtd elements */
+				/* Loop over all gtg and gtd elements; do gtg[0] afterwards */
 				gtd[0] += G->data[ij];	/* Implicitly multiply by pstuff[0] which is 1 */
-				for (k = 1; k < n_model; k++) {
+				for (k = 1; k < n_model; k++) {	/* Rows in GTG */
 					gtd[k] += (G->data[ij] * pstuff[k]);
-					gtg[k] += pstuff[k];
-					for (l = k; l < n_model; l++) gtg[k + l*n_model] += (pstuff[k]*pstuff[l]);
+					gtg[k*n_model] += pstuff[k];
+					for (l = 1; l <= k; l++)
+						gtg[k*n_model + l] += (pstuff[k]*pstuff[l]);
 				}
 			}	/* End if  */
 		}
@@ -555,8 +557,8 @@ GMT_LOCAL void grdtrend_load_gtg_and_gtd (struct GMT_CTRL *GMT, struct GMT_GRID 
 	if (!weighted) gtg[0] = (double)n_used;
 
 	/* Fill in upper triangular part of normal equation matrix G'*G */
-	for (k = 0; k < n_model; k++) {
-		for (l = 0; l < k; l++) gtg[l + k*n_model] = gtg[k + l*n_model];
+	for (k = 0; k < n_model; k++) {	/* Rows */
+		for (l = k + 1; l < n_model; l++) gtg[k*n_model + l] = gtg[l*n_model + k];
 	}
 	/* That is all there is to it!  */
 
