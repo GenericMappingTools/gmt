@@ -295,7 +295,20 @@ Redo the same plot but this time add orange vector heads to each direction (with
 
     gmt rose lines.az_r -R0/500/0/360 -JX10c -Bxg100 -Byg45 -B+t"Windrose diagram" -M0.5c+e+gorange+n1c -W0.5p -U+c -pdf rose
 
-.. include:: rose_notes.rst_
+.. module_note_begins
+
+Bugs
+----
+
+No default radial scale and grid settings for polar histograms. Users
+must run the module with **-I** to find max length in binned data set.
+
+References
+----------
+
+Berens, P., 2009, CircStat: A MATLAB Toolbox for Circular Statistics, *J. Stat. Software, 31(10)*\ , 1-21.
+
+.. module_note_ends
 
 See Also
 --------
