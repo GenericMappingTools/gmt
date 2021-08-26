@@ -586,19 +586,13 @@ iterative solutions, and the like. Since these messages are written to
 may optionally choose among six models of *verbosity*; each mode adds
 more messages with an increasing level of details. The modes are
 
-  **q** Complete silence, not even fatal error messages.
-
-  **e** Errors messages only.
-
-  **w** Warnings [Default].
-
-  **t** Timings (for time-intensive algorithms only).
-
-  **i** Informational messages.
-
-  **c** Compatibility warnings about deprecated usage (if compiled for compatibility).
-
-  **d** Debugging messages (mostly of interest to developers).
+  - **q** - Quiet, not even fatal error messages are produced.
+  - **e** - Error messages only.
+  - **w** - Warnings (same as running without **-V**)
+  - **t** - Timings (report runtimes for time-intensive algorithms).
+  - **i** - Informational messages (same as **-V** only).
+  - **c** - Compatibility warnings (if compiled with backward-compatibility).
+  - **d** - Debugging messages (mostly of interest to developers).
 
 The verbosity is cumulative, i.e., mode **w** means all messages of mode
 **e** as well will be reported.
@@ -2324,13 +2318,13 @@ by other programs that conform to those conventions. Three such programs are
 <https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
-to read netcdf 4 files (if data compression has been applied).
+to read netCDF 4 files (if data compression has been applied).
 
 In addition, users with some C-programming experience may add their own
 read/write functions and link them with the GMT library to extend the
 number of predefined formats. Technical information on this topic can be
-found in the source file ``gmt_customio.c``. Users who are considering this approach
-should contact the GMT team.
+found in the source file ``gmt_customio.c``. Users who are considering this
+approach should contact the GMT team for guidance.
 
 .. _tbl-grdformats:
 
@@ -2402,17 +2396,18 @@ the data may need translation and scaling prior to use. Therefore, all
 GMT programs that read or write grid files will decode the given
 filename as follows:
 
-name[=\ *ID*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]
+name[=\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*][**+o**\ *offset*][**+s**\ *scale*]
 
 where anything in brackets is optional. If you are reading a grid then
-no options are needed: just continue to pass the name of the grid file.
-However, if you write another format you must append the =\ *ID* string,
-where *ID* is the format code listed above. In addition, should you want
-to (1) multiply the data by a scale factor, and (2) add a constant
-offset you must append the **+s**\ *scale* and **+o**\ *offset* modifiers. Finally, if you
-need to indicate that a certain data value should be interpreted as a
-NaN (not-a-number) you must append **+n**\ *invalid* modifier to file name.
-You may the scale as *a* for auto-adjusting the scale and/or offset of
+no *ID* is needed: just continue to pass the name of the grid file.
+However, if you write another format than the default netCDF you must append
+the =\ *ID* string, where *ID* is the format code listed above. In addition,
+should you want to (1) multiply the data by a *scale* factor (or alternatively
+divide the data by a *divisor*), and (2) add a constant offset you must append
+the **+s**\ *scale* (or **+d**\ *divisor*) and **+o**\ *offset* modifiers.
+Finally, if you need to indicate that a certain data value should be interpreted
+as a NaN (not-a-number) you must append **+n**\ *invalid* modifier to file name.
+For output, you may specify scale as *a* for auto-adjusting the scale and/or offset of
 packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
 =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
 
