@@ -26,7 +26,6 @@ Synopsis
 
 .. module_common_begins
 
-
 Description
 -----------
 
