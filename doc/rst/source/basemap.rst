@@ -500,7 +500,39 @@ degrees about an axis centered on the map, try
 
     gmt basemap -R10/40/10/40 -JM10c -Bafg -B+t"I am rotated" -p90+w25/25 -Xc -pdf rotated
 
-.. include:: basemap_notes.rst_
+.. module_note_begins
+
+Custom Labels or Intervals
+--------------------------
+
+The |-B| option sets up a regular annotation interval and the
+annotations derive from the corresponding *x*, *y*, or *z* coordinates.
+However, some applications requires special control on which annotations
+to plot and even replace the annotation with other labels. This is
+achieved by using **c**\ *intfile* in the |-B| option, where *intfile*
+contains all the information about annotations, ticks, and even
+gridlines. Each record is of the form *coord* *type* [*label*], where
+*coord* is the coordinate for this annotation (or tick or gridline),
+*type* is one or more letters from **a** (annotation), **i** interval
+annotation, **f** tickmark, and **g** gridline. Note that **a** and
+**i** are mutually exclusive and cannot both appear in the same
+*intfile*. Both **a** and **i** requires you to supply a *label* which
+is used as the plot annotation. If not given then a regular formatted
+annotation based on the coordinate will occur.
+
+Restrictions
+------------
+
+For some projections, a spherical earth is implicitly assumed. A warning
+will notify the user if |-V| is set.
+
+Bugs
+----
+
+The |-B| option is somewhat complicated to explain and comprehend.
+However, it is fairly simple for most applications (see examples).
+
+.. module_note_ends
 
 See Also
 --------
