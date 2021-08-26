@@ -1024,7 +1024,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
-	bool detect_range = false;
+	bool detect_range = false, has_text;
 
 	int n_rec = 0, n_plane_old = 0, form = 0, error;
 	int i, transparence_old = 0, not_defined = 0;
@@ -1038,6 +1038,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 	double scale, P_x, P_y, T_x, T_y, nominal_size, in[GMT_LEN16];
 
 	char event_title[GMT_BUFSIZ] = {""}, Xstring[GMT_BUFSIZ] = {""}, Ystring[GMT_BUFSIZ] = {""};
+	char *no_name = "<unnamed>", *event_name = NULL;
 
 	st_me meca, mecar;
 	struct MOMENT moment;
@@ -1127,6 +1128,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 		Return (API->error);
 	}
 
+	/* Read the entire input data set */
 	if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
@@ -1259,6 +1261,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 
 				/* Data record to process */
 
+				has_text = S->text && S->text[row];
 				n_rec++;
 				if (Ctrl->S.read) nominal_size = scale = in[scol];
 				size = scale;
@@ -1268,7 +1271,7 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 				}
 				/* Must examine the trailing text for optional columns: newX, newY and title */
 				/* newX and newY are not used in pscoupe, but we promised psmeca and pscoupe can use the same input file */
-				if (S->text && S->text[row]) {
+				if (has_text) {
 					n_scanned = sscanf (S->text[row], "%s %s %[^\n]s\n", Xstring, Ystring, event_title);
 					if (n_scanned >= 2) { /* Got new x,y coordinates and possibly event title */
 						unsigned int type;
@@ -1382,7 +1385,8 @@ EXTERN_MSC int GMT_pscoupe (void *V_API, int mode, void *args) {
 						Ctrl->T.active = true;
 						Ctrl->T.n_plane = 1;
 						meca.NP1.rake = 1000.0;
-						GMT_Report (API, GMT_MSG_WARNING, "Second plane is not defined for event %s only first plane is plotted.\n", S->text ? S->text[row] : "<unnamed>");
+						event_name = (has_text) ? S->text[row] : no_name;
+						GMT_Report (API, GMT_MSG_WARNING, "Second plane is not defined for event %s only first plane is plotted.\n", event_name);
 					}
 					else
 						meca.NP1.rake = meca_computed_rake2 (meca.NP2.str, meca.NP2.dip, meca.NP1.str, meca.NP1.dip, fault);
