@@ -41,7 +41,9 @@ Synopsis
 
 .. include:: common_classic.rst_
 
-.. include:: grdimage_notes.rst_
+.. include:: grdimage.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 Examples
 --------
