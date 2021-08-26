@@ -249,8 +249,8 @@ convert from one format to the other;
 header and convert a pixel- to a gridline-registered grid, or *vice
 versa*. The grid registration is determined by the common GMT **-r**
 option (see Section :ref:`option_nodereg`). **Note**: The smallest
-pixel-registered grid can be 1x1 (storing a single value), while the
-smallest gridline-registered grid cannot be smaller than 2x2.
+pixel-registered grid can be 1x1 (storing a single value), while a
+gridline-registered grid cannot be smaller than 2x2.
 
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
