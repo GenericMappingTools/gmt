@@ -276,7 +276,18 @@ Optional Arguments
 
 .. module_common_ends
 
-.. include:: grdcontour_notes.rst_
+.. module_note_begins
+
+Notes
+-----
+
+The angle of a contour is computed as an average over *n* points along the contour.
+If you obtain poor angles you can play with two variables: Change *n* via the **+w**
+modifier to **-A**, and/or resample the contour via **-S**.  For a fixed *n* the
+**-S** will localize the calculation, while the opposite is true if you increase *n*
+for a constant **-S**.
+
+.. module_note_ends
 
 .. include:: auto_legend_info.rst_
 
