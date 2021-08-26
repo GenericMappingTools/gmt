@@ -170,6 +170,16 @@ command line. The default output is relative time in that time system,
 or absolute time when using the option **-f0T**, **-f1T**, or **-f2T**
 for x, y, or z coordinate, respectively.
 
+Row Order
+---------
+
+The **-Lr** option allows you to output a specific row in the grid. Note that while
+a grid's y-coordinates are positive up, internal row numbers are scanline numbers
+and hence positive down.  Therefore, the first row (0) coincides with the largest *y*-value.
+This means that **-Lr**\ *0* and **-Ly**\ *ymax* (for the correct maximum y-value)
+will yield the same result.  In contrast, both *x* and column numbers are positive to the right,
+with **-Lc**\ *0* and **-Lx**\ *xmin* (for the correct minimum x-value) yielding the same output.
+
 Examples
 --------
 
