@@ -7735,9 +7735,12 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 	if (option == 0)
 		GMT_Usage (API, 1, "\n%s", GMT_OUTGRID);
-	else
+	else if (option != '=')
 		GMT_Usage (API, 1, "\n-%c%s", option, GMT_OUTGRID);
-	GMT_Usage (API, -2, "%s. Optionally append =<ID> for writing a specific file format and add any modifiers:", message);
+	if (message)
+		GMT_Usage (API, -2, "%s. Optionally append =<ID> for writing a specific file format and add any modifiers:", message);
+	else
+		GMT_Usage (API, -2, "Optionally append =<ID> for writing a specific file format and add any modifiers:");
 	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [0]");
 	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
 	GMT_Usage (API, 3, "+o Offset data values by the given <offset>, or append a for automatic range offset to preserve precision for integer grids [0].");
