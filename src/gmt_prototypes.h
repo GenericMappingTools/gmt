@@ -110,6 +110,7 @@ EXTERN_MSC int gmt_hash_lookup (struct GMT_CTRL *GMT, const char *key, struct GM
 EXTERN_MSC void gmt_syntax (struct GMT_CTRL *GMT, char option);
 EXTERN_MSC void gmt_ingrid_syntax (struct GMTAPI_CTRL *API, char option, char *message);
 EXTERN_MSC void gmt_cont_syntax (struct GMT_CTRL *GMT, unsigned int indent, unsigned int kind);
+EXTERN_MSC void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message);
 EXTERN_MSC void gmt_innercont_syntax (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_refpoint_syntax (struct GMT_CTRL *GMT, char *option, char *string, unsigned int kind, unsigned int part);
 EXTERN_MSC void gmt_mapscale_syntax (struct GMT_CTRL *GMT, char option, char *string);

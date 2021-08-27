@@ -168,15 +168,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [%s] [-D<resolution>[+f]] [%s] [-M] [-N] [-S] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] %s A B op C op D op ... = <outgrid>\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
-		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		"[%s] [%s] [%s] [%s] [%s] %s A B op C op D op ... = %s\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
+		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT, GMT_OUTGRID);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n= <outgrid>");
-	GMT_Usage (API, -2, "Writes the current top of the stack to the named file and pops it off the stack. "
-		"Can be used more than once.");
+	gmt_outgrid_syntax (API, '=', "Writes the current top of the stack to the named file and pops it off the stack. "
+		"Can be used more than once");
 	GMT_Usage (API, 1, "\n<operands>");
 	GMT_Usage (API, -2, "A, B, etc. are grid files, constants, or symbols (see below). "
 		"The stack can hold up to %d entries (given enough memory).", GRDMATH_STACK_SIZE);
