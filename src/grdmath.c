@@ -174,7 +174,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n= %s", GMT_OUTGRID);
 	gmt_outgrid_syntax (API, '=', "Writes the current top of the stack to the named file and pops it off the stack. "
 		"Can be used more than once");
 	GMT_Usage (API, 1, "\n<operands>");

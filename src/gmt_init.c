@@ -7733,9 +7733,11 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 	\param message ...
 */
 void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
-	if (option == 0)
+	if (option == 0)	/* grid is an input file argument, not an option */
 		GMT_Usage (API, 1, "\n%s", GMT_OUTGRID);
-	else if (option != '=')
+	else if (option == '=')	/* grdmath usees = instead of -option*/
+		GMT_Usage (API, 1, "\n= %s", GMT_OUTGRID);
+	else	/* All regular options */
 		GMT_Usage (API, 1, "\n-%c%s", option, GMT_OUTGRID);
 	if (message)
 		GMT_Usage (API, -2, "%s. Optionally append =<ID> for writing a specific file format and add any modifiers:", message);
