@@ -10,7 +10,7 @@ echo ".5 .25
 .25 .5
 .75 .5" > data.txt
 
-gmt begin clip_draw ps
+gmt begin clip_draw
 	# -N
 	gmt subplot begin 2x2 -Fs8c -Scb -Srl -R0/1/0/1 -A
 	gmt subplot set -A"-N"

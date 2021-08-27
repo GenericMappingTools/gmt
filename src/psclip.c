@@ -192,9 +192,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPT
 	if (Ctrl->T.active) Ctrl->N.active = true;	/* -T implies -N */
 	if (Ctrl->T.active && n_files) GMT_Report (API, GMT_MSG_WARNING, "Option -T ignores all input files\n");
 
-	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (API, GMT_MSG_WARNING, "Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
-		GMT->current.map.frame.draw = false;
+	if (Ctrl->N.active) {
+		unsigned int fig = gmt_get_current_figure (API);	/* Get current figure number */
+		unsigned int subplot_status = gmt_subplot_status (API, fig);
+		if (GMT->current.map.frame.init && !(subplot_status & GMT_SUBPLOT_ACTIVE)) {
+			GMT_Report (API, GMT_MSG_WARNING, "Option -B cannot be used in combination with Options -N or -T. -B is ignored.\n");
+			GMT->current.map.frame.draw = false;
+		}
 	}
 
 	n_errors += gmt_check_binary_io (GMT, 2);
@@ -220,7 +224,7 @@ GMT_LOCAL void psclip_terminate_clipping (struct GMT_CTRL *C, struct PSL_CTRL *P
 
 EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 	int error = 0;
-	unsigned int tbl, first, eo_flag = 0, was;
+	unsigned int tbl, first, eo_flag = 0;
 	bool duplicate;
 	uint64_t row, seg, n_new;
 	double x0, y0;
@@ -246,12 +250,9 @@ EXTERN_MSC int GMT_psclip (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments; return if errors are encountered */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
-	was = GMT->current.map.frame.init;
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
-	GMT->current.map.frame.init = 0;	/* May be set if called within a subplot so we want to bypass the usual check. */
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
-	if (was) GMT->current.map.frame.init = was;
 
 	/*---------------------------- This is the psclip main code ----------------------------*/
 
