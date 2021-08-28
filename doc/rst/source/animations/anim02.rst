@@ -8,7 +8,7 @@ Here, we want to use :doc:`grdimage </grdimage>` to generate a shaded-relief
 image sequence in which we sweep the illumination azimuth around the
 entire horizon. The resulting animation illustrates how changing the
 illumination azimuth can bring out subtle features (or artifacts) in the
-gridded data. The red arrow points in the direction of the illumination.
+gridded data. The red arrow points in the direction of the light source.
 
 .. literalinclude:: /_verbatim/anim02.txt
    :language: bash
