@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
 #               GMT ANIMATION 02
 #
-# Purpose:      Make simple animated GIF of an illuminated DEM grid
+# Purpose:      Make simple MP4 of an illuminated DEM grid
 # GMT modules   math, makecpt, grdcut, grdimage, inset, plot, text, movie
 # Unix progs:   cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps"
-else	# Make animated GIF
-	opt="-Fgif+l"
+else	# Make MP4
+	opt="-Fmp4"
 fi
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh
@@ -32,4 +32,4 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Chd -Nanim02 -Tangles.txt -V1 -Sbpre.sh -D36 -Zs $opt
+gmt movie main.sh -Chd -Nanim02 -Tangles.txt -V1 -Sbpre.sh -Zs $opt
