@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 #               GMT ANIMATION 02
 #
