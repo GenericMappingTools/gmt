@@ -16,7 +16,7 @@ cat << 'EOF' > pre.sh
 gmt begin
 	gmt math -T0/360/1 T -o0 = angles.txt
 	gmt makecpt -Coleron -T500/4500 -H > main.cpt
-    gmt grdcut @earth_relief_15s -R-114/-103/35/40 -Gtopo.nc
+	gmt grdcut @earth_relief_15s -R-114/-103/35/40 -Gtopo.nc
 gmt end
 EOF
 # 2. Set up the main frame script
@@ -26,7 +26,7 @@ gmt begin
 	gmt grdimage topo.nc -I+a${MOVIE_COL0}+nt2 -JM${width} -Cmain.cpt \
 		-BWSne -B1 -X1c -Y0.53c --FONT_ANNOT_PRIMARY=9p
 	gmt inset begin -DjBR+w2.1c/2.4c+o0.2c -F+gwhite+s+p
-        echo 0.5 0.5 | gmt plot -R0/1/0/1 -JX? -Sc2c -Gwhite -Wthinner -Y-0.15
+	echo 0.5 0.5 | gmt plot -R0/1/0/1 -JX? -Sc2c -Gwhite -Wthinner -Y-0.15
 		echo 0.5 0.5 ${MOVIE_COL0} | gmt plot -Sk@azimuth/1.0c -W1.75p -Gred
 		echo Light Source | gmt text -F+cTC+f9 -Y0.1
 gmt end
