@@ -2620,7 +2620,7 @@ GMT_LOCAL void gmtplot_map_label (struct GMT_CTRL *GMT, double x, double y, char
 			if (axis == GMT_Y) PSL_command (PSL, "0 %d M currentpoint T\n", (int)lrint (sgn[below]*GMT->current.setting.map_label_offset[GMT_Y] * PSL->internal.y2iy));
 		}
 		// PSL_command (PSL, "V currentpoint -2000 0 G 4000 0 D S U\n");	/* Debug line for base of label; keep for future debugging */
-		PSL_plotepsimage (PSL, x, y, w, h, PSL_BC, eps, &header);	/* Place the EPS plot */
+		PSL_plotlatexeps (PSL, x, y, w, h, PSL_BC, eps, GMT->current.setting.font_label.fill.rgb, &header);	/* Place the EPS plot */
 		PSL_command (PSL, "U\n");	/* Close up the block */
 		if (set_L_off)	/* Must reset the value of PSL_LH to the EPS image height so the title baseline can be adjusted */
 			PSL_command (PSL, "/PSL_LH %d def\n", (int)lrint (h * PSL->internal.y2iy));
@@ -5342,7 +5342,7 @@ void gmt_map_text (struct GMT_CTRL *GMT, double x, double y, struct GMT_FONT *fo
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmt_map_text: Conversion of LaTeX gave dimensions %g x %g\n", w, h);
 		PSL_command (PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 		PSL_setorigin (PSL, x, y, angle, PSL_FWD);		/* Move to desired point and possibly rotate to angle */
-		PSL_plotepsimage (PSL, 0.0, 0.0, w, h, just, eps, &header);	/* Place the EPS plot */
+		PSL_plotlatexeps (PSL, 0.0, 0.0, w, h, just, eps, font->fill.rgb, &header);	/* Place the EPS plot */
 		PSL_command (PSL, "U\n");	/* Close up the block */
 		PSL_free (eps);
 	}
@@ -6169,7 +6169,7 @@ GMT_LOCAL double gmtplot_place_latex_eps (struct GMT_CTRL *GMT, double x, double
 	PSL_command (GMT->PSL, "V\n");	/* Keep the relative changes inside a save/restore block */
 	if (pos_set)
 		PSL_command (GMT->PSL, "currentpoint T\n");	/* Translate to currentpoint since already set by calling function */
-	PSL_plotepsimage (GMT->PSL, x, y, w, h, PSL_BC, eps, &header);
+	PSL_plotlatexeps (GMT->PSL, x, y, w, h, PSL_BC, eps, F->fill.rgb, &header);
 	PSL_command (GMT->PSL, "U\n");
 	PSL_free (eps);
 	return h;
