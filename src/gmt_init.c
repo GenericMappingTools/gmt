@@ -2862,7 +2862,7 @@ GMT_LOCAL void gmtinit_freeshorthand (struct GMT_CTRL *GMT) {/* Free memory used
 	gmt_M_free (GMT, GMT->session.shorthand);
 }
 
-GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig) {
+unsigned int gmt_subplot_status (struct GMTAPI_CTRL *API, int fig) {
 	/* Return GMT_SUBPLOT_ACTIVE if we are in a subplot situation, and add GMT_PANEL_NOTSET if no panel set yet */
 	char file[PATH_MAX] = {""};
 	bool answer;
@@ -14890,7 +14890,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		if (GMT->current.ps.active) {	/* Only explore -c settings, etc for plot modules */
 			/* Check if a subplot operation is in effect and if there is a current panel already */
-			subplot_status = gmtinit_subplot_status (API, fig);
+			subplot_status = gmt_subplot_status (API, fig);
 			if ((inset_status = gmtinit_get_inset_dimensions (API, fig, &GMT->current.plot.inset))) {
 				return (NULL);
 			}
@@ -18350,7 +18350,7 @@ int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
 void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset) {
 	/* Determine figure number, subplot panel, inset for current graphics item */
 	*fig = gmt_get_current_figure (API);	/* Return figure number 1-? or 0 if a session plot */
-	*subplot = gmtinit_subplot_status (API, *fig);	/* Get information about subplot, if active */
+	*subplot = gmt_subplot_status (API, *fig);	/* Get information about subplot, if active */
 	panel[0] = '\0';
 	if ((*subplot) & GMT_SUBPLOT_ACTIVE) {	/* subplot is active */
 		if (((*subplot) & GMT_PANEL_NOTSET) == 0) {

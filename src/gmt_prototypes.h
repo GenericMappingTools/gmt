@@ -49,6 +49,7 @@ EXTERN_MSC int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *i
 
 /* gmt_init.c: */
 
+EXTERN_MSC unsigned int gmt_subplot_status (struct GMTAPI_CTRL *API, int fig);
 EXTERN_MSC void gmt_round_wesn (double wesn[], bool geo);
 EXTERN_MSC int gmt_get_dim_unit (struct GMT_CTRL *GMT, char c);
 EXTERN_MSC void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update);

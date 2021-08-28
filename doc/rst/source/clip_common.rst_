@@ -96,7 +96,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *pen*
-    Draw outline of clip path using given pen attributes [Default is no outline].
+    Draw outline of clip path using given pen attributes before clipping is initiated [Default is no outline].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
 .. include:: explain_-XY.rst_
