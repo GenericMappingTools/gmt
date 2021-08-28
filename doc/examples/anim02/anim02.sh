@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 #               GMT ANIMATION 02
 #
-# Purpose:      Make simple MP4 of an illuminated DEM grid
+# Purpose:      Make simple MP4 of an illuminated DEM grid of the US Rockies
 # GMT modules   math, makecpt, grdcut, grdimage, inset, plot, text, movie
 # Unix progs:   cat
 # Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
+#
+# The finished movie is available in our YouTube channel as well:
+# https://youtu.be/WQ6JrtEu_Fk
+# The movie took 1 minute 45 seconds to render on a 24-core MacPro 2013.
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
 	opt="-Mps"
