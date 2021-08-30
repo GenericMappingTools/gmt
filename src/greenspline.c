@@ -358,7 +358,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	 */
 
 	int n_items;
-	unsigned int n_errors = 0, k, pos = 0, dimension = 0;
+	unsigned int n_errors = 0, dimension, k, pos = 0;
 	char txt[6][GMT_LEN64], p[GMT_BUFSIZ] = {""}, *c = NULL, *i = NULL, *r = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
