@@ -153,7 +153,7 @@ Optional Arguments
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cn** to retain only the *value* largest
     eigenvalues; append % if *value* is the percentage of eigenvalues
-    to use instead.  The two last modifiers (**+c** and **i**) are only
+    to use instead.  The two other modifiers (**+c** and **i**) are only
     available for 2-D gridding and can be used to write intermediate grids,
     one per eigenvalue, and thus require a file name with a suitable extension
     to be given via **-G** (we automatically insert "_cum_###" or "_inc_###"
