@@ -25,7 +25,7 @@ includes the animations) does not take excessive time.
 
 .. jinja::
 
-    {% for i in [1, 3, 4, 5, 6] %}
+    {% for i in [1, 3, 4, 5] %}
     {% set i = '%02d' % i %}
     -  .. figure:: /_images/anim{{i}}.*
           :target: ./animations/anim{{i}}.html
