@@ -2455,7 +2455,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_grd_init (GMT, Out->header, options, true);
 
 			for (k = 0; k < nm; k++) {
-				fprintf (stderr, "Eigen # %d\n", (int)k+1);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate %s spline for eigenvalue # %d\n", mkind[Ctrl->C.movie], (int)k+1);
 				snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s). %s contribution for eigenvalue # %d", method[Ctrl->S.mode], Ctrl->S.arg, mkind[Ctrl->C.movie], (int)k+1);
 				if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
 					Return (API->error);				/* Update solution for k eigenvalues only */

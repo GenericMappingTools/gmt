@@ -65,7 +65,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDPASTE_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <grid1> <grid2> -G<outgrid> [%s] [%s] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <grid1> <grid2> -G%s [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -76,8 +76,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Use grdpaste and/or grdsample to adjust files as necessary. "
 		"If grids are geographic and adds to full 360-degree range then <grid1> "
 		"determines west.  Use grdedit -S to rotate grid to another -Rw/e/s/n.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Specify file name for output grid file.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V,f,.");
 

@@ -306,7 +306,7 @@ enum GMT_time_period {
 /* Valid modifiers for various input files */
 
 /* Valid modifiers for -Tmin/max/inc array creator */
-#define GMT_ARRAY_MODIFIERS "abeilnt"
+#define GMT_ARRAY_MODIFIERS "abeilntu"
 
 /* Modifiers for grid files:
  * +d<divisor> divides all grid values by this divisor

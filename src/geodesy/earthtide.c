@@ -1273,8 +1273,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 2, "(Note: One of -G, -L, or -S is required.)");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Specify file name for output grid file (s). "
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output grid file (s). "
 		"If more than one component is set via -C then <outgrid> must contain %%s to format component code.");
 	GMT_Usage (API, 1, "\n-L<lon>/<lat>");
 	GMT_Usage (API, -2, "Geographical coordinate where to compute the time-series.");

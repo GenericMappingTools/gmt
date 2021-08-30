@@ -17057,7 +17057,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	-T<argument>
 	 *
 	 * where <argument> is one of these:
-	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l|t]
+	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l|t|u]
 	 *	<file>
 	 *
 	 * Parsing:
@@ -17098,6 +17098,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *     10) Since -T is a command-line option we enforce ISO calendar string format
 	 *	   only (yyyy-mm-ddT, yyyy-jjjT, yyyy-WwwT).
 	 *
+	 * 11) If +u is given then we ensure the input array has unique and sorted entries
+	 *     and that duplicated are eliminated.
 	 * Note:   The effects in 4) and 5) are only allowed if the corresponding
 	 *	   flags are passed to the parser.
 	 */
@@ -17114,8 +17116,54 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	gmt_M_str_free (T->file);		/* In case earlier parsing */
 	gmt_M_memset (T, 1, struct GMT_ARRAY);	/* Wipe clean the structure */
 
-	if (flags & GMT_ARRAY_UNIQUE)
+	if (flags & GMT_ARRAY_UNIQUE)	/* This can also be set by the user via +u */
 		T->unique = true;	/* Resulting array must contain unique and sorted entries */
+
+	if (gmt_validate_modifiers (GMT, argument, option, GMT_ARRAY_MODIFIERS, GMT_MSG_ERROR)) return (GMT_PARSE_ERROR);
+
+	if ((m = gmt_first_modifier (GMT, argument, GMT_ARRAY_MODIFIERS))) {	/* Process optional modifiers +a, +b, +e, +i, +l, +n, +t */
+		unsigned int pos = 0;	/* Reset to start of new word */
+		unsigned int n_errors = 0;
+		char p[GMT_LEN32] = {""};
+		while (gmt_getmodopt (GMT, 'T', m, GMT_ARRAY_MODIFIERS, &pos, p, &n_errors) && n_errors == 0) {
+			switch (p[0]) {
+				case 'a':	/* Add spatial distance column to output */
+					T->add = true;
+					break;
+				case 'b':	/* Do a log2 grid */
+					T->logarithmic2 = true;
+					break;
+				case 'e':	/* Increment must be honored exactly */
+					T->exact_inc = true;
+					break;
+				case 'i':	/* Gave reciprocal increment; calculate inc later */
+					T->reciprocal = true;
+					break;
+				case 'n':	/* Gave number of points instead; calculate inc later */
+					T->count = true;
+					break;
+				case 'l':	/* Do a log10 grid */
+					T->logarithmic = true;
+					break;
+				case 't':	/* Do a time vector */
+					T->temporal = true;
+					break;
+				case 'u':	/* Ensure no duplicates; array must contain unique and sorted entries */
+					T->unique = true;
+					break;
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%cmin/max/inc+ modifier +%s not recognized.\n", option, p);
+					break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		m[0] = '\0';	/* Chop off the modifiers */
+	}
+	else if (gmt_M_compat_check (GMT, 5) && argument[strlen(argument)-1] == '+') {	/* Old-style + instead of +n */
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[+a|n] instead.\n", option, option);
+		m = strrchr (argument, '+');	/* Position of last + */
+		if (m) m[0] = '\0';	/* Chop off the plus */
+		T->count = true;
+	}
 
 	/* 1a. Check if argument is a remote file */
 	if (gmt_file_is_cache (GMT->parent, argument) || gmt_M_file_is_url (argument)) {	/* Remote file, must check */
@@ -17154,48 +17202,6 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	if (gmt_validate_modifiers (GMT, argument, option, GMT_ARRAY_MODIFIERS, GMT_MSG_ERROR)) return (GMT_PARSE_ERROR);
-
-	if ((m = gmt_first_modifier (GMT, argument, GMT_ARRAY_MODIFIERS))) {	/* Process optional modifiers +a, +b, +e, +i, +l, +n, +t */
-		unsigned int pos = 0;	/* Reset to start of new word */
-		unsigned int n_errors = 0;
-		char p[GMT_LEN32] = {""};
-		while (gmt_getmodopt (GMT, 'T', m, GMT_ARRAY_MODIFIERS, &pos, p, &n_errors) && n_errors == 0) {
-			switch (p[0]) {
-				case 'a':	/* Add spatial distance column to output */
-					T->add = true;
-					break;
-				case 'b':	/* Do a log2 grid */
-					T->logarithmic2 = true;
-					break;
-				case 'e':	/* Increment must be honored exactly */
-					T->exact_inc = true;
-					break;
-				case 'i':	/* Gave reciprocal increment; calculate inc later */
-					T->reciprocal = true;
-					break;
-				case 'n':	/* Gave number of points instead; calculate inc later */
-					T->count = true;
-					break;
-				case 'l':	/* Do a log10 grid */
-					T->logarithmic = true;
-					break;
-				case 't':	/* Do a time vector */
-					T->temporal = true;
-					break;
-				default:
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%cmin/max/inc+ modifier +%s not recognized.\n", option, p);
-					break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
-			}
-		}
-		m[0] = '\0';	/* Chop off the modifiers */
-	}
-	else if (gmt_M_compat_check (GMT, 5) && argument[strlen(argument)-1] == '+') {	/* Old-style + instead of +n */
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[+a|n] instead.\n", option, option);
-		m = strrchr (argument, '+');	/* Position of last + */
-		if (m) m[0] = '\0';	/* Chop off the plus */
-		T->count = true;
-	}
 	if (T->count && T->reciprocal) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Cannot give both +i and +n\n", option);
 		return GMT_PARSE_ERROR;
