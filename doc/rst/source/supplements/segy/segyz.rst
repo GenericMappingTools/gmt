@@ -199,7 +199,18 @@ variable area shading in black, use
     gmt segyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 \
             -C3 -N -So -W -Fblack -pdf segy
 
-.. include:: segyz_notes.rst_
+.. module_note_begins
+
+Bugs
+----
+
+Variable area involves filling four-sided figures of distressing
+generality. I *know* that some of the more complex degenerate cases are
+not dealt with correctly or at all; the incidence of such cases
+increases as viewing angles become more oblique, and particularly as the
+viewing elevation increases. Wiggle-trace plotting is not affected.
+
+.. module_note_ends
 
 See Also
 --------
