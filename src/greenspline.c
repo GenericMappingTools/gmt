@@ -707,6 +707,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && dimension != 2, "The -C +c+i modifiers only apply to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && strchr (Ctrl->G.file, '%') == NULL && strchr (Ctrl->G.file, '.') == NULL, "Option -G: When -C +i|c is used your grid file must have an extension\n");
 #ifdef DEBUG
 	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -Z options disagree on the dimension\n");
 #else
@@ -1453,7 +1454,8 @@ GMT_LOCAL void greenspline_dump_system (double *A, double *b, uint64_t nm, char 
 }
 
 GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned int width, unsigned int mode, char *file) {
-	/* Turn name, k, mode into a filename, e.g. for "solution.grd", 33, inc will give solution_inc_033.grd */
+	/* Turn name, eigenvalue number k, precision width and mode into a filename, e.g.,
+	 * ("solution.grd", 33, 3, GREENSPLINE_INC_MOVIE, file) will give solution_inc_033.grd */
 	unsigned int s = strlen (name) - 1;
 	static char *type[3] = {"", "inc", "cum"};
 	while (name[s] != '.') s--;	/* Wind backwards to start of extension */
