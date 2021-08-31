@@ -59,7 +59,7 @@ if (SPHINX_FOUND)
 	if (UNIX AND DO_ANIMATIONS)
 		configure_file (animate.in animate @ONLY)
 
-		foreach (_num 01 02 03 04 05)
+		foreach (_num 01 03 04 05)
 			add_custom_command (
 				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif
 				COMMAND ${BASH} animate anim${_num}/anim${_num}.sh
@@ -87,7 +87,7 @@ if (SPHINX_FOUND)
 		add_custom_target (animation DEPENDS ${_animations})
 
 		# clean target
-		foreach (_num 01 02 03 04 05)
+		foreach (_num 01 03 04 05)
 			add_custom_target (_anim_clean${_num}
 				COMMAND ${CMAKE_COMMAND} -E remove_directory
 				${CMAKE_CURRENT_BINARY_DIR}/anim${_num}
@@ -101,7 +101,7 @@ endif (SPHINX_FOUND)
 file (GLOB _examples RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/ex*/*.sh")
 # Remove a few known failed examples from tests
 list (REMOVE_ITEM _examples "doc/examples/ex51/ex51.sh")
-file (GLOB _anims RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim0[1-5]/*.sh")
+file (GLOB _anims RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim0[1345]/*.sh")
 if (DO_EXAMPLES AND BASH)
 	foreach (_job ${_examples} ${_anims})
 		add_test (NAME ${_job}

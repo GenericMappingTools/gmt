@@ -46,7 +46,9 @@ Synopsis
 [ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
 
-.. include:: histogram_common.rst_
+.. include:: histogram.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
