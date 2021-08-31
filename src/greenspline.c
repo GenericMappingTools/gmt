@@ -60,6 +60,7 @@ EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint6
 /* Control structure for greenspline */
 
 struct GREENSPLINE_CTRL {
+	unsigned int dimension;
 	struct GREENSPLINE_A {	/* -A<gradientfile> */
 		bool active;
 		unsigned int mode;	/* 0 = azimuths, 1 = directions, 2 = dx,dy components, 3 = dx, dy, dz components */
@@ -328,6 +329,27 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	return (GMT_MODULE_USAGE);
 }
 
+GMT_LOCAL unsigned int greenspline_pre_parser (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	/* Help GMT_Parse know if -R is geographic based on -Z mode and return dimension */
+	unsigned int dim = 0;
+	struct GMT_OPTION *opt = NULL;
+	for (opt = options; opt; opt = opt->next) {	/* Look for -Z only */
+		if (opt->option != 'Z' || opt->arg[0] == '\0') continue;
+		switch (opt->arg[0]) {
+			case '0':	dim = 1;	break;
+			case '1':	dim = 2;	break;
+			case '2':	case '3':	case '4':
+				dim = 2;
+				gmt_set_geographic (GMT, GMT_IN);
+				gmt_set_geographic (GMT, GMT_OUT);
+				break;
+			case '5':	dim = 3;	break;
+			default:	dim = 0;	break;
+		}
+	}
+	return (dim);
+}
+
 static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GMT_OPTION *options) {
 	/* This parses the options provided to greenspline and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
@@ -337,7 +359,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 
 	int n_items;
 	unsigned int n_errors = 0, dimension, k, pos = 0;
-	char txt[6][GMT_LEN64], p[GMT_BUFSIZ] = {""}, *c = NULL;
+	char txt[6][GMT_LEN64], p[GMT_BUFSIZ] = {""}, *c = NULL, *i = NULL, *r = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -351,7 +373,23 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 			case 'R':	/* Normally processed internally but must be handled separately since it can take 1,2,3 dimensions */
 				GMT->common.R.active[RSET] = true;
 				Ctrl->R3.dimension = 1;	/* At least */
-
+				if (GMT->current.setting.run_mode == GMT_MODERN && Ctrl->dimension == 2) {	/* Watch for multi-item -R string created by gmt_init_module that would not have been parsed */
+					/* This is needed because we are not using gmt_parse_R_option in greenspline */
+					if ((r = strstr (opt->arg, "+G"))) {	/* Got grid registration implicitly via history */
+						switch (r[2]) {
+							case 'G':	GMT->common.R.registration = GMT_GRID_NODE_REG;		break;
+							default:	GMT->common.R.registration = GMT_GRID_PIXEL_REG;	break;
+						}
+						r[0] = '\0';	/* Chop off this modifier */
+						GMT->common.R.active[GSET] = true;
+					}
+					if ((i = strstr (opt->arg, "+I"))) {	/* Got grid increments implicitly via history */
+						Ctrl->I.active = true;
+						k = gmt_getincn (GMT, &i[2], Ctrl->I.inc, 2);
+						i[0] = '\0';	/* Chop off this modifier */
+						GMT->common.R.active[ISET] = true;
+					}
+				}
 				if (opt->arg[0] == 'g' && opt->arg[1] == '\0') {	/* Got -Rg */
 					Ctrl->R3.range[0] = 0.0;	Ctrl->R3.range[1] = 360.0;	Ctrl->R3.range[2] = -90.0;	Ctrl->R3.range[3] = 90.0;
 					Ctrl->R3.dimension = 2;
@@ -417,6 +455,8 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Z), gmt_scanf_arg (GMT, txt[5], gmt_M_type (GMT, GMT_IN, GMT_Z), false, &Ctrl->R3.range[5]), txt[5]);
 				}
 				if (Ctrl->R3.dimension > 1) gmt_M_memcpy (GMT->common.R.wesn, Ctrl->R3.range, 4, double);
+				if (r) r[0] = '+';	/* Restore modifier */
+				if (i) i[0] = '+';	/* Restore modifier */
 				break;
 
 			/* Processes program-specific parameters */
@@ -1512,8 +1552,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
+	dimension = greenspline_pre_parser (GMT, options);	/* Check -Z and possibly change default to geographic data mode before -R is parsed */
 	if (GMT_Parse_Common (API, THIS_MODULE_OPTIONS, options)) Return (API->error);
 	Ctrl = New_Ctrl (GMT);	/* Allocate and initialize a new control structure */
+	Ctrl->dimension = dimension;
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the greenspline main code ----------------------------*/

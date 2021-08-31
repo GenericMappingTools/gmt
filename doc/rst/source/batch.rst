@@ -161,8 +161,8 @@ and those that change with the job number.  The constants are accessible by all 
 total number of jobs (given or inferred from **-T**). Also, if **-I** was used then any static parameters
 listed therein will be available to all the scripts as well. In addition, the *mainscript* also has access
 to parameters that vary with the job counter: **BATCH_JOB**\ : The current job number (an integer, e.g., 136),
-**BATCH_TAG**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
-The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_TAG**), Furthermore, if a *timefile*
+**BATCH_ITEM**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
+The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_ITEM**), Furthermore, if a *timefile*
 was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are also set, yielding one variable per
 column in *timefile*.  If *timefile* has trailing text then that text can be accessed via the variable
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to **-T** then the trailing
