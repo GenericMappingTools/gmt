@@ -5544,7 +5544,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_resample_data_cartesian (struct GMT_CT
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
+GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, double deviation, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Din is a data set with at least two columns (lon/lat);
 	 * it can contain any number of tables and segments.
 	 * cross_length is the desired length of cross-profiles, in meters.
@@ -5638,6 +5638,11 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 				gmt_normalize3v (GMT, T);			/* Make sure T has unit length */
 				gmt_cross3v (GMT, T, P, E);			/* Get pole E to plane trough P normal to L,R (hence going trough P) */
 				gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
+				if (!gmt_M_is_zero (deviation)) {	/* Must now rotate E about P by the deviation first */
+					gmtlib_load_rot_matrix (D2R * deviation, Rot0, P);
+					gmt_matrix_vect_mult (GMT, 3U, Rot, E, X);				/* Rotate E about P by deviation */
+					gmt_M_memcpy (E, X, 3u, double);	/* Copy the result to E */
+				}
 				gmtlib_init_rot_matrix (Rot0, E);			/* Get partial rotation matrix since no actual angle is applied yet */
 				az_cross = fmod (Tin->segment[seg]->data[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
 				if (mode & GMT_ALTERNATE)
@@ -5706,7 +5711,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
+GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, double deviation, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Din is a data set with at least two columns (x,y);
 	 * it can contain any number of tables and segments.
 	 * cross_length is the desired length of cross-profiles, in Cartesian units.
@@ -5779,7 +5784,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 				else if (mode & GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np_cross, n_tot_cols, NULL, NULL);
-				sincosd (90.0 - az_cross, &sa, &ca);	/* Trig on the direction */
+				sincosd (90.0 - az_cross - deviation, &sa, &ca);	/* Trig on the direction */
 				for (k = k_start, ii = 0; k <= k_stop; k++, ii++) {	/* For each point along normal to FZ */
 					dist_across_seg = sign * k * across_ds;		/* The current distance along this profile */
 					S->data[GMT_X][ii] = x + dist_across_seg * ca;
@@ -15885,13 +15890,13 @@ struct GMT_DATASET * gmt_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 }
 
 /*! . */
-struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
+struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, double deviation, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Call either the spherical or Cartesian version */
 	struct GMT_DATASET *D = NULL;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, mode, unit);
+		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, deviation, n_cols, mode, unit);
 	else
-		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, mode, unit);
+		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, deviation, n_cols, mode, unit);
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
