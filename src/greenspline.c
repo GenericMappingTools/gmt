@@ -227,7 +227,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[n]<val>[%%][+c][+f<file>][+i]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-A<gradientfile>+f<format>] [-C[[n]<val>[%%]][+c][+f<file>][+i]] "
 		"[-D<information>] [-E[<misfitfile>]] [-I<dx>[/<dy>[/<dz>]]] [-L] [-N<nodefile>] [-Q<az>] "
 		"[-R<xmin>/<xmax[/<ymin>/<ymax>[/<zmin>/<zmax>]]] [-Sc|l|t|r|p|q[<pars>]] [-T<maskgrid>] "
 		"[%s] [-W[w]] [-Z<mode>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s [%s]%s[%s] [%s]\n",
@@ -257,11 +257,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "4: X, Vcomponents.");
 	GMT_Usage (API, 3, "5: X, Vunit-vector, Vmagnitude.");
 	GMT_Usage (API, -2, "Here, X = (x, y[, z]) is the position vector, V = (Vx, Vy[, Vz]) is the gradient vector.");
-	GMT_Usage (API, 1, "\n-C[n]<val>[%%][+c][+f<file>][+i]");
+	GMT_Usage (API, 1, "\n-C[[n]<val>[%%]][+c][+f<file>][+i]");
 	GMT_Usage (API, -2, "Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0]. "
 		"A negative cutoff will stop execution after reporting the eigenvalues. "
 		"Use -Cn to select only the largest <val> eigenvalues [all]. "
-		"Use <val>%% to select a percentage of the eigenvalues instead "
+		"Use <val>%% to select a percentage of the eigenvalues instead [100] "
 		"[Default uses Gauss-Jordan elimination to solve the linear system].");
 	GMT_Usage (API, 3, "+c Valid for 2-D gridding only and will create a series of intermediate "
 		"grids for each eigenvalue holding the cumulative result. Requires -G with a valid filename "
@@ -2227,7 +2227,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			/* Sort singular values into ascending order */
 			gmt_sort_array (GMT, eig, nm, GMT_DOUBLE);
 			for (i = 0, j = nm-1; i < nm; i++, j--) {
-				E->table[0]->segment[0]->data[GMT_X][i] = i + 1.0;	/* Let 1 be x-value of the first eigenvalue */
+				E->table[0]->segment[0]->data[GMT_X][i] = i;	/* Let 0 be x-value of the first eigenvalue */
 				E->table[0]->segment[0]->data[GMT_Y][i] = eig[j];
 			}
 			E->table[0]->segment[0]->n_rows = nm;
@@ -2463,7 +2463,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 		} /* Else we are writing a grid or cube */
 		if (Ctrl->C.movie) {	/* 2-D only: Write out grid after adding contribution for each eigenvalue separately */
-			unsigned int width = urint (floor (log10 ((double)nm))) + 1;	/* Width of maximum integer needed */
+			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
 			gmt_grdfloat *current = NULL, *previous = NULL;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			char file[PATH_MAX] = {""};
@@ -2474,30 +2474,51 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 			gmt_grd_init (GMT, Out->header, options, true);
 
-			for (k = 0; k < nm; k++) {
-				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)k+1);
+			for (k = 0; k < n_use; k++) {
+				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)k);
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)k, 1);
-				for (row = 0; row < Grid->header->n_rows; row++) {
-					V[GMT_Y] = yp[row];
-					for (col = 0; col < Grid->header->n_columns; col++) {
-						ij = gmt_M_ijp (Grid->header, row, col);
-						if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
-						V[GMT_X] = xp[col];
-						/* Here, V holds the current output coordinates */
-						for (p = 0, wp = 0.0; p < nm; p++) {
-							r = greenspline_get_radius (GMT, V, X[p], 2U);
-							if (Ctrl->Q.active) {
+				if (Ctrl->Q.active) {	/* Derivatives of solution */
+#ifdef _OPENMP
+#pragma omp parallel for private(row,V,col,ij,p,wp,r,C,part) shared(Grid,yp,xp,n_use,GMT,Ctrl,X,G,par,Lz,alpha,Out,normalize,norm)
+#endif
+					for (row = 0; row < Grid->header->n_rows; row++) {
+						V[GMT_Y] = yp[row];
+						for (col = 0; col < Grid->header->n_columns; col++) {
+							ij = gmt_M_ijp (Grid->header, row, col);
+							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
+							V[GMT_X] = xp[col];
+							/* Here, V holds the current output coordinates */
+							for (p = 0, wp = 0.0; p < n_use; p++) {
+								r = greenspline_get_radius (GMT, V, X[p], 2U);
 								C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], 2U, false);
 								part = dGdr (GMT, r, par, Lz) * C;
+								wp += alpha[p] * part;
 							}
-							else
-								part = G (GMT, r, par, Lz);
-							wp += alpha[p] * part;
+							V[GMT_Z] = greenspline_undo_normalization (V, wp, normalize, norm, 2U);
+							Out->data[ij] = (gmt_grdfloat)V[GMT_Z];
 						}
-						V[GMT_Z] = greenspline_undo_normalization (V, wp, normalize, norm, 2U);
-						Out->data[ij] = (gmt_grdfloat)V[GMT_Z];
 					}
+				}
+				else {
+#ifdef _OPENMP
+#pragma omp parallel for private(row,V,col,ij,p,wp,r,part) shared(Grid,yp,xp,n_use,GMT,X,G,par,Lz,alpha,Out,normalize,norm)
+#endif
+					for (row = 0; row < Grid->header->n_rows; row++) {
+						V[GMT_Y] = yp[row];
+						for (col = 0; col < Grid->header->n_columns; col++) {
+							ij = gmt_M_ijp (Grid->header, row, col);
+							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
+							V[GMT_X] = xp[col];
+							/* Here, V holds the current output coordinates */
+							for (p = 0, wp = 0.0; p < n_use; p++) {
+								r = greenspline_get_radius (GMT, V, X[p], 2U);
+								part = G (GMT, r, par, Lz);
+								wp += alpha[p] * part;
+							}
+							Out->data[ij] = (gmt_grdfloat)greenspline_undo_normalization (V, wp, normalize, norm, 2U);
+						}
+					}	/* End of row-loop [OpenMP] */
 				}
 				if (Ctrl->C.movie) gmt_M_memcpy (current, Out->data, Out->header->size, gmt_grdfloat);	/* Save current solution */
 

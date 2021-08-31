@@ -1099,6 +1099,7 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double cutoff, unsigned int mode) {
 	/* Mode = 0: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
 	 * mode = 1: Use the first cutoff singular values only. If cutoff is < 1 we assume this is the fraction of eigenvalues we want.
+	 * We return the number of eigenvalues used.
 	 */
 	double w_abs, sing_max;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
@@ -1164,7 +1165,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	}
 	if (mode == 0)
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
-		            "gmt_solve_svd: Ratio limit %g ratained %d singular values\n", cutoff, n_use);
+		            "gmt_solve_svd: Ratio limit %g retained %d singular values\n", cutoff, n_use);
 	if (mode == 2)
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 		            "gmt_solve_svd: Selected first %d singular values\n", n_use);

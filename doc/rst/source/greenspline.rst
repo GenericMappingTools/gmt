@@ -15,7 +15,7 @@ Synopsis
 **gmt greenspline** [ *table* ]
 |-G|\ *grdfile*
 [ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
-[ |-C|\ [**n**]\ *value*\ [%][**+c**][**+f**\ *file*][**+i**] ]
+[ |-C|\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**] ]
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
@@ -142,7 +142,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**]\ *value*\ [%][**+c**][**+f**\ *file*][**+i**]
+**-C**\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
@@ -151,8 +151,8 @@ Optional Arguments
     eigenvalues to the specified file for further analysis.
     If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cn** to retain only the *value* largest
-    eigenvalues; append % if *value* is the percentage of eigenvalues
+    output is produced.  Specify **-Cn**\ *value* to retain only the *value* largest
+    eigenvalues; append % if *value* is the *percentage* of eigenvalues
     to use instead.  The two other modifiers (**+c** and **i**) are only
     available for 2-D gridding and can be used to write intermediate grids,
     one per eigenvalue, and thus require a file name with a suitable extension
