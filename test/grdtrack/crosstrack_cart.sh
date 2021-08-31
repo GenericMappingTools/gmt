@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Test non-orthogonal modifier +d in -C for grdtrack, Cartesian version
 # Also try +r for right-side only
-gmt begin crosstrack_cart
+gmt begin crosstrack_cart ps
 	# Fake Cartesian grid
+	gmt set PS_MEDIA letter
 	gmt grdmath -R-10/10/-5/5 -I0.1 X Y MUL = cart.grd
-	gmt subplot begin 3x1 -Fs16c/8c -Sc -Srl -A -T"Cartesian cross-tracks"
+	gmt subplot begin 3x1 -Fs14c/7c -Sc -Srl -A -T"Cartesian cross-tracks"
 		gmt subplot set 0 -A"No deviation"
 		# Sample it along profiles orthogonal to the line y = 0
 		gmt grdtrack -Gcart.grd -C8/0.1/1 -E-7/0/7/0 -Dline.txt > cross.txt
