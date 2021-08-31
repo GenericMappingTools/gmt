@@ -5639,9 +5639,10 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 				gmt_cross3v (GMT, T, P, E);			/* Get pole E to plane trough P normal to L,R (hence going trough P) */
 				gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
 				if (!gmt_M_is_zero (deviation)) {	/* Must now rotate E about P by the deviation first */
-					gmtlib_load_rot_matrix (D2R * deviation, Rot0, P);
-					gmt_matrix_vect_mult (GMT, 3U, Rot, E, X);				/* Rotate E about P by deviation */
+					gmtlib_load_rot_matrix (-D2R * deviation, Rot0, P);	/* Negative so that rotation goes clockwise */
+					gmt_matrix_vect_mult (GMT, 3U, Rot0, E, X);				/* Rotate E about P by deviation */
 					gmt_M_memcpy (E, X, 3u, double);	/* Copy the result to E */
+					gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
 				}
 				gmtlib_init_rot_matrix (Rot0, E);			/* Get partial rotation matrix since no actual angle is applied yet */
 				az_cross = fmod (Tin->segment[seg]->data[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
@@ -5753,9 +5754,9 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
 	k_start = -n_half_cross;
 	k_stop = n_half_cross;
-	if (mode & GMT_LEFT_ONLY)	/* Only want left side of profiles */
+	if (mode & GMT_RIGHT_ONLY)	/* Only want left side of profiles */
 		k_stop = 0;
-	else if (mode & GMT_RIGHT_ONLY)	/* Only want right side of profiles */
+	else if (mode & GMT_LEFT_ONLY)	/* Only want right side of profiles */
 		k_start = 0;
 	np_cross = k_stop - k_start + 1;			/* Total cross-profile length */
 	dim[GMT_TBL] = Din->n_tables;	dim[GMT_COL] = n_tot_cols;	dim[GMT_ROW] = np_cross;

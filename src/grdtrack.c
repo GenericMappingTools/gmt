@@ -199,7 +199,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "3. Optionally, append /<spacing> to set the spacing between cross-profiles, in units of u [Default erects cross-profiles at input locations].");
 	GMT_Usage (API, -2, "Several modifiers controls the creation of the profiles:");
 	GMT_Usage (API, 3, "+a Alternate the direction of cross-profiles [Default orients all the same way].");
-	GMT_Usage (API, 3, "+d Set deviation from orthogonal cross-profiles [no deviation].");
+	GMT_Usage (API, 3, "+d Set deviation (-90/+90 range) from orthogonal cross-profiles [0 (no deviation)].");
 	GMT_Usage (API, 3, "+l Only use the left half of the profiles [entire profile].");
 	GMT_Usage (API, 3, "+r Only use the right half of the profiles [entire profile].");
 	GMT_Usage (API, 3, "+v Adjust direction of cross-profiles for E-W or S-N viewing [Default orients all the same way].");
