@@ -2505,6 +2505,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 		} /* Else we are writing a grid or cube */
 		if (Ctrl->C.movie) {	/* 2-D only: Write out grid after adding contribution for each eigenvalue separately */
+			/* Note: Because the SVD decomposition is not sorting the vectors from largest to smallest eigenvalue the
+			 * gmt_solve_svd sets to zero those we don't want but we must still loop over its full length to ensure we
+			 * include the eigenvalues we want. */
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
 			gmt_grdfloat *current = NULL, *previous = NULL;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
@@ -2516,13 +2519,13 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 			gmt_grd_init (GMT, Out->header, options, true);
 
-			for (k = 0; k < n_use; k++) {
+			for (k = 0; k < n_use; k++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)k);
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)k, 1);
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
-#pragma omp parallel for private(row,V,col,ij,p,wp,r,C,part) shared(Grid,yp,xp,n_use,GMT,Ctrl,X,G,par,Lz,alpha,Out,normalize,norm)
+#pragma omp parallel for private(row,V,col,ij,p,wp,r,C,part) shared(Grid,yp,xp,nm,GMT,Ctrl,X,G,par,Lz,alpha,Out,normalize,norm)
 #endif
 					for (row = 0; row < Grid->header->n_rows; row++) {
 						V[GMT_Y] = yp[row];
@@ -2531,7 +2534,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
-							for (p = 0, wp = 0.0; p < n_use; p++) {
+							for (p = 0, wp = 0.0; p < nm; p++) {
+								if (alpha[p] == 0.0) continue;	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
 								r = greenspline_get_radius (GMT, V, X[p], 2U);
 								C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], 2U, false);
 								part = dGdr (GMT, r, par, Lz) * C;
@@ -2544,7 +2548,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				else {
 #ifdef _OPENMP
-#pragma omp parallel for private(row,V,col,ij,p,wp,r,part) shared(Grid,yp,xp,n_use,GMT,X,G,par,Lz,alpha,Out,normalize,norm)
+#pragma omp parallel for private(row,V,col,ij,p,wp,r,part) shared(Grid,yp,xp,nm,GMT,X,G,par,Lz,alpha,Out,normalize,norm)
 #endif
 					for (row = 0; row < Grid->header->n_rows; row++) {
 						V[GMT_Y] = yp[row];
@@ -2553,7 +2557,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
-							for (p = 0, wp = 0.0; p < n_use; p++) {
+							for (p = 0, wp = 0.0; p < nm; p++) {	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
+								if (alpha[p] == 0.0) continue;	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
 								r = greenspline_get_radius (GMT, V, X[p], 2U);
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;

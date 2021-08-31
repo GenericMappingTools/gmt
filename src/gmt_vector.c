@@ -1128,7 +1128,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		 /* mode = 1: Find the m largest singular values, with m = cutoff (if <1 it is the fraction of values).
 		 * Either case requires sorted singular values so we need to do some work first.
 		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
-		 * so that the singular values are the individual variace contributions. */
+		 * so that the singular values are the individual variance contributions. */
 		struct GMT_SINGULAR_VALUE {
 			double value;
 			unsigned int order;
