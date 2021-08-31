@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Test non-orthogonal modifier +d in -C for grdtrack, geographic version
-g# Also try +l for left-side only
-mt begin crosstrack_geo png
+# Also try +l for left-side only
+gmt begin crosstrack_geo
 	# Fake geographic grid
 	gmt grdmath -R-10/10/-5/5 -I0.1 -fg X Y MUL = geo.grd
 	gmt subplot begin 3x1 -Fs16c/8c -Sc -Srl -A -T"Geographic cross-tracks"
