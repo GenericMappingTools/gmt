@@ -2467,9 +2467,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_grdfloat *current = NULL, *previous = NULL;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			char file[PATH_MAX] = {""};
-			if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE) {
+			if (Ctrl->C.movie) {
 				current  = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
-				previous = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
+				if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE)
+					previous = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			}
 			gmt_grd_init (GMT, Out->header, options, true);
 
@@ -2527,9 +2528,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE) {	/* Free temporary arrays */
+			if (Ctrl->C.movie) {	/* Free temporary arrays */
 				gmt_M_free_aligned (GMT, current);
-				gmt_M_free_aligned (GMT, previous);
+				if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE)
+					gmt_M_free_aligned (GMT, previous);
 			}
 			gmt_M_free (GMT, A);
 			gmt_M_free (GMT, s);
