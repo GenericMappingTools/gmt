@@ -280,8 +280,11 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 							n_errors++;
 						}
 					}
-					else	/* Got ratio cutoff */
+					else {	/* Got ratio cutoff */
 						Ctrl->C.value = atof (&opt->arg[k]);
+						if (Ctrl->C.value >= 0.0 && Ctrl->C.value < 1.0) /* Old style fraction */
+							Ctrl->C.mode = GMT_SVD_EIGEN_PERCENT_CUTOFF;
+					}
 				}
 				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Deprecated syntax */
 				break;
