@@ -120,7 +120,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 			c[0] = '\0';
 		}
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unupported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unsupported image format. Supported formats are:\nBMP,GIF,JPG,PNG & TIF\n");
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Alternatively, append :<driver> for a valid GDAL driver\n");
 			return GMT_NOTSET;
 		}

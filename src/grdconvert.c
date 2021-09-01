@@ -75,18 +75,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid>[=<id>][+s<scale>][+o<offset>][+n<nan>] "
-		"-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]] [-N] [%s] [%s] "
-		"[-Z[+s<fact>][+o<shift>]] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -G%s [-N] [%s] [%s] "
+		"[-Z[+s<fact>][+o<shift>]] [%s] [%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid>[=<id>][+s<scale>][+o<offset>][+n<nan>]");
-	GMT_Usage (API, -2, "The grid file to convert.");
-	GMT_Usage (API, 1, "\n-G<outgrid>[=<id>][+s<scale>][+o<offset>][+n<nan>][:<driver>[/<dataType>]]");
-	GMT_Usage (API, -2, "The new converted grid file. <scale> and <offset>, if given, will multiply data by scale and "
-		"add offset. Optionally, +n designates an invalid grid value to act as NaN.");
+	gmt_ingrid_syntax (API, 0, "Name of grid to convert from");
+	gmt_outgrid_syntax (API, 'G', "Set name of the new converted grid file");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-N Do NOT write the header (for native grids only - ignored otherwise). Useful when creating "
 		"files to be used by external programs.");

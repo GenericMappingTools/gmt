@@ -159,10 +159,10 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outgrid> %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[<out>/<in>]] [-C[c|d|g|o|p]] [-D%s] "
 		"[-E] [-F[<flattening>]] [-L[<hcut>]] [-M[<list>]] [-N<norm>] [-Q<bmode><fmode>[+d]] [-S<r_scale>] "
 		"[-T<t0>[/<t1>/<dt>|<file>|<n>[+l]]] [%s] [-Z<base>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_LEN_UNITS2_DISPLAY, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -174,8 +174,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"With -E we expect lon, lat, azimuth, semi-major, semi-minor, height instead. "
 		"If -F (with no argument) is given then an extra column with flattening (0-1) is expected. "
 		"If -T is given then two extra columns with start and stop times are expected.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Filename for output grid with constructed surface. If -T is set then <outgrid> "
+	gmt_outgrid_syntax (API, 'G', "Filename for output grid with constructed surface. If -T is set then <outgrid> "
 		"must be a filename template that contains a floating point format (C syntax) and "
 		"we use the corresponding time (in units specified in -T) to generate the file names.");
 	GMT_Option (API, "I,R");

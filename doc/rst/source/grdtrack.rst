@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdtrack** [ *table* ] |-G|\ *grd1* |-G|\ *grd2* ...
 [ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
-[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**] ]
+[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\ *deviation*][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
 [ |-F|\ [**+b**][**+n**][**+r**][**+z**\ *z0*] ]
@@ -104,7 +104,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**]
+**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\ *deviation*][**l**\|\ **r**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
@@ -124,7 +124,11 @@ Optional Arguments
     `Units`_ below). The default unit for geographic grids is meter while
     Cartesian grids implies the user unit.  The output columns will be
     *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ..., *zn* (The *zi* are
-    the sampled values for each of the *n* grids)
+    the sampled values for each of the *n* grids). Finally, use **+d** to
+    change the profiles from being orthogonal to the line by the given
+    *deviation* [0]. Looking in the direction of the line, a positive *deviation*
+    will rotate the crosslines clockwise and a negative one will rotate them
+    counter-clockwise.
 
 .. _-D:
 

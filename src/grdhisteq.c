@@ -92,20 +92,19 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDHISTEQ_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> [-C<n_cells>] [-D[<table>]] [-G<outgrid>] [-N[<norm>]] [-Q] "
-		"[%s] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s [-C<n_cells>] [-D[<table>]] [-G%s] [-N[<norm>]] [-Q] "
+		"[%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is name of input grid file.");
+	gmt_ingrid_syntax (API, 0, "Name of input grid");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C<n_cells>");
 	GMT_Usage (API, -2, "Set how many cells (divisions) of data range to make [16].");
 	GMT_Usage (API, 1, "\n-D[<table>]");
 	GMT_Usage (API, -2, "Dump level information to <table> or standard output if not given.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Create an equalized output grid file called <outgrid>.");
+	gmt_outgrid_syntax (API, 'G', "Create an equalized output grid file called <outgrid>");
 	GMT_Usage (API, 1, "\n-N[<norm>]");
 	GMT_Usage (API, -2, "Use with -G to make an output grid file with standard normal scores. "
 		"Alternatively, append <norm> to normalize the scores to -<norm>/+<norm>.");

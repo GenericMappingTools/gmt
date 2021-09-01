@@ -43,11 +43,15 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: grdcontour_common.rst_
+.. include:: grdcontour.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
-.. include:: grdcontour_notes.rst_
+.. include:: grdcontour.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 Examples
 --------

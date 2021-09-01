@@ -33,6 +33,13 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-:>RVbdfhoqs" GMT_OPT("H")
 
+enum grd2xyz_mode {
+	GRD2XYZ_COL = 0,
+	GRD2XYZ_ROW = 1,
+	GRD2XYZ_X = 2,
+	GRD2XYZ_Y = 3
+};
+
 struct GRD2XYZ_CTRL {
 	struct GRD2XYZ_C {	/* -C[f|i] */
 		bool active;
@@ -43,6 +50,12 @@ struct GRD2XYZ_CTRL {
 		bool floating;
 		double nodata;
 	} E;
+	struct GRD2XYZ_L {	/* -Lc|r|x|y<value> */
+		bool active;
+		unsigned int mode;
+		int item;
+		double value;
+	} L;
 	struct GRD2XYZ_W {	/* -W[a|<weight>][+u<unit>] */
 		bool active;
 		bool area;
@@ -76,20 +89,26 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <grid> [-C[f|i]] [%s] [%s] [-W[a[+u<unit>]|<weight>]] "
+	GMT_Usage (API, 0, "usage: %s %s [-C[f|i]] [-Lc|r|x|y<value>] [%s] [%s] [-W[a[+u<unit>]|<weight>]] "
 		"[-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT,
+		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT,
 		GMT_o_OPT, GMT_qo_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<grid>");
-	GMT_Usage (API, -2, "<grid> is one or more grid files.");
+	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C[f|i]");
 	GMT_Usage (API, -2, "Write row,col instead of x,y. Append f to start at 1, else 0 [Default]. "
 		"Use -Ci to write grid index instead of (x,y).");
+	GMT_Usage (API, 1, "\n-Lc|r|x|y<value>");
+	GMT_Usage (API, -2, "Limit output to a single vector. Specify which one:");
+	GMT_Usage (API, 3, "c: Append a column number (0 to nx-1)");
+	GMT_Usage (API, 3, "r: Append a row number (0 to ny-1)");
+	GMT_Usage (API, 3, "x: Append a column coordinate (xmin to xmax)");
+	GMT_Usage (API, 3, "y: Append a row coordinate (ymin to ymax)");
+	GMT_Usage (API, -2, "Note: Selections outside the grid will result in no output.");
 	GMT_Option (API, "R,V");
 	GMT_Usage (API, 1, "\n-W[a[+u<unit>]|<weight>]");
 	GMT_Usage (API, -2, "Write xyzw using supplied <weight> (or 1 if not given) [Default is xyz]. "
@@ -162,6 +181,29 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
+			case 'L':	/* Select single row or column for output */
+				Ctrl->L.active = true;
+				switch (opt->arg[0]) {
+					case 'c':	Ctrl->L.mode = GRD2XYZ_COL;	Ctrl->L.item = atoi (&opt->arg[1]);	break;
+					case 'r':	Ctrl->L.mode = GRD2XYZ_ROW;	Ctrl->L.item = atoi (&opt->arg[1]);	break;
+					case 'x':
+						Ctrl->L.mode = GRD2XYZ_X;
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_X),
+						            gmt_scanf_arg (GMT, &opt->arg[1], gmt_M_type (GMT, GMT_IN, GMT_X), false,
+						            &Ctrl->L.value), &opt->arg[1]);
+						break;
+					case 'y':
+						Ctrl->L.mode = GRD2XYZ_Y;
+						n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y),
+						            gmt_scanf_arg (GMT, &opt->arg[1], gmt_M_type (GMT, GMT_IN, GMT_Y), false,
+						            &Ctrl->L.value), &opt->arg[1]);
+						break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -L: Append c|r|x|y<value>\n");
+						n_errors++;
+						break;
+				}
+				break;
 			case 'S':	/* Suppress/no-suppress NaNs on output */
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -S is deprecated; use -s common option instead.\n");
@@ -217,6 +259,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 
 	if (Ctrl->Z.active) n_errors += gmt_init_z_io (GMT, Ctrl->Z.format, Ctrl->Z.repeat, Ctrl->Z.swab, Ctrl->Z.skip, Ctrl->Z.type, io);
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.mode == GRD2XYZ_ROW && Ctrl->L.item < 0, "Option -Lr: Row cannot be negative\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.mode == GRD2XYZ_COL && Ctrl->L.item < 0, "Option -Lc: Column cannot be negative\n");
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Must specify at least one input file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Option -E can only handle one input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Option -E is not compatible with -Z\n");
@@ -229,7 +273,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 
 EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 	bool first = true, first_geo = true;
-	unsigned int row, col, n_output, w_col = 3;
+	unsigned int row, col, n_output, w_col = 3, orig_mode;
 	int error = 0, write_error = 0;
 
 	uint64_t ij, ij_gmt, n_total = 0, n_suppressed = 0;
@@ -320,9 +364,29 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			Return (API->error);	/* Get subset */
 		}
 
-		H = gmt_get_H_hidden (G->header);
+		if (Ctrl->L.active) {	/* Check that limits are within range and warn otherwise */
+			orig_mode = Ctrl->L.mode;	/* In case we have many grids */
+			if (Ctrl->L.mode == GRD2XYZ_Y) {	/* Convert y coordinate to nearest row */
+				Ctrl->L.item = gmt_M_grd_y_to_row (GMT, Ctrl->L.value, G->header);
+				Ctrl->L.mode = GRD2XYZ_ROW;
+			}
+			else if (Ctrl->L.mode == GRD2XYZ_X) {	/* Convert x coordinate to nearest column */
+				Ctrl->L.item = gmt_M_grd_x_to_col (GMT, Ctrl->L.value, G->header);
+				Ctrl->L.mode = GRD2XYZ_COL;
+			}
+			if (Ctrl->L.mode == GRD2XYZ_COL && (Ctrl->L.item < 0 || Ctrl->L.item >= G->header->n_columns))
+				GMT_Report (API, GMT_MSG_WARNING, "Option -L: Your column selection is outside the range of this grid's columns - no output will result\n");
+			else if (Ctrl->L.mode == GRD2XYZ_ROW && (Ctrl->L.item < 0 || Ctrl->L.item >= G->header->n_rows))
+				GMT_Report (API, GMT_MSG_WARNING, "Option -L: Your column x-value selection is outside the range of this grid's rows - no output will result\n");
+			else if (Ctrl->L.mode == GRD2XYZ_ROW)
+				n_total += G->header->n_columns;
+			else
+				n_total += G->header->n_rows;
+		}
+		else
+			n_total += G->header->nm;
 
-		n_total += G->header->nm;
+		H = gmt_get_H_hidden (G->header);
 
 		if ((error = gmt_M_err_fail (GMT, gmt_set_z_io (GMT, &io, G), opt->arg)))
 			Return (error);
@@ -485,6 +549,12 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			}
 
 			gmt_M_grd_loop (GMT, G, row, col, ij) {
+				if (Ctrl->L.active) {	/* Limit output to one row or column */
+					if (Ctrl->L.mode == GRD2XYZ_ROW && row != Ctrl->L.item) continue;	/* Skip these rows */
+					if (Ctrl->L.mode == GRD2XYZ_COL && col != Ctrl->L.item) continue;	/* Skip these columns */
+					if (Ctrl->L.mode == GRD2XYZ_Y && !doubleAlmostEqualZero (y[row], Ctrl->L.value)) continue;	/* Skip these rows */
+					if (Ctrl->L.mode == GRD2XYZ_X && !doubleAlmostEqualZero (x[col], Ctrl->L.value)) continue;	/* Skip these columns */
+				}
 				if (Ctrl->C.mode == 2) {	/* Write index, z */
 					out[GMT_X] = (double)gmt_M_ij0 (G->header, row, col);
 					out[GMT_Y] = G->data[ij];
@@ -509,6 +579,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, Out);
 			if (W) gmt_free_grid (GMT, &W, true);
 		}
+		if (Ctrl->L.active)	/* Reset */
+			Ctrl->L.mode = orig_mode;
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

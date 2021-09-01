@@ -2862,7 +2862,7 @@ GMT_LOCAL void gmtinit_freeshorthand (struct GMT_CTRL *GMT) {/* Free memory used
 	gmt_M_free (GMT, GMT->session.shorthand);
 }
 
-GMT_LOCAL unsigned int gmtinit_subplot_status (struct GMTAPI_CTRL *API, int fig) {
+unsigned int gmt_subplot_status (struct GMTAPI_CTRL *API, int fig) {
 	/* Return GMT_SUBPLOT_ACTIVE if we are in a subplot situation, and add GMT_PANEL_NOTSET if no panel set yet */
 	char file[PATH_MAX] = {""};
 	bool answer;
@@ -7725,6 +7725,49 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			break;
 		}
 	}
+}
+
+/*! Output grid specification */
+/*!
+	\param GMT ...
+	\param message ...
+*/
+void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
+	if (option == 0)	/* grid is an input file argument, not an option */
+		GMT_Usage (API, 1, "\n%s", GMT_OUTGRID);
+	else if (option == '=')	/* grdmath usees = instead of -option*/
+		GMT_Usage (API, 1, "\n= %s", GMT_OUTGRID);
+	else	/* All regular options */
+		GMT_Usage (API, 1, "\n-%c%s", option, GMT_OUTGRID);
+	if (message)
+		GMT_Usage (API, -2, "%s. Optionally append =<ID> for writing a specific file format and add any modifiers:", message);
+	else
+		GMT_Usage (API, -2, "Optionally append =<ID> for writing a specific file format and add any modifiers:");
+	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [0]");
+	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
+	GMT_Usage (API, 3, "+o Offset data values by the given <offset>, or append a for automatic range offset to preserve precision for integer grids [0].");
+	GMT_Usage (API, 3, "+s Scale data values by the given <scale>, or append a for automatic range scale to preserve precision for integer grids [1].");
+	GMT_Usage (API, -2, "Note: Any offset is added after any scaling, and +sa also sets +oa (unless overridden). "
+		"To write specific formats via GDAL, use <ID> = gd and supply <driver> (and optionally <dataType> and/or one or more concatenated GDAL -co <options> using +c).");
+}
+
+/*! Input grid specification */
+/*!
+	\param GMT ...
+	\param message ...
+*/
+void gmt_ingrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
+	if (option == 0)
+		GMT_Usage (API, 1, "\n%s", GMT_INGRID);
+	else
+		GMT_Usage (API, 1, "\n-%c%s", option, GMT_INGRID);
+	GMT_Usage (API, -2, "%s. Optionally append =<ID> for reading a specific file format or ?<varname> for a specific netCDF variable, and add any modifiers:", message);
+	GMT_Usage (API, 3, "+b Select a band (for images only) [0]");
+	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [0]");
+	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
+	GMT_Usage (API, 3, "+o Offset data values by the given <offset> [0].");
+	GMT_Usage (API, 3, "+s Scale data values by the given <scale> [1].");
+	GMT_Usage (API, -2, "Note: Any offset is added after any scaling.");
 }
 
 /*! GSHHG subset specification */
@@ -14847,7 +14890,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		if (GMT->current.ps.active) {	/* Only explore -c settings, etc for plot modules */
 			/* Check if a subplot operation is in effect and if there is a current panel already */
-			subplot_status = gmtinit_subplot_status (API, fig);
+			subplot_status = gmt_subplot_status (API, fig);
 			if ((inset_status = gmtinit_get_inset_dimensions (API, fig, &GMT->current.plot.inset))) {
 				return (NULL);
 			}
@@ -18307,7 +18350,7 @@ int gmt_get_current_figure (struct GMTAPI_CTRL *API) {
 void gmtlib_get_graphics_item (struct GMTAPI_CTRL *API, int *fig, int *subplot, char *panel, int *inset) {
 	/* Determine figure number, subplot panel, inset for current graphics item */
 	*fig = gmt_get_current_figure (API);	/* Return figure number 1-? or 0 if a session plot */
-	*subplot = gmtinit_subplot_status (API, *fig);	/* Get information about subplot, if active */
+	*subplot = gmt_subplot_status (API, *fig);	/* Get information about subplot, if active */
 	panel[0] = '\0';
 	if ((*subplot) & GMT_SUBPLOT_ACTIVE) {	/* subplot is active */
 		if (((*subplot) & GMT_PANEL_NOTSET) == 0) {

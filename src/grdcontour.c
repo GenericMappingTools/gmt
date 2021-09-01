@@ -167,17 +167,17 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <grid> %s [-A[n|[+]<int>|<list>][<labelinfo>]] [%s] [-C<contours>] "
+	GMT_Usage (API, 0, "usage: %s %s %s [-A[n|[+]<int>|<list>][<labelinfo>]] [%s] [-C<contours>] "
 		"[-D<template>] [-F[l|r]] [%s] %s[-L<low>/<high>|n|N|P|p] [-N[<cpt>]] %s%s[-Q[<n>][+z]] [%s] "
 		"[-S<smooth>] [%s] [%s] [%s] [-W[a|c]<pen>[+c[l|f]]] [%s] [%s] [-Z[+o<shift>][+p][+s<fact>]] "
-		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_B_OPT, GMT_CONTG, API->K_OPT, API->O_OPT,
+		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_J_OPT, GMT_B_OPT, GMT_CONTG, API->K_OPT, API->O_OPT,
 		API->P_OPT, GMT_Rgeoz_OPT, GMT_CONTT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_bo_OPT, API->c_OPT,
 		GMT_do_OPT, GMT_ho_OPT, GMT_l_OPT, GMT_p_OPT, GMT_t_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<grid> is the grid file to be contoured.");
+	gmt_ingrid_syntax (API, 0, "Name of grid to be contoured");
 	GMT_Option (API, "J-Z");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A[n|[+]<int>|<list>][<labelinfo>]");

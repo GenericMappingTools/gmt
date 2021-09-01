@@ -143,15 +143,16 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <grid> -N<name> [-Aa|g|s[<altitude>]] [-C<cpt>] [-E<url>] [-F<filter>] "
+	GMT_Usage (API, 0, "usage: %s %s -N<name> [-Aa|g|s[<altitude>]] [-C<cpt>] [-E<url>] [-F<filter>] "
 		"[-H<scale>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
-		"[-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s] [%s]\n", name, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_PAR_OPT);
+		"[-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<grid>");
-	GMT_Usage (API, -2, "The data set to be plotted.  Its z-values are in user units and will be "
+	gmt_ingrid_syntax (API, 0, "Name of grid to be plotted");
+	GMT_Usage (API, -2, "Note: Grid z-values are in user units and will be "
 		"converted to colors via the CPT [%s].", API->GMT->current.setting.cpt);
 	GMT_Usage (API, 1, "\n-N<name>");
 	GMT_Usage (API, -2, "Set file name prefix for image directory and KML file. If the directory "

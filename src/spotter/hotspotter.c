@@ -185,9 +185,9 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct HOTSPOTTER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] %s -G<outgrid> %s %s [-D<factor>] [-N<upper_age>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] %s -G%s %s %s [-D<factor>] [-N<upper_age>] "
 		"[-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, SPOTTER_E_OPT, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT,
+		name, SPOTTER_E_OPT, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT,
 		GMT_qi_OPT, GMT_r_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -196,8 +196,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n<table> (in ASCII, binary, or netCDF) has 5 or more columns.  If no file(s) is given, "
 		"standard input is read. Expects (x,y,z,r,t) records, with t in Ma.");
 	spotter_rot_usage (API);
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Specify file name for output CVA grid.");
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output CVA grid");
 	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
 	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
 	GMT_Option (API, "Rg");

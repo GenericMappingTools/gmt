@@ -418,18 +418,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>] "
+	GMT_Usage (API, 0, "usage: %s %s [<ingrid2>] -G%s [-C<n/wavelength/mean_depth/tbw>] "
 		"[-D<density>] [-E<n_terms>] [-F[f[+s]|b|g|v|n|e]] [-I<cbktw>] [-N%s] [-Q] [-S] "
 		"[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>[k]] [-Z<zm>[/<zl>]] [-fg] [%s]\n",
-		name, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
+		name, GMT_INGRID, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is the input grdfile with topography values. "
-		"Optionally, give a second grid <ingrid2> for cross-spectral computations");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Filename for output netCDF grdfile with gravity [or geoid] values.");
+	gmt_ingrid_syntax (API, 0, "Name of input grid with topography values.  Optionally, give a second grid <ingrid2> for cross-spectral computations (same modifiers apply)");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file with gravity [or geoid] value");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C<n/wavelength/mean_depth/tbw>");
 	GMT_Usage (API, -2, "Compute admittance curves based on a theoretical model. "

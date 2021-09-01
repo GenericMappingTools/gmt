@@ -8,16 +8,17 @@ netCDF file format. However, GMT is able to produce and read grid files in many
 other commonly used grid file formats and also facilitates so called "packing"
 of grids, writing out floating point data as 1- or 2-byte integers. To specify
 the precision, scale and offset, the user should add the suffix
-[**=**\ *id*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*], where
-*id* is a two-letter identifier of the grid type and precision, and the
-*scale*, *offset* and *invalid* are the arguments of optional modifiers to be applied
+[**=**\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*][**+o**\ *offset*][**+s**\ *scale*], where
+*ID* is a two-letter identifier of the grid type and precision, and the
+*scale* (or *divisor*), *offset* and *invalid* are the arguments of optional modifiers to be applied
 to all grid values,  Here, *invalid* is the value used to indicate missing
-data. In case the *id* is not provided, as in **+s**\ *scale*, then a
-*id*\ **=**\ *nf* is assumed. When reading grids, the format is generally
+data. In case the *ID* is not provided, as in **+s**\ *scale*, then a
+*ID*\ **=**\ *nf* is assumed. When reading grids, the format is generally
 automatically recognized from almost all of those formats that GMT and GDAL
 combined offer. If not, the same suffix can be added to input grid file names.
+If reading an image as a grid you can select the band via **+b**.
 See :doc:`grdconvert </grdconvert>` and Section :ref:`grid-file-format`
-of the GMT Technical Reference and Cookbook for more information.
+of the GMT Technical Reference and Cookbook for more information regarding GDAL settings.
 
 When reading a netCDF file that contains multiple grids, GMT will
 read, by default, the first 2-dimensional grid that it can find in that
