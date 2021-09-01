@@ -14,7 +14,7 @@ Synopsis
 
 **gmt gpsgridder** [ *table* ]
 |-G|\ *outfile*
-[ |-C|\ [**n**]\ *value*\ [**+f**\ *file*] ]
+[ |-C|\ [[**n**]\ *value*\ [%]][**+f**\ *file*][**+n**] ]
 [ |-E|\ [*misfitfile*] ]
 [ |-F|\ [**d**\|\ **f**]\ *fudge* ]
 [ |SYN_OPT-I| ]
@@ -77,18 +77,18 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**]\ *value*\ [**+f**\ *file*]
+**-C**\ [[**n**]\ *value*\ [%]][**+f**\ *file*][**+n**]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
     [Default uses Gauss-Jordan elimination to solve the linear system
-    and fit the data exactly]. If *value* is in 0–1 range the we assume
-    it is the fraction of eigenvalues to keep.  Optionally, append **+f**\ *file* to save the
+    and fit the data exactly]. Append % if *value* is the *percentage* of eigenvalues
+    to use instead.  Optionally, append **+f**\ *file* to save the
     eigenvalue ratios to the specified file for further analysis.
-    If a negative *value* is given then **+f**\ *file* is required and
+    If **+n** is given then **+f**\ *file* is also required and
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cn**\ *value* to retain only the *value* largest eigenvalues.
-    **Note**: 1/4 of the total number of data constraints is a good starting point
+    **Note**: ~25% of the total number of data constraints is a good starting point
     for further experiments.
 
 .. _-E:

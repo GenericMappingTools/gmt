@@ -1097,11 +1097,12 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 */
 
 int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double cutoff, unsigned int mode) {
-	/* Mode = 0: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
-	 * mode = 1: Use the first cutoff singular values only. If cutoff is < 1 we assume this is the fraction of eigenvalues we want.
-	 * We return the number of eigenvalues used.
+	/* Mode = 0 [GMT_SVD_EIGEN_RATIO_CUTOFF]: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
+	 * mode = 1 [GMT_SVD_EIGEN_NUMBER_CUTOFF]: Use the first cutoff singular values only.
+	 * mode = 2 [GMT_SVD_EIGEN_PERCENT_CUTOFF]: Use a percentage fraction of eigenvalues we want.
+	 * We return the number of eigenvalues that passed the checks.
 	 */
-	double w_abs, sing_max;
+	double w_abs, sing_max, percent;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
 	double s, *tmp = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_unused(m);	/* Since we are actually only doing square matrices... */
@@ -1110,22 +1111,23 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	gmt_M_unused(v);	/* Not used when we solve via Lapack */
 #endif
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Evaluate solution\n");
-	/* find maximum singular value.  Assumes w[] may have negative eigenvalues */
 
+	/* Find maximum singular value.  Assumes w[] may have negative eigenvalues */
 	sing_max = fabs (w[0]);
 	for (i = 1; i < n; i++) {
 		w_abs = fabs (w[i]);
 		sing_max = MAX (sing_max, w_abs);
 	}
 
-	if (mode == 1 && cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
+	if (mode == GMT_SVD_EIGEN_PERCENT_CUTOFF) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
 		double was = cutoff;
 		cutoff = rint (n*cutoff);
+		mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
 	}
 
-	if (mode) {
-		 /* mode = 1: Find the m largest singular values, with m = cutoff (if <1 it is the fraction of values).
+	if (mode == GMT_SVD_EIGEN_NUMBER_CUTOFF) {
+		 /* Find the m largest singular values, with m = cutoff (if <1 it is the fraction of values).
 		 * Either case requires sorted singular values so we need to do some work first.
 		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
 		 * so that the singular values are the individual variance contributions. */
@@ -1163,14 +1165,15 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 				w[i] = 0.0;
 		}
 	}
-	if (mode == 0)
+	percent = 100.0 * (double)n_use / (double)n;
+	if (mode == GMT_SVD_EIGEN_RATIO_CUTOFF)
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
-		            "gmt_solve_svd: Ratio limit %g retained %d singular values\n", cutoff, n_use);
-	if (mode == 2)
+		            "gmt_solve_svd: Ratio limit %g retained %d singular values (%.1lf%%\n", cutoff, n_use, percent);
+	else
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
-		            "gmt_solve_svd: Selected first %d singular values\n", n_use);
+		            "gmt_solve_svd: Selected the largest %d singular values (%.1lf%%)\n", n_use, percent);
 
-	/* Here w contains 1/eigenvalue so we multiply by w if w != 0*/
+	/* Here w contains 1/eigenvalue so we multiply by w if w != 0 */
 
 #ifdef HAVE_LAPACK
 	/* New Lapack SVD evaluation */

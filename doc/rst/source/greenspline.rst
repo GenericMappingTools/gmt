@@ -15,7 +15,7 @@ Synopsis
 **gmt greenspline** [ *table* ]
 |-G|\ *grdfile*
 [ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
-[ |-C|\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**] ]
+[ |-C|\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
@@ -142,14 +142,14 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**]
+**-C**\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
     [Default uses Gauss-Jordan elimination to solve the linear system
     and fit the data exactly]. Optionally, append **+f**\ *file* to save the
     eigenvalues to the specified file for further analysis.
-    If a negative *value* is given then **+f**\ *file* is required and
+    If **+n** is given then **+f**\ *file* is also required and
     execution will stop after saving the eigenvalues, i.e., no surface
     output is produced.  Specify **-Cn**\ *value* to retain only the *value* largest
     eigenvalues; append % if *value* is the *percentage* of eigenvalues
@@ -436,7 +436,7 @@ Considerations
 
 #. The inversion for coefficients can become numerically unstable when
    data neighbors are very close compared to the overall span of the data.
-   You can remedy this by pre-processing the data, e.g., by averaging
+   You can remedy this by preprocessing the data, e.g., by averaging
    closely spaced neighbors. Alternatively, you can improve stability by
    using the SVD solution and discard information associated with the
    smallest eigenvalues (see **-C**).
