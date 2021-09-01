@@ -91,6 +91,26 @@ Optional Arguments
     **Note**: ~25% of the total number of data constraints is a good starting point
     for further experiments.
 
+**-C**\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
+    Find an approximate surface fit: Solve the linear system for the
+    spline coefficients by SVD and eliminate the contribution from all
+    eigenvalues whose ratio to the largest eigenvalue is less than *value*
+    [Default uses Gauss-Jordan elimination to solve the linear system
+    and fit the data exactly]. Optionally, append **+f**\ *file* to save the
+    eigenvalues to the specified file for further analysis.
+    If **+n** is given then **+f**\ *file* is also required and
+    execution will stop after saving the eigenvalues, i.e., no surface
+    output is produced.  Specify **-Cn**\ *value* to retain only the *value*
+    largest eigenvalues; append % if *value* is the *percentage* of eigenvalues
+    to use instead.  The two other modifiers (**+c** and **i**) can be used to
+    write intermediate grids, two (*u* and *v*) per eigenvalue, and we will
+    automatically insert "_cum_###" or "_inc_###" before the file extension,
+    using a fixed integer format for the eigenvalue number starting at 0.  The
+    **+i** modifier will write the **i**\ ncremental contributions to the grids
+    for each eigenvalue, while **+c** will instead produce the **c**\ umulative
+    sum of these contributions. Use both modifiers to write both types of
+    intermediate grids.
+
 .. _-E:
 
 **-E**\ [*misfitfile*]
