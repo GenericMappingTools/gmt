@@ -33,7 +33,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: segyz_common.rst_
+.. include:: segyz.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: ../../common_classic.rst_
 
@@ -49,7 +51,9 @@ variable area shading in black, use
     gmt pssegyz wa1.segy -JX5i/-5i -D1 -Jz0.05i -E180/5 -R0/100/0/10/0/10 \
             -C3 -N -So -W -Fblack > segy.ps
 
-.. include:: segyz_notes.rst_
+.. include:: segyz.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

@@ -16,8 +16,8 @@
 GMT is an open source collection of about 90 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
 projecting, etc.) and producing high-quality illustrations ranging from simple x–y
-plots via contour maps to artificially illuminated surfaces and 3D perspective
-views. The GMT supplements add another 50 more specialized and discipline-specific
+plots via contour maps to artificially illuminated surfaces, 3D perspective
+views and animations. The GMT supplements add another 50 more specialized and discipline-specific
 tools. GMT supports over 30 map projections and transformations and requires
 support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/)
 coastlines, rivers, and political boundaries and optionally
@@ -84,7 +84,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2021 by [the GMT Team](AUTHORS.md).
+Copyright (c) 1991-2021 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)

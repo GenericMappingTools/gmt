@@ -15,7 +15,7 @@ Synopsis
 **gmt greenspline** [ *table* ]
 |-G|\ *grdfile*
 [ |-A|\ *gradfile*\ **+f**\ **1**\|\ **2**\|\ **3**\|\ **4**\|\ **5** ]
-[ |-C|\ [**n**]\ *value*\ [%][**+f**\ *file*][**+m**\|\ **M**] ]
+[ |-C|\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**] ]
 [ |SYN_OPT-D3| ]
 [ |-E|\ [*misfitfile*] ]
 [ |-I|\ *xinc*\ [/*yinc*\ [/*zinc*]] ]
@@ -142,7 +142,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [**n**]\ *value*\ [%][**+f**\ *file*][**+m**\|\ **M**]
+**-C**\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from all
     eigenvalues whose ratio to the largest eigenvalue is less than *value*
@@ -151,14 +151,17 @@ Optional Arguments
     eigenvalues to the specified file for further analysis.
     If a negative *value* is given then **+f**\ *file* is required and
     execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cn** to retain only the *value* largest
-    eigenvalues; append % if *value* is the percentage of eigenvalues
-    to use instead.  The two last modifiers (**+m**\|\ **M**) are only
+    output is produced.  Specify **-Cn**\ *value* to retain only the *value* largest
+    eigenvalues; append % if *value* is the *percentage* of eigenvalues
+    to use instead.  The two other modifiers (**+c** and **i**) are only
     available for 2-D gridding and can be used to write intermediate grids,
-    one per eigenvalue, and thus require a file name template with a C-format
-    integer specification to be given via **-G**.  The **+m** modifier will
-    write the contributions to the grid for each eigenvalue, while **+M**
-    will instead produce the cumulative sum of these contributions.
+    one per eigenvalue, and thus require a file name with a suitable extension
+    to be given via **-G** (we automatically insert "_cum_###" or "_inc_###"
+    before the extension, using a fixed integer format for the eigenvalue
+    number starting at 0).  The **+i** modifier will write the **i**\ ncremental
+    contributions to the grid for each eigenvalue, while **+c** will instead
+    produce the **c**\ umulative sum of these contributions. Use both modifiers
+    to write both types of intermediate grids.
 
 .. _-D:
 
@@ -369,9 +372,9 @@ of the surface slope in the NW direction, try::
     gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Sr0.95 -V -Z1 -Q-45 -Gslopes.nc
 
 To use Cartesian cubic splines and evaluate the cumulative solution as a function of eigenvalue,
-using the output template with three digits for the eigenvalue, try::
+using output file based on the main grid name (such as contribution_cum_033.nc), try::
 
-    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Gcontribution_%3.3d.nc -Sc -Z1 -C+M
+    gmt greenspline @Table_5_11.txt -R0/6.5/-0.2/6.5 -I0.1 -Gcontribution.nc -Sc -Z1 -C+c
 
 Finally, to use Cartesian minimum curvature splines in recovering a
 surface where the input data is a single surface value (pt.txt) and the

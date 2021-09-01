@@ -210,17 +210,16 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> %s -G<outgrid> %s %s [-A<agegrid>] [-D[i|p]<grdfile>] "
+	GMT_Usage (API, 0, "usage: %s %s %s -G%s %s %s [-A<agegrid>] [-D[i|p]<grdfile>] "
 		"[-L<IDgrid>] [-M] [-N<upper_age>] [-Q<IDinfo>] [-S] [-Tt|u<age>] [%s] [-W<n_try>] [-Z<z_min>[/<z_max>[/<z_inc>]]] "
-		"[%s] [%s] [%s]\n", name, SPOTTER_E_OPT, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		"[%s] [%s] [%s]\n", name, GMT_INGRID, SPOTTER_E_OPT, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_ho_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is the grid with topo or gravity.");
+	gmt_ingrid_syntax (API, 0, "Name of input grid with topo or gravity");
 	spotter_rot_usage (API);
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Specify file name for output CVA convolution grid.");
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output CVA convolution grid");
 	GMT_Option (API, "I,Rg");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A<agegrid>");

@@ -79,12 +79,12 @@ struct GRDTRACK_CTRL {
 		bool active, loxo;
 		enum GMT_enum_track mode;
 	} A;
-	struct GRDTRACK_C {	/* -C<length>/<ds>[/<spacing>][+a][+v] */
+	struct GRDTRACK_C {	/* -C<length>/<ds>[/<spacing>][+a|v][+d<deviation>][+l|r] */
 		bool active;
 		unsigned int mode;
 		int dist_mode;	/* May be negative */
 		char unit;
-		double ds, spacing, length;
+		double ds, spacing, length, deviation;
 	} C;
 	struct GRDTRACK_D {	/* -Dresampfile */
 		bool active;
@@ -164,21 +164,20 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -G<grid1> -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+l|r]] "
+	GMT_Usage (API, 0, "usage: %s -G%s -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+d<deviation>][+l|r]] "
 		"[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]] "
 		"[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[a|l|L|m|p|u|U][+a][+c][+d][+r][+s[<file>]]] [-T<radius>>[+e|p]] [%s] [-Z] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] %s] [%s] [%s] [%s]\n",
-		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_n_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 
-	GMT_Usage (API, 1, "\n-G<grid>");
-	GMT_Usage (API, -2, "Set the name of a 2-D binary data set to sample. "
-		"Repeat -G for as many grids as you wish to sample, or "
+	gmt_ingrid_syntax (API, 'G', "Name of grid to sample");
+	GMT_Usage (API, -2, "Note: Repeat -G for as many grids as you wish to sample, or "
 		"use -G+l<list> to pass a list of grid file names. "
-		"Note: If the file is a Sandwell/Smith Mercator grid (IMG format) then more information is required:");
+		"If the file is a Sandwell/Smith Mercator grid (IMG format) then more information is required: <imgfile>,<scale>,<mode>[,<maxlat>].");
 	gmt_img_syntax (API->GMT, 2);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
@@ -191,7 +190,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "r: Resample at equidistant locations; input points not necessarily included.");
 	GMT_Usage (API, 3, "R: Same, but adjust given spacing to fit the track length exactly.");
 	GMT_Usage (API, -2, "Append +l to compute distances along rhumblines (loxodromes) [no].");
-	GMT_Usage (API, 1, "\n-C<length>/<ds>[/<spacing>][+a|v][+l|r]");
+	GMT_Usage (API, 1, "\n-C<length>/<ds>[/<spacing>][+a|v][+d<deviation>][+l|r]");
 	GMT_Usage (API, -2, "Create equidistant cross-profiles from input line segments. Append 2-3 parameters:");
 	GMT_Usage (API, 3, "1. <length>: The full-length of each cross profile. "
 		"Append distance unit u (%s); this unit also applies to <ds> and <spacing>. "
@@ -200,6 +199,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "3. Optionally, append /<spacing> to set the spacing between cross-profiles, in units of u [Default erects cross-profiles at input locations].");
 	GMT_Usage (API, -2, "Several modifiers controls the creation of the profiles:");
 	GMT_Usage (API, 3, "+a Alternate the direction of cross-profiles [Default orients all the same way].");
+	GMT_Usage (API, 3, "+d Set deviation (-90/+90 range) from orthogonal cross-profiles [0 (no deviation)].");
 	GMT_Usage (API, 3, "+l Only use the left half of the profiles [entire profile].");
 	GMT_Usage (API, 3, "+r Only use the right half of the profiles [entire profile].");
 	GMT_Usage (API, 3, "+v Adjust direction of cross-profiles for E-W or S-N viewing [Default orients all the same way].");
@@ -336,11 +336,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 				break;
 			case 'C':	/* Create cross profiles */
 				Ctrl->C.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "alrv"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "adlrv"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'C', c, "alrv", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'C', c, "adlrv", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'a': Ctrl->C.mode |= GMT_ALTERNATE; break;		/* Select alternating direction of cross-profiles */
+							case 'd': Ctrl->C.deviation = atof (&p[1]); break;		/* Less than orthogonal vy given deviation */
 							case 'l': Ctrl->C.mode |= GMT_LEFT_ONLY; break;		/* cross-profile starts at line and go to left side only */
 							case 'r': Ctrl->C.mode |= GMT_RIGHT_ONLY; break;	/* cross-profile starts at line and go to right side only */
 							case 'v': Ctrl->C.mode |= GMT_EW_SN; break;		/* Select preferred E-W, S-N direction of cross-profiles */
@@ -898,7 +899,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			if (Ctrl->S.selected[STACK_ADD_DEV]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked deviations(s) in each profile */
 			if (Ctrl->S.selected[STACK_ADD_RES]) n_cols += Ctrl->G.n_grids;	/* Make space for the stacked residuals(s) in each profile */
 		}
-		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, n_cols, Ctrl->C.mode, Ctrl->C.unit)) == NULL) Return (API->error);
+		if ((Dout = gmt_crosstracks (GMT, Dtmp, Ctrl->C.length, Ctrl->C.ds, Ctrl->C.deviation, n_cols, Ctrl->C.mode, Ctrl->C.unit)) == NULL) Return (API->error);
 
 		if (Ctrl->F.active) {	/* Keep a record of the along-track distances produced in -C */
 			dist = gmt_M_memory (GMT, NULL, Dtmp->n_records, double);

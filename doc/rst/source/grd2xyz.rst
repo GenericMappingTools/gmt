@@ -14,6 +14,7 @@ Synopsis
 
 **gmt grd2xyz** *grid*
 [ |-C|\ [**f**\|\ **i**] ]
+[ |-L|\ [**c**\|\ **r**\|\ **x**\|\ **y**]\ *value* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**a**\ [**+u**\ *unit*]\|\ *weight*] ] [ |-Z|\ [*flags*] ]
@@ -57,6 +58,15 @@ Optional Arguments
     **f** to start at 1 (Fortran-style counting). Alternatively, append
     **i** to write just the two columns *index* and *z*, where *index*
     is the 1-D indexing that GMT uses when referring to grid nodes.
+
+.. _-L:
+
+**-L**\ **c**\|\ **r**\|\ **x**\|\ **y**]\ *value*
+    Limit the output of records to a single row or column.  Identify the desired
+    vector either by *row* or *column* number (via directives **c** or **r**), or by the
+    constant *x* or *y* value (via directives **x** or **y**).  If your selection is outside
+    the valid range then no output will result and a warning is issued.  **Note**: For
+    directives **x** and **y** we find the nearest column or row, respectively.
 
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of the grid. If this subsection exceeds the
     boundaries of the grid, only the common region will be output. |Add_-R_links|
@@ -159,6 +169,16 @@ are then converted to the internal time system specified by
 command line. The default output is relative time in that time system,
 or absolute time when using the option **-f0T**, **-f1T**, or **-f2T**
 for x, y, or z coordinate, respectively.
+
+Row Order
+---------
+
+The **-Lr** option allows you to output a specific row in the grid. Note that while
+a grid's y-coordinates are positive up, internal row numbers are scanline numbers
+and hence positive down.  Therefore, the first row (0) coincides with the largest *y*-value.
+This means that **-Lr**\ *0* and **-Ly**\ *ymax* (for the correct maximum y-value)
+will yield the same result.  In contrast, both *x* and column numbers are positive to the right,
+with **-Lc**\ *0* and **-Lx**\ *xmin* (for the correct minimum x-value) yielding the same output.
 
 Examples
 --------

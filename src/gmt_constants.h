@@ -306,16 +306,17 @@ enum GMT_time_period {
 /* Valid modifiers for various input files */
 
 /* Valid modifiers for -Tmin/max/inc array creator */
-#define GMT_ARRAY_MODIFIERS "abeilnt"
+#define GMT_ARRAY_MODIFIERS "abeilntu"
 
 /* Modifiers for grid files:
+ * +d<divisor> divides all grid values by this divisor
  * +o<offset>  adds this offset to all grid values
  * +n<nodata> sets what the no-data value is
  * +s<scl> scales all grid values by this scale
  * +u<unit> converts Cartesian x/y coordinates from given unit to meters
  * +U<unit> converts Cartesian x/y coordinates from meter to given unit
  */
-#define GMT_GRIDFILE_MODIFIERS "onsuU"
+#define GMT_GRIDFILE_MODIFIERS "donsuU"
 
 /* Modifiers for CPT files:
  * +h[<hinge>] to override soft-hinge value in CPT

@@ -33,7 +33,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: basemap_common.rst_
+.. include:: basemap.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -428,7 +430,9 @@ degrees about an axis centered on the map, try
 
     gmt psbasemap -R10/40/10/40 -JM10c -P -Bafg -B+t"I am rotated" -p90+w25/25 -Xc -P > rotated.ps
 
-.. include:: basemap_notes.rst_
+.. include:: basemap.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

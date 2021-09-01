@@ -192,9 +192,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <grdfile_top> [<grdfile_bot>] [-C<density>] [-D] [-E<thickness>] [-F<xy_file>] "
-		"[-G<outgrid>] [-H<params>] [%s] [-L<z_obs>] [-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]] "
+		"[-G%s] [-H<params>] [%s] [-L<z_obs>] [-Q[n<n_pad>]|[pad_dist]|[<w/e/s/n>]] "
 		"[%s] [-S<radius>] [%s] [-Z[<level>]|[t|p]] [-fg] %s[%s]\n",
-		name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -206,8 +206,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Set body density in SI.");
 	GMT_Usage (API, 1, "\n-F<xy_file>");
 	GMT_Usage (API, -2, "Pass file with locations where anomaly is going to be computed.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Set name of the output grdfile.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-D Specifies that z is positive down [Default positive up].");
 	GMT_Usage (API, 1, "\n-E<thickness>");

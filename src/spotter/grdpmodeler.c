@@ -100,21 +100,20 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <ingrid> %s [-F<polygontable>] [-G<outgrid>] [%s] [%s] [-N<upper_age>] "
+	GMT_Usage (API, 0, "usage: %s %s %s [-F<polygontable>] [-G%s] [%s] [%s] [-N<upper_age>] "
 		"[-SadrswxyXY] [-T<time>] [%s] [%s] [%s] [%s] [%s] [%s]\n",
-		name, SPOTTER_E_OPT, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		name, GMT_INGRID, SPOTTER_E_OPT, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_h_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n<ingrid> is a gridded data file in geographic coordinates with crustal ages.");
+	gmt_ingrid_syntax (API, 0, "Name of input grid in geographic coordinates with crustal ages");
 	spotter_rot_usage (API);
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-F<polygontable>");
 	GMT_Usage (API, -2, "Specify a multi-segment closed polygon file that describes the area "
 		"of the grid to work on [Default works on the entire grid].");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Set output filename with the model predictions. "
+	gmt_outgrid_syntax (API, 'G', "Set output filename with the model predictions. "
 		"Must contain %%s if more than one item is specified in -S. "
 		"Default writes x,y,<predictions> to standard output.");
 	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);

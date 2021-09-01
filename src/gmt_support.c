@@ -5544,7 +5544,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_resample_data_cartesian (struct GMT_CT
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
+GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, double deviation, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Din is a data set with at least two columns (lon/lat);
 	 * it can contain any number of tables and segments.
 	 * cross_length is the desired length of cross-profiles, in meters.
@@ -5638,6 +5638,12 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 				gmt_normalize3v (GMT, T);			/* Make sure T has unit length */
 				gmt_cross3v (GMT, T, P, E);			/* Get pole E to plane trough P normal to L,R (hence going trough P) */
 				gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
+				if (!gmt_M_is_zero (deviation)) {	/* Must now rotate E about P by the deviation first */
+					gmtlib_load_rot_matrix (-D2R * deviation, Rot0, P);	/* Negative so that rotation goes clockwise */
+					gmt_matrix_vect_mult (GMT, 3U, Rot0, E, X);				/* Rotate E about P by deviation */
+					gmt_M_memcpy (E, X, 3u, double);	/* Copy the result to E */
+					gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
+				}
 				gmtlib_init_rot_matrix (Rot0, E);			/* Get partial rotation matrix since no actual angle is applied yet */
 				az_cross = fmod (Tin->segment[seg]->data[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
 				if (mode & GMT_ALTERNATE)
@@ -5706,7 +5712,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 }
 
 /*! . */
-GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
+GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, double deviation, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Din is a data set with at least two columns (x,y);
 	 * it can contain any number of tables and segments.
 	 * cross_length is the desired length of cross-profiles, in Cartesian units.
@@ -5748,9 +5754,9 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 	n_tot_cols = 4 + n_cols;				/* Total number of columns in the resulting data set */
 	k_start = -n_half_cross;
 	k_stop = n_half_cross;
-	if (mode & GMT_LEFT_ONLY)	/* Only want left side of profiles */
+	if (mode & GMT_RIGHT_ONLY)	/* Only want left side of profiles */
 		k_stop = 0;
-	else if (mode & GMT_RIGHT_ONLY)	/* Only want right side of profiles */
+	else if (mode & GMT_LEFT_ONLY)	/* Only want right side of profiles */
 		k_start = 0;
 	np_cross = k_stop - k_start + 1;			/* Total cross-profile length */
 	dim[GMT_TBL] = Din->n_tables;	dim[GMT_COL] = n_tot_cols;	dim[GMT_ROW] = np_cross;
@@ -5779,7 +5785,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 				else if (mode & GMT_EW_SN)
 					sign = (az_cross >= 315.0 || az_cross < 135.0) ? -1.0 : 1.0;	/* We want profiles to be either ~E-W or ~S-N */
 				S = GMT_Alloc_Segment (GMT->parent, GMT_NO_STRINGS, np_cross, n_tot_cols, NULL, NULL);
-				sincosd (90.0 - az_cross, &sa, &ca);	/* Trig on the direction */
+				sincosd (90.0 - az_cross - deviation, &sa, &ca);	/* Trig on the direction */
 				for (k = k_start, ii = 0; k <= k_stop; k++, ii++) {	/* For each point along normal to FZ */
 					dist_across_seg = sign * k * across_ds;		/* The current distance along this profile */
 					S->data[GMT_X][ii] = x + dist_across_seg * ca;
@@ -15885,13 +15891,13 @@ struct GMT_DATASET * gmt_resample_data (struct GMT_CTRL *GMT, struct GMT_DATASET
 }
 
 /*! . */
-struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, uint64_t n_cols, unsigned int mode, char unit) {
+struct GMT_DATASET * gmt_crosstracks (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, double cross_length, double across_ds, double deviation, uint64_t n_cols, unsigned int mode, char unit) {
 	/* Call either the spherical or Cartesian version */
 	struct GMT_DATASET *D = NULL;
 	if (gmt_M_is_geographic (GMT, GMT_IN))
-		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, n_cols, mode, unit);
+		D = gmtsupport_crosstracks_spherical (GMT, Din, cross_length, across_ds, deviation, n_cols, mode, unit);
 	else
-		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, n_cols, mode, unit);
+		D = gmtsupport_crosstracks_cartesian (GMT, Din, cross_length, across_ds, deviation, n_cols, mode, unit);
 	gmt_set_dataset_minmax (GMT, D);	/* Determine min/max for each column */
 	return (D);
 }
@@ -17057,7 +17063,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	-T<argument>
 	 *
 	 * where <argument> is one of these:
-	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l|t]
+	 *	[<min/max/]<inc>[<unit>|+a|e|i|n|b|l|t|u]
 	 *	<file>
 	 *
 	 * Parsing:
@@ -17098,6 +17104,8 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *     10) Since -T is a command-line option we enforce ISO calendar string format
 	 *	   only (yyyy-mm-ddT, yyyy-jjjT, yyyy-WwwT).
 	 *
+	 * 11) If +u is given then we ensure the input array has unique and sorted entries
+	 *     and that duplicated are eliminated.
 	 * Note:   The effects in 4) and 5) are only allowed if the corresponding
 	 *	   flags are passed to the parser.
 	 */
@@ -17114,8 +17122,54 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	gmt_M_str_free (T->file);		/* In case earlier parsing */
 	gmt_M_memset (T, 1, struct GMT_ARRAY);	/* Wipe clean the structure */
 
-	if (flags & GMT_ARRAY_UNIQUE)
+	if (flags & GMT_ARRAY_UNIQUE)	/* This can also be set by the user via +u */
 		T->unique = true;	/* Resulting array must contain unique and sorted entries */
+
+	if (gmt_validate_modifiers (GMT, argument, option, GMT_ARRAY_MODIFIERS, GMT_MSG_ERROR)) return (GMT_PARSE_ERROR);
+
+	if ((m = gmt_first_modifier (GMT, argument, GMT_ARRAY_MODIFIERS))) {	/* Process optional modifiers +a, +b, +e, +i, +l, +n, +t */
+		unsigned int pos = 0;	/* Reset to start of new word */
+		unsigned int n_errors = 0;
+		char p[GMT_LEN32] = {""};
+		while (gmt_getmodopt (GMT, 'T', m, GMT_ARRAY_MODIFIERS, &pos, p, &n_errors) && n_errors == 0) {
+			switch (p[0]) {
+				case 'a':	/* Add spatial distance column to output */
+					T->add = true;
+					break;
+				case 'b':	/* Do a log2 grid */
+					T->logarithmic2 = true;
+					break;
+				case 'e':	/* Increment must be honored exactly */
+					T->exact_inc = true;
+					break;
+				case 'i':	/* Gave reciprocal increment; calculate inc later */
+					T->reciprocal = true;
+					break;
+				case 'n':	/* Gave number of points instead; calculate inc later */
+					T->count = true;
+					break;
+				case 'l':	/* Do a log10 grid */
+					T->logarithmic = true;
+					break;
+				case 't':	/* Do a time vector */
+					T->temporal = true;
+					break;
+				case 'u':	/* Ensure no duplicates; array must contain unique and sorted entries */
+					T->unique = true;
+					break;
+				default:
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%cmin/max/inc+ modifier +%s not recognized.\n", option, p);
+					break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		m[0] = '\0';	/* Chop off the modifiers */
+	}
+	else if (gmt_M_compat_check (GMT, 5) && argument[strlen(argument)-1] == '+') {	/* Old-style + instead of +n */
+		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[+a|n] instead.\n", option, option);
+		m = strrchr (argument, '+');	/* Position of last + */
+		if (m) m[0] = '\0';	/* Chop off the plus */
+		T->count = true;
+	}
 
 	/* 1a. Check if argument is a remote file */
 	if (gmt_file_is_cache (GMT->parent, argument) || gmt_M_file_is_url (argument)) {	/* Remote file, must check */
@@ -17154,48 +17208,6 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		return (GMT_NOERROR);
 	}
 
-	if (gmt_validate_modifiers (GMT, argument, option, GMT_ARRAY_MODIFIERS, GMT_MSG_ERROR)) return (GMT_PARSE_ERROR);
-
-	if ((m = gmt_first_modifier (GMT, argument, GMT_ARRAY_MODIFIERS))) {	/* Process optional modifiers +a, +b, +e, +i, +l, +n, +t */
-		unsigned int pos = 0;	/* Reset to start of new word */
-		unsigned int n_errors = 0;
-		char p[GMT_LEN32] = {""};
-		while (gmt_getmodopt (GMT, 'T', m, GMT_ARRAY_MODIFIERS, &pos, p, &n_errors) && n_errors == 0) {
-			switch (p[0]) {
-				case 'a':	/* Add spatial distance column to output */
-					T->add = true;
-					break;
-				case 'b':	/* Do a log2 grid */
-					T->logarithmic2 = true;
-					break;
-				case 'e':	/* Increment must be honored exactly */
-					T->exact_inc = true;
-					break;
-				case 'i':	/* Gave reciprocal increment; calculate inc later */
-					T->reciprocal = true;
-					break;
-				case 'n':	/* Gave number of points instead; calculate inc later */
-					T->count = true;
-					break;
-				case 'l':	/* Do a log10 grid */
-					T->logarithmic = true;
-					break;
-				case 't':	/* Do a time vector */
-					T->temporal = true;
-					break;
-				default:
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-%cmin/max/inc+ modifier +%s not recognized.\n", option, p);
-					break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
-			}
-		}
-		m[0] = '\0';	/* Chop off the modifiers */
-	}
-	else if (gmt_M_compat_check (GMT, 5) && argument[strlen(argument)-1] == '+') {	/* Old-style + instead of +n */
-		GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-%cmin/max/inc+ is deprecated; use -%c[<min>/<max>/]<int>[+a|n] instead.\n", option, option);
-		m = strrchr (argument, '+');	/* Position of last + */
-		if (m) m[0] = '\0';	/* Chop off the plus */
-		T->count = true;
-	}
 	if (T->count && T->reciprocal) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Cannot give both +i and +n\n", option);
 		return GMT_PARSE_ERROR;

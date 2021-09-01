@@ -266,7 +266,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R,V");
 	GMT_Usage (API, 1, "\n-Z<level>");
 	GMT_Usage (API, -2, "Set observation level for output locations [0]. "
-		"Append either a constant or the name of gridfile with levels. "
+		"Append either a constant or the name of grid file with variable levels. "
 		"If given a grid then it also defines the output grid.");
 	GMT_Usage (API, -2, "Note: Cannot use both -Z<grid> and -R -I [-r].");
 	GMT_Option (API, "bo,d,e");

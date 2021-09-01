@@ -1417,10 +1417,8 @@ EXTERN_MSC int GMT_pstext (void *V_API, int mode, void *args) {
 				c_font[m] = T.font;
 				m++;
 			}
-			else {
+			else
 				gmt_map_text (GMT, plot_x, plot_y, &T.font, curr_txt, T.paragraph_angle, T.block_justify, fmode);
-				//PSL_plottext (PSL, plot_x, plot_y, T.font.size, curr_txt, T.paragraph_angle, T.block_justify, fmode);
-			}
 			if (Ctrl->A.active) T.paragraph_angle = save_angle;	/* Restore original angle */
 			gmt_M_str_free (use_text);
 		}

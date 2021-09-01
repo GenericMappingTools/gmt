@@ -107,14 +107,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -G<outgrid> %s %s [%s] [-D<resolution>[+f]] [-E[<bordervalues>]] [-N<maskvalues>] "
-		"[%s] [%s] %s [%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s -G%s %s %s [%s] [-D<resolution>[+f]] [-E[<bordervalues>]] [-N<maskvalues>] "
+		"[%s] [%s] %s [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Specify file name for output mask grid file.");
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output mask grid");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_GSHHG_syntax (API->GMT, 'A');
