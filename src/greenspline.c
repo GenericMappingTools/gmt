@@ -69,7 +69,7 @@ struct GREENSPLINE_CTRL {
 	struct GREENSPLINE_C {	/* -C[[n]<cutoff>[%]][+c][+f<file>][+i][+n] */
 		bool active;
 		bool dryrun;	/* Only report eigenvalues */
-		unsigned int movie;	/* Undocumented and not-yet-working movie mode +m incremental grids, +M total grids vs eigenvalue */
+		unsigned int movie;
 		unsigned int mode;
 		double value;
 		char *file;

@@ -39,10 +39,10 @@
 /* Control structure for gpsgridder */
 
 struct GPSGRIDDER_CTRL {
-	struct GPSGRIDDER_C {	/* -C[[n]<cutoff>[%]][+f<file>][+n] */
+	struct GPSGRIDDER_C {	/* -C[[n]<cutoff>[%]][+c][+f<file>][+i][+n] */
 		bool active;
 		bool dryrun;	/* Only report eigenvalues */
-		unsigned int movie;	/* Undocumented and not-yet-working movie mode +m incremental grids, +M total grids vs eigenvalue */
+		unsigned int movie;	
 		unsigned int mode;
 		double value;
 		char *file;
@@ -120,7 +120,7 @@ GMT_LOCAL void gpsgridder_set_filename (char *name, unsigned int k, unsigned int
 	/* Turn name, eigenvalue number k, precision width, mode and comp into a filename, e.g.,
 	 * ("solution.grd", 33, 3, GPSGRIDDER_INC_MOVIE, 1, file) will give solution_v_inc_033.grd */
 	unsigned int s = strlen (name) - 1;
-	static char *type[3] = {"", "inc", "cum"}, *uv = {"u", "v"};
+	static char *type[3] = {"", "inc", "cum"}, *uv[2] = {"u", "v"};
 	while (name[s] != '.') s--;	/* Wind backwards to start of extension */
 	name[s] = '\0';	/* Temporarily chop off extension */
 	sprintf (file, "%s_%s_%s_%*.*d.%s", name, uv[comp], type[mode], width, width, k, &name[s+1]);
@@ -150,7 +150,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n]<val>[%%]][+f<file>][+n]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
 		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -173,12 +173,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"contain the format specifier \"%%s\" which will be replaced with u or v.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
-	GMT_Usage (API, 1, "\n-C[[n]<val>[%%]][+f<file>][+n]");
+	GMT_Usage (API, 1, "\n-C[[n]<val>[%%]][+c][+f<file>][+i][+n]");
 	GMT_Usage (API, -2, "Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0]. "
 		"Use -Cn to select only the largest <val> eigenvalues [all]. "
 		"Use <val>%% to select a percentage of the eigenvalues instead [100] "
 		"[Default uses Gauss-Jordan elimination to solve the linear system].");
+	GMT_Usage (API, 3, "+c Vreate a series of intermediate grids for each eigenvalue holding the cumulative result. "
+		"We will insert _cum_### before the filename extension.");
 	GMT_Usage (API, 3, "+f Save the eigenvalues to <filename>.");
+	GMT_Usage (API, 3, "+i As +c but save incremental results, inserting _inc_### before the extension.");
 	GMT_Usage (API, 3, "+n Stop execution after reporting the eigenvalues - no solution is computed.");
 	GMT_Usage (API, -2, "Note: ~25%% of the total number of data constraints is a good starting point.");
 	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
@@ -225,8 +228,8 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, k;
-	char p[GMT_BUFSIZ] = {""};
+	unsigned int n_errors = 0, k, pos = 0;
+	char p[GMT_BUFSIZ] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -264,7 +267,7 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 						Ctrl->C.file = strdup (p);
 					}
 					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C[[n]<cut>[%]][+f<file>][+n]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C[[n]<cut>[%]][+c][+f<file>][+i][+n]\n");
 						n_errors++;
 					}
 				}
@@ -1203,7 +1206,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			gmt_grdfloat *current[2] = {NULL, NULL}, *previous[2] = {NULL, NULL};
 			for (k = GMT_X; k <= GMT_Y; k++) current[k]  = gmt_M_memory_aligned (GMT, NULL, Out[GMT_X]->header->size, gmt_grdfloat);
-			if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE)
+			if (Ctrl->C.movie & GPSGRIDDER_INC_MOVIE)
 				for (k = GMT_X; k <= GMT_Y; k++) previous[k] = gmt_M_memory_aligned (GMT, NULL, Out[GMT_X]->header->size, gmt_grdfloat);
 
 			for (e = 1; e <= (int64_t)n_params; e++) {	/* For each eigenvalue */
@@ -1234,9 +1237,9 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				}
 				for (k = GMT_X; k <= GMT_Y; k++)gmt_M_memcpy (current[k], Out[k]->data, Out[k]->header->size, gmt_grdfloat);	/* Save current solutions */
 
-				if (Ctrl->C.movie & GREENSPLINE_CUM_MOVIE) {	/* Write out the cumulative solution first */
+				if (Ctrl->C.movie & GPSGRIDDER_CUM_MOVIE) {	/* Write out the cumulative solution first */
 					for (k = GMT_X; k <= GMT_Y; k++) {	/* Write the two grids with u(x,y) and v(xy) */
-						gpsgridder_set_filename (Ctrl->G.file, e, width, GPSGRIDDER_CUM_MOVIE, k, file) {
+						gpsgridder_set_filename (Ctrl->G.file, e, width, GPSGRIDDER_CUM_MOVIE, k, file);
 						snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "%s Strain component %s for eigenvalue # %d", mkind[GPSGRIDDER_INC_MOVIE], comp[k], (int)e);
 						if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k]))
 							Return (API->error);				/* Update solution for k eigenvalues only */
@@ -1244,11 +1247,11 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 							Return (API->error);
 					}
 				}
-				if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE) {	/* Want to write out incremental solution due to this eigenvalue */
+				if (Ctrl->C.movie & GPSGRIDDER_INC_MOVIE) {	/* Want to write out incremental solution due to this eigenvalue */
 					for (k = GMT_X; k <= GMT_Y; k++) {	/* Incremental improvement since last time */
 						gmt_M_grd_loop (GMT, Out[k], row, col, ij) Out[k]->data[ij] = current[k][ij] - previous[k][ij];
 						gmt_M_memcpy (previous[k], current[k], Out[k]->header->size, gmt_grdfloat);	/* Save current solution which will be previous for next eigenvalue */
-						gpsgridder_set_filename (Ctrl->G.file, e, width, GPSGRIDDER_INC_MOVIE, k, file) {
+						gpsgridder_set_filename (Ctrl->G.file, e, width, GPSGRIDDER_INC_MOVIE, k, file);
 						snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "%s Strain component %s for eigenvalue # %d", mkind[GPSGRIDDER_CUM_MOVIE], comp[k], (int)e);
 						if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k]))
 							Return (API->error);
@@ -1258,7 +1261,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				}
 			}
 			for (k = GMT_X; k <= GMT_Y; k++) gmt_M_free_aligned (GMT, current[k]);
-			if (Ctrl->C.movie == 1)
+			if (Ctrl->C.movie & GPSGRIDDER_INC_MOVIE)
 				for (k = GMT_X; k <= GMT_Y; k++) gmt_M_free_aligned (GMT, previous[k]);
 			gmt_M_free (GMT, A);
 			gmt_M_free (GMT, s);
