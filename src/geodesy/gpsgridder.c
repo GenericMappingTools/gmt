@@ -121,9 +121,17 @@ GMT_LOCAL void gpsgridder_set_filename (char *name, unsigned int k, unsigned int
 	 * ("solution.grd", 33, 3, GPSGRIDDER_INC_MOVIE, 1, file) will give solution_v_inc_033.grd */
 	unsigned int s = strlen (name) - 1;
 	static char *type[3] = {"", "inc", "cum"}, *uv[2] = {"u", "v"};
+	char tmp[GMT_LEN256] = {""};
 	while (name[s] != '.') s--;	/* Wind backwards to start of extension */
 	name[s] = '\0';	/* Temporarily chop off extension */
-	sprintf (file, "%s_%s_%s_%*.*d.%s", name, uv[comp], type[mode], width, width, k, &name[s+1]);
+	if (strchr (name, '%'))
+		sprintf (tmp, name, uv[comp]);	/* Place the u or v in a name with a format */
+	else
+		sprintf (tmp, "%s_%s", name, uv[comp]);	/* Append the _u or _v to the name */
+	if (width)
+		sprintf (file, "%s_%s_%*.*d.%s", tmp, type[mode], width, width, k, &name[s+1]);
+	else
+		sprintf (file, "%s.%s", tmp, &name[s+1]);
 	name[s] = '.';	/* Restore original name */
 }
 
@@ -169,8 +177,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If no files are given, standard input is read. "
 		"The data must contain x y u v [weight_u weight_v] records. "
 		"Specify -fg to convert longitude, latitude to Flat Earth coordinates.");
-	gmt_outgrid_syntax (API, 'G', "Give name of output file (if -N) or a gridfile name template that must "
-		"contain the format specifier \"%%s\" which will be replaced with u or v.");
+	gmt_outgrid_syntax (API, 'G', "Give name of output table (if -N) or a grid (we automatically insert _u and _v before extension.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
 	GMT_Usage (API, 1, "\n-C[[n]<val>[%%]][+c][+f<file>][+i][+n]");
@@ -373,7 +380,6 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && !Ctrl->T.file, "Option -T: Must specify mask grid file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && !Ctrl->N.file, "Option -N: Must specify node file name\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.file && gmt_access (GMT, Ctrl->N.file, R_OK), "Option -N: Cannot read file %s!\n", Ctrl->N.file);
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.file == NULL && !strchr (Ctrl->G.file, '%'), "Option -G: Must specify a template file name containing %%s\n");
 	n_errors += gmt_M_check_condition (GMT, (GMT->common.R.active[ISET] + GMT->common.R.active[RSET]) == 1, "Must specify -R, -I, [-r], -G for gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->S.nu < -1.0 || Ctrl->S.nu > 1.0, "Option -S: Poisson\'s ratio must be in the -1 <= nu <= +1 range\n");
 
@@ -1212,7 +1218,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			if (Ctrl->C.movie & GPSGRIDDER_INC_MOVIE)
 				for (k = GMT_X; k <= GMT_Y; k++) previous[k] = gmt_M_memory_aligned (GMT, NULL, Out[GMT_X]->header->size, gmt_grdfloat);
 
-			for (e = 1; e <= (int64_t)n_params; e++) {	/* For each eigenvalue */
+			for (e = 0; e < (int64_t)n_params; e++) {	/* For each eigenvalue */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Add contribution from eigenvalue %" PRIu64 "\n", e);
 				/* Update solution for e eigenvalues only */
 				gmt_M_memcpy (s, ssave, n_params, double);
@@ -1298,7 +1304,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			for (k = GMT_X; k <= GMT_Y; k++) {	/* Write the two grids with u(x,y) and v(xy) */
 				gmt_grd_init (GMT, Out[k]->header, options, true);
 				snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "Strain component %s", comp[k]);
-				sprintf (file, Ctrl->G.file, tag[k]);
+				gpsgridder_set_filename (Ctrl->G.file, 0, 0, 0, k, file);
 				if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k])) {
 					gmt_M_free (GMT, xp);	gmt_M_free (GMT, yp);
 					Return (API->error);
@@ -1317,6 +1323,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	gmt_M_free (GMT, X);
 	gmt_M_free (GMT, u);
 	gmt_M_free (GMT, v);
+	if (Ctrl->C.active) gmt_M_free (GMT, V);
 
 	Return (GMT_NOERROR);
 }

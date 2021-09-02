@@ -60,17 +60,15 @@ Required Arguments
 .. _-G:
 
 **-G**\ *outfile*
-    Name of resulting output file. (1) If options **-R**, **-I**, and
+    Name of resulting output file(s). (1) If options **-R**, **-I**, and
     possibly **-r** are set we produce two equidistant output grids. In
-    this case, *outfile* must be a name template containing the C format
-    specifier %s, which will be replaced with u and v, respectively.
+    this case, we take *outfile* and append "_u" and "_v" before the extension, respectively.
     (2) If option **-T** is selected then **-R**, **-I** cannot be given
-    as the *maskgrid* determines the region and increments. Again, the
-    *outfile* must be a name template for the two output grids.
+    as the *maskgrid* determines the region and increments. The two output
+    filenames are generated as under (1).
     (3) If **-N** is selected then the output is a single ASCII (or binary; see
     **-bo**) table written to *outfile*; if **-G** is not given then
-    this table is written to standard output. The **-G** option is ignored
-    if **-C** or **-C**\ 0 is given.
+    this table is written to standard output.
 
 Optional Arguments
 ------------------
