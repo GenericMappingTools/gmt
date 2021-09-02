@@ -1218,7 +1218,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			if (Ctrl->C.movie & GPSGRIDDER_INC_MOVIE)
 				for (k = GMT_X; k <= GMT_Y; k++) previous[k] = gmt_M_memory_aligned (GMT, NULL, Out[GMT_X]->header->size, gmt_grdfloat);
 
-			for (e = 0; e < (int64_t)n_params; e++) {	/* For each eigenvalue */
+			for (e = 0; e < (int64_t)n_use; e++) {	/* For each eigenvalue selected */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Add contribution from eigenvalue %" PRIu64 "\n", e);
 				/* Update solution for e eigenvalues only */
 				gmt_M_memcpy (s, ssave, n_params, double);
