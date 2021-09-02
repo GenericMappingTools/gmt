@@ -187,6 +187,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Secondary vector */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'm') {
 					Ctrl->A.mode = 1;
@@ -196,6 +197,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 					Ctrl->A.arg = strdup (opt->arg);
 				break;
 			case 'C':	/* Cartesian coordinates on in|out */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (opt->arg[0] == 'i')
 					Ctrl->C.active[GMT_IN] = true;
 				else if (opt->arg[0] == 'o')
@@ -208,12 +210,15 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'E':	/* geodetic/geocentric conversion */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 			 	Ctrl->E.active = true;
 				break;
 			case 'N':	/* Normalize vectors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 			 	Ctrl->N.active = true;
 				break;
 			case 'T':	/* Selects transformation */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	/* Angle between vectors */
@@ -284,6 +289,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'S':	/* Secondary vector */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.arg = strdup (opt->arg);
 				break;

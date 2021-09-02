@@ -228,6 +228,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 	bool scan_slopes = false;
 	unsigned int n_errors = 0, j, k, n, col, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -245,6 +246,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Explore E vs slope or force a limited angle range */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if ((c = strstr (opt->arg, "+f"))) {
 					Ctrl->A.force = true;
@@ -259,10 +261,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'C':	/* Set confidence level in %, convert to fraction */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.value = atof (opt->arg) * 0.01;
 				break;
 			case 'E':	/* Select regression type */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'x': Ctrl->E.mode = GMTREGRESS_X;   break; /* Regress on x */
@@ -276,6 +280,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'F':	/* Select output columns */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (!strcmp (opt->arg, "p")) {	/* Just want to return model parameters */
 					Ctrl->F.param = true;
@@ -298,6 +303,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'N':	/* Select Norm for misfit calculations */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case '1': Ctrl->N.mode = GMTREGRESS_NORM_L1;	break;
@@ -311,10 +317,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'S':	/* Restrict output records */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.mode = (opt->arg[0] == 'r') ? GMTREGRESS_OUTPUT_BAD : GMTREGRESS_OUTPUT_GOOD;
 				break;
 			case 'T':	/* Output lattice or length */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (!strcmp (opt->arg, "0"))	/* -T0 means no model evaluation */
 					Ctrl->T.no_eval = true;
@@ -322,6 +330,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 				break;
 			case 'W':	/* Weights or not */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w') Ctrl->W.type = 1;	/* Got weights; determine their column position */
 				for (k = Ctrl->W.type, col = GMT_Z; opt->arg[k]; k++) {
@@ -340,6 +349,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'Z':	/* Set new zscore limit */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				Ctrl->Z.limit = fabs (atof (opt->arg));
 				switch (opt->arg[0]) {	/* Look for one-sided outliers */

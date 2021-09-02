@@ -103,6 +103,7 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -118,10 +119,12 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'E':	/* Feature type */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 		 		Ctrl->E.active = true;
  				Ctrl->Z.active = true;	/* Needs this too */
 				break;
 			case 'F':	/* Feature type */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 		 		Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 's':
@@ -142,6 +145,7 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
  				Ctrl->Z.active = true;
 				break;
 			default:	/* Report bad options */

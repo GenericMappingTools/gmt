@@ -111,6 +111,7 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 
 	unsigned int n_errors = 0, k;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	opt = options;	/* The first argument is the inset command */
 	if (opt->option != GMT_OPT_INFILE) {
@@ -133,11 +134,13 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 		switch (opt->option) {
 
 			case 'D':	/* Draw map inset */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
 				break;
 
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->D.inset.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel for the map inset", 3);
@@ -146,6 +149,7 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'M':	/* inset margins */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Gave nothing */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: No margins given.\n");
@@ -169,6 +173,7 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'N':	/* Turn off clipping  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 

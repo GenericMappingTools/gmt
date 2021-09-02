@@ -163,6 +163,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 	int n = 0;
 	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -180,26 +181,31 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Separate closed from open segments  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Write each segment to a separate output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				gmt_M_str_free (Ctrl->D.format);
 				if (opt->arg[0]) Ctrl->D.format = strdup (opt->arg);
 				break;
 			case 'L':	/* Write link information to file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				gmt_M_str_free (Ctrl->L.file);
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Write names of individual files to list(s) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				gmt_M_str_free (Ctrl->Q.file);
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Set threshold distance */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active[0] = true;
 				if (opt->arg[0]) {	/* Specified a distance */
 					char *c = NULL;

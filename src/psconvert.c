@@ -792,6 +792,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	bool grayscale = false, halfbaked = false;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -807,40 +808,49 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Crop settings (plus backwards comptible parsing of older -A option syntax) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				n_errors += psconvert_parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'C':	/* Append extra custom GS options */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				strcat (Ctrl->C.arg, " ");
 				strncat (Ctrl->C.arg, opt->arg, GMT_LEN256-1);	/* Append to list of extra GS options */
 				break;
 			case 'D':	/* Change output directory */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.dir = strdup (opt->arg);
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.dir))) n_errors++;
 				break;
 			case 'E':	/* Set output dpi */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->E.dpi = atof (opt->arg);
 				break;
 			case 'F':	/* Set explicitly the output file name */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.file = gmt_strdup_noquote (opt->arg);
 				gmt_filename_get (Ctrl->F.file);
 				break;
 			case 'G':	/* Set GS path */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				gmt_M_str_free (Ctrl->G.file);
 				Ctrl->G.file = malloc (strlen (opt->arg)+3);	/* Add space for quotes */
 				sprintf (Ctrl->G.file, "%c%s%c", quote, opt->arg, quote);
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				Ctrl->H.active = true;
 				Ctrl->H.factor = atoi (opt->arg);
 				break;
 			case 'I':	/* Set margins/scale modifiers [Deprecated -I: Do not use the ICC profile when converting gray shades] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				n_errors += psconvert_parse_new_I_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'L':	/* Give list of files to convert */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
@@ -854,6 +864,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 						n_errors++;
 						break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M[j].active);
 				if (!n_errors && !Ctrl->M[j].active) {	/* Got -Mb<file> or -Mf<file> */
 					if (!gmt_access (GMT, &opt->arg[1], R_OK)) {	/* The plot file exists */
 						Ctrl->M[j].active = true;
@@ -866,9 +877,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'N':	/* Set media paint, fade, outline */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				n_errors += psconvert_parse_new_N_settings (GMT, opt->arg, Ctrl);
 				break;
 			case 'P':	/* Force Portrait mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->P.active);
 				Ctrl->P.active = true;
 				break;
 			case 'Q':	/* Anti-aliasing settings */
@@ -889,9 +902,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				if (mode < PSC_GEO) Ctrl->Q.bits[mode] = (opt->arg[1]) ? atoi (&opt->arg[1]) : 4;
 				break;
 			case 'S':	/* Write the GS command to STDERR */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Select output format (optionally also request EPS) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if ((j = (int)strlen(opt->arg)) > 1 && opt->arg[j-1] == '-')	/* Old deprecated way of appending a single - sign at end */
 					grayscale = true;
@@ -953,10 +968,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'W':	/* Save world file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				n_errors += psconvert_parse_GE_settings (GMT, opt->arg, Ctrl);
 				break;
 
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				if (GMT->current.setting.run_mode == GMT_CLASSIC)
 					Ctrl->Z.active = true;
 				else {

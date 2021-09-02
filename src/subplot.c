@@ -283,6 +283,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 	struct GMT_OPTION *opt = NULL, *Bframe = NULL, *Bx = NULL, *By = NULL, *Bxy = NULL;
 	struct GMT_PEN pen;	/* Only used to make sure any pen is given with correct syntax */
 	struct GMT_FILL fill;	/* Only used to make sure any fill is given with correct syntax */
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	opt = options;	/* The first argument is the subplot command */
 	if (opt->option != GMT_OPT_INFILE) {
@@ -350,6 +351,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case 'A':	/* Enable subplot tags and get attributes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (Ctrl->In.mode == SUBPLOT_SET) {	/* Override the auto-annotation for this subplot only */
 					strncpy (Ctrl->A.format, opt->arg, GMT_LEN128);
@@ -455,10 +457,12 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'D':	/* Use -B, -C, -M -S, --MAP_*=value and gmt.conf for dimensions and spacing calculations but do not draw any frames or annotations */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'f':	Ctrl->F.mode = SUBPLOT_FIGURE;  n = 1;	break; /* Figure dimension */
@@ -592,12 +596,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 					break;
 				}
-				if (Ctrl->S[k].active) {
-					char *flavor = "cr";
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S%c already specified!\n", flavor[k]);
-					n_errors++;
-					break;
-				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S[k].active);
 				Ctrl->S[k].active = true;	/* Selected this once */
 				/* Determine if we are to place annotations on the minimum or maximum side of the feature, or both sides: */
 				if ((k == GMT_X && opt->arg[1] == 'b') || (k == GMT_Y && opt->arg[1] == 'l')) Ctrl->S[k].annotate = Ctrl->S[k].tick = SUBPLOT_PLACE_AT_MIN;
@@ -625,6 +624,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'M':	/* Margins between subplots */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Got nothing */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: No margins given.\n");
@@ -648,6 +648,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'T':	/* Gave figure heading */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.title = strdup (opt->arg);
 				break;

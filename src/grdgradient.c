@@ -215,6 +215,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Set azimuth(s) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file with variable azimuths exists */
 					Ctrl->A.file = strdup (opt->arg);
@@ -227,6 +228,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'D':	/* Find direction of grad|z| */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				j = 0;
 				while (opt->arg[j]) {
@@ -244,6 +246,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'E':	/* Lambertian family radiance */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'p':	/* Peucker */
@@ -308,6 +311,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':	/* Output grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
@@ -337,6 +341,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Normalization */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;	j = 0;
 				if (opt->arg[0] && strchr ("et", opt->arg[0])) {	/* Got -Ne or -Nt, possibly with arguments */
 					Ctrl->N.mode = (opt->arg[0] == 't') ? 1 : 2;
@@ -367,6 +372,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'Q':	/* Read/write normalization values */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->Q.mode = 1; break;
@@ -379,6 +385,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'S':	/* Slope grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0]) Ctrl->S.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->S.file))) n_errors++;
