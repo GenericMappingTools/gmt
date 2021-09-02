@@ -140,6 +140,9 @@ struct GRDSPOTTER_CTRL {	/* All control options for this program (except common 
 		bool active;	/* Pixel registration */
 		char *file;
 	} G;
+	struct GRDSPOTTER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDSPOTTER_L {	/* -Lfile */
 		bool active;
 		char *file;
@@ -321,6 +324,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSPOTTER_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':

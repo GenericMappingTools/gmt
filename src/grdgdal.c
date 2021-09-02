@@ -50,6 +50,9 @@ struct GRDGDAL_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDGDAL_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDGDAL_M {	/* -M[+r+w] which read-write machinery. GMT or GDAL  */
 		bool active;
 		bool read_gdal, write_gdal;
@@ -160,6 +163,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 

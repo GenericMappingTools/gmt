@@ -114,6 +114,9 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c, or auto */
 	} D;
+	struct GRDMATH_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDMATH_M {	/* -M */
 		bool active;
 	} M;
@@ -511,6 +514,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Map units */

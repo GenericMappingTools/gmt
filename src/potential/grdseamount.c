@@ -91,6 +91,9 @@ struct GRDSEAMOUNT_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDSEAMOUNT_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDSEAMOUNT_L {	/* -L[<hcut>] */
 		bool active;
 		unsigned int mode;
@@ -312,6 +315,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacing */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* List area, volume and mean height only, then exit */

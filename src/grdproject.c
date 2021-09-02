@@ -44,6 +44,9 @@ struct GRDPROJECT_CTRL {
 		bool active;
 		double easting, northing;
 	} C;
+	struct GRDPROJECT_D {	/* -D (for checking only) */
+		bool active;
+	} D;
 	struct GRDPROJECT_E {	/* -E<dpi> */
 		bool active;
 		int dpi;
@@ -152,6 +155,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDPROJECT_CTRL *Ctrl, struct GMT
 						 "Expected -C[<false_easting>/<false_northing>]\n");
 				break;
 			case 'D':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				Ctrl->D.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'D', opt->arg);
 				break;
 			case 'E':	/* Set dpi of grid */

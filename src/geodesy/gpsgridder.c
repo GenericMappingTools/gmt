@@ -60,6 +60,9 @@ struct GPSGRIDDER_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GPSGRIDDER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GPSGRIDDER_L {	/* -L */
 		bool active;
 	} L;
@@ -279,6 +282,8 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* Leave trend alone [Default removes LS plane] */

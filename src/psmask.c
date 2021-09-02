@@ -67,6 +67,9 @@ struct PSMASK_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
+	struct PSMASK_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct PSMASK_L {	/* -L<file>[+i|o] */
 		bool active;
 		int mode;	/* -1 = set inside node to NaN (+i), 0 as is, +1 set outside node to NaN (+o) */
@@ -551,6 +554,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':

@@ -103,6 +103,9 @@ struct DIMFILTER_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct DIMFILTER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct DIMFILTER_L {	/* -L */
 		bool active;
 	} L;
@@ -423,6 +426,8 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 				set++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				set++;
 				break;

@@ -67,6 +67,9 @@ struct GRDBLEND_CTRL {
 		unsigned int mode;
 		int sign;
 	} C;
+	struct GRDBLEND_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDBLEND_Q {	/* -Q */
 		bool active;
 	} Q;
@@ -768,6 +771,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* NaN-value (deprecated 7.29.2021 PW, use -di) */

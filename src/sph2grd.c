@@ -49,16 +49,19 @@ struct SPH2GRD_CTRL {	/* All control options for this program (except common arg
 	struct SPH2GRD_E {	/* -E */
 		bool active;
 	} E;
-	struct SPH2GRD_G {	/* -G<grdfile> */
-		bool active;
-		char *file;
-	} G;
 	struct SPH2GRD_F {	/* -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi> */
 		bool active;
 		bool km;	/* True if filter was specified in km instead of harmonic degree */
 		int mode;
 		double lc, lp, hp, hc;
 	} F;
+	struct SPH2GRD_G {	/* -G<grdfile> */
+		bool active;
+		char *file;
+	} G;
+	struct SPH2GRD_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct SPH2GRD_N {	/* -Ng|m|s */
 		bool active;
 		char mode;
@@ -190,6 +193,8 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':

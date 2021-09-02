@@ -100,7 +100,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		double sensor_offset;
 	} A;
 	struct MGD77LIST_D {	/* -D */
-		bool active;
+		bool active[2];
 		bool mode;	/* true to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
@@ -113,7 +113,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		char *flags;
 	} F;
 	struct MGD77LIST_G {	/* -G */
-		bool active;
+		bool active[2];
 		uint64_t start;	/* Start rec */
 		uint64_t stop;	/* Stop rec */
 	} G;
@@ -136,7 +136,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		double max[3];
 	} Q;
 	struct MGD77LIST_S {	/* -S */
-		bool active;
+		bool active[2];
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
@@ -502,7 +502,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'D':		/* Assign start/stop times for sub-section */
-				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 				 	case 'A':		/* Start date, skip records with time = NaN */
 						Ctrl->D.mode = true;
@@ -513,6 +512,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[0]);
+						Ctrl->D.active[0] = true;
 						break;
 					case 'B':		/* Stop date, skip records with time = NaN */
 						Ctrl->D.mode = true;
@@ -523,6 +524,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Db: Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[1]);
+						Ctrl->D.active[1] = true;
 						break;
 					default:
 						n_errors++;
@@ -579,13 +582,16 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'G':		/* Assign start/stop records for sub-section */
-				Ctrl->G.active = true;
 				switch (opt->arg[0]) {
 				 	case 'a':		/* Start record */
 						Ctrl->G.start = atol (&opt->arg[1]);
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[0]);
+						Ctrl->G.active[0] = true;
 						break;
 					case 'b':		/* Stop record */
 						Ctrl->G.stop = atol (&opt->arg[1]);
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[1]);
+						Ctrl->G.active[1] = true;
 						break;
 					default:
 						n_errors++;
@@ -617,13 +623,13 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'N':	/* Nautical units (knots, nautical miles) */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				if (opt->arg[1] == 'm' && gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -N: Unit m for miles is deprecated; use unit M instead\n");
 					opt->arg[1] = 'M';
 				}
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[N_D]);
 						Ctrl->N.active[N_D] = true;
 						Ctrl->N.unit[N_D][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_D][0])) {
@@ -632,6 +638,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 						}
 						break;
 					case 's':	/* Speed unit selection */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[N_S]);
 						Ctrl->N.active[N_S] = true;
 						Ctrl->N.unit[N_S][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_S][0])) {
@@ -647,13 +654,13 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'Q':		/* Assign min/max values for speeds or azimuth */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				switch (opt->arg[0]) {
 					case 'a':	/* Azimuth min/max */
 						if (sscanf (&opt->arg[1], "%lf/%lf", &Ctrl->Q.min[Q_A], &Ctrl->Q.max[Q_A]) != 2) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Qa: append min/max azimuth limits [0/360]\n");
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_A]);
 						Ctrl->Q.active[Q_A] = true;
 						break;
 					case 'C':	/* Course change min/max using absolute value of cc */
@@ -664,6 +671,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Qc: append min/max course change limits [-360/+360]\n");
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_C]);
 						Ctrl->Q.active[Q_C] = true;
 						break;
 					case 'v':	/* Velocity min/max */
@@ -674,6 +682,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Qv: append min[/max] velocity limits [0]\n");
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_V]);
 						Ctrl->Q.active[Q_V] = true;
 						break;
 					default:
@@ -684,14 +693,17 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'S':		/* Assign start/stop position for sub-section (converted to meters) */
-				Ctrl->S.active = true;
 				if (opt->arg[0] == 'a') {		/* Start position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.start = atof (&opt->arg[1]) * dist_scale;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[0]);
+					Ctrl->S.active[0] = true;
 				}
 				else if (opt->arg[0] == 'b') {	/* Stop position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.stop = atof (&opt->arg[1]) * dist_scale;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[1]);
+					Ctrl->S.active[1] = true;
 				}
 				else
 					n_errors++;

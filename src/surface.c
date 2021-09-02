@@ -73,6 +73,9 @@ struct SURFACE_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct SURFACE_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct SURFACE_J {	/* -G<file> */
 		bool active;
 		char *projstring;
@@ -1766,6 +1769,8 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'J':			/* We have this gal here be cause it needs to be processed separately (after -R) */

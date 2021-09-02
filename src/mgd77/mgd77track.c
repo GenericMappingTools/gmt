@@ -72,7 +72,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 		struct MGD77TRACK_ANNOT info;
 	} A;
 	struct MGD77TRACK_D {	/* -D */
-		bool active;
+		bool active[2];
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
@@ -97,7 +97,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 		bool active;
 	} N;
 	struct MGD77TRACK_S {	/* -S */
-		bool active;
+		bool active[2];
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
@@ -351,7 +351,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'D':		/* Assign start/stop times for sub-section */
-				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
@@ -359,6 +358,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[0]);
+						Ctrl->D.active[0] = true;
 						break;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
@@ -366,6 +367,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[1]);
+						Ctrl->D.active[1] = true;
 						break;
 					default:
 						n_errors++;
@@ -445,14 +448,17 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'S':		/* Assign start/stop position for sub-section (in meters) */
-				Ctrl->S.active = true;
 				if (opt->arg[0] == 'a') {		/* Start position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.start = atof (&opt->arg[1]) * dist_scale;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[0]);
+					Ctrl->S.active[0] = true;
 				}
 				else if (opt->arg[0] == 'b') {	/* Stop position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.stop = atof (&opt->arg[1]) * dist_scale;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[1]);
+					Ctrl->S.active[1] = true;
 				}
 				else
 					n_errors++;

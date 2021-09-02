@@ -82,6 +82,9 @@ struct GMTBINSTATS_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 	} G;
+	struct GMTBINSTATS_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GMTBINSTATS_N {	/* -N */
 		bool active;
 	} N;
@@ -211,6 +214,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'C':	/* -Ca|d|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z */

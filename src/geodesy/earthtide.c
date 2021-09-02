@@ -50,6 +50,9 @@ struct EARTHTIDE_CTRL {
 		bool selected[N_COMPS];
 		int n_selected;
 	} C;
+	struct EARTHTIDE_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct EARTHTIDE_L {	/* -Cx/y */
 		bool active;
 		double x, y;
@@ -1365,6 +1368,8 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* Location for time-series */
