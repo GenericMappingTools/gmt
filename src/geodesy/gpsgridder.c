@@ -1203,7 +1203,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Output on equidistant lattice */
-		unsigned int width = urint (floor (log10 ((double)n_params))) + 1;	/* Width of maximum integer needed */
+		unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
 		int64_t col, row, p, e; /* On Windows 'for' index variables must be signed, so redefine these 3 inside this block only */
 		char file[PATH_MAX] = {""};
 		double *xp = NULL, *yp = NULL, V[4] = {0.0, 0.0, 0.0, 0.0};
