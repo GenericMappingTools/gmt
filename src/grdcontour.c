@@ -948,21 +948,18 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 					}
 					strcat (cmd2, string); break;
 				case 'C':	/* grdcontour, but maybe this is a cpt to be used in grdview as well */
-					got_cpt = true;
+					got_cpt = got_C_cpt = true;
 					strcat (cmd2, string);
 					if (optN->arg[0])	/* Use the -N cpt instead */
 						sprintf (string, " -C%s", optN->arg);
-					else if (gmt_M_file_is_memory (opt->arg)) {	/* CPT passed in as an object */
+					else if (gmt_M_file_is_memory (opt->arg))	/* CPT passed in as an object */
 						strcpy (cptfile, opt->arg);
-						got_C_cpt = true;
-					}
 					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], GMT_CPT_EXTENSION, GMT_CPT_EXTENSION_LEN)) {	/* Gave a -C<cpt> argument, check that it is valid */
 						if (!gmt_file_is_cache (API, opt->arg) && gmt_access (API->GMT, opt->arg, R_OK)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -C: CPT file %s not found\n", opt->arg);
 							bailout (GMT_PARSE_ERROR);
 						}
 						strcpy (cptfile, opt->arg);
-						got_C_cpt = true;
 					}
 					else if (L < 4) {
 						GMT_Report (API, GMT_MSG_ERROR, "Options -C or -N: No CPT given\n");
