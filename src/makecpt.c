@@ -236,6 +236,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	int n;
+	bool q_active = false;
 	unsigned int n_errors = 0, n_files[2] = {0, 0}, n_categorical = 0;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL, *keys = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -378,8 +379,8 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;	/* Did not give increment, just min/max */
 				break;
 			case 'Q':	/* Logarithmic scale */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
-				Ctrl->Q.active = true;
+				n_errors += gmt_M_repeated_module_option (API, q_active);
+				q_active = true;
 				if (opt->arg[0] != '\0' && gmt_M_compat_check (GMT, 5))
 					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -Qi or -Qo are deprecated; Use -T+l for old -Qo and -Q for old -Qi.\n");
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */

@@ -205,11 +205,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Set threshold distance */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[0]);
 				Ctrl->T.active[0] = true;
 				if (opt->arg[0]) {	/* Specified a distance */
 					char *c = NULL;
 					if ((c = strstr (opt->arg, "+s"))) {	/* Gave second distance via +s<dist> */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[1]);
 						c[0] = '\0';	/* Temporarily chop off modifier */
 						Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
 						Ctrl->T.dist[1] = atof (&c[2]);
@@ -220,6 +221,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 						n = sscanf (opt->arg, "%[^/]/%s", A, B);
 						Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
 						if (n == 2) {	/* Gave second distance via /<dist> */
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[1]);
 							Ctrl->T.dist[1] = atof (B);
 							Ctrl->T.active[1] = true;
 						}

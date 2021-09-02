@@ -675,6 +675,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 	 * Any GMT common options will override values set previously by other commands.
 	 */
 
+	bool d_active = false;
 	unsigned int n_errors = 0, n_files = 0, k, pos, mag, T, frames;
 	int n;
 	char txt_a[GMT_LEN32] = {""}, txt_b[GMT_LEN32] = {""}, arg[GMT_LEN64] = {""}, p[GMT_LEN256] = {""};
@@ -804,7 +805,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'D':	/* ALready processed but need to have a case so we can skip */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				n_errors += gmt_M_repeated_module_option (API, d_active);
+				d_active = true;
 				break;
 
 			case 'E':	/* Title/fade sequence  */
@@ -850,7 +852,6 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				break;
 
 			case 'F':	/* Set movie format and optional FFmpeg options */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				if ((c = gmt_first_modifier (GMT, opt->arg, "lost"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'F', c, "lost", &pos, p, &n_errors) && n_errors == 0) {

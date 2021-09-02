@@ -361,19 +361,21 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONVERT_CTRL *Ctrl, struct GMT
 				Ctrl->S.select = gmt_set_text_selection (GMT, opt->arg);
 				break;
 			case 'T':	/* -T[h]: Do not write segment headers, -Td: Skip duplicate records */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				strncpy (p, opt->arg, GMT_BUFSIZ-1);
 				if ((c = strchr (p, 'd'))) { /* Skip duplicates */
 					char *d = NULL;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[EXCLUDE_DUPLICATES]);
 					Ctrl->T.active[EXCLUDE_DUPLICATES] = true;
 					if ((d = strstr (c, ",t")) || (d = strchr (c, 't'))) {	/* Got either d<cols>,t or just t */
 						Ctrl->T.text = true;
 						d[0] = '\0';
 					}
-					if (c[1]) Ctrl->T.C = gmt_set_int_selection (GMT, &c[1]);	/* if we gave -Tdt then no columns and c[1] is 0 */
+					if (c[1]) Ctrl->T.C = gmt_set_int_selection (GMT, &c[1]);	/* If we gave -Tdt then no columns and c[1] is 0 */
 				}
-				if (!p[0] || strchr (p, 'h'))	/* Skip segment headers */
+				if (!p[0] || strchr (p, 'h')) {	/* Skip segment headers */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[EXCLUDE_HEADERS]);
 					Ctrl->T.active[EXCLUDE_HEADERS] = true;
+				}
 				break;
 			case 'W':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);

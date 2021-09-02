@@ -425,8 +425,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSROSE_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->T.active = true;
 				break;
 			case 'W':	/* Get pen width for outline */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				n = (opt->arg[0] == 'v') ? 1 : 0;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active[n]);
 				Ctrl->W.active[n] = true;
 				if (gmt_getpen (GMT, &opt->arg[n], &Ctrl->W.pen[n])) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);

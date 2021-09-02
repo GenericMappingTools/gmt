@@ -197,13 +197,19 @@ static int parse (struct GMT_CTRL *GMT, struct GMTVECTOR_CTRL *Ctrl, struct GMT_
 					Ctrl->A.arg = strdup (opt->arg);
 				break;
 			case 'C':	/* Cartesian coordinates on in|out */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
-				if (opt->arg[0] == 'i')
+				if (opt->arg[0] == 'i') {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[GMT_IN]);
 					Ctrl->C.active[GMT_IN] = true;
-				else if (opt->arg[0] == 'o')
+				}
+				else if (opt->arg[0] == 'o') {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[GMT_OUT]);
 					Ctrl->C.active[GMT_OUT] = true;
-				else if (opt->arg[0] == '\0')
+				}
+				else if (opt->arg[0] == '\0') {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[GMT_IN]);
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active[GMT_OUT]);
 					Ctrl->C.active[GMT_IN] = Ctrl->C.active[GMT_OUT] = true;
+				}
 				else {
 					GMT_Report (API, GMT_MSG_ERROR, "Bad modifier given to -C (%s)\n", opt->arg);
 					n_errors++;

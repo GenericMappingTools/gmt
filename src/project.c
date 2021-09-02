@@ -404,6 +404,7 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
+	bool n_active = false;
 	unsigned int n_errors = 0, j, k, pos;
 	size_t len;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *ce = NULL, *ch = NULL, *c = NULL, dummy;
@@ -518,8 +519,8 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'N': /* Handled above but still in argv */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
-				Ctrl->N.active = true;
+				n_errors += gmt_M_repeated_module_option (API, n_active);
+				n_active = true;
 				break;
 			case 'Q':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
