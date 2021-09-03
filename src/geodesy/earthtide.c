@@ -1325,7 +1325,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -1339,14 +1339,14 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 						case 'y': case 'n':		Ctrl->C.selected[Y_COMP] = Ctrl->G.do_north = true;	break;
 						case 'z': case 'v':		Ctrl->C.selected[Z_COMP] = Ctrl->G.do_up = true;		break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized field argument %s in -C.!\n", p);
+							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized field argument %s in -C.!\n", p);
 							n_errors++;
 							break;
 					}
 					Ctrl->C.n_selected++;
 				}
 				if (Ctrl->C.n_selected == 0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-C requires comma-separated component arguments.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-C requires comma-separated component arguments.\n");
 					n_errors++;
 				}
 				break;
@@ -1354,12 +1354,12 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G can only be set once!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-G can only be set once!\n");
 					n_errors++;
 				}
 				else {
 					Ctrl->G.file[Ctrl->G.n] = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file[Ctrl->G.n]))) n_errors++;;
 				}
 
 				if (!GMT->parent->external) {		/* Copy the name into the 3 slots to simplify the grid writing algo */
@@ -1376,7 +1376,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -C: Expected -C<lon>/<lat>\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C<lon>/<lat>\n");
 					n_errors++;
 				}
 				else {
@@ -1384,7 +1384,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 					                                     false, &Ctrl->L.x), txt_a);
 					n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, txt_b, GMT_IS_LAT,
 					                                     false, &Ctrl->L.y), txt_b);
-					if (n_errors) GMT_Report (GMT->parent, GMT_MSG_ERROR,
+					if (n_errors) GMT_Report (API, GMT_MSG_ERROR,
 					                          "Option -C: Undecipherable argument %s\n", opt->arg);
 				}
 				break;
@@ -1397,7 +1397,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (!opt->arg) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: must provide a valid date\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: must provide a valid date\n", opt->arg);
 					n_errors++;
 					break;
 				}
@@ -1412,7 +1412,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 
 	if (Ctrl->G.active) {
 		if (Ctrl->C.active && Ctrl->C.n_selected > 1 && !GMT->parent->external && !strstr (Ctrl->G.file[X_COMP], "%s")) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
+			GMT_Report (API, GMT_MSG_ERROR, "-G file format must contain a %%s for field type substitution.\n");
 			n_errors++;
 		}
 		if (!Ctrl->C.active) {	/* Default to vertical component */
@@ -1431,7 +1431,7 @@ static int parse (struct GMT_CTRL *GMT, struct EARTHTIDE_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_parse_inc_option (GMT, 'I', "0.5");
 		}
 		else if (!GMT->common.R.inc[0]) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "When setting -R must set -I too!\n");
+			GMT_Report (API, GMT_MSG_ERROR, "When setting -R must set -I too!\n");
 			n_errors++;
 		}
 	}

@@ -113,7 +113,7 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -139,7 +139,7 @@ static int parse (struct GMT_CTRL *GMT, struct KML2GMT_CTRL *Ctrl, struct GMT_OP
 						Ctrl->F.geometry = GMT_IS_POLY;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad feature type. Use s, l or p.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Bad feature type. Use s, l or p.\n");
 						n_errors++;
 						break;
 				}

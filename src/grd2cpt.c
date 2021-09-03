@@ -239,7 +239,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input files */
 				Ctrl->In.active = true;
 				n_files[GMT_IN]++;
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files[GMT_OUT]++ == 0) Ctrl->Out.file = strdup (opt->arg);
@@ -460,7 +460,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2CPT_CTRL *Ctrl, struct GMT_OP
 	}
 
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
 		Ctrl->H.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,

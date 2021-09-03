@@ -251,7 +251,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -265,7 +265,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						Ctrl->A.value[GMT_IN]  = (T2[0] == 'N') ? GMT->session.f_NaN : (gmt_grdfloat)atof (T2);
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -A: Must specify two values\n");
+						GMT_Report (API, GMT_MSG_WARNING, "Option -A: Must specify two values\n");
 						n_errors++;
 					}
 				}
@@ -282,7 +282,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 					case 'p': Ctrl->C.mode = SHAPE_PARA; break;
 					default:
 						if (opt->arg[0]) {
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -G: Unrecognized shape %s\n", opt->arg);
+							GMT_Report (API, GMT_MSG_WARNING, "Option -G: Unrecognized shape %s\n", opt->arg);
 							n_errors++;
 						}
 						else	/* Read from trailing text instead */
@@ -312,7 +312,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacing */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -351,7 +351,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSEAMOUNT_CTRL *Ctrl, struct GM
 						Ctrl->Q.fmode = (f == 'c') ? FLUX_LINEAR : FLUX_GAUSSIAN;
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -Q: Unable to parse the two modes\n");
+						GMT_Report (API, GMT_MSG_WARNING, "Option -Q: Unable to parse the two modes\n");
 						n_errors++;
 					}
 				}

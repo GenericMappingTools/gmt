@@ -209,7 +209,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -296,7 +296,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSEGYZ_CTRL *Ctrl, struct GMT_OP
 			case 'S':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				if (Ctrl->S.active) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Can't specify more than one trace location key\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Can't specify more than one trace location key\n");
 					n_errors++;
 					continue;
 				}

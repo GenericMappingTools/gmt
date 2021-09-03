@@ -149,13 +149,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_IMAGE, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Image placement (old syntax) */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-C option is deprecated, use -Dx instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-C option is deprecated, use -Dx instead.\n");
 				n = sscanf (opt->arg, "%[^/]/%[^/]/%2s", txt_a, txt_b, txt_c);
 				sprintf (string, "x%s/%s", txt_a, txt_b);
 				if (n == 3) {
@@ -168,7 +168,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				Ctrl->D.active = true;
 				p = (string[0]) ? string : opt->arg;	/* If -C was used the string is set */
 				if ((Ctrl->D.refpoint = gmt_get_refpoint (GMT, p, 'D')) == NULL) {	/* Failed basic parsing */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Basic parsing of reference point in %s failed\n", opt->arg);
 					p_fail = true;
 					n_errors++;
 				}
@@ -199,9 +199,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'E':	/* Specify image dpi */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +r instead.\n");
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+r) with the old-style -C option.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "The -E option is deprecated but is accepted.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "For the current -D syntax you should use -D modifier +r instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "Note you cannot mix new-style modifiers (+r) with the old-style -C option.\n");
 				Ctrl->D.dpi = atof (opt->arg);
 				break;
 			case 'F':	/* Specify frame pen */
@@ -225,7 +225,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				else if ((p = strstr (opt->arg, "+t"))) {	/* Transparency color specified */
 					ind = PSIMAGE_TRA;	k = 0; p[0] = '\0';
 					if (opt->arg[0] == '\0') {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: Must specify a color when +t is used\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: Must specify a color when +t is used\n");
 						n_errors++;
 					}
 				}
@@ -246,10 +246,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				else if (opt->arg[k] == '-') {	/* - means set transparency but only in GMT 5 and earlier */
 					if (gmt_M_compat_check (GMT, 5)) {	/* - means set transparency in GMT 5 and earlier */
 						Ctrl->G.rgb[ind][0] = -1;
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-G with color - for transparency is deprecated; give no <color> instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-G with color - for transparency is deprecated; give no <color> instead.\n");
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -G: - is not a color\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -G: - is not a color\n");
 						n_errors++;
 					}
 				}
@@ -268,13 +268,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Replicate image */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-N option is deprecated; use -D modifier +n instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-N option is deprecated; use -D modifier +n instead.\n");
 				n = sscanf (opt->arg, "%d/%d", &Ctrl->D.n_columns, &Ctrl->D.n_rows);
 				if (n == 1) Ctrl->D.n_rows = Ctrl->D.n_columns;
 				n_errors += gmt_M_check_condition (GMT, n < 1, "Option -N: Must give values for replication\n");
 				break;
 			case 'W':	/* Image width */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-W option is deprecated; use -D modifier +w instead.\n");
+				GMT_Report (API, GMT_MSG_COMPAT, "-W option is deprecated; use -D modifier +w instead.\n");
 				if ((n = gmt_get_pair (GMT, opt->arg, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) < 0) n_errors++;
 				if (Ctrl->D.dim[GMT_X] < 0.0) {
 					Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];

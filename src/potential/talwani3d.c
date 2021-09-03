@@ -149,7 +149,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
@@ -171,7 +171,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 						break;
 					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -200,7 +200,7 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 							break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (API, GMT_MSG_WARNING, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;

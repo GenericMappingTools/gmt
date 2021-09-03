@@ -193,7 +193,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 			/* Common parameters */
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg)))
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg)))
 					n_errors++;
 				else
 					n_files++;
@@ -234,7 +234,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 						Ctrl->E.mode = GMT_Y;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Expected -Ex or -Ey\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Expected -Ex or -Ey\n");
 						n_errors++;
 						break;
 				}
@@ -245,12 +245,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 						case 'u': Ctrl->E.val = +1; break;
 						case 'U': Ctrl->E.val = +1; Ctrl->E.type = -1; break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Expected modifiers +l|L|u|U, not +%c\n", c[1]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -E: Expected modifiers +l|L|u|U, not +%c\n", c[1]);
 							n_errors++;
 							break;
 					}
 				}
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Will look for the %s value among %s values along each %s\n", M[(Ctrl->E.val+1)/2], V[Ctrl->E.type+1], T[Ctrl->E.mode]);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Will look for the %s value among %s values along each %s\n", M[(Ctrl->E.val+1)/2], V[Ctrl->E.type+1], T[Ctrl->E.mode]);
 				break;
 			case 'F':	/* World mapping format */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -305,13 +305,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (opt->arg[0] == 's' && gmt_M_compat_check (GMT, 5)) {	/* Old-style format, cast in new syntax */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Ts option is deprecated; please use -T[<dv>][+s][+a[<alpha>]] next time.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-Ts option is deprecated; please use -T[<dv>][+s][+a[<alpha>]] next time.\n");
 					sprintf (text, "%s+s", &opt->arg[1]);
 				}
 				else
 					strncpy (text, opt->arg, GMT_LEN32-1);
 				if (gmt_validate_modifiers (GMT, text, opt->option, "as", GMT_MSG_ERROR)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Syntax is -T[<dv>][+s][+a[<alpha>]] next time.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Syntax is -T[<dv>][+s][+a[<alpha>]] next time.\n");
 					n_errors++;
 				}
 				else {

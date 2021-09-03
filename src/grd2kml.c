@@ -225,7 +225,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -238,7 +238,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 					case 's': Ctrl->A.mode = 1; break;
 					case 'a': Ctrl->A.mode = 2; break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Append either a(bsolute), g(round) or s(eafloor) with optional <altitude>.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Append either a(bsolute), g(round) or s(eafloor) with optional <altitude>.\n");
 						n_errors++;
 						break;
 				}
@@ -269,7 +269,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				if (strchr ("bcgm", opt->arg[0]))
 					Ctrl->F.filter = opt->arg[0];
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Choose among b, c, g, m!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Choose among b, c, g, m!\n");
 					n_errors++;
 				}
 				break;
@@ -306,7 +306,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 					Ctrl->I.constant = true;
 				}
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
 					n_errors++;
 				}
 				break;
@@ -322,7 +322,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				Ctrl->N.prefix = strdup (opt->arg);
 				break;
 			case 'Q':	/* Deprecated colormasking option */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Q is deprecated as transparency is automatically detected\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -Q is deprecated as transparency is automatically detected\n");
 				break;
 			case 'S':	/* Extra levels */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);

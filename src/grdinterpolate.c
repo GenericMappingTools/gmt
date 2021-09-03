@@ -207,7 +207,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 					Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc, char *);
 				}
 				Ctrl->In.file[Ctrl->In.n_files] = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_files]))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_files]))) n_errors++;
 				Ctrl->In.n_files++;
 				break;
 
@@ -244,7 +244,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->G.file = strdup (opt->arg);
 				if (strchr (Ctrl->G.file, '%') == NULL) {	/* Gave a fixed output file, can check */
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				}
 				break;
 			case 'T':	/* Set level sampling spacing */
@@ -281,7 +281,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINTERPOLATE_CTRL *Ctrl, struct
 				}
 				else {
 					Ctrl->S.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->S.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->S.file))) n_errors++;
 				}
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;

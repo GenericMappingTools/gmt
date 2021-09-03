@@ -292,7 +292,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -316,14 +316,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 								else if (unit == 'i')	/* Explicitly said dpu is in inch - do nothing */
 									Ctrl->A.dpu *= 1;	/* Still dpi */
 								else if (isalpha (unit)) {	/* Gave some junk, if not true then unit is now probably the last digit in the dpu */
-									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ar: Your dpu has a bad unit (%c)\n", unit);
+									GMT_Report (API, GMT_MSG_ERROR, "Option -Ar: Your dpu has a bad unit (%c)\n", unit);
 									n_errors++;
 								}
 								else if (GMT->current.setting.proj_length_unit == GMT_CM)	/* Default length unit is cm so convert */
 									Ctrl->A.dpu *= 2.54;	/* Now dpi */
 							}
 							else {
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ar: Your dpu could not be processed (%s)\n", &opt->arg[1]);
+								GMT_Report (API, GMT_MSG_ERROR, "Option -Ar: Your dpu could not be processed (%s)\n", &opt->arg[1]);
 								n_errors++;
 							}
 							if (c) c[0] = '+';	/* Restore */
@@ -333,7 +333,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						break;
 					case 's':	Ctrl->A.mode = PSEVENTS_LINE_SEG; break;	/* Read polygons/lines segments */
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Specify -Ar[<dpu>]|s\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Specify -Ar[<dpu>]|s\n");
 						n_errors++;
 						break;
 				}
@@ -374,7 +374,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt_a[1]);	break;	/* Event time offset */
 						case 'l':	/* Event length override for text */
 							if (id == PSEVENTS_SYMBOL) {
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E[s]: The +l modifier is only allowed for -Et\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -E[s]: The +l modifier is only allowed for -Et\n");
 								n_errors++;
 							}
 							else
@@ -429,7 +429,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						Ctrl->H.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 						Ctrl->H.soff[GMT_Y] = -Ctrl->H.soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
 						if (!Ctrl->H.boxfill) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -H: Modifier +h requires +g as well\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -H: Modifier +h requires +g as well\n");
 							n_errors++;
 						}
 						else if (string[0]) {	/* Gave an argument to +b */
@@ -475,7 +475,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					case 't':	id = 2;	k = 1;	break;	/* Transparency settings */
 					case 'z':	id = 3;	k = 1;	break;	/* Delta z settings */
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Directive %c not valid\n", opt->arg[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Directive %c not valid\n", opt->arg[1]);
 						n_errors++;
 						break;
 				}
@@ -493,7 +493,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (!(opt->arg[0] == '\0' || strchr ("rc", opt->arg[0]))) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
 				else {	/* Create option to pass to plot/text */
@@ -535,7 +535,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				else {	/* Odd symbols not yet possible in this module */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
@@ -568,8 +568,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 							Ctrl->S.mode = 1;
 						if (strstr (txt_a, "-C") || strstr (txt_a, "-G") || strstr (txt_a, "-H") || strstr (txt_a, "-I") || strstr (txt_a, "-J") || strstr (txt_a, "-N") || strstr (txt_a, "-R") \
 						  || strstr (txt_a, "-W") || strstr (txt_a, "-t")) {	/* Sanity check */
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -H, -I, -J, -N, -R, -W, or -t in the %s command\n", Ctrl->Z.module);
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: The -C, -G, -J, -N, -R, -W options may be given to %s instead, while -H, -I, -t are not allowed\n", &events[s]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -H, -I, -J, -N, -R, -W, or -t in the %s command\n", Ctrl->Z.module);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: The -C, -G, -J, -N, -R, -W options may be given to %s instead, while -H, -I, -t are not allowed\n", &events[s]);
 							n_errors++;							
 						}
 						else	/* Keep a copy of the final command that has -S with no symbol-size specified */
@@ -577,7 +577,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				if (Ctrl->Z.cmd == NULL || Ctrl->Z.module == NULL) {	/* Sanity checks */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core [ps]coupe, [ps]meca, or [ps]velo command with valid -S option and fixed size\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Requires a core [ps]coupe, [ps]meca, or [ps]velo command with valid -S option and fixed size\n");
 					n_errors++;
 				}
 				break;
@@ -594,7 +594,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 	if (Ctrl->debug.active) return (GMT_NOERROR);	/* No need the other things */
 
-	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	if (Ctrl->C.active) n_col++;	/* Need to read one more column for z */
 	if (Ctrl->S.mode) n_col++;	/* Must allow for size in input before time and length */
@@ -603,7 +603,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 		n_errors += gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, t_string, type, false, &Ctrl->T.now), t_string);
 	}
 	else if (Ctrl->A.mode != PSEVENTS_LINE_TO_POINTS) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: -T<now> is a required option.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -T: -T<now> is a required option.\n");
 		n_errors++;
 	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;

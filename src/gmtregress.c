@@ -234,13 +234,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -274,7 +274,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					case 'o': Ctrl->E.mode = GMTREGRESS_XY;  break; /* Orthogonal Regression*/
 					case 'r': Ctrl->E.mode = GMTREGRESS_RMA; break; /* RMA Regression*/
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Unrecognized type %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unrecognized type %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -290,7 +290,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					if (k < GMTREGRESS_N_FARGS) {
 						Ctrl->F.col[k] = opt->arg[j];
 						if (!strchr (GMTREGRESS_FARGS, opt->arg[j])) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Choose from -F%s\n", GMTREGRESS_FARGS);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -F: Choose from -F%s\n", GMTREGRESS_FARGS);
 							n_errors++;
 						}
 						Ctrl->F.n_cols++;
@@ -298,7 +298,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					}
 					else {
 						n_errors++;
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Too many output columns selected\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Too many output columns selected\n");
 					}
 				}
 				break;
@@ -311,7 +311,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					case 'r': Ctrl->N.mode = GMTREGRESS_NORM_LMS;	break;
 					case 'w': Ctrl->N.mode = GMTREGRESS_NORM_RLS;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Unrecognized norm %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized norm %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
@@ -338,13 +338,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					else if (opt->arg[k] == 'y') Ctrl->W.col[GMT_Y] = col++;
 					else if (opt->arg[k] == 'r') Ctrl->W.col[GMT_Z] = col++;
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -W: Specify -W[w][x][y][r]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Specify -W[w][x][y][r]\n");
 						n_errors++;
 					}
 					Ctrl->W.n_weights++;
 				}
 				if (Ctrl->W.n_weights > 3) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -W: Gave more than 3 uncertainty types\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -W: Gave more than 3 uncertainty types\n");
 					n_errors++;
 				}
 				break;

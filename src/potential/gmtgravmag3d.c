@@ -264,7 +264,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				Ctrl->T.xyz_file = strdup(opt->arg);
 				n_files++;
 				break;
@@ -302,7 +302,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
@@ -323,7 +323,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 
 				while (gmt_strtok (opt->arg, ",", &pos, p)) {		/* -M+cone,a/b/c+ellipe,a/b/c/d */
 					if (p[0] != '+' && p[1] != 's') {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model option must start with a +s<code> and not %s\n", p);
+						GMT_Report (API, GMT_MSG_ERROR, "Model option must start with a +s<code> and not %s\n", p);
 						return GMT_PARSE_ERROR;
 					}
 					gmt_strtok(opt->arg, "+", &pos, p2);	/* Get the string with the model parameters */
@@ -380,11 +380,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 						nSPHERE++;
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown model code (%s) in -M option\n", &p[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Unknown model code (%s) in -M option\n", &p[1]);
 						return GMT_PARSE_ERROR;
 					}
 					if (err_npar) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
 						return GMT_PARSE_ERROR;
 					}
 				}

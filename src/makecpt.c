@@ -287,7 +287,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
@@ -382,7 +382,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, q_active);
 				q_active = true;
 				if (opt->arg[0] != '\0' && gmt_M_compat_check (GMT, 5))
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -Qi or -Qo are deprecated; Use -T+l for old -Qo and -Q for old -Qi.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -Qi or -Qo are deprecated; Use -T+l for old -Qo and -Q for old -Qi.\n");
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */
 					Ctrl->Q.mode = 2;
 				else			/* Input is log10(z) */
@@ -408,7 +408,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 
 	if (n_categorical) {	/* Must do some shuffling */
 		if (Ctrl->F.key) {
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Cannot set categorical keys with both -T and -F+k.\n");
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Cannot set categorical keys with both -T and -F+k.\n");
 			n_errors++;
 		}
 		else {
@@ -423,7 +423,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	else if (Ctrl->T.T.logarithmic) Ctrl->Q.active = true, Ctrl->Q.mode = 2;
 
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
 		Ctrl->H.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
@@ -437,7 +437,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 
 	if (!Ctrl->S.active) {
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
 			Ctrl->Z.active = false;
 		}
 	}

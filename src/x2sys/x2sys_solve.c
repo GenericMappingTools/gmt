@@ -261,7 +261,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 						Ctrl->E.mode = F_IS_SCALE_OFF;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized model: %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized model: %s\n", opt->arg);
 						n_errors++;
 						break;
 				}

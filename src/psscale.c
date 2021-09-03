@@ -579,7 +579,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 	else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
 		n = sscanf (Ctrl->D.refpoint->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 		if (n < 2) {	/* Gave not enough args  */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: No bar dimensions provided\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -D: No bar dimensions provided\n");
 			n_errors++;
 		}
 		else {	/* First deal with bar dimensions and horizontal vs vertical */
@@ -602,7 +602,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 			}
 		}
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
+	GMT_Report (API, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
 
 	/* Check that the options selected are mutually consistent */
 

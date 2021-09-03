@@ -266,7 +266,7 @@ static int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Supplemental parameters */
@@ -287,7 +287,7 @@ static int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT
 				if (opt->arg[0] == '+') { Ctrl->E.mode = true; k = 1;}
 				else if ((c = strstr (opt->arg, "+i"))) {Ctrl->E.mode = true; c[0] = '\0';}
 				if (opt->arg[k]) Ctrl->E.file = strdup (&opt->arg[k]);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->E.file))) n_errors++;
 				if (c) c[0] = '+';
 				break;
 			case 'F':
@@ -295,7 +295,7 @@ static int parse (struct GMT_CTRL *GMT, struct ORIGINATOR_CTRL *Ctrl, struct GMT
 				Ctrl->F.active = true;	k = 0;
 				if (opt->arg[0] == '+') { Ctrl->F.mode = true; k = 1;}
 				if (opt->arg[k]) Ctrl->F.file = strdup (&opt->arg[k]);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);

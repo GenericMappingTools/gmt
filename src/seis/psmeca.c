@@ -352,7 +352,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -489,7 +489,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 				break;
 			case 'M':	/* Same size for any magnitude [Deprecated 8/14/2021 6.3.0 - use -S+m instead] */
 				if (gmt_M_compat_check (GMT, 6)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-M is deprecated from 6.3.0; use -S modifier +m instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-M is deprecated from 6.3.0; use -S modifier +m instead.\n");
 					Ctrl->S.fixed = true;
 				}
 				else
@@ -616,7 +616,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 		}
 	}
 
-	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	/* Check that the options selected are mutually consistent */
 	n_errors += gmt_M_check_condition(GMT, !Ctrl->S.active, "Must specify -S option\n");

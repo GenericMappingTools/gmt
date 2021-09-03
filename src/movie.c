@@ -705,12 +705,12 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 			case '<':	/* Input file */
 				if (n_files++ > 0) break;
 				Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;;
 				break;
 
 			case 'A':	/* Animated GIF [Deprecated] */
 				if (gmt_M_compat_check (GMT, 6)) {	/* GMT6 compatibility allows -A */
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -A is deprecated - use -F instead\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated - use -F instead\n");
 					Ctrl->F.active[MOVIE_GIF] = Ctrl->F.active[MOVIE_PNG] = Ctrl->animate = true;	/* old -A implies -Fpng */
 					if ((c = gmt_first_modifier (GMT, opt->arg, "ls"))) {	/* Process any modifiers */
 						pos = 0;	/* Reset to start of new word */
@@ -726,7 +726,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 									mag = urint (pow (10.0, floor (log10 ((double)Ctrl->F.stride))));
 									k = Ctrl->F.stride / mag;
 									if (!(k == 1 || k == 2 || k == 5)) {
-										GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
+										GMT_Report (API, GMT_MSG_ERROR, "Option -A+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
 										n_errors++;
 									}
 									break;
@@ -788,7 +788,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				}
 				else {	/* Custom canvas dimensions */
 					if ((n = sscanf (arg, "%[^x]x%[^x]x%lg", txt_a, txt_b, &Ctrl->C.dim[GMT_Z])) != 3) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -C: Requires name of a known format or give width x height x dpu string\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Requires name of a known format or give width x height x dpu string\n");
 						n_errors++;
 					}
 					else {	/* Got three items; let's check */
@@ -845,7 +845,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				if (opt->arg[0])
 					Ctrl->E.file = strdup (opt->arg);
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: No title script or PostScript file given\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: No title script or PostScript file given\n");
 					n_errors++;					
 				}
 				if (c) c[0] = '+';	/* Restore modifiers */
@@ -869,7 +869,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 								mag = urint (pow (10.0, floor (log10 ((double)Ctrl->F.stride))));
 								k = Ctrl->F.stride / mag;
 								if (!(k == 1 || k == 2 || k == 5)) {
-									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
+									GMT_Report (API, GMT_MSG_ERROR, "Option -F+s: Allowable strides are 2,5,10,20,50,100,200,500,...\n");
 									n_errors++;
 								}
 								break;
@@ -886,11 +886,11 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				gmt_str_tolower (arg);	/* ...so we can convert it to lower case for comparisons */
 				if (!strcmp (opt->arg, "none")) {	/* Do not make those PNGs at all, just a master plot */
 					if (gmt_M_compat_check (GMT, 6)) {	/* GMT6 compatibility allows -Fnone */
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -Fnone is deprecated, it is the default action\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "Option -Fnone is deprecated, it is the default action\n");
 						Ctrl->M.exit = true;
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
 						n_errors++;
 					}
 					break;
@@ -904,13 +904,13 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				else if (!strcmp (opt->arg, "webm"))	/* Make a WebM movie */
 					k = MOVIE_WEBM;
 				else if (opt->arg[0]) {	/* Gave another argument which is invalid */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Unrecognized format %s\n", opt->arg);
 					n_errors++;
 					break;
 				}
 				if (opt->arg[0]) {	/* Gave a valid argument */
 					if (Ctrl->F.active[k]) {	/* Can only select a format once */
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Format %s already selected\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Format %s already selected\n", opt->arg);
 						n_errors++;
 						break;
 					}
@@ -1007,7 +1007,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 			case 'L':	/* Label frame and get attributes */
 				Ctrl->L.active = Ctrl->item_active[MOVIE_ITEM_IS_LABEL] = true;
 				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_LABEL]) == GMT_LEN32) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -L: Cannot handle more than %d tags\n", GMT_LEN32);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -L: Cannot handle more than %d tags\n", GMT_LEN32);
 					n_errors++;
 					break;
 				}
@@ -1061,7 +1061,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 			case 'P':	/* Movie progress bar(s) */
 				Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = true;
 				if ((T = Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR]) == GMT_LEN32) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -P: Cannot handle more than %d progress indicators\n", GMT_LEN32);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -P: Cannot handle more than %d progress indicators\n", GMT_LEN32);
 					n_errors++;
 					break;
 				}
@@ -1085,7 +1085,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					default: n_errors += movie_get_item_default (GMT, Ctrl, opt->arg, I);  break;	/* Default pie progression circle (a)*/
 				}
 				if (I->kind == 'F' && I->mode == MOVIE_LABEL_IS_ELAPSED) {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Cannot handle elapsed time with progress indicator (f) yet - skipped\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Cannot handle elapsed time with progress indicator (f) yet - skipped\n");
 					if (Ctrl->n_items[MOVIE_ITEM_IS_PROG_INDICATOR] == 0) Ctrl->P.active = Ctrl->item_active[MOVIE_ITEM_IS_PROG_INDICATOR] = false;
 					continue;
 				}
@@ -1105,7 +1105,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 					k = MOVIE_POSTFLIGHT;	/* foreground */
 				else {	/* Bad option */
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Select -Sb or -Sf\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Select -Sb or -Sf\n");
 					break;
 				}
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->S[k].active);
@@ -1113,7 +1113,7 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 				Ctrl->S[k].active = true;
 				Ctrl->S[k].file = strdup (&opt->arg[1]);
 				if ((Ctrl->S[k].fp = fopen (Ctrl->S[k].file, "r")) == NULL) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S%c: Unable to open file %s\n", opt->arg[0], Ctrl->S[k].file);
 					n_errors++;
 				}
 				break;
@@ -1227,8 +1227,8 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		else if (strstr (Ctrl->In.file, ".bat"))
 			Ctrl->In.mode = GMT_DOS_MODE;
 		else {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to determine script language from the extension of your script %s\n", Ctrl->In.file);
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Allowable extensions are: *.sh, *.bash, *.csh, and *.bat\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to determine script language from the extension of your script %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Allowable extensions are: *.sh, *.bash, *.csh, and *.bat\n");
 			n_errors++;
 		}
 		/* Armed with script language we check that any back/fore-ground scripts are of the same kind */
@@ -1239,24 +1239,24 @@ static int parse (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctrl, struct GMT_OPTI
 		if (!n_errors && Ctrl->E.active) {	/* Must also check the include file, and open it for reading */
 			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->E.file, 2, &Ctrl->E.PS);
 			if (n_errors == 0 && ((Ctrl->E.fp = fopen (Ctrl->E.file, "r")) == NULL)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open title script file %s\n", Ctrl->E.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to open title script file %s\n", Ctrl->E.file);
 				n_errors++;
 			}
 		}
 		if (!n_errors && Ctrl->I.active) {	/* Must also check the include file, and open it for reading */
 			n_errors += gmt_check_language (GMT, Ctrl->In.mode, Ctrl->I.file, 3, NULL);
 			if (n_errors == 0 && ((Ctrl->I.fp = fopen (Ctrl->I.file, "r")) == NULL)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open include script file %s\n", Ctrl->I.file);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to open include script file %s\n", Ctrl->I.file);
 				n_errors++;
 			}
 		}
 		/* Open the main script for reading here */
 		if (n_errors == 0 && ((Ctrl->In.fp = fopen (Ctrl->In.file, "r")) == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open main script file %s\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to open main script file %s\n", Ctrl->In.file);
 			n_errors++;
 		}
 		if (n_errors == 0 && gmt_script_is_classic (GMT, Ctrl->In.fp)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
+			GMT_Report (API, GMT_MSG_ERROR, "Your main script file %s is not in GMT modern mode\n", Ctrl->In.file);
 			n_errors++;
 		}
 		/* Make sure all MOVIE_* variables are used with leading token ($, %) */

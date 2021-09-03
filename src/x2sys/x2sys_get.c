@@ -139,7 +139,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_
 			/* Common parameters */
 
 			case '<':	/* Does not take input! */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No input files expected\n");
+				GMT_Report (API, GMT_MSG_ERROR, "No input files expected\n");
 				n_errors++;
 				break;
 			case '>':	/* Got named output file */

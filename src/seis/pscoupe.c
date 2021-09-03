@@ -582,7 +582,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -644,7 +644,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					}
 					/* Process the first 4 args */
 					if (sscanf (&opt->arg[1], "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d) != 4) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A requires 4 arguments before modifiers.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "-A requires 4 arguments before modifiers.\n");
 						n_errors++;
 					}
 					switch (Ctrl->A.proj_type) {
@@ -673,7 +673,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 							Ctrl->A.p_length = atof (txt_d);
 							break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Unrecognized mode %c.\n", Ctrl->A.proj_type);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -A: Unrecognized mode %c.\n", Ctrl->A.proj_type);
 							n_errors++;
 							break;
 					}
@@ -703,7 +703,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 
 			case 'Z':	/* Backwards compatibility */
 				if (gmt_M_compat_check (GMT, 6))
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Z<cpt> is deprecated; use -C<cpt> instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-Z<cpt> is deprecated; use -C<cpt> instead.\n");
 				else {	/* Hard error */
 					n_errors += gmt_default_error (GMT, opt->option);
 					continue;
@@ -866,7 +866,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 				break;
 			case 'M':	/* Same size for any magnitude [Deprecated 8/14/2021 6.3.0 - use -S+m instead] */
 				if (gmt_M_compat_check (GMT, 6)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-M is deprecated from 6.3.0; use -S modifier +m instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "-M is deprecated from 6.3.0; use -S modifier +m instead.\n");
 					Ctrl->S.fixed = true;
 				}
 				else
@@ -1009,7 +1009,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 
-	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	/* Check that the options selected are mutually consistent */
 

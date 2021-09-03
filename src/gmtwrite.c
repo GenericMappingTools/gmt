@@ -128,7 +128,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_O
 						if (gmt_M_compat_check (GMT, 5))	/* There is no longer a T type but we will honor T as D from GMT5 */
 							Ctrl->T.mode = GMT_IS_DATASET;
 						else {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
 							n_errors++;
 						}
 						break;
@@ -139,7 +139,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_O
 					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
 					case 'u': Ctrl->T.mode = GMT_IS_CUBE;	 break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}

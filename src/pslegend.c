@@ -155,7 +155,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -259,7 +259,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 			case 'G':	/* Inside legend box fill [OBSOLETE] */
 				if (gmt_M_compat_check (GMT, 4)) {
 					char tmparg[GMT_LEN32] = {""};
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -G is deprecated; -F...+g%s was set instead, use this in the future.\n", opt->arg);
 					Ctrl->F.active = true;
 					sprintf (tmparg, "+g%s", opt->arg);
 					if (gmt_getpanel (GMT, opt->option, tmparg, &(Ctrl->F.panel))) {
@@ -272,7 +272,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':	/* Sets linespacing in units of fontsize [1.1] */
-				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -L is deprecated; -D...+l%s was set instead, use this in the future.\n", opt->arg);
+				GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; -D...+l%s was set instead, use this in the future.\n", opt->arg);
 				Ctrl->D.spacing = atof (opt->arg);
 				break;
 
@@ -293,7 +293,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSLEGEND_CTRL *Ctrl, struct GMT_O
 				if (opt->arg[0])
 					Ctrl->T.file = strdup (opt->arg);
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T requires a filename\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T requires a filename\n");
 					n_errors++;
 				}
 				break;

@@ -256,7 +256,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				Ctrl->In.active = true;
 				if (n_files >= 3) {n_errors++; continue; }
 				file[n_files] = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(file[n_files]))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(file[n_files]))) n_errors++;
 				n_files++;
 				break;
 			case '>':	/* Output file (probably for -A via external interface) */

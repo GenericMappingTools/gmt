@@ -124,8 +124,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 			case '<':	/* Input file(s) */
 				Ctrl->fname_in = strdup(opt->arg);
 				n_files++;
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) {	/* No grid found */
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) 	/* No dataset found */
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) {	/* No grid found */
+					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) 	/* No dataset found */
 						n_errors++;
 				}
 				break;
@@ -137,7 +137,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 				if (gmt_get_modifier (opt->arg, 'm', txt_a)) {
 					if (strcmp(txt_a, "hillshade") && strcmp(txt_a, "color-relief") && strcmp(txt_a, "slope") &&
 					    strcmp(txt_a, "TRI") && strcmp(txt_a, "TPI") && strcmp(txt_a, "roughness")) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A option. \"%s\" is not a valid method\n", txt_a);
+						GMT_Report (API, GMT_MSG_ERROR, "-A option. \"%s\" is not a valid method\n", txt_a);
 						n_errors++;
 						break;
 					}
@@ -159,7 +159,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			case 'I':	/* Grid spacings */
@@ -178,7 +178,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 					if (strstr(opt->arg, "+w")) Ctrl->M.write_gdal = true;
 				}
 				if (!Ctrl->M.read_gdal && !Ctrl->M.write_gdal) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-M option. Modifiers must be either +r or +w\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-M option. Modifiers must be either +r or +w\n");
 					n_errors++;
 				}
 				break;

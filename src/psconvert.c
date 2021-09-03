@@ -800,7 +800,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 			case '<':	/* Input files [Allow for file "=" under API calls] */
 				if (strstr (opt->arg, ".ps-")) halfbaked = true;
 				if (!(GMT->parent->external && !strncmp (opt->arg, "=", 1))) {	/* Can check if file is sane */
-					if (!halfbaked && GMT_Get_FilePath (GMT->parent, GMT_IS_POSTSCRIPT, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+					if (!halfbaked && GMT_Get_FilePath (API, GMT_IS_POSTSCRIPT, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				}
 				Ctrl->In.n_files++;
 				break;
@@ -820,7 +820,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.dir = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.dir))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->D.dir))) n_errors++;
 				break;
 			case 'E':	/* Set output dpi */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -853,14 +853,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				break;
 			case 'M':	/* Manage background and foreground layers for PostScript sandwich */
 				switch (opt->arg[0]) {
 					case 'b':	j = 0;	break;	/* background */
 					case 'f':	j = 1;	break;	/* foreground */
 					default:	/* Bad argument */
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Select -Mb or -Sf\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Select -Mb or -Sf\n");
 						n_errors++;
 						break;
 				}
@@ -871,7 +871,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 						Ctrl->M[j].file = strdup (&opt->arg[1]);
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M%c: Cannot read file %s\n", opt->arg[0], &opt->arg[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -M%c: Cannot read file %s\n", opt->arg[0], &opt->arg[1]);
 						n_errors++;
 					}
 				}
@@ -893,7 +893,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				else if (opt->arg[0] == 'p')
 					mode = PSC_GEO;
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -Q option requires setting -Qg, -Qp, or -Qt!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "The -Q option requires setting -Qg, -Qp, or -Qt!\n");
 					n_errors++;
 					continue;
 
@@ -977,7 +977,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 				if (GMT->current.setting.run_mode == GMT_CLASSIC)
 					Ctrl->Z.active = true;
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -Z option is not available in MODERN mode!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "The -Z option is not available in MODERN mode!\n");
 					n_errors++;
 				}
 				break;
@@ -989,7 +989,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 	}
 
 	if (Ctrl->H.active && Ctrl->H.factor <= 1) {	/* Allow -H1 (or zero or bad negative factors) to mean the same as giving no -H */
-			GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Selecting -H1 or less turns off sub-pixeling\n");
+			GMT_Report (API, GMT_MSG_INFORMATION, "Selecting -H1 or less turns off sub-pixeling\n");
 			Ctrl->H.active = false;
 	}
 
@@ -1013,7 +1013,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 		if (Ctrl->M[j].active) {
 			static char *layer[2] = {"Back", "Fore"};
 			if (Ctrl->M[j].file && access (Ctrl->M[j].file, F_OK)) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "-Mb: %sground file %s cannot be found!\n", layer[j], Ctrl->M[j].file);
+				GMT_Report (API, GMT_MSG_ERROR, "-Mb: %sground file %s cannot be found!\n", layer[j], Ctrl->M[j].file);
 				n_errors++;
 			}
 		}

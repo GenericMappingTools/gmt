@@ -264,7 +264,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -273,7 +273,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->OLD_C.active);
 				if (strchr (opt->arg, 'W') || strchr (opt->arg, 'P')) {	/* Old-style -C args, honor them */
 					if (gmt_M_compat_check (GMT, 6))
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
 					else {	/* Hard error */
 						n_errors += gmt_default_error (GMT, opt->option);
 						continue;
@@ -310,7 +310,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				else if (gmt_count_char (GMT, opt->arg, '/') == 1 && strstr (opt->arg, ".cpt") == NULL) {	/* Just old-style coordinates without modifiers */
 					if (gmt_M_compat_check (GMT, 6))
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
 					else {	/* Hard error */
 						n_errors += gmt_default_error (GMT, opt->option);
 						continue;

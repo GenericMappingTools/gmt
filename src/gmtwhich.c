@@ -130,7 +130,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWHICH_CTRL *Ctrl, struct GMT_O
 					case 'u': Ctrl->G.mode = GMT_DATA_DIR;		break;
 					case '\0': case 'l': Ctrl->G.mode = GMT_LOCAL_DIR;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Download mode %s not recognized\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Download mode %s not recognized\n", opt->arg);
 						n_errors++;
 						break;
 				}

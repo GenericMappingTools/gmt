@@ -287,14 +287,14 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 
 	opt = options;	/* The first argument is the subplot command */
 	if (opt->option != GMT_OPT_INFILE) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No subplot command given\n");
+		GMT_Report (API, GMT_MSG_ERROR, "No subplot command given\n");
 		return GMT_PARSE_ERROR;
 	}
 	if (!strncmp (opt->arg, "begin", 5U)) {	/* Initiate new subplot */
 		Ctrl->In.mode = SUBPLOT_BEGIN;
 		opt = opt->next;	/* The required number of rows and columns */
 		if (opt->option != GMT_OPT_INFILE || (n = sscanf (opt->arg, "%dx%d", &Ctrl->N.dim[GMT_Y], &Ctrl->N.dim[GMT_X]) < 1)) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "subplot begin: Unable to extract nrows and ncols from %s\n", opt->arg);
+			GMT_Report (API, GMT_MSG_ERROR, "subplot begin: Unable to extract nrows and ncols from %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
 		Ctrl->N.n_subplots = Ctrl->N.dim[GMT_X] * Ctrl->N.dim[GMT_Y];
@@ -306,12 +306,12 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		opt = opt->next;	/* The row,col part */
 		if (opt && opt->option == GMT_OPT_INFILE) {	/* There is an argument without a leading -? option (thus flagged as input file) */
 			if (isdigit (opt->arg[0]) && (n = sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col)) < 1) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col: %s\n", opt->arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to parse row,col: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
 			}
 			if (n == 1) Ctrl->In.col = INT_MAX;	/* Flag we gave the 1-D index only */
 			if (Ctrl->In.row == GMT_NOTSET || Ctrl->In.col == GMT_NOTSET) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse row,col|index: %s\n", opt->arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Unable to parse row,col|index: %s\n", opt->arg);
 				return GMT_PARSE_ERROR;
 			}
 		}
@@ -324,25 +324,25 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 	}
 	else if (strchr (opt->arg, ',')) {	/* Implicitly called set without using the word "set" */
 		if (sscanf (opt->arg, "%d,%d", &Ctrl->In.row, &Ctrl->In.col) < 2 || Ctrl->In.row < 0 || Ctrl->In.col < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not a subplot command: %s\n", opt->arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Not a subplot command: %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
 		Ctrl->In.mode = SUBPLOT_SET;	/* Implicit set command */
 	}
 	else if (gmt_is_integer (opt->arg)) {	/* Implicitly called set via an index without using the word "set" */
 		if ((Ctrl->In.row = atoi (opt->arg)) < 0) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to parse index: %s\n", opt->arg);
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to parse index: %s\n", opt->arg);
 			return GMT_PARSE_ERROR;
 		}
 		Ctrl->In.col = INT_MAX;	/* Flag we gave the 1-D index only */
 	}
 	else {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Not a recognized subplot command: %s\n", opt->arg);
+		GMT_Report (API, GMT_MSG_ERROR, "Not a recognized subplot command: %s\n", opt->arg);
 		return GMT_PARSE_ERROR;
 	}
 	if (opt) opt = opt->next;	/* Position to the next argument */
 	if (Ctrl->In.mode == SUBPLOT_END && opt && !(opt->option == 'V' && opt->next == NULL)) {	/* Only -V is optional for end or set */
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "subplot end: Unrecognized option: %s\n", opt->arg);
+		GMT_Report (API, GMT_MSG_ERROR, "subplot end: Unrecognized option: %s\n", opt->arg);
 		return GMT_PARSE_ERROR;
 	}
 
@@ -391,7 +391,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 							int pos = gmt_just_decode (GMT, Ctrl->A.placement, PSL_NO_DEF);
 							pos = gmt_flip_justify (GMT, pos);
 							gmt_just_to_code (GMT, pos, Ctrl->A.justify);
-							GMT_Report (GMT->parent, GMT_MSG_DEBUG, "The mirror of %s is %s\n", Ctrl->A.placement, Ctrl->A.justify);
+							GMT_Report (API, GMT_MSG_DEBUG, "The mirror of %s is %s\n", Ctrl->A.placement, Ctrl->A.justify);
 						}
 						if (gmt_get_modifier (opt->arg, 'c', string) && string[0])	/* Clearance for box */
 							if (gmt_get_pair (GMT, string, GMT_PAIR_DIM_DUP, Ctrl->A.clearance) < 0) n_errors++;
@@ -470,7 +470,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					default:	Ctrl->F.mode = SUBPLOT_FIGURE;  n = 0;	break; /* Figure dimension is default */
 				}
 				if (Ctrl->F.mode == SUBPLOT_PANEL && strstr (opt->arg, "+f")) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: +f modifier can only be used with -F[f].\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: +f modifier can only be used with -F[f].\n");
 					n_errors++;
 				}
 				Ctrl->F.w = gmt_M_memory (GMT, NULL, Ctrl->N.dim[GMT_X], double);	/* Normalized fractional widths */
@@ -482,26 +482,26 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					if ((q = strstr (opt->arg, "+f")) != NULL) {	/* Gave optional fractions on how to partition width and height on a per row/col basis */
 						char *ytxt = strchr (&q[2], '/');	/* Find the slash */
 						if (!ytxt) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ff...+f missing slash between width and height fractions.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Ff...+f missing slash between width and height fractions.\n");
 							n_errors++;
 							break;
 						}
-						k = GMT_Get_Values (GMT->parent, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
+						k = GMT_Get_Values (API, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
 						if (k == 1) {	/* Constant, must duplicate */
 							for (j = 1; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.h[j-1];
 						}
 						else if (k < Ctrl->N.dim[GMT_Y]) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ff...+f requires as many height fractions as there are rows.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Ff...+f requires as many height fractions as there are rows.\n");
 							n_errors++;
 						}
 						ytxt[0] = '\0';	/* Chop off the slash at start of height fractions */
-						k = GMT_Get_Values (GMT->parent, &q[2], Ctrl->F.w, Ctrl->N.dim[GMT_X]);
+						k = GMT_Get_Values (API, &q[2], Ctrl->F.w, Ctrl->N.dim[GMT_X]);
 						ytxt[0] = '/';	/* Restore the slash */
 						if (k == 1) {	/* Constant, must duplicate */
 							for (j = 1; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.w[j-1];
 						}
 						else if (k < Ctrl->N.dim[GMT_X]) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ff...+f requires as many width fractions as there are columns.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Ff...+f requires as many width fractions as there are columns.\n");
 							n_errors++;
 						}
 						/* Normalize fractions */
@@ -516,7 +516,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						for (j = 0, f = 1.0 / Ctrl->N.dim[GMT_Y]; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = f;
 					}
 					if (c) c[0] = '\0';	/* Chop off modifiers for now */
-					if ((k = GMT_Get_Values (GMT->parent, &opt->arg[n], Ctrl->F.dim, 2)) == 1) {	/* Square panel, duplicate */
+					if ((k = GMT_Get_Values (API, &opt->arg[n], Ctrl->F.dim, 2)) == 1) {	/* Square panel, duplicate */
 						Ctrl->F.dim[GMT_Y] = Ctrl->F.dim[GMT_X];
 					}
 					/* Since GMT_Get_Values returns in default project length unit, convert to inch */
@@ -527,25 +527,25 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					if (strchr (opt->arg, ',')) {	/* Gave separate widths and heights */
 						char *ytxt = strchr (opt->arg, '/');	/* Find the slash */
 						if (ytxt == NULL) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Fs requires heights and width lists separated by a slash.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Fs requires heights and width lists separated by a slash.\n");
 							return GMT_PARSE_ERROR;
 						}
-						k = GMT_Get_Values (GMT->parent, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
+						k = GMT_Get_Values (API, &ytxt[1], Ctrl->F.h, Ctrl->N.dim[GMT_Y]);
 						if (k == 1) {	/* Constant, must duplicate */
 							for (j = 1; j < Ctrl->N.dim[GMT_Y]; j++) Ctrl->F.h[j] = Ctrl->F.h[j-1];
 						}
 						else if (k < Ctrl->N.dim[GMT_Y]) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Fs requires as many heights as there are rows, or just a constant one.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Fs requires as many heights as there are rows, or just a constant one.\n");
 							n_errors++;
 						}
 						ytxt[0] = '\0';	/* Chop off the slash at start of height fractions */
-						k = GMT_Get_Values (GMT->parent, &opt->arg[1], Ctrl->F.w, Ctrl->N.dim[GMT_X]);
+						k = GMT_Get_Values (API, &opt->arg[1], Ctrl->F.w, Ctrl->N.dim[GMT_X]);
 						ytxt[0] = '/';	/* Restore the slash */
 						if (k == 1) {	/* Constant, must duplicate */
 							for (j = 1; j < Ctrl->N.dim[GMT_X]; j++) Ctrl->F.w[j] = Ctrl->F.w[j-1];
 						}
 						else if (k < Ctrl->N.dim[GMT_X]) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Fs requires as many widths as there are columns, or just a constant one.\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Fs requires as many widths as there are columns, or just a constant one.\n");
 							n_errors++;
 						}
 						/* Since GMT_Get_Values returns in default project length unit, convert to inch */
@@ -553,7 +553,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						for (k = 0; k < Ctrl->N.dim[GMT_Y]; k++) Ctrl->F.h[k] *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 					}
 					else {	/* Just got a fixed width/height for each subplot */
-						if ((k = GMT_Get_Values (GMT->parent, &opt->arg[n], Ctrl->F.dim, 2)) == 1)	/* Square subplot */
+						if ((k = GMT_Get_Values (API, &opt->arg[n], Ctrl->F.dim, 2)) == 1)	/* Square subplot */
 							Ctrl->F.dim[GMT_Y] = Ctrl->F.dim[GMT_X];
 						if (Ctrl->F.dim[GMT_Y] == 0.0) Ctrl->F.reset_h = true;	/* Update h later based on map aspect ratio and width of 1st col */
 
@@ -592,7 +592,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 					default:	k = GMT_Z; 	break;	/* Bad option, see test below */
 				}
 				if (k == GMT_Z) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S requires c or r as first argument!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S requires c or r as first argument!\n");
 					n_errors++;
 					break;
 				}
@@ -618,7 +618,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						Ctrl->S[k].parallel = 1;
 				}
 				else if (gmt_get_modifier (opt->arg, 'p', string)) {	/* Invalid, only for -Sr */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Modifier +p only allowed for -Sr\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Modifier +p only allowed for -Sr\n");
 					n_errors++;
 				}
 				break;
@@ -627,11 +627,11 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 0) {	/* Got nothing */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: No margins given.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -M: No margins given.\n");
 					n_errors++;
 				}
 				else {	/* Process 1, 2, or 4 margin values */
-					k = GMT_Get_Values (GMT->parent, opt->arg, Ctrl->M.margin, 4);
+					k = GMT_Get_Values (API, opt->arg, Ctrl->M.margin, 4);
 					if (k == 1)	/* Same page margin in all directions */
 						Ctrl->M.margin[XHI] = Ctrl->M.margin[YLO] = Ctrl->M.margin[YHI] = Ctrl->M.margin[XLO];
 					else if (k == 2) {	/* Separate page margins in x and y */
@@ -639,7 +639,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 						Ctrl->M.margin[XHI] = Ctrl->M.margin[XLO];
 					}
 					else if (k != 4) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Bad number of margins given.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Bad number of margins given.\n");
 						n_errors++;
 					}
 					/* Since GMT_Get_Values returns values in default project length unit, convert to inch */
@@ -675,7 +675,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		if (B_args) {	/* Got common -B settings that applies to all axes not controlled by -Sr, -Sc */
 			if (!noB) {
 				if ((Bxy && (Bx || By)) || (!Bxy && ((Bx && !By) || (By && !Bx)))) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Must either set -Bx and -By or -B that applies to both axes.\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -B: Must either set -Bx and -By or -B that applies to both axes.\n");
 					n_errors++;
 				}
 			}

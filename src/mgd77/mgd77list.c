@@ -963,7 +963,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 		auxlist[MGD77_AUX_AZ].requested = true;
 		auxlist[MGD77_AUX_SP].requested = true;
 	}
-	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
+	need_distances = (Ctrl->S.active[0] || Ctrl->S.active[1] || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > MG_MAG_STORED || Ctrl->A.code[ADJ_DP] & DP_TWT_X_V_MINUS_CARTER || Ctrl->A.code[ADJ_CT] > CT_U_MINUS_DEPTH || Ctrl->A.code[ADJ_GR] > GR_FAA_STORED || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested ||
 	             auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested ||
@@ -976,7 +976,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 		 if (MGD77_Get_Column (GMT, "lon", &M) == MGD77_NOT_SET)
 		 	strcat (fx_setting, ",lon"), n_sub++;	/* Append lon to requested list */
 	}
-	if ((Ctrl->D.active || need_time || auxlist[MGD77_AUX_SP].requested) && MGD77_Get_Column (GMT, "time", &M) == MGD77_NOT_SET) strcat (fx_setting, ",time"), n_sub++;	/* Append time to requested list */
+	if ((Ctrl->D.active[0] || Ctrl->D.active[1] || need_time || auxlist[MGD77_AUX_SP].requested) && MGD77_Get_Column (GMT, "time", &M) == MGD77_NOT_SET) strcat (fx_setting, ",time"), n_sub++;	/* Append time to requested list */
 	need_twt = (auxlist[MGD77_AUX_CT].requested || (Ctrl->A.code[ADJ_CT] > 0 && Ctrl->A.code[ADJ_CT] <= CT_U_MINUS_CARTER) ||
 	            (Ctrl->A.code[ADJ_DP] > DP_DEPTH_STORED));
 	if (need_twt) {	/* Want to estimate Carter corrections */
@@ -1235,7 +1235,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 			tvalue[kk] = D->values[kk];
 		}
 
-		this_limit_on_time = Ctrl->D.active;	/* Since we might change it below */
+		this_limit_on_time = (Ctrl->D.active[0] || Ctrl->D.active[1]);	/* Since we might change it below */
 		if (time_column != MGD77_NOT_SET && D->H.no_time) {	/* Cannot know if ASCII MGD77 don't have time until after reading */
 			bool faked = false;
 			if (Ctrl->A.fake_times) {	/* Try to make fake times based on duration and distances */
@@ -1336,8 +1336,8 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 			/* Check if rec no, time or distance falls outside specified ranges */
 
-			if (Ctrl->G.active && (rec < Ctrl->G.start || rec > Ctrl->G.stop)) continue;
-			if (Ctrl->S.active && (cumulative_dist < Ctrl->S.start || cumulative_dist >= Ctrl->S.stop)) continue;
+			if ((Ctrl->G.active[0] || Ctrl->G.active[1]) && (rec < Ctrl->G.start || rec > Ctrl->G.stop)) continue;
+			if ((Ctrl->S.active[0] || Ctrl->S.active[1]) && (cumulative_dist < Ctrl->S.start || cumulative_dist >= Ctrl->S.stop)) continue;
 			if (Ctrl->D.mode && gmt_M_is_dnan (dvalue[t_col][rec])) continue;
 			if (this_limit_on_time && (dvalue[t_col][rec] < Ctrl->D.start || dvalue[t_col][rec] >= Ctrl->D.stop)) continue;
 			if (GMT->common.R.active[RSET]) {	/* Check is lat/lon is outside specified area */

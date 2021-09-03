@@ -165,7 +165,7 @@ static int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -182,7 +182,7 @@ static int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct GMT_
 						case 's': Ctrl->F.mode |=  8;	break;
 						case 'c': Ctrl->F.mode |= 16;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
 							n_errors++;
 							break;
 					}

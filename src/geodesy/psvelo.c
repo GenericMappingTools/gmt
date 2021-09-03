@@ -764,7 +764,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
@@ -909,7 +909,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 						Ctrl->S.readmode = READ_CROSS;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Unrecognized symbol code %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized symbol code %s\n", opt->arg);
 						n_errors++;
 						break;
 				}
@@ -938,7 +938,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 					case 'r':	Ctrl->Z.mode = PSVELO_R_MAG;	break;
 					case 'u':	Ctrl->Z.mode = PSVELO_V_USER;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Unrecognized mode %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Unrecognized mode %s\n", opt->arg);
 						n_errors++;
 						break;
 				}
@@ -951,7 +951,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	if (Ctrl->S.symbol == CROSS && !got_shape) Ctrl->A.S.v.v_shape = 0.1;	/* Traditional default cross vector shape if none given */
-	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
         /* Only one allowed */
 	n_set = (Ctrl->S.readmode == READ_ELLIPSE) + (Ctrl->S.readmode == READ_ROTELLIPSE) + (Ctrl->S.readmode == READ_ANISOTROPY) + (Ctrl->S.readmode == READ_CROSS) + (Ctrl->S.readmode == READ_WEDGE);
