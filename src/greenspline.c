@@ -2584,7 +2584,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
-							for (p = 0, wp = 0.0; p < nm; p++) {	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
+							for (p = 0, wp = 0.0; p < nm; p++) {
 								if (alpha[p] == 0.0) continue;	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
 								r = greenspline_get_radius (GMT, V, X[p], 2U);
 								part = G (GMT, r, par, Lz);

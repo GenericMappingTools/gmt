@@ -1259,7 +1259,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 						Out[GMT_Y]->data[ij] = (gmt_grdfloat)V[GPSGRIDDER_V];
 					}
 				}
-				for (k = GMT_X; k <= GMT_Y; k++)gmt_M_memcpy (current[k], Out[k]->data, Out[k]->header->size, gmt_grdfloat);	/* Save current solutions */
+				for (k = GMT_X; k <= GMT_Y; k++) gmt_M_memcpy (current[k], Out[k]->data, Out[k]->header->size, gmt_grdfloat);	/* Save current solutions */
 
 				if (Ctrl->C.movie & GPSGRIDDER_CUM_MOVIE) {	/* Write out the cumulative solution first */
 					for (k = GMT_X; k <= GMT_Y; k++) {	/* Write the two grids with u(x,y) and v(xy) */
