@@ -54,6 +54,7 @@ struct PSIMAGE_CTRL {
 	} F;
 	struct PSIMAGE_G {	/* -G<rgb>[+b|f|t] */
 		bool active;
+		bool set[3];
 		double rgb[3][4];
 	} G;
 	struct PSIMAGE_I {	/* -I */
@@ -257,6 +258,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSIMAGE_CTRL *Ctrl, struct GMT_OP
 					gmt_rgb_syntax (GMT, 'G', " ");
 					n_errors++;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.set[ind]);
+				Ctrl->G.set[ind] = true;
 				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 			case 'I':	/* Invert 1-bit images */

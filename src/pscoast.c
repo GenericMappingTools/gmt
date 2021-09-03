@@ -74,6 +74,7 @@ struct PSCOAST_CTRL {
 	} A;
 	struct PSCOAST_C {	/* -C<fill>[+l|r] */
 		bool active;
+		bool set[2];
 		struct GMT_FILL fill[2];	/* lake and riverlake fill */
 	} C;
 	struct PSCOAST_D {	/* -D<resolution>[+f] */
@@ -296,7 +297,6 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'C':	/* Lake colors */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if ((opt->arg[0] == 'l' || opt->arg[0] == 'r') && opt->arg[1] == '/') {	/* Specific lake or river-lake fill [deprecated syntax] */
 					k = (opt->arg[0] == 'l') ? LAKE : RIVER;
@@ -311,12 +311,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 						gmt_fill_syntax (GMT, 'C', NULL, " ");
 						n_errors++;
 					}
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[k]);
+					Ctrl->C.set[k] = true;
 				}
 				else if (opt->arg[0]) {
 					if (gmt_getfill (GMT, opt->arg, &Ctrl->C.fill[LAKE])) {
 						gmt_fill_syntax (GMT, 'C', NULL, " ");
 						n_errors++;
 					}
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[RIVER]);
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[LAKE]);
+					Ctrl->C.set[RIVER] = Ctrl->C.set[LAKE] = true;
 					Ctrl->C.fill[RIVER] = Ctrl->C.fill[LAKE];
 				}
 				if (c) c[0] = '+';	/* Restore */

@@ -81,7 +81,7 @@ struct SURFACE_CTRL {
 		char *projstring;
 	} J;
 	struct SURFACE_L {	/* -Ll|u<limit> */
-		bool active;
+		bool active[2];
 		char *file[2];
 		double limit[2];
 		unsigned int mode[2];
@@ -1779,11 +1779,11 @@ static int parse (struct GMT_CTRL *GMT, struct SURFACE_CTRL *Ctrl, struct GMT_OP
 				Ctrl->J.projstring = strdup(opt->arg);
 				break;
 			case 'L':	/* Set limits */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'l': case 'u':	/* Lower or upper limits  */
 						end = (opt->arg[0] == 'l') ? LO : HI;	/* Which one it is */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active[end]);
+						Ctrl->L.active[end] = true;
 						n_errors += gmt_M_check_condition (GMT, opt->arg[1] == 0, "Option -L%c: No argument given\n", opt->arg[0]);
 						Ctrl->L.file[end] = strdup (&opt->arg[1]);
 						if (!gmt_access (GMT, Ctrl->L.file[end], F_OK))	/* File exists */

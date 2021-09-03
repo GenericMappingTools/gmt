@@ -114,6 +114,7 @@ struct SUBPLOT_CTRL {
 	} A;
 	struct SUBPLOT_C {	/* -C[side]<clearance>  */
 		bool active;
+		bool set[4];	/* separate active for each side */
 		double gap[4];	/* Internal margins (in inches) on the 4 sides [0/0/0/0] */
 	} C;
 	struct SUBPLOT_D {	/* -D determine correct dimensions but do not draw frames and annotations  */
@@ -277,7 +278,7 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	unsigned int n_errors = 0, error, k, j, n = 0, pos;
+	unsigned int n_errors = 0, error, k, j, n = 0, pos, side;
 	bool B_args = false, noB = false;
 	char *c = NULL, add[2] = {0, 0}, string[GMT_LEN128] = {""}, p[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL, *Bframe = NULL, *Bx = NULL, *By = NULL, *Bxy = NULL;
@@ -443,16 +444,22 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 				Ctrl->C.active = true;
 				if (strchr ("wesnxy", opt->arg[0])) {	/* Gave a side directive */
 					switch (opt->arg[0]) {
-						case 'w':	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 'e':	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 's':	Ctrl->C.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 'n':	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 'x':	Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
-						case 'y':	Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'w':	side = XLO;	Ctrl->C.gap[XLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'e':	side = XHI;	Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 's':	side = YLO;	Ctrl->C.gap[YLO] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'n':	side = YHI;	Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'x':	side = XLO;	Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
+						case 'y':	side = YLO;	Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, &opt->arg[1]); break;
 					}
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
+					Ctrl->C.set[side] = true;
 				}
 				else {	/* Constant clearance on all side */
 					Ctrl->C.gap[XLO] = Ctrl->C.gap[XHI] = Ctrl->C.gap[YLO] = Ctrl->C.gap[YHI] = gmt_M_to_inch (GMT, opt->arg);
+					for (side = XLO; side <= YHI; side++) {
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[side]);
+						Ctrl->C.set[side] = true;
+					}
 				}
 				break;
 
