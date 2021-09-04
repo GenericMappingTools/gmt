@@ -486,12 +486,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Annotation control */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				k = gmt_contour_first_pos (GMT, opt->arg);	/* Do deal with backwards compatibility */
 				if ((c = gmt_first_modifier (GMT, &opt->arg[k], GMT_CONTSPEC_MODS))) {	/* Process any modifiers */
@@ -506,6 +507,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 			case 'C':	/* Contour arguments */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (Ctrl->C.active) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Given more than once\n");
 					n_errors++;
@@ -515,21 +517,26 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_contour_C_arg_parsing (GMT, opt->arg, &Ctrl->C.info);
 				break;
 			case 'D':	/* Dump contours */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'E':	/* Triplet file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.file = strdup (opt->arg);
 				Ctrl->E.active = true;
 				break;
 			case 'G':	/* contour annotation settings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				n_errors += gmt_contlabel_info (GMT, 'G', opt->arg, &Ctrl->contour);
 				break;
 			case 'I':	/* Image triangles */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Draw triangular mesh lines */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->L.pen)) {
 					gmt_pen_syntax (GMT, 'L', NULL, " ", NULL, 0);
@@ -537,9 +544,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'N':	/* Do not clip at boundary */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'Q':	/* Skip small closed contours */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				if (!gmt_access (GMT, opt->arg, F_OK) && gmt_M_compat_check (GMT, 4)) {	/* Must be the now old -Q<indexfile> option, set to -E */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -Q<indexfile> is deprecated; use -E instead.\n");
 					Ctrl->E.file = strdup (opt->arg);
@@ -573,11 +582,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONTOUR_CTRL *Ctrl, struct GMT_
 				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'S':	/* Skip points outside border */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0] == 'p') Ctrl->S.mode = 0;
 				else if (opt->arg[0] == 't') Ctrl->S.mode = 1;
 				break;
 			case 'T':	/* Embellish innermost closed contours */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				if (!gmt_access (GMT, opt->arg, F_OK) && gmt_M_compat_check (GMT, 4)) {	/* Must be the old -T<indexfile> option, set to -E */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -T<indexfile> is deprecated; use -E instead.\n");
 					Ctrl->E.file = strdup (opt->arg);

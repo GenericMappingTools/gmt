@@ -366,7 +366,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			case 'R':	/* Normally processed internally but must be handled separately since it can take 1,2,3 dimensions */
@@ -461,6 +461,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Gradient data: -A<gradientfile>+f<format> */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (strchr (opt->arg, ',')) {	/* Old syntax: Specified a particular format with -A<mode>,<file> */
 					if (gmt_M_compat_check (API->GMT, 5)) {
@@ -492,6 +493,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'C':	/* Solve by SVD */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 'n') Ctrl->C.mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
 				k = (Ctrl->C.mode) ? 1 : 0;
@@ -538,6 +540,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Deprecated syntax */
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if (gmt_M_compat_check (API->GMT, 6) && strlen (opt->arg) == 1) {	/* Old -D<mode> option supported for backwards compatibility (now -Z) */
 					Ctrl->Z.active = true;
 					Ctrl->Z.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
@@ -548,6 +551,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'E':	/* Evaluate misfit -E[<file>]*/
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg) {
 					Ctrl->E.file = strdup (opt->arg);
@@ -555,10 +559,12 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Table or grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				k = gmt_getincn (GMT, opt->arg, Ctrl->I.inc, 3);
 				if (k < 1) {
@@ -569,18 +575,22 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				if (Ctrl->I.inc[GMT_Z] == 0.0) Ctrl->I.inc[GMT_Z] = Ctrl->I.inc[GMT_X];
 				break;
 			case 'L':	/* Leave trend alone */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				break;
 			case 'M':	/* Read or write list of Green's function forces [NOT IMPLEMENTED YET] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				Ctrl->M.file = strdup (opt->arg);
 				break;
 			case 'N':	/* Output locations */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (opt->arg[0]) Ctrl->N.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
 				break;
 			case 'Q':	/* Directional derivative */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (strchr (opt->arg, '/')) {	/* Got 3-D vector components */
 					n_items = sscanf (opt->arg, "%lf/%lf/%lf", &Ctrl->Q.dir[0], &Ctrl->Q.dir[1], &Ctrl->Q.dir[2]);
@@ -598,6 +608,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'S':	/* Spline selection */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.arg = strdup (opt->arg);
 				switch (opt->arg[0]) {
@@ -670,9 +681,10 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'T':	/* Input mask grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file)))
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->T.file)))
 					n_errors++;
 				else  {	/* Obtain -R -I -r from file */
 					struct GMT_GRID *G = NULL;
@@ -692,10 +704,12 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'W':	/* Expect data uncertainty or weights in last column */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w') Ctrl->W.mode = GSP_GOT_WEIGHTS;	/* Got weights instead of sigmas */
 				break;
 			case 'Z':	/* Distance mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				Ctrl->Z.mode = atoi (opt->arg);	/* Since I added 0 to be 1-D later so now this is mode -1 */
 				break;
@@ -2570,7 +2584,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
-							for (p = 0, wp = 0.0; p < nm; p++) {	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
+							for (p = 0, wp = 0.0; p < nm; p++) {
 								if (alpha[p] == 0.0) continue;	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
 								r = greenspline_get_radius (GMT, V, X[p], 2U);
 								part = G (GMT, r, par, Lz);

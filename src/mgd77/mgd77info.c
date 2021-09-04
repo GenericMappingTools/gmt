@@ -147,6 +147,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Get the short list [Default] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'm':
@@ -164,6 +165,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 'f') {
 					Ctrl->M.mode = FORMATTED_HEADER;
@@ -187,6 +189,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))
@@ -203,6 +206,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'E':	/* Get the short list [Default] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				switch (opt->arg[0]) {
 					case 'm':
 					case 'M':
@@ -223,6 +227,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77INFO_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'L':	/* Get the list of institutions and vessels  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'a':

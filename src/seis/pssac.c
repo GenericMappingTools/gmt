@@ -233,13 +233,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				Ctrl->In.active = true;
 				if (n_alloc <= Ctrl->In.n) Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
 				Ctrl->In.file[Ctrl->In.n] = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]))) n_errors++;
 				Ctrl->In.n++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if ((j = sscanf (opt->arg, "%lf/%lf", &Ctrl->C.t0, &Ctrl->C.t1)) != 2) {
 					Ctrl->C.t0 = GMT->common.R.wesn[XLO];
@@ -247,6 +248,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if ((j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b)) < 1) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -D: Give x [and y] offsets\n");
 					n_errors++;
@@ -258,10 +260,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				strncpy(Ctrl->E.keys, &opt->arg[0], GMT_LEN256-1);
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				strncpy(Ctrl->F.keys, &opt->arg[0], GMT_LEN256-1);
 				break;
@@ -271,6 +275,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 					case 'n': j = 1, k = 1; break;
 					default : j = 0, k = 0; break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[k]);
 				Ctrl->G.active[k] = true;
 				pos = j;
 				while (gmt_getmodopt (GMT, 'G', opt->arg, "gtz", &pos, p, &n_errors) && n_errors == 0) {
@@ -296,6 +301,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				j = sscanf(opt->arg, "%[^/]/%s", txt_a, txt_b);
 				if (j == 1) { /* -Msize */
@@ -330,9 +336,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 					Ctrl->M.size *= fabs((GMT->common.R.wesn[YHI]-GMT->common.R.wesn[YLO])/GMT->current.proj.pars[1]);
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				len = strlen (opt->arg) - 1;
 				j = (opt->arg[0] == 'i') ? 1 : 0;
@@ -363,6 +371,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				pos = 0;
 				Ctrl->T.active = true;
 				Ctrl->T.shift = 0.0;  /* default no shift */
@@ -384,6 +393,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSAC_CTRL *Ctrl, struct GMT_OPTI
 				}
 				break;
 			case 'W':		/* Set line attributes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, &opt->arg[0], &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 3);

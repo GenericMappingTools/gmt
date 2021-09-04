@@ -329,16 +329,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Limit GSHHS features */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'C':	/* Near a point test  Syntax -C<pfile>+d<distance> or -C<lon/lat>+d<distance> */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
 					n_errors += gmtselect_old_C_parser (API, opt->arg, Ctrl);
@@ -364,11 +366,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'D':	/* Set GSHHS resolution */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
 				Ctrl->D.force = (opt->arg[1] == '+' && (opt->arg[2] == 'f' || opt->arg[2] == '\0'));
 				break;
 			case 'E':	/* On-boundary selection */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
@@ -382,16 +386,19 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'F':	/* Inside/outside polygon test */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':	/* In-grid selection */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Invert these tests */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				for (j = 0; opt->arg[j]; j++) {
 					switch (opt->arg[j]) {
@@ -410,6 +417,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'L':	/* Near a line test -L<lfile>+d%s[+p]] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if ((c = strstr (opt->arg, "+d")) == NULL) {	/* Must be old syntax or error */
 					n_errors += gmtselect_old_L_parser (API, opt->arg, Ctrl);
@@ -433,6 +441,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSELECT_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'N':	/* Inside/outside GSHHS land */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				strncpy (buffer, opt->arg, GMT_BUFSIZ);
 				if (buffer[strlen(buffer)-1] == 'o' && gmt_M_compat_check (GMT, 4)) { /* Edge is considered outside */

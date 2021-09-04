@@ -58,6 +58,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *show) 
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		switch (opt->option) {
@@ -65,14 +66,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *show) 
 				if (!strncmp (opt->arg, "show", 4U))
 					*show = true;
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized argument %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
 				break;
 			case 'V':	/* This is OK */
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option %s\n", opt->arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option %s\n", opt->arg);
 				n_errors++;
 				break;
 		}

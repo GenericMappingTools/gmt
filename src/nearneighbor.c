@@ -53,6 +53,9 @@ struct NEARNEIGHBOR_CTRL {	/* All control options for this program (except commo
 		bool active;
 		char *file;
 	} G;
+	struct NEARNEIGHBOR_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct NEARNEIGHBOR_N {	/* -N<sectors>[+m<min_sectors>] | -Nn */
 		bool active;
 		unsigned int sectors, min_sectors;
@@ -185,12 +188,13 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'E':	/* NaN value */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0])
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
@@ -200,11 +204,14 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* BCs */
@@ -223,12 +230,13 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* -N<sectors>[+m<minsectors>]] or -Nn */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (opt->arg[0] == 'n')
 					Ctrl->N.mode = 1;
 				else if (opt->arg[0]) {	/* Override default -N4+m4 */
 					if (isalpha(opt->arg[0])) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-N%c is not a valid option\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "-N%c is not a valid option\n", opt->arg[0]);
 						n_errors++;
 						break;
 					}
@@ -246,10 +254,12 @@ static int parse (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *Ctrl, struct G
 				if (Ctrl->N.sectors < Ctrl->N.min_sectors) Ctrl->N.min_sectors = Ctrl->N.sectors;	/* Minimum cannot be larger than desired */
 				break;
 			case 'S':	/* Search radius */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 			case 'W':	/* Use weights */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				break;
 			default:	/* Report bad options */

@@ -166,12 +166,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Write row,col or index instead of x,y */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0] == 'c') Ctrl->C.mode = 0;
 				else if (opt->arg[0] == 'f') Ctrl->C.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->C.mode = 2;
 				break;
 			case 'E':	/* Old ESRI option */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if (gmt_M_compat_check (GMT, 4)) {
 					Ctrl->E.active = true;
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -E is deprecated; use grdconvert instead.\n");
@@ -182,6 +184,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':	/* Select single row or column for output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'c':	Ctrl->L.mode = GRD2XYZ_COL;	Ctrl->L.item = atoi (&opt->arg[1]);	break;
@@ -235,6 +238,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'W':	/* Add weight on output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0] == 'a') {
 					char *c = NULL;
@@ -247,6 +251,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 					Ctrl->W.weight = atof (opt->arg);
 				break;
 			case 'Z':	/* Control format */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				n_errors += gmt_parse_z_io (GMT, opt->arg, &Ctrl->Z);
 					break;

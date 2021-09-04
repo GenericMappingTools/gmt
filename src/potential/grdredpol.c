@@ -46,6 +46,7 @@ struct GRDREDPOL_CTRL {
 		char *file;
 	} In;
 	struct GRDREDPOL_C {	/* -C */
+		bool active;
 		bool use_igrf;
 		bool const_f;
 		double	dec;
@@ -70,6 +71,7 @@ struct GRDREDPOL_CTRL {
 		char	*file;
 	} G;
 	struct GRDREDPOL_M {	/* -M */
+		bool active;
 		bool pad_zero;
 		bool mirror;
 	} M;
@@ -77,14 +79,17 @@ struct GRDREDPOL_CTRL {
 		bool active;
 	} N;
 	struct GRDREDPOL_S {	/* -S, size of working grid */
+		bool active;
 		unsigned int	n_columns;
 		unsigned int	n_rows;
 	} S;
 	struct GRDREDPOL_T {	/* -T */
+		bool active;
 		double	year;
 	} T;
 	struct GRDREDPOL_W {	/* -W */
 		double	wid;
+		bool active;
 	} W;
 	struct GRDREDPOL_Z {	/* -Z */
 		bool active;
@@ -1088,6 +1093,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				Ctrl->C.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->C.dec, &Ctrl->C.dip);
 				Ctrl->C.dec *= D2R;
 				Ctrl->C.dip *= D2R;
@@ -1095,6 +1102,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				Ctrl->C.use_igrf = false;
 				break;
 			case 'E':		/* -Ei<dip_grid> -Ee<dec_grid> */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->C.use_igrf = false;
 				Ctrl->E.dip_grd_only = true;
@@ -1128,6 +1136,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				Ctrl->F.active = true;
 				j = sscanf (opt->arg, "%d/%d", &Ctrl->F.ncoef_row, &Ctrl->F.ncoef_col);
 				if (j == 1) Ctrl->F.compute_n = true;	/* Case of only one filter dimension was given */
 				if (Ctrl->F.ncoef_row %2 != 1 || Ctrl->F.ncoef_col %2 != 1) {
@@ -1140,11 +1150,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.pad_zero = false;
 				for (j = 0; opt->arg[j]; j++) {
 					if (opt->arg[j] == 'm')
@@ -1158,15 +1170,21 @@ static int parse (struct GMT_CTRL *GMT, struct GRDREDPOL_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = false;
 				break;
 			case 'T':
-				sscanf (opt->arg, "%lf", &Ctrl->T.year);
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				Ctrl->T.active = false;
+			sscanf (opt->arg, "%lf", &Ctrl->T.year);
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
+				Ctrl->W.active = false;
 				sscanf (opt->arg, "%lf", &Ctrl->W.wid);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;

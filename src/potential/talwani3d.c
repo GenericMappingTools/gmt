@@ -143,22 +143,26 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *C) {	/* Deal
 static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_OPTION *options) {
 	unsigned int k, n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {		/* Process all the options given */
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			case 'A':	/* Specify z-axis is positive up [Default is down] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.rho = atof (opt->arg);
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'v': Ctrl->F.mode = TALWANI3D_VGG; 	break;
@@ -167,37 +171,48 @@ static int parse (struct GMT_CTRL *GMT, struct TALWANI3D_CTRL *Ctrl, struct GMT_
 						break;
 					case 'g':  Ctrl->F.mode = TALWANI3D_FAA; 	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_WARNING, "Option -F: Unrecognized field %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Length units */
 				k = 0;
 				while (opt->arg[k]) {
 					switch (opt->arg[k]) {
-						case 'h': Ctrl->M.active[TALWANI3D_HOR] = true; break;
-						case 'z': Ctrl->M.active[TALWANI3D_VER] = true; break;
+						case 'h':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI3D_HOR]);
+							Ctrl->M.active[TALWANI3D_HOR] = true;
+							break;
+						case 'z':
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[TALWANI3D_VER]);
+							Ctrl->M.active[TALWANI3D_VER] = true;
+							break;
 						default:
 							n_errors++;
-							GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
+							GMT_Report (API, GMT_MSG_WARNING, "Option -M: Unrecognized modifier %c\n", opt->arg[k]);
 							break;
 					}
 					k++;
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.file = strdup (opt->arg);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file exists */
 					Ctrl->Z.file = strdup (opt->arg);

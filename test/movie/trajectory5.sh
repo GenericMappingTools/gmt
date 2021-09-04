@@ -36,4 +36,4 @@ gmt begin
 gmt end
 EOF
 # Build the product
-gmt movie -C4.8ix2.7ix100 -Ntrajectory5 -Ttimes.txt -Sbpre.sh main.sh -Lf -M10 ${opt} -Z
+gmt movie -C4.8ix2.7ix100 -Ntrajectory5 -Ttimes.txt -Sbpre.sh main.sh -Lf ${opt} -Z

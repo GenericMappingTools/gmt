@@ -104,6 +104,7 @@ struct GRDGRAVMAG3D_CTRL {
 		double	year;
 	} T;
 	struct GRDGRAVMAG3D_Z {	/* -Z */
+		bool active;
 		bool top, bot;
 		double z0;
 	} Z;
@@ -288,18 +289,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.rho = atof(opt->arg) * 6.674e-6;
 				Ctrl->C.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.z_dir = 1;
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->E.thickness = fabs(atof(opt->arg));
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.file = strdup(opt->arg);
 				break;
@@ -308,6 +313,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->G.file = strdup(opt->arg);
 				break;
 			case 'H':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				Ctrl->H.active = true;
 				if (opt->arg[0] == '+' && opt->arg[1] == 'm') {
 					Ctrl->H.magfile = strdup(&opt->arg[2]);        /* Source (magnetization) grid */
@@ -367,6 +373,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (gmt_getinc(GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
@@ -386,6 +393,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 					n_errors += gmt_default_error(GMT, opt->option);
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'n') {
 					Ctrl->Q.n_pad = atoi(&opt->arg[1]);
@@ -408,12 +416,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 	 		case 'S':
-				Ctrl->S.radius = atof(opt->arg) * 1000;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
+				Ctrl->S.radius = atof(opt->arg) * 1000;
 				break;
  			case 'T':
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				Ctrl->Z.active = true;
 				if (opt->arg[0] == 't')      Ctrl->Z.top = true;
 				else if (opt->arg[0] == 'b') Ctrl->Z.bot = true;
 				else

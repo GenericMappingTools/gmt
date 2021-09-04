@@ -90,6 +90,9 @@ struct GRDFILTER_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDFILTER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDFILTER_N {	/* -Np|i|r */
 		bool active;
 		unsigned int mode;	/* 0 is default (i), 1 is replace (r), 2 is preserve (p) */
@@ -721,13 +724,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 #ifdef DEBUG
 			case 'A':	/* Debug mode options */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 's') {
 					Ctrl->A.file = strdup (&opt->arg[1]);
@@ -741,6 +745,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 				break;
 #endif
 			case 'D':	/* Distance mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (strchr (GRDFILTER_MODES, opt->arg[0])) {	/* OK filter code */
 					Ctrl->D.mode = (opt->arg[0] == 'p') ? GRDFILTER_XY_PIXEL : atoi (opt->arg);
@@ -751,6 +756,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'F':	/* Filter */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				if (strchr (GRDFILTER_FILTERS, opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.active = true;
 					Ctrl->F.filter = opt->arg[0];
@@ -765,7 +771,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 					}
 					else if (Ctrl->F.filter == 'f' || Ctrl->F.filter == 'o') {	/* Custom filter or operator */
 						Ctrl->F.file = strdup (&opt->arg[1]);
-						if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) {
+						if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -F%c: Cannot access filter weight or operator grid %s\n",
 								Ctrl->F.filter, &opt->arg[1]);
 							n_errors++;
@@ -843,14 +849,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* New grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Treatment of NaNs */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'i':
@@ -869,6 +879,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILTER_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'T':	/* Toggle registration */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 

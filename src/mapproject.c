@@ -459,12 +459,13 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if ((p = strstr(opt->arg, "+v"))) {	/* Expect two pairs of coordinates per line for azim calculations */
 					Ctrl->A.mode = GMT_MP_PAIR_DIST;
@@ -514,6 +515,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				if (p) p[0] = '+';	/* Restore the +v string */
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0] && (p = strstr (opt->arg, "+m"))) {	/* Gave +m for reset relative offsets to Mercator origin */
 					Ctrl->C.m_origin = true;
@@ -528,19 +530,23 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				if (p) p[0] = '+';	/* Restore modifier */
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.unit = opt->arg[0];
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (gmt_set_datum (GMT, opt->arg, &Ctrl->E.datum) == -1) n_errors++;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.unit = opt->arg[0];
 				will_need_RJ = true;	/* Since -F is used with projections only */
 				break;
 			case 'G':	/* Syntax. Old: -G[<lon0/lat0>][/[+|-]unit][+|-]  New: -G[<lon0/lat0>][+i][+a][+u<unit>][+v] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (mapproject_is_old_G_syntax (GMT, opt->arg))
 					n_errors += mapproject_old_G_parser (GMT, opt->arg, Ctrl);		/* -G[<lon0/lat0>][/[+|-]unit][+|-] */
@@ -604,10 +610,12 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				if (Ctrl->G.unit == 'C') will_need_RJ = true;	/* Since unit C is projected distances */
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				will_need_RJ = true;	/* Since -I means inverse projection */
 				break;
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
@@ -630,11 +638,12 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				if (strchr (GMT_LEN_UNITS, (int)Ctrl->L.unit) && gmt_M_is_cartesian (GMT, GMT_IN))
 					gmt_parse_common_options (GMT, "f", 'f', "g");	/* Implicitly set -fg since user wants spherical distances */
 				if (Ctrl->L.unit == 'c') Ctrl->L.unit = 'X';		/* Internally, this is Cartesian data and distances */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				Ctrl->used[MP_COL_DS] = Ctrl->used[MP_COL_XN] = Ctrl->used[MP_COL_YN] = true;	/* Output dist, xnear, ynear */
 				if (Ctrl->L.unit == 'C') will_need_RJ = true;	/* Since unit C is projected distances */
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->N.mode = GMT_LATSWAP_G2A; break;
@@ -648,15 +657,18 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e')  Ctrl->Q.mode |= 1;
 				if (opt->arg[0] == 'd')  Ctrl->Q.mode |= 2;
 				if (opt->arg[0] == '\0') Ctrl->Q.mode = 3;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				k = 0;
 				if (opt->arg[k] == 'h') {	/* We will process lon, lat, height data */
@@ -676,6 +688,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				                                 "Option -T: Usage -T[h]<from>[/<to>]\n");
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				switch (opt->arg[0]) {
 					case '\0': Ctrl->W.mode = GMT_MP_M_WH; break;
@@ -696,6 +709,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				if ((p = gmt_first_modifier (GMT, opt->arg, "aift"))) {
 					unsigned int pos = 0;

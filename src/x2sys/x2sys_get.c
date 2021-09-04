@@ -131,6 +131,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, k = 0, n_files = 0;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -138,7 +139,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_
 			/* Common parameters */
 
 			case '<':	/* Does not take input! */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No input files expected\n");
+				GMT_Report (API, GMT_MSG_ERROR, "No input files expected\n");
 				n_errors++;
 				break;
 			case '>':	/* Got named output file */
@@ -148,21 +149,26 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			case 'E':	/* Just accept and ignore (it was an option in GMT4 but the default in 5) */
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				if (opt->arg[0] == '+') {k = 1; Ctrl->L.mode = 0;}
 				else if ((c = strstr (opt->arg, "+i"))) {k = 0; Ctrl->L.mode = 0; c[0] = '\0';}
 				if (opt->arg[k]) Ctrl->L.file = strdup (&opt->arg[k]);
@@ -170,14 +176,17 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_GET_CTRL *Ctrl, struct GMT_
 				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.flags = strdup (opt->arg);
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;	/* Undocumented swap option for index.b reading */
 				break;
 			default:	/* Report bad options */
