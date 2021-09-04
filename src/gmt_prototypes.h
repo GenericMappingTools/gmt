@@ -636,19 +636,6 @@ EXTERN_MSC char gmt_shore_adjust_res (struct GMT_CTRL *GMT, char res, bool downl
 EXTERN_MSC struct GMT_DATASET * gmt_get_gshhg_lines (struct GMT_CTRL *GMT, double wesn[], char res, struct GMT_SHORE_SELECT *A);
 EXTERN_MSC int gmt_shore_level_at_point (struct GMT_CTRL *GMT, struct GMT_SHORE *c, int inside, double lon, double lat);
 
-/* gmt_vector.c: */
-
-EXTERN_MSC int gmt_chol_dcmp (struct GMT_CTRL *GMT, double *a, double *d, double *cond, int nr, int n);
-EXTERN_MSC void gmt_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n, int nerr, bool donly);
-EXTERN_MSC void gmt_chol_solv (struct GMT_CTRL *GMT, double *a, double *x, double *y, int nr, int n);
-EXTERN_MSC void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT_DATATABLE *T);
-EXTERN_MSC void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3]);
-EXTERN_MSC void gmt_matrix_vector_mult (struct GMT_CTRL *GMT, double *A, double *b, uint64_t n_rowsA, uint64_t n_colsA, double *c);
-EXTERN_MSC void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C);
-EXTERN_MSC void gmt_matrix_matrix_add (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_colsA, double *C);
-EXTERN_MSC void gmt_make_rot_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double w, double R[3][3]);
-EXTERN_MSC void gmt_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3]);
-
 /* gmt_support.c: */
 
 EXTERN_MSC int gmt_find_macro (char *arg, unsigned int n_macros, struct GMT_MATH_MACRO *M);
@@ -706,6 +693,17 @@ EXTERN_MSC struct GMT_DATASET * gmt_voronoi (struct GMT_CTRL *GMT, double *x_in,
 
 /* gmt_vector.c: */
 
+EXTERN_MSC struct GMT_SINGULAR_VALUE * gmt_sort_svd_values (struct GMT_CTRL *GMT, double *w, unsigned int n);
+EXTERN_MSC int gmt_chol_dcmp (struct GMT_CTRL *GMT, double *a, double *d, double *cond, int nr, int n);
+EXTERN_MSC void gmt_chol_recover (struct GMT_CTRL *GMT, double *a, double *d, int nr, int n, int nerr, bool donly);
+EXTERN_MSC void gmt_chol_solv (struct GMT_CTRL *GMT, double *a, double *x, double *y, int nr, int n);
+EXTERN_MSC void gmt_set_tbl_minmax (struct GMT_CTRL *GMT, unsigned int geometry, struct GMT_DATATABLE *T);
+EXTERN_MSC void gmt_matrix_vect_mult (struct GMT_CTRL *GMT, unsigned int dim, double a[3][3], double b[3], double c[3]);
+EXTERN_MSC void gmt_matrix_vector_mult (struct GMT_CTRL *GMT, double *A, double *b, uint64_t n_rowsA, uint64_t n_colsA, double *c);
+EXTERN_MSC void gmt_matrix_matrix_mult (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_rowsB, uint64_t n_colsB, double *C);
+EXTERN_MSC void gmt_matrix_matrix_add (struct GMT_CTRL *GMT, double *A, double *B, uint64_t n_rowsA, uint64_t n_colsA, double *C);
+EXTERN_MSC void gmt_make_rot_matrix (struct GMT_CTRL *GMT, double lonp, double latp, double w, double R[3][3]);
+EXTERN_MSC void gmt_make_rot_matrix2 (struct GMT_CTRL *GMT, double E[3], double w, double R[3][3]);
 EXTERN_MSC void gmt_cart_to_geo (struct GMT_CTRL *GMT, double *lat, double *lon, double *a, bool degrees);
 EXTERN_MSC void gmt_n_cart_to_geo (struct GMT_CTRL *GMT, uint64_t n, double *x, double *y, double *z, double *lon, double *lat);
 EXTERN_MSC void gmt_geo_to_cart (struct GMT_CTRL *GMT, double lat, double lon, double *a, bool degrees);

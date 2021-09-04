@@ -1387,7 +1387,7 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 
 	uint64_t i;
 	double d, min = DBL_MAX, max = -DBL_MAX;
-	char *type[4] = {"Remove mean", "Normalization mode: Remove %d-D linear trend\n", "Remove mean and normalize data", "Normalization mode: Remove %d-D linear trend and normalize data"};
+	char *type[4] = {"Remove mean\n", "Normalization mode: Remove %d-D linear trend\n", "Remove mean and normalize data\n", "Normalization mode: Remove %d-D linear trend and normalize data\n"};
 	if (mode % 2)
 		GMT_Report (API, GMT_MSG_INFORMATION, type[mode], dim);
 	else
@@ -1445,7 +1445,7 @@ GMT_LOCAL void greenspline_do_normalization (struct GMTAPI_CTRL *API, double **X
 	}
 
 	/* Recover obs(x,y) = w_norm(x,y) * coeff[GSP_RANGE] + coeff[GSP_MEAN_Z] + coeff[GSP_SLP_X]*(x-coeff[GSP_MEAN_X]) + coeff[GSP_SLP_Y]*(y-coeff[GSP_MEAN_Y]) */
-	GMT_Report (API, GMT_MSG_INFORMATION, "2-D Normalization coefficients: zoff = %g xslope = %g xmean = %g yslope = %g ymean = %g range = %g\n",
+	GMT_Report (API, GMT_MSG_INFORMATION, "2-D Normalization coefficients: zoff = %g xslope = %g xmean = %g yslope = %g ymean = %g data range = %g\n",
 		coeff[GSP_MEAN_Z], coeff[GSP_SLP_X], coeff[GSP_MEAN_X], coeff[GSP_SLP_Y], coeff[GSP_MEAN_Y], coeff[GSP_RANGE]);
 }
 
@@ -2145,12 +2145,12 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	if (dimension == 1) gmt_increase_abstime_format_precision (GMT, GMT_X, Ctrl->I.inc[GMT_X]);	/* In case we need more sub-second precision output */
 
-	if (Ctrl->E.active) {	/* Need to duplicate the data since SVD destroys it */
+	/* Remove mean (or LS plane) from data (we will add it back later) */
+
+	if (Ctrl->E.active) {	/* Need to duplicate the data since SVD destroys it. */
 		orig_obs = gmt_M_memory (GMT, NULL, nm, double);
 		gmt_M_memcpy (orig_obs, obs, nm, double);
 	}
-
-	/* Remove mean (or LS plane) from data (we will add it back later) */
 
 	greenspline_do_normalization (API, X, obs, n, normalize, dimension, norm);
 
@@ -2203,7 +2203,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->debug.active) greenspline_dump_system (A, obs, nm, "A Matrix row || obs");	/* Dump the A | b system under debug */
-	if (Ctrl->E.active) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
+	if (Ctrl->E.active && Ctrl->C.movie == GREENSPLINE_NO_MOVIE) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
 		A_orig = gmt_M_memory (GMT, NULL, nm * nm, double);
 		gmt_M_memcpy (A_orig, A, nm * nm, double);
 	}
@@ -2269,22 +2269,19 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_M_memcpy (ssave, s, nm, double);
 		}
 		if (Ctrl->C.file) {	/* Save the singular values for study */
-			double *eig = gmt_M_memory (GMT, NULL, nm, double);
+			struct GMT_SINGULAR_VALUE *eigen = gmt_sort_svd_values (GMT, s, nm);
 			uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, 2};
 			unsigned int col_type[3];
 			struct GMT_DATASET *E = NULL;
-			for (i = 0; i < nm; i++) eig[i] = fabs (s[i]);
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving singular values\n");
 				Return (API->error);
 			}
 			gmt_M_memcpy (col_type, GMT->current.io.col_type[GMT_OUT], 2, unsigned int);	/* Save previous x/y output col types */
 			GMT->current.io.col_type[GMT_OUT][GMT_X] = GMT->current.io.col_type[GMT_OUT][GMT_Y] = GMT_IS_FLOAT;
-			/* Sort singular values into ascending order */
-			gmt_sort_array (GMT, eig, nm, GMT_DOUBLE);
-			for (i = 0, j = nm-1; i < nm; i++, j--) {
+			for (i = 0; i < nm; i++) {
 				E->table[0]->segment[0]->data[GMT_X][i] = i;	/* Let 0 be x-value of the first eigenvalue */
-				E->table[0]->segment[0]->data[GMT_Y][i] = eig[j];
+				E->table[0]->segment[0]->data[GMT_Y][i] = eigen[i].value;
 			}
 			E->table[0]->segment[0]->n_rows = nm;
 			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, "index\teigenvalue", E)) {
@@ -2294,8 +2291,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			gmt_M_memcpy (GMT->current.io.col_type[GMT_OUT], col_type, 2, unsigned int);	/* Restore output col types */
-			GMT_Report (API, GMT_MSG_INFORMATION, "Eigen-values saved to %s\n", Ctrl->C.file);
-			gmt_M_free (GMT, eig);
+			GMT_Report (API, GMT_MSG_INFORMATION, "Eigenvalues saved to %s\n", Ctrl->C.file);
+			gmt_M_free (GMT, eigen);
 
 			if (Ctrl->C.dryrun) {	/* We are done */
 				for (p = 0; p < nm; p++) gmt_M_free (GMT, X[p]);
@@ -2328,6 +2325,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Solve linear equations by Gauss-Jordan elimination\n");
+		if (!Ctrl->W.active) GMT_Report (API, GMT_MSG_INFORMATION, "In the absence of weights, the solution will be exact\n");
 		if ((error = gmt_gaussjordan (GMT, A, (unsigned int)nm, obs)) != 0) {
 			GMT_Report (API, GMT_MSG_ERROR, "You probably have nearly duplicate data constraints\n");
 			GMT_Report (API, GMT_MSG_ERROR, "Preprocess your data with one of the blockm* modules\n");
@@ -2363,7 +2361,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.movie == GREENSPLINE_NO_MOVIE) gmt_M_free (GMT, A);
 
-	if (Ctrl->E.active) {
+	if (Ctrl->E.active && Ctrl->C.movie == GREENSPLINE_NO_MOVIE) {
 		double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2, chi2_sum = 0, pvar_sum = 0.0, *predicted = NULL;
 		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, dimension+3+Ctrl->W.active};
 		unsigned int m = 0;
@@ -2382,16 +2380,14 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		for (j = 0; j < nm; j++) {	/* For each data constraint */
 			predicted[j] = greenspline_undo_normalization (X[j], predicted[j], normalize, norm, dimension);	/* undo normalization first */
 			pvar_sum += predicted[j] * predicted[j];	/* Sum of predicted variance */
-			dev = orig_obs[j] - predicted[j];	/* Deviation between observed and predicted */
+			dev = value = orig_obs[j] - predicted[j];	/* Deviation between observed and predicted */
 			rms += dev * dev;	/* Accumulate rms sum */
 			if (Ctrl->W.active) {	/* If data had uncertainties we also compute the chi2 sum */
 				chi2 = pow (dev * X[j][dimension], 2.0);
 				chi2_sum += chi2;
 			}
-
 			/* Use Welford (1962) algorithm to compute mean and variance */
 			m++;
-			value = orig_obs[j] - predicted[j];
 			dev = value - mean;
 			mean += dev / m;
 			std += dev * (value - mean);
@@ -2400,7 +2396,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 					S->data[p][j] = X[j][p];
 				S->data[p++][j] = orig_obs[j];
 				S->data[p++][j] = predicted[j];
-				S->data[p][j]   = dev;
+				S->data[p][j]   = value;
 				if (Ctrl->W.active)
 					S->data[++p][j] = chi2;
 			}
@@ -2426,6 +2422,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {
 				Return (API->error);
 			}
+			gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
 			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
 				Return (API->error);
 			}
@@ -2524,18 +2521,34 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			 * include the eigenvalues we want. */
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
 			int64_t col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
-			gmt_grdfloat *current = NULL, *previous = NULL;
+			gmt_grdfloat *current = NULL, *previous = NULL, *predicted = NULL;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			char file[PATH_MAX] = {""};
+			struct GMT_SINGULAR_VALUE *eigen = NULL;
+			struct GMT_DATASET *E = NULL;
+			struct GMT_DATASEGMENT *S = NULL;
+
 			current  = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE)
 				previous = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
+			if (Ctrl->E.active) {	/* Want to write out misfit as function of eigenvalue */
+				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 4+Ctrl->W.active};
+				predicted = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
+ 				eigen = gmt_sort_svd_values (GMT, s, nm);	/* Get sorted eigenvalues */
+				if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates per eigenvector\n");
+					Return (API->error);
+				}
+				S = E->table[0]->segment[0];
+				S->n_rows = n_use;
+			}
 
 			for (k = 0; k < n_use; k++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)k);
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
 				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)k, GMT_SVD_EIGEN_NUMBER_CUTOFF);
+				/* obs (hence alpha) now has the solution for the coefficients based on the first k eigenvalues */
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,C,part) shared(Grid,yp,xp,nm,GMT,Ctrl,X,G,par,Lz,alpha,Out,normalize,norm)
@@ -2548,7 +2561,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
 							for (p = 0, wp = 0.0; p < nm; p++) {
-								if (alpha[p] == 0.0) continue;	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
 								r = greenspline_get_radius (GMT, V, X[p], 2U);
 								C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], 2U, false);
 								part = dGdr (GMT, r, par, Lz) * C;
@@ -2559,7 +2571,42 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						}
 					}
 				}
-				else {
+				else {	/* Surface solution */
+					if (Ctrl->E.active) {	/* Compute the history of model misfit */
+						unsigned int m = 0;
+						double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2_sum = 0.0;
+						for (j = 0; j < nm; j++) {	/* For each data constraint */
+							predicted[j] = 0.0;
+							for (p = 0, wp = 0.0; p < nm; p++) {	/* Add contribution for each data constraint */
+								r = greenspline_get_radius (GMT, X[j], X[p], 2U);
+								part = G (GMT, r, par, Lz);
+								wp += alpha[p] * part;	/* Just add this scaled Green's function */
+							}
+							predicted[j] = greenspline_undo_normalization (X[j], wp, normalize, norm, dimension);	/* Undo normalization first */
+							dev = value = orig_obs[j] - predicted[j];	/* Deviation between observed and predicted */
+							rms += dev * dev;	/* Accumulate rms sum */
+							if (Ctrl->W.active) {	/* If data had uncertainties we also compute the chi2 sum */
+								double chi2 = pow (dev * X[j][2], 2.0);
+								chi2_sum += chi2;
+							}
+							/* Use Welford (1962) algorithm to compute mean and variance */
+							m++;
+							dev -= mean;
+							mean += dev / m;
+							std  += dev * (value - mean);
+						}
+						rms = sqrt (rms / nm);
+						std = (m > 1) ? sqrt (std / (m-1.0)) : GMT->session.d_NaN;
+						if (Ctrl->W.active)
+							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg std = %lg chi2 = %lg\n", (int)k, rms, std, chi2_sum);
+						else
+							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg std = %lg\n", (int)k, rms, std);
+						S->data[0][k] = k;
+						S->data[1][k] = eigen[k].value;
+						S->data[2][k] = rms;
+						S->data[3][k] = std;
+						if (Ctrl->W.active) S->data[4][k] = chi2_sum;
+					}
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,part) shared(Grid,yp,xp,nm,GMT,X,G,par,Lz,alpha,Out,normalize,norm)
 #endif
@@ -2570,8 +2617,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							if (gmt_M_is_fnan (Grid->data[ij])) continue;	/* Only do solution where mask is not NaN */
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
-							for (p = 0, wp = 0.0; p < nm; p++) {	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
-								if (alpha[p] == 0.0) continue;	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
+							for (p = 0, wp = 0.0; p < nm; p++) {
 								r = greenspline_get_radius (GMT, V, X[p], 2U);
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;
@@ -2607,6 +2653,23 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						Return (API->error);
 				}
 			}
+			if (Ctrl->E.active) {	/* Compute the history of model misfit as rms */
+				char header[GMT_LEN64] = {""};
+				sprintf (header, "# eigenno\teigenval\trms\tstd");
+				if (Ctrl->W.active) strcat (header, "\tchi2");
+				if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {
+					Return (API->error);
+				}
+				gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
+				for (k = 0; k < 5; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
+					Return (API->error);
+				}
+				gmt_M_free (GMT, eigen);
+				gmt_M_free (GMT, predicted);
+				gmt_M_free (GMT, orig_obs);
+			}
+
 			/* Free temporary arrays */
 			gmt_M_free_aligned (GMT, current);
 			if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE)
@@ -2635,7 +2698,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
 							for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {	/* Loop over Green's function components */
-								if (alpha[p] == 0.0) continue;	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
 								r = greenspline_get_radius (GMT, V, X[p], dimension);
 								C = greenspline_get_dircosine (GMT, Ctrl->Q.dir, V, X[p], dimension, false);
 								part = dGdr (GMT, r, par, Lz) * C;
@@ -2658,7 +2720,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							V[GMT_X] = xp[col];
 							/* Here, V holds the current output coordinates */
 							for (p = 0, wp = 0.0; p < (int64_t)nm; p++) {	/* Loop over Green's function components */
-								if (alpha[p] == 0.0) continue;	/* Note: The alpha's are not sorted so must loop over all then skip the zeros */
 								r = greenspline_get_radius (GMT, V, X[p], dimension);
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;

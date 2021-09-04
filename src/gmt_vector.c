@@ -26,11 +26,6 @@
 
 #define MAX_SWEEPS 50
 
-struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functions */
-	double value;
-	unsigned int order;
-};
-
 /* Local functions */
 
 GMT_LOCAL void gmtvector_switchrows (double *a, double *b, unsigned int n1, unsigned int n2, unsigned int n) {
@@ -1096,6 +1091,18 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 
 */
 
+struct GMT_SINGULAR_VALUE * gmt_sort_svd_values (struct GMT_CTRL *GMT, double *w, unsigned int n) {
+	/* Store the eigenvalues in a structure and sort it so that the array is
+	 * sorted from large to small values while the order reflects the original position in w */
+	struct GMT_SINGULAR_VALUE *eigen = gmt_M_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
+	for (unsigned int i = 0; i < n; i++) {	/* Load in original order from |w| */
+		eigen[i].value = fabs (w[i]);
+		eigen[i].order = i;
+	}
+	qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), gmtvector_compare_singular_values);
+	return (eigen);
+}
+
 int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double cutoff, unsigned int mode) {
 	/* Mode = 0 [GMT_SVD_EIGEN_RATIO_CUTOFF]: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
 	 * mode = 1 [GMT_SVD_EIGEN_NUMBER_CUTOFF]: Use the first cutoff singular values only.
@@ -1131,19 +1138,9 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		 * Either case requires sorted singular values so we need to do some work first.
 		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
 		 * so that the singular values are the individual variance contributions. */
-		struct GMT_SINGULAR_VALUE {
-			double value;
-			unsigned int order;
-		} *eigen;
-		int n_eigen = 0;
-		eigen = gmt_M_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
-		for (i = 0; i < n; i++) {	/* Load in original order from |w| */
-			eigen[i].value = fabs (w[i]);
-			eigen[i].order = i;
-		}
-		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), gmtvector_compare_singular_values);
+		struct GMT_SINGULAR_VALUE *eigen = gmt_sort_svd_values (GMT, w, n);	/* Sort the eigenvalues */
+		int n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 
-		n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if (i < n_eigen) {	/* Still within specified limit so we add this singular value */
 				w[eigen[i].order] = 1.0 / w[eigen[i].order];
