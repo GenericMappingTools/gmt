@@ -1057,8 +1057,8 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active) {	/* Want to estimate misfits between data and model */
 		double here[4], mean = 0.0, std = 0.0, rms = 0.0, *predicted = NULL;
-		double mean_u = 0.0, std_u = 0.0, rms_u = 0.0, dev_u, pvar_sum = 0.0;
-		double mean_v = 0.0, std_v = 0.0, rms_v = 0.0, dev_v, chi2u = 0.0, chi2v = 0.0, chi2u_sum = 0.0, chi2v_sum = 0.0;
+		double mean_u = 0.0, std_u = 0.0, rms_u = 0.0, res_u, dev_u, pvar_sum = 0.0;
+		double mean_v = 0.0, std_v = 0.0, rms_v = 0.0, res_v, dev_v, chi2u = 0.0, chi2v = 0.0, chi2u_sum = 0.0, chi2v_sum = 0.0;
 		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_uv, 8+2*Ctrl->W.active};
 		unsigned int m = 0, m2 = 0;
 		struct GMT_DATASET *E = NULL;
@@ -1094,17 +1094,21 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			}
 #endif
 			gpsgridder_undo_gps_normalization (here, normalize, norm);
-			dev_u = orig_u[j] - here[GPSGRIDDER_U];
-			dev_v = orig_v[j] - here[GPSGRIDDER_V];
+			res_u = orig_u[j] - here[GPSGRIDDER_U];
+			res_v = orig_v[j] - here[GPSGRIDDER_V];
 			pvar_sum += here[GPSGRIDDER_U] * here[GPSGRIDDER_U] + here[GPSGRIDDER_V] * here[GPSGRIDDER_V];
 
-			rms += pow (dev_u, 2.0) + pow (dev_v, 2.0);
+			rms += pow (res_u, 2.0) + pow (res_v, 2.0);
 			if (Ctrl->W.active && Ctrl->W.mode == GPSGRIDDER_GOT_SIG) {	/* If data had uncertainties we also compute the chi2 sum */
-				chi2u = pow (dev_u * X[j][GPSGRIDDER_WU], 2.0);
-				chi2v = pow (dev_v * X[j][GPSGRIDDER_WV], 2.0);
+				chi2u = pow (res_u * X[j][GPSGRIDDER_WU], 2.0);
+				chi2v = pow (res_v * X[j][GPSGRIDDER_WV], 2.0);
 				chi2u_sum += chi2u;
 				chi2v_sum += chi2v;
 			}
+			/* Do rms sums */
+			rms_u += res_u * res_u;
+			rms_v += res_v * res_v;
+			rms += res_u * res_u + res_v * res_v;
 			/* Use Welford (1962) algorithm to compute mean and corrected sum of squares */
 			m++;
 			dev_u = orig_u[j] - mean_u;
@@ -1119,21 +1123,15 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			m2++;
 			mean += dev_v / m2;
 			std += dev_v * (orig_v[j] - mean_v);
-			/* Do rms sums */
-			dev_u = orig_u[j] - here[GPSGRIDDER_U];
-			rms_u += dev_u * dev_u;
-			dev_v = orig_v[j] - here[GPSGRIDDER_V];
-			rms_v += dev_v * dev_v;
-			rms += dev_u * dev_u + dev_v * dev_v;
 			if (Ctrl->E.mode == GPSGRIDDER_MISFIT) {	/* Save information in output dataset */
 				for (p = 0; p < 2; p++)
 					S->data[p][j] = X[j][p];
 				S->data[p++][j] = orig_u[j];
 				S->data[p++][j] = here[GPSGRIDDER_U];
-				S->data[p++][j] = dev_u;
+				S->data[p++][j] = res_u;
 				S->data[p++][j] = orig_v[j];
 				S->data[p++][j] = here[GPSGRIDDER_V];
-				S->data[p][j]   = dev_v;
+				S->data[p][j]   = res_v;
 				if (Ctrl->W.active) {	/* Add the chi^2 terms */
 					S->data[++p][j] = chi2u;
 					S->data[++p][j] = chi2v;
