@@ -256,7 +256,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				Ctrl->In.active = true;
 				if (n_files >= 3) {n_errors++; continue; }
 				file[n_files] = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(file[n_files]))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(file[n_files]))) n_errors++;
 				n_files++;
 				break;
 			case '>':	/* Output file (probably for -A via external interface) */
@@ -270,6 +270,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Get image file name plus driver name to write via GDAL */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (API->external) {	/* External interface only */
 					if ((n = strlen (opt->arg)) > 0) {
@@ -325,6 +326,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 
 			case 'C':	/* CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
@@ -332,6 +334,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 #ifdef HAVE_GDAL
 			case 'D':	/* Get an image via GDAL */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if (!API->external)			/* For externals we actually still need the -D */
 					GMT_Report (API, GMT_MSG_COMPAT,
 					            "Option -D is deprecated; images are detected automatically\n");
@@ -340,6 +343,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				break;
 #endif
 			case 'E':	/* Sets dpi */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0] == 'i')	/* Interpolate image to device resolution */
 					Ctrl->E.device_dpi = true;
@@ -349,6 +353,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 					Ctrl->E.dpi = atoi (opt->arg);
 				break;
 			case 'G':	/* -G<color>[+b|f] 1-bit fore- or background color for transparent masks (was -G[f|b]<color>) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if ((c = strstr (opt->arg, "+b"))) {	/* Background color */
 					ind = GMT_BGD;	off = GMT_FGD;	k = 0;	c[0] = '\0';
@@ -373,6 +378,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'I':	/* Use intensity from grid or constant or auto-compute it */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if ((c = strstr (opt->arg, "+d"))) {	/* Gave +d, so derive intensities from the input grid using default settings */
 					Ctrl->I.derive = true;
@@ -414,12 +420,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				if (c) c[0] = '+';	/* Restore the plus */
 				break;
 			case 'M':	/* Monochrome image */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not clip at map boundary */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'Q':	/* PS3 colormasking */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0]) {	/* Change input image transparency pixel color */
 					if (gmt_getrgb (GMT, opt->arg, Ctrl->Q.rgb)) {	/* Change input image transparency pixel color */
@@ -431,6 +440,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDIMAGE_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'W':	/* Warn if no image, usually when called from grd2kml */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				break;
 

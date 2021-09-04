@@ -159,17 +159,19 @@ static int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0;
 	size_t k, s_length;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'F':	/* Select outputs for data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				s_length = strlen (opt->arg);
 				for (k = 0; k < s_length; k++) {
@@ -180,17 +182,19 @@ static int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct GMT_
 						case 's': Ctrl->F.mode |=  8;	break;
 						case 'c': Ctrl->F.mode |= 16;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
 							n_errors++;
 							break;
 					}
 				}
 				break;
 			case 'L':	/* Select norm */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.norm = (opt->arg[0]) ? atoi(opt->arg) : 3;
 				break;
 			case 'S':	/* Fit small-circle instead [optionally fix the latitude] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
   				if (opt->arg[0]) {
 					Ctrl->S.lat = atof (opt->arg);

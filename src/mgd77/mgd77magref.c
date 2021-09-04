@@ -192,6 +192,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				pos = 0;
 				while ((gmt_strtok (opt->arg, "+", &pos, p))) {
@@ -222,11 +223,14 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'C':	/* Alternate CM4 coefficient file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->CM4->CM4_M.path);
 				Ctrl->CM4->CM4_M.path = strdup (opt->arg);
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				Ctrl->D.active = true;
 				j = 0;
 				if (opt->arg[j] == '-') j++;
 				if ((opt->arg[j] > 47) && (opt->arg[j] < 58)) {	/* arg is numeric -> Dst Index */
@@ -251,7 +255,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'F':
-				Ctrl->CM4->CM4_F.active = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
+				Ctrl->CM4->CM4_F.active = Ctrl->F.active = true;
 
 				pos_slash = 0;
 				for (j = 0; opt->arg[j]; j++) {
@@ -329,10 +334,13 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				Ctrl->G.active = true;
 				Ctrl->CM4->CM4_G.geodetic = false;
 				break;
 			case 'L':
-				Ctrl->CM4->CM4_L.curr = true;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				Ctrl->CM4->CM4_L.curr = Ctrl->L.active = true;
 
 				pos_slash = 0;
 				for (j = 0; opt->arg[j]; j++) {
@@ -381,6 +389,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77MAGREF_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
+				Ctrl->S.active = true;
 				if (opt->arg[0] == 'c') {
 					j = sscanf (&opt->arg[1], "%d/%d", &Ctrl->CM4->CM4_S.nlmf[0], &Ctrl->CM4->CM4_S.nhmf[0]);
 					if (j != 2) {

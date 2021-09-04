@@ -79,6 +79,7 @@ struct GMTGRAVMAG3D_CTRL {
 		double radius;
 	} S;
 	struct GMTGRAVMAG3D_Z {	/* -Z */
+		bool active;
 		double z0;
 	} Z;
 	struct GMTGRAVMAG3D_T {	/* -T */
@@ -263,7 +264,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				Ctrl->T.xyz_file = strdup(opt->arg);
 				n_files++;
 				break;
@@ -272,6 +273,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 
 			case 'B':	/* For backward compat (Undocumented) */
 			case 'H':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				if ((sscanf(opt->arg, "%lf/%lf/%lf/%lf/%lf",
 					    &Ctrl->H.t_dec, &Ctrl->H.t_dip, &Ctrl->H.m_int, &Ctrl->H.m_dec, &Ctrl->H.m_dip)) != 5) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -H: Can't dechiper values\n");
@@ -281,24 +283,29 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->C.active = false;
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.rho = atof (opt->arg) * 6.674e-6;
 				Ctrl->C.active = true;
 				Ctrl->H.active = false;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.dir = 1;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.file = strdup (opt->arg);
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
@@ -306,15 +313,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.zobs = atof (opt->arg);
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 
 				while (gmt_strtok (opt->arg, ",", &pos, p)) {		/* -M+cone,a/b/c+ellipe,a/b/c/d */
 					if (p[0] != '+' && p[1] != 's') {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model option must start with a +s<code> and not %s\n", p);
+						GMT_Report (API, GMT_MSG_ERROR, "Model option must start with a +s<code> and not %s\n", p);
 						return GMT_PARSE_ERROR;
 					}
 					gmt_strtok(opt->arg, "+", &pos, p2);	/* Get the string with the model parameters */
@@ -371,11 +380,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 						nSPHERE++;
 					}
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unknown model code (%s) in -M option\n", &p[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Unknown model code (%s) in -M option\n", &p[1]);
 						return GMT_PARSE_ERROR;
 					}
 					if (err_npar) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Model prism option, wrong number of parametrs.\n");
 						return GMT_PARSE_ERROR;
 					}
 				}
@@ -385,10 +394,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				Ctrl->E.active = true;
 				break;
 	 		case 'S':
-				Ctrl->S.radius = atof (opt->arg) * 1000;
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
+				Ctrl->S.radius = atof (opt->arg) * 1000;
 				break;
 			case 'T': 		/* Selected input mesh format */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (opt->arg[0] == 'p') {
 					char *pch;
@@ -420,6 +431,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
+				Ctrl->Z.active = true;
 				Ctrl->Z.z0 = atof(opt->arg);
 				break;
 			default:	/* Report bad options */
