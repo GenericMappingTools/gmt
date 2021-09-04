@@ -173,7 +173,11 @@ Optional Arguments
     Evaluate the spline exactly at the input data locations and report
     statistics of the misfit (mean, standard deviation, and rms).  Optionally,
     append a filename and we will write the data table, augmented by
-    two extra columns holding the spline estimate and the misfit.
+    two extra columns holding the spline estimate and the misfit. Alternatively,
+    if **-C** is used and history is computed (via one or more of modifiers **+c**
+    and **+i**), then we will instead write a table with eigenvalue number,
+    eigenvalue, percent of model variance explained, rms misfit, and standard
+    deviation of misfit.  If **-W** is used we also append chi-squared.
 
 .. _-I:
 

@@ -271,7 +271,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_grdcube_info_syntax (API->GMT, 'D');
 	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
 	GMT_Usage (API, -2, "Evaluate solution at input locations and report misfit statistics. "
-		"Append a filename to save all data with two extra columns for model and misfit.");
+		"Append a filename to save all data with two extra columns for model and misfit. "
+		"If -C+i|c are used then we instead report the history of model variance and rms misfit.");
 	GMT_Usage (API, 1, "\nI<dx>[/<dy>[/<dz>]]");
 	GMT_Usage (API, -2, "Specify a regular set of output locations. Give equidistant increment for each dimension. "
 		"Requires -R for specifying the output domain.");
@@ -762,6 +763,7 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && dimension != 2, "The -C +c+i modifiers only apply to 2-D gridding\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && strchr (Ctrl->G.file, '%') == NULL && strchr (Ctrl->G.file, '.') == NULL, "Option -G: When -C +i|c is used your grid file must have an extension\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && Ctrl->E.active && Ctrl->E.mode == 0, "Option -E: When -C +i|c is used you must supply a file via -E\n");
 #ifdef DEBUG
 	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -Z options disagree on the dimension\n");
 #else
@@ -2522,6 +2524,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
 			int64_t col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
 			gmt_grdfloat *current = NULL, *previous = NULL, *predicted = NULL;
+			double l2_sum_n = 0.0, l2_sum_k = 0.0;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			char file[PATH_MAX] = {""};
 			struct GMT_SINGULAR_VALUE *eigen = NULL;
@@ -2533,13 +2536,15 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				previous = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
 			if (Ctrl->E.active) {	/* Want to write out misfit as function of eigenvalue */
-				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 4+Ctrl->W.active};
+				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 5+Ctrl->W.active};
 				predicted = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
  				eigen = gmt_sort_svd_values (GMT, s, nm);	/* Get sorted eigenvalues */
 				if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates per eigenvector\n");
 					Return (API->error);
 				}
+				for (k = 0; k < nm; k++)	/* Get sum of squared eigenvalues */
+					l2_sum_n += eigen[k].value * eigen[k].value;
 				S = E->table[0]->segment[0];
 				S->n_rows = n_use;
 			}
@@ -2597,14 +2602,16 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						}
 						rms = sqrt (rms / nm);
 						std = (m > 1) ? sqrt (std / (m-1.0)) : GMT->session.d_NaN;
+						l2_sum_k += eigen[k].value * eigen[k].value;
 						if (Ctrl->W.active)
 							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg std = %lg chi2 = %lg\n", (int)k, rms, std, chi2_sum);
 						else
 							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg std = %lg\n", (int)k, rms, std);
 						S->data[0][k] = k;
 						S->data[1][k] = eigen[k].value;
-						S->data[2][k] = rms;
-						S->data[3][k] = std;
+						S->data[2][k] = 100.0 * l2_sum_k / l2_sum_n;	/* Percent of model variance */
+						S->data[3][k] = rms;
+						S->data[4][k] = std;
 						if (Ctrl->W.active) S->data[4][k] = chi2_sum;
 					}
 #ifdef _OPENMP
@@ -2655,13 +2662,13 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 			if (Ctrl->E.active) {	/* Compute the history of model misfit as rms */
 				char header[GMT_LEN64] = {""};
-				sprintf (header, "# eigenno\teigenval\trms\tstd");
+				sprintf (header, "# eigenno\teigenval\tvar_percent\trms\tstd");
 				if (Ctrl->W.active) strcat (header, "\tchi2");
 				if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {
 					Return (API->error);
 				}
 				gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
-				for (k = 0; k < 5; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
+				for (k = 0; k < 6; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
 				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
 					Return (API->error);
 				}
