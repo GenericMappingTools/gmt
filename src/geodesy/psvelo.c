@@ -979,7 +979,7 @@ GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C
 EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, justify;
 	int plot_ellipse = true, plot_vector = true, error = false;
-	unsigned int xcol = 0, tcol_f = 0, tcol_s = 0, scol = 0, icol = 0;
+	unsigned int xcol = 0, tcol_f = 0, tcol_s = 0, scol = 0, icol = 0, n_warn = 0;
 	bool set_g_fill, set_e_fill;
 
 	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
@@ -1262,8 +1262,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 				}
 				if (plot_vector) {	/* Verify that vector length is not ridiculously small */
 					length = hypot (plot_x-plot_vx, plot_y-plot_vy);	/* Length of arrow */
-					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0)	/* No shrink requested yet head length exceeds total vector length */
-						GMT_Report (API, GMT_MSG_WARNING, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0) {	/* No shrink requested yet head length exceeds total vector length */
+						GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+						n_warn++;
+					}
 					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
 					hw = s * Ctrl->A.S.v.h_width;
 					hl = s * Ctrl->A.S.v.h_length;
@@ -1359,6 +1361,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		PSL_settransparencies (PSL, transp);
 	}
 
+	if (n_warn) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -A\n", n_warn);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of records read: %li\n", n_rec);
 
 	if (!Ctrl->N.active) gmt_map_clip_off (GMT);

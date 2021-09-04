@@ -2013,8 +2013,10 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 						}
 						else
 							S.v.v_width = (float)(current_pen.width * GMT->session.u2u[GMT_PT][GMT_INCH]);
-						if (length < S.v.h_length && S.v.v_norm < 0.0)	/* No shrink requested but head length exceeds total vector length */
+						if (length < S.v.h_length && S.v.v_norm < 0.0) {	/* No shrink requested but head length exceeds total vector length */
 							GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider using +n<norm>\n", n_total_read);
+							n_warn[1]++;
+						}
 						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
 						dim[PSL_VEC_XTIP]        = x_2;
 						dim[PSL_VEC_YTIP]        = y_2;
