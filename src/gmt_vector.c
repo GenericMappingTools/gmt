@@ -1107,6 +1107,7 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	/* Mode = 0 [GMT_SVD_EIGEN_RATIO_CUTOFF]: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
 	 * mode = 1 [GMT_SVD_EIGEN_NUMBER_CUTOFF]: Use the first cutoff singular values only.
 	 * mode = 2 [GMT_SVD_EIGEN_PERCENT_CUTOFF]: Use a percentage fraction of eigenvalues we want.
+	 * mode = 3 [GMT_SVD_EIGEN_VARIANCE_CUTOFF]: Use a percentage fraction of explained variance to find the eigenvalues we want.
 	 * We return the number of eigenvalues that passed the checks.
 	 */
 	double w_abs, sing_max, percent;
@@ -1131,6 +1132,19 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		cutoff = rint (n*cutoff);
 		mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
+	}
+	else if (mode == GMT_SVD_EIGEN_VARIANCE_CUTOFF) {	/* Determine N cutoff via model variance desired */
+		struct GMT_SINGULAR_VALUE *eigen = gmt_sort_svd_values (GMT, w, n);	/* Sort the eigenvalues */
+		double l2_sum_n = 0.0, l2_sum_k = 0.0;
+		for (i = 0; i < n; i++)	/* Get total sum of squared eigenvalues */
+			l2_sum_n += eigen[i].value * eigen[i].value;
+		l2_sum_n *= cutoff;	/* Fraction of explained model variance */
+		for (i = 0; i < n; i++) {	/* Determine i that gives >= variance percentage */
+			l2_sum_k += eigen[i].value * eigen[i].value;
+			if (l2_sum_k >= l2_sum_n) break;
+		}
+		cutoff = i;
+		mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
 	}
 
 	if (mode == GMT_SVD_EIGEN_NUMBER_CUTOFF) {

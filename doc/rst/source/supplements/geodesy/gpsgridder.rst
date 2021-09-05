@@ -14,7 +14,7 @@ Synopsis
 
 **gmt gpsgridder** [ *table* ]
 |-G|\ *outfile*
-[ |-C|\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
+[ |-C|\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**] ]
 [ |-E|\ [*misfitfile*] ]
 [ |-F|\ [**d**\|\ **f**]\ *fudge* ]
 [ |SYN_OPT-I| ]
@@ -75,18 +75,21 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ [[**n**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
+***-C**\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
     Find an approximate surface fit: Solve the linear system for the
-    spline coefficients by SVD and eliminate the contribution from all
-    eigenvalues whose ratio to the largest eigenvalue is less than *value*
-    [Default uses Gauss-Jordan elimination to solve the linear system
-    and fit the data exactly]. Optionally, append **+f**\ *file* to save the
-    eigenvalues to the specified file for further analysis.
-    If **+n** is given then **+f**\ *file* is also required and
-    execution will stop after saving the eigenvalues, i.e., no surface
-    output is produced.  Specify **-Cn**\ *value* to retain only the *value*
-    largest eigenvalues; append % if *value* is the *percentage* of eigenvalues
-    to use instead.  The two other modifiers (**+c** and **i**) can be used to
+    spline coefficients by SVD and eliminate the contribution from smaller
+    eigenvalues [Default uses Gauss-Jordan elimination to solve the linear system
+    and fit the data exactly (unless **-W** is used)]. Append a directive and *value*
+    to determine which eigenvalues to keep: **n** will retain only the *value* largest
+    eigenvalues [all], **r** [Default] will retain those eigenvalues whose ratio
+    to the largest eigenvalue is less than *value* [0], while **v** will retain
+    the eigenvalues needed to ensure the model prediction variance fraction is at
+    least *value*. For **n** and **v** you may append % if *value* is given as a
+    *percentage* of the total instead.  Several optional modifiers are available:
+    Append **+f**\ *file* to save the eigenvalues to the specified file for further
+    analysis. If **+n** is given then **+f**\ *file* is required and execution will
+    stop after saving the eigenvalues, i.e., no surface output is produced.
+    The two other modifiers (**+c** and **+i**) can be used to
     write intermediate grids, two (*u* and *v*) per eigenvalue, and we will
     automatically insert "_cum_###" or "_inc_###" before the file extension,
     using a fixed integer format for the eigenvalue number starting at 0.  The
@@ -200,11 +203,10 @@ Examples
 --------
 
 To compute the *u* and *v* strain rate grids from the GPS data set *gps.txt*,
-containing *x y u v du dv*, on a 2x2 arc minute grid for California, try
+containing *x y u v du dv*, on a 2x2 arc minute grid for California, and just
+using about 25% of the largest eigenvalues, try::
 
-   ::
-
-    gmt gpsgridder gps.txt -R-125/-114/31/41 -I2m -fg -W -r -Ggps_strain_%s.nc -V
+    gmt gpsgridder gps.txt -R-125/-114/31/41 -I2m -fg -W -r -Cn25% -Ggps_strain_%s.nc -V
 
 
 References

@@ -39,7 +39,7 @@
 /* Control structure for gpsgridder */
 
 struct GPSGRIDDER_CTRL {
-	struct GPSGRIDDER_C {	/* -C[[n]<cutoff>[%]][+c][+f<file>][+i][+n] */
+	struct GPSGRIDDER_C {	/* -C[[n|r|v]<cutoff>[%]][+c][+f<file>][+i][+n] */
 		bool active;
 		bool dryrun;	/* Only report eigenvalues */
 		unsigned int movie;	
@@ -144,6 +144,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct GPSGRIDDER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->C.mode = GMT_SVD_EIGEN_RATIO_CUTOFF;
 	C->S.nu = 0.5;	/* Poisson's ratio */
 	C->F.fudge = 0.01;	/* Default fudge scale for r_min */
 	return (C);
@@ -161,7 +162,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
 		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -183,17 +184,19 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_outgrid_syntax (API, 'G', "Give name of output table (if -N) or a grid (we automatically insert _u and _v before extension.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
-	GMT_Usage (API, 1, "\n-C[[n]<val>[%%]][+c][+f<file>][+i][+n]");
-	GMT_Usage (API, -2, "Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0]. "
-		"Use -Cn to select only the largest <val> eigenvalues [all]. "
-		"Use <val>%% to select a percentage of the eigenvalues instead [100] "
-		"[Default uses Gauss-Jordan elimination to solve the linear system].");
-	GMT_Usage (API, 3, "+c Vreate a series of intermediate grids for each eigenvalue holding the cumulative result. "
-		"We will insert _cum_### before the filename extension.");
+	GMT_Usage (API, 1, "\n-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]");
+	GMT_Usage (API, -2, "Solve by SVD and control how many eigenvalues to use. Optionally append a directive and value:");
+	GMT_Usage (API, 3, "n: Only use the largest <val> eigenvalues [all].");
+	GMT_Usage (API, 3, "r: Eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0].");
+	GMT_Usage (API, 3, "v: Include eigenvalues needed to reach a variance explained fraction of <val> [1].");
+	GMT_Usage (API, -2, "Note: For r|v you may append %% to give <val> as the percentage of total instead. Various optional modifiers are available:");
+	GMT_Usage (API, 3, "+c Create a series of intermediate grids for each eigenvalue holding the cumulative result. "
+		"Requires -G with a valid filename and extension and we will insert _cum_### before the extension.");
 	GMT_Usage (API, 3, "+f Save the eigenvalues to <filename>.");
 	GMT_Usage (API, 3, "+i As +c but save incremental results, inserting _inc_### before the extension.");
 	GMT_Usage (API, 3, "+n Stop execution after reporting the eigenvalues - no solution is computed.");
-	GMT_Usage (API, -2, "Note: ~25%% of the total number of data constraints is a good starting point.");
+	GMT_Usage (API, -2, "Note: ~25%% of the total number of data constraints is a good starting point. "
+		"Without -C we use Gauss-Jordan elimination to solve the linear system.");
 	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
 	GMT_Usage (API, -2, "Evaluate spline at input locations and report statistics on the misfit. "
 		"If <misfitfile> is given then we write individual location misfits to that file.");
@@ -255,9 +258,25 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 			case 'C':	/* Solve by SVD */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'n') Ctrl->C.mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
-				k = (Ctrl->C.mode) ? 1 : 0;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "cifmMn"))) {	/* Process any modifiers */
+				if (strchr (opt->arg, '/') && strstr (opt->arg, "+f") == NULL) {	/* Old-style file deprecated specification */
+					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
+						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
+						Ctrl->C.file = strdup (p);
+					}
+					else {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C[[n|r|v]<cut>[%]][+c][+f<file>][+i][+n]\n");
+						n_errors++;
+					}
+					break;	/* No modifiers for the deprecated syntax */
+				}
+				switch (opt->arg[0]) {	/* First check directives (Default is no directive [0] which is the same as -Cr) */
+					case 'n': Ctrl->C.mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;   k = 1; break;
+					case 'r': Ctrl->C.mode = GMT_SVD_EIGEN_RATIO_CUTOFF;    k = 1; break;
+					case 'v': Ctrl->C.mode = GMT_SVD_EIGEN_VARIANCE_CUTOFF; k = 1; break;
+					default:	/* No directive, probably part of a number of modifier, just ignore */
+						k = 0; break;
+				}
+				if ((c = gmt_first_modifier (GMT, &opt->arg[k], "cifmMn"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'C', c, "cifmMn", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
@@ -272,32 +291,22 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 					}
 					c[0] = '\0';
 				}				
-				if (strchr (opt->arg, '/')) {	/* Old-style file specification */
-					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
-						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
-						Ctrl->C.file = strdup (p);
-					}
-					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C[[n]<cut>[%]][+c][+f<file>][+i][+n]\n");
-						n_errors++;
-					}
-				}
-				else if (opt->arg[k]) {	/* See if we got any value argument */
+				if (opt->arg[k]) {	/* See if we got any value argument */
 					if (strchr (opt->arg, '%')) {	/* Got percentages of largest eigenvalues */
 						Ctrl->C.value = 0.01 * atof (&opt->arg[k]);
-						Ctrl->C.mode = GMT_SVD_EIGEN_PERCENT_CUTOFF;
+						if (Ctrl->C.mode == GMT_SVD_EIGEN_NUMBER_CUTOFF) Ctrl->C.mode = GMT_SVD_EIGEN_PERCENT_CUTOFF;	/* else it is GMT_SVD_EIGEN_VARIANCE_CUTOFF */
 						if (Ctrl->C.value < 0.0 || Ctrl->C.value > 1.0) {
-							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Percentage must be in 0-100%% range!\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Percentages must be in 0-100%% range!\n");
 							n_errors++;
 						}
 					}
-					else {	/* Got ratio cutoff */
+					else {	/* Got regular cutoff value */
 						Ctrl->C.value = atof (&opt->arg[k]);
-						if (Ctrl->C.value >= 0.0 && Ctrl->C.value < 1.0) /* Old style fraction */
+						if (Ctrl->C.mode == GMT_SVD_EIGEN_NUMBER_CUTOFF && Ctrl->C.value >= 0.0 && Ctrl->C.value < 1.0) /* Old style fraction given instead */
 							Ctrl->C.mode = GMT_SVD_EIGEN_PERCENT_CUTOFF;
 					}
 				}
-				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Deprecated syntax */
+				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Check for deprecated syntax giving negative value */
 				break;
 			case 'E':	/* Evaluate misfit -E[<file>]*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
