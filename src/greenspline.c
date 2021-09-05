@@ -2626,7 +2626,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 						S->data[2][k] = 100.0 * l2_sum_k / l2_sum_n;	/* Percent of model variance */
 						S->data[3][k] = rms;
 						S->data[4][k] = std;
-						if (Ctrl->W.active) S->data[4][k] = chi2_sum;
+						if (Ctrl->W.active) S->data[5][k] = chi2_sum;
 					}
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,part) shared(Grid,yp,xp,nm,GMT,X,G,par,Lz,alpha,Out,normalize,norm)
