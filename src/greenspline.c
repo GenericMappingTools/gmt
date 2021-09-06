@@ -2451,7 +2451,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		}
 	}
 
-	Rec = gmt_new_record (GMT, NULL, NULL);
+	if (Ctrl->N.file || dimension == 1 || write_3D_records) Rec = gmt_new_record (GMT, NULL, NULL);
 
 	if (Ctrl->N.file) {	/* Specified nodes only */
 		unsigned int wmode = GMT_ADD_DEFAULT;
@@ -2606,9 +2606,10 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							}
 							predicted = greenspline_undo_normalization (X[j], wp, normalize, norm, dimension);	/* Undo normalization first */
 							dev = orig_obs[j] - predicted;	/* Deviation between observed and predicted */
-							rms += dev * dev;	/* Accumulate rms sum */
+							dev *= dev;	/* Squared misfit */
+							rms += dev;	/* Accumulate rms sum */
 							if (Ctrl->W.active) {	/* If data had uncertainties we also compute the chi2 sum */
-								double chi2 = pow (dev * X[j][2], 2.0);
+								double chi2 = dev * pow (X[j][2], 2.0);
 								chi2_sum += chi2;
 							}
 						}
@@ -2618,11 +2619,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg chi2 = %lg\n", (int)e, rms, chi2_sum);
 						else
 							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg\n", (int)e, rms);
-						S->data[0][e] = e;
-						S->data[1][e] = eigen[e].value;
+						S->data[0][e] = e;	/* Eigenvalue number (starting at 0) */
+						S->data[1][e] = eigen[e].value;	/* Eigenvalue, from largest to smallest */
 						S->data[2][e] = 100.0 * l2_sum_e / l2_sum_n;	/* Percent of model variance */
-						S->data[3][e] = rms;
-						if (Ctrl->W.active) S->data[4][e] = chi2_sum;
+						S->data[3][e] = rms;	/* RMS misfit for this solution */
+						if (Ctrl->W.active) S->data[4][e] = chi2_sum;	/* Chi^2 sum for this solution */
 					}
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,part) shared(Grid,yp,xp,nm,GMT,X,G,par,Lz,alpha,Out,normalize,norm)
@@ -2794,7 +2795,6 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 			Return (API->error);
 		}
-		gmt_M_free (GMT, Rec);
 		gmt_M_free (GMT, xp);
 		if (dimension > 1) gmt_M_free (GMT, yp);
 	}
@@ -2808,6 +2808,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		for (p = 0; p < m; p++) gmt_M_free (GMT, D[p]);
 		gmt_M_free (GMT, D);
 	}
+	if (Rec) gmt_M_free (GMT, Rec);
 	greenspline_free_lookup (GMT, &Lz, 0);
 	greenspline_free_lookup (GMT, &Lg, 1);
 

@@ -1290,16 +1290,16 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 					else
 						GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg rms_u = %g rms_v = %lg\n",
 							(int)e, rms, rms_u, rms_v);
-					S->data[0][e] = e;
-					S->data[1][e] = eigen[e].value;
+					S->data[0][e] = e;	/* Eigenvalue number (starting at 0) */
+					S->data[1][e] = eigen[e].value;	/* Eigenvalue, from largest to smallest */
 					S->data[2][e] = 100.0 * l2_sum_e / l2_sum_n;	/* Percent of model variance */
-					S->data[3][e] = rms;
-					S->data[4][e] = rms_u;
-					S->data[5][e] = rms_v;
+					S->data[3][e] = rms;	/* RMS misfit for this solution in total */
+					S->data[4][e] = rms_u;	/* RMS misfit for this solution for u-component only */
+					S->data[5][e] = rms_v;	/* RMS misfit for this solution for v-component only */
 					if (Ctrl->W.active) {
-						S->data[6][e] = chi2_sum;
-						S->data[7][e] = chi2u_sum;
-						S->data[8][e] = chi2v_sum;
+						S->data[6][e] = chi2_sum;	/* Chi^2 sum for this solution in total */
+						S->data[7][e] = chi2u_sum;	/* Chi^2 sum for this solution for u-component only */
+						S->data[8][e] = chi2v_sum;	/* Chi^2 sum for this solution for v-component only */
 					}
 				}
 #ifdef _OPENMP
