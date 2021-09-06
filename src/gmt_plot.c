@@ -8580,6 +8580,18 @@ GMT_LOCAL void gmtplot_prog_indicator_F (struct GMT_CTRL *GMT, double x, double 
 	PSL_plotsymbol (GMT->PSL, xt, 1.2*s*dy2, &w, symbol);
 }
 
+GMT_LOCAL void gmtplot_reset_PSL (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL) {
+	/* Because PSL_*_completion procedures are called at the end of the module but crafted at the start, we must forget we used any fonts, fills, pens in creating them,
+	 * otherwise the next PSL call requesting a fill or pen will not be properly set since PSL may think it is already the current choice. */
+	PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Forget about font encoding */
+	PSL->current.font_no = -1;					/* Forget what the current font is */
+	PSL->current.linewidth = -1.0;              /* Forget we ever set a line width */
+	PSL->current.outline = -1;					/* Forget we requested polygon outline */
+	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since fill setting must set the color desired */
+	gmt_M_memcpy (PSL->current.rgb[PSL_IS_STROKE], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since stroke setting must set the color desired */
+}
+
 struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	/* Shuffles parameters and calls PSL_beginplot, issues PS comments regarding the GMT options
 	 * and places a time stamp, if selected */
@@ -8593,7 +8605,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	FILE *fp = NULL;	/* Default which means stdout in PSL */
 	struct GMT_FILL fill;
 	struct GMT_OPTION *Out = NULL;
-	struct PSL_CTRL *PSL= NULL;
+	struct PSL_CTRL *PSL = NULL;
 	struct GMT_SUBPLOT *P = NULL;
 	struct GMT_INSET *I = &(GMT->current.plot.inset);	/* I->active == 1 if an inset */
 
@@ -8909,10 +8921,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			}
 			else   /* Just place the tag text */
 				PSL_plottext (PSL, plot_x, plot_y, GMT->current.setting.font_tag.size, P->tag, 0.0, justify, form);
-			/* Because PSL_plot_completion is called at the end of the module, we must forget we used fonts here */
-			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
-			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
-			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+			gmtplot_reset_PSL (GMT, PSL);	/* Reset anything we may have set in building the completion PS procedure */
 			PSL_comment (PSL, "End of panel tag for panel (%d,%d)\n", P->row, P->col);
 			PSL_command (PSL, "U\n}!\n");
 		}
@@ -8982,10 +8991,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 			else
 				PSL_plottext (PSL, plot_x, plot_y, Tfont.size, label, 0.0, justify, form);
 			gmt_M_str_free (movie_item_arg[k][T]);	/* Done with this label */
-			/* Because PSL_movie_label_completion is called at the end of the module, we must forget we used any fonts here */
-			PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
-			PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
-			gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
+			gmtplot_reset_PSL (GMT, PSL);	/* Reset anything we may have set in building the completion PS procedure */
 		}
 		PSL_comment (PSL, "End of movie labels\n");
 		PSL_command (PSL, "U\n}!\n");
@@ -9051,14 +9057,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 					break;
 			}
 			gmt_M_str_free (movie_item_arg[k][T]);	/* Free since done with this string */
-			if (isupper (kind)) {
-				/* Because PSL_movie_prog_indicator_completion is called at the end of the module, we must forget we used any fonts here */
-				PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Since truly not used yet */
-				PSL->current.font_no = -1;	/* To force setting of next font since the PSL stuff might have changed it */
-				gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
-				gmt_M_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
-			}
-			PSL->current.linewidth = -1.0;	/* Make sure pen widths reprocessed */
+			gmtplot_reset_PSL (GMT, PSL);	/* Reset anything we may have set in building the completion PS procedure */
 		PSL_command (PSL, "U\n");
 		}
 		PSL_comment (PSL, "End of movie progress indicators\n");
