@@ -43,10 +43,29 @@ Description
 
 **gpsgridder** grids 2-D vector data such as GPS velocities by using a coupled
 model based on 2-D elasticity.  The degree of coupling can be tuned by adjusting
-the effective Poisson's ratio. The solution field can be tuned to extremes such
+the effective Poisson's ratio, :math:`\nu`. The solution field can be tuned to extremes such
 as incompressible (1), typical elastic (0.5) or even an unphysical value of -1
 that basically removes the elastic coupling of vector interpolation.  Smoothing
-is offered via the optional elimination of small eigenvalues.
+is offered via the optional elimination of small eigenvalues.  The solutions
+for the two component grids are evaluated as
+
+.. math::
+
+    u(\mathbf{x}) = \sum_{j=1}^{n} \alpha_j q(\mathbf{x}, \mathbf{x}_j) +  \beta_j w(\mathbf{x}, \mathbf{x}_j)\\
+    v(\mathbf{x}) = \sum_{j=1}^{n} \alpha_j w(\mathbf{x}, \mathbf{x}_j) +  \beta_j p(\mathbf{x}, \mathbf{x}_j)
+
+where the three 2-D elastic coupled Green's functions are given by
+
+.. math::
+
+    q(\mathbf{a}, \mathbf{b}) = (3 - \nu)\log r + (1 + \nu) \frac{y^2}{r^2}\\
+    p(\mathbf{a}, \mathbf{b}) = (3 - \nu)\log r + (1 + \nu) \frac{x^2}{r^2}\\
+    w(\mathbf{a}, \mathbf{b}) = -(1 + \nu) \frac{xy}{r^2}
+
+Here, *r* is the radial distance between points **a** and **b** and *x* and *y* are the components of that
+distance.  The body forces :math:`\alpha_j` and :math:`\beta_j` are obtained by evaluating the solution at the data
+locations and inverting the square linear system that results; see *Sandwell and Wessel* [2016] and
+*Haines et al.* [2015] for details.
 
 Required Arguments
 ------------------
@@ -75,7 +94,7 @@ Optional Arguments
 
 .. _-C:
 
-***-C**\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
+**-C**\ [[**n**\|\ **r**\|\ **v**]\ *value*\ [%]][**+c**][**+f**\ *file*][**+i**][**+n**]
     Find an approximate surface fit: Solve the linear system for the
     spline coefficients by SVD and eliminate the contribution from smaller
     eigenvalues [Default uses Gauss-Jordan elimination to solve the linear system
@@ -105,14 +124,19 @@ Optional Arguments
     statistics of the misfit (mean, standard deviation, and rms) for *u* and
     *v* separately and combined.  Optionally, append a filename and we will
     write the data table, augmented by two extra columns after each of the
-    *u* and *v* columns holding the spline estimates and misfits.  If **-W**
-    is given we also add two more columns with the chi^2 values.
+    *u* and *v* columns holding the spline estimates and misfits. If **-W**
+    is given we also add two more columns with :math:`\chi_u^2` and :math:`\chi_v^2`
+    values. Alternatively, if **-C** is used and history is computed (via one
+    or more of modifiers **+c** and **+i**), then we will instead write a table
+    with eigenvalue number, eigenvalue, percent of model variance explained,
+    and overall rms, rms_u, and rms_v misfits.  If **-W** is used we also append
+    :math:`\chi^2`, :math:`\chi_u^2`, and :math:`\chi_v^2`.
 
 .. _-F:
 
 **-F**\ [**d**\|\ **f**]\ *fudge*\
-    The Green's functions are proportional to terms like 1/r^2 and log(r)
-    and thus blow up for r == 0.  To prevent that we offer two fudging schemes:
+    The Green's functions are proportional to :math:`r^{-2}` and :math:`\log(r)`
+    and thus blow up for *r == 0*.  To prevent that we offer two fudging schemes:
     **-Fd**\ *del_radius* lets you add a constant offset to all radii
     and must be specified in the user units.  Alternatively, use
     **-Ff**\ *factor* which will compute *del_radius* from the product

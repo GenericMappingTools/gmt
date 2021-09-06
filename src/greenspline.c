@@ -69,7 +69,7 @@ struct GREENSPLINE_CTRL {
 	struct GREENSPLINE_C {	/* -C[[n|r|v]<cutoff>[%]][+c][+f<file>][+i][+n] */
 		bool active;
 		bool dryrun;	/* Only report eigenvalues */
-		unsigned int movie;
+		unsigned int history;
 		unsigned int mode;
 		double value;
 		char *file;
@@ -159,10 +159,7 @@ enum Greenspline_modes {	/* Various integer mode flags */
 	GREENSPLINE_NORM		= 2,		/* Normalize residual data to 0-1 range */
 	SQ_N_NODES 			= 10001,	/* Default number of nodes in the precalculated -Sq spline */
 	GSP_GOT_SIG			= 0,
-	GSP_GOT_WEIGHTS			= 1,
-	GREENSPLINE_NO_MOVIE		= 0,
-	GREENSPLINE_INC_MOVIE		= 1,
-	GREENSPLINE_CUM_MOVIE		= 2
+	GSP_GOT_WEIGHTS			= 1
 };
 
 #ifndef M_LOG_2
@@ -521,11 +518,11 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'C', c, "cifmMn", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'c': Ctrl->C.movie |= GREENSPLINE_CUM_MOVIE; break;
-							case 'i': Ctrl->C.movie |= GREENSPLINE_INC_MOVIE; break;
+							case 'c': Ctrl->C.history |= GMT_SVD_CUMULATIVE; break;
+							case 'i': Ctrl->C.history |= GMT_SVD_INCREMENTAL; break;
 							case 'f': Ctrl->C.file = strdup (&p[1]); break;
-							case 'm': Ctrl->C.movie = GREENSPLINE_INC_MOVIE; break;
-							case 'M': Ctrl->C.movie = GREENSPLINE_CUM_MOVIE; break;
+							case 'm': Ctrl->C.history = GMT_SVD_INCREMENTAL; break;
+							case 'M': Ctrl->C.history = GMT_SVD_CUMULATIVE; break;
 							case 'n': Ctrl->C.dryrun = true; break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
@@ -784,9 +781,9 @@ static int parse (struct GMT_CTRL *GMT, struct GREENSPLINE_CTRL *Ctrl, struct GM
 	n_errors += gmt_M_check_condition (GMT, Ctrl->A.active && Ctrl->A.mode > 5, "Option -A: format must be in 0-5 range\n");
 	n_errors += gmt_M_check_condition (GMT, !(GMT->common.R.active[RSET] || Ctrl->N.active || Ctrl->T.active), "No output locations specified (use either [-R -I], -N, or -T)\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->R3.mode && dimension != 2, "The -R<gridfile> or -T<gridfile> option only applies to 2-D gridding\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && dimension != 2, "The -C +c+i modifiers only apply to 2-D gridding\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && strchr (Ctrl->G.file, '%') == NULL && strchr (Ctrl->G.file, '.') == NULL, "Option -G: When -C +i|c is used your grid file must have an extension\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->C.movie && Ctrl->E.active && Ctrl->E.mode == 0, "Option -E: When -C +i|c is used you must supply a file via -E\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.history && dimension != 2, "The -C +c+i modifiers only apply to 2-D gridding\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.history && strchr (Ctrl->G.file, '%') == NULL && strchr (Ctrl->G.file, '.') == NULL, "Option -G: When -C +i|c is used your grid file must have an extension\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->C.history && Ctrl->E.active && Ctrl->E.mode == 0, "Option -E: When -C +i|c is used you must supply a file via -E\n");
 #ifdef DEBUG
 	n_errors += gmt_M_check_condition (GMT, !TEST && !Ctrl->N.active && Ctrl->R3.dimension != dimension, "The -R and -Z options disagree on the dimension\n");
 #else
@@ -1534,7 +1531,7 @@ GMT_LOCAL void greenspline_dump_system (double *A, double *b, uint64_t nm, char 
 
 GMT_LOCAL void greenspline_set_filename (char *name, unsigned int k, unsigned int width, unsigned int mode, char *file) {
 	/* Turn name, eigenvalue number k, precision width and mode into a filename, e.g.,
-	 * ("solution.grd", 33, 3, GREENSPLINE_INC_MOVIE, file) will give solution_inc_033.grd */
+	 * ("solution.grd", 33, 3, GMT_SVD_INCREMENTAL, file) will give solution_inc_033.grd */
 	unsigned int s = strlen (name) - 1;
 	static char *type[3] = {"", "inc", "cum"};
 	while (name[s] != '.') s--;	/* Wind backwards to start of extension */
@@ -2228,7 +2225,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->debug.active) greenspline_dump_system (A, obs, nm, "A Matrix row || obs");	/* Dump the A | b system under debug */
-	if (Ctrl->E.active && Ctrl->C.movie == GREENSPLINE_NO_MOVIE) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
+	if (Ctrl->E.active && Ctrl->C.history == GMT_SVD_NO_HISTORY) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
 		A_orig = gmt_M_memory (GMT, NULL, nm * nm, double);
 		gmt_M_memcpy (A_orig, A, nm * nm, double);
 	}
@@ -2289,7 +2286,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		v = gmt_M_memory (GMT, NULL, nm * nm, double);
 		s = gmt_M_memory (GMT, NULL, nm, double);
 		if ((error = gmt_svdcmp (GMT, A, (unsigned int)nm, (unsigned int)nm, s, v)) != 0) Return (error);
-		if (Ctrl->C.movie) {	/* Keep copy of original singular values */
+		if (Ctrl->C.history) {	/* Keep copy of original singular values */
 			ssave = gmt_M_memory (GMT, NULL, nm, double);
 			gmt_M_memcpy (ssave, s, nm, double);
 		}
@@ -2336,7 +2333,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		if (n_use == -1) Return (GMT_RUNTIME_ERROR);
 		GMT_Report (API, GMT_MSG_INFORMATION, "[%d of %" PRIu64 " eigen-values used]\n", n_use, nm);
 
-		if (Ctrl->C.movie == GREENSPLINE_NO_MOVIE) {
+		if (Ctrl->C.history == GMT_SVD_NO_HISTORY) {
 			gmt_M_free (GMT, s);
 			gmt_M_free (GMT, v);
 			gmt_M_free (GMT, b);
@@ -2384,9 +2381,9 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 		GMT->current.setting.io_header[GMT_OUT] = was;	/* Restore default */
 	}
 
-	if (Ctrl->C.movie == GREENSPLINE_NO_MOVIE) gmt_M_free (GMT, A);
+	if (Ctrl->C.history == GMT_SVD_NO_HISTORY) gmt_M_free (GMT, A);
 
-	if (Ctrl->E.active && Ctrl->C.movie == GREENSPLINE_NO_MOVIE) {
+	if (Ctrl->E.active && Ctrl->C.history == GMT_SVD_NO_HISTORY) {
 		double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2, chi2_sum = 0, pvar_sum = 0.0, *predicted = NULL;
 		uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, nm, dimension+3+Ctrl->W.active};
 		unsigned int m = 0;
@@ -2540,14 +2537,14 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			}
 
 		} /* Else we are writing a grid or cube */
-		if (Ctrl->C.movie) {	/* 2-D only: Write out grid after adding contribution for each eigenvalue separately */
+		if (Ctrl->C.history) {	/* 2-D only: Write out grid after adding contribution for each eigenvalue separately */
 			/* Note: Because the SVD decomposition is not sorting the vectors from largest to smallest eigenvalue the
 			 * gmt_solve_svd sets to zero those we don't want but we must still loop over its full length to ensure we
 			 * include the eigenvalues we want. */
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
-			int64_t col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
-			gmt_grdfloat *current = NULL, *previous = NULL, *predicted = NULL;
-			double l2_sum_n = 0.0, l2_sum_k = 0.0;
+			int64_t e, col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
+			gmt_grdfloat *current = NULL, *previous = NULL;
+			double l2_sum_n = 0.0, l2_sum_e = 0.0, predicted;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			char file[PATH_MAX] = {""};
 			struct GMT_SINGULAR_VALUE *eigen = NULL;
@@ -2555,12 +2552,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			struct GMT_DATASEGMENT *S = NULL;
 
 			current  = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
-			if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE)
+			if (Ctrl->C.history & GMT_SVD_INCREMENTAL)
 				previous = gmt_M_memory_aligned (GMT, NULL, Out->header->size, gmt_grdfloat);
 			gmt_grd_init (GMT, Out->header, options, true);
 			if (Ctrl->E.active) {	/* Want to write out misfit as function of eigenvalue */
-				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 5+Ctrl->W.active};
-				predicted = gmt_M_memory (GMT, NULL, nm, double);	/* To hold predictions */
+				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 4+Ctrl->W.active};
  				eigen = gmt_sort_svd_values (GMT, s, nm);	/* Get sorted eigenvalues */
 				if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates per eigenvector\n");
@@ -2572,11 +2568,11 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				S->n_rows = n_use;
 			}
 
-			for (k = 0; k < n_use; k++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
-				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)k);
+			for (e = 0; e < n_use; e++) {	/* Only loop over the first n_use eigenvalues (if restricted) */
+				GMT_Report (API, GMT_MSG_INFORMATION, "Evaluate spline for eigenvalue # %d\n", (int)e);
 				gmt_M_memcpy (s, ssave, nm, double);	/* Restore original values before call */
-				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)k, GMT_SVD_EIGEN_NUMBER_CUTOFF);
-				/* obs (hence alpha) now has the solution for the coefficients based on the first k eigenvalues */
+				(void)gmt_solve_svd (GMT, A, (unsigned int)nm, (unsigned int)nm, v, s, b, 1U, obs, (double)e, GMT_SVD_EIGEN_NUMBER_CUTOFF);
+				/* obs (hence alpha) now has the solution for the coefficients based on the first e eigenvalues */
 				if (Ctrl->Q.active) {	/* Derivatives of solution */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,C,part) shared(Grid,yp,xp,nm,GMT,Ctrl,X,G,par,Lz,alpha,Out,normalize,norm)
@@ -2601,41 +2597,32 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				else {	/* Surface solution */
 					if (Ctrl->E.active) {	/* Compute the history of model misfit */
-						unsigned int m = 0;
-						double value, mean = 0.0, std = 0.0, rms = 0.0, dev, chi2_sum = 0.0;
+						double dev, rms = 0.0, chi2_sum = 0.0;
 						for (j = 0; j < nm; j++) {	/* For each data constraint */
-							predicted[j] = 0.0;
 							for (p = 0, wp = 0.0; p < nm; p++) {	/* Add contribution for each data constraint */
 								r = greenspline_get_radius (GMT, X[j], X[p], 2U);
 								part = G (GMT, r, par, Lz);
 								wp += alpha[p] * part;	/* Just add this scaled Green's function */
 							}
-							predicted[j] = greenspline_undo_normalization (X[j], wp, normalize, norm, dimension);	/* Undo normalization first */
-							dev = value = orig_obs[j] - predicted[j];	/* Deviation between observed and predicted */
+							predicted = greenspline_undo_normalization (X[j], wp, normalize, norm, dimension);	/* Undo normalization first */
+							dev = orig_obs[j] - predicted;	/* Deviation between observed and predicted */
 							rms += dev * dev;	/* Accumulate rms sum */
 							if (Ctrl->W.active) {	/* If data had uncertainties we also compute the chi2 sum */
 								double chi2 = pow (dev * X[j][2], 2.0);
 								chi2_sum += chi2;
 							}
-							/* Use Welford (1962) algorithm to compute mean and variance */
-							m++;
-							dev -= mean;
-							mean += dev / m;
-							std  += dev * (value - mean);
 						}
 						rms = sqrt (rms / nm);
-						std = (m > 1) ? sqrt (std / (m-1.0)) : GMT->session.d_NaN;
-						l2_sum_k += eigen[k].value * eigen[k].value;
+						l2_sum_e += eigen[e].value * eigen[e].value;
 						if (Ctrl->W.active)
-							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg std = %lg chi2 = %lg\n", (int)k, rms, std, chi2_sum);
+							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg chi2 = %lg\n", (int)e, rms, chi2_sum);
 						else
-							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg std = %lg\n", (int)k, rms, std);
-						S->data[0][k] = k;
-						S->data[1][k] = eigen[k].value;
-						S->data[2][k] = 100.0 * l2_sum_k / l2_sum_n;	/* Percent of model variance */
-						S->data[3][k] = rms;
-						S->data[4][k] = std;
-						if (Ctrl->W.active) S->data[5][k] = chi2_sum;
+							GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg\n", (int)e, rms);
+						S->data[0][e] = e;
+						S->data[1][e] = eigen[e].value;
+						S->data[2][e] = 100.0 * l2_sum_e / l2_sum_n;	/* Percent of model variance */
+						S->data[3][e] = rms;
+						if (Ctrl->W.active) S->data[4][e] = chi2_sum;
 					}
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,wp,r,part) shared(Grid,yp,xp,nm,GMT,X,G,par,Lz,alpha,Out,normalize,norm)
@@ -2658,51 +2645,50 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 				}
 				gmt_M_memcpy (current, Out->data, Out->header->size, gmt_grdfloat);	/* Save current solution */
 
-				if (Ctrl->C.movie & GREENSPLINE_CUM_MOVIE) {	/* Write out the cumulative solution first */
+				if (Ctrl->C.history & GMT_SVD_CUMULATIVE) {	/* Write out the cumulative solution first */
 					if (strchr (Ctrl->G.file, '%'))	/* Gave a template, use it to write one of the two types of grids */
-						sprintf (file, Ctrl->G.file, (int)k+1);
+						sprintf (file, Ctrl->G.file, (int)e+1);
 					else	/* Create the appropriate cumulative gridfile name from static file name */
-						greenspline_set_filename (Ctrl->G.file, k, width, GREENSPLINE_CUM_MOVIE, file);
-					snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s). %s contribution for eigenvalue # %d", method[Ctrl->S.mode], Ctrl->S.arg, mkind[GREENSPLINE_CUM_MOVIE], (int)k+1);
+						greenspline_set_filename (Ctrl->G.file, e, width, GMT_SVD_CUMULATIVE, file);
+					snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s). %s contribution for eigenvalue # %d", method[Ctrl->S.mode], Ctrl->S.arg, mkind[GMT_SVD_CUMULATIVE], (int)e+1);
 					if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
-						Return (API->error);				/* Update solution for k eigenvalues only */
+						Return (API->error);				/* Update solution for e eigenvalues only */
 					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Out) != GMT_NOERROR)
 						Return (API->error);
 				}
-				if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE) {	/* Want to write out incremental solution due to this eigenvalue */
+				if (Ctrl->C.history & GMT_SVD_INCREMENTAL) {	/* Want to write out incremental solution due to this eigenvalue */
 					gmt_M_grd_loop (GMT, Out, row, col, ij) Out->data[ij] = current[ij] - previous[ij];	/* Incremental improvement since last time */
 					gmt_M_memcpy (previous, current, Out->header->size, gmt_grdfloat);	/* Save current solution which will be previous for next eigenvalue */
 					if (strchr (Ctrl->G.file, '%'))	/* Gave a template, use it to write one of the two types of grids */
-						sprintf (file, Ctrl->G.file, (int)k+1);
+						sprintf (file, Ctrl->G.file, (int)e+1);
 					else	/* Create the appropriate cumulative gridfile name from static file name */
-						greenspline_set_filename (Ctrl->G.file, k, width, GREENSPLINE_INC_MOVIE, file);
-					snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s). %s contribution for eigenvalue # %d", method[Ctrl->S.mode], Ctrl->S.arg, mkind[GREENSPLINE_INC_MOVIE], (int)k+1);
+						greenspline_set_filename (Ctrl->G.file, e, width, GMT_SVD_INCREMENTAL, file);
+					snprintf (Out->header->remark, GMT_GRID_REMARK_LEN160, "%s (-S%s). %s contribution for eigenvalue # %d", method[Ctrl->S.mode], Ctrl->S.arg, mkind[GMT_SVD_INCREMENTAL], (int)e+1);
 					if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out))
-						Return (API->error);				/* Update solution for k eigenvalues only */
+						Return (API->error);				/* Update solution for e eigenvalues only */
 					if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Out) != GMT_NOERROR)
 						Return (API->error);
 				}
 			}
 			if (Ctrl->E.active) {	/* Compute the history of model misfit as rms */
 				char header[GMT_LEN64] = {""};
-				sprintf (header, "# eigenno\teigenval\tvar_percent\trms\tstd");
+				sprintf (header, "# eigenno\teigenval\tvar_percent\trms");
 				if (Ctrl->W.active) strcat (header, "\tchi2");
 				if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {
 					Return (API->error);
 				}
 				gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
-				for (k = 0; k < 6; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
+				for (k = 0; k < 5; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
 				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
 					Return (API->error);
 				}
 				gmt_M_free (GMT, eigen);
-				gmt_M_free (GMT, predicted);
 				gmt_M_free (GMT, orig_obs);
 			}
 
 			/* Free temporary arrays */
 			gmt_M_free_aligned (GMT, current);
-			if (Ctrl->C.movie & GREENSPLINE_INC_MOVIE)
+			if (Ctrl->C.history & GMT_SVD_INCREMENTAL)
 				gmt_M_free_aligned (GMT, previous);
 			gmt_M_free (GMT, A);
 			gmt_M_free (GMT, s);
