@@ -223,6 +223,17 @@ Optional Arguments
 
 .. include:: ../../explain_distunits.rst_
 
+Notes on SVD solution
+---------------------
+
+It may be difficult to know how many eigenvalues are needed for a suitable
+approximate fit.  The **-C** modifiers allow you to explore this further
+by creating solutions for all cutoff selections and estimate model variance
+and data misfit as a function of how many eigenvalues are used.  The large
+set of such solutions can be animated so it is easier to explore the changes
+between solutions and to make a good selection for the **-C** directive values.
+See the animations for one or more examples of this exploration.
+
 Examples
 --------
 
