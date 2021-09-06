@@ -2557,7 +2557,7 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			gmt_grd_init (GMT, Out->header, options, true);
 			if (Ctrl->E.active) {	/* Want to write out misfit as function of eigenvalue */
 				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 4+Ctrl->W.active};
- 				eigen = gmt_sort_svd_values (GMT, s, nm);	/* Get sorted eigenvalues */
+ 				eigen = gmt_sort_svd_values (GMT, ssave, nm);	/* Get sorted eigenvalues */
 				if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates per eigenvector\n");
 					Return (API->error);
