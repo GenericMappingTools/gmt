@@ -43,10 +43,10 @@ double quotes.
 .. description-ends
 .. ingrid-syntax-begins
 
-*grid*\ [=\ *ID*\|\ ?\ *varname*][**+b**\ *band*][**+d**\ *divisor*][**+n**\ *invalid*]
+*ingrid*\ [=\ *ID*\|\ ?\ *varname*][**+b**\ *band*][**+d**\ *divisor*][**+n**\ *invalid*]
 [**+o**\ *offset*][**+s**\ *scale*]
 
-    |Add_ingrid|. Optionally, append =\ *ID* for reading a specific file
+    |Add_ingrid| Optionally, append =\ *ID* for reading a specific file
     format [Default is =\ *nf*] or ?\ *varname* for a specific netCDF variable
     [Default is the first 2-D grid found by GMT]
     (:ref:`See full description <grd_inout_full>`). The following modifiers are

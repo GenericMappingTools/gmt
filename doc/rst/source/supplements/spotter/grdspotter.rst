@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdspotter** [*grdfile*]
+**gmt grdspotter** *ingrid*
 |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*\ [**+i**]
 |-G|\ *outgrid*
 |SYN_OPT-I|
@@ -45,8 +45,11 @@ give a Cumulative Volcano Amplitude grid (CVA).
 Required Arguments
 ------------------
 
-*grdfile*
-    Data grid to be processed, typically residual bathymetry or free-air anomalies.
+.. |Add_ingrid| replace:: Data grid to be processed, typically residual
+    bathymetry or free-air anomalies.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. include:: explain_rots.rst_
 

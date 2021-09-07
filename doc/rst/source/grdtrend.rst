@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdtrend** *grdfile* |-N|\ *n_model*\ [**+r**][**+x**\|\ **y**]
+**gmt grdtrend** *ingrid* |-N|\ *n_model*\ [**+r**][**+x**\|\ **y**]
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
@@ -48,8 +48,10 @@ same locations.
 Required Arguments
 ------------------
 
-*grdfile*
-    The name of a 2-D binary grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D gridded data file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-N:
 
