@@ -1243,12 +1243,12 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 
 			if (Ctrl->E.active) {	/* Want to write out misfit as function of eigenvalue */
 				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 6+3*Ctrl->W.active};
- 				eigen = gmt_sort_svd_values (GMT, ssave, n_uv);	/* Get sorted eigenvalues */
+ 				eigen = gmt_sort_svd_values (GMT, ssave, n_params);	/* Get sorted eigenvalues */
 				if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates per eigenvector\n");
 					Return (API->error);
 				}
-				for (j = 0; j < n_uv; j++)	/* Get sum of squared eigenvalues */
+				for (j = 0; j < n_params; j++)	/* Get sum of squared eigenvalues */
 					l2_sum_n += eigen[j].value * eigen[j].value;
 				S = E->table[0]->segment[0];
 				S->n_rows = n_use;
@@ -1262,6 +1262,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				if (Ctrl->E.active) {	/* Compute the history of model misfit */
 					double V[4],rms = 0.0, rms_u = 0.0, dev_u, rms_v = 0.0, dev_v, chi2u = 0.0, chi2v = 0.0, chi2_sum = 0.0, chi2u_sum = 0.0, chi2v_sum = 0.0;
 					for (j = 0; j < n_uv; j++) {	/* For each data constraint pair (u,v) */
+						V[GMT_X] = X[j][GMT_X];	V[GMT_Y] = X[j][GMT_Y];
 						V[GPSGRIDDER_U] = V[GPSGRIDDER_V] = 0.0;
 						for (p = 0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up all body forces */
 							gpsgridder_evaluate_greensfunctions (GMT, X[j], X[p], par, geo, G);
@@ -1281,6 +1282,9 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 							chi2_sum += chi2u + chi2v;
 						}
 					}
+					rms   = sqrt (rms   / n_uv);
+					rms_u = sqrt (rms_u / n_uv);
+					rms_v = sqrt (rms_v / n_uv);
 					l2_sum_e += eigen[e].value * eigen[e].value;
 					if (Ctrl->W.active)
 						GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg chi2 = %lg rms_u = %g rms_v = %lg  chi2_u = %lgchi2_v = %lg\n",
