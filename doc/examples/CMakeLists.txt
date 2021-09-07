@@ -101,7 +101,7 @@ endif (SPHINX_FOUND)
 file (GLOB _examples RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/ex*/*.sh")
 # Remove a few known failed examples from tests
 list (REMOVE_ITEM _examples "doc/examples/ex51/ex51.sh")
-file (GLOB _anims RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim0[1345]/*.sh")
+file (GLOB _anims RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim0[134]/*.sh")
 if (DO_EXAMPLES AND BASH)
 	foreach (_job ${_examples} ${_anims})
 		add_test (NAME ${_job}
