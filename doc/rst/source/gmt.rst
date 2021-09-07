@@ -354,6 +354,7 @@ Module help and configuration
 .. include:: explain_precision.rst_
 
 .. include:: explain_grd_inout.rst_
+    :end-before: .. description-ends
 
 Classic Mode Options
 --------------------

@@ -59,8 +59,10 @@ location of the most negative input value, and so on.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D grid file to be equalized. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D grid file to be equalized.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------

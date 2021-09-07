@@ -62,10 +62,11 @@ are doing; see the examples for further guidance.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be operated on. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
-    For cross-spectral operations, also give the second grid file *ingrid2*.
+.. |Add_ingrid| replace:: 2-D binary grid file to be operated on. For
+    cross-spectral operations, also give the second grid file *ingrid2*.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 

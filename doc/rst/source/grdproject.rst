@@ -49,9 +49,10 @@ than that implied by the extent of the grid file.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be transformed. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D gridded data set to be transformed.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 

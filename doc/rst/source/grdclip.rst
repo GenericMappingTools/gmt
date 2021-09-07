@@ -37,8 +37,10 @@ range of data values is required, or for reclassification of data values.
 Required Arguments
 ------------------
 
-*ingrid*
-    The input 2-D binary grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: The input 2-D binary grid file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
