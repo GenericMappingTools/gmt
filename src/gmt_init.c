@@ -7743,7 +7743,7 @@ void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 		GMT_Usage (API, -2, "%s. Optionally append =<ID> for writing a specific file format and add any modifiers:", message);
 	else
 		GMT_Usage (API, -2, "Optionally append =<ID> for writing a specific file format and add any modifiers:");
-	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [0]");
+	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [1]");
 	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
 	GMT_Usage (API, 3, "+o Offset data values by the given <offset>, or append a for automatic range offset to preserve precision for integer grids [0].");
 	GMT_Usage (API, 3, "+s Scale data values by the given <scale>, or append a for automatic range scale to preserve precision for integer grids [1].");
@@ -7763,7 +7763,7 @@ void gmt_ingrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 		GMT_Usage (API, 1, "\n-%c%s", option, GMT_INGRID);
 	GMT_Usage (API, -2, "%s. Optionally append =<ID> for reading a specific file format or ?<varname> for a specific netCDF variable, and add any modifiers:", message);
 	GMT_Usage (API, 3, "+b Select a band (for images only) [0]");
-	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [0]");
+	GMT_Usage (API, 3, "+d Divide data values by the given <divisor> [1]");
 	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
 	GMT_Usage (API, 3, "+o Offset data values by the given <offset> [0].");
 	GMT_Usage (API, 3, "+s Scale data values by the given <scale> [1].");
