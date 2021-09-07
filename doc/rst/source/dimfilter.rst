@@ -51,8 +51,10 @@ DiM-filtered data is generally recommended.
 Required Arguments
 ------------------
 
-*ingrid*
-    The input grid to be filtered (see :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: The input grid to be filtered.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-D:
 

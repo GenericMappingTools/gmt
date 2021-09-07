@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2xyz** *grid*
+**gmt grd2xyz** *ingrid*
 [ |-C|\ [**f**\|\ **i**] ]
 [ |-L|\ [**c**\|\ **r**\|\ **x**\|\ **y**]\ *value* ]
 [ |SYN_OPT-R| ]
@@ -43,9 +43,10 @@ output z-values without the (x,y) coordinates; see **-Z** below.
 Required Arguments
 ------------------
 
-*grid*
-    Names of 2-D binary grid files to be converted (see :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_ingrid| replace:: Names of 2-D binary grid files to be converted.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------

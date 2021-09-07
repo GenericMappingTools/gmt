@@ -42,9 +42,10 @@ then the output may be less frequently sampled than the input.
 Required Arguments
 ------------------
 
-*ingrid*
-    The grid file of points to be filtered. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_ingrid| replace:: The grid file of points to be filtered.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-D:
 

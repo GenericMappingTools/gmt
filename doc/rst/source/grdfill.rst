@@ -35,8 +35,10 @@ can be used to replace the hole values.  **Note**: One of **-A** or **-L** is re
 Required Arguments
 ------------------
 
-*ingrid*
-    This is the input grid file.
+.. |Add_ingrid| replace:: This is the input grid file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------

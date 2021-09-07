@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdcontour** *grid*
+**gmt grdcontour** *ingrid*
 |-J|\ *parameters*
 [ |-A|\ [**n**\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]

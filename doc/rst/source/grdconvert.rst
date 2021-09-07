@@ -32,23 +32,10 @@ be written and to specify scaling, translation, and NaN-value.
 Required Arguments
 ------------------
 
-*ingrid*\ [=ID[**+d**\ *divisor*][**+n**\ *invalid*]][**+o**\ *offset*][**+s**\ *scale*]
-    The grid file to be read. Append format =\ *ID* code if not a
-    standard COARDS-compliant netCDF grid file. If =\ *ID* is set (see
-    below), you may optionally append any of **+s**\ *scale* (or alternatively
-    **+d**\ *divisor*), **+o**\ *offset*,
-    and **+n**\ *invalid*. The first two options will scale the data
-    and then offset them with the specified amounts after reading
-    while the latter lets you supply a value that represents an invalid
-    grid entry, i.e., 'Not-a-Number' (for floating-point grids this is
-    unnecessary since the IEEE NaN is used; however integers need a
-    value which means no data available). When *ID=gd*, the file will
-    be read using the GDAL library, which will take care to detect the
-    format of the file being read. This mechanism is actually used
-    automatically when the file format is not one of those that GMT
-    recognize. However, sometimes the guessing may fail, so adding
-    *ID=gd* forces a read via GDAL.
-    See Section :ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more information.
+.. |Add_ingrid| replace:: 2-D gridded data set to be read.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 

@@ -44,8 +44,10 @@ will join together two grid files along a common edge.
 Required Arguments
 ------------------
 
-*ingrid*
-    This is the input grid file (see :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: Input grid file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 

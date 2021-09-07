@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdedit** *grid* [ |-A| ] [ |-C| ]
+**gmt grdedit** *ingrid* [ |-A| ] [ |-C| ]
 [ |SYN_OPT-D2| ]
 [ |-E|\ [**a**\|\ **e**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**] ]
 [ |-G|\ *outgrid* ]
@@ -49,8 +49,10 @@ to save the modified grid to a new file.
 Required Arguments
 ------------------
 
-*grid*
-    Name of the 2-D grid file to modify. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: Name of the 2-D grid file to modify.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
