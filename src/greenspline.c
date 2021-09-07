@@ -235,7 +235,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Usage (API, -1, "Choose one of three ways to specify where to evaluate the spline:");
-	GMT_Usage (API, 2, "%s Specify an equidistant 1- ,2-, or 3-D domain with options -R, -I [and optionally -r].", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "%s Specify an equidistant 1-, 2-, or 3-D domain with options -R, -I [and optionally -r].", GMT_LINE_BULLET);
 	GMT_Usage (API, 2, "%s Specify a set of 1- ,2-, or 3-D output locations via the -N option.", GMT_LINE_BULLET);
 	GMT_Usage (API, 2, "%s Supply a mask grid file via -T whose values are NaN or 0.  The spline will then "
 		"only be evaluated at the nodes originally set to zero (2-D only).", GMT_LINE_BULLET);
