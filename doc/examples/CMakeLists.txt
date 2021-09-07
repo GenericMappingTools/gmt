@@ -59,7 +59,7 @@ if (SPHINX_FOUND)
 	if (UNIX AND DO_ANIMATIONS)
 		configure_file (animate.in animate @ONLY)
 
-		foreach (_num 01 03 04 05)
+		foreach (_num 01 03 04)
 			add_custom_command (
 				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif
 				COMMAND ${BASH} animate anim${_num}/anim${_num}.sh
@@ -87,7 +87,7 @@ if (SPHINX_FOUND)
 		add_custom_target (animation DEPENDS ${_animations})
 
 		# clean target
-		foreach (_num 01 03 04 05)
+		foreach (_num 01 03 04)
 			add_custom_target (_anim_clean${_num}
 				COMMAND ${CMAKE_COMMAND} -E remove_directory
 				${CMAKE_CURRENT_BINARY_DIR}/anim${_num}
