@@ -436,9 +436,6 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_PLP, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {
 		Return (API->error);
 	}
-	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_ON) != GMT_NOERROR) {
-		Return (API->error);	/* Enables data output and sets access mode */
-	}
 
 	if (!Ctrl->S.active) {	/* Must extend table with 2 cols to hold d and az */
 		n_columns = D[GMT_IN]->n_columns + 2;
@@ -572,11 +569,6 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 		}
 	}
 	if (Ctrl->F.active) gmt_M_free (GMT, fwork);
-	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
-		gmt_M_free (GMT, rec);
-		gmt_free_segment (GMT, &S_out);
-		Return (API->error);
-	}
 
 	/* Get here when all profiles have been found and written.  */
 
@@ -611,6 +603,12 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 		Ctrl->Out.file = strdup (Ctrl->N.name);
 	}
 	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_PLP, io_mode, NULL, Ctrl->Out.file, D[GMT_OUT]) != GMT_NOERROR) {
+		gmt_free_segment (GMT, &S_out);
+		Return (API->error);
+	}
+
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
+		gmt_M_free (GMT, rec);
 		gmt_free_segment (GMT, &S_out);
 		Return (API->error);
 	}
