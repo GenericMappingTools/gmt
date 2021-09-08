@@ -7778,7 +7778,7 @@ struct GMT_PALETTE * gmtlib_read_cpt (struct GMT_CTRL *GMT, void *source, unsign
 		struct stat S;
 		strncpy (cpt_file, source, PATH_MAX-1);
 		Z = gmtsupport_cpt_parse (GMT, cpt_file, GMT_IN, &hinge_mode, &z_hinge);
-		if (stat (cpt_file, &S) == 0 && S.st_size == 0) {
+		if (strncmp (cpt_file, "/dev/fd/", 8U) && stat (cpt_file, &S) == 0 && S.st_size == 0) {	/* Exclude process substitution files in /dev/fd */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Color palette table %s is empty\n", cpt_file);
 			gmt_M_free (GMT, Z);
 			return (NULL);
