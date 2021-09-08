@@ -70,6 +70,7 @@ int main (int argc, char *argv[]) {
 	sigaction (SIGINT,  &act, NULL);
 #endif
 	act.sa_flags = SA_SIGINFO;
+	sigaction (SIGINT,  &act, NULL);
 	sigaction (SIGILL,  &act, NULL);
 	sigaction (SIGFPE,  &act, NULL);
 	sigaction (SIGBUS,  &act, NULL);

@@ -25,6 +25,9 @@
 
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
+#include "declspec.h"
+
+EXTERN_MSC void gmtlib_terminate_session ();
 
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))
 
@@ -184,6 +187,41 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 		/* catch ctrl-c */
 		int c;
 		struct sigaction act, oldact;
+		gmtlib_terminate_session ();
+		sigemptyset (&act.sa_mask);
+		act.sa_flags = 0;
+		act.sa_handler = SIG_DFL; /* restore default action (do not catch SIGINT again) */
+		sigaction (SIGINT, &act, &oldact); /* change signal handler */
+		sigaction (SIGINT, &oldact, NULL); /* restore old action */
+		return;
+	}
+	else {
+#ifdef HAVE_STRSIGNAL
+		fprintf (stderr, "ERROR: Caught signal number %d (%s) at\n", sig_num, strsignal(sig_num));
+#else
+		fprintf (stderr, "ERROR: Caught signal number %d (%s) at\n", sig_num, sys_siglist[sig_num]);
+#endif
+		backtrace_symbols_fd (array, 2, STDERR_FILENO); /* print function with faulting instruction */
+		size = backtrace (array, 50); /* get void*'s for all entries on the stack */
+		fprintf (stderr, "Stack backtrace:\n");
+		backtrace_symbols_fd (array, size, STDERR_FILENO); /* print out all the frames to stderr */
+		exit (EXIT_FAILURE);
+	}
+}
+
+#if 0/* This was the old signal handler doing the backtrace etc */
+void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
+	int size;
+	void *array[50];
+	ucontext_t *uc = (ucontext_t *)ucontext;
+
+	array [0] = UC_IP (uc); /* caller's address */
+	array [1] = info->si_addr; /* address of faulting instruction */
+
+	if (sig_num == SIGINT) {
+		/* catch ctrl-c */
+		int c;
+		struct sigaction act, oldact;
 		sigemptyset (&act.sa_mask);
 		act.sa_flags = 0;
 		act.sa_handler = SIG_DFL; /* restore default action (do not catch SIGINT again) */
@@ -209,6 +247,7 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 		exit (EXIT_FAILURE);
 	}
 }
+#endif
 
 /*
  * install signal handler like this:
