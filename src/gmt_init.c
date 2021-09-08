@@ -18807,7 +18807,7 @@ void gmtlib_terminate_session () {
 	char dir[PATH_MAX] = {""};
 	if (global_API == NULL || global_API->session_dir == NULL || global_API->session_name == NULL) return;	/* Cannot check */
 	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", global_API->session_dir, global_API->session_name);
-	GMT_Report (global_API, GMT_MSG_NOTICE, "Try to remove session directory %s\n", dir);
+	GMT_Report (global_API, GMT_MSG_NOTICE, "Remove session directory %s before exiting due to Ctrl-C\n", dir);
 	if (!access (dir, F_OK)) {	/* Session directory exist, try to remove it */
 		if (gmt_remove_dir (global_API, dir, false))
 			GMT_Report (global_API, GMT_MSG_WARNING, "Unable to remove session directory %s [permissions?]\n", dir);

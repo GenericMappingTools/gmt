@@ -184,7 +184,7 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 	array [1] = info->si_addr; /* address of faulting instruction */
 
 	if (sig_num == SIGINT) {
-		/* catch ctrl-c and remove modern session directory */
+		/* catch ctrl-c and remove modern session directory before exit*/
 		gmtlib_terminate_session ();
 		exit (EXIT_FAILURE);
 	}
