@@ -184,16 +184,9 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
 	array [1] = info->si_addr; /* address of faulting instruction */
 
 	if (sig_num == SIGINT) {
-		/* catch ctrl-c */
-		int c;
-		struct sigaction act, oldact;
+		/* catch ctrl-c and remove modern session directory */
 		gmtlib_terminate_session ();
-		sigemptyset (&act.sa_mask);
-		act.sa_flags = 0;
-		act.sa_handler = SIG_DFL; /* restore default action (do not catch SIGINT again) */
-		sigaction (SIGINT, &act, &oldact); /* change signal handler */
-		sigaction (SIGINT, &oldact, NULL); /* restore old action */
-		return;
+		exit (EXIT_FAILURE);
 	}
 	else {
 #ifdef HAVE_STRSIGNAL
