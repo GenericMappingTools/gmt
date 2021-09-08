@@ -65,12 +65,8 @@ int main (int argc, char *argv[]) {
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
 	act.sa_sigaction = sig_handler;
-#if 0 /* summit 2016 decision: disable CTRL-C interrupt feature */
-	act.sa_flags = SA_SIGINFO | SA_NODEFER; /* Do not prevent the signal from being received from within its own signal handler. */
-	sigaction (SIGINT,  &act, NULL);
-#endif
 	act.sa_flags = SA_SIGINFO;
-	sigaction (SIGINT,  &act, NULL);
+	sigaction (SIGINT,  &act, NULL);	/* This will also wipe a session work directory */
 	sigaction (SIGILL,  &act, NULL);
 	sigaction (SIGFPE,  &act, NULL);
 	sigaction (SIGBUS,  &act, NULL);
