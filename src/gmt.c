@@ -29,11 +29,12 @@
 #include "gmt_dev.h"
 
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))
-#ifdef	__APPLE__
-	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
-#ifndef _Nullable
-#	define _Nullable
-#	endif
+	/* Install a signal handler */
+#	ifdef	__APPLE__
+		/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
+#		ifndef _Nullable
+#			define _Nullable
+#		endif
 #	endif
 #	include <signal.h>
 #	include "gmt_common_sighandler.h"
@@ -66,7 +67,7 @@ int main (int argc, char *argv[]) {
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
 	act.sa_sigaction = sig_handler;
 	act.sa_flags = SA_SIGINFO;
-	sigaction (SIGINT,  &act, NULL);	/* This will also wipe a session work directory */
+	sigaction (SIGINT,  &act, NULL);	/* Catching Ctrl-C will also wipe a session work directory and destroy GMT session */
 	sigaction (SIGILL,  &act, NULL);
 	sigaction (SIGFPE,  &act, NULL);
 	sigaction (SIGBUS,  &act, NULL);
