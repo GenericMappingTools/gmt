@@ -124,7 +124,7 @@
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
 #define gmt_M_keyword_update(val) if (core) GMT_keyword_updated[val] = true
 
-struct GMTAPI_CTRL *global_API = NULL;
+void *global_API = NULL;
 
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
@@ -18802,16 +18802,19 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 void gmtlib_terminate_session () {
 	/* If a modern mode session catches a CTRL-C interrupt then we must terminate
 	 * the session so not to leave behind a mess that requires gmt clear sessions
+	 * As well as 
 	 */
 
 	char dir[PATH_MAX] = {""};
-	if (global_API == NULL || global_API->session_dir == NULL || global_API->session_name == NULL) return;	/* Cannot check */
-	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", global_API->session_dir, global_API->session_name);
-	GMT_Report (global_API, GMT_MSG_NOTICE, "Remove session directory %s before exiting due to Ctrl-C\n", dir);
+	struct GMTAPI_CTRL *API = gmt_get_api_ptr (global_API);
+	if (API == NULL || API->session_dir == NULL || API->session_name == NULL) return;	/* Cannot check */
+	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", API->session_dir, API->session_name);
+	GMT_Report (API, GMT_MSG_NOTICE, "Remove session directory %s before exiting due to Ctrl-C\n", dir);
 	if (!access (dir, F_OK)) {	/* Session directory exist, try to remove it */
-		if (gmt_remove_dir (global_API, dir, false))
-			GMT_Report (global_API, GMT_MSG_WARNING, "Unable to remove session directory %s [permissions?]\n", dir);
+		if (gmt_remove_dir (API, dir, false))
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to remove session directory %s [permissions?]\n", dir);
 	}
+	GMT_Destroy_Session (API);	/* Try to get out cleanly */
 }
 
 /*! . */

@@ -28,6 +28,7 @@
 #include "declspec.h"
 
 EXTERN_MSC void gmtlib_terminate_session ();
+EXTERN_MSC void *global_API;
 
 #if !(defined(WIN32) || defined(NO_SIGHANDLER))
 
