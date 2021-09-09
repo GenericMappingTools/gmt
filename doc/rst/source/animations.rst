@@ -41,7 +41,7 @@ includes the animations) does not take excessive time.
 
   :doc:`/animations/anim02`
 
-- .. youtube:: 
+- .. youtube:: zCo0fuMkvMY
      :width: 100%
 
   :doc:`/animations/anim03`

@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 #               GMT ANIMATION 03
 #
-# Purpose:      Make web page with simple animated MP4 of Iceland topo
+# Purpose:      Make simple animated MP4 of Iceland topo from different viewpoints
 # GMT modules:  basemap, grdclip, grdcut, grdgradient, makecpt, math, grdview, movie
 # Unix progs:   echo, cat
 # Note:         Run with any argument to build movie; otherwise 27th frame is plotted only.
 #
 # The finished movie is available in our YouTube channel as well:
-# https://youtu.be/....
-# The movie took ...  to render on a 24-core MacPro 2013.
+# https://youtu.be/zCo0fuMkvMY
+# The movie took just 2 minutes to render on a 24-core MacPro 2013.
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 27 (az = 206)
 	opt="-M27,ps"
@@ -17,6 +17,7 @@ else	# Make MP4
 fi
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh
+gmt begin
 	gmt math -T180/540/1 T 30 SUB = angles.txt
 	gmt makecpt -Coleron -T-2000/2000/20 -H > iceland.cpt
 	gmt grdcut @earth_relief_15s -R-26/-12/63/67 -Giceland.nc
