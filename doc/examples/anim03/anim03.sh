@@ -5,6 +5,10 @@
 # GMT modules:  basemap, grdclip, grdcut, grdgradient, makecpt, math, grdview, movie
 # Unix progs:   echo, cat
 # Note:         Run with any argument to build movie; otherwise 27th frame is plotted only.
+#
+# The finished movie is available in our YouTube channel as well:
+# https://youtu.be/....
+# The movie took ...  to render on a 24-core MacPro 2013.
 
 if [ $# -eq 0 ]; then	# Just make master PostScript frame 27 (az = 206)
 	opt="-M27,ps"
