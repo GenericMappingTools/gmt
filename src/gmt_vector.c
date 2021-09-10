@@ -26,11 +26,6 @@
 
 #define MAX_SWEEPS 50
 
-struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functions */
-	double value;
-	unsigned int order;
-};
-
 /* Local functions */
 
 GMT_LOCAL void gmtvector_switchrows (double *a, double *b, unsigned int n1, unsigned int n2, unsigned int n) {
@@ -1096,10 +1091,23 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 
 */
 
+struct GMT_SINGULAR_VALUE * gmt_sort_svd_values (struct GMT_CTRL *GMT, double *w, unsigned int n) {
+	/* Store the eigenvalues in a structure and sort it so that the array is
+	 * sorted from large to small values while the order reflects the original position in w */
+	struct GMT_SINGULAR_VALUE *eigen = gmt_M_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
+	for (unsigned int i = 0; i < n; i++) {	/* Load in original order from |w| */
+		eigen[i].value = fabs (w[i]);
+		eigen[i].order = i;
+	}
+	qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), gmtvector_compare_singular_values);
+	return (eigen);
+}
+
 int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double cutoff, unsigned int mode) {
 	/* Mode = 0 [GMT_SVD_EIGEN_RATIO_CUTOFF]: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
 	 * mode = 1 [GMT_SVD_EIGEN_NUMBER_CUTOFF]: Use the first cutoff singular values only.
 	 * mode = 2 [GMT_SVD_EIGEN_PERCENT_CUTOFF]: Use a percentage fraction of eigenvalues we want.
+	 * mode = 3 [GMT_SVD_EIGEN_VARIANCE_CUTOFF]: Use a percentage fraction of explained variance to find the eigenvalues we want.
 	 * We return the number of eigenvalues that passed the checks.
 	 */
 	double w_abs, sing_max, percent;
@@ -1125,25 +1133,28 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 		mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
 	}
+	else if (mode == GMT_SVD_EIGEN_VARIANCE_CUTOFF) {	/* Determine N cutoff via model variance desired */
+		struct GMT_SINGULAR_VALUE *eigen = gmt_sort_svd_values (GMT, w, n);	/* Sort the eigenvalues */
+		double l2_sum_n = 0.0, l2_sum_k = 0.0;
+		for (i = 0; i < n; i++)	/* Get total sum of squared eigenvalues */
+			l2_sum_n += eigen[i].value * eigen[i].value;
+		l2_sum_n *= cutoff;	/* Fraction of explained model variance */
+		for (i = 0; i < n; i++) {	/* Determine i that gives >= variance percentage */
+			l2_sum_k += eigen[i].value * eigen[i].value;
+			if (l2_sum_k >= l2_sum_n) break;
+		}
+		cutoff = i;
+		mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
+	}
 
 	if (mode == GMT_SVD_EIGEN_NUMBER_CUTOFF) {
 		 /* Find the m largest singular values, with m = cutoff (if <1 it is the fraction of values).
 		 * Either case requires sorted singular values so we need to do some work first.
 		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
 		 * so that the singular values are the individual variance contributions. */
-		struct GMT_SINGULAR_VALUE {
-			double value;
-			unsigned int order;
-		} *eigen;
-		int n_eigen = 0;
-		eigen = gmt_M_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
-		for (i = 0; i < n; i++) {	/* Load in original order from |w| */
-			eigen[i].value = fabs (w[i]);
-			eigen[i].order = i;
-		}
-		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), gmtvector_compare_singular_values);
+		struct GMT_SINGULAR_VALUE *eigen = gmt_sort_svd_values (GMT, w, n);	/* Sort the eigenvalues */
+		int n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 
-		n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if (i < n_eigen) {	/* Still within specified limit so we add this singular value */
 				w[eigen[i].order] = 1.0 / w[eigen[i].order];

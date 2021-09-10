@@ -39,10 +39,10 @@
 /* Control structure for gpsgridder */
 
 struct GPSGRIDDER_CTRL {
-	struct GPSGRIDDER_C {	/* -C[[n]<cutoff>[%]][+c][+f<file>][+i][+n] */
+	struct GPSGRIDDER_C {	/* -C[[n|r|v]<cutoff>[%]][+c][+f<file>][+i][+n] */
 		bool active;
 		bool dryrun;	/* Only report eigenvalues */
-		unsigned int movie;	
+		unsigned int history;	
 		unsigned int mode;
 		double value;
 		char *file;
@@ -113,15 +113,12 @@ enum Gpsgridded_enum {	/* Indices for coeff array for normalization */
 	GPSGRIDDER_FUDGE_F		= 2,
 	GPSGRIDDER_GOT_SIG		= 0,	/* Modes for -W */
 	GPSGRIDDER_GOT_W		= 1,
-	GPSGRIDDER_MISFIT		= 1,	/* Modes for -E */
-	GPSGRIDDER_NO_MOVIE		= 0,
-	GPSGRIDDER_INC_MOVIE	= 1,
-	GPSGRIDDER_CUM_MOVIE	= 2
+	GPSGRIDDER_MISFIT		= 1		/* Modes for -E */
 };
 
 GMT_LOCAL void gpsgridder_set_filename (char *name, unsigned int k, unsigned int width, unsigned int mode, unsigned int comp, char *file) {
 	/* Turn name, eigenvalue number k, precision width, mode and comp into a filename, e.g.,
-	 * ("solution.grd", 33, 3, GPSGRIDDER_INC_MOVIE, 1, file) will give solution_v_inc_033.grd */
+	 * ("solution.grd", 33, 3, GMT_SVD_INCREMENTAL, 1, file) will give solution_v_inc_033.grd */
 	unsigned int s = strlen (name) - 1;
 	static char *type[3] = {"", "inc", "cum"}, *uv[2] = {"u", "v"};
 	char tmp[GMT_LEN256] = {""};
@@ -144,6 +141,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct GPSGRIDDER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	C->C.mode = GMT_SVD_EIGEN_RATIO_CUTOFF;
 	C->S.nu = 0.5;	/* Poisson's ratio */
 	C->F.fudge = 0.01;	/* Default fudge scale for r_min */
 	return (C);
@@ -161,7 +159,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -G<outfile> [-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]] [-E<misfitfile>] [-Fd|f<val>] [-I<dx>[/<dy>] "
 		"[-L] [-N<nodefile>] [%s] [-S<nu>] [-T<maskgrid>] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s]%s[%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT,
 		GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -183,17 +181,19 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_outgrid_syntax (API, 'G', "Give name of output table (if -N) or a grid (we automatically insert _u and _v before extension.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 
-	GMT_Usage (API, 1, "\n-C[[n]<val>[%%]][+c][+f<file>][+i][+n]");
-	GMT_Usage (API, -2, "Solve by SVD and eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0]. "
-		"Use -Cn to select only the largest <val> eigenvalues [all]. "
-		"Use <val>%% to select a percentage of the eigenvalues instead [100] "
-		"[Default uses Gauss-Jordan elimination to solve the linear system].");
-	GMT_Usage (API, 3, "+c Vreate a series of intermediate grids for each eigenvalue holding the cumulative result. "
-		"We will insert _cum_### before the filename extension.");
+	GMT_Usage (API, 1, "\n-C[[n|r|v]<val>[%%]][+c][+f<file>][+i][+n]");
+	GMT_Usage (API, -2, "Solve by SVD and control how many eigenvalues to use. Optionally append a directive and value:");
+	GMT_Usage (API, 3, "n: Only use the largest <val> eigenvalues [all].");
+	GMT_Usage (API, 3, "r: Eliminate eigenvalues whose ratio to largest eigenvalue is less than <val> [0].");
+	GMT_Usage (API, 3, "v: Include eigenvalues needed to reach a variance explained fraction of <val> [1].");
+	GMT_Usage (API, -2, "Note: For r|v you may append %% to give <val> as the percentage of total instead. Various optional modifiers are available:");
+	GMT_Usage (API, 3, "+c Create a series of intermediate grids for each eigenvalue holding the cumulative result. "
+		"Requires -G with a valid filename and extension and we will insert _cum_### before the extension.");
 	GMT_Usage (API, 3, "+f Save the eigenvalues to <filename>.");
 	GMT_Usage (API, 3, "+i As +c but save incremental results, inserting _inc_### before the extension.");
 	GMT_Usage (API, 3, "+n Stop execution after reporting the eigenvalues - no solution is computed.");
-	GMT_Usage (API, -2, "Note: ~25%% of the total number of data constraints is a good starting point.");
+	GMT_Usage (API, -2, "Note: ~25%% of the total number of data constraints is a good starting point. "
+		"Without -C we use Gauss-Jordan elimination to solve the linear system.");
 	GMT_Usage (API, 1, "\n-E[<misfitfile>]");
 	GMT_Usage (API, -2, "Evaluate spline at input locations and report statistics on the misfit. "
 		"If <misfitfile> is given then we write individual location misfits to that file.");
@@ -255,49 +255,55 @@ static int parse (struct GMT_CTRL *GMT, struct GPSGRIDDER_CTRL *Ctrl, struct GMT
 			case 'C':	/* Solve by SVD */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'n') Ctrl->C.mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
-				k = (Ctrl->C.mode) ? 1 : 0;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "cifmMn"))) {	/* Process any modifiers */
+				if (strchr (opt->arg, '/') && strstr (opt->arg, "+f") == NULL) {	/* Old-style file deprecated specification */
+					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
+						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
+						Ctrl->C.file = strdup (p);
+					}
+					else {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C[[n|r|v]<cut>[%]][+c][+f<file>][+i][+n]\n");
+						n_errors++;
+					}
+					break;	/* No modifiers for the deprecated syntax */
+				}
+				switch (opt->arg[0]) {	/* First check directives (Default is no directive [0] which is the same as -Cr) */
+					case 'n': Ctrl->C.mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;   k = 1; break;
+					case 'r': Ctrl->C.mode = GMT_SVD_EIGEN_RATIO_CUTOFF;    k = 1; break;
+					case 'v': Ctrl->C.mode = GMT_SVD_EIGEN_VARIANCE_CUTOFF; k = 1; break;
+					default:	/* No directive, probably part of a number of modifier, just ignore */
+						k = 0; break;
+				}
+				if ((c = gmt_first_modifier (GMT, &opt->arg[k], "cifmMn"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
 					while (gmt_getmodopt (GMT, 'C', c, "cifmMn", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'c': Ctrl->C.movie |= GPSGRIDDER_CUM_MOVIE; break;
-							case 'i': Ctrl->C.movie |= GPSGRIDDER_INC_MOVIE; break;
+							case 'c': Ctrl->C.history |= GMT_SVD_CUMULATIVE; break;
+							case 'i': Ctrl->C.history |= GMT_SVD_INCREMENTAL; break;
 							case 'f': Ctrl->C.file = strdup (&p[1]); break;
-							case 'm': Ctrl->C.movie = GPSGRIDDER_INC_MOVIE; break;
-							case 'M': Ctrl->C.movie = GPSGRIDDER_CUM_MOVIE; break;
+							case 'm': Ctrl->C.history = GMT_SVD_INCREMENTAL; break;
+							case 'M': Ctrl->C.history = GMT_SVD_CUMULATIVE; break;
 							case 'n': Ctrl->C.dryrun = true; break;
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
 					c[0] = '\0';
 				}				
-				if (strchr (opt->arg, '/')) {	/* Old-style file specification */
-					if (gmt_M_compat_check (API->GMT, 5)) {	/* OK */
-						sscanf (&opt->arg[k], "%lf/%s", &Ctrl->C.value, p);
-						Ctrl->C.file = strdup (p);
-					}
-					else {
-						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Expected -C[[n]<cut>[%]][+c][+f<file>][+i][+n]\n");
-						n_errors++;
-					}
-				}
-				else if (opt->arg[k]) {	/* See if we got any value argument */
+				if (opt->arg[k]) {	/* See if we got any value argument */
 					if (strchr (opt->arg, '%')) {	/* Got percentages of largest eigenvalues */
 						Ctrl->C.value = 0.01 * atof (&opt->arg[k]);
-						Ctrl->C.mode = GMT_SVD_EIGEN_PERCENT_CUTOFF;
+						if (Ctrl->C.mode == GMT_SVD_EIGEN_NUMBER_CUTOFF) Ctrl->C.mode = GMT_SVD_EIGEN_PERCENT_CUTOFF;	/* else it is GMT_SVD_EIGEN_VARIANCE_CUTOFF */
 						if (Ctrl->C.value < 0.0 || Ctrl->C.value > 1.0) {
-							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Percentage must be in 0-100%% range!\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -C: Percentages must be in 0-100%% range!\n");
 							n_errors++;
 						}
 					}
-					else {	/* Got ratio cutoff */
+					else {	/* Got regular cutoff value */
 						Ctrl->C.value = atof (&opt->arg[k]);
-						if (Ctrl->C.value >= 0.0 && Ctrl->C.value < 1.0) /* Old style fraction */
+						if (Ctrl->C.mode == GMT_SVD_EIGEN_NUMBER_CUTOFF && Ctrl->C.value >= 0.0 && Ctrl->C.value < 1.0) /* Old style fraction given instead */
 							Ctrl->C.mode = GMT_SVD_EIGEN_PERCENT_CUTOFF;
 					}
 				}
-				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Deprecated syntax */
+				if (Ctrl->C.value < 0.0) Ctrl->C.dryrun = true, Ctrl->C.value = 0.0;	/* Check for deprecated syntax giving negative value */
 				break;
 			case 'E':	/* Evaluate misfit -E[<file>]*/
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
@@ -903,7 +909,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	obs = u;					/* Hereafter, use obs to refer to the combined (u,v) array */
 	if (Ctrl->Z.active) gpsgridder_dump_system (A, obs, n_params, "A Matrix row || u|v");	/* Dump the A | b system under debug */
 
-	if (Ctrl->E.active) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
+	if (Ctrl->E.active && Ctrl->C.history == GMT_SVD_NO_HISTORY) {	/* Needed A to evaluate misfit later as predict = A_orig * x */
 		A_orig = gmt_M_memory (GMT, NULL, n_params * n_params, double);
 		gmt_M_memcpy (A_orig, A, n_params * n_params, double);
 	}
@@ -969,7 +975,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, V);
 			Return (error);
 		}
-		if (Ctrl->C.movie) {	/* Keep copy of original eigenvalues */
+		if (Ctrl->C.history) {	/* Keep copy of original eigenvalues */
 			ssave = gmt_M_memory (GMT, NULL, n_params, double);
 			gmt_M_memcpy (ssave, s, n_params, double);
 		}
@@ -1024,7 +1030,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "[%d of %" PRIu64 " eigen-values used]\n", n_use, n_params);
 
-		if (Ctrl->C.movie == GPSGRIDDER_NO_MOVIE) {
+		if (Ctrl->C.history == GMT_SVD_NO_HISTORY) {
 			gmt_M_free (GMT, s);
 			gmt_M_free (GMT, V);
 			gmt_M_free (GMT, b);
@@ -1045,7 +1051,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			Return (error);
 		}
 	}
-	if (Ctrl->C.movie == GPSGRIDDER_NO_MOVIE) gmt_M_free (GMT, A);
+	if (Ctrl->C.history == GMT_SVD_NO_HISTORY) gmt_M_free (GMT, A);
 
 	f_x = obs;			/* Just a different name for clarity since obs vector now holds all body forces f_x, f_y */
 	f_y = &obs[n_uv];	/* Halfway down the array we find the start of the f_y body forces */
@@ -1055,7 +1061,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	fclose (fp);
 #endif
 
-	if (Ctrl->E.active) {	/* Want to estimate misfits between data and model */
+	if (Ctrl->E.active && Ctrl->C.history == GMT_SVD_NO_HISTORY) {	/* Want to estimate misfits between data and model */
 		double here[4], mean = 0.0, std = 0.0, rms = 0.0, *predicted = NULL;
 		double mean_u = 0.0, std_u = 0.0, rms_u = 0.0, res_u, dev_u, pvar_sum = 0.0;
 		double mean_v = 0.0, std_v = 0.0, rms_v = 0.0, res_v, dev_v, chi2u = 0.0, chi2v = 0.0, chi2u_sum = 0.0, chi2v_sum = 0.0;
@@ -1068,7 +1074,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (Ctrl->E.mode == GPSGRIDDER_MISFIT) {	/* Want to write out prediction errors */
 			if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates\n");
-				if (Ctrl->C.movie) {
+				if (Ctrl->C.history) {
 					gmt_M_free (GMT, ssave);
 					gmt_M_free (GMT, A);
 					gmt_M_free (GMT, s);
@@ -1198,7 +1204,6 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				out[GMT_Y] = T->segment[seg]->data[GMT_Y][row];
 				out[GPSGRIDDER_U] = out[GPSGRIDDER_V] = 0.0;	/* Initialize before adding up terms */
 				for (p = 0; p < n_uv; p++) {
-					if (f_x[p] == 0.0 && f_y[p] == 0.0) continue;	/* Note: The f_x and f_y are not sorted so must loop over all then skip the zeros */
 					gpsgridder_evaluate_greensfunctions (GMT, X[p], out, par, geo, G);
 					out[GPSGRIDDER_U] += (f_x[p] * G[GPSGRIDDER_FUNC_Q] + f_y[p] * G[GPSGRIDDER_FUNC_W]);
 					out[GPSGRIDDER_V] += (f_x[p] * G[GPSGRIDDER_FUNC_W] + f_y[p] * G[GPSGRIDDER_FUNC_P]);
@@ -1224,18 +1229,81 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		/* Precalculate all coordinates */
 		xp = Out[GMT_X]->x;
 		yp = Out[GMT_X]->y;
-		if (Ctrl->C.movie) {	/* Write out U,V grids after adding contribution for each eigenvalue */
+		if (Ctrl->C.history) {	/* Write out U,V grids after adding contribution for each eigenvalue */
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			gmt_grdfloat *current[2] = {NULL, NULL}, *previous[2] = {NULL, NULL};
+			double predicted[4], l2_sum_n = 0.0, l2_sum_e = 0.0;
+			struct GMT_SINGULAR_VALUE *eigen = NULL;
+			struct GMT_DATASET *E = NULL;
+			struct GMT_DATASEGMENT *S = NULL;
+
 			for (k = GMT_X; k <= GMT_Y; k++) current[k]  = gmt_M_memory_aligned (GMT, NULL, Out[GMT_X]->header->size, gmt_grdfloat);
-			if (Ctrl->C.movie & GPSGRIDDER_INC_MOVIE)
+			if (Ctrl->C.history & GMT_SVD_INCREMENTAL)
 				for (k = GMT_X; k <= GMT_Y; k++) previous[k] = gmt_M_memory_aligned (GMT, NULL, Out[GMT_X]->header->size, gmt_grdfloat);
+
+			if (Ctrl->E.active) {	/* Want to write out misfit as function of eigenvalue */
+				uint64_t e_dim[GMT_DIM_SIZE] = {1, 1, n_use, 6+3*Ctrl->W.active};
+ 				eigen = gmt_sort_svd_values (GMT, ssave, n_params);	/* Get sorted eigenvalues */
+				if ((E = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, e_dim, NULL, NULL, 0, 0, NULL)) == NULL) {
+					GMT_Report (API, GMT_MSG_ERROR, "Unable to create a data set for saving misfit estimates per eigenvector\n");
+					Return (API->error);
+				}
+				for (j = 0; j < n_params; j++)	/* Get sum of squared eigenvalues */
+					l2_sum_n += eigen[j].value * eigen[j].value;
+				S = E->table[0]->segment[0];
+				S->n_rows = n_use;
+			}
 
 			for (e = 0; e < (int64_t)n_use; e++) {	/* For each eigenvalue selected */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Add contribution from eigenvalue %" PRIu64 "\n", e);
 				/* Update solution for e eigenvalues only */
 				gmt_M_memcpy (s, ssave, n_params, double);
 				(void)gmt_solve_svd (GMT, A, (unsigned int)n_params, (unsigned int)n_params, V, s, b, 1U, obs, (double)e, GMT_SVD_EIGEN_NUMBER_CUTOFF);
+				if (Ctrl->E.active) {	/* Compute the history of model misfit */
+					double V[4],rms = 0.0, rms_u = 0.0, dev_u, rms_v = 0.0, dev_v, chi2u = 0.0, chi2v = 0.0, chi2_sum = 0.0, chi2u_sum = 0.0, chi2v_sum = 0.0;
+					for (j = 0; j < n_uv; j++) {	/* For each data constraint pair (u,v) */
+						V[GMT_X] = X[j][GMT_X];	V[GMT_Y] = X[j][GMT_Y];
+						V[GPSGRIDDER_U] = V[GPSGRIDDER_V] = 0.0;
+						for (p = 0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up all body forces */
+							gpsgridder_evaluate_greensfunctions (GMT, X[j], X[p], par, geo, G);
+							V[GPSGRIDDER_U] += (f_x[p] * G[GPSGRIDDER_FUNC_Q] + f_y[p] * G[GPSGRIDDER_FUNC_W]);
+							V[GPSGRIDDER_V] += (f_x[p] * G[GPSGRIDDER_FUNC_W] + f_y[p] * G[GPSGRIDDER_FUNC_P]);
+						}
+						gpsgridder_undo_gps_normalization (V, normalize, norm);
+						dev_u = orig_u[j] - V[GPSGRIDDER_U];	dev_u *= dev_u;
+						dev_v = orig_v[j] - V[GPSGRIDDER_V];	dev_v *= dev_v;
+						rms_u += dev_u;	rms_v += dev_v;
+						rms += dev_u + dev_v;
+						if (Ctrl->W.active && Ctrl->W.mode == GPSGRIDDER_GOT_SIG) {	/* If data had uncertainties we also compute the chi2 sum */
+							chi2u = dev_u * pow (X[j][GPSGRIDDER_WU], 2.0);
+							chi2v = dev_v * pow (X[j][GPSGRIDDER_WV], 2.0);
+							chi2u_sum += chi2u;
+							chi2v_sum += chi2v;
+							chi2_sum += chi2u + chi2v;
+						}
+					}
+					rms   = sqrt (rms   / n_uv);
+					rms_u = sqrt (rms_u / n_uv);
+					rms_v = sqrt (rms_v / n_uv);
+					l2_sum_e += eigen[e].value * eigen[e].value;
+					if (Ctrl->W.active)
+						GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg chi2 = %lg rms_u = %g rms_v = %lg  chi2_u = %lgchi2_v = %lg\n",
+							(int)e, rms, chi2_sum, rms_u, rms_v, chi2u_sum, chi2v_sum);
+					else
+						GMT_Report (API, GMT_MSG_INFORMATION, "Cumulative data misfit for eigenvalue # %d: rms = %lg rms_u = %g rms_v = %lg\n",
+							(int)e, rms, rms_u, rms_v);
+					S->data[0][e] = e;	/* Eigenvalue number (starting at 0) */
+					S->data[1][e] = eigen[e].value;	/* Eigenvalue, from largest to smallest */
+					S->data[2][e] = 100.0 * l2_sum_e / l2_sum_n;	/* Percent of model variance */
+					S->data[3][e] = rms;	/* RMS misfit for this solution in total */
+					S->data[4][e] = rms_u;	/* RMS misfit for this solution for u-component only */
+					S->data[5][e] = rms_v;	/* RMS misfit for this solution for v-component only */
+					if (Ctrl->W.active) {
+						S->data[6][e] = chi2_sum;	/* Chi^2 sum for this solution in total */
+						S->data[7][e] = chi2u_sum;	/* Chi^2 sum for this solution for u-component only */
+						S->data[8][e] = chi2v_sum;	/* Chi^2 sum for this solution for v-component only */
+					}
+				}
 #ifdef _OPENMP
 #pragma omp parallel for private(row,V,col,ij,p,G) shared(Out,yp,xp,n_uv,GMT,X,par,geo,f_x,f_y,normalize,norm)
 #endif
@@ -1247,7 +1315,6 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 						V[GMT_X] = xp[col];
 						/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
 						for (p = 0, V[GPSGRIDDER_U] = V[GPSGRIDDER_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up all body forces */
-							if (f_x[p] == 0.0 && f_y[p] == 0.0) continue;	/* Note: The f_x and f_y are not sorted so must loop over all then skip the zeros */
 							gpsgridder_evaluate_greensfunctions (GMT, X[p], V, par, geo, G);
 							V[GPSGRIDDER_U] += (f_x[p] * G[GPSGRIDDER_FUNC_Q] + f_y[p] * G[GPSGRIDDER_FUNC_W]);
 							V[GPSGRIDDER_V] += (f_x[p] * G[GPSGRIDDER_FUNC_W] + f_y[p] * G[GPSGRIDDER_FUNC_P]);
@@ -1259,22 +1326,22 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 				}
 				for (k = GMT_X; k <= GMT_Y; k++) gmt_M_memcpy (current[k], Out[k]->data, Out[k]->header->size, gmt_grdfloat);	/* Save current solutions */
 
-				if (Ctrl->C.movie & GPSGRIDDER_CUM_MOVIE) {	/* Write out the cumulative solution first */
+				if (Ctrl->C.history & GMT_SVD_CUMULATIVE) {	/* Write out the cumulative solution first */
 					for (k = GMT_X; k <= GMT_Y; k++) {	/* Write the two grids with u(x,y) and v(xy) */
-						gpsgridder_set_filename (Ctrl->G.file, e, width, GPSGRIDDER_CUM_MOVIE, k, file);
-						snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "%s Strain component %s for eigenvalue # %d", mkind[GPSGRIDDER_INC_MOVIE], comp[k], (int)e);
+						gpsgridder_set_filename (Ctrl->G.file, e, width, GMT_SVD_CUMULATIVE, k, file);
+						snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "%s Strain component %s for eigenvalue # %d", mkind[GMT_SVD_INCREMENTAL], comp[k], (int)e);
 						if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k]))
 							Return (API->error);				/* Update solution for k eigenvalues only */
 						if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Out[k]) != GMT_NOERROR)
 							Return (API->error);
 					}
 				}
-				if (Ctrl->C.movie & GPSGRIDDER_INC_MOVIE) {	/* Want to write out incremental solution due to this eigenvalue */
+				if (Ctrl->C.history & GMT_SVD_INCREMENTAL) {	/* Want to write out incremental solution due to this eigenvalue */
 					for (k = GMT_X; k <= GMT_Y; k++) {	/* Incremental improvement since last time */
 						gmt_M_grd_loop (GMT, Out[k], row, col, ij) Out[k]->data[ij] = current[k][ij] - previous[k][ij];
 						gmt_M_memcpy (previous[k], current[k], Out[k]->header->size, gmt_grdfloat);	/* Save current solution which will be previous for next eigenvalue */
-						gpsgridder_set_filename (Ctrl->G.file, e, width, GPSGRIDDER_INC_MOVIE, k, file);
-						snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "%s Strain component %s for eigenvalue # %d", mkind[GPSGRIDDER_CUM_MOVIE], comp[k], (int)e);
+						gpsgridder_set_filename (Ctrl->G.file, e, width, GMT_SVD_INCREMENTAL, k, file);
+						snprintf (Out[k]->header->remark, GMT_GRID_REMARK_LEN160, "%s Strain component %s for eigenvalue # %d", mkind[GMT_SVD_CUMULATIVE], comp[k], (int)e);
 						if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Out[k]))
 							Return (API->error);
 						if (GMT_Write_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, file, Out[k]) != GMT_NOERROR)
@@ -1282,8 +1349,25 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 					}
 				}
 			}
+			if (Ctrl->E.active) {	/* Compute the history of model misfit as rms */
+				char header[GMT_LEN64] = {""};
+				sprintf (header, "# eigenno\teigenval\tvar_percent\trms\trms_u\trms_v");
+				if (Ctrl->W.active) strcat (header, "\tchi2\tchi2_u\tchi2_v");
+				if (GMT_Set_Comment (API, GMT_IS_DATASET, GMT_COMMENT_IS_COLNAMES, header, E)) {
+					Return (API->error);
+				}
+				gmt_set_tableheader (API->GMT, GMT_OUT, true);	/* So header is written */
+				for (k = 0; k < 9; k++) GMT->current.io.col_type[GMT_OUT][k] = GMT_IS_FLOAT;	/* Set plain float column types */
+				if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_WRITE_SET, NULL, Ctrl->E.file, E) != GMT_NOERROR) {
+					Return (API->error);
+				}
+				gmt_M_free (GMT, eigen);
+				gmt_M_free (GMT, orig_u);
+				gmt_M_free (GMT, orig_v);
+			}
+
 			for (k = GMT_X; k <= GMT_Y; k++) gmt_M_free_aligned (GMT, current[k]);
-			if (Ctrl->C.movie & GPSGRIDDER_INC_MOVIE)
+			if (Ctrl->C.history & GMT_SVD_INCREMENTAL)
 				for (k = GMT_X; k <= GMT_Y; k++) gmt_M_free_aligned (GMT, previous[k]);
 			gmt_M_free (GMT, A);
 			gmt_M_free (GMT, s);
@@ -1304,7 +1388,6 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 					V[GMT_X] = xp[col];
 					/* Here, (V[GMT_X], V[GMT_Y]) are the current output coordinates */
 					for (p = 0, V[GPSGRIDDER_U] = V[GPSGRIDDER_V] = 0.0; p < (int64_t)n_uv; p++) {	/* Initialize before adding up terms */
-						if (f_x[p] == 0.0 && f_y[p] == 0.0) continue;	/* Note: The f_x and f_y are not sorted so must loop over all then skip the zeros */
 						gpsgridder_evaluate_greensfunctions (GMT, X[p], V, par, geo, G);
 						V[GPSGRIDDER_U] += (f_x[p] * G[GPSGRIDDER_FUNC_Q] + f_y[p] * G[GPSGRIDDER_FUNC_W]);
 						V[GPSGRIDDER_V] += (f_x[p] * G[GPSGRIDDER_FUNC_W] + f_y[p] * G[GPSGRIDDER_FUNC_P]);
