@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 #
-# Gridding via elastically coupled Green's splines is similar to greenspline in
-# that a SVD-based solution allows for the use of a subset of the eigenvalues.
+# Gridding via elastically coupled Green's splines is similar to greenspline gridding
+# in that a SVD-based solution allows for the use of a subset of the eigenvalues.
 # While a good first step is to use 25% of them, this animation shows the solutions
 # for all choices of eigenvalues and tracks the reduction of misfit (both total and
 # separately for the east and north components.)  The movie shares the same data and
 # setup as one of our test scripts (gpsgridder1.sh) but has been weaponized to do it
-# via animation.
+# via animation.  Note as we include the contributions from the tiniest eigenvalues
+# we rapidly "improve" the misfit while adding spurious variations to the solution.
+# The moral is to not try to fit the data exactly.
 #
 # The finished movie is available in our YouTube channel as well:
-# https://youtu.be/xxxxxxxxxxxx
+# https://youtu.be/Pvvc4vb8G4Y
+#
 # The script took ~20 minutes to render on a 24-core MacPro 2013, with most of the
 # time being used to solve for the cumulative and incremental grid components.
 
