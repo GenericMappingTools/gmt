@@ -28,7 +28,7 @@
 
 #include "gmt_dev.h"
 
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
+#ifndef NO_SIGHANDLER
 	/* Install a signal handler */
 #	ifdef	__APPLE__
 		/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
@@ -61,18 +61,20 @@ int main (int argc, char *argv[]) {
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
 	/* Install signal handler */
+#ifdef WIN32
+	signal (SIGINT, sig_handler_win32);
+#elif !defined(NO_SIGHANDLER)
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
-	act.sa_sigaction = sig_handler;
+	act.sa_sigaction = sig_handler_unix;
 	act.sa_flags = SA_SIGINFO;
 	sigaction (SIGINT,  &act, NULL);	/* Catching Ctrl-C will also wipe a session work directory and destroy GMT session */
 	sigaction (SIGILL,  &act, NULL);
 	sigaction (SIGFPE,  &act, NULL);
 	sigaction (SIGBUS,  &act, NULL);
 	sigaction (SIGSEGV, &act, NULL);
-#endif /* !(defined(WIN32) || defined(NO_SIGHANDLER)) */
+#endif /* !defined(NO_SIGHANDLER) */
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */

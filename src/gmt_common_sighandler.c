@@ -27,15 +27,25 @@
 #include "gmt_config.h"
 #include "declspec.h"
 
-EXTERN_MSC void gmtlib_terminate_session ();
-EXTERN_MSC void *global_API;
-
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
 #include <string.h>
+
+EXTERN_MSC void gmtlib_terminate_session ();
+EXTERN_MSC void *global_API;
+
+#ifdef WIN32
+/* win32: Install Windows SIGINT handling only */
+void sig_handler_win32 (int sig) {
+	gmtlib_terminate_session ();	/* Delete session dir and call GMT_Destroy_Session */
+    exit (0);
+}
+/* install signal handler like this: 
+ *     sig_handler_win32 (SIGINT, sigHandler);
+ */
+#elif !defined(NO_SIGHANDLER)
+/* unix: Install broader sighandler via backtrace handling of SIGINT, SIGILL, SIGFPE, SIGBUS and SIGSEGV */
 #include <unistd.h>
 #include <sys/ucontext.h>
 #include <sys/resource.h>
@@ -176,7 +186,7 @@ static void process_info() {
 	process_mem();
 }
 
-void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
+void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext) {
 	if (sig_num == SIGINT) {
 		/* Catch Ctrl-c and remove modern session sub-directory (if it exists) before exit */
 		struct sigaction act, oldact;
@@ -213,7 +223,7 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
  *   struct sigaction act;
  *   sigemptyset (&act.sa_mask);
  *   act.sa_flags = SA_NODEFER;
- *   act.sa_handler = sig_handler;
+ *   act.sa_handler = sig_handler_unix;
  *   sigaction (SIGINT,  &act, NULL);
  *   act.sa_flags = 0;
  *   sigaction (SIGBUS,  &act, NULL);
@@ -221,4 +231,4 @@ void sig_handler(int sig_num, siginfo_t *info, void *ucontext) {
  * }
  */
 
-#endif /* !(defined(WIN32) || defined(NO_SIGHANDLER)) */
+#endif /* !defined(NO_SIGHANDLER) */

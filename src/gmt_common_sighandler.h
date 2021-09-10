@@ -31,8 +31,10 @@
 #ifndef GMT_COMMON_SIGHANDLER_H
 #define GMT_COMMON_SIGHANDLER_H
 
-#if !(defined WIN32 || defined NO_SIGHANDLER)
-void sig_handler(int sig_num, siginfo_t *info, void *ucontext);
-#endif /* !(defined WIN32 || defined NO_SIGHANDLER) */
+#ifdef WIN32
+void sig_handler_win32 (int sig);
+#elif !defined(NO_SIGHANDLER)
+void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
+#endif /* !defined(NO_SIGHANDLER) */
 
 #endif /* !GMT_COMMON_SIGHANDLER_H */
