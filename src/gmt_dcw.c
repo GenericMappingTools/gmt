@@ -741,8 +741,12 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 		if (search) {	/* Listed continent(s) */
 			bool found = false;
 			for (kk = 0; kk < F->n_items; kk++) {
-				if (F->item[kk]->codes[0] == '=' && strstr (F->item[kk]->codes, GMT_DCW_country[i].continent))
-					found = true;
+				if (F->item[kk]->codes[0] == '=') {
+					if (strstr (F->item[kk]->codes, GMT_DCW_country[i].continent))
+						found = true;
+				}
+				else if (strncmp (F->item[kk]->codes, GMT_DCW_country[i].code, 2U) == 0)
+						found = true;
 			}
 			if (!found) continue;
 		}
@@ -790,7 +794,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	}
 	GMT_Usage (API, 3, "+l Just list the countries and their codes [no %s takes place].", action2[plot]);
 	GMT_Usage (API, 3, "+L List states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US. "
-		"Select =<continent>+l|L to only list countries from that continent (repeatable).");
+		"Select =<continent>+l|L to only list countries from that continent or <code>+L for that country(repeatable).");
 	if (plot == 1)
 		GMT_Usage (API, 3, "+p Draw outline using given <pen> [none].");
 	GMT_Usage (API, 3, "+z Add -Z<countrycode> to multisegment headers if extracting polygons.");
