@@ -14,7 +14,7 @@
 # a few bad tracks which leads to artifacts in the gridded solution.
 #
 # The finished movie is available in our YouTube channel as well:
-# https://youtu.be/xxxxxxxxxxxx
+# https://youtu.be/7NQa4TORA3E
 # The script took ~70 minutes to render on a 24-core MacPro 2013, with most of the
 # time being used to solve for the cumulative and incremental grid components.
 
