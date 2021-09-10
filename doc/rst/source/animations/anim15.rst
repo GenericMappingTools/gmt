@@ -3,7 +3,7 @@
 (15) Animating 2-D coupled gridding via SVD
 ===========================================
 
-Gridding via elastically coupled Green's splines via :doc:`/supplements/seis/gpsgridder`
+Gridding via elastically coupled Green's splines via :doc:`/supplements/geodesy/gpsgridder`
 is similar to :doc:`/greenspline` gridding in that a SVD-based solution allows for the
 use of a subset of the eigenvalues. While a good first step is to use 25% of them, this
 animation shows the solutions for all choices of eigenvalues and tracks the reduction
