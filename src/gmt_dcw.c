@@ -754,8 +754,10 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 			sprintf (string, "%s [%s]", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
-		sprintf (string, "%s\t%s", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
-		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+		if ((list_mode & 2) == 0) {
+			sprintf (string, "%s\t%s", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+		}
 		if ((list_mode & 2) && gmtdcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
 			for (j = 0; j < GMT_DCW_STATES; j++) {
 				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) {
