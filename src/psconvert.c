@@ -40,13 +40,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 
-#ifdef	__APPLE__
-	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
-#ifndef _Nullable
-#	define _Nullable
-#	endif
-#	endif
-
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>
 #	include <process.h>
