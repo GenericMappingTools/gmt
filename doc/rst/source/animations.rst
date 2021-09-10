@@ -46,7 +46,7 @@ includes the animations) does not take excessive time.
 
   :doc:`/animations/anim03`
 
-- .. youtube:: 3vB53hoLsls
+- .. youtube:: 7NQa4TORA3E
      :width: 100%
 
   :doc:`/animations/anim05`
