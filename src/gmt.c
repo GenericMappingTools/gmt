@@ -30,7 +30,6 @@
 
 #ifndef NO_SIGHANDLER
 	/* Include signal declarations */
-#	include <signal.h>
 #	include "gmt_common_sighandler.h"
 #endif
 
@@ -55,10 +54,11 @@ int main (int argc, char *argv[]) {
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
-	/* Install signal handler */
+#ifndef NO_SIGHANDLER
+	/* Install a signal handler */
 #ifdef WIN32
 	signal (SIGINT, sig_handler_win32);	/* Only handle Ctrl-C under Windows */
-#elif !defined(NO_SIGHANDLER)
+#else	/* Unix/Linux/macOS */
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
 	act.sa_sigaction = sig_handler_unix;
@@ -68,7 +68,8 @@ int main (int argc, char *argv[]) {
 	sigaction (SIGFPE,  &act, NULL);
 	sigaction (SIGBUS,  &act, NULL);
 	sigaction (SIGSEGV, &act, NULL);
-#endif /* !defined(NO_SIGHANDLER) */
+#endif	/* Unix/Linux/macOS */
+#endif	/* !defined(NO_SIGHANDLER) */
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */

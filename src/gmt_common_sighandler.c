@@ -23,6 +23,8 @@
  * Version: 5
  */
 
+#ifndef NO_SIGHANDLER
+
 /* CMake definitions: This must be first! */
 #include "gmt_config.h"
 #include "declspec.h"
@@ -44,7 +46,7 @@ void sig_handler_win32 (int sig) {
 /* install signal handler like this: 
  *     sig_handler_win32 (SIGINT, sigHandler);
  */
-#elif !defined(NO_SIGHANDLER)
+#else
 /* unix: Install broader sighandler via backtrace handling of SIGINT, SIGILL, SIGFPE, SIGBUS and SIGSEGV */
 #include <unistd.h>
 #include <sys/ucontext.h>
@@ -64,7 +66,7 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 	once = true;
 	fprintf (stderr, "(stack backtrace unavailable due to missing execinfo.h)\n");
 }
-#endif
+#endif	/* HAVE_EXECINFO_H_ */
 
 /* Macro for retrieving instruction pointer */
 #if defined(__APPLE__)
@@ -230,5 +232,6 @@ void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext) {
  *   sigaction (SIGSEGV, &act, NULL);
  * }
  */
+#endif	/* Unix */
 
-#endif /* !defined(NO_SIGHANDLER) */
+#endif	/* !NO_SIGHANDLER */
