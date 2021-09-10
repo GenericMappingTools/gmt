@@ -47,7 +47,7 @@ Description
 
 **triangulate** reads one or more ASCII [or binary] files (or standard
 input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
-find how the points should be connected to give the most equilateral
+finds how the points should be connected to give the most equilateral
 triangulation possible. If a map projection (give **-R** and **-J**) is
 chosen then it is applied before the triangulation is calculated. By
 default, the output is triplets of point id numbers that make up each
