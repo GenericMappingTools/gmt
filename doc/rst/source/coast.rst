@@ -121,10 +121,10 @@ Optional Arguments
     NA (North America), or SA (South America).  Append **+l** to
     just list the countries and their codes [no data extraction or plotting takes place].
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
-    Finally, you can append **+l**\|\ **+L** to **-E**\ =\ *continent* to only list countries in that continent;
-    repeat if more than one continent is requested.
+    Finally, you can append **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code to only list
+    countries in that continent or country; repeat if more than one continent or country is requested.
     To set up clip paths based on your selection, append **+c** or **+C** for inside or outside (area between selection
-    and the map boundary) clipping, respectively.  To plot instead,
+    and the map boundary) clipping, res pectively.  To plot instead,
     append **+p**\ *pen* to draw polygon outlines [no outline] and
     **+g**\ *fill* to fill them [no fill].  One of **+c**\|\ **C**\|\ **g**\|\ **p** must be
     specified unless **-M** is in effect, in which case only one **-E** option can be given;
