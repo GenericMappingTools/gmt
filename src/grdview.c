@@ -2039,6 +2039,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 		PSL_comment (PSL, "Painting the frontal facade\n");
 		gmt_setpen (GMT, &Ctrl->W.pen[2]);
 		gmt_setfill (GMT, &Ctrl->N.fill, 1);
+		Z = Topo;	/* Ensure we use the topo grid, not the draped grid for this */
 		if (!GMT->current.proj.z_project.draw[0])	{	/* Southern side */
 			for (col = 0, n = 0, ij = sw; col < Z->header->n_columns; col++, ij++) {
 				if (gmt_M_is_fnan (Topo->data[ij])) continue;
