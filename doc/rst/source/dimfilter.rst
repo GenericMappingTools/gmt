@@ -67,7 +67,7 @@ Required Arguments
     cos(middle y), Cartesian distances.
 
     The above options are fastest because they allow weight matrix to be
-    computed only once. The next three options are slower because they
+    computed only once. The next two options are slower because they
     recompute weights for each latitude.
 
     *flag* = 3: grid (x,y) in degrees, *width* in km, dx scaled by
