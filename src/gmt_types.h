@@ -112,6 +112,12 @@ struct GMT_RANGE {
 	double center;	/* Forced to be 0-360 */
 };
 
+/*! For accessing singular values in sorted order */
+struct GMT_SINGULAR_VALUE {
+	double value;
+	unsigned int order;
+};
+
 /*! For information on 1-D array */
 
 struct GMT_ARRAY {	/* Used by modules that needs to set up 1-D output/bin arrays */
