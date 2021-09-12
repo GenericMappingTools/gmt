@@ -329,6 +329,39 @@ int gmtremote_wind_to_file (const char *file) {
 	return (k+1);
 }
 
+int gmt_remote_no_resolution_given (struct GMTAPI_CTRL *API, const char *rfile, int *registration) {
+	/* Return first entry to a list of different resolutions for the
+	 * same data set. For instance, if file is "earth_relief" then we
+	 * return the ID to the first one listed. */
+	char *c = NULL, *p = NULL, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""};
+	int ID = GMT_NOTSET, reg = GMT_NOTSET;
+	size_t L;
+
+	if (rfile == NULL || rfile[0] == '\0') return GMT_NOTSET;	/* No file name given */
+	if (rfile[0] != '@') return GMT_NOTSET;	/* No remote file name given */
+	strcpy (file, &rfile[1]);	/* Make a copy but skipping leading @ character */
+	if ((c = strchr (file, '+'))) c[0] = '\0';	/* Chop of modifiers such as in grdimage -I */
+	L = strlen (file);
+	if (!strncmp (&file[L-2], "_g", 2U)) {	/* Want a gridline-registered version */
+		reg = GMT_GRID_NODE_REG;
+		file[L-2] = '\0';
+	}
+	else if (!strncmp (&file[L-2], "_p", 2U)) {	/* Want a pixel-registered version */
+		reg = GMT_GRID_PIXEL_REG;
+		file[L-2] = '\0';
+	}
+	for (int k = 0; ID == GMT_NOTSET && k < API->n_remote_info; k++) {
+		strncpy (dir, API->remote_info[k].dir, strlen (API->remote_info[k].dir)-1);	/* Make a copy without the trailing slash */
+		p = strrchr (dir, '/');	/* Start of final subdirectory */
+		p++;	/* Skip past the slash */
+		if (!strcmp (p, file)) ID = k;
+	}
+	if (ID != GMT_NOTSET && registration)
+		*registration = reg;	/* Pass back desired [or any] registration */
+
+	return (ID);	/* Start of the family or -1 */
+}
+
 int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	/* Return the entry in the remote file table of file is found, else -1.
 	 * Complications to consider before finding a match:

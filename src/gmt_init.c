@@ -379,6 +379,11 @@ static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
 	"lat_parallel"
 };
 
+struct GMT_RESOLUTIONS {
+	int k;
+	double resolution;
+};
+
 #if defined(USE_COMMON_LONG_OPTIONS)
 /* List of GMT common keyword/options pairs.  This list is used in gmtinit_translate_to_short_options to convert
  * the new long-format GMT options (e.g., --timestamp="My plot"+offset=5c/6c) to regular GMT short format
@@ -14640,6 +14645,14 @@ GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
 	return false;	/* Nothing */
 }
 
+/*! . */
+GMT_LOCAL int gmtinit_compare_resolutions (const void *point_1, const void *point_2) {
+	/* Sorts cols into ascending order  */
+	if (((struct GMT_RESOLUTIONS *)point_1)->resolution < ((struct GMT_RESOLUTIONS *)point_2)->resolution) return (-1);
+	if (((struct GMT_RESOLUTIONS *)point_1)->resolution > ((struct GMT_RESOLUTIONS *)point_2)->resolution) return (+1);
+	return (0);
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
@@ -15140,7 +15153,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 	if (options) {	/* Check if any filename argument is a remote tiled dataset */
 		bool first_time = true;
-		int k_data;
+		int k_data, registration;
 		unsigned int srtm_flag;
 		char *list = NULL, *c = NULL;
 		double wesn[4];
@@ -15159,6 +15172,62 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				gmt_M_str_free (opt->arg);
 				opt->arg = file;
 				continue;
+			}
+			if ((k_data = gmt_remote_no_resolution_given (API, opt->arg, &registration))) {	/* To no resolution, e.g., just "eart_relief" */
+					char codes[3] = {""}, reg[2] = {'g', 'p'}, unit, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""}, *p_dir = NULL;
+					unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
+					unsigned int k, r, kk, res, inc;
+					int k_data2 = GMT_NOTSET;
+					double D, L, n;
+					struct GMT_RESOLUTIONS n_per_degree[15] = {
+						{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 6}, {5, 10}, {6, 12}, {7, 15}, {8, 20}, {9, 30}, {10, 60}, {11, 120}, {12, 240}, {13, 1200}, {14, 3600}}, sorted_n_per_deg[15];
+					unsigned int valid_inc[] = {3600, 1800, 1200, 900, 600, 360, 300, 240, 180, 120, 60, 30, 15, 3, 1};
+					if (!GMT->current.ps.active) {
+						GMT_Report (API, GMT_MSG_ERROR, "Cannot request automatic remote grid resolution if not plotting [%s]\n", opt->arg);
+						return NULL;
+					}
+					if (opt_R == NULL || opt_J == NULL) {
+						GMT_Report (API, GMT_MSG_ERROR, "Cannot request automatic remote grid resolution without -R -J settings [%s]\n", opt->arg);
+						return NULL;
+					}
+					if (!opt_R->arg[0]) codes[n_to_set++] = 'R';	/* Must have -R */
+					if (!opt_J->arg[0]) codes[n_to_set++] = 'J';	/* Must have -J */
+					if (n_to_set) gmtinit_complete_RJ (GMT, codes, *options);	/* Fill in what -R actually is (and possibly fill in -J) */
+					if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
+					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
+					gmt_parse_R_option (GMT, opt_R->arg);
+					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
+					GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
+					if (gmt_map_setup (GMT, GMT->common.R.wesn))
+						return NULL;
+					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
+					L = hypot (GMT->current.map.height, GMT->current.map.width);	/* Diagonal length of map in inches */
+					D = gmtlib_great_circle_dist_degree (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);	/* Diagonal great circle distance in degrees */
+					n = L * 300 / D;	/* Number of equivalent nodes per degree needed */
+					gmt_M_memcpy (sorted_n_per_deg, n_per_degree, 15U, struct GMT_RESOLUTIONS);
+					for (k = 0; k < 15; k++) sorted_n_per_deg[k].resolution = fabs (n - sorted_n_per_deg[k].resolution);
+					mergesort (sorted_n_per_deg, 15U, sizeof (struct GMT_RESOLUTIONS), gmtinit_compare_resolutions);
+					/* Find the closest fit to what we need */
+					strncpy (dir, API->remote_info[k_data].dir, strlen (API->remote_info[k_data].dir)-1);	/* Make a copy without the trailing slash */
+					p_dir = strrchr (dir, '/');	/* Start of final subdirectory */
+					p_dir++;	/* Skip past the slash */
+					for (r = GMT_GRID_NODE_REG; k_data2 == GMT_NOTSET && r <= GMT_GRID_PIXEL_REG; r++) {	/* Loop over both possible registrations */
+						if (registration != GMT_NOTSET && registration != r) continue;	/* Skip the other if we insist on only one type of registration */
+						for (k = 0; k_data2 == GMT_NOTSET && k < 15; k++) {
+							kk = sorted_n_per_deg[k].k;
+							res = irint (n_per_degree[kk].resolution);
+							if (res > 60) inc = valid_inc[kk], unit = 's';
+							else if (res > 1) inc = valid_inc[kk] / 60, unit = 'm';
+							else inc = valid_inc[kk] / 3600, unit = 'd';
+							sprintf (file, "@%s_%2.2d%c_%c", p_dir, inc, unit, reg[r]);	/* Candidate name */
+							k_data2 = gmt_remote_dataset_id (API, file);
+						}
+					}
+					if (k_data2 != GMT_NOTSET) {	/* Replace entry with correct version */
+							gmt_M_str_free (opt->arg);
+							opt->arg = strdup (file);
+					}
+					continue;
 			}
 			if ((c = strchr (opt->arg, '+'))) {	/* Maybe have things like -I@earth_relief_30m+d given to grdimage */
 				c[0] = '\0';
