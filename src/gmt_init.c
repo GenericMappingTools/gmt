@@ -16797,7 +16797,10 @@ int gmt_set_measure_unit (struct GMT_CTRL *GMT, char unit) {
 	int k;
 
 	if ((k = gmt_get_dim_unit (GMT, unit)) < 0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad plot measure selected (%c); use c, i, or p.\n", unit);
+		if (unit)
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad plot measure selected (%c); use c, i, or p.\n", unit);
+		else
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No plot measure selected; use c, i, or p.\n");
 		return (GMT_MAP_BAD_MEASURE_UNIT);
 	}
 	GMT->current.setting.proj_length_unit = k;
