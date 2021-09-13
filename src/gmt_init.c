@@ -187,6 +187,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "GMT_EXPORT_TYPE"},
 	{ 0, "GMT_EXTRAPOLATE_VAL"},
 	{ 0, "GMT_FFT"},
+	{ 0, "GMT_GRAPHICS_DPU"},
 	{ 0, "GMT_GRAPHICS_FORMAT"},
 	{ 0, "GMT_HISTORY"},
 	{ 0, "GMT_INTERPOLANT"},
@@ -6345,6 +6346,9 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
 	/* GMT_FFT */
 	GMT->current.setting.fft = k_fft_auto;
+	/* GMT_GRAPHICS_DPU */
+	GMT->current.setting.graphics_dpu = GMT_IMAGE_DPU_VALUE;
+	GMT->current.setting.graphics_dpu_unit = GMT_IMAGE_DPU_UNIT;
 	/* GMT_GRAPHICS_FORMAT */
 	GMT->current.setting.graphics_format = GMT_SESSION_FORMAT;
 	/* GMT_HISTORY */
@@ -11525,6 +11529,16 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
+		case GMTCASE_GMT_GRAPHICS_DPU:
+		 	if (value[0] == '\0') {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No value given to graphics dpu\n");
+				error = true;
+			}
+			else {
+				GMT->current.setting.graphics_dpu = atof (value);
+				GMT->current.setting.graphics_dpu_unit = (!strcmp ("ci", &value[strlen(value)-1])) ? value[strlen(value)-1] : GMT_IMAGE_DPU_UNIT;
+			}
+			break;
 		case GMTCASE_GMT_GRAPHICS_FORMAT:
 		 	if ((ival = gmt_get_graphics_id (GMT, value)) == GMT_NOTSET) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", value);
@@ -12837,6 +12851,9 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				default:
 					strcpy (value, "undefined");
 			}
+			break;
+		case GMTCASE_GMT_GRAPHICS_DPU:
+			sprintf (value, "%g%c", GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit);
 			break;
 		case GMTCASE_GMT_GRAPHICS_FORMAT:
 			strncpy (value, gmt_session_format[GMT->current.setting.graphics_format], GMT_LEN256-1);
@@ -15178,7 +15195,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
 					unsigned int k, r, kk, res, inc;
 					int k_data2 = GMT_NOTSET;
-					double D, L, n;
+					double D, L, n, dpi;
 					struct GMT_RESOLUTIONS n_per_degree[15] = {
 						{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 6}, {5, 10}, {6, 12}, {7, 15}, {8, 20}, {9, 30}, {10, 60}, {11, 120}, {12, 240}, {13, 1200}, {14, 3600}}, sorted_n_per_deg[15];
 					unsigned int valid_inc[] = {3600, 1800, 1200, 900, 600, 360, 300, 240, 180, 120, 60, 30, 15, 3, 1};
@@ -15201,9 +15218,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (gmt_map_setup (GMT, GMT->common.R.wesn))
 						return NULL;
 					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
+					dpi = GMT->current.setting.graphics_dpu; if (GMT->current.setting.graphics_dpu_unit == 'c') dpi *= 2.54;	/* Convert dpc to dpi */
 					L = hypot (GMT->current.map.height, GMT->current.map.width);	/* Diagonal length of map in inches */
 					D = gmtlib_great_circle_dist_degree (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);	/* Diagonal great circle distance in degrees */
-					n = L * 300 / D;	/* Number of equivalent nodes per degree needed */
+					n = L * dpi / D;	/* Number of equivalent nodes per degree needed */
 					gmt_M_memcpy (sorted_n_per_deg, n_per_degree, 15U, struct GMT_RESOLUTIONS);
 					for (k = 0; k < 15; k++) sorted_n_per_deg[k].resolution = fabs (n - sorted_n_per_deg[k].resolution);
 					mergesort (sorted_n_per_deg, 15U, sizeof (struct GMT_RESOLUTIONS), gmtinit_compare_resolutions);
@@ -15211,7 +15229,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					strncpy (dir, API->remote_info[k_data].dir, strlen (API->remote_info[k_data].dir)-1);	/* Make a copy without the trailing slash */
 					p_dir = strrchr (dir, '/');	/* Start of final subdirectory */
 					p_dir++;	/* Skip past the slash */
-					for (r = GMT_GRID_NODE_REG; k_data2 == GMT_NOTSET && r <= GMT_GRID_PIXEL_REG; r++) {	/* Loop over both possible registrations */
+					for (r = GMT_GRID_PIXEL_REG; k_data2 == GMT_NOTSET && r >= GMT_GRID_NODE_REG; r--) {	/* Loop over both possible registrations, starting with pixel registration */
 						if (registration != GMT_NOTSET && registration != r) continue;	/* Skip the other if we insist on only one type of registration */
 						for (k = 0; k_data2 == GMT_NOTSET && k < 15; k++) {
 							kk = sorted_n_per_deg[k].k;
@@ -15224,10 +15242,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						}
 					}
 					if (k_data2 != GMT_NOTSET) {	/* Replace entry with correct version */
-							gmt_M_str_free (opt->arg);
-							opt->arg = strdup (file);
+						GMT_Report (API, GMT_MSG_NOTICE, "Given -R -J settings, D_g = %g degrees and D_m = %g inches and given dpu = %g%c so we replace %s by %s\n",
+							D, L, GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, opt->arg, file);
+						gmt_M_str_free (opt->arg);
+						opt->arg = strdup (file);
 					}
-					continue;
 			}
 			if ((c = strchr (opt->arg, '+'))) {	/* Maybe have things like -I@earth_relief_30m+d given to grdimage */
 				c[0] = '\0';

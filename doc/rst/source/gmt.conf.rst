@@ -416,6 +416,12 @@ GMT Miscellaneous Parameters
         significant. In that case, stick to the default planner, *estimate*,
         based on heuristics.
 
+    **GMT_GRAPHICS_DPU**
+        Default target dots-per-unit for images when a remote gridded data
+        set is requested without specifyin a resolution (e.g., @earth_relief).
+        Append "i" to indicate the DPU is dots-per-inches and "c" for dots-per-cm.
+        [default is 300i].
+
     **GMT_GRAPHICS_FORMAT**
         Default graphics format in modern mode [default is **pdf**].
 
