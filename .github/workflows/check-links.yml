@@ -3,7 +3,7 @@ name: Check Links
 
 on:
   # Uncomment the 'pull_request' line below to trigger the workflow in PR
-  # pull_request:
+  pull_request:
   # Schedule runs on 12 noon every Sunday
   schedule:
     - cron: '0 12 * * 0'
@@ -23,7 +23,6 @@ jobs:
         # 429: Too many requests
         args: >
           --accept 429
-          --base https://docs.generic-mapping-tools.org
           --exclude "^ftp://"
           --exclude "^https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$"
           --exclude "^https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$"
@@ -31,6 +30,8 @@ jobs:
           --exclude "^http://aa.usno.navy.mil/faq/docs/lawyers.php$"
           --exclude "^uhttp://my.server.com/images$"
           --exclude "^-W@weight.png$"
+          --exclude "^/doc/rst/source$"
+          --exclude "^/dev/_static/version_switch.js$"
           --verbose
           "**/*.rst"
           "**/*.rst_"
@@ -42,8 +43,8 @@ jobs:
       id: date
       run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
-    - name: Create Issue From File
-      uses: peter-evans/create-issue-from-file@v3
-      with:
-        title: Link Checker Report on ${{ steps.date.outputs.date }}
-        content-filepath: ./lychee/out.md
+    #- name: Create Issue From File
+    #  uses: peter-evans/create-issue-from-file@v3
+    #  with:
+    #    title: Link Checker Report on ${{ steps.date.outputs.date }}
+    #    content-filepath: ./lychee/out.md
