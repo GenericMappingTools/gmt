@@ -15191,7 +15191,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 
 	if (options) {	/* Check if any filename argument is a remote tiled dataset */
-		bool first_time = true;
+		bool first_time = true, parsed_R = false;
 		int k_data, registration;
 		unsigned int srtm_flag;
 		char *list = NULL, *c = NULL;
@@ -15236,6 +15236,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
 					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
 					gmt_parse_R_option (GMT, opt_R->arg);
+					parsed_R = true;
 					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
 					GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
 					if (gmt_map_setup (GMT, GMT->common.R.wesn))
@@ -15344,7 +15345,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (n_to_set) gmtinit_complete_RJ (GMT, codes, *options);	/* Fill in what -R actually is (and possibly fill in -J) */
 					if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
 					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
-					gmt_parse_R_option (GMT, opt_R->arg);
+					if (!parsed_R) gmt_parse_R_option (GMT, opt_R->arg);
 					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
 					if (GMT->common.R.oblique) {	/* Must do gmt_mapsetup here to get correct region for building tiles */
 						if (!opt_J) {
