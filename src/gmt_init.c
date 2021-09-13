@@ -15215,8 +15215,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if ((k_data = gmt_remote_no_resolution_given (API, opt->arg, &registration)) != GMT_NOTSET) {	/* Gave no resolution, e.g., just "eart_relief" */
 					char codes[3] = {""}, reg[2] = {'g', 'p'}, unit, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""}, *p_dir = NULL;
 					unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
-					unsigned int k, r, kk, res, inc;
-					int k_data2 = GMT_NOTSET;
+					unsigned int k, kk, res, inc;
+					int r, k_data2 = GMT_NOTSET;
 					double D, L, this_n_per_degree, dpi;
 					struct GMT_RESOLUTIONS n_per_degree[15] = {	/* Sorted list of number of nodes per degree for possible grids */
 						{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 6}, {5, 10}, {6, 12}, {7, 15}, {8, 20}, {9, 30}, {10, 60}, {11, 120}, {12, 240}, {13, 1200}, {14, 3600}}, sorted_n_per_deg[15];
@@ -15270,7 +15270,14 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 							k_data2 = gmt_remote_dataset_id (API, file);
 						}
 					}
-					if (k_data2 != GMT_NOTSET) {	/* Replace entry with correct version */
+					if (k_data2 == GMT_NOTSET) {	/* Replace entry with correct version */
+						if (registration != GMT_NOTSET)
+							GMT_Report (API, GMT_MSG_ERROR, "No matching data with suitable resolution for this registration was found [%s]\n", opt->arg);
+						else
+							GMT_Report (API, GMT_MSG_ERROR, "No matching data with suitable resolution and any registration was found [%s]\n", opt->arg);
+						return NULL;
+					}
+					else {	/* Replace entry with correct version */
 						GMT_Report (API, GMT_MSG_NOTICE, "Given -R%s -J%s, D_g = %g degrees and D_m = %g inches and given dpu = %g%c so we replace %s by %s\n",
 							GMT->common.R.string, GMT->common.J.string, D, L, GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, opt->arg, file);
 						gmt_M_str_free (opt->arg);
