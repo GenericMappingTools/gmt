@@ -15191,7 +15191,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 
 	if (options) {	/* Check if any filename argument is a remote tiled dataset */
-		bool first_time = true, parsed_R = false;
+		bool first_time = true, parsed_R = false, dry_run = false, got_grdcut = false;
 		int k_data, registration;
 		unsigned int srtm_flag;
 		char *list = NULL, *c = NULL;
@@ -15201,6 +15201,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = GMT_Find_Option (API, 'J', *options);
+		got_grdcut = !strncmp (mod_name, "grdcut", 6U);
+		dry_run = (got_grdcut && GMT_Find_Option (API, 'D', *options));	/* Do not want the grid, just the information */
+		if (dry_run && GMT_Find_Option (API, 'G', *options)) {	/* Check here since parse is in the future */
+			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Cannot specify -G since no grid will be returned\n");
+			return NULL;
+		}
 
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (gmt_M_file_is_memory (opt->arg) || opt->arg[0] != '@') continue;	/* No remote file argument given */
@@ -15222,12 +15228,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 6}, {5, 10}, {6, 12}, {7, 15}, {8, 20}, {9, 30}, {10, 60}, {11, 120}, {12, 240}, {13, 1200}, {14, 3600}}, sorted_n_per_deg[15];
 					unsigned int valid_inc[] = {3600, 1800, 1200, 900, 600, 360, 300, 240, 180, 120, 60, 30, 15, 3, 1};	/* Corresponding increment in arc seconds */
 
-					if (!GMT->current.ps.active) {
-						GMT_Report (API, GMT_MSG_ERROR, "Cannot request automatic remote grid resolution if not plotting [%s]\n", opt->arg);
-						return NULL;
-					}
 					if (opt_R == NULL || opt_J == NULL) {
 						GMT_Report (API, GMT_MSG_ERROR, "Cannot request automatic remote grid resolution without -R -J settings [%s]\n", opt->arg);
+						return NULL;
+					}
+					if (!(GMT->current.ps.active || got_grdcut)) {
+						GMT_Report (API, GMT_MSG_ERROR, "Except for grdcut, cannot request automatic remote grid resolution if not plotting [%s]\n", opt->arg);
 						return NULL;
 					}
 					if (!opt_R->arg[0]) codes[n_to_set++] = 'R';	/* Must have -R parsed */
@@ -15279,8 +15285,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						return NULL;
 					}
 					else {	/* Replace entry with correct version */
-						GMT_Report (API, GMT_MSG_NOTICE, "Given -R%s -J%s, D_g = %g degrees and D_m = %g inches and given dpu = %g%c so we replace %s by %s\n",
-							GMT->common.R.string, GMT->common.J.string, D, L, GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, opt->arg, file);
+						GMT_Report (API, GMT_MSG_INFORMATION, "Given -R%s -J%s, representative distances D_g = %g degrees, D_m = %g %s and dpu = %g%c we replace %s by %s\n",
+							GMT->common.R.string, GMT->common.J.string, D, L * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit],
+							GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, opt->arg, file);
 						gmt_M_str_free (opt->arg);
 						opt->arg = strdup (file);
 					}
@@ -15368,19 +15375,42 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			wesn[XHI] = ceil  ((wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
 			wesn[YLO] = floor ((wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
 			wesn[YHI] = ceil  ((wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
-			/* Get a file with a list of all needed tiles */
-			list = gmtlib_get_tile_list (API, wesn, k_data, GMT->current.ps.active, srtm_flag);
-			/* Replace the remote file name with this local list */
-			gmt_M_str_free (opt->arg);
-			if (c) {	/* Must append the modifiers */
-				char args[GMT_LEN128] = {""};
-				c[0] = '+';
-				sprintf (args, "%s%s", list, c);
-				opt->arg = strdup (args);
-				gmt_M_str_free (list);
+			if (dry_run) {
+				double out[6];
+				struct GMT_RECORD *Out = NULL;
+				GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increment %s\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc);
+				if (GMT_Set_Columns (API, GMT_OUT, 6, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
+					return NULL;
+				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, *options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+					return NULL;
+				}
+				if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+					return NULL;
+				}
+
+				Out = gmt_new_record (GMT, out, NULL);	/* The numerical output record */
+				gmt_M_memcpy (out, wesn, 4U, double);	/* Place the grid boundaries */
+				out[4] = out[5] = I->d_inc;
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
+					return NULL;
+				gmt_M_free (GMT, Out);
 			}
-			else
-				opt->arg = list;
+			else {
+				/* Get a file with a list of all needed tiles */
+				list = gmtlib_get_tile_list (API, wesn, k_data, GMT->current.ps.active, srtm_flag);
+				/* Replace the remote file name with this local list */
+				gmt_M_str_free (opt->arg);
+				if (c) {	/* Must append the modifiers */
+					char args[GMT_LEN128] = {""};
+					c[0] = '+';
+					sprintf (args, "%s%s", list, c);
+					opt->arg = strdup (args);
+					gmt_M_str_free (list);
+				}
+				else
+					opt->arg = list;
+			}
 		}
 	}
 

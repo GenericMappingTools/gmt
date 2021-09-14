@@ -16,6 +16,7 @@ Synopsis
 *ingrid*
 |-G|\ *outgrid*
 |SYN_OPT-R|
+[ |-D| ]
 [ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
@@ -56,6 +57,15 @@ Required Arguments
 
 Optional Arguments
 ------------------
+
+.. _-D:
+
+**-D**
+    A "dry run": Simply report the region and increment of what would be the
+    extracted grid. Useful when using **-R -J** with or without unknown grid
+    resolution for a remote data set.  No grid is created (**-G** is disallowed)
+    and instead we write a single data record with *west east south north xinc yinc*
+    to standard output.
 
 .. _-F:
 
@@ -160,6 +170,11 @@ to NaN outside France, based on the 10x10 minute DEM, try::
     gmt coast -EFR -M > FR.txt
     gmt grdcut @earth_relief_10m -FFR.txt+c -GFR_only.grd
     gmt grdimage FR_only.grd -B -pdf map
+
+To determine what grid region and resolution is most suitable for a 24 cm wide map
+that is using an oblique projection to display the remote Earth Relief data grid, try::
+
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D -V
     
 See Also
 --------
