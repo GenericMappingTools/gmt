@@ -44,6 +44,7 @@ struct GRDCUT_CTRL {
 	} In;
 	struct GRDCUT_D {	/* -D */
 		bool active;
+		bool quit;
 	} D;
 	struct GRDCUT_F {	/* -Fpolfile[+c][+i] */
 		bool active;
@@ -171,6 +172,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
+				if (opt->arg[0] && !strcmp (opt->arg, "done-in-gmt_init_module")) {
+					Ctrl->D.quit = true;	/* Reporting has already happened */
+					gmt_M_str_free (opt->arg);	/* Free internal marker */
+				}
 				break;
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
@@ -268,7 +273,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && Ctrl->G.file, "Option -D: Cannot specify -G since no grid will be returned\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !GMT->common.J.active, "Option -D: Requires -R and -J\n");
+	//n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !GMT->common.J.active, "Option -D: Requires -R and -J\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.active[RSET] && Ctrl->F.crop, "Option -F: Modifier +c cannot be used with -R\n");
 	F_or_R_or_J = GMT->common.R.active[RSET] | Ctrl->F.active | GMT->common.J.active;
 	n_errors += gmt_M_check_condition (GMT, (F_or_R_or_J + Ctrl->S.active + Ctrl->Z.active) != 1,
@@ -418,7 +423,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdcut main code ----------------------------*/
 
-	if (Ctrl->D.active)	/* Only requested an information done deep inside gmt_init_module */
+	if (Ctrl->D.quit)	/* Already reported information deep inside gmt_init_module */
 		Return (GMT_NOERROR);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
@@ -709,6 +714,31 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Requested subset is entirely to the left or to the right of the current grid region\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
+
+	if (Ctrl->D.active) {
+		double out[6];
+		struct GMT_RECORD *Out = NULL;
+		GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increments %lg/%lg\n", wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y]);
+		if (GMT_Set_Columns (API, GMT_OUT, 6, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
+			Return (API->error);
+		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+			Return (API->error);
+		}
+		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+			Return (API->error);
+		}
+
+		Out = gmt_new_record (GMT, out, NULL);	/* The numerical output record */
+		gmt_M_memcpy (out, wesn_new, 4U, double);	/* Place the grid boundaries */
+		out[4] = G->header->inc[GMT_X];
+		out[5] = G->header->inc[GMT_Y];
+		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
+			Return (API->error);
+		gmt_M_free (GMT, Out);
+		Return (GMT_NOERROR);
+	}
+
 	gmt_M_memcpy (wesn_requested, wesn_new, 4, double);
 	if (wesn_new[YLO] < G->header->wesn[YLO]) wesn_new[YLO] = G->header->wesn[YLO], outside[YLO] = true;
 	if (wesn_new[YHI] > G->header->wesn[YHI]) wesn_new[YHI] = G->header->wesn[YHI], outside[YHI] = true;

@@ -15196,13 +15196,13 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int srtm_flag;
 		char *list = NULL, *c = NULL;
 		double wesn[4];
-		struct GMT_OPTION *opt_J = NULL, *opt_S = NULL;
+		struct GMT_OPTION *opt_J = NULL, *opt_S = NULL, *opt_D = NULL;
 		struct GMT_DATA_INFO *I = NULL;
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = GMT_Find_Option (API, 'J', *options);
 		got_grdcut = !strncmp (mod_name, "grdcut", 6U);
-		dry_run = (got_grdcut && GMT_Find_Option (API, 'D', *options));	/* Do not want the grid, just the information */
+		dry_run = (got_grdcut && (opt_D = GMT_Find_Option (API, 'D', *options)));	/* Do not want the grid, just the information */
 		if (dry_run && GMT_Find_Option (API, 'G', *options)) {	/* Check here since parse is in the future */
 			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Cannot specify -G since no grid will be returned\n");
 			return NULL;
@@ -15378,7 +15378,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			if (dry_run) {
 				double out[6];
 				struct GMT_RECORD *Out = NULL;
-				GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increment %s\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc);
+				GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increments %s/%s\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc, I->inc);
 				if (GMT_Set_Columns (API, GMT_OUT, 6, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
 					return NULL;
 				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, *options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
@@ -15395,6 +15395,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
 					return NULL;
 				gmt_M_free (GMT, Out);
+				opt_D->arg = strdup ("done-in-gmt_init_module");	/* Flag so that grdcut can deal with the mixed cases later */
 			}
 			else {
 				/* Get a file with a list of all needed tiles */
