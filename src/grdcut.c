@@ -118,8 +118,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Alternatively, see -N below.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-D[+t]");
-	GMT_Usage (API, -2, "\nDry-run mode. No grid is written but its domain and increment will be "
-		"written to stdout in w e s n dx dy format.  Append +t to instead receive -Rw/e/s/n -Idx/dy.");
+	GMT_Usage (API, -2, "Dry-run mode. No grid is written but its domain and increment will be "
+		"written to stdout in w e s n dx dy numerical format.  Append +t to instead receive text strings -Rw/e/s/n -Idx/dy.");
 	GMT_Usage (API, 1, "\n-F<polygontable>[+c][+i]");
 	GMT_Usage (API, -2, "Specify a multi-segment closed polygon table that describes the grid subset "
 		"to be extracted (nodes between grid boundary and polygons will be set to NaN).");

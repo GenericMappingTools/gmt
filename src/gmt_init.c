@@ -15375,9 +15375,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			wesn[XHI] = ceil  ((wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
 			wesn[YLO] = floor ((wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
 			wesn[YHI] = ceil  ((wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
-			if (dry_run) {
-				double out[6];
-				char record[GMT_LEN256] = {""};
+			if (dry_run) {	/* Only want to learn about the grid domain and resolution */
+				double out[6];	/* To hold w e s n dx dy */
+				char record[GMT_LEN256] = {""};	/* To hold -Rw/e/s/n -Idx/dy */
 				struct GMT_RECORD *Out = NULL;
 				bool text = (strstr (opt_D->arg, "+t"));
 				GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increments %s/%s\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc, I->inc);
