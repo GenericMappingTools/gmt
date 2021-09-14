@@ -138,6 +138,16 @@ eight tiles that make up the 2m x 2m gridline-registered data, try::
 
     gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd -Rg
 
+Finally, if you wish to determine the most suitable grid resolution that is adequate for making a map
+given a region and projection, you can learn that information by passing -D, e.g.,::
+
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D -V > info.txt
+
+
+ or obtain the required subset grid via::
+
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -Gsubset.grd -V
+
 ----
 
 .. include:: earth-relief.rst_

@@ -16,7 +16,7 @@ Synopsis
 *ingrid*
 |-G|\ *outgrid*
 |SYN_OPT-R|
-[ |-D| ]
+[ |-D|\ [**+t**] ]
 [ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
@@ -62,10 +62,11 @@ Optional Arguments
 
 **-D**
     A "dry run": Simply report the region and increment of what would be the
-    extracted grid. Useful when using **-R -J** with or without unknown grid
-    resolution for a remote data set.  No grid is created (**-G** is disallowed)
+    extracted grid given the selected options.  No grid is created (**-G** is disallowed)
     and instead we write a single data record with *west east south north xinc yinc*
-    to standard output.
+    to standard output. The increments will reflect the input grid unless it is a
+    remote gridded data set without implied resolution. Append **+t** to instead receive
+    the information as the string -Rwest/east/south/north -Ixinc/yinc.
 
 .. _-F:
 

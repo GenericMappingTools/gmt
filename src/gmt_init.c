@@ -15377,9 +15377,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			wesn[YHI] = ceil  ((wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
 			if (dry_run) {
 				double out[6];
+				char record[GMT_LEN256] = {""};
 				struct GMT_RECORD *Out = NULL;
+				bool text = (strstr (opt_D->arg, "+t"));
 				GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increments %s/%s\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc, I->inc);
-				if (GMT_Set_Columns (API, GMT_OUT, 6, GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
+				if (GMT_Set_Columns (API, GMT_OUT, text ? 0 : 6, text ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
 					return NULL;
 				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, *options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 					return NULL;
@@ -15388,14 +15390,23 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					return NULL;
 				}
 
-				Out = gmt_new_record (GMT, out, NULL);	/* The numerical output record */
-				gmt_M_memcpy (out, wesn, 4U, double);	/* Place the grid boundaries */
-				out[4] = out[5] = I->d_inc;
+				if (text) {
+					Out = gmt_new_record (GMT, NULL, record);	/* The trailing text output record */
+					sprintf (record, "-R%.16lg/%.16lg/%.16lg/%.16lg -I%s/%s", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc, I->inc);
+				}
+				else {
+					Out = gmt_new_record (GMT, out, NULL);	/* The numerical output record */
+					gmt_M_memcpy (out, wesn, 4U, double);	/* Place the grid boundaries */
+					out[4] = out[5] = I->d_inc;
+				}
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
 					return NULL;
 				gmt_M_free (GMT, Out);
-				opt_D->arg = strdup ("done-in-gmt_init_module");	/* Flag so that grdcut can deal with the mixed cases later */
+				gmt_M_str_free (opt_D->arg);	/* Free any previous arguments */
+				strcpy (record, "done-in-gmt_init_module");
+				if (text) strcat (record, "+t");
+				opt_D->arg = strdup (record);	/* Flag so that grdcut can deal with the mixed cases later */
 			}
 			else {
 				/* Get a file with a list of all needed tiles */
