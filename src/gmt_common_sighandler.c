@@ -35,7 +35,6 @@
 #include <string.h>
 
 EXTERN_MSC void gmtlib_terminate_session ();
-EXTERN_MSC void *global_API;
 
 #ifdef WIN32
 /* win32: Install Windows SIGINT handling only */
