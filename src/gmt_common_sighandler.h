@@ -34,9 +34,9 @@
 #ifndef NO_SIGHANDLER
 #   include <signal.h>
 #   ifdef WIN32
-        void sig_handler_win32 (int sig);
+        EXTERN_MSC void sig_handler_win32 (int sig);
 #   else
-        void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
+        EXTERN_MSC void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
 #   endif
 #endif /* !defined(NO_SIGHANDLER) */
 
