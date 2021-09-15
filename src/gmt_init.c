@@ -7747,7 +7747,7 @@ void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
 	GMT_Usage (API, 3, "+o Offset data values by the given <offset>, or append a for automatic range offset to preserve precision for integer grids [0].");
 	GMT_Usage (API, 3, "+s Scale data values by the given <scale>, or append a for automatic range scale to preserve precision for integer grids [1].");
-	GMT_Usage (API, -2, "Note: Any offset is added after any scaling, and +sa also sets +oa (unless overridden). "
+	GMT_Usage (API, -2, "Note: Any offset is added before any scaling, and +sa also sets +oa (unless overridden). "
 		"To write specific formats via GDAL, use <ID> = gd and supply <driver> (and optionally <dataType> and/or one or more concatenated GDAL -co <options> using +c).");
 }
 
