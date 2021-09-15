@@ -1471,7 +1471,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, bool plot_region, unsigned int srtm_flag) {
 	/* Builds a list of the tiles to download for the chosen region, dataset and resolution.
 	 * Uses the optional tile information grid to know if a particular tile exists. */
-	char tile_list[PATH_MAX] = {""}, *file = NULL, **tile = NULL, datatype[3] = {'L', 'O', 'X'}, regtype[2] = {'G', 'P'};
+	char tile_list[PATH_MAX] = {""}, stem[GMT_LEN32] = {""}, *file = NULL, **tile = NULL, datatype[3] = {'L', 'O', 'X'}, regtype[2] = {'G', 'P'};
 	int k_filler = GMT_NOTSET;
 	unsigned int k, n_tiles = 0, ocean = (srtm_flag) ? 0 : 2;
 	FILE *fp = NULL;
@@ -1489,48 +1489,12 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 
 	/* Create temporary filename for list of tiles */
 
-	if (API->GMT->current.setting.run_mode == GMT_MODERN) {	/* Isolation mode is baked in, so just use 000000 (or any 6 characters) as extension */
-		snprintf (tile_list, PATH_MAX, "%s/=tiled_%d_%c%c.000000", API->GMT->parent->gwf_dir, k_data, regtype[plot_region], datatype[ocean]);
-		file = tile_list;
-		if ((fp = fopen (file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to create list of tiles: %s.\n", file);
-			return NULL;
-		}
+	snprintf (stem, GMT_LEN32, "=tiled_%d_%c%c", k_data, regtype[plot_region], datatype[ocean]);
+	if ((fp = gmt_create_tempfile (API, stem, NULL, tile_list)) == NULL) {	/* Not good... */
+		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to create list of tiles from template: %s.\n", tile_list);
+		return NULL;
 	}
-	else {	/* Under classic mode we must create a unique filename for the list */
-		char name[GMT_LEN32] = {""};
-#ifndef _WIN32
-		int fd = 0;
-#endif
-		if (API->tmp_dir)	/* Have a recognized temp directory */
-			snprintf (tile_list, PATH_MAX, "%s/", API->tmp_dir);
-		snprintf (name, GMT_LEN32, "=tiled_%d_%c%c.XXXXXX", k_data, regtype[plot_region], datatype[ocean]);
-		strcat (tile_list, name);
-#ifdef _WIN32
-		if ((file = mktemp (tile_list)) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Could not create temporary file name %s.\n", tile_list);
-			API->error = GMT_RUNTIME_ERROR;
-			return NULL;
-		}
-		if ((fp = fopen (file, "w")) == NULL) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to create list of tiles: %s.\n", file);
-			API->error = GMT_RUNTIME_ERROR;
-			return NULL;
-		}
-#else
-		if ((fd = mkstemp (tile_list)) == -1) {
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Could not create temporary file name %s.\n", tile_list);
-			API->error = GMT_RUNTIME_ERROR;
-			return NULL;
-		}
-		file = tile_list;
-		if ((fp = fdopen (fd, "w")) == NULL) {
-			API->error = GMT_RUNTIME_ERROR;
-			GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Could not fdopen the temporary file %s.\n", file);
-			return NULL;
-		}
-#endif
-	}
+	file = tile_list;	/* Pointer to the buffer with the name */
 
 	/* Get the primary tiles */
 	tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles);

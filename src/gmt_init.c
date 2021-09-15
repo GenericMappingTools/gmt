@@ -13960,34 +13960,15 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 				char *file = NULL;
 				void *content = NULL;
 				size_t n_read = 0;
-#ifndef _WIN32
-				int fd = 0;
-#endif
 
 				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Must save stdin to a temporary file.\n");
-				if (API->tmp_dir)			/* Have a recognized temp directory */
-					snprintf (tmpfile, PATH_MAX, "%s/", API->tmp_dir);
-				strcat (tmpfile, "gmt_saved_stdin.XXXXXX");	/* The XXXXXX will be replaced by mktemp */
-#ifdef _WIN32
-				if ((file = mktemp (tmpfile)) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not create temporary file name.\n");
-					return GMT_RUNTIME_ERROR;
-				}
-				if ((fp = fopen (file, API->GMT->current.io.w_mode)) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not open temporary file %s.\n", file);
-					return GMT_RUNTIME_ERROR;
-				}
-#else
-				if ((fd = mkstemp (tmpfile)) == -1) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not create and open temporary file %s.\n", tmpfile);
+
+				if ((fp = gmt_create_tempfile (API, "gmt_saved_stdin", NULL, tmpfile)) == NULL) {	/* Not good... */
+					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not create and open temporary file name %s.\n", tmpfile);
 					return GMT_RUNTIME_ERROR;
 				}
 				file = tmpfile;
-				if ((fp = fdopen (fd, API->GMT->current.io.w_mode)) == NULL) {
-					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not fdopen temporary file %s.\n", file);
-					return GMT_RUNTIME_ERROR;
-				}
-#endif
+
 				/* Dump stdin to that temp file */
 				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Send stdin to %s.\n", file);
 				if ((content = malloc (GMT_BUFSIZ)) == NULL) {
