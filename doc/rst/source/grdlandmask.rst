@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdlandmask** |-G|\ *mask_grd_file*
+**gmt grdlandmask** |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |SYN_OPT-Area| ]
@@ -41,8 +41,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output mask grid.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 

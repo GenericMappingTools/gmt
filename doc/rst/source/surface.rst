@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt surface** [ *table* ] |-G|\ *outputfile.nc*
+**gmt surface** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *aspect_ratio*\|\ **m** ]
@@ -78,9 +78,11 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outputfile.nc*
-    Output file name. Output is a binary 2-D *.nc* file. Note that the
+.. |Add_outgrid| replace:: Give the name of the output grid file. Note that the
     smallest grid dimension must be at least 4.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
