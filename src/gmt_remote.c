@@ -649,6 +649,12 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	if ((LF = gmtremote_lock_on (GMT, file)) == NULL)
 		return 1;
 
+	/* If file locking held us up as another process was downloading the same file,
+	 * then that file should now be available.  So we check again if it is before proceeding */
+
+	if (!access (file, F_OK))
+		return GMT_NOERROR;	/* Yes it was! */
+
 	/* Initialize the curl session */
 	if ((Curl = gmtremote_setup_curl (API, url, file, &urlfile, GMT_HASH_TIME_OUT)) == NULL)
 		goto unlocking1;
@@ -1220,6 +1226,12 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	/* Only make a lock if not a query */
 	if (!query && (LF = gmtremote_lock_on (GMT, (char *)name)) == NULL)
 		return 1;
+
+	/* If file locking held us up as another process was downloading the same file,
+	 * then that file should now be available.  So we check again if it is before proceeding */
+
+	if (!access (localfile, F_OK))
+		return GMT_NOERROR;	/* Yes it was! */
 
 	/* Initialize the curl session */
 	if ((Curl = gmtremote_setup_curl (API, url, localfile, &urlfile, 0)) == NULL)
