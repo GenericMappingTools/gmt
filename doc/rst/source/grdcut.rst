@@ -60,7 +60,7 @@ Optional Arguments
 
 .. _-D:
 
-**-D**
+**-D**\ [**+t**]
     A "dry run": Simply report the region and increment of what would be the
     extracted grid given the selected options.  No grid is created (**-G** is disallowed)
     and instead we write a single data record with *west east south north xinc yinc*
