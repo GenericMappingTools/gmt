@@ -31,7 +31,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdcut"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Extract subregion from a grid"
-#define THIS_MODULE_KEYS	"<G{,FD(=,>D),GG}"
+#define THIS_MODULE_KEYS	"<G{,FD(=,>DD,GG}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-JRVf"
 
