@@ -322,7 +322,7 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 
 	/* Create unique directory for outputs, stored in tmpdir */
 
-	if (gmt_get_temp_name (API, "gmt_latex", NULL, tmpdir))
+	if (gmt_get_tempname (API, "gmt_latex", NULL, tmpdir))
 		return NULL;
 	if (gmt_mkdir (tmpdir)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", tmpdir);

@@ -465,7 +465,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 			gmt_filename_set (B[n].file);	/* Replace any spaces in filename with ASCII 29 */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
 
-				if (gmt_get_temp_name (GMT->parent, "grdblend_resampled", ".nc", buffer))
+				if (gmt_get_tempname (GMT->parent, "grdblend_resampled", ".nc", buffer))
 					return GMT_RUNTIME_ERROR;
 				snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, res,
 				         Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
@@ -481,7 +481,7 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 				if (srtm_job)
 					GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 					            "Convert tile from JPEG2000 to netCDF grid [%s]\n", B[n].file);
-				if (gmt_get_temp_name (GMT->parent, "grdblend_reformatted", ".nc", buffer))
+				if (gmt_get_tempname (GMT->parent, "grdblend_reformatted", ".nc", buffer))
 					return GMT_RUNTIME_ERROR;
 				snprintf (cmd, GMT_LEN256, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
@@ -976,7 +976,7 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	else {
 		unsigned int w_mode;
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
-			if (gmt_get_temp_name (GMT->parent, "grdblend_temp", ".nc", outtemp))
+			if (gmt_get_tempname (GMT->parent, "grdblend_temp", ".nc", outtemp))
 				return GMT_RUNTIME_ERROR;
 			outfile = outtemp;
 		}

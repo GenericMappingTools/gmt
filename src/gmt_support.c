@@ -4905,7 +4905,7 @@ GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, ch
 		snprintf (path, PATH_MAX, "%s_XXXXXX", stem ? stem : "gmttemp");
 }
 
-int gmt_get_temp_name (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
 	/* Create a unique temporary file or directory name on the system;
 	 * If stem is NULL we use "gmttemp" as file prefix.  If extension is not NULL we append it.
 	 * Note: path is expected to have a length of PATH_MAX.
@@ -4939,7 +4939,7 @@ FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension,
 		return NULL;
 	}
 #else	/* Must create file name first, then open file - susceptible to race condition if another process gets there first */
-	if (gmt_get_temp_name (API, stem, extension, path)) {
+	if (gmt_get_tempname (API, stem, extension, path)) {
 		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name %s.\n", path);
 		API->error = GMT_RUNTIME_ERROR;
 		return NULL;
