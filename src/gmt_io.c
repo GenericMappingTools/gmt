@@ -3358,7 +3358,7 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		}
 		*tpos = pos;
 	}
-	if (found_text && col == 0 && !GMT->common.i.select) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
+	if (found_text && col == 0 && !GMT->common.i.select && phys_col_type != GMT_IS_STRING) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
 		gmt_M_free (GMT, type);
 		return GMT_NOT_OUTPUT_OBJECT;
 	}
