@@ -2083,6 +2083,7 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 	}
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
+		if (dim == NULL) return (GMT_VALUE_NOT_SET);
 		gmt_M_memcpy (M->range, dummy_range, 2 * dims, double);
 		gmt_M_memcpy (M->inc, dummy_range, dims, double);
 		M->n_rows    = dim[GMTAPI_DIM_ROW];
