@@ -357,7 +357,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 GMT_LOCAL int gmtsupport_parse_pattern (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
 	int err;
 	/* New syntax may have a modifier */
-	if (strstr(line, "+r") || strstr(line, "+f") || strstr(line, "+b") || !strchr(line, '/'))	/* Clearly new syntax */
+	if (gmt_found_modifier (GMT, line, "bfr") || !strchr(line, '/'))	/* Clearly new syntax */
 		err = gmtsupport_parse_pattern_new (GMT, line, fill);
 	else
 		err = gmtsupport_parse_pattern_old (GMT, line, fill);
@@ -890,7 +890,7 @@ GMT_LOCAL bool gmtsupport_is_pattern (struct GMT_CTRL *GMT, char *word) {
 
 	bool val;
 	/* New syntax may have a modifier or no slash AND no colon */
-	if ((strstr(word, "+r") || strstr(word, "+f") || strstr(word, "+b") || !strchr(word, '/')) && !strchr (word,':'))
+	if ((gmt_found_modifier (GMT, word, "bfr") || !strchr(word, '/')) && !strchr (word,':'))
 		val = gmtsupport_is_pattern_new (GMT, word);
 	else
 		val = gmtsupport_is_pattern_old (word);
@@ -4167,7 +4167,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_watson (struct GMT_CTRL *GMT, 
 GMT_LOCAL int gmtsupport_ensure_new_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *in_text, char *text, char *panel_txt) {
 	/* Recasts any old syntax using new syntax and gives a warning.
  	   Assumes text and panel_text are blank and have adequate space */
-	if (strstr (in_text, "+c") || strstr (in_text, "+g") || strstr (in_text, "+p")) {	/* Tell-tale sign of old syntax */
+	if (gmt_found_modifier (GMT, in_text, "cgp")) {	/* Tell-tale sign of old syntax */
 		char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 		unsigned int pos = 0, start = 0, i;
 		int n;
@@ -4329,7 +4329,7 @@ GMT_LOCAL int gmtsupport_getscale_old (struct GMT_CTRL *GMT, char option, char *
 		error++;
 	}
 
-	ms->old_style = (strstr (txt_cpy, "+f") || strstr (txt_cpy, "+g") || strstr (txt_cpy, "+p"));
+	ms->old_style = gmt_found_modifier (GMT, txt_cpy, "fgp");
 
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
 		char p[GMT_BUFSIZ], oldshit[GMT_LEN128] = {""};
@@ -9918,7 +9918,7 @@ unsigned int gmt_contour_T_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 			I->high = false, j = 1;
 		else
 			j = 0;
-		if (strstr (arg, "+a") || strstr (arg, "+d") || strstr (arg, "+l")) {	/* New parser */
+		if (gmt_found_modifier (GMT, arg, "adl")) {	/* New parser */
 			if (gmt_validate_modifiers (GMT, arg, 'T', "adl", GMT_MSG_ERROR)) n_errors++;
 			if (gmt_get_modifier (arg, 'a', string))
 				I->all = true;
@@ -18233,4 +18233,14 @@ bool gmt_is_gmt_end_show (char *line) {
 	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get third word or fail */
 	if (!strcmp (word, "show")) return true;	/* Yes, found gmt end show */
 	return false;	/* Not gmt end show */
+}
+
+bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
+	/* Return true if any of the modifiers listed are found in the string */
+	char this_modifier[3] = {'+', ' ', '\0'};
+	for (unsigned int k = 0; k < strlen (mods); k++) {
+		this_modifier[1] = mods[k];
+		if (strstr (string, this_modifier)) return (true);	/* Found it */
+	}
+	return (false);
 }
