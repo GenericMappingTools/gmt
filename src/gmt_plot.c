@@ -291,157 +291,157 @@ GMT_LOCAL bool gmtplot_has_title_breaks (struct GMT_CTRL *GMT, const char *strin
 }
 
 GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FONT *F, const char *string, struct imageinfo *h) {
-    /* Convert a string containing LaTeX syntax to an EPS image */
-    unsigned int i, o;
-    int error = 0;
-    char *text = NULL, *font, *code;
-    char tmpdir[PATH_MAX] = {""}, here[PATH_MAX] = {""}, file[PATH_MAX] = {""}, cmd[PATH_MAX] = {""};
-    unsigned char *picture = NULL;
-    FILE *fp = NULL;
-    struct GMTAPI_CTRL *API = GMT->parent;
+	/* Convert a string containing LaTeX syntax to an EPS image */
+	unsigned int i, o;
+	int error = 0;
+	char *text = NULL, *font, *code;
+	char tmpdir[PATH_MAX] = {""}, here[PATH_MAX] = {""}, file[PATH_MAX] = {""}, cmd[PATH_MAX] = {""};
+	unsigned char *picture = NULL;
+	FILE *fp = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
-    if (gmtplot_has_title_breaks (GMT, string)) {
-        GMT_Report (API, GMT_MSG_ERROR, "LaTeX expressions are only allowed in single-line strings\n");
-        return NULL;
-    }
+	if (gmtplot_has_title_breaks (GMT, string)) {
+		GMT_Report (API, GMT_MSG_ERROR, "LaTeX expressions are only allowed in single-line strings\n");
+		return NULL;
+	}
 
-    if (gmt_check_executable (GMT, "latex", "--version", NULL, NULL)) {
-        GMT_Report (API, GMT_MSG_DEBUG, "latex found.\n");
-    }
-    else {
-        GMT_Report (API, GMT_MSG_ERROR, "latex is not installed or not in your executable path - cannot process LaTeX to DVI.\n");
-        return NULL;
-    }
-    if (gmt_check_executable (GMT, "dvips", "--version", NULL, NULL)) {
-        GMT_Report (API, GMT_MSG_DEBUG, "dvips found.\n");
-    }
-    else {
-        GMT_Report (API, GMT_MSG_ERROR, "dvips is not installed or not in your executable path - cannot convert DVI to EPS.\n");
-        return NULL;
-    }
+	if (gmt_check_executable (GMT, "latex", "--version", NULL, NULL)) {
+		GMT_Report (API, GMT_MSG_DEBUG, "latex found.\n");
+	}
+	else {
+		GMT_Report (API, GMT_MSG_ERROR, "latex is not installed or not in your executable path - cannot process LaTeX to DVI.\n");
+		return NULL;
+	}
+	if (gmt_check_executable (GMT, "dvips", "--version", NULL, NULL)) {
+		GMT_Report (API, GMT_MSG_DEBUG, "dvips found.\n");
+	}
+	else {
+		GMT_Report (API, GMT_MSG_ERROR, "dvips is not installed or not in your executable path - cannot convert DVI to EPS.\n");
+		return NULL;
+	}
 
-    /* Create unique directory for outputs, stored in tmpdir */
+	/* Create unique directory for outputs, stored in tmpdir */
 
-    if (gmt_get_tempname (API, "gmt_latex", NULL, tmpdir))
-        return NULL;
-    if (gmt_mkdir (tmpdir)) {
-        GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", tmpdir);
-        return NULL;
-    }
-    /* Remember where we are */
-    if (getcwd (here, PATH_MAX) == NULL) {
-        GMT_Report (API, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
-        return NULL;
-    }
-    gmt_replace_backslash_in_path (here);
-    /* Use tmpdir as the current directory */
-    if (chdir (tmpdir)) {
-        GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to %s - exiting.\n", tmpdir);
-        return NULL;
-    }
-    /* Create LaTeX file */
-    sprintf (file, "gmt_eq.tex");
-    if ((fp = fopen (file, "w")) == NULL) {
-        GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create LaTeX file %s.\n", file);
-        return NULL;
-    }
+	if (gmt_get_tempname (API, "gmt_latex", NULL, tmpdir))
+		return NULL;
+	if (gmt_mkdir (tmpdir)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", tmpdir);
+		return NULL;
+	}
+	/* Remember where we are */
+	if (getcwd (here, PATH_MAX) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to determine current working directory - exiting.\n");
+		return NULL;
+	}
+	gmt_replace_backslash_in_path (here);
+	/* Use tmpdir as the current directory */
+	if (chdir (tmpdir)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to change directory to %s - exiting.\n", tmpdir);
+		return NULL;
+	}
+	/* Create LaTeX file */
+	sprintf (file, "gmt_eq.tex");
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create LaTeX file %s.\n", file);
+		return NULL;
+	}
 
-    /* Replace any @[ or <math> ... </math> with $ */
-    text = strdup (string);
-    for (i = o = 0; i < strlen (string); i++) {
-        if (string[i] == '@' && string[i+1] == '[')
-            text[o++] = '$', i++;
-        else if (!strncmp (&string[i], "<math>", 6U))
-            text[o++] = '$', i += 5;
-        else if (!strncmp (&string[i], "</math>", 7U))
-            text[o++] = '$', i += 6;
-        else
-            text[o++] = string[i];
-    }
-    text[o] = '\0'; /* Terminate the now shortened string */
+	/* Replace any @[ or <math> ... </math> with $ */
+	text = strdup (string);
+	for (i = o = 0; i < strlen (string); i++) {
+		if (string[i] == '@' && string[i+1] == '[')
+			text[o++] = '$', i++;
+		else if (!strncmp (&string[i], "<math>", 6U))
+			text[o++] = '$', i += 5;
+		else if (!strncmp (&string[i], "</math>", 7U))
+			text[o++] = '$', i += 6;
+		else
+			text[o++] = string[i];
+	}
+	text[o] = '\0'; /* Terminate the now shortened string */
 
-    /* Check title font selection and pick corresponding fontpackagename and fontcode, if possible */
-    switch (F->id) {
-        case 0:  case 1:  case 2:   case 3: font = "helvet";    code = "phv";   break;
-        case 4:  case 5:  case 6:   case 7: font = "mathptmx";  code = "ptm";   break;
-        case 8:  case 9:  case 10: case 11: font = "courier";   code = "pcr";   break;
-        case 12: font = "symbol";   code = "psy";   break;
-        case 13: case 14: case 15: case 16: font = "avantgar";  code = "pag";   break;
-        case 17: case 18: case 19: case 20: font = "bookman";   code = "pbk";   break;
-        case 21: case 22: case 23: case 24: font = "helvet";    code = "phv";   break;
-        case 25: case 26: case 27: case 28: font = "newcent";   code = "pnc";   break;
-        case 29: case 30: case 31: case 32: font = "mathpazo";  code = "ppl";   break;
-        case 33: font = "zapfchan"; code = "pzc";   break;
-        case 34: font = "zapfding"; code = "pzd";   break;
-        default: font = code = NULL;    /* Go with default */
-    }
-    /* Write LaTeX file content */
-    fprintf (fp, "\\documentclass{article}\n"); /* Default to 10p font size */
-    if (font) { /* Impose a selected font family, otherwise take default Computer Modern */
-        GMT_Report (API, GMT_MSG_DEBUG, "gmtplot_latex_eps: Selecting font %s [%s].\n", font, code);
-        fprintf (fp, "\\usepackage[T1]{fontenc}\\usepackage[utf8]{inputenc}\\usepackage{%s}\n", font);
-    }
-    fprintf (fp, "\\begin{document}\n\\thispagestyle{empty}\n");    /* No page number */
-    if (code) /* Select font */
-        fprintf (fp, "\\fontfamily{%s}\\selectfont\n", code);
-    fprintf (fp, "%s\n\\end{document}\n", text);
-    fclose (fp);
-    gmt_M_str_free (text);
+	/* Check title font selection and pick corresponding fontpackagename and fontcode, if possible */
+	switch (F->id) {
+		case 0:  case 1:  case 2:   case 3: font = "helvet";    code = "phv";   break;
+		case 4:  case 5:  case 6:   case 7: font = "mathptmx";  code = "ptm";   break;
+		case 8:  case 9:  case 10: case 11: font = "courier";   code = "pcr";   break;
+		case 12: font = "symbol";   code = "psy";   break;
+		case 13: case 14: case 15: case 16: font = "avantgar";  code = "pag";   break;
+		case 17: case 18: case 19: case 20: font = "bookman";   code = "pbk";   break;
+		case 21: case 22: case 23: case 24: font = "helvet";    code = "phv";   break;
+		case 25: case 26: case 27: case 28: font = "newcent";   code = "pnc";   break;
+		case 29: case 30: case 31: case 32: font = "mathpazo";  code = "ppl";   break;
+		case 33: font = "zapfchan"; code = "pzc";   break;
+		case 34: font = "zapfding"; code = "pzd";   break;
+		default: font = code = NULL;    /* Go with default */
+	}
+	/* Write LaTeX file content */
+	fprintf (fp, "\\documentclass{article}\n"); /* Default to 10p font size */
+	if (font) { /* Impose a selected font family, otherwise take default Computer Modern */
+		GMT_Report (API, GMT_MSG_DEBUG, "gmtplot_latex_eps: Selecting font %s [%s].\n", font, code);
+		fprintf (fp, "\\usepackage[T1]{fontenc}\\usepackage[utf8]{inputenc}\\usepackage{%s}\n", font);
+	}
+	fprintf (fp, "\\begin{document}\n\\thispagestyle{empty}\n");    /* No page number */
+	if (code) /* Select font */
+		fprintf (fp, "\\fontfamily{%s}\\selectfont\n", code);
+	fprintf (fp, "%s\n\\end{document}\n", text);
+	fclose (fp);
+	gmt_M_str_free (text);
 
-    /* Make script file for running latex and dvips */
+	/* Make script file for running latex and dvips */
 #ifdef _WIN32
-    sprintf (file, "gmt_eq.bat");
-    sprintf (cmd, "start /B gmt_eq.bat");
+	sprintf (file, "gmt_eq.bat");
+	sprintf (cmd, "start /B gmt_eq.bat");
 #else
-    sprintf (file, "gmt_eq.sh");
-    sprintf (cmd, "sh gmt_eq.sh");
+	sprintf (file, "gmt_eq.sh");
+	sprintf (cmd, "sh gmt_eq.sh");
 #endif
-    if ((fp = fopen (file, "w")) == NULL) {
-        GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create script file %s.\n", file);
-        return NULL;
-    }
+	if ((fp = fopen (file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create script file %s.\n", file);
+		return NULL;
+	}
 #ifdef _WIN32
-    fprintf (fp, "latex -interaction=nonstopmode gmt_eq.tex > NUL\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
+	fprintf (fp, "latex -interaction=nonstopmode gmt_eq.tex > NUL\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
 #else
-    fprintf (fp, "latex -interaction=nonstopmode gmt_eq.tex > /dev/null\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
+	fprintf (fp, "latex -interaction=nonstopmode gmt_eq.tex > /dev/null\ndvips -q -E gmt_eq.dvi -o equation.eps\n");
 #endif
-    fclose (fp);
+	fclose (fp);
 
-    /* Run the script via a system call */
-    if ((error = system (cmd))) {
-        GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Running \"%s\" returned error %d.\n", cmd, error);
-        GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Please run it manually to learn what LaTeX packages you are missing.\n", cmd, error);
-        GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: The script and logs can be found here: %s\n", tmpdir);
-        return NULL;
-    }
-    else {  /* Success, now remove the temp files but not worry about the return code here */
+	/* Run the script via a system call */
+	if ((error = system (cmd))) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Running \"%s\" returned error %d.\n", cmd, error);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Please run it manually to learn what LaTeX packages you are missing.\n", cmd, error);
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: The script and logs can be found here: %s\n", tmpdir);
+		return NULL;
+	}
+	else {  /* Success, now remove the temp files but not worry about the return code here */
 #ifdef _WIN32
-        system ("del gmt_eq.*");
+		system ("del gmt_eq.*");
 #else
-        system ("rm -f gmt_eq.*");
+		system ("rm -f gmt_eq.*");
 #endif
-    }
-    /* Retrieve the EPS code */
-    gmt_M_memset (h, 1U, struct imageinfo); /* Initialize information struct */
-    if (PSL_loadeps (GMT->PSL, "equation.eps", h, &picture)) {
-        GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to load EPS file equation.eps\n");
-        return NULL;
-    }
-    /* Clean up */
-    if (gmt_remove_dir (API, tmpdir, false)) {
-        GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to remove temporary directory %s!\n", tmpdir);
-        PSL_free (picture);
-        return NULL;
-    }
-    /* Change back to original directory */
-    if (chdir (here)) {
-        GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to change directory back to %s - exiting.\n", here);
-        PSL_free (picture);
-        return NULL;
-    }
+	}
+	/* Retrieve the EPS code */
+	gmt_M_memset (h, 1U, struct imageinfo); /* Initialize information struct */
+	if (PSL_loadeps (GMT->PSL, "equation.eps", h, &picture)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to load EPS file equation.eps\n");
+		return NULL;
+	}
+	/* Clean up */
+	if (gmt_remove_dir (API, tmpdir, false)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to remove temporary directory %s!\n", tmpdir);
+		PSL_free (picture);
+		return NULL;
+	}
+	/* Change back to original directory */
+	if (chdir (here)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Unable to change directory back to %s - exiting.\n", here);
+		PSL_free (picture);
+		return NULL;
+	}
 
-    /* Return the EPS data and size information via header */
-    return picture;
+	/* Return the EPS data and size information via header */
+	return picture;
 }
 
 /*	GMT_LINEAR PROJECTION MAP BOUNDARY	*/
