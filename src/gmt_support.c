@@ -18236,7 +18236,7 @@ bool gmt_is_gmt_end_show (char *line) {
 }
 
 bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
-	/* Return true if any of the modifiers listed are found in the stringt */
+	/* Return true if any of the modifiers listed are found in the string */
 	char this_modifier[3] = {'+', ' ', '\0'};
 	for (unsigned int k = 0; k < strlen (mods); k++) {
 		this_modifier[1] = mods[k];
