@@ -28,45 +28,45 @@
  *
  * PUBLIC Functions include (39):
  *
- *	gmt_draw_map_scale	: Plot map scale
- *	gmt_draw_map_rose	: Plot map rose
- *	gmt_draw_map_panel	: Plot map panel
- *	gmt_draw_front		: Draw a front line
- *	gmt_geo_line		: Plots line in lon/lat on maps, takes care of periodicity jumps
- *	gmt_plot_geo_ellipse	: Plots ellipse in lon/lat on maps, takes care of periodicity jumps
- *	gmt_geo_polygons	: Plots polygon in lon/lat on maps, takes care of periodicity jumps
- *	gmt_geo_rectangle	: Plots rectangle in lat/lon on maps, takes care of periodicity jumps
- *	gmt_map_basemap	: Generic basemap function
- *	gmt_map_clip_off	: Deactivate map region clip path
- *	gmt_map_clip_on	: Activate map region clip path
- *	gmt_BB_clip_on	: Activate Bounding Box clip path
- *	gmt_plane_perspective	: Adds PS matrix to simulate perspective plotting
- *	gmt_plot_line	: Plots path (in projected coordinates), takes care of boundary crossings
- *	gmt_vertical_axis	: Draw 3-D vertical axes
- *	gmt_xy_axis	: Draw x or y axis
- *	gmt_linearx_grid	: Draw linear x grid lines
- *	gmt_setfill	:
- *	gmt_setfont	:
- *	gmt_draw_map_inset	:
- *	gmt_setpen	:
- *	gmt_draw_custom_symbol	:
- *	gmt_add_label_record	:
- *	gmt_contlabel_save_begin	:
- *	gmt_contlabel_save_end	:
- *	gmt_textpath_init	:
- *	gmt_contlabel_plot	:
- *	gmt_export2proj4	:
- *	gmt_plotinit	:
- *	gmt_plotcanvas	:
- *	gmt_plotend	:
- *	gmt_geo_polarcap_segment	:
- *	gmt_geo_vector	:
- *	gmtlib_create_ps	:
- *	gmtlib_free_ps_ptr	:
- *	gmtlib_free_ps	:
- *	gmtlib_read_ps	:
- *	gmtlib_write_ps	:
- *	gmtlib_duplicate_ps	:
+ *  gmt_draw_map_scale   : Plot map scale
+ *  gmt_draw_map_rose    : Plot map rose
+ *  gmt_draw_map_panel   : Plot map panel
+ *  gmt_draw_front       : Draw a front line
+ *  gmt_geo_line         : Plots line in lon/lat on maps, takes care of periodicity jumps
+ *  gmt_plot_geo_ellipse     : Plots ellipse in lon/lat on maps, takes care of periodicity jumps
+ *  gmt_geo_polygons     : Plots polygon in lon/lat on maps, takes care of periodicity jumps
+ *  gmt_geo_rectangle    : Plots rectangle in lat/lon on maps, takes care of periodicity jumps
+ *  gmt_map_basemap      : Generic basemap function
+ *  gmt_map_clip_off     : Deactivate map region clip path
+ *  gmt_map_clip_on      : Activate map region clip path
+ *  gmt_BB_clip_on       : Activate Bounding Box clip path
+ *  gmt_plane_perspective    : Adds PS matrix to simulate perspective plotting
+ *  gmt_plot_line        : Plots path (in projected coordinates), takes care of boundary crossings
+ *  gmt_vertical_axis    : Draw 3-D vertical axes
+ *  gmt_xy_axis          : Draw x or y axis
+ *  gmt_linearx_grid     : Draw linear x grid lines
+ *  gmt_setfill              :
+ *  gmt_setfont              :
+ *  gmt_draw_map_inset       :
+ *  gmt_setpen               :
+ *  gmt_draw_custom_symbol   :
+ *  gmt_add_label_record     :
+ *  gmt_contlabel_save_begin :
+ *  gmt_contlabel_save_end   :
+ *  gmt_textpath_init        :
+ *  gmt_contlabel_plot       :
+ *  gmt_export2proj4         :
+ *  gmt_plotinit             :
+ *  gmt_plotcanvas           :
+ *  gmt_plotend              :
+ *  gmt_geo_polarcap_segment :
+ *  gmt_geo_vector           :
+ *  gmtlib_create_ps            :
+ *  gmtlib_free_ps_ptr          :
+ *  gmtlib_free_ps              :
+ *  gmtlib_read_ps              :
+ *  gmtlib_write_ps             :
+ *  gmtlib_duplicate_ps         :
  *
  */
 
