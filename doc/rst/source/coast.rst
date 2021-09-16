@@ -31,7 +31,7 @@ Synopsis
 [ |-T|\ *rose* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*level*/]\ *pen* ]
+[ |-W|\ [[*level*/]\ *pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bo| ]
@@ -242,7 +242,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*level*/]\ *pen* :ref:`(more ...) <set-pens>`
+**-W**\ [[*level*/]\ *pen*] :ref:`(more ...) <set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
     [Defaults: width = default, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
