@@ -776,7 +776,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOUPE_CTRL *Ctrl, struct GMT_OP
 					case 's':	/* Only points : get symbol [and size] */
 						Ctrl->S.active = true;
 						Ctrl->S.symbol = opt->arg[1];
-						if ((strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
+						if (gmt_found_modifier (GMT, opt->arg, "fjo")) {
 							/* New syntax: -Fs<symbol>[<size>]+f<font>+o<dx>/<dy>+j<justify> */
 							char word[GMT_LEN256] = {""}, *c = NULL;
 

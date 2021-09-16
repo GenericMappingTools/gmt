@@ -2010,7 +2010,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	GMT->current.setting.map_logo = true;
 	if (!item || !item[0]) return (GMT_NOERROR);	/* Just basic -U with no args */
 
-	if ((strstr (item, "+c")) || strstr (item, "+j") || strstr (item, "+o")) {	/* New syntax */
+	if (gmt_found_modifier (GMT, item, "cjo")) {	/* New syntax */
 		unsigned int pos = 0, uerr = 0;
 		int k = 1, len = (int)strlen (item);
 		char word[GMT_LEN256] = {""}, *c = NULL;
@@ -8948,7 +8948,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 		return GMT_NOERROR;
 	}
 
-	new_style = (strstr (arg, "+d") || strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
+	new_style = gmt_found_modifier (GMT, arg, "dlos");
 
 	strncpy (GMT->common.i.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
@@ -9175,8 +9175,8 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -o requires an argument */
 
-	if (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l")) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -o option does not take +l|o|s modifiers; consider -i instead.\n");
+	if (gmt_found_modifier (GMT, arg, "dlos")) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -o option does not take +d|l|o|s modifiers; consider -i instead.\n");
 		return GMT_PARSE_ERROR;
 	}
 
@@ -9185,7 +9185,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
 	GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -o you have to specifically add column t to parse trailing text */
 	if (! strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to select numerical output only */
-	if (arg[0] == 't') {	/* Just wants trailing text, no numerical colulmns */
+	if (arg[0] == 't') {	/* Just wants trailing text, no numerical columns */
 		GMT->current.io.trailing_text[GMT_OUT] = true;
 		GMT->common.o.text = true;	/* Special flag to switch to gmtlib_ascii_output_trailing_text output function later */
 		if (arg[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */

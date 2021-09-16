@@ -367,12 +367,11 @@ GMT_LOCAL bool mapproject_is_old_G_syntax (struct GMT_CTRL *GMT, char *arg) {
 	/* If no point given and we just get -G<unit> then it is the old way */
 	if (strchr (GMT_LEN_UNITS, arg[0])) return true;
 	/* Check if we have a leading + before a valid unit: This is the old way of saying ellipsoidal distances in that unit */
-	if (strstr (arg, "+d") || strstr (arg, "+m") || strstr (arg, "+s") || strstr (arg, "+e") || strstr (arg, "+f") || strstr (arg, "+k") || \
-		strstr (arg, "+M") || strstr (arg, "+n") || strstr (arg, "+u")) return true;
+	if (gmt_found_modifier (GMT, arg, GMT_LEN_UNITS)) return true;
 	/* Check if we have a leading - before a valid unit: This is the old way of saying flat earth distances in that unit */
 	if (strstr (arg, "-d") || strstr (arg, "-m") || strstr (arg, "-s") || strstr (arg, "-e") || strstr (arg, "-f") || strstr (arg, "-k") || \
 		strstr (arg, "-M") || strstr (arg, "-n") || strstr (arg, "-u")) return true;
-	if (arg[0] == '/') return true;	/* DOn't this this was ever correct but the old usage said so */
+	if (arg[0] == '/') return true;	/* Don't this this was ever correct but the old usage said so */
 	if (strchr ("-+", arg[len-1])) return true;	/* If last char is - or + it means the old way of saying incremental vs accumulated distances */
 	n_slashes = gmt_count_char (GMT, arg, '/');	/* Count slashes */
 	if (n_slashes == 3) return true;	/* Leading point plus more stuff is the old way */
@@ -617,7 +616,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
-				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
+				if (!(gmt_found_modifier (GMT, opt->arg, "pu") || strchr (opt->arg, '/')))
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
 					char *m = NULL;
