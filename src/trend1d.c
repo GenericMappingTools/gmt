@@ -301,7 +301,7 @@ GMT_LOCAL void trend1d_recompute_weights (struct GMT_CTRL *GMT, struct TREND1D_D
 	if (n_data%2)
 		*scale = MAD_NORMALIZE * work[n_data/2];
 	else
-		*scale = 0.7413 * (work[n_data/2 - 1] + work[n_data/2]);
+		*scale = MAD_NORMALIZE * (work[n_data/2 - 1] + work[n_data/2]) / 2;
 
 	k = 1.5 * (*scale);	/*  Huber[1964] weight; 95% efficient for Normal data  */
 	ksq = k * k;
