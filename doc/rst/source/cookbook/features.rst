@@ -2798,7 +2798,7 @@ Writing grids and images
 Saving images in the common raster formats is possible but, for the time being, only from :doc:`/grdimage` and even
 that is restricted to raster type information. That is, vector data (for instance, coast lines) or text will not
 be saved. To save an image with :doc:`/grdimage` use the **-A**\ *outimg=driver* mechanism, where *driver*
-is the driver code name used by GDAL (e.g. GTiff).
+is the driver code name used by GDAL (e.g. GTiff) (run `gdal_translate --formats` for the full list.)
 
 For all other programs that create grids, it is also possible to save them using GDAL. To do it one need to use
 the =gd appended with the necessary information regarding the driver and the data type to use. Generically,
@@ -2810,6 +2810,10 @@ number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one 
 **+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO
 **Note**: You will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
+
+Consider setting :term:`IO_NC4_DEFLATION_LEVEL` to reduce file size and to further increase read/write performance.
+Especially when working with subsets of global grids, masks, and grids with repeating grid values, the improvement is
+usually significant.
 
 The NaN data value
 ------------------
