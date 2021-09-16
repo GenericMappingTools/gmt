@@ -363,7 +363,7 @@ GMT_LOCAL bool mapproject_is_old_G_syntax (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int n_slashes;
 	if (len == 0) return false;	/* Might as well parse as modern syntax */
 	/* If any of the modern modifiers +a|i|u|v given then it is the new way */
-	if (strstr (arg, "+a") || strstr (arg, "+i") || strstr (arg, "+u") || strstr (arg, "+v")) return false;
+	if (gmt_found_modifier (GMT, arg, "aiuv")) return false;
 	/* If no point given and we just get -G<unit> then it is the old way */
 	if (strchr (GMT_LEN_UNITS, arg[0])) return true;
 	/* Check if we have a leading + before a valid unit: This is the old way of saying ellipsoidal distances in that unit */
