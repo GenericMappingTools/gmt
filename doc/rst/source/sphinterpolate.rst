@@ -18,6 +18,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-D|\ [*east*] ]
 [ |-Q|\ *mode*\ [*options*] ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]

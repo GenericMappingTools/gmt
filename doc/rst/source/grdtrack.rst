@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdtrack** [ *table* ] |-G|\ *grd1* |-G|\ *grd2* ...
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
+[ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**] ]
 [ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\ *deviation*][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
@@ -64,9 +64,9 @@ Required Arguments
 ------------------
 
 *table*
-    This is an ASCII (or binary, see **-bi**)
-    file where the first 2 columns hold the (x,y) positions where the
-    user wants to sample the 2-D data set.
+    This is an ASCII (or binary, see **-bi**) file where the first 2 columns
+    hold the (x,y) positions where the user wants to sample the 2-D data set.
+    If no tables are given then we read from standard input, unless |-E| is set.
 
 .. _-G:
 
@@ -91,7 +91,7 @@ Optional Arguments
 
 .. _-A:
 
-**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
+**-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**]
     For track resampling (if **-C** or **-E** are set) we can select how this is to
     be performed. Append **f** to keep original points, but add
     intermediate points if needed [Default], **m** as **f**, but first

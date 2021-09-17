@@ -26,6 +26,7 @@ Synopsis
 [ |-S|\ *search_radius*\ [**m**\|\ **s**] ]
 [ |-T|\ [**b**\|\ **i**]\ *tension_factor* ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [*logfile*] ]
 [ |-Z|\ *over-relaxation_factor* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
@@ -207,6 +208,11 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. _-W:
+
+**-W**\ [*logfile*]
+    Write convergence information to *logfile* [Default is *surface_log.txt*].
 
 .. _-Z:
 

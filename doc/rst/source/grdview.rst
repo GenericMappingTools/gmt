@@ -24,6 +24,7 @@ Synopsis
 [ |-S|\ *smooth* ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
 [ |-W|\ **c|m|f**\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]

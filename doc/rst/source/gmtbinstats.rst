@@ -22,6 +22,7 @@ Synopsis
 [ |-T|\ [**h**\|\ **r**] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [**+s**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -134,6 +135,8 @@ Optional Arguments
    while the count will be the sum of the weights instead of number of points.
    If your weights are actually uncertainties (one sigma) then append **+s**
    and we compute weight = 1/sigma.
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
 .. include:: explain_-bi.rst_

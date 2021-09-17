@@ -15,7 +15,9 @@ Synopsis
 **gmt grdtrend** *ingrid* |-N|\ *n_model*\ [**+r**][**+x**\|\ **y**]
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
-[ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
+[ |-T|\ *trend.nc* ]
+[ |SYN_OPT-V| ]
+[ |-W|\ *weight.nc* ]
 [ |SYN_OPT--| ]
 
 |No-spaces|

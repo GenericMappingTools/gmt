@@ -16,7 +16,7 @@ Synopsis
 [ |SYN_OPT-Area| ]
 [ |-C|\ *pointfile*\ \|\ *lon*/*lat*\ **+d**\ *dist* ]
 [ |-D|\ *resolution*\ [**+f**] ]
-[ |-E|\ [**fn**] ]
+[ |-E|\ [**f**][**n**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *gridmask* ]
 [ |-I|\ [**cfglrsz**] ]
@@ -99,7 +99,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**fn**]
+**-E**\ [**f**][**n**]
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
     polygon. Append **f** and/or **n** to change this behavior for the
