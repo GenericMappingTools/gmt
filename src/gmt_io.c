@@ -7121,7 +7121,7 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 	 * since that is only valid on command line and in a data record the "d" mans degree.
 	 */
 
-	unsigned int got, percent = 0;
+	unsigned int got;
 
 	if (s == NULL) {	/* Cannot do anything here */
 		*val = GMT->session.d_NaN;
@@ -7143,9 +7143,6 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 				expectation = GMT_IS_FLOAT;
 			else if (c == 't')		/* Found trailing t - assume Relative time */
 				expectation = GMT_IS_ARGTIME;
-			else if (c == '%') {		/* Found trailing % - assume float in percentage */
-				expectation = GMT_IS_FLOAT; s[len-1] = '\0'; percent = len - 1;
-			}
 			else if (nt > 1 || gmt_not_numeric (GMT, s)) {	/* No number has 2 or more letters at the end, or other junk, so return as NaN */
 				*val = GMT->session.d_NaN;
 				return GMT_IS_NAN;
@@ -7180,7 +7177,6 @@ int gmt_scanf_arg (struct GMT_CTRL *GMT, char *s, unsigned int expectation, bool
 	/* OK, here we have an expectation, now call gmt_scanf */
 
 	got = gmt_scanf (GMT, s, expectation, val);
-	if (percent) { (*val) *= 0.01; s[percent] = '%';}	/* Turn percentage into fraction 0-1 */
 	return (got == GMT_IS_NAN) ? got : expectation;	/* Want to return the actual expectation here since it may be used upstream, unless parsing failed */
 }
 
