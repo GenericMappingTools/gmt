@@ -15,8 +15,8 @@ Synopsis
 **gmt grdhisteq** *ingrid* [ |-G|\ *outgrid* ]
 [ |-C|\ *n_cells* ] [ |-D|\ [*file*] ] [ |-N|\ [*norm*] ]
 [ |-Q| ]
-|SYN_OPT-R|
-|SYN_OPT-V|
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT--| ]
 
