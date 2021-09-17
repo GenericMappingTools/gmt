@@ -95,7 +95,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [coeff_file] -G%s %s %s [-Dg|n] [-E] [-F[k]<filter>] "
-		"[-Ng|m|s] [-Q] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
+		"[-Ng|m|s] [-Q] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_e_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
