@@ -15266,9 +15266,9 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						return NULL;
 					}
 					else {	/* Replace entry with correct version */
-						GMT_Report (API, GMT_MSG_INFORMATION, "Given -R%s -J%s, representative distances D_g = %g degrees, D_m = %g %s and dpu = %g%c we replace %s by %s\n",
+						GMT_Report (API, GMT_MSG_INFORMATION, "Given -R%s -J%s, representative distances D_g = %g degrees, D_m = %g %s and dpu = %g%c (this_n_per_degree = %lg) we replace %s by %s\n",
 							GMT->common.R.string, GMT->common.J.string, D, L * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit],
-							GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, opt->arg, file);
+							GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, this_n_per_degree, opt->arg, file);
 						gmt_M_str_free (opt->arg);
 						opt->arg = strdup (file);
 					}
