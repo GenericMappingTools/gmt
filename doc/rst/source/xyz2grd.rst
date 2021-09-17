@@ -135,29 +135,18 @@ Optional Arguments
     to be swapped, append **w**. Select one of several data types (all
     binary except **a**):
 
-    **A** ASCII representation of one or more floating point values per record
-
-    **a** ASCII representation of a single item per record
-
-    **c** int8_t, signed 1-byte character
-
-    **u** uint8_t, unsigned 1-byte character
-
-    **h** int16_t, signed 2-byte integer
-
-    **H** uint16_t, unsigned 2-byte integer
-
-    **i** int32_t, signed 4-byte integer
-
-    **I** uint32_t, unsigned 4-byte integer
-
-    **l** int64_t, long (8-byte) integer
-
-    **L** uint64_t, unsigned long (8-byte) integer
-
-    **f** 4-byte floating point single precision
-
-    **d** 8-byte floating point double precision
+    - **A** ASCII representation of one or more floating point values per record
+    - **a** ASCII representation of a single item per record
+    - **c** int8_t, signed 1-byte character
+    - **u** uint8_t, unsigned 1-byte character
+    - **h** int16_t, signed 2-byte integer
+    - **H** uint16_t, unsigned 2-byte integer
+    - **i** int32_t, signed 4-byte integer
+    - **I** uint32_t, unsigned 4-byte integer
+    - **l** int64_t, long (8-byte) integer
+    - **L** uint64_t, unsigned long (8-byte) integer
+    - **f** 4-byte floating point single precision
+    - **d** 8-byte floating point double precision
 
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
     The difference between **A** and **a** is that the latter can decode both
