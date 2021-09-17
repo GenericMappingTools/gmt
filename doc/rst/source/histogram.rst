@@ -43,6 +43,7 @@ Synopsis
 [ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT--| ]
@@ -246,6 +247,8 @@ Optional Arguments
 .. include:: explain_perspective.rst_
 
 .. include:: explain_-qi.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_-t.rst_
 
