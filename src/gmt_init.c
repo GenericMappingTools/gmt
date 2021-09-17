@@ -4767,6 +4767,273 @@ GMT_LOCAL int gmtinit_autoscale (char *arg) {
 	return 0;	/* No */
 }
 
+#ifdef DEBUG
+#define GMT_GENPER_MODIFIERS "adtvwz"
+#else
+#define GMT_GENPER_MODIFIERS "atvwz"
+#endif
+
+GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, bool got_xxx_scale, bool width_given) {
+	/* Modern form for genper: -Jg|g<lon>/<lat>/scale|width>[+a<azimuth>][+t<tilt>][+v<width>/<height>][+w<twist>][+z<altitude>]
+	 * For developers there is also [+d<level>] if -DDEBUG was used */
+	int m, n, error = 0;
+	char txt_arr[4][GMT_LEN256], *c = NULL, *d = NULL;
+
+	/* Initialize settings */
+	GMT->current.proj.g_debug = 0;
+	GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set = GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
+	GMT->current.proj.g_sphere = true; /* force spherical as default */
+	gmt_M_memset (GMT->current.proj.pars, 10, double);
+
+	d = strstr (args, "+d");	/* This is width modifier already processed  earlier - we must hide to avoid problems with other modifiers */
+	if (d) d[0] = 'X';
+
+	if ((c = gmt_first_modifier (GMT, args, GMT_GENPER_MODIFIERS))) {	/* Process modifiers */
+		unsigned int pos = 0, n_errors = 0, nlen;
+		char txt[GMT_LEN256] = {""}, W[GMT_LEN256] = {""}, H[GMT_LEN256] = {""};
+		while (gmt_getmodopt (GMT, 'J', c, GMT_GENPER_MODIFIERS, &pos, txt, &n_errors) && n_errors == 0) {
+			nlen = strlen(txt);
+			switch (txt[0]) {
+				case 'a':	/* View azimuth */
+					if (strchr ("lL", txt[nlen-1])) {	/* Undocumented trailing l|L to set this variable */
+						GMT->current.proj.g_longlat_set = true;
+						txt[nlen-1] = 0;
+					}
+					GMT->current.proj.pars[5] = atof (&txt[1]);
+					break;
+				case 'd': /* Debug settings+d[d|D|X][s|e] (requires -DDEBUG during build) */
+					switch (txt[1]) {
+						case 'd': GMT->current.proj.g_debug = 1; break;
+						case 'D': GMT->current.proj.g_debug = 2; break;
+						case 'X': GMT->current.proj.g_debug = 3; break;
+						case 'e': GMT->current.proj.g_sphere = false; break;
+						case 's': GMT->current.proj.g_sphere = true; break;
+						default:	break;
+					}
+					if (txt[2]) GMT->current.proj.g_sphere = (txt[2] == 's') ? true : false;
+					break;
+				case 't':	/* View tilt */
+					if (strchr ("lL", txt[nlen-1])) {	/* Undocumented trailing l|L to set this variable */
+						GMT->current.proj.g_longlat_set = true;
+						txt[nlen-1] = 0;
+					}
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &txt[1], GMT_IS_GEO, &GMT->current.proj.pars[6]), &txt[1]);
+					break;
+				case 'v': /* View window */
+					if (strchr (txt, '/'))	/* Got width and height in separate strings */
+						sscanf (&txt[1], "%[^/]/%s", W, H);
+					else
+						strcpy (W, &txt[1]), strcpy (H, &txt[1]);	/* Duplicate */
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, W, GMT_IS_GEO, &GMT->current.proj.pars[8]), W);
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, H, GMT_IS_GEO, &GMT->current.proj.pars[9]), H);
+					break;
+				case 'w':	/* View twist */
+					if (txt[nlen-1] == 'n') {	/* Undocumented trailing n to set this variable */
+						GMT->current.proj.g_auto_twist = true;
+						txt[nlen-1] = 0;
+					}
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &txt[1], GMT_IS_GEO, &GMT->current.proj.pars[7]), &txt[1]);
+					break;
+				case 'z':	/* View altitude */
+					if (txt[nlen-1] == 'r') {	/* Altitude is actually radius from center of Earth */
+						GMT->current.proj.g_radius = true;
+						txt[nlen-1] = 0;
+					}
+					n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &txt[1], GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &txt[1]);
+					break;
+				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
+			}
+		}
+		c[0] = '\0';	/* Chop off the modifiers */
+		error += n_errors;
+	}
+
+	if (d) d[0] = '\0';	/* Restore the optional +d modifier for map width */
+
+	/* Here we are only dealing with <lon>/<lat>[/<horizon]/<scale-or-width> */
+
+	n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", &(txt_arr[0][0]), &(txt_arr[1][0]), &(txt_arr[2][0]), &(txt_arr[3][0]));
+	if (n < 3) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -Jg|G: Arguments <lon>/<lat>[/<horizon]/<scale-or-width> are required\n");
+		error++;
+	}
+
+	/* Check to see if scale is specified in 1:xxxx */
+	GMT->current.proj.units_pr_degree = (strchr (txt_arr[n-1], ':')) ? false : true;
+	gmt_set_geographic (GMT, GMT_IN);
+
+	if (got_xxx_scale) {
+		/* Scale entered as 1:mmmmm */
+		m = sscanf (&(txt_arr[n-1][0]),"1:%lf", &GMT->current.proj.pars[2]);
+		if (GMT->current.proj.pars[2] != 0.0) {
+			GMT->current.proj.pars[2] = 1.0 / (GMT->current.proj.pars[2] * GMT->current.proj.unit);
+		}
+		error += (m == 0) ? 1 : 0;
+		if (error) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: scale entered but couldn't read\n");
+	}
+	else if (width_given) {
+		GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-1][0]));
+	}
+	else {
+		double olat;
+		GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-2][0]));
+		if (gmtinit_get_uservalue (GMT, &(txt_arr[n-1][0]), gmt_M_type (GMT, GMT_IN, GMT_Y), &olat, "oblique latitude")) return true;
+		if (olat <= -90.0 || olat >= 90.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Oblique latitude must be in -90 to +90 range\n");
+			error++;
+		}
+		else
+			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
+		if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "genper: error in reading last lat value\n");
+	}
+	error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &(txt_arr[0][0]), GMT_IS_LON, &GMT->current.proj.pars[0]), &(txt_arr[0][0]));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
+	error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[1][0]), GMT_IS_LAT, &GMT->current.proj.pars[1]), &(txt_arr[1][0]));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading latitude '%s'\n", &(txt_arr[1][0]));
+
+	error += (GMT->current.proj.pars[2] <= 0.0 || (got_xxx_scale && width_given));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "final error %d\n", error);
+	GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
+	if (d) d[0] = '+';	/* Restore the optional +d modifier for map width */
+	if (c) c[0] = '+';	/* Restore the optional perspective  modifiers */
+	return (error);
+}
+
+GMT_LOCAL int gmtinit_parse_genper_deprecated (struct GMT_CTRL *GMT, char *args, bool got_xxx_scale, bool width_given) {
+	/* This is the deprecated parser for general perspective projection */
+	int i, j, m, n, n_slashes, nlen, error = 0;
+	char txt_arr[11][GMT_LEN256];
+
+	GMT->current.proj.g_debug = 0;
+	GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set = GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
+	GMT->current.proj.g_sphere = true; /* force spherical as default */
+
+	n_slashes = gmt_count_char (GMT, args, '/');	/* Count slashes to distinguish args */
+
+	i = 0;
+	for (j = 0 ; j < 2 ; j++) {
+		if (args[j] == 'd') {         /* standard genper debugging */
+			GMT->current.proj.g_debug = 1;
+			i++;
+		} else if (args[j] == 'D') {  /* extensive genper debugging */
+			GMT->current.proj.g_debug = 2;
+			i++;
+		} else if (args[j] == 'X') {  /* extreme genper debugging */
+			GMT->current.proj.g_debug = 3;
+			i++;
+		} else if (args[j] == 's') {
+			GMT->current.proj.g_sphere = true;
+			i++;
+		} else if (args[j] == 'e') {
+			GMT->current.proj.g_sphere = false;
+			i++;
+		}
+	}
+
+	GMT->current.proj.pars[4] = GMT->current.proj.pars[5] = GMT->current.proj.pars[6] = GMT->current.proj.pars[7] = GMT->current.proj.pars[8] = GMT->current.proj.pars[9] = 0.0;
+
+	if (GMT->current.proj.g_debug > 1) {
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, j);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper:  initial error %d  j = %d  width_given %d\n", error, j, width_given);
+	}
+
+	n = sscanf(args+i, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s",
+		&(txt_arr[0][0]), &(txt_arr[1][0]), &(txt_arr[2][0]), &(txt_arr[3][0]),
+		&(txt_arr[4][0]), &(txt_arr[5][0]), &(txt_arr[6][0]), &(txt_arr[7][0]),
+		&(txt_arr[8][0]), &(txt_arr[9][0]), &(txt_arr[10][0]));
+
+	if (GMT->current.proj.g_debug > 1) {
+		for (i = 0 ; i < n ; i ++) {
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
+		}
+		fflush (NULL);
+	}
+
+	if (got_xxx_scale) {
+		/* Scale entered as 1:mmmmm */
+		m = sscanf(&(txt_arr[n-1][0]),"1:%lf", &GMT->current.proj.pars[2]);
+		if (GMT->current.proj.pars[2] != 0.0) {
+			GMT->current.proj.pars[2] = 1.0 / (GMT->current.proj.pars[2] * GMT->current.proj.unit);
+		}
+		error += (m == 0) ? 1 : 0;
+		if (error) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: scale entered but couldn't read\n");
+	}
+	else  if (width_given) {
+		GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-1][0]));
+	}
+	else {
+		double c;
+		GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-2][0]));
+		/*            GMT->current.proj.pars[3] = GMT_ddmmss_to_degree(txt_i); */
+		if (gmtinit_get_uservalue (GMT, &(txt_arr[n-1][0]), gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return true;
+		if (c <= -90.0 || c >= 90.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Oblique latitude must be in -90 to +90 range\n");
+			error++;
+		}
+		else
+			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
+		if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "genper: error in reading last lat value\n");
+	}
+	error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &(txt_arr[0][0]), GMT_IS_LON, &GMT->current.proj.pars[0]), &(txt_arr[0][0]));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
+	error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[1][0]), GMT_IS_LAT, &GMT->current.proj.pars[1]), &(txt_arr[1][0]));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading latitude '%s'\n", &(txt_arr[1][0]));
+
+	/* g_alt    GMT->current.proj.pars[4] = atof(txt_c); */
+	nlen = (int)strlen(&(txt_arr[2][0]));
+	if (txt_arr[2][nlen-1] == 'r') {
+		GMT->current.proj.g_radius = true;
+		txt_arr[2][nlen-1] = 0;
+	}
+	error += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &(txt_arr[2][0]), GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &(txt_arr[2][0]));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading altitude '%s'\n", &(txt_arr[2][0]));
+
+	/* g_az    GMT->current.proj.pars[5] = atof(txt_d); */
+	nlen = (int)strlen(&(txt_arr[3][0]));
+	if (txt_arr[3][nlen-1] == 'l' || txt_arr[3][nlen-1] == 'L') {
+		GMT->current.proj.g_longlat_set = true;
+		txt_arr[3][nlen-1] = 0;
+	}
+	error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[3][0]), GMT_IS_GEO, &GMT->current.proj.pars[5]), &(txt_arr[3][0]));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
+
+	/* g_tilt    GMT->current.proj.pars[6] = atof(txt_e); */
+	nlen = (int)strlen(&(txt_arr[4][0]));
+	if (txt_arr[4][nlen-1] == 'l' || txt_arr[4][nlen-1] == 'L') {
+		GMT->current.proj.g_longlat_set = true;
+		txt_arr[4][nlen-1] = 0;
+	}
+	error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[4][0]), GMT_IS_GEO, &GMT->current.proj.pars[6]), &(txt_arr[4][0]));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading tilt '%s'\n", &(txt_arr[4][0]));
+
+	if (n > 6) {
+		/*g_twist   GMT->current.proj.pars[7] = atof(txt_f); */
+		nlen = (int)strlen(&(txt_arr[5][0]));
+		if (txt_arr[5][nlen-1] == 'n') {
+			GMT->current.proj.g_auto_twist = true;
+			txt_arr[5][nlen-1] = 0;
+		}
+		error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[5][0]), GMT_IS_GEO, &GMT->current.proj.pars[7]), &(txt_arr[5][0]));
+		if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading twist '%s'\n", &(txt_arr[5][0]));
+
+		/*g_width   GMT->current.proj.pars[8] = atof(txt_f); */
+		if (n > 7) {
+			error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[6][0]), GMT_IS_GEO, &GMT->current.proj.pars[8]), &(txt_arr[6][0]));
+			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading width '%s'\n", &(txt_arr[6][0]));
+
+			if (n > 8) {
+				/* g_height  GMT->current.proj.pars[9] = atof(txt_g); */
+				error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[7][0]), GMT_IS_GEO, &GMT->current.proj.pars[9]), &(txt_arr[7][0]));
+				if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error height '%s'\n", &(txt_arr[7][0]));
+			}
+		}
+	}
+	error += (GMT->current.proj.pars[2] <= 0.0 || (got_xxx_scale && width_given));
+	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "final error %d\n", error);
+	GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
+	return (error);
+}
+
 /*! . */
 GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	/* gmtinit_parse_J_option scans the arguments given and extracts the parameters needed
@@ -4838,7 +5105,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 
 	/* Differentiate between general perspective and orthographic projection based on number of slashes */
 	if (project == GMT_GENPER || project == GMT_ORTHO) {
-		if (n_slashes >= 5)
+		if (n_slashes >= 5 || gmt_found_modifier (GMT, GMT->common.J.string, GMT_GENPER_MODIFIERS))
 			project = GMT_GENPER;
 		else
 			project = GMT_ORTHO;
@@ -4858,6 +5125,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	GMT->current.proj.unit = GMT_units[GMT_INCH];	/* No of meters in an inch */
 	n = 0;	/* Initialize with no fields found */
 	d = NULL;
+
 	switch (project) {
 		case GMT_LINEAR:	/* Linear x/y scaling */
 			gmt_set_cartesian (GMT, GMT_IN);	/* This will be overridden below if -Jx or -Jp, for instance */
@@ -5314,130 +5582,10 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 
 		case GMT_GENPER:	/* General perspective */
 
-			GMT->current.proj.g_debug = 0;
-			GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set = GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
-			GMT->current.proj.g_sphere = true; /* force spherical as default */
-
-			i = 0;
-			for (j = 0 ; j < 2 ; j++) {
-				if (args[j] == 'd') {         /* standard genper debugging */
-					GMT->current.proj.g_debug = 1;
-					i++;
-				} else if (args[j] == 'D') {  /* extensive genper debugging */
-					GMT->current.proj.g_debug = 2;
-					i++;
-				} else if (args[j] == 'X') {  /* extreme genper debugging */
-					GMT->current.proj.g_debug = 3;
-					i++;
-				} else if (args[j] == 's') {
-					GMT->current.proj.g_sphere = true;
-					i++;
-				} else if (args[j] == 'e') {
-					GMT->current.proj.g_sphere = false;
-					i++;
-				}
-			}
-
-			GMT->current.proj.pars[4] = GMT->current.proj.pars[5] = GMT->current.proj.pars[6] = GMT->current.proj.pars[7] = GMT->current.proj.pars[8] = GMT->current.proj.pars[9] = 0.0;
-
-			if (GMT->current.proj.g_debug > 1) {
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: arg '%s' n_slashes %d k %d\n", args, n_slashes, j);
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper:  initial error %d  j = %d  width_given %d\n", error, j, width_given);
-			}
-
-			n = sscanf(args+i, "%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%[^/]/%s",
-				&(txt_arr[0][0]), &(txt_arr[1][0]), &(txt_arr[2][0]), &(txt_arr[3][0]),
-				&(txt_arr[4][0]), &(txt_arr[5][0]), &(txt_arr[6][0]), &(txt_arr[7][0]),
-				&(txt_arr[8][0]), &(txt_arr[9][0]), &(txt_arr[10][0]));
-
-			if (GMT->current.proj.g_debug > 1) {
-				for (i = 0 ; i < n ; i ++) {
-					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: txt_arr[%d] '%s'\n", i, &(txt_arr[i][0]));
-				}
-				fflush (NULL);
-			}
-
-			if (k >= 0) {
-				/* Scale entered as 1:mmmmm */
-				m = sscanf(&(txt_arr[n-1][0]),"1:%lf", &GMT->current.proj.pars[2]);
-				if (GMT->current.proj.pars[2] != 0.0) {
-					GMT->current.proj.pars[2] = 1.0 / (GMT->current.proj.pars[2] * GMT->current.proj.unit);
-				}
-				error += (m == 0) ? 1 : 0;
-				if (error) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: scale entered but couldn't read\n");
-			}
-			else  if (width_given) {
-				GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-1][0]));
-			}
-			else {
-				GMT->current.proj.pars[2] = gmt_M_to_inch (GMT, &(txt_arr[n-2][0]));
-				/*            GMT->current.proj.pars[3] = GMT_ddmmss_to_degree(txt_i); */
-				if (gmtinit_get_uservalue (GMT, &(txt_arr[n-1][0]), gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return true;
-				if (c <= -90.0 || c >= 90.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Oblique latitude must be in -90 to +90 range\n");
-					error++;
-				}
-				else
-					error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[n-1][0]), GMT_IS_LAT, &GMT->current.proj.pars[3]), &(txt_arr[n-1][0]));
-				if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "genper: error in reading last lat value\n");
-			}
-			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, &(txt_arr[0][0]), GMT_IS_LON, &GMT->current.proj.pars[0]), &(txt_arr[0][0]));
-			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error is reading longitude '%s'\n", &(txt_arr[0][0]));
-			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, &(txt_arr[1][0]), GMT_IS_LAT, &GMT->current.proj.pars[1]), &(txt_arr[1][0]));
-			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading latitude '%s'\n", &(txt_arr[1][0]));
-
-			/* g_alt    GMT->current.proj.pars[4] = atof(txt_c); */
-			nlen = (int)strlen(&(txt_arr[2][0]));
-			if (txt_arr[2][nlen-1] == 'r') {
-				GMT->current.proj.g_radius = true;
-				txt_arr[2][nlen-1] = 0;
-			}
-			error += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &(txt_arr[2][0]), GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &(txt_arr[2][0]));
-			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading altitude '%s'\n", &(txt_arr[2][0]));
-
-			/* g_az    GMT->current.proj.pars[5] = atof(txt_d); */
-			nlen = (int)strlen(&(txt_arr[3][0]));
-			if (txt_arr[3][nlen-1] == 'l' || txt_arr[3][nlen-1] == 'L') {
-				GMT->current.proj.g_longlat_set = true;
-				txt_arr[3][nlen-1] = 0;
-			}
-			error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[3][0]), GMT_IS_GEO, &GMT->current.proj.pars[5]), &(txt_arr[3][0]));
-			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading azimuth '%s'\n", &(txt_arr[3][0]));
-
-			/* g_tilt    GMT->current.proj.pars[6] = atof(txt_e); */
-			nlen = (int)strlen(&(txt_arr[4][0]));
-			if (txt_arr[4][nlen-1] == 'l' || txt_arr[4][nlen-1] == 'L') {
-				GMT->current.proj.g_longlat_set = true;
-				txt_arr[4][nlen-1] = 0;
-			}
-			error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[4][0]), GMT_IS_GEO, &GMT->current.proj.pars[6]), &(txt_arr[4][0]));
-			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading tilt '%s'\n", &(txt_arr[4][0]));
-
-			if (n > 6) {
-				/*g_twist   GMT->current.proj.pars[7] = atof(txt_f); */
-				nlen = (int)strlen(&(txt_arr[5][0]));
-				if (txt_arr[5][nlen-1] == 'n') {
-					GMT->current.proj.g_auto_twist = true;
-					txt_arr[5][nlen-1] = 0;
-				}
-				error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[5][0]), GMT_IS_GEO, &GMT->current.proj.pars[7]), &(txt_arr[5][0]));
-				if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading twist '%s'\n", &(txt_arr[5][0]));
-
-				/*g_width   GMT->current.proj.pars[8] = atof(txt_f); */
-				if (n > 7) {
-					error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[6][0]), GMT_IS_GEO, &GMT->current.proj.pars[8]), &(txt_arr[6][0]));
-					if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading width '%s'\n", &(txt_arr[6][0]));
-
-					if (n > 8) {
-						/* g_height  GMT->current.proj.pars[9] = atof(txt_g); */
-						error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[7][0]), GMT_IS_GEO, &GMT->current.proj.pars[9]), &(txt_arr[7][0]));
-						if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error height '%s'\n", &(txt_arr[7][0]));
-					}
-				}
-			}
-			error += (GMT->current.proj.pars[2] <= 0.0 || (k >= 0 && width_given));
-			if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "final error %d\n", error);
-			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
+			if (n_slashes <= 3)	/* Simple orthographic or modernized general perspective */
+				error += gmtinit_parse_genper_modern (GMT, &GMT->common.J.string[1], k >= 0, width_given);
+			else	/* The old deprecated long syntax for general perspective */
+				error += gmtinit_parse_genper_deprecated (GMT, args, k >= 0, width_given);
 			break;
 
 		case GMT_OBLIQUE_MERC:		/* Oblique mercator, specifying origin and azimuth or second point */
@@ -7106,21 +7254,20 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"<scale> can also be given as <radius>/<lat>, where <radius> is distance"
 				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
-			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>/<scale>|<width> (General Perspective). "
-				"<lon0>/<lat0> is the center of the projection, while "
-				"<altitude> is the height (in km) of the viewpoint above local sea level."
-				"If <altitude> less than 10 then it is the distance "
-				"from center of earth to viewpoint in earth radii. "
-				"If <altitude> has a suffix of 'r' then it is the radius "
-				"from the center of earth in kilometers. "
-				"<azimuth> is azimuth east of North of view, "
-				"<tilt> is the upward tilt of the plane of projection; "
-				"if <tilt> < 0 then viewpoint is centered on the horizon, "
-				"<twist> is the CW twist of the viewpoint in degree, "
-				"<Width> is width of the viewpoint in degree, and "
-				"<Height> is the height of the viewpoint in degrees. "
+			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scale>|<width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>] (General Perspective). "
+				"<lon0>/<lat0> is the center of the projection. "
 				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance "
-				"in %s to the oblique parallel <lat0>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+				"in %s to the oblique parallel <lat0>. "
+				"Several optional modifiers control the perspective:", GMT->session.unit_name[GMT->current.setting.proj_length_unit]); 
+			GMT_Usage (API, 3, "+a Append <azimuth> east of North of view [0].");
+			GMT_Usage (API, 3, "+t Append the upward <tilt> of the plane of projection; "
+				"if <tilt> < 0 then viewpoint is centered on the horizon [0].");
+			GMT_Usage (API, 3, "+v Append restricted view: <vwidth> is width of the viewpoint in degree, and "
+				"<vheight> is the height of the viewpoint in degrees [unrestricted].");
+			GMT_Usage (API, 3, "+w Append the CW <twist> of the viewpoint in degree [0].");
+			GMT_Usage (API, 3, "+z Append <altitude> (in km) of the viewpoint above local sea level. "
+				"If <altitude> less than 10 then it is the distance from center of earth to viewpoint in earth radii. "
+				"If <altitude> has a suffix of 'r' then it is the radius from the center of earth in kilometers [infinity].");
 
 			GMT_Usage (API, 2, "-Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff). Give optional central meridian and <scale>.");
 
@@ -7237,7 +7384,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scl> (or <radius>/<lat>)|<width> (Orthographic)");
 
-			GMT_Usage (API, 2, "-Jg|G[<lon0>/]<lat0>[/<horizon>|/<altitude>/<azimuth>/<tilt>/<twist>/<Width>/<Height>]/<scl>|<width> (General Perspective)");
+			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scl>|<width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>] (General Perspective)");
 
 			GMT_Usage (API, 2, "-Jh|H[<lon0>/]<scl>|<width> (Hammer-Aitoff)");
 
