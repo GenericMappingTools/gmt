@@ -277,8 +277,6 @@ Optional Arguments
     trailing text [Default is the entire trailing text].  The *word* indicates
     the word order, with the first word being 0.  No numerical columns can be specified.
 
-.. include:: explain_colon.rst_
-
 .. |Add_perspective| replace:: (Not implemented for paragraph mode).
 .. include:: explain_perspective.rst_
 
@@ -287,6 +285,8 @@ Optional Arguments
 .. include:: explain_-tv_full.rst_
 
 .. include:: explain_-w.rst_
+
+.. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
 

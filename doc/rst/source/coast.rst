@@ -31,10 +31,11 @@ Synopsis
 [ |-T|\ *rose* ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*level*/]\ *pen* ]
+[ |-W|\ [[*level*/]\ *pen*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
 [ |SYN_OPT-bo| ]
+[ |SYN_OPT-d| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
@@ -161,41 +162,26 @@ Optional Arguments
     Choose from the list of river types below; repeat option **-I** as
     often as necessary.
 
-    0 = Double-lined rivers (river-lakes)
-
-    1 = Permanent major rivers
-
-    2 = Additional major rivers
-
-    3 = Additional rivers
-
-    4 = Minor rivers
-
-    5 = Intermittent rivers - major
-
-    6 = Intermittent rivers - additional
-
-    7 = Intermittent rivers - minor
-
-    8 = Major canals
-
-    9 = Minor canals
-
-    10 = Irrigation canals
+    - 0 = Double-lined rivers (river-lakes)
+    - 1 = Permanent major rivers
+    - 2 = Additional major rivers
+    - 3 = Additional rivers
+    - 4 = Minor rivers
+    - 5 = Intermittent rivers - major
+    - 6 = Intermittent rivers - additional
+    - 7 = Intermittent rivers - minor
+    - 8 = Major canals
+    - 9 = Minor canals
+    - 10 = Irrigation canals
 
     You can also choose from several preconfigured river groups:
 
-    a = All rivers and canals (0-10)
-
-    A = All rivers and canals except river-lakes (1-10)
-
-    r = All permanent rivers (0-4)
-
-    R = All permanent rivers except river-lakes (1-4)
-
-    i = All intermittent rivers (5-7)
-
-    c = All canals (8-10)
+    - a = All rivers and canals (0-10)
+    - A = All rivers and canals except river-lakes (1-10)
+    - r = All permanent rivers (0-4)
+    - R = All permanent rivers except river-lakes (1-4)
+    - i = All intermittent rivers (5-7)
+    - c = All canals (8-10)
 
 .. _-L:
 
@@ -223,13 +209,10 @@ Optional Arguments
     Choose from the list of boundaries below. Repeat option **-N** as
     often as necessary.
 
-    1 = National boundaries
-
-    2 = State boundaries within the Americas
-
-    3 = Marine boundaries
-
-    a = All boundaries (1-3)
+    - 1 = National boundaries
+    - 2 = State boundaries within the Americas
+    - 3 = Marine boundaries
+    - a = All boundaries (1-3)
 
 .. _-Q:
 
@@ -259,7 +242,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*level*/]\ *pen* :ref:`(more ...) <set-pens>`
+**-W**\ [[*level*/]\ *pen*] :ref:`(more ...) <set-pens>`
     Draw shorelines [Default is no shorelines]. Append pen attributes
     [Defaults: width = default, color = black, style = solid] which
     apply to all four levels. To set the pen for each level differently,
@@ -275,6 +258,9 @@ Optional Arguments
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-bo.rst_
+
+.. |Add_-d| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-d.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_

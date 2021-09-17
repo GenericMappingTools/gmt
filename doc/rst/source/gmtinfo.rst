@@ -106,7 +106,7 @@ Optional Arguments
     information for each segment in the virtual data set: *tbl_number, seg_number,
     n_rows, start_rec, stop_rec*. Mode **t** does the same but honors the input
     table organization and thus resets *seg_number, start_rec, stop_rec* at the
-    start of each new table.
+    start of each new table [Default is **i**].
 
 .. _-I:
 
