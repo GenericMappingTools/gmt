@@ -40,8 +40,8 @@ EXTERN_MSC void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
 #define V_BORDER 8	/* 8p vertical border space for -T [not used] */
 
-#define PSSCALE_L_SCALE	0.80	/* Set scale length to 80% of map side length under auto-setting */
-#define PSSCALE_W_SCALE	0.04	/* Set scale width to 4% of scale length under auto-setting */
+#define PSSCALE_L_SCALE	80	/* Set scale length to 80% of map side length under auto-setting */
+#define PSSCALE_W_SCALE	4	/* Set scale width to 4% of scale length under auto-setting */
 #define PSSCALE_CYCLE_DIM 0.45	/* Cyclic symbol radius is 0.45 of width */
 #define N_FAVOR_IMAGE	1
 #define N_FAVOR_POLY	2
@@ -79,6 +79,7 @@ struct PSSCALE_CTRL {
 		unsigned int mmode;
 		double dim[2];
 		double off[2];
+		double scl[2];	/* Scales related to plot length */
 		bool extend;
 		unsigned int emode;
 		double elength;
@@ -137,6 +138,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.opt = strdup ("JBC");
+	C->D.scl[GMT_X] = PSSCALE_L_SCALE * 0.01;	/* Default for unspecified bar length is 80% of map side */
+	C->D.scl[GMT_Y] = PSSCALE_W_SCALE * 0.01;	/* Default for unspecified bar width is 4% of map side */
 	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
 	C->N.dpi = 600.0;
 	C->I.min = -1.0;
@@ -186,7 +189,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+h Select a horizontal scale.");
 	GMT_Usage (API, 3, "+r Reverse the positive direction along the scale bar.");
 	GMT_Usage (API, 3, "+v Select a vertical scale [Default].");
-	GMT_Usage (API, 3, "+w Append <length>[/<width>] for the bar dimensions [Default width is 4%% of <length>].");
+	GMT_Usage (API, 3, "+w Append <length>[/<width>] for the bar dimensions [Default width is %d%% of <length> whose default is %d%% of map dimension]. "
+		"If either <length> or <width> has unit %% then those percentages are used instead.", PSSCALE_W_SCALE, PSSCALE_L_SCALE);
 	GMT_Usage (API, -2, "You may also further adjust the appearance of the bar:");
 	GMT_Usage (API, 3, "+e Add sidebar triangles for back- and foreground colors. "
 		"Specify b(ackground) or f(oreground) to get one only [Default is both]. "
@@ -513,14 +517,43 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 			Ctrl->D.reverse = true;
 		/* Required modifier +w */
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
+			unsigned int n_percent = gmt_count_char (GMT, string, '%');
 			if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
 				string[j] = '\0';
 				Ctrl->D.horizontal = true;
 			}
 			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) == 0)
 				n_errors++;
-			else if (n == 1)	/* Set height as 4% of width */
-				Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * fabs (Ctrl->D.dim[GMT_X]);
+			if (n_percent) { /* Gave at least one dimension as percent of plot dimension */
+				char *p = strchr (string, '%'), *slash = strchr (string, '/');
+				gmt_strrepc (string, '%', ' ');	/* Replace any % with spaces */
+				if (n == 2) {	/* Check if we got 0-2 percentage(s) */
+					slash[0] = ' ';	/* Replace / with space */
+					if (n_percent == 2) { /* Both length and width given as percentage of plot dimension */
+						sscanf (string, "%lf %lg", &Ctrl->D.scl[GMT_X], &Ctrl->D.scl[GMT_Y]);
+						Ctrl->D.scl[GMT_X] *= 0.01;	Ctrl->D.scl[GMT_Y] *= 0.01;
+						gmt_M_memset (Ctrl->D.dim, 2U, double);	/* Wipe back to zero */
+					}
+					else {	/* Got one percent and one fixed */
+						if (p < slash) {	/* Gave length in percentage */
+							sscanf (string, "%lf %*s", &Ctrl->D.scl[GMT_X]);
+							Ctrl->D.scl[GMT_X] *= 0.01;
+							Ctrl->D.dim[GMT_X] = 0.0;
+						}
+						else {	/* Gave width in percentage */
+							sscanf (string, "%*s %lf", &Ctrl->D.scl[GMT_Y]);
+							Ctrl->D.scl[GMT_Y] *= 0.01;
+							Ctrl->D.dim[GMT_Y] = 0.0;
+						}
+					}
+				}
+				else {	/* Only gave width in percentage */
+					Ctrl->D.scl[GMT_X] = atof (string) * 0.01;
+					Ctrl->D.dim[GMT_X] = 0.0;
+				}
+			}
+			else if (n == 1 && fabs (Ctrl->D.dim[GMT_X]) > 0.0)	/* Set height as 4% of width */
+				Ctrl->D.dim[GMT_Y] = Ctrl->D.scl[GMT_Y] * fabs (Ctrl->D.dim[GMT_X]);
 			if (Ctrl->D.reverse) Ctrl->D.dim[GMT_X] = -fabs(Ctrl->D.dim[GMT_X]);
 		}
 		/* Optional modifiers +e, +h, +j, +m, +n, +o, +v */
@@ -1957,8 +1990,7 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 		if (Ctrl->D.dim[GMT_X] == 0.0) {	/* Automatically set scale width */
-			Ctrl->D.dim[GMT_X] = PSSCALE_L_SCALE * (Ctrl->D.horizontal ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI]);
-			Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * Ctrl->D.dim[GMT_X];
+			Ctrl->D.dim[GMT_X] = Ctrl->D.scl[GMT_X] * (Ctrl->D.horizontal ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI]);
 			if (Ctrl->D.reverse) Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 			if (Ctrl->Q.active && GMT->current.map.frame.draw)
 				sprintf (text, "X%gil/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
@@ -1968,6 +2000,8 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 				sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 			GMT_Report (API, GMT_MSG_DEBUG, "Scale mapping set to -J%s\n", text);
 		}
+		if (Ctrl->D.dim[GMT_Y] == 0.0)
+			Ctrl->D.dim[GMT_Y] = Ctrl->D.scl[GMT_Y] * Ctrl->D.dim[GMT_X];
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 			Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
