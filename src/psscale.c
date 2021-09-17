@@ -19,7 +19,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
- * Brief synopsis: psscale draws a gray scale or color bar either vertically
+ * Brief synopsis: psscale draws a grayscale or color bar either vertically
  * or horizontally, optionally with illumination.
  *
  */
