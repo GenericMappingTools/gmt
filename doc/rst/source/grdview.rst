@@ -186,6 +186,9 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
 .. include:: explain_-n.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
