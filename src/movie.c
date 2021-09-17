@@ -1299,6 +1299,17 @@ GMT_LOCAL int movie_delete_scripts (struct GMT_CTRL *GMT, struct MOVIE_CTRL *Ctr
 	return (GMT_NOERROR);
 }
 
+GMT_LOCAL bool movie_valid_format (char *format, char code) {
+	/* Return true if the format has a format statement for code, e.g., %5.5d or %d if code = d */
+	char *c = strchr (format, '%');
+	if (c == NULL) return false;	/* No format whatsoever */
+	c++;	/* Skip past the percentage marker */
+	while (isdigit (c[0]) || c[0] == '.') c++;	/* Skip past the optional width.precision items */
+	/* Here we are looking at [l]d|f|g|e|x etc */
+	if (c[0] == 'l') c++;	/* Skip past any l for long */
+	return (c[0] == code);
+}
+
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
@@ -1379,13 +1390,13 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			I->x += sx * I->off[GMT_X];
 			I->y += sy * I->off[GMT_Y];
 			if (I->mode == MOVIE_LABEL_IS_COL_T) {
-				if (!strchr (I->format, 's')) {
+				if (!movie_valid_format (I->format, 's')) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with word variables requires a \'%%s\'-style format.\n", which[k]);
 					movie_close_files (Ctrl);
 					Return (GMT_PARSE_ERROR);
 				}
 			}
-			else if (I->mode != MOVIE_LABEL_IS_STRING && I->format[0] && !(strchr (I->format, 'd') || strchr (I->format, 'e') || strchr (I->format, 'f') || strchr (I->format, 'g'))) {
+			else if (I->mode != MOVIE_LABEL_IS_STRING && I->format[0] && !(movie_valid_format (I->format, 'd') || movie_valid_format (I->format, 'e') || movie_valid_format (I->format, 'f') || movie_valid_format (I->format, 'g'))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Option -%c: Using +f<format> with frame or data variables requires a \'%%d\', \'%%e\', \'%%f\', or \'%%g\'-style format.\n", which[k]);
 				movie_close_files (Ctrl);
 				Return (GMT_PARSE_ERROR);
@@ -2074,7 +2085,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 						if (I->kind == 'F' && p == 0) strcat (label, "-R");	/* We will write a functioning -R option to plot the time-axis */
 						t = (use_frame + 1.0) / n_frames;	/* Relative time 0-1 for selected frame */
 						if (I->mode == MOVIE_LABEL_IS_FRAME) {	/* Place a frame counter */
-							if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
+							if (I->format[0] && movie_valid_format (I->format, 'd'))	/* Set as integer */
 								sprintf (string, I->format, (int)use_frame);
 							else if (I->format[0])	/* Set as floating point */
 								sprintf (string, I->format, (double)use_frame);
@@ -2082,7 +2093,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 								sprintf (string, "%*.*d", precision, precision, use_frame);
 						}
 						else if (I->mode == MOVIE_LABEL_IS_PERCENT) {	/* Place a percent counter */
-							if (I->format[0] && strchr (I->format, 'd'))	/* Set as integer */
+							if (I->format[0] && movie_valid_format (I->format, 'd'))	/* Set as integer */
 								sprintf (string, I->format, (int)irint (100.0 * t));
 							else if (I->format[0])	/* Set as floating point */
 								sprintf (string, I->format, (100.0 * t));
@@ -2119,7 +2130,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 									sprintf (string, "%s%c%s", date, spacer, clock);
 							}
 							else {	/* Regular floating point (or latitude, etc.) */
-								if (I->format[0] && strchr (I->format, 'd'))	/* Set as an integer */
+								if (I->format[0] && movie_valid_format (I->format, 'd'))	/* Set as an integer */
 									sprintf (string, I->format, (int)irint (L_col));
 								else if (I->format[0])	/* Set as floating point */
 									sprintf (string, I->format, L_col);

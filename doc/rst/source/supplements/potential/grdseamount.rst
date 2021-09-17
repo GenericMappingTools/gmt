@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt grdseamount** [ *table* ]
-|-G|\ *grdfile*
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [*out*/*in*] ]
@@ -64,13 +64,13 @@ Required Arguments (if **-L** not given)
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Specify the name of the output grid file (see :ref:`Grid File Formats <grd_inout_full>`).
-    If **-T** is set then *grdfile* must be a filename template that contains
-    a floating point format (C syntax).  If the filename template also contains
-    either %s (for unit name) or %c (for unit letter) then we use the corresponding time
-    (in units specified in **-T**) to generate the individual file names, otherwise
-    we use time in years with no unit.
+.. |Add_outgrid| replace:: Give the name of the output grid file. If |-T| is set then *outgrid* must be a filename
+    template that contains a floating point format (C syntax).  If the filename template also contains
+    either %s (for unit name) or %c (for unit letter) then we use the corresponding time (in units specified in |-T|)
+    to generate the individual file names, otherwise we use time in years with no unit.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 

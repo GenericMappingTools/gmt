@@ -391,7 +391,7 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 			/* Found, replace given file name with this */
 			if (c) {	/* Restore the modifiers */
 				c[0] = '+';
-				if (strstr (c, "+s") || strstr (c, "+o"))
+				if (gmt_found_modifier (API->GMT, c, "os"))
 					GMT_Report (API, GMT_MSG_WARNING, "Cannot append +s<scl> and/or +o<offset> to the remote global grid %s - ignored\n", newfile);
 				else
 					strcat (newfile, c);
@@ -615,6 +615,12 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	/* Make a lock */
 	if ((LF = gmtremote_lock_on (GMT, file)) == NULL)
 		return 1;
+
+	/* If file locking held us up as another process was downloading the same file,
+	 * then that file should now be available.  So we check again if it is before proceeding */
+
+	if (!access (file, F_OK))
+		return GMT_NOERROR;	/* Yes it was! */
 
 	/* Initialize the curl session */
 	if ((Curl = gmtremote_setup_curl (API, url, file, &urlfile, GMT_HASH_TIME_OUT)) == NULL)
@@ -1187,6 +1193,12 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	/* Only make a lock if not a query */
 	if (!query && (LF = gmtremote_lock_on (GMT, (char *)name)) == NULL)
 		return 1;
+
+	/* If file locking held us up as another process was downloading the same file,
+	 * then that file should now be available.  So we check again if it is before proceeding */
+
+	if (!access (localfile, F_OK))
+		return GMT_NOERROR;	/* Yes it was! */
 
 	/* Initialize the curl session */
 	if ((Curl = gmtremote_setup_curl (API, url, localfile, &urlfile, 0)) == NULL)

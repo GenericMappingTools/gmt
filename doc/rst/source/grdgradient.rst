@@ -44,9 +44,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of the output grid file for the directional derivative. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file for the directional derivative.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------

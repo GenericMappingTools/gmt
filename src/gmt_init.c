@@ -2010,7 +2010,7 @@ GMT_LOCAL int gmtinit_parse_U_option (struct GMT_CTRL *GMT, char *item) {
 	GMT->current.setting.map_logo = true;
 	if (!item || !item[0]) return (GMT_NOERROR);	/* Just basic -U with no args */
 
-	if ((strstr (item, "+c")) || strstr (item, "+j") || strstr (item, "+o")) {	/* New syntax */
+	if (gmt_found_modifier (GMT, item, "cjo")) {	/* New syntax */
 		unsigned int pos = 0, uerr = 0;
 		int k = 1, len = (int)strlen (item);
 		char word[GMT_LEN256] = {""}, *c = NULL;
@@ -4351,9 +4351,10 @@ void gmt_init_B (struct GMT_CTRL *GMT) {
 GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	/* GMT5 clean version based on new syntax:
 	 * Frame settings:
-	 *	-B[WESNwesnz|Z[1234]][+b][+g<fill>][+o<lon/lat>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]
+	 *	-B[WESNwesnz|Z[1234]][+b][+g<fill>][+i][+o<lon/lat>][+t<title>][+w[<pen>]][+x<fill>][+y<fill>][+z<fill>]
 	 *    		+b draws 3-D box.
 	 *    		+g<fill> as plot interior fill and backwalls (if 3-D) [none].
+	 *			+i Annotate along parallel or meridian <val> [0] when no such axes can be plotted.
 	 *    		+t<title> as plot title [none].
 	 *    		+w[<pen>] draws the outline of the xz and yz planes [no outline].
 	 *    		of one or more of w,e,s,n,z then only those axes will be drawn.
@@ -4400,8 +4401,8 @@ GMT_LOCAL int gmtinit_parse5_B_option (struct GMT_CTRL *GMT, char *in) {
 	if ((error = gmtinit_parse5_B_frame_setting (GMT, in)) >= 0) return (error);	/* Parsed the -B frame settings separately */
 	error = 0;	/* Reset since otherwise it is -1 */
 
-	if (strstr (in, "+b") || strstr (in, "+g") || strstr (in, "+i") || strstr (in, "+n") || strstr (in, "+o") || strstr (in, "+o") || strstr (in, "+t") || strstr (in, "+w") || strstr (in, "+x") || strstr (in, "+y") || strstr (in, "+z")) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Found frame setting modifiers (+b|g|i|n|o|p|W) mixed with axes settings!\n");
+	if (gmt_found_modifier (GMT, in, "bginotwxyz")) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B: Found frame setting modifiers (+b|g|i|n|o|t|w|x|y|z) mixed with axes settings!\n");
 		return (GMT_PARSE_ERROR);
 	}
 
@@ -7747,7 +7748,7 @@ void gmt_outgrid_syntax (struct GMTAPI_CTRL *API, char option, char *message) {
 	GMT_Usage (API, 3, "+n Replace data values matching <invalid> with a NaN.");
 	GMT_Usage (API, 3, "+o Offset data values by the given <offset>, or append a for automatic range offset to preserve precision for integer grids [0].");
 	GMT_Usage (API, 3, "+s Scale data values by the given <scale>, or append a for automatic range scale to preserve precision for integer grids [1].");
-	GMT_Usage (API, -2, "Note: Any offset is added after any scaling, and +sa also sets +oa (unless overridden). "
+	GMT_Usage (API, -2, "Note: Any offset is added before any scaling, and +sa also sets +oa (unless overridden). "
 		"To write specific formats via GDAL, use <ID> = gd and supply <driver> (and optionally <dataType> and/or one or more concatenated GDAL -co <options> using +c).");
 }
 
@@ -8947,7 +8948,7 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 		return GMT_NOERROR;
 	}
 
-	new_style = (strstr (arg, "+d") || strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l"));
+	new_style = gmt_found_modifier (GMT, arg, "dlos");
 
 	strncpy (GMT->common.i.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	for (i = 0; i < GMT_MAX_COLUMNS; i++) GMT->current.io.col_skip[i] = true;	/* Initially, no input column is requested */
@@ -9174,8 +9175,8 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -o requires an argument */
 
-	if (strstr (arg, "+s") || strstr (arg, "+o") || strstr (arg, "+l")) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -o option does not take +l|o|s modifiers; consider -i instead.\n");
+	if (gmt_found_modifier (GMT, arg, "dlos")) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -o option does not take +d|l|o|s modifiers; consider -i instead.\n");
 		return GMT_PARSE_ERROR;
 	}
 
@@ -9184,7 +9185,7 @@ int gmt_parse_o_option (struct GMT_CTRL *GMT, char *arg) {
 
 	GMT->current.io.trailing_text[GMT_OUT] = false;	/* When using -o you have to specifically add column t to parse trailing text */
 	if (! strcmp (arg, "n")) return GMT_NOERROR;	/* We just wanted to select numerical output only */
-	if (arg[0] == 't') {	/* Just wants trailing text, no numerical colulmns */
+	if (arg[0] == 't') {	/* Just wants trailing text, no numerical columns */
 		GMT->current.io.trailing_text[GMT_OUT] = true;
 		GMT->common.o.text = true;	/* Special flag to switch to gmtlib_ascii_output_trailing_text output function later */
 		if (arg[1]) {	/* Want a specific word (0-(nwords-1)) from the trailing text */
@@ -13832,9 +13833,8 @@ GMT_LOCAL bool gmtinit_is_PS_module (struct GMTAPI_CTRL *API, const char *name, 
 		if ((opt = GMT_Find_Option (API, 'M', options))) return false;	/* -M writes dataset */
 		if ((opt = GMT_Find_Option (API, 'J', options))) return true;	/* -J writes PS regardless of -E */
 		if ((opt = GMT_Find_Option (API, 'E', options)) == NULL) return true;	/* Without -E writes PS */
-		if (strstr (opt->arg, "+g") || strstr (opt->arg, "+p")) return true;	/* -E...+g|p writes PS */
-		if (strstr (opt->arg, "+c") || strstr (opt->arg, "+C")) return true;	/* -E...+c|C writes PS */
-		if (strstr (opt->arg, "+r") || strstr (opt->arg, "+R")) return false;	/* -E...+r|R writes dataset */
+		if (gmt_found_modifier (API->GMT, opt->arg, "cCgp")) return true;	/* -E...+g|p|c|C writes PS */
+		if (gmt_found_modifier (API->GMT, opt->arg, "rR")) return false;	/* -E...+r|R writes dataset */
 	}
 	else if (!strncmp (name, "grdimage", 8U)) {	/* Check for -A option */
 		if ((opt = GMT_Find_Option (API, 'A', options))) return false;	/* -A writes image */
@@ -14964,7 +14964,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					/* Deal with the frame option check first */
 					if (strchr ("WESNwesnlrbt", opt->arg[0]))	/* User is overriding the frame settings - that is their choice */
 						frame_set = true;
-					else if (strstr (opt->arg, "+t") || strstr (opt->arg, "+g")) {	/* No axis specs means we have to add default */
+					else if (gmt_found_modifier (API->GMT, opt->arg, "gt")) {	/* No axis specs means we have to add default */
 						/* Frame but no sides specified.  Insert the required sides */
 						snprintf (arg, GMT_LEN256, "%s", P->Baxes);
 						strncat (arg, opt->arg, GMT_LEN256-1);
