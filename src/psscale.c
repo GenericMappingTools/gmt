@@ -531,25 +531,25 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 					slash[0] = ' ';	/* Replace / with space */
 					if (n_percent == 2) { /* Both length and width given as percentage of plot dimension */
 						sscanf (string, "%lf %lg", &Ctrl->D.scl[GMT_X], &Ctrl->D.scl[GMT_Y]);
-						Ctrl->D.scl[GMT_X] *= 0.01;	Ctrl->D.scl[GMT_Y] *= 0.01;
+						Ctrl->D.scl[GMT_X] *= 0.01;	Ctrl->D.scl[GMT_Y] *= 0.01;	/* Convert to fraction */
 						gmt_M_memset (Ctrl->D.dim, 2U, double);	/* Wipe back to zero */
 					}
 					else {	/* Got one percent and one fixed */
 						if (p < slash) {	/* Gave length in percentage */
 							sscanf (string, "%lf %*s", &Ctrl->D.scl[GMT_X]);
-							Ctrl->D.scl[GMT_X] *= 0.01;
-							Ctrl->D.dim[GMT_X] = 0.0;
+							Ctrl->D.scl[GMT_X] *= 0.01;	/* Convert to fraction */
+							Ctrl->D.dim[GMT_X] = 0.0;	/* Wipe back to zero */
 						}
 						else {	/* Gave width in percentage */
 							sscanf (string, "%*s %lf", &Ctrl->D.scl[GMT_Y]);
-							Ctrl->D.scl[GMT_Y] *= 0.01;
-							Ctrl->D.dim[GMT_Y] = 0.0;
+							Ctrl->D.scl[GMT_Y] *= 0.01;	/* Convert to fraction */
+							Ctrl->D.dim[GMT_Y] = 0.0;	/* Wipe back to zero */
 						}
 					}
 				}
 				else {	/* Only gave width in percentage */
-					Ctrl->D.scl[GMT_X] = atof (string) * 0.01;
-					Ctrl->D.dim[GMT_X] = 0.0;
+					Ctrl->D.scl[GMT_X] = atof (string) * 0.01;	/* Convert to fraction */
+					Ctrl->D.dim[GMT_X] = 0.0;	/* Wipe back to zero */
 				}
 			}
 			else if (n == 1 && fabs (Ctrl->D.dim[GMT_X]) > 0.0)	/* Set height as 4% of width */
