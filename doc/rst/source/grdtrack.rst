@@ -24,6 +24,7 @@ Synopsis
 [ |-T|\ [*radius*][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ]
 [ |-Z| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -258,9 +259,7 @@ Optional Arguments
     column becomes 0 instead of 2.  If specifying specific columns
     in **-s** then start numbering the z-columns from 0 instead of 2.
 
-**-:**
-    Toggles between (longitude,latitude) and (latitude,longitude)
-    input/output. [Default is (longitude,latitude)].
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -296,6 +295,10 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
+
+**-:**
+    Toggles between (longitude,latitude) and (latitude,longitude)
+    input/output. [Default is (longitude,latitude)].
 
 .. include:: explain_help.rst_
 
