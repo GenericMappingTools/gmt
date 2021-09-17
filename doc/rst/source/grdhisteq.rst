@@ -79,9 +79,10 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of output 2-D grid file. Used with **-N** only. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file. Used with |-N| only.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-N:
 

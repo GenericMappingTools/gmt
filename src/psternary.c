@@ -262,7 +262,7 @@ GMT_LOCAL unsigned int psternary_prep_options (struct GMTAPI_CTRL *API, struct G
 	/* Next, find any references to A|B|C|a|b|c in -B and replace with X|Y|Z|x|y|z to survive the parser */
 	for (opt = *options; opt; opt = opt->next) {	/* Linearly search for the specified option */
 		if (opt->option == 'B') {
-			if (strchr ("ABC", opt->arg[0]) || strstr (opt->arg, "+b") || strstr (opt->arg, "+g") || strstr (opt->arg, "+n") || strstr (opt->arg, "+t")) {	/* Frame setting */
+			if (strchr ("ABC", opt->arg[0]) || gmt_found_modifier (API->GMT, opt->arg, "bgnt")) {	/* Frame setting */
 				for (k = 0; opt->arg[k] && opt->arg[k] != '+'; k++) {
 					if (opt->arg[k] == 'a') opt->arg[0] = 's';		/* -Ba becomes -Bs */
 					else if (opt->arg[k] == 'A') opt->arg[k] = 'S';	/* -BA becomes -BS */

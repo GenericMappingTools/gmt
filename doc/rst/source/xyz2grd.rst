@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt xyz2grd** [ *table* ] |-G|\ *grdfile*
+**gmt xyz2grd** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**d**\|\ **f**\|\ **l**\|\ **m**\|\ **n**\|\ **r**\|\ **S**\|\ **s**\|\ **u**\|\ **z**] ]
@@ -59,10 +59,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See
-    :ref:`Grid File Formats <grd_inout_full>`).
-
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 

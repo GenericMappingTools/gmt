@@ -292,7 +292,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 			case 'D':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
-				if (opt->arg[0] == '+' && (strstr (opt->arg, "+e") || strstr (opt->arg, "+n")) && strstr (opt->arg, "w") == NULL) {
+				if (opt->arg[0] == '+' && (gmt_found_modifier (GMT, opt->arg, "en")) && strstr (opt->arg, "w") == NULL) {
 					/* Only want +e or +n to be added to defaults */
 					sprintf (string, "%s%s", Ctrl->D.opt, opt->arg);
 					gmt_M_str_free (Ctrl->D.opt);

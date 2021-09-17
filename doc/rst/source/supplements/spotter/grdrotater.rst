@@ -57,11 +57,13 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of output grid. This is the grid with the data reconstructed
+.. |Add_outgrid| replace:: Name of output grid. This is the grid with the data reconstructed
     according to the specified rotation. If more than one reconstruction
     time is implied then *outgrid* must contain a C-format specifier
     to format a floating point number (reconstruction time) to text.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
