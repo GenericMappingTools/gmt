@@ -598,7 +598,7 @@ void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
 
 GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
 	bool turn_ctrl_C_off = false;
-	int curl_err = 0, error = 0;
+	int curl_err = 0, error = GMT_NOERROR;
 	long time_spent;
 	CURL *Curl = NULL;
 	struct LOCFILE_FP *LF = NULL;
@@ -620,7 +620,7 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	 * then that file should now be available.  So we check again if it is before proceeding */
 
 	if (!access (file, F_OK))
-		return GMT_NOERROR;	/* Yes it was! */
+		goto unlocking1;	/* Yes it was, unlock and return no error */
 
 	/* Initialize the curl session */
 	if ((Curl = gmtremote_setup_curl (API, url, file, &urlfile, GMT_HASH_TIME_OUT)) == NULL)
@@ -1197,8 +1197,11 @@ int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *
 	/* If file locking held us up as another process was downloading the same file,
 	 * then that file should now be available.  So we check again if it is before proceeding */
 
-	if (!access (localfile, F_OK))
-		return GMT_NOERROR;	/* Yes it was! */
+	if (!access (localfile, F_OK)) {	/* Yes it was! Undo lock and return no error */
+		if (!query)	/* Remove lock file after successful download (unless query) */
+			gmtremote_lock_off (GMT, &LF);
+		return GMT_NOERROR;
+	}
 
 	/* Initialize the curl session */
 	if ((Curl = gmtremote_setup_curl (API, url, localfile, &urlfile, 0)) == NULL)
