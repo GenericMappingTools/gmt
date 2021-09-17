@@ -543,7 +543,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 						else {	/* Gave width in percentage */
 							sscanf (string, "%*s %lf", &Ctrl->D.scl[GMT_Y]);
 							Ctrl->D.scl[GMT_Y] *= 0.01;	/* Convert to fraction */
-							Ctrl->D.dim[GMT_Y] = 0.0;	/* Wipe back to zero */
+							Ctrl->D.dim[GMT_Y] = Ctrl->D.dim[GMT_X] * Ctrl->D.scl[GMT_Y];	/* Wipe back to zero */
 						}
 					}
 				}
