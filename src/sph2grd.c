@@ -29,7 +29,7 @@
 #define THIS_MODULE_PURPOSE	"Compute grid from spherical harmonic coefficients"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "->RVbdhirs" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "->RVbdhir" GMT_ADD_x_OPT
 
 #ifndef M_LN2
 #define M_LN2 0.69314718055994530942  /* log_e 2 */
@@ -97,7 +97,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [coeff_file] -G%s %s %s [-Dg|n] [-E] [-F[k]<filter>] "
 		"[-Ng|m|s] [-Q] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_e_OPT, GMT_h_OPT,
-		GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		GMT_i_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -126,7 +126,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "m: Mathematical normalization - inner products summed over surface equal 1 [Default].");
 	GMT_Usage (API, 3, "s: Schmidt normalization - as used in geomagnetism.");
 	GMT_Usage (API, 1, "\n-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor.");
-	GMT_Option (API, "V,bi4,e,h,i,r,s,x,.");
+	GMT_Option (API, "V,bi4,e,h,i,r,x,.");
 
 	return (GMT_MODULE_USAGE);
 }
