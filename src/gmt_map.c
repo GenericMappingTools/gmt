@@ -5164,8 +5164,9 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 
 /*! . */
 GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double *east, double *south, double *north) {
-	double w, e, s = 90.0, n = -90.0, lat, *lon = NULL, *work_x = NULL, *work_y = NULL;
+	double w, e, s = 90.0, n = -90.0, *work_x = NULL, *work_y = NULL;
 	uint64_t np, k;
+	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT);
 	/* Because the genper clip path may be a mix of straight borders and a curved horizon, we must determine this
 	 * clip path and search along it, getting lon,lat along the way, and find the extreme values to use. Before this
 	 * function was added, we ended up in the gmt_wesn_search function which would fail along the horizon in many
@@ -5178,23 +5179,27 @@ GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double 
 
 	/* Search for extreme lon/lat coordinates by matching along the genper boundary */
 
-	/* Need temp array to hold all the longitudes we compute */
-	lon = gmt_M_memory (GMT, NULL, np, double);
+	/* Need temp datasegment to hold all the longitudes and latitudes we compute */
+	gmt_alloc_segment (GMT, S, np, 2, 0, true);
 	for (k = 0; k < np; k++) {
-		gmt_xy_to_geo (GMT, &lon[k], &lat, work_x[k], work_y[k]);
-		if (lat < s) s = lat;
-		if (lat > n) n = lat;
+		gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], work_x[k], work_y[k]);
+		if (S->data[GMT_Y][k] < s) s = S->data[GMT_Y][k];
+		if (S->data[GMT_Y][k] > n) n = S->data[GMT_Y][k];
 	}
 	gmt_M_free (GMT, work_x);
 	gmt_M_free (GMT, work_y);
+	gmt_set_seg_minmax (GMT, GMT_IS_POLY, 2, S);	/* Update min/max of x/y */
 
-	gmtlib_get_lon_minmax (GMT, lon, np, &w, &e);	/* Determine lon-range by robust quandrant check */
-	gmt_M_free (GMT, lon);
+	gmtlib_get_lon_minmax (GMT, S->data[GMT_X], np, &w, &e);	/* Determine lon-range by robust quadrant check */
 
-	/* Then check if one or both poles are inside map; then the above won't be correct */
+	/* Then check if one or both poles are inside map; then the above won't be correct.
+	 * Because the clip path for genper may be some weird rounded octagon we must use the polygon directly. */
 
-	if (!gmt_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
-	if (!gmt_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
+	gmt_set_inside_mode (GMT, NULL, GMT_IOO_SPHERICAL);	/* Ensure spherical treatment */
+	if (gmt_inonout (GMT, GMT->current.proj.central_meridian, -90.0, S) == GMT_INSIDE) { s = -90.0; w = 0.0; e = 360.0; }
+	if (gmt_inonout (GMT, GMT->current.proj.central_meridian, +90.0, S) == GMT_INSIDE) { n = +90.0; w = 0.0; e = 360.0; }
+
+	gmt_free_segment (GMT, &S);
 
 	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
 	n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
