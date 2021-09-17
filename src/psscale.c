@@ -1991,6 +1991,8 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 
 		if (Ctrl->D.dim[GMT_X] == 0.0) {	/* Automatically set scale width */
 			Ctrl->D.dim[GMT_X] = Ctrl->D.scl[GMT_X] * (Ctrl->D.horizontal ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI]);
+			if (Ctrl->D.dim[GMT_Y] == 0.0)
+				Ctrl->D.dim[GMT_Y] = Ctrl->D.scl[GMT_Y] * Ctrl->D.dim[GMT_X];
 			if (Ctrl->D.reverse) Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 			if (Ctrl->Q.active && GMT->current.map.frame.draw)
 				sprintf (text, "X%gil/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
@@ -2000,8 +2002,6 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 				sprintf (text, "X%gi/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);
 			GMT_Report (API, GMT_MSG_DEBUG, "Scale mapping set to -J%s\n", text);
 		}
-		if (Ctrl->D.dim[GMT_Y] == 0.0)
-			Ctrl->D.dim[GMT_Y] = Ctrl->D.scl[GMT_Y] * Ctrl->D.dim[GMT_X];
 		if ((PSL = gmt_plotinit (GMT, options)) == NULL)
 			Return (GMT_RUNTIME_ERROR);
 		gmt_plane_perspective (GMT, GMT->current.proj.z_project.view_plane, GMT->current.proj.z_level);
