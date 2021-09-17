@@ -130,14 +130,16 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
+.. include:: explain_-icols.rst_
+
 .. include:: explain_-qi.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: explain_nodereg.rst_
 
 .. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
-
-.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
-.. include:: explain_nodereg.rst_
 
 .. include:: explain_help.rst_
 
