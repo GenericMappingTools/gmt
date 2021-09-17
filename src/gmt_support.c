@@ -4892,21 +4892,76 @@ GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_
 	return (E);
 }
 
+GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+	/* Create a template for making a unique temporary file or directory name on the system.
+	 * The 6 XXXXXX will be replaced by mktemp or mkstemp with a unique 6-char token (62^6 unique tokens).
+	 * If a temp dir is designated then we use that in the path else we assume current directory.
+	 * If stem is NULL we use "gmttemp" as file prefix.  If extension is not NULL we append it as is.
+	 * Note: path is expected to have a length of PATH_MAX.
+	 */
+	if (API->tmp_dir)	/* Use the established temp directory */
+		snprintf (path, PATH_MAX, "%s/%s_XXXXXX", API->tmp_dir, stem ? stem : "gmttemp");
+	else	/* Must dump it in current directory */
+		snprintf (path, PATH_MAX, "%s_XXXXXX", stem ? stem : "gmttemp");
+}
+
+int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+	/* Create a unique temporary file or directory name on the system;
+	 * If stem is NULL we use "gmttemp" as file prefix.  If extension is not NULL we append it.
+	 * Note: path is expected to have a length of PATH_MAX.
+	 */
+
+	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+
+	if (mktemp (path) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Could not create a temporary name from template %s.\n", path);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (extension) strcat (path, extension);	/* Appending a file extension is unlikely to change uniqueness */
+	return (GMT_NOERROR);
+}
+
+FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+	/* Returns file pointer to the desired temp file open for writing */
+	FILE *fp = NULL;
+#ifndef _WIN32
+	/* Here we can use the race-safe mkstemp function which returns a file descriptor */
+	int fd = 0;
+	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+	if ((fd = mkstemp (path)) == -1) {	/* Create filename AND open in one go to avoid race condition */
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name and open it %s.\n", path);
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
+	if ((fp = fdopen (fd, API->GMT->current.io.w_mode)) == NULL) {	/* Get FILE pointer from file descriptor */
+		API->error = GMT_RUNTIME_ERROR;
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not fdopen the temporary file %s.\n", path);
+		return NULL;
+	}
+#else	/* Must create file name first, then open file - susceptible to race condition if another process gets there first */
+	if (gmt_get_tempname (API, stem, extension, path)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name %s.\n", path);
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
+	if ((fp = fopen (path, API->GMT->current.io.w_mode)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to open the temporary file: %s.\n", path);
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
+#endif
+	return (fp);
+}
+
 int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path) {
 	/* Replace an EPS file with a simple 1-liner custom file using an inline EPS command P instead.
 	 * path is updated to point to the replacement temp file */
 
 	FILE *fp = NULL;
-	snprintf (path, PATH_MAX, "%s/gmt_epssymbol_XXXXXX", GMT->parent->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
-	if (mktemp (path) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_convert_eps_to_def: Could not create temporary file name from template %s.\n", path);
+
+	if ((fp = gmt_create_tempfile (GMT->parent, "gmt_epssymbol", ".def", path)) == NULL)	/* Not good... */
 		return GMT_RUNTIME_ERROR;
-	}
-	strcat (path, ".def");	/* Append the right extension for a custom symbol */
-	if ((fp = fopen (path, "w")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_convert_eps_to_def: Unable to create custom symbol file %s\n", path);
-		return GMT_RUNTIME_ERROR;
-	}
+
 	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
 	fclose (fp);
 	return GMT_NOERROR;

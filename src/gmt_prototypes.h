@@ -400,6 +400,8 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]);
+EXTERN_MSC int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]);
 EXTERN_MSC bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods);
 EXTERN_MSC bool gmt_is_fill (struct GMT_CTRL *GMT, char *word);
 EXTERN_MSC void gmt_init_next_color (struct GMT_CTRL *GMT);
