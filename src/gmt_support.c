@@ -357,7 +357,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 GMT_LOCAL int gmtsupport_parse_pattern (struct GMT_CTRL *GMT, char *line, struct GMT_FILL *fill) {
 	int err;
 	/* New syntax may have a modifier */
-	if (strstr(line, "+r") || strstr(line, "+f") || strstr(line, "+b") || !strchr(line, '/'))	/* Clearly new syntax */
+	if (gmt_found_modifier (GMT, line, "bfr") || !strchr(line, '/'))	/* Clearly new syntax */
 		err = gmtsupport_parse_pattern_new (GMT, line, fill);
 	else
 		err = gmtsupport_parse_pattern_old (GMT, line, fill);
@@ -890,7 +890,7 @@ GMT_LOCAL bool gmtsupport_is_pattern (struct GMT_CTRL *GMT, char *word) {
 
 	bool val;
 	/* New syntax may have a modifier or no slash AND no colon */
-	if ((strstr(word, "+r") || strstr(word, "+f") || strstr(word, "+b") || !strchr(word, '/')) && !strchr (word,':'))
+	if ((gmt_found_modifier (GMT, word, "bfr") || !strchr(word, '/')) && !strchr (word,':'))
 		val = gmtsupport_is_pattern_new (GMT, word);
 	else
 		val = gmtsupport_is_pattern_old (word);
@@ -4167,7 +4167,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_voronoi_watson (struct GMT_CTRL *GMT, 
 GMT_LOCAL int gmtsupport_ensure_new_mapinset_syntax (struct GMT_CTRL *GMT, char option, char *in_text, char *text, char *panel_txt) {
 	/* Recasts any old syntax using new syntax and gives a warning.
  	   Assumes text and panel_text are blank and have adequate space */
-	if (strstr (in_text, "+c") || strstr (in_text, "+g") || strstr (in_text, "+p")) {	/* Tell-tale sign of old syntax */
+	if (gmt_found_modifier (GMT, in_text, "cgp")) {	/* Tell-tale sign of old syntax */
 		char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 		unsigned int pos = 0, start = 0, i;
 		int n;
@@ -4329,7 +4329,7 @@ GMT_LOCAL int gmtsupport_getscale_old (struct GMT_CTRL *GMT, char option, char *
 		error++;
 	}
 
-	ms->old_style = (strstr (txt_cpy, "+f") || strstr (txt_cpy, "+g") || strstr (txt_cpy, "+p"));
+	ms->old_style = gmt_found_modifier (GMT, txt_cpy, "fgp");
 
 	if (options > 0) {	/* Gave +?<args> which now must be processed */
 		char p[GMT_BUFSIZ], oldshit[GMT_LEN128] = {""};
@@ -4892,21 +4892,76 @@ GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_
 	return (E);
 }
 
+GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+	/* Create a template for making a unique temporary file or directory name on the system.
+	 * The 6 XXXXXX will be replaced by mktemp or mkstemp with a unique 6-char token (62^6 unique tokens).
+	 * If a temp dir is designated then we use that in the path else we assume current directory.
+	 * If stem is NULL we use "gmttemp" as file prefix.  If extension is not NULL we append it as is.
+	 * Note: path is expected to have a length of PATH_MAX.
+	 */
+	if (API->tmp_dir)	/* Use the established temp directory */
+		snprintf (path, PATH_MAX, "%s/%s_XXXXXX", API->tmp_dir, stem ? stem : "gmttemp");
+	else	/* Must dump it in current directory */
+		snprintf (path, PATH_MAX, "%s_XXXXXX", stem ? stem : "gmttemp");
+}
+
+int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+	/* Create a unique temporary file or directory name on the system;
+	 * If stem is NULL we use "gmttemp" as file prefix.  If extension is not NULL we append it.
+	 * Note: path is expected to have a length of PATH_MAX.
+	 */
+
+	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+
+	if (mktemp (path) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Could not create a temporary name from template %s.\n", path);
+		return (GMT_RUNTIME_ERROR);
+	}
+	if (extension) strcat (path, extension);	/* Appending a file extension is unlikely to change uniqueness */
+	return (GMT_NOERROR);
+}
+
+FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+	/* Returns file pointer to the desired temp file open for writing */
+	FILE *fp = NULL;
+#ifndef _WIN32
+	/* Here we can use the race-safe mkstemp function which returns a file descriptor */
+	int fd = 0;
+	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+	if ((fd = mkstemp (path)) == -1) {	/* Create filename AND open in one go to avoid race condition */
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name and open it %s.\n", path);
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
+	if ((fp = fdopen (fd, API->GMT->current.io.w_mode)) == NULL) {	/* Get FILE pointer from file descriptor */
+		API->error = GMT_RUNTIME_ERROR;
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not fdopen the temporary file %s.\n", path);
+		return NULL;
+	}
+#else	/* Must create file name first, then open file - susceptible to race condition if another process gets there first */
+	if (gmt_get_tempname (API, stem, extension, path)) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name %s.\n", path);
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
+	if ((fp = fopen (path, API->GMT->current.io.w_mode)) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to open the temporary file: %s.\n", path);
+		API->error = GMT_RUNTIME_ERROR;
+		return NULL;
+	}
+#endif
+	return (fp);
+}
+
 int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path) {
 	/* Replace an EPS file with a simple 1-liner custom file using an inline EPS command P instead.
 	 * path is updated to point to the replacement temp file */
 
 	FILE *fp = NULL;
-	snprintf (path, PATH_MAX, "%s/gmt_epssymbol_XXXXXX", GMT->parent->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
-	if (mktemp (path) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_convert_eps_to_def: Could not create temporary file name from template %s.\n", path);
+
+	if ((fp = gmt_create_tempfile (GMT->parent, "gmt_epssymbol", ".def", path)) == NULL)	/* Not good... */
 		return GMT_RUNTIME_ERROR;
-	}
-	strcat (path, ".def");	/* Append the right extension for a custom symbol */
-	if ((fp = fopen (path, "w")) == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_convert_eps_to_def: Unable to create custom symbol file %s\n", path);
-		return GMT_RUNTIME_ERROR;
-	}
+
 	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
 	fclose (fp);
 	return GMT_NOERROR;
@@ -9918,7 +9973,7 @@ unsigned int gmt_contour_T_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct 
 			I->high = false, j = 1;
 		else
 			j = 0;
-		if (strstr (arg, "+a") || strstr (arg, "+d") || strstr (arg, "+l")) {	/* New parser */
+		if (gmt_found_modifier (GMT, arg, "adl")) {	/* New parser */
 			if (gmt_validate_modifiers (GMT, arg, 'T', "adl", GMT_MSG_ERROR)) n_errors++;
 			if (gmt_get_modifier (arg, 'a', string))
 				I->all = true;
@@ -18233,4 +18288,14 @@ bool gmt_is_gmt_end_show (char *line) {
 	if (gmt_strtok (line, " \t\n", &pos, word) == 0) return false;	/* Get third word or fail */
 	if (!strcmp (word, "show")) return true;	/* Yes, found gmt end show */
 	return false;	/* Not gmt end show */
+}
+
+bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
+	/* Return true if any of the modifiers listed are found in the string */
+	char this_modifier[3] = {'+', ' ', '\0'};
+	for (unsigned int k = 0; k < strlen (mods); k++) {
+		this_modifier[1] = mods[k];
+		if (strstr (string, this_modifier)) return (true);	/* Found it */
+	}
+	return (false);
 }

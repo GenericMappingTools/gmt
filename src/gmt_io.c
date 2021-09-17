@@ -3358,9 +3358,11 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		}
 		*tpos = pos;
 	}
-	if (found_text && col == 0 && !GMT->common.i.select) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
-		gmt_M_free (GMT, type);
-		return GMT_NOT_OUTPUT_OBJECT;
+	if (found_text && col == 0 && !GMT->common.i.select && phys_col_type != GMT_IS_STRING) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
+		if (strncmp (GMT->init.module_name, "batch", 5U) && strncmp (GMT->init.module_name, "movie", 5U)) {	/* Make exception for these modules what often will just read text lines */
+			gmt_M_free (GMT, type);
+			return GMT_NOT_OUTPUT_OBJECT;
+		}
 	}
 	*n_columns = col;	/* Pass back the numerical column count */
 	if (GMT->common.i.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */

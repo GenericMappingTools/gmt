@@ -91,9 +91,11 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Normally, **grdedit** will overwrite the existing grid with the modified grid.
+.. |Add_outgrid| replace:: Normally, **grdedit** will overwrite the existing grid with the modified grid.
     Use **-G** to write the modified grid to the file *outgrid* instead.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be recognized by GDAL.

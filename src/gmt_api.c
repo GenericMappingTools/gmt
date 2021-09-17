@@ -2083,6 +2083,7 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 	}
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
+		if (dim == NULL) return (GMT_VALUE_NOT_SET);
 		gmt_M_memcpy (M->range, dummy_range, 2 * dims, double);
 		gmt_M_memcpy (M->inc, dummy_range, dims, double);
 		M->n_rows    = dim[GMTAPI_DIM_ROW];
@@ -12652,8 +12653,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		/* Potential problem under modern mode: No -J -R set but will be provided later, and we are doing -E for coloring or lines */
 		if (GMT_Find_Option (API, 'M', *head)) type = 'D';	/* -M means dataset dump */
 		else if (GMT_Find_Option (API, 'C', *head) || GMT_Find_Option (API, 'G', *head) || GMT_Find_Option (API, 'I', *head) || GMT_Find_Option (API, 'N', *head) || GMT_Find_Option (API, 'W', *head)) type = 'X';	/* Clearly plotting GSHHG */
-		else if ((opt = GMT_Find_Option (API, 'E', *head)) && (strstr (opt->arg, "+g") || strstr (opt->arg, "+p"))) type = 'X';	/* Clearly plotting DCW polygons */
-		else if ((opt = GMT_Find_Option (API, 'E', *head)) && (strstr (opt->arg, "+l") || strstr (opt->arg, "+L"))) type = 'D';	/* Clearly requesting listing of DCW countries/states */
+		else if ((opt = GMT_Find_Option (API, 'E', *head)) && gmt_found_modifier (API->GMT, opt->arg, "cCgp")) type = 'X';	/* Clearly plotting DCW polygons */
+		else if ((opt = GMT_Find_Option (API, 'E', *head)) && gmt_found_modifier (API->GMT, opt->arg, "lL")) type = 'D';	/* Clearly requesting listing of DCW countries/states */
 		else if (!GMT_Find_Option (API, 'J', *head)) type = 'D';	/* No -M and no -J means -Rstring as dataset */
 		else type = 'X';	/* Otherwise we are still most likely plotting PostScript */
 	}
