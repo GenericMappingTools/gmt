@@ -4774,7 +4774,7 @@ GMT_LOCAL int gmtinit_autoscale (char *arg) {
 #endif
 
 GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, bool got_xxx_scale, bool width_given) {
-	/* Modern form for genper: -Jg|g<lon>/<lat>/scale|width>[+a<azimuth>][+t<tilt>][+v<width>/<height>][+w<twist>][+z<altitude>]
+	/* Modern form for genper: -Jg|g<lon>/<lat>/scale|width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>]
 	 * For developers there is also [+d<level>] if -DDEBUG was used */
 	int m, n, error = 0;
 	char txt_arr[4][GMT_LEN256], *c = NULL, *d = NULL;
