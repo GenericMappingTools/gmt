@@ -24,6 +24,7 @@ Synopsis
 [ |-S|\ *smooth* ]
 [ |-T|\ [**+o**\ [*pen*]][**+s**] ]
 [ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
 [ |-W|\ **c|m|f**\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
@@ -185,6 +186,9 @@ Optional Arguments
 .. include:: explain_-XY.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
 
 .. include:: explain_-n.rst_
 

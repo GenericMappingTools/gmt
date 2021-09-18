@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Resample 1-D table data using splines"
 #define THIS_MODULE_KEYS	"<D{,ND(,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->Vbdefghioqsw" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "->Vbdefghijoqsw" GMT_OPT("HMm")
 
 #define INT_1D_CART	0	/* Regular 1-D interpolation */
 #define INT_2D_CART	1	/* Cartesian 2-D path interpolation */

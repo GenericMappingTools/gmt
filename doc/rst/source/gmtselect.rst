@@ -16,7 +16,7 @@ Synopsis
 [ |SYN_OPT-Area| ]
 [ |-C|\ *pointfile*\ \|\ *lon*/*lat*\ **+d**\ *dist* ]
 [ |-D|\ *resolution*\ [**+f**] ]
-[ |-E|\ [**fn**] ]
+[ |-E|\ [**f**][**n**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *gridmask* ]
 [ |-I|\ [**cfglrsz**] ]
@@ -26,6 +26,7 @@ Synopsis
 [ |SYN_OPT-R| ]
 [ |-Z|\ *min*\ [/*max*]\ [**+a**]\ [**+c**\ *col*]\ [**+i**] ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -98,7 +99,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**fn**]
+**-E**\ [**f**][**n**]
     Specify how points exactly on a polygon boundary should be
     considered. By default, such points are considered to be inside the
     polygon. Append **f** and/or **n** to change this behavior for the
@@ -125,20 +126,14 @@ Optional Arguments
 **-I**\ [**cflrsz**]
     Reverses the sense of the test for each of the criteria specified:
 
-    **c** select records NOT inside any point's circle of influence.
-
-    **f** select records NOT inside any of the polygons.
-
-    **g** will pass records inside the cells with z equal zero of the grid mask in **-G**.
-
-    **l** select records NOT within the specified distance of any line.
-
-    **r** select records NOT inside the specified rectangular region.
-
-    **s** select records NOT considered inside as specified by **-N**
-    (and **-A**, **-D**).
-
-    **z** select records NOT within the range specified by **-Z**.
+    - **c** - select records NOT inside any point's circle of influence.
+    - **f** - select records NOT inside any of the polygons.
+    - **g** - pass records inside the cells with z equal zero of the grid mask in **-G**.
+    - **l** - select records NOT within the specified distance of any line.
+    - **r** - select records NOT inside the specified rectangular region.
+    - **s** - select records NOT considered inside as specified by **-N**
+      (and **-A**, **-D**).
+    - **z** - select records NOT within the range specified by **-Z**.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -203,6 +198,8 @@ Optional Arguments
     tests to pass record with *z* value NOT in the given range.  Finally, if **+c** is
     not used then it is automatically incremented for each new **-Z** option, starting
     with 2.
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_

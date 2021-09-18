@@ -23,6 +23,7 @@ Synopsis
 [ |-S|\ [**i**\|\ **l**]\ *scale* ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
+[ |SYN_OPT-V| ]
 [ |-W|\ *pen* ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]

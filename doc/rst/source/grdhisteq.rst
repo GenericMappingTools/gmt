@@ -15,8 +15,9 @@ Synopsis
 **gmt grdhisteq** *ingrid* [ |-G|\ *outgrid* ]
 [ |-C|\ *n_cells* ] [ |-D|\ [*file*] ] [ |-N|\ [*norm*] ]
 [ |-Q| ]
-|SYN_OPT-R|
-|SYN_OPT-V|
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -106,6 +107,9 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_
 

@@ -282,10 +282,10 @@ Optional Arguments
     give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
     To apply the color obtain to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
-
-.. include:: explain_-aspatial.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_

@@ -49,7 +49,7 @@
 #define THIS_MODULE_PURPOSE	"Grid table data using adjustable tension continuous curvature splines"
 #define THIS_MODULE_KEYS	"<D{,DD(=,LG(,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefhiqrsw" GMT_ADD_x_OPT GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:RVabdefhiqrw" GMT_ADD_x_OPT GMT_OPT("FH")
 
 struct SURFACE_CTRL {
 	struct SURFACE_A {	/* -A<aspect_ratio> */
@@ -1635,9 +1635,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A<aspect_ratio>|m] [-C<convergence_limit>] "
 		"[-D<breakline>[+z[<zlevel>]]] [%s] [-Ll|u<limit>] [-M<radius>] [-N<n_iterations>] [-Q] "
 		"[-S<search_radius>[m|s]] [-T[b|i]<tension>] [%s] [-W[<logfile>]] [-Z<over_relaxation>] "
-		"[%s] [%s] [%s] [%s] [%s] [%s] [%s [%s] [%s] [%s] [%s] %s[%s] [%s]\n",
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s [%s] [%s] [%s] %s[%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT,
-		GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_w_OPT, GMT_x_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 	ppm = urint (SURFACE_CONV_LIMIT / 1e-6);	/* Default convergence criteria */
@@ -1700,7 +1700,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Change over-relaxation parameter [Default = %g]. Use a value "
 		"between 1 and 2. Larger number accelerates convergence but can be unstable. "
 		"Use 1 if you want to be sure to have (slow) stable convergence.", SURFACE_OVERRELAXATION);
-	GMT_Option (API, "a,bi3,di,e,f,h,i,qi,r,s,w,x,:,.");
+	GMT_Option (API, "a,bi3,di,e,f,h,i,qi,r,w,x,:,.");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Note: Geographic data with 360-degree range use periodic boundary condition in longitude. "
 		"For additional details, see Smith & Wessel, Geophysics, 55, 293-305, 1990.");
 
