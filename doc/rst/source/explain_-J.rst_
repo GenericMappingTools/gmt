@@ -215,7 +215,7 @@ respectively):
        *tilt* is negative, then the viewpoint is centered on the horizon [0].
      - **+v** sets a restricted view: *vwidth* and *vheight* ( in degrees) limits the view from the viewpoint [unrestricted].
      - **+w** sets the clockwise *twist* of the viewpoint (in degrees) [0].
-     - **+z** sets the *altitude* (in km) of the viewpoint above local sea level. If *altitude* is less than 10, then
+     - **+z** sets the *altitude* (in km) of the viewpoint above local sea level [infinity]. If *altitude* is less than 10, then
        it is the distance from the center of the earth to the viewpoint in earth radii. If *altitude* has a suffix **r**
        then it is the radius from the center of the earth in kilometers.
 
