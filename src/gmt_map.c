@@ -9689,6 +9689,8 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 		if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) {
 			if ((error = gmtmap_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]))) goto gmt_map_setup_end;
 		}
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_map_setup perimeter search region: %.16lg/%.16lg/%.16lg/%.16lg.\n", 
+			GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 	}
 
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (or meridians/parallels)  before they are plotted */
