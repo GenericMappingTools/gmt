@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt sample1d** [ *table* ]
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+d**][**+l**] ]
+[ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**] ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] ]
@@ -65,7 +65,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+d**][**+l**]
+**-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**]
     For track resampling (if **-T**...\ *unit* is set) we can select how
     this is to be performed. Append **f** to keep original points, but
     add intermediate points if needed; note this selection does not

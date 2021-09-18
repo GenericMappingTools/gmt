@@ -24,6 +24,7 @@ Synopsis
 [ |-T| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -166,6 +167,9 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_
 

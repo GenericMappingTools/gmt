@@ -21,6 +21,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-Z|\ *fact*\ [/*shift*] ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT--| ]
 
@@ -107,6 +108,9 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
 
 .. include:: explain_-ocols.rst_
 

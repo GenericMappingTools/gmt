@@ -173,6 +173,11 @@ Optional Arguments
 **-W**\ *pen*
     Specify outline pen attributes [Default is no outline].
 
+.. |Add_-XY| replace:: |Add_-XY_links|
+.. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 .. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
 

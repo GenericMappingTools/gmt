@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdtrack** [ *table* ] |-G|\ *grd1* |-G|\ *grd2* ...
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
+[ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**] ]
 [ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\ *deviation*][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
@@ -24,6 +24,7 @@ Synopsis
 [ |-T|\ [*radius*][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ]
 [ |-Z| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -63,9 +64,9 @@ Required Arguments
 ------------------
 
 *table*
-    This is an ASCII (or binary, see **-bi**)
-    file where the first 2 columns hold the (x,y) positions where the
-    user wants to sample the 2-D data set.
+    This is an ASCII (or binary, see **-bi**) file where the first 2 columns
+    hold the (x,y) positions where the user wants to sample the 2-D data set.
+    If no tables are given then we read from standard input, unless |-E| is set.
 
 .. _-G:
 
@@ -90,7 +91,7 @@ Optional Arguments
 
 .. _-A:
 
-**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
+**-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**]
     For track resampling (if **-C** or **-E** are set) we can select how this is to
     be performed. Append **f** to keep original points, but add
     intermediate points if needed [Default], **m** as **f**, but first
@@ -258,9 +259,7 @@ Optional Arguments
     column becomes 0 instead of 2.  If specifying specific columns
     in **-s** then start numbering the z-columns from 0 instead of 2.
 
-**-:**
-    Toggles between (longitude,latitude) and (latitude,longitude)
-    input/output. [Default is (longitude,latitude)].
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -296,6 +295,10 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
+
+**-:**
+    Toggles between (longitude,latitude) and (latitude,longitude)
+    input/output. [Default is (longitude,latitude)].
 
 .. include:: explain_help.rst_
 

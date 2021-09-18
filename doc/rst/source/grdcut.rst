@@ -57,6 +57,11 @@ Required Arguments
     :start-after: outgrid-syntax-begins
     :end-before: outgrid-syntax-ends
 
+.. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
 Optional Arguments
 ------------------
 
@@ -88,11 +93,6 @@ Optional Arguments
 **-N**\ [*nodata*]
     Allow grid to be extended if new **-R** exceeds existing boundaries.
     Append *nodata* value to initialize nodes outside current region [Default is NaN].
-
-.. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
-.. include:: explain_-R.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. _-S:
 

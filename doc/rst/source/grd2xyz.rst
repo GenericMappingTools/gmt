@@ -138,6 +138,9 @@ Optional Arguments
     is selected. [Default is no header].
 ..  include:: explain_-f.rst_
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
+
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_-qo.rst_

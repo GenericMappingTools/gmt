@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfft** *ingrid* [ *ingrid2* ]
-[ |-G|\ *outfile*\|\ *table* ]
+|-G|\ *outfile*\|\ *table*
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\|\ **g**] ]

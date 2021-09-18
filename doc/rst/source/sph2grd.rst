@@ -97,6 +97,11 @@ Optional Arguments
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
 
+.. _-Q:
+
+**-Q**
+    Coefficients have phase convention from physics, i.e., the :math:`(-1)^m` factor.
+
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
