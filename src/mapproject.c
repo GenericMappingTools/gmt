@@ -1049,7 +1049,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			case GMT_MP_M_RSTRING:
 				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
 			case GMT_MP_M_REGION: GMT_MP_M_RSTRING:
-				if ((error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
+				if (GMT->current.proj.search && (error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
 					Return (GMT_RUNTIME_ERROR);
 				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
 				n_output = 4;
@@ -1078,7 +1078,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Ctrl->W.mode == GMT_MP_M_RSTRING) {
-			sprintf (region, "-R%.12lg/%.12lg/%.12lg/%.12lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
+			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
 			Out->text = region;
 		}
 		else
