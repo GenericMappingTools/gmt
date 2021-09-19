@@ -318,7 +318,7 @@ GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wes
 
 	gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO],
 	                 GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI],
-					 &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
+					 &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI], false);
 
 	wesn[XLO] = floor (GMT->common.R.wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
 	wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
