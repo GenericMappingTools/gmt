@@ -239,7 +239,7 @@ Optional Arguments
     standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
     where a plot point is given directly. To output the rectangular domain that
-    covers an area defined by oblique areas defined by **-R -J**, append **r**,
+    covers an oblique area as defined by **-R -J**, append **r**,
     or use **R** to get the result in -Rw/e/s/n string format [Default returns
     the width and height of the map].
 
