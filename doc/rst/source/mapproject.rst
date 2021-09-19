@@ -27,7 +27,7 @@ Synopsis
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **w**\|\ **x**] ]
+[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **r**\|\ **w**\|\ **x**] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -230,7 +230,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **w**\|\ **x**]
+**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **r**\|\ **w**\|\ **x**]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -238,7 +238,9 @@ Optional Arguments
     To output the map coordinates of a reference point, select **j**\ *code* (with
     standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
-    where a plot point is given directly [Default returns the width and height of the map].
+    where a plot point is given directly. To output the rectangular domain that
+    covers an area defined by oblique projections, append **r** [Default returns
+    the width and height of the map].
 
 .. _-Z:
 

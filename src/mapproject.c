@@ -64,6 +64,7 @@ enum GMT_mp_Wcodes {	/* Support for -W parsing */
 	GMT_MP_M_WIDTH   = 1,	/* Return width */
 	GMT_MP_M_HEIGHT  = 2,	/* Return height */
 	GMT_MP_M_POINT   = 3,	/* Return user coordinates of point given in plot coordinates */
+	GMT_MP_M_REGION  = 4	/* Return rectangular w/e/s/n for oblique -R -J setting */
 };
 
 enum GMT_mp_Zcodes {	/* Support for -Z parsing */
@@ -191,7 +192,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[g|h|j|n|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[g|h|j|n|r|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -274,12 +275,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If <from> equals - we use WGS-84.  If /<to> is not given we assume WGS-84. "
 		"Note: -T can be used as pre- or post- (-I) processing for -J -R.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[g|h|j|n|w|x]");
+	GMT_Usage (API, 1, "\n-W[g|h|j|n|r|w|x]");
 	GMT_Usage (API, -2, "Print map width and/or height or a reference point. No input files are read. Select optional directive:");
 	GMT_Usage (API, 3, "g: Print map coordinates of reference point <gx/gy>.");
 	GMT_Usage (API, 3, "h: Print map height (See -D for plot units).");
 	GMT_Usage (API, 3, "j: Print map coordinates of justification point given as 2-char justification code (BL, MC, etc.).");
 	GMT_Usage (API, 3, "n: Print map coordinates of reference point with normalized coordinates <rx/ry> in 0-1 range.");
+	GMT_Usage (API, 3, "r: Print rectangular region for an oblique -R -J selection.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
 	GMT_Usage (API, 3, "x: Print map coordinates of reference point given in plot coordinates <px/py>.");
 	GMT_Usage (API, -2, "Default prints both map width and map height.");
@@ -699,8 +701,9 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 						}
 						Ctrl->W.mode = GMT_MP_M_POINT;
 						break;
+					case 'r': Ctrl->W.mode = GMT_MP_M_REGION; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[w|h|j|g|n|x]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[g|h|j|n|r|w|x]\n");
 						n_errors++;
 						break;
 				}
@@ -996,7 +999,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	Out = gmt_new_record (GMT, NULL, NULL);
 
 	if (Ctrl->W.active) {	/* Print map dimensions or reference point and exit */
-		double w_out[2] = {0.0, 0.0}, x_orig, y_orig;
+		double w_out[4] = {0.0, 0.0, 0.0, 0.0}, x_orig, y_orig;
 		unsigned int wmode = 0;
 		char key[3] = {""};
 		switch (Ctrl->W.mode) {
@@ -1040,6 +1043,12 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				}
 				gmt_free_refpoint (GMT, &Ctrl->W.refpoint);
 				n_output = 2;	break;
+			case GMT_MP_M_REGION:
+				if ((error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
+					Return (GMT_RUNTIME_ERROR);
+				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
+				n_output = 4;
+				break;
 			default:
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map width and height in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;
