@@ -205,7 +205,7 @@ respectively):
         *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center (in
         degrees, <= 90, default 90). Give *scale* (with **-Jg**; as **1:**\ *xxxx* or *radius/lat*, where *radius* is
         distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*.
-    **-Jg**\|\ **G**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*] (General Perspective).
+    **-Jg**\|\ **G**\ *lon0/lat0*\ /\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*] (General Perspective).
         *lon0/lat0* specifies the projection center. Give *scale* (with **-Jg**; as **1:**\ *xxxx* or *radius/lat*,
         where *radius* is distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*) or width
         (with **-JG**; in :ref:`plot-units <plt-units>`). Several optional modifiers control the perspective:
