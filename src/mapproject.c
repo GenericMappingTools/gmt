@@ -64,6 +64,8 @@ enum GMT_mp_Wcodes {	/* Support for -W parsing */
 	GMT_MP_M_WIDTH   = 1,	/* Return width */
 	GMT_MP_M_HEIGHT  = 2,	/* Return height */
 	GMT_MP_M_POINT   = 3,	/* Return user coordinates of point given in plot coordinates */
+	GMT_MP_M_REGION  = 4,	/* Return rectangular w/e/s/n for oblique -R -J setting */
+	GMT_MP_M_RSTRING = 5	/* As 4, but return string -Rw/e/s/n */
 };
 
 enum GMT_mp_Zcodes {	/* Support for -Z parsing */
@@ -191,7 +193,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s [-Ab|B|f|F|o|O[<lon0>/<lat0>][+v]] [-C[<dx></dy>][+m]] [-D%s] "
 		"[-E[<datum>]] [-F[<%s|%s>]] [-G[<lon0>/<lat0>][+a][+i][+u<unit>][+v]] [-I] [-L<table>[+p][+u<unit>]] "
-		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[g|h|j|n|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
+		"[-N[a|c|g|m]] [-Q[d|e]] [-S] [-T[h]<from>[/<to>]] [%s] [-W[g|h|j|n|r|R|w|x]] [-Z[<speed>][+a][+i][+f][+t<epoch>]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_J_OPT, GMT_Rgeo_OPT, GMT_DIM_UNITS_DISPLAY, GMT_LEN_UNITS2_DISPLAY, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT,
 		GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_p_OPT,
@@ -274,12 +276,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"If <from> equals - we use WGS-84.  If /<to> is not given we assume WGS-84. "
 		"Note: -T can be used as pre- or post- (-I) processing for -J -R.");
 	GMT_Option (API, "V");
-	GMT_Usage (API, 1, "\n-W[g|h|j|n|w|x]");
+	GMT_Usage (API, 1, "\n-W[g|h|j|n|r|R|w|x]");
 	GMT_Usage (API, -2, "Print map width and/or height or a reference point. No input files are read. Select optional directive:");
 	GMT_Usage (API, 3, "g: Print map coordinates of reference point <gx/gy>.");
 	GMT_Usage (API, 3, "h: Print map height (See -D for plot units).");
 	GMT_Usage (API, 3, "j: Print map coordinates of justification point given as 2-char justification code (BL, MC, etc.).");
 	GMT_Usage (API, 3, "n: Print map coordinates of reference point with normalized coordinates <rx/ry> in 0-1 range.");
+	GMT_Usage (API, 3, "r: Print rectangular region for an oblique -R -J selection.");
+	GMT_Usage (API, 3, "R: Same as r but prints -Rw/e/s/n string as trailing text instead.");
 	GMT_Usage (API, 3, "w: Print map width (See -D for plot units).");
 	GMT_Usage (API, 3, "x: Print map coordinates of reference point given in plot coordinates <px/py>.");
 	GMT_Usage (API, -2, "Default prints both map width and map height.");
@@ -363,16 +367,15 @@ GMT_LOCAL bool mapproject_is_old_G_syntax (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int n_slashes;
 	if (len == 0) return false;	/* Might as well parse as modern syntax */
 	/* If any of the modern modifiers +a|i|u|v given then it is the new way */
-	if (strstr (arg, "+a") || strstr (arg, "+i") || strstr (arg, "+u") || strstr (arg, "+v")) return false;
+	if (gmt_found_modifier (GMT, arg, "aiuv")) return false;
 	/* If no point given and we just get -G<unit> then it is the old way */
 	if (strchr (GMT_LEN_UNITS, arg[0])) return true;
 	/* Check if we have a leading + before a valid unit: This is the old way of saying ellipsoidal distances in that unit */
-	if (strstr (arg, "+d") || strstr (arg, "+m") || strstr (arg, "+s") || strstr (arg, "+e") || strstr (arg, "+f") || strstr (arg, "+k") || \
-		strstr (arg, "+M") || strstr (arg, "+n") || strstr (arg, "+u")) return true;
+	if (gmt_found_modifier (GMT, arg, GMT_LEN_UNITS)) return true;
 	/* Check if we have a leading - before a valid unit: This is the old way of saying flat earth distances in that unit */
 	if (strstr (arg, "-d") || strstr (arg, "-m") || strstr (arg, "-s") || strstr (arg, "-e") || strstr (arg, "-f") || strstr (arg, "-k") || \
 		strstr (arg, "-M") || strstr (arg, "-n") || strstr (arg, "-u")) return true;
-	if (arg[0] == '/') return true;	/* DOn't this this was ever correct but the old usage said so */
+	if (arg[0] == '/') return true;	/* Don't this this was ever correct but the old usage said so */
 	if (strchr ("-+", arg[len-1])) return true;	/* If last char is - or + it means the old way of saying incremental vs accumulated distances */
 	n_slashes = gmt_count_char (GMT, arg, '/');	/* Count slashes */
 	if (n_slashes == 3) return true;	/* Leading point plus more stuff is the old way */
@@ -617,7 +620,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 			case 'L':	/* -L<table>[+u[+|-]<unit>][+p] (Note: spherical only) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
-				if (!(strstr (opt->arg, "+u") || strstr (opt->arg, "+p") || strchr (opt->arg, '/')))
+				if (!(gmt_found_modifier (GMT, opt->arg, "pu") || strchr (opt->arg, '/')))
 					n_errors += mapproject_old_L_parser (API, opt->arg, Ctrl);
 				else {
 					char *m = NULL;
@@ -700,8 +703,10 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 						}
 						Ctrl->W.mode = GMT_MP_M_POINT;
 						break;
+					case 'r': Ctrl->W.mode = GMT_MP_M_REGION; break;
+					case 'R': Ctrl->W.mode = GMT_MP_M_RSTRING; break;
 					default:
-						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[w|h|j|g|n|x]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Expected -W[g|h|j|n|r|R|w|x]\n");
 						n_errors++;
 						break;
 				}
@@ -997,9 +1002,9 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 	Out = gmt_new_record (GMT, NULL, NULL);
 
 	if (Ctrl->W.active) {	/* Print map dimensions or reference point and exit */
-		double w_out[2] = {0.0, 0.0}, x_orig, y_orig;
-		unsigned int wmode = 0;
-		char key[3] = {""};
+		double w_out[4] = {0.0, 0.0, 0.0, 0.0}, x_orig, y_orig;
+		unsigned int wmode = 0, tmode = GMT_COL_FIX_NO_TEXT;
+		char key[3] = {""}, region[GMT_LEN256] = {""};
 		switch (Ctrl->W.mode) {
 			case GMT_MP_M_WIDTH:
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map width in %s\n", unit_name);
@@ -1041,6 +1046,14 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				}
 				gmt_free_refpoint (GMT, &Ctrl->W.refpoint);
 				n_output = 2;	break;
+			case GMT_MP_M_RSTRING:
+				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
+			case GMT_MP_M_REGION: GMT_MP_M_RSTRING:
+				if (GMT->current.proj.search && (error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
+					Return (GMT_RUNTIME_ERROR);
+				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);
+				n_output = 4;
+				break;
 			default:
 				GMT_Report (API, GMT_MSG_INFORMATION, "Reporting map width and height in %s\n", unit_name);
 				w_out[GMT_X] = GMT->current.proj.rect[XHI] * inch_to_unit;
@@ -1052,7 +1065,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
-		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)n_output, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) {
+		if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(Ctrl->W.mode == GMT_MP_M_RSTRING ? 0 : n_output), tmode)) != GMT_NOERROR) {
 			gmt_M_free (GMT, Out);
 			Return (error);
 		}
@@ -1064,7 +1077,12 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, Out);
 			Return (API->error);
 		}
-		Out->data = w_out;
+		if (Ctrl->W.mode == GMT_MP_M_RSTRING) {
+			sprintf (region, "-R%.16lg/%.16lg/%.16lg/%.16lg", w_out[XLO], w_out[XHI], w_out[YLO], w_out[YHI]);
+			Out->text = region;
+		}
+		else
+			Out->data = w_out;
 		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 		gmt_M_free (GMT, Out);
 		if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data input */

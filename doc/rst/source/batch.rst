@@ -23,6 +23,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [*dir*] ]
 [ |-Z| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -138,6 +139,9 @@ Optional Arguments
 **-Z**
     Erase the *mainscript* and all input scripts given via **-I** and **-S** upon completion.  Not compatible
     with **-Q**.
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
 
 .. _-cores:
 

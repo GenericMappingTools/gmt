@@ -115,7 +115,10 @@ Optional Arguments
     away from the map frame.
     However, you can override any of these with these modifiers:
     Append **+w** followed by the *length* and *width* of the color bar.  If *width* is not
-    specified then it is set to 4% of the given *length*.
+    specified then it is set to 4% of the given *length*. If *length* is not given then it defaults
+    to 80% of the corresponding map side dimension.  If either *length* or *width* end with % then
+    those percentages are used instead to set the dimensions, where *width* is defined as a
+    percentage of the colorbar *length*.
     Give a negative *length* to reverse the scale bar, or append **+r**. Append **+h** to get a
     horizontal scale [Default is vertical (**+v**)].
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this

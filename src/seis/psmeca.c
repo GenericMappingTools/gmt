@@ -539,7 +539,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMECA_CTRL *Ctrl, struct GMT_OPT
 						break;
 				}
 
-				if ((strstr (opt->arg, "+a")) || (strstr (opt->arg, "+f")) || strstr (opt->arg, "+j") || strstr (opt->arg, "+l") || strstr (opt->arg, "+m") || strstr (opt->arg, "+o") || strstr (opt->arg, "+s")) {
+				if (gmt_found_modifier (GMT, opt->arg, "afjlmos")) {
 					/* New syntax: -S<format>[<scale>][+a<angle>][+f<font>][+j<justify>][+l][+m][+o<dx>[/<dy>]][+s<ref>] */
 					char word[GMT_LEN256] = {""}, *c = NULL;
 

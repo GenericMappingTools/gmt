@@ -63,4 +63,7 @@ struct GMT_DATA_HASH {			/* Holds file hashes (probably SHA256) */
 #define GMT_TILE_EXTENSION_LOCAL		"nc"	/* Tile extension of netCDF nc short int files to be saved */
 #define GMT_TILE_EXTENSION_LOCAL_LEN	2U		/* Length of nc short int file extension */
 
+#define GMT_IMAGE_DPU_VALUE	300	/* 300 dots per inch */
+#define GMT_IMAGE_DPU_UNIT	'i'	/* 300 dpts per inch */
+
 #endif /* GMT_REMOTE_H */

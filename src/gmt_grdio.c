@@ -456,7 +456,7 @@ GMT_LOCAL int gmtgrdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct 
 
 GMT_LOCAL int gmtgrdio_parse_grd_format_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
 	int code;
-	if (strstr(format, "+s") || strstr(format, "+o") || strstr(format, "+n") || strstr(format, "+d") || strstr(format, "+b"))
+	if (gmt_found_modifier (GMT, format, "bdnos"))
 		code = gmtgrdio_parse_grd_format_scale_new (GMT, header, format);
 	else
 		code = gmtgrdio_parse_grd_format_scale_old (GMT, header, format);
@@ -1892,8 +1892,7 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
-	if (!(input[0] == '+' && (strstr (input, "+x") || strstr (input, "+y") || strstr (input, "+z") || strstr (input, "+s") || \
-	    strstr (input, "+o") || strstr (input, "+n") || strstr (input, "+t") || strstr (input, "+r")))) {	/* Cannot be new syntax */
+	if (!(input[0] == '+' && gmt_found_modifier (GMT, input, "norstxyz"))) {	/* Cannot be new syntax */
 		old = (n_slash > 4);	/* Pretty sure this is the old syntax of that many slashes */
 	}
 	if (dim == 3 && old) return GMT_PARSE_ERROR;	/* Old syntax does not exist for cubes */

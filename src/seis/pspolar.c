@@ -459,7 +459,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				Ctrl->T.active = true;
 				if (strlen (opt->arg)) {
 					/* New syntax: -T+a<angle>+j<justify>+o<dx>/<dy>+f<font> */
-					if ((strstr (opt->arg, "+a")) || (strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
+					if (gmt_found_modifier (GMT, opt->arg, "afjo")) {
 						char word[GMT_LEN64] = {""};
 						if (gmt_get_modifier (opt->arg, 'a', word))
 							Ctrl->T.angle = atof(word);

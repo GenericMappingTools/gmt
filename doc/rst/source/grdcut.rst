@@ -16,6 +16,7 @@ Synopsis
 *ingrid*
 |-G|\ *outgrid*
 |SYN_OPT-R|
+[ |-D|\ [**+t**] ]
 [ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
@@ -51,11 +52,28 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    This is the output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
+
+.. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
+
+.. _-D:
+
+**-D**\ [**+t**]
+    A "dry run": Simply report the region and increment of what would be the
+    extracted grid given the selected options.  No grid is created (**-G** is disallowed)
+    and instead we write a single data record with *west east south north xinc yinc*
+    to standard output. The increments will reflect the input grid unless it is a
+    remote gridded data set without implied resolution. Append **+t** to instead receive
+    the information as the trailing string "-Rwest/east/south/north -Ixinc/yinc".
 
 .. _-F:
 
@@ -75,11 +93,6 @@ Optional Arguments
 **-N**\ [*nodata*]
     Allow grid to be extended if new **-R** exceeds existing boundaries.
     Append *nodata* value to initialize nodes outside current region [Default is NaN].
-
-.. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
-.. include:: explain_-R.rst_
-    :start-after: **Syntax**
-    :end-before: **Description**
 
 .. _-S:
 
@@ -160,6 +173,11 @@ to NaN outside France, based on the 10x10 minute DEM, try::
     gmt coast -EFR -M > FR.txt
     gmt grdcut @earth_relief_10m -FFR.txt+c -GFR_only.grd
     gmt grdimage FR_only.grd -B -pdf map
+
+To determine what grid region and resolution (in text format) most suitable for a 24 cm wide map
+that is using an oblique projection to display the remote Earth Relief data grid, try::
+
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D+t -V
     
 See Also
 --------

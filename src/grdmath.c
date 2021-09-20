@@ -42,7 +42,7 @@
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
 #define THIS_MODULE_NEEDS	"r"
-#define THIS_MODULE_OPTIONS "-:RVabdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:RVabdfghinr" GMT_OPT("F") GMT_ADD_x_OPT
 
 /* Some local macros to simplify coding */
 /*! Loop over all nodes including the pad */

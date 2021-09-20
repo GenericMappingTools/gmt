@@ -294,8 +294,8 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 	/* Convert a string containing LaTeX syntax to an EPS image */
 	unsigned int i, o;
 	int error = 0;
-	char *text = NULL, *tmpdir = NULL, *font, *code;
-	char template[PATH_MAX] = {""}, here[PATH_MAX] = {""}, file[PATH_MAX] = {""}, cmd[PATH_MAX] = {""};
+	char *text = NULL, *font, *code;
+	char tmpdir[PATH_MAX] = {""}, here[PATH_MAX] = {""}, file[PATH_MAX] = {""}, cmd[PATH_MAX] = {""};
 	unsigned char *picture = NULL;
 	FILE *fp = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -322,11 +322,8 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 
 	/* Create unique directory for outputs, stored in tmpdir */
 
-	snprintf (template, PATH_MAX, "%s/gmt_latex_XXXXXX", API->tmp_dir);	/* The XXXXXX will be replaced by mktemp */
-	if ((tmpdir = mktemp (template)) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: Could not create temporary directory name from template %s.\n", template);
+	if (gmt_get_tempname (API, "gmt_latex", NULL, tmpdir))
 		return NULL;
-	}
 	if (gmt_mkdir (tmpdir)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create directory %s - exiting.\n", tmpdir);
 		return NULL;
@@ -361,30 +358,30 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		else
 			text[o++] = string[i];
 	}
-	text[o] = '\0';	/* Terminate the now shortened string */
+	text[o] = '\0'; /* Terminate the now shortened string */
 
 	/* Check title font selection and pick corresponding fontpackagename and fontcode, if possible */
 	switch (F->id) {
-		case 0:  case 1:  case 2:   case 3: font = "helvet";	code = "phv";	break;
-		case 4:  case 5:  case 6:   case 7: font = "mathptmx";	code = "ptm";	break;
-		case 8:  case 9:  case 10: case 11: font = "courier";	code = "pcr";	break;
-		case 12: font = "symbol";	code = "psy";	break;
-		case 13: case 14: case 15: case 16: font = "avantgar";	code = "pag";	break;
-		case 17: case 18: case 19: case 20: font = "bookman";	code = "pbk";	break;
-		case 21: case 22: case 23: case 24: font = "helvet";	code = "phv";	break;
-		case 25: case 26: case 27: case 28: font = "newcent";	code = "pnc";	break;
-		case 29: case 30: case 31: case 32: font = "mathpazo";	code = "ppl";	break;
-		case 33: font = "zapfchan";	code = "pzc";	break;
-		case 34: font = "zapfding";	code = "pzd";	break;
-		default: font = code = NULL;	/* Go with default */
+		case 0:  case 1:  case 2:   case 3: font = "helvet";    code = "phv";	break;
+		case 4:  case 5:  case 6:   case 7: font = "mathptmx";  code = "ptm";	break;
+		case 8:  case 9:  case 10: case 11: font = "courier";   code = "pcr";	break;
+		case 12: font = "symbol";   code = "psy";   break;
+		case 13: case 14: case 15: case 16: font = "avantgar";  code = "pag";	break;
+		case 17: case 18: case 19: case 20: font = "bookman";   code = "pbk";	break;
+		case 21: case 22: case 23: case 24: font = "helvet";    code = "phv";	break;
+		case 25: case 26: case 27: case 28: font = "newcent";   code = "pnc";	break;
+		case 29: case 30: case 31: case 32: font = "mathpazo";  code = "ppl";	break;
+		case 33: font = "zapfchan"; code = "pzc";	break;
+		case 34: font = "zapfding"; code = "pzd";	break;
+		default: font = code = NULL;    /* Go with default */
 	}
 	/* Write LaTeX file content */
-	fprintf (fp, "\\documentclass{article}\n");	/* Default to 10p font size */
+	fprintf (fp, "\\documentclass{article}\n"); /* Default to 10p font size */
 	if (font) { /* Impose a selected font family, otherwise take default Computer Modern */
 		GMT_Report (API, GMT_MSG_DEBUG, "gmtplot_latex_eps: Selecting font %s [%s].\n", font, code);
 		fprintf (fp, "\\usepackage[T1]{fontenc}\\usepackage[utf8]{inputenc}\\usepackage{%s}\n", font);
 	}
-	fprintf (fp, "\\begin{document}\n\\thispagestyle{empty}\n");	/* No page number */
+	fprintf (fp, "\\begin{document}\n\\thispagestyle{empty}\n");    /* No page number */
 	if (code) /* Select font */
 		fprintf (fp, "\\fontfamily{%s}\\selectfont\n", code);
 	fprintf (fp, "%s\n\\end{document}\n", text);
@@ -417,7 +414,7 @@ GMT_LOCAL unsigned char * gmtplot_latex_eps (struct GMT_CTRL *GMT, struct GMT_FO
 		GMT_Report (API, GMT_MSG_ERROR, "gmtplot_latex_eps: The script and logs can be found here: %s\n", tmpdir);
 		return NULL;
 	}
-	else {	/* Success, now remove the temp files but not worry about the return code here */
+	else {  /* Success, now remove the temp files but not worry about the return code here */
 #ifdef _WIN32
 		system ("del gmt_eq.*");
 #else

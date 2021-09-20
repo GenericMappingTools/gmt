@@ -43,7 +43,7 @@
 #define THIS_MODULE_PURPOSE	"Clip or mask map areas with no data table coverage"
 #define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG)"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqrstwxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqrtwxy" GMT_OPT("Ec")
 
 enum Mask_Modes {
 	PSMASK_INSIDE  = -1,	/* Set inside nodes to NaN */
@@ -436,10 +436,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s <table> %s %s %s [%s] [-C] [-D<template>] [-F[l|r]] [-G<fill>] %s[-L<grdfile>[+i|o]] [-N] "
-		"%s%s[-Q<min>] [-S%s] [-T] [%s] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"%s%s[-Q<min>] [-S%s] [-T] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_I_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_RADIUS_OPT, GMT_U_OPT,
 		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT,
-		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		GMT_qi_OPT, GMT_r_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -477,7 +477,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Default is -S0, i.e., only the nearest node is considered reliable.");
 	GMT_Usage (API, 1, "\n-T Paint tiles [Default will trace data outline and set a clip path]. "
 		"Note: If set you must also specify a color/fill with -G.");
-	GMT_Option (API, "U,V,X,bi2,bo,c,d,e,h,i,p,qi,r,s,t,w,:,.");
+	GMT_Option (API, "U,V,X,bi2,bo,c,d,e,h,i,p,qi,r,t,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }

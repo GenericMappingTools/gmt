@@ -5116,7 +5116,7 @@ GMT_LOCAL int gmtmap_init_polyconic (struct GMT_CTRL *GMT, bool *search) {
  * - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -*/
 
 /*! . */
-void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north) {
+void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymin, double ymax, double *west, double *east, double *south, double *north, bool add_pad) {
 	double dx, dy, w, e, s, n, x, y, lat, *lon = NULL;
 	unsigned int i, j, k;
 
@@ -5156,16 +5156,19 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 	if (GMT->current.proj.pole_in_map[0]) { s = -90.0; w = 0.0; e = 360.0; }
 	if (GMT->current.proj.pole_in_map[1]) { n = +90.0; w = 0.0; e = 360.0; }
 
-	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
-	n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
-	w -= 0.1;	e += 0.1;	if (fabs (w - e) > 360.0) { w = 0.0; e = 360.0; }	/* Ensure max 360 range */
+	if (add_pad) {	/* Extend by 0.1 degrees, if possible */
+		s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
+		n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
+		w -= 0.1;	e += 0.1;	if (fabs (w - e) > 360.0) { w = 0.0; e = 360.0; }	/* Ensure max 360 range */
+	}
 	*west = w;	*east = e;	*south = s;	*north = n;	/* Pass back our findings */
 }
 
 /*! . */
-GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double *east, double *south, double *north) {
-	double w, e, s = 90.0, n = -90.0, lat, *lon = NULL, *work_x = NULL, *work_y = NULL;
+GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double *east, double *south, double *north, bool add_pad) {
+	double w, e, s = 90.0, n = -90.0, *work_x = NULL, *work_y = NULL;
 	uint64_t np, k;
+	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT);
 	/* Because the genper clip path may be a mix of straight borders and a curved horizon, we must determine this
 	 * clip path and search along it, getting lon,lat along the way, and find the extreme values to use. Before this
 	 * function was added, we ended up in the gmt_wesn_search function which would fail along the horizon in many
@@ -5178,27 +5181,33 @@ GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double 
 
 	/* Search for extreme lon/lat coordinates by matching along the genper boundary */
 
-	/* Need temp array to hold all the longitudes we compute */
-	lon = gmt_M_memory (GMT, NULL, np, double);
+	/* Need temp datasegment to hold all the longitudes and latitudes we compute */
+	gmt_alloc_segment (GMT, S, np, 2, 0, true);
 	for (k = 0; k < np; k++) {
-		gmt_xy_to_geo (GMT, &lon[k], &lat, work_x[k], work_y[k]);
-		if (lat < s) s = lat;
-		if (lat > n) n = lat;
+		gmt_xy_to_geo (GMT, &S->data[GMT_X][k], &S->data[GMT_Y][k], work_x[k], work_y[k]);
+		if (S->data[GMT_Y][k] < s) s = S->data[GMT_Y][k];
+		if (S->data[GMT_Y][k] > n) n = S->data[GMT_Y][k];
 	}
 	gmt_M_free (GMT, work_x);
 	gmt_M_free (GMT, work_y);
+	gmt_set_seg_minmax (GMT, GMT_IS_POLY, 2, S);	/* Update min/max of x/y */
 
-	gmtlib_get_lon_minmax (GMT, lon, np, &w, &e);	/* Determine lon-range by robust quandrant check */
-	gmt_M_free (GMT, lon);
+	gmtlib_get_lon_minmax (GMT, S->data[GMT_X], np, &w, &e);	/* Determine lon-range by robust quadrant check */
 
-	/* Then check if one or both poles are inside map; then the above won't be correct */
+	/* Then check if one or both poles are inside map; then the above won't be correct.
+	 * Because the clip path for genper may be some weird rounded octagon we must use the polygon directly. */
 
-	if (!gmt_map_outside (GMT, GMT->current.proj.central_meridian, -90.0)) { s = -90.0; w = 0.0; e = 360.0; }
-	if (!gmt_map_outside (GMT, GMT->current.proj.central_meridian, +90.0)) { n = +90.0; w = 0.0; e = 360.0; }
+	gmt_set_inside_mode (GMT, NULL, GMT_IOO_SPHERICAL);	/* Ensure spherical treatment */
+	if (gmt_inonout (GMT, GMT->current.proj.central_meridian, -90.0, S) == GMT_INSIDE) { s = -90.0; w = 0.0; e = 360.0; }
+	if (gmt_inonout (GMT, GMT->current.proj.central_meridian, +90.0, S) == GMT_INSIDE) { n = +90.0; w = 0.0; e = 360.0; }
 
-	s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
-	n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
-	w -= 0.1;	e += 0.1;	if (fabs (w - e) > 360.0) { w = 0.0; e = 360.0; }	/* Ensure max 360 range */
+	gmt_free_segment (GMT, &S);
+
+	if (add_pad) {	/* Extend by 0.1 degrees */
+		s -= 0.1;	if (s < -90.0) s = -90.0;	/* Make sure point is not inside area, 0.1 is just a small arbitrary number */
+		n += 0.1;	if (n > 90.0) n = 90.0;		/* But don't go crazy beyond the pole */
+		w -= 0.1;	e += 0.1;	if (fabs (w - e) > 360.0) { w = 0.0; e = 360.0; }	/* Ensure max 360 range */
+	}
 	*west = w;	*east = e;	*south = s;	*north = n;	/* Pass back our findings */
 }
 
@@ -9612,6 +9621,25 @@ int gmt_proj_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	return (error);
 }
 
+int gmt_map_perimeter_search (struct GMT_CTRL *GMT, double *wesn, bool add_pad) {
+	/* Loop around rectangular perimeter and determine min/max lon/lat extent.
+	 * If add_pad is true then we extend by 0.1 degrees (as per GMT historical settings) */
+	int error = GMT_NOERROR;
+	if (GMT->current.proj.projection_GMT == GMT_GENPER)	/* Need special considerations for this projection */
+		gmtmap_genper_search (GMT, &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI], add_pad);
+	else	/* Search along the projected border */
+		gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI], add_pad);
+	GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
+	GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
+	if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) {
+		if ((error = gmtmap_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI])))
+			return (error);
+	}
+	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_map_setup perimeter search region: %.16lg/%.16lg/%.16lg/%.16lg.\n", 
+		GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+	return (GMT_NOERROR);
+}
+
 /*! . */
 int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	unsigned int i;
@@ -9675,15 +9703,8 @@ int gmt_map_setup (struct GMT_CTRL *GMT, double wesn[]) {
 	}
 
 	if (search) {	/* Loop around rectangular perimeter and determine min/max lon/lat extent */
-		if (GMT->current.proj.projection_GMT == GMT_GENPER)	/* Need special considerations for this projection */
-			gmtmap_genper_search (GMT, &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
-		else	/* Search along the projected boarder */
-			gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI], &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI]);
-		GMT->current.map.dlon = (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]) / GMT->current.map.n_lon_nodes;
-		GMT->current.map.dlat = (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]) / GMT->current.map.n_lat_nodes;
-		if (gmt_M_is_azimuthal(GMT) && GMT->common.R.oblique) {
-			if ((error = gmtmap_horizon_search (GMT, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO], GMT->current.proj.rect[YHI]))) goto gmt_map_setup_end;
-		}
+		if ((error = gmt_map_perimeter_search (GMT, wesn, true)))
+			goto gmt_map_setup_end;
 	}
 
 	/* Maximum step size (in degrees) used for interpolation of line segments along great circles (or meridians/parallels)  before they are plotted */
