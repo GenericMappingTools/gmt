@@ -169,6 +169,8 @@ jobs:
           path: build/
         if: failure()
 
-      - name: Upload test coverage
-        run: bash <(curl -s https://codecov.io/bash)
-        if: ${{ always() }}
+      # Upload coverage to Codecov
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v2.1.0
+        with:
+          fail_ci_if_error: false
