@@ -5,8 +5,8 @@
 #
 # License: MIT License
 # Copyright (c) 2021, Fabio Crameri.
-# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/4491293
-# This is Scientific Colour Maps version 7.0.0
+# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/5501399
+# This is Scientific Colour Maps version 7.0.1
 # Note: Original file converted to GMT version >= 5 CPT format.
 # Note: Range changed from 0-1 to -1/+1 to place hinge at zero.
 #
