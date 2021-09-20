@@ -4848,13 +4848,13 @@ GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, boo
 		error += n_errors;
 	}
 
-	if (d) d[0] = '\0';	/* Restore the optional +d modifier for map width */
+	if (d) d[0] = '\0';	/* Chop off the optional +d modifier for map width */
 
-	/* Here we are only dealing with <lon>/<lat>[/<horizon]/<scale-or-width> */
+	/* Here we are only dealing with <lon>/<lat>/<scale-or-width> */
 
 	n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", &(txt_arr[0][0]), &(txt_arr[1][0]), &(txt_arr[2][0]), &(txt_arr[3][0]));
 	if (n < 3) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -Jg|G: Arguments <lon>/<lat>[/<horizon]/<scale-or-width> are required\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Option -Jg|G: Arguments <lon>/<lat>/<scale-or-width> are required\n");
 		error++;
 	}
 
@@ -5047,7 +5047,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
-	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *d = NULL, *args;
+	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *dd = NULL, *d = NULL, *args;
 	char txt_arr[11][GMT_LEN256], args_buf[GMT_LEN128] = {""};
 
 	if (args_in == NULL) {
@@ -5072,8 +5072,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	args += i;		/* Skip to first argument */
 	if (width_given) {	/* If given size (not scale) then we may have modifiers */
 		mod_flag = 1;	/* Default is that size meant width */
-		if ((d = strstr (args, "+d"))) {	/* Specify type of size argument via modifier +d */
-			switch (d[2]) {
+		if ((dd = strstr (args, "+d"))) {	/* Specify type of size argument via modifier +d */
+			switch (dd[2]) {
 				case 'l':	mod_flag = 4; break;	/* Want this to be the MIN (lower) dimension of map */
 				case 'u':	mod_flag = 3; break;	/* Want this to be the MAX (upper) dimension of map */
 				case 'h':	mod_flag = 2; break;	/* Want map HEIGHT instead of width */
@@ -5083,9 +5083,9 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 					return (true);
 					break;
 			}
-			if (strstr (args, "+v"))	/* To guard against -JOa120W/25N/150/6i+dh+v and losing the +v */
+			if (project == GMT_OBLIQUE_MERC && strstr (args, "+v"))	/* To guard against -JOa120W/25N/150/6i+dh+v and losing the +v */
 				GMT->current.proj.obl_flip = true;
-			d[0] = '\0';	/* Chop off this modifier */
+			dd[0] = '\0';	/* Chop off this modifier */
 		}
 		else {	/* Backwards compatibility for trailing +,-,h */
 			last_pos = (int)strlen (args) - 1;	/* Position of last character in this string */
@@ -5124,7 +5124,6 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 
 	GMT->current.proj.unit = GMT_units[GMT_INCH];	/* No of meters in an inch */
 	n = 0;	/* Initialize with no fields found */
-	d = NULL;
 
 	switch (project) {
 		case GMT_LINEAR:	/* Linear x/y scaling */
@@ -5687,7 +5686,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 		GMT->current.proj.projection = project;
 		GMT->current.proj.projection_GMT = project;		/* Make a copy to use when using the Proj4 lib */
 	}
-	if (d) d[0] = '+';	/* Restore modifier +dl|h|w|h */
+	if (dd) dd[0] = '+';	/* Restore modifier +dl|h|w|h */
 	else if (mod_flag > 1) args[last_pos] = last_char;	/* Restore modifier +,-,h,w */
 
 	return (error > 0);
