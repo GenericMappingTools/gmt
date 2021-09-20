@@ -368,7 +368,7 @@ and height will product a 6-inch-wide basemap:
 
    ::
 
-    gmt basemap -Rg -JG-74/41.5/160/210/55/30/30/6i -Bafg -B+t"General Perspective" -pdf genper
+    gmt basemap -Rg -JG-74/41.5/6i+z160+a210+t55+v30 -Bafg -B+t"General Perspective" -pdf genper
 
 Stereographic [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~
