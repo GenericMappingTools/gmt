@@ -404,7 +404,7 @@ Perspective projection (**-Jg** **-JG**)
 
 **Syntax**
 
-    **-Jg**\|\ **G**\ *lon0/lat0*\ [*/horizon*]\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*]
+    **-Jg**\|\ **G**\ *lon0/lat0*\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*]
 
 **Required Parameters**
 
