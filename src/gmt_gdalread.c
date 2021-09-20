@@ -642,8 +642,9 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
-		if (z_min == 1e50) {		/* We don't know yet the dataset Min/Max */
-			GDALComputeRasterMinMax(hBand, false, adfMinMax);		/* Unfortunately, cannot trust metadata min/max */
+		hBand = GDALGetRasterBand(hDataset, 1);	/* Ensure hBand points to the first layer */
+		if (z_min == DBL_MAX && GDALGetRasterDataType (hBand) != GDT_Byte) {	/* We don't know yet the dataset Min/Max and it seems to be a grid */
+			GDALComputeRasterMinMax(hBand, false, adfMinMax);	/* Unfortunately, cannot trust metadata min/max */
 			Ctrl->hdr[4] = adfMinMax[0];
 			Ctrl->hdr[5] = adfMinMax[1];
 		}
@@ -741,7 +742,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
 	double  dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
-	double  z_min = 1e50, z_max = -1e50;
+	double  z_min = DBL_MAX, z_max = -DBL_MAX;
 	GDALDatasetH	hDataset;
 	GDALRasterBandH	hBand;
 	GDALDriverH	hDriver;
