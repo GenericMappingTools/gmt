@@ -12849,6 +12849,10 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
     else if (!strncmp (module, "pscoupe", 7U)) {
         type = ((opt = GMT_Find_Option (API, 'A', *head)) && strstr (opt->arg, "+c")) ? 'D' : 'X';
     }
+    /* 1x. Check if grdcut is just getting information */
+    else if (!strncmp (module, "grdcut", 6U) && GMT_Find_Option (API, 'D', *head)) {
+         deactivate_output = true;   /* Turn off implicit output since none is in effect, only secondary -D output */
+    }
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */

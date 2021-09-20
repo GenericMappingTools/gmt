@@ -109,6 +109,8 @@ struct GMT_DEFAULTS {
 	unsigned int history;     /* mode to pass information via history file gmt.history (GMT_HISTORY_OFF, GMT_HISTORY_READ, GMT_HISTORY_WRITE) */
 	unsigned int history_orig;     /* Copy of history */
 	unsigned int export_type;     /* What data type to export to external APIs [GMT_DOUBLE] */
+	double graphics_dpu;	/* The default target image dpu when not specifying grid resolution [GMT_IMAGE_DPU_VALUE] */
+	char graphics_dpu_unit;	/* The unit we selected [GMT_IMAGE_DPU_UNIT] */
 	unsigned graphics_format;	/* The default graphics format in modern mode [GMT_SESSION_FORMAT] */
 	int max_cores;		/* The maximum number of cores for a multi-threaded module [GMT_MAX_CORES] */
 	char theme[GMT_LEN64];	/* User-selected defaults theme */

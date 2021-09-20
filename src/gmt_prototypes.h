@@ -185,6 +185,7 @@ EXTERN_MSC double gmt_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FF
 
 /* gmt_remote.c: */
 
+EXTERN_MSC int gmt_remote_no_resolution_given (struct GMTAPI_CTRL *API, const char *rfile, int *registration);
 EXTERN_MSC char *gmt_dataserver_url (struct GMTAPI_CTRL *API);
 EXTERN_MSC void gmt_refresh_server (struct GMTAPI_CTRL *API);
 EXTERN_MSC int gmt_download_file (struct GMT_CTRL *GMT, const char *name, char *url, char *localfile, bool mode);

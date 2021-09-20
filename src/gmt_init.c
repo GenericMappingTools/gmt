@@ -187,6 +187,7 @@ static struct GMT_parameter GMT_keyword_active[]= {
 	{ 0, "GMT_EXPORT_TYPE"},
 	{ 0, "GMT_EXTRAPOLATE_VAL"},
 	{ 0, "GMT_FFT"},
+	{ 0, "GMT_GRAPHICS_DPU"},
 	{ 0, "GMT_GRAPHICS_FORMAT"},
 	{ 0, "GMT_HISTORY"},
 	{ 0, "GMT_INTERPOLANT"},
@@ -377,6 +378,11 @@ static char *map_annot_oblique_item[N_MAP_ANNOT_OBLIQUE_ITEMS] = {
 	"tick_extend",
 	"tick_normal",
 	"lat_parallel"
+};
+
+struct GMT_RESOLUTIONS {
+	int k;
+	double resolution;
 };
 
 #if defined(USE_COMMON_LONG_OPTIONS)
@@ -6488,6 +6494,9 @@ GMT_LOCAL void gmtinit_conf_classic (struct GMT_CTRL *GMT) {
 	GMT->current.setting.extrapolate_val[0] = GMT_EXTRAPOLATE_NONE;
 	/* GMT_FFT */
 	GMT->current.setting.fft = k_fft_auto;
+	/* GMT_GRAPHICS_DPU */
+	GMT->current.setting.graphics_dpu = GMT_IMAGE_DPU_VALUE;
+	GMT->current.setting.graphics_dpu_unit = GMT_IMAGE_DPU_UNIT;
 	/* GMT_GRAPHICS_FORMAT */
 	GMT->current.setting.graphics_format = GMT_SESSION_FORMAT;
 	/* GMT_HISTORY */
@@ -11667,6 +11676,16 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			else
 				error = true;
 			break;
+		case GMTCASE_GMT_GRAPHICS_DPU:
+		 	if (value[0] == '\0') {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No value given to graphics dpu\n");
+				error = true;
+			}
+			else {
+				GMT->current.setting.graphics_dpu = atof (value);
+				GMT->current.setting.graphics_dpu_unit = (!strcmp ("ci", &value[strlen(value)-1])) ? value[strlen(value)-1] : GMT_IMAGE_DPU_UNIT;
+			}
+			break;
 		case GMTCASE_GMT_GRAPHICS_FORMAT:
 		 	if ((ival = gmt_get_graphics_id (GMT, value)) == GMT_NOTSET) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", value);
@@ -12979,6 +12998,9 @@ char *gmtlib_getparameter (struct GMT_CTRL *GMT, const char *keyword) {
 				default:
 					strcpy (value, "undefined");
 			}
+			break;
+		case GMTCASE_GMT_GRAPHICS_DPU:
+			sprintf (value, "%g%c", GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit);
 			break;
 		case GMTCASE_GMT_GRAPHICS_FORMAT:
 			strncpy (value, gmt_session_format[GMT->current.setting.graphics_format], GMT_LEN256-1);
@@ -14767,6 +14789,36 @@ GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
 	return false;	/* Nothing */
 }
 
+/*! . */
+GMT_LOCAL int gmtinit_compare_resolutions (const void *point_1, const void *point_2) {
+	/* Sorts differences from desired nodes-per-degree from small to big  */
+	if (((struct GMT_RESOLUTIONS *)point_1)->resolution < ((struct GMT_RESOLUTIONS *)point_2)->resolution) return (-1);
+	if (((struct GMT_RESOLUTIONS *)point_1)->resolution > ((struct GMT_RESOLUTIONS *)point_2)->resolution) return (+1);
+	return (0);
+}
+
+GMT_LOCAL double gmtinit_map_diagonal_degree (struct GMT_CTRL *GMT) {
+	/* Return a diagonal or representative distance in degrees across the map */
+	double X = GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO];
+	double Y = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
+	double D = gmtlib_great_circle_dist_degree (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);	/* "Diagonal" great circle distance in degrees */
+	/* For some global projections the D here may be 180 even though we see a full 360 degrees in longitude.  Hence these checks */
+	if (Y > D) D = Y;
+	if (X > D) D = X;
+	return (D);
+}
+
+GMT_LOCAL double gmtinit_map_diagonal_inches (struct GMT_CTRL *GMT) {
+	/* Return a diagonal or representative distance in degrees across the map */
+	/* For some global projections the D here may be 180 even though we see a full 360 degrees in longitude.  Hence these checks */
+	double L;
+	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))	/* Global maps */
+		L = GMT->current.map.width;
+	else
+		L = hypot (GMT->current.map.height, GMT->current.map.width);	/* Approximate or actual "Diagonal" length of map in inches */
+	return (L);
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
@@ -15266,16 +15318,22 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 
 	if (options) {	/* Check if any filename argument is a remote tiled dataset */
-		bool first_time = true;
-		int k_data;
+		bool first_time = true, parsed_R = false, dry_run = false, got_grdcut = false;
+		int k_data, registration;
 		unsigned int srtm_flag;
 		char *list = NULL, *c = NULL;
 		double wesn[4];
-		struct GMT_OPTION *opt_J = NULL, *opt_S = NULL;
+		struct GMT_OPTION *opt_J = NULL, *opt_S = NULL, *opt_D = NULL;
 		struct GMT_DATA_INFO *I = NULL;
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = GMT_Find_Option (API, 'J', *options);
+		got_grdcut = !strncmp (mod_name, "grdcut", 6U);
+		dry_run = (got_grdcut && (opt_D = GMT_Find_Option (API, 'D', *options)));	/* Do not want the grid, just the information */
+		if (dry_run && GMT_Find_Option (API, 'G', *options)) {	/* Check here since parse is in the future */
+			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Cannot specify -G since no grid will be returned\n");
+			return NULL;
+		}
 
 		for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 			if (gmt_M_file_is_memory (opt->arg) || opt->arg[0] != '@') continue;	/* No remote file argument given */
@@ -15286,6 +15344,80 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				gmt_M_str_free (opt->arg);
 				opt->arg = file;
 				continue;
+			}
+			if ((k_data = gmt_remote_no_resolution_given (API, opt->arg, &registration)) != GMT_NOTSET) {	/* Gave no resolution, e.g., just "eart_relief" */
+					char codes[3] = {""}, reg[2] = {'g', 'p'}, unit, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""}, *p_dir = NULL;
+					unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
+					unsigned int k, kk, res, inc;
+					int r, k_data2 = GMT_NOTSET;
+					double D, L, this_n_per_degree, dpi;
+					struct GMT_RESOLUTIONS n_per_degree[15] = {	/* Sorted list of number of nodes per degree for possible grids */
+						{0, 1}, {1, 2}, {2, 3}, {3, 4}, {4, 6}, {5, 10}, {6, 12}, {7, 15}, {8, 20}, {9, 30}, {10, 60}, {11, 120}, {12, 240}, {13, 1200}, {14, 3600}}, sorted_n_per_deg[15];
+					unsigned int valid_inc[] = {3600, 1800, 1200, 900, 600, 360, 300, 240, 180, 120, 60, 30, 15, 3, 1};	/* Corresponding increment in arc seconds */
+
+					if (opt_R == NULL || opt_J == NULL) {
+						GMT_Report (API, GMT_MSG_ERROR, "Cannot request automatic remote grid resolution without -R -J settings [%s]\n", opt->arg);
+						return NULL;
+					}
+					if (!(GMT->current.ps.active || got_grdcut)) {
+						GMT_Report (API, GMT_MSG_ERROR, "Except for grdcut, cannot request automatic remote grid resolution if not plotting [%s]\n", opt->arg);
+						return NULL;
+					}
+					if (!opt_R->arg[0]) codes[n_to_set++] = 'R';	/* Must have -R parsed */
+					if (!opt_J->arg[0]) codes[n_to_set++] = 'J';	/* Must have -J parsed */
+					if (n_to_set) gmtinit_complete_RJ (GMT, codes, *options);	/* Fill in what -R actually is (and possibly fill in -J) */
+					if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
+					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
+					gmt_parse_R_option (GMT, opt_R->arg);
+					parsed_R = true;
+					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
+					GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
+					if (gmt_map_setup (GMT, GMT->common.R.wesn))
+						return NULL;
+					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
+					/* PW: The simplification here is that we try to equate the long diagonal distance L on the map (in inches) times the dpi as a rough
+					 * estimates of pixels we would like.  To retain the highest resolution of the data here we need approximately that many nodes
+					 * in the grid of the same distance, which we compute as a great circle distance D. The balance is L * dpi = n * D, where we solve
+					 * for n and find the closest match of possible grid resolutions (in the struct GMT_RESOLUTIONS above). If the user actually
+					 * specified a specific registration then we only look for that one, else we look for either, with preference for pixel registration. */
+
+					dpi = GMT->current.setting.graphics_dpu; if (GMT->current.setting.graphics_dpu_unit == 'c') dpi *= 2.54;	/* Convert dpc to dpi */
+					L = gmtinit_map_diagonal_inches (GMT);	/* Approximate or actual "Diagonal" length of map in inches */
+					D = gmtinit_map_diagonal_degree (GMT);	/* Approximate "Diagonal" or representative great circle distance in degrees */
+					this_n_per_degree = L * dpi / D;	/* Number of equivalent nodes per degree needed */
+					gmt_M_memcpy (sorted_n_per_deg, n_per_degree, 15U, struct GMT_RESOLUTIONS);	/* Make a copy for sorting */
+					for (k = 0; k < 15; k++) sorted_n_per_deg[k].resolution = fabs (this_n_per_degree - sorted_n_per_deg[k].resolution);	/* Compute unsigned deviation from needed resolution */
+					mergesort (sorted_n_per_deg, 15U, sizeof (struct GMT_RESOLUTIONS), gmtinit_compare_resolutions);	/* Sort so entry 0 is the best */
+					/* Find the closest fit to what we need that actually has a file and registration that matches */
+					strncpy (dir, API->remote_info[k_data].dir, strlen (API->remote_info[k_data].dir)-1);	/* Make a copy without the trailing slash */
+					p_dir = strrchr (dir, '/');	/* Start of final subdirectory */
+					p_dir++;	/* Skip past the slash */
+					for (k = 0; k_data2 == GMT_NOTSET && k < 15; k++) {
+						kk = sorted_n_per_deg[k].k;
+						res = irint (n_per_degree[kk].resolution);
+						if (res > 60) inc = valid_inc[kk], unit = 's';
+						else if (res > 1) inc = valid_inc[kk] / 60, unit = 'm';
+						else inc = valid_inc[kk] / 3600, unit = 'd';
+						for (r = GMT_GRID_PIXEL_REG; k_data2 == GMT_NOTSET && r >= GMT_GRID_NODE_REG; r--) {	/* Loop over both possible registrations, starting with pixel registration */
+							if (registration != GMT_NOTSET && registration != r) continue;	/* Skip the other if we insist on only one type of registration */
+							sprintf (file, "@%s_%2.2d%c_%c", p_dir, inc, unit, reg[r]);	/* Candidate name */
+							k_data2 = gmt_remote_dataset_id (API, file);
+						}
+					}
+					if (k_data2 == GMT_NOTSET) {	/* Replace entry with correct version */
+						if (registration != GMT_NOTSET)
+							GMT_Report (API, GMT_MSG_ERROR, "No matching data with suitable resolution for this registration was found [%s]\n", opt->arg);
+						else
+							GMT_Report (API, GMT_MSG_ERROR, "No matching data with suitable resolution and any registration was found [%s]\n", opt->arg);
+						return NULL;
+					}
+					else {	/* Replace entry with correct version */
+						GMT_Report (API, GMT_MSG_INFORMATION, "Given -R%s -J%s, representative distances D_g = %g degrees, D_m = %g %s and dpu = %g%c (this_n_per_degree = %lg) we replace %s by %s\n",
+							GMT->common.R.string, GMT->common.J.string, D, L * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit],
+							GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, this_n_per_degree, opt->arg, file);
+						gmt_M_str_free (opt->arg);
+						opt->arg = strdup (file);
+					}
 			}
 			if ((c = strchr (opt->arg, '+'))) {	/* Maybe have things like -I@earth_relief_30m+d given to grdimage */
 				c[0] = '\0';
@@ -15347,7 +15479,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					if (n_to_set) gmtinit_complete_RJ (GMT, codes, *options);	/* Fill in what -R actually is (and possibly fill in -J) */
 					if (opt_J) gmtinit_parse_J_option (GMT, opt_J->arg);
 					API->GMT->hidden.func_level++;	/* Must do this here in case gmt_parse_R_option calls mapproject */
-					gmt_parse_R_option (GMT, opt_R->arg);
+					if (!parsed_R) gmt_parse_R_option (GMT, opt_R->arg);
 					API->GMT->hidden.func_level = level;	/* Reset to what it should be */
 					if (GMT->common.R.oblique) {	/* Must do gmt_mapsetup here to get correct region for building tiles */
 						if (!opt_J) {
@@ -15370,19 +15502,54 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			wesn[XHI] = ceil  ((wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
 			wesn[YLO] = floor ((wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
 			wesn[YHI] = ceil  ((wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
-			/* Get a file with a list of all needed tiles */
-			list = gmtlib_get_tile_list (API, wesn, k_data, GMT->current.ps.active, srtm_flag);
-			/* Replace the remote file name with this local list */
-			gmt_M_str_free (opt->arg);
-			if (c) {	/* Must append the modifiers */
-				char args[GMT_LEN128] = {""};
-				c[0] = '+';
-				sprintf (args, "%s%s", list, c);
-				opt->arg = strdup (args);
-				gmt_M_str_free (list);
+			if (dry_run) {	/* Only want to learn about the grid domain and resolution */
+				double out[6];	/* To hold w e s n dx dy */
+				char record[GMT_LEN256] = {""};	/* To hold -Rw/e/s/n -Idx/dy */
+				struct GMT_RECORD *Out = NULL;
+				bool text = (strstr (opt_D->arg, "+t"));
+				GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increments %s/%s\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc, I->inc);
+				if (GMT_Set_Columns (API, GMT_OUT, text ? 0 : 6, text ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
+					return NULL;
+				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, *options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+					return NULL;
+				}
+				if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+					return NULL;
+				}
+
+				if (text) {
+					Out = gmt_new_record (GMT, NULL, record);	/* The trailing text output record */
+					sprintf (record, "-R%.16lg/%.16lg/%.16lg/%.16lg -I%s/%s", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc, I->inc);
+				}
+				else {
+					Out = gmt_new_record (GMT, out, NULL);	/* The numerical output record */
+					gmt_M_memcpy (out, wesn, 4U, double);	/* Place the grid boundaries */
+					out[4] = out[5] = I->d_inc;
+				}
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
+					return NULL;
+				gmt_M_free (GMT, Out);
+				gmt_M_str_free (opt_D->arg);	/* Free any previous arguments */
+				strcpy (record, "done-in-gmt_init_module");
+				if (text) strcat (record, "+t");
+				opt_D->arg = strdup (record);	/* Flag so that grdcut can deal with the mixed cases later */
 			}
-			else
-				opt->arg = list;
+			else {
+				/* Get a file with a list of all needed tiles */
+				list = gmtlib_get_tile_list (API, wesn, k_data, GMT->current.ps.active, srtm_flag);
+				/* Replace the remote file name with this local list */
+				gmt_M_str_free (opt->arg);
+				if (c) {	/* Must append the modifiers */
+					char args[GMT_LEN128] = {""};
+					c[0] = '+';
+					sprintf (args, "%s%s", list, c);
+					opt->arg = strdup (args);
+					gmt_M_str_free (list);
+				}
+				else
+					opt->arg = list;
+			}
 		}
 	}
 
