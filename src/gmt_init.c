@@ -14795,10 +14795,8 @@ GMT_LOCAL bool gmtinit_might_be_remotefile (char *file) {
 /*! . */
 GMT_LOCAL int gmtinit_compare_resolutions (const void *point_1, const void *point_2) {
 	/* Sorts differences from desired nodes-per-degree from small to big  */
-	double delta_1 = fabs(((struct GMT_RESOLUTIONS *)point_1)->resolution);
-	double delta_2 = fabs(((struct GMT_RESOLUTIONS *)point_2)->resolution);
-	if (delta_1 < delta_2) return (-1);
-	if (delta_1 > delta_2) return (+1);
+	if (((struct GMT_RESOLUTIONS *)point_1)->resolution < ((struct GMT_RESOLUTIONS *)point_2)->resolution) return (-1);
+	if (((struct GMT_RESOLUTIONS *)point_1)->resolution > ((struct GMT_RESOLUTIONS *)point_2)->resolution) return (+1);
 	return (0);
 }
 
