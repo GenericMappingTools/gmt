@@ -25,7 +25,7 @@ includes the animations) does not take excessive time.
 
 .. jinja::
 
-    {% for i in [1, 4] %}
+    {% for i in [1] %}
     {% set i = '%02d' % i %}
     -  .. figure:: /_images/anim{{i}}.*
           :target: ./animations/anim{{i}}.html
@@ -47,6 +47,11 @@ includes the animations) does not take excessive time.
   :doc:`/animations/anim03`
 
 - .. youtube:: 7NQa4TORA3E
+     :width: 100%
+
+  :doc:`/animations/anim04`
+  
+  - .. youtube:: 
      :width: 100%
 
   :doc:`/animations/anim05`
