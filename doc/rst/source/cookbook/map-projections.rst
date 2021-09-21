@@ -404,7 +404,7 @@ Perspective projection (**-Jg** **-JG**)
 
 **Syntax**
 
-    **-Jg**\|\ **G**\ *lon0/lat0*\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*]
+    **-Jg**\|\ **G**\ *lon0/lat0*\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**]
 
 **Required Parameters**
 
@@ -421,9 +421,10 @@ Perspective projection (**-Jg** **-JG**)
 - The *vwidth* and *vheight* of the viewpoint in degrees. This number depends on whether you are looking with the naked
   eye (in which case the view is about 60° wide), or with binoculars, for example [unrestricted].
 - The *twist* in degrees. This is the boresight rotation (clockwise) of the image [0].
-- The *altitude* of the viewer above sea level in kilometers. If this value is less than 10, it is assumed to instead be
-  the distance of the viewer from the center of the earth in earth radii. If **r** is appended, it is assumed to instead
-  be the distance from the center of the earth in kilometers [infinity].
+- The *altitude* of the viewer above sea level in kilometers [infinity]. Alternatively, append **R** if giving
+  the distance of the viewer from the center of the Earth in Earth radii, or **r** if giving the distance from the
+  center of the Earth in kilometers.  Finally, give *altitude* as **g** to compute and use the altitude for a
+  geosynchronous orbit.
 
 **Description**
 
