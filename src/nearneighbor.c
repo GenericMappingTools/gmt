@@ -38,7 +38,7 @@
 #define THIS_MODULE_PURPOSE	"Grid table data using a \"Nearest neighbor\" algorithm"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefhinqrsw" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:RVabdefhinqrw" GMT_OPT("FH")
 
 #define NN_DEF_SECTORS	4
 #define GMT_n_OPT2 "-n+b<BC>"
@@ -130,9 +130,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s -S%s [-E<empty>] [-N<sectors>[+m<min_sectors>]|n] "
-		"[%s] [-W] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[%s] [-W] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
-		GMT_e_OPT,GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT2, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		GMT_e_OPT,GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT2, GMT_qi_OPT, GMT_r_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -166,7 +166,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		GMT_Usage (API, 3, "y applies the boundary condition for y only.");
 		GMT_Usage (API, -2, "[Default: Natural conditions, unless grid is geographic].");
 	}
-	GMT_Option (API, "qi,r,s,w,:,.");
+	GMT_Option (API, "qi,r,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
