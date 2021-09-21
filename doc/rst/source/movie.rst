@@ -292,7 +292,8 @@ Optional Arguments
     By default we try to use all available cores.  Append *n* to only use *n* cores
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
-    The parallel processing does not depend on OpenMP.
+    The parallel processing does not depend on OpenMP. **Note**: One core is utilized by
+    **movie** so in effect *n-1* cores are used for the individual frames.
 
 .. include:: explain_help.rst_
 
