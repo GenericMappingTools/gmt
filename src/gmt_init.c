@@ -11678,7 +11678,7 @@ unsigned int gmtlib_setparameter (struct GMT_CTRL *GMT, const char *keyword, cha
 			break;
 		case GMTCASE_GMT_GRAPHICS_DPU:
 		 	if (value[0] == '\0') {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No value given to graphics dpu\n");
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "No value given to GMT_GRAPHICS_DPU\n");
 				error = true;
 			}
 			else {
@@ -15325,7 +15325,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		unsigned int srtm_flag;
 		char *list = NULL, *c = NULL;
 		double wesn[4];
-		struct GMT_OPTION *opt_J = NULL, *opt_S = NULL, *opt_D = NULL;
+		struct GMT_OPTION *opt_J = NULL, *opt_S = NULL, *opt_D = NULL, *opt_dash = NULL;
 		struct GMT_DATA_INFO *I = NULL;
 
 		opt_R = GMT_Find_Option (API, 'R', *options);
@@ -15384,6 +15384,21 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				 * for n and find the closest match of possible grid resolutions (in the struct GMT_RESOLUTIONS above). If the user actually
 				 * specified a specific registration then we only look for that one, else we look for either, with preference for pixel registration. */
 
+				/* Because GMT_Parse_Common has not yet been called, we would not have parsed any --GMT_GRAPHICS_DPU=xxxx which it may be reasonable
+				 * to give in this context.  Thus we check for this setting here first before using it in the code below */
+				if ((opt_dash = GMT_Find_Option (API, GMT_OPT_PARAMETER, *options)) && !strncmp (opt_dash->arg, "GMT_GRAPHICS_DPU", 16U)) {
+					char *value = strchr (opt_dash->arg, '='), unit = 0;
+		 			if (value == NULL || value[1] == '\0') {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "No value given to GMT_GRAPHICS_DPU\n");
+						return NULL;
+					}
+					else {
+						value++;	/* Skip past the equal sign */
+						GMT->current.setting.graphics_dpu = atof (value);
+						unit = value[strlen(value)-1];
+						GMT->current.setting.graphics_dpu_unit = (strchr ("ci", unit)) ? unit : GMT_IMAGE_DPU_UNIT;
+					}
+				}
 				dpi = GMT->current.setting.graphics_dpu; if (GMT->current.setting.graphics_dpu_unit == 'c') dpi *= 2.54;	/* Convert dpc to dpi */
 				L = gmtinit_map_diagonal_inches (GMT);	/* Approximate or actual "Diagonal" length of map in inches */
 				D = gmtinit_map_diagonal_degree (GMT);	/* Approximate "Diagonal" or representative great circle distance in degrees */
