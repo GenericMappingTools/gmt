@@ -219,7 +219,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	/* Number of threads (re-purposed from -x in GMT_Option since this local option is always available and we are not using OpenMP) */
 	GMT_Usage (API, 1, "\n-x[[-]<n>]");
 	GMT_Usage (API, -2, "Limit the number of cores used in job generation [Default uses all %d cores]. "
-		"If <n> is negative then we select (%d - <n>) cores (or at least 1).", API->n_cores, API->n_cores);
+		"If <n> is negative then we select (%d - <n>) cores (or at least 1). Note: 1 core is used by batch itself.", API->n_cores, API->n_cores);
 	GMT_Option (API, ".");
 
 	return (GMT_MODULE_USAGE);
