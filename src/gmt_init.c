@@ -4780,14 +4780,15 @@ GMT_LOCAL int gmtinit_autoscale (char *arg) {
 #endif
 
 GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, bool got_xxx_scale, bool width_given) {
-	/* Modern form for genper: -Jg|g<lon>/<lat>/scale|width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>]
+	/* Modern form for genper: -Jg|g<lon>/<lat>/scale|width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>[r|R]|g]
 	 * For developers there is also [+d<level>] if -DDEBUG was used */
 	int m, n, error = 0;
 	char txt_arr[4][GMT_LEN256], *c = NULL, *d = NULL;
 
 	/* Initialize settings */
 	GMT->current.proj.g_debug = 0;
-	GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set = GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
+	GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set = GMT->current.proj.g_radius = \
+		GMT->current.proj.g_geosync = GMT->current.proj.g_earth_radius = false;
 	GMT->current.proj.g_sphere = true; /* force spherical as default */
 	gmt_M_memset (GMT->current.proj.pars, 10, double);
 
@@ -4834,18 +4835,19 @@ GMT_LOCAL int gmtinit_parse_genper_modern (struct GMT_CTRL *GMT, char *args, boo
 					n_errors += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, H, GMT_IS_GEO, &GMT->current.proj.pars[9]), H);
 					break;
 				case 'w':	/* View twist */
-					if (txt[nlen-1] == 'n') {	/* Undocumented trailing n to set this variable */
-						GMT->current.proj.g_auto_twist = true;
-						txt[nlen-1] = 0;
-					}
 					n_errors += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &txt[1], GMT_IS_GEO, &GMT->current.proj.pars[7]), &txt[1]);
 					break;
 				case 'z':	/* View altitude */
-					if (txt[nlen-1] == 'r') {	/* Altitude is actually radius from center of Earth */
-						GMT->current.proj.g_radius = true;
-						txt[nlen-1] = 0;
+					switch (txt[nlen-1]) {	/* Check flag */
+						case 'g':	/* Geosynchronous orbit altitude */
+							GMT->current.proj.g_geosync = true;	break;
+						case 'r':/* Altitude is actually radius from center of Earth */
+							GMT->current.proj.g_radius = true;	txt[nlen-1] = 0;	break;
+						case 'R':	/* Altitude is number of Earth radii, not km */
+							GMT->current.proj.g_earth_radius = true;	txt[nlen-1] = 0;break;
+						default:	break; /* Probably just an altitude with numbers */
 					}
-					n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &txt[1], GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &txt[1]);
+					if (!GMT->current.proj.g_geosync) n_errors += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &txt[1], GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &txt[1]);
 					break;
 				default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 			}
@@ -4911,7 +4913,8 @@ GMT_LOCAL int gmtinit_parse_genper_deprecated (struct GMT_CTRL *GMT, char *args,
 	char txt_arr[11][GMT_LEN256];
 
 	GMT->current.proj.g_debug = 0;
-	GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set = GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
+	GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set = GMT->current.proj.g_radius = \
+		GMT->current.proj.g_geosync = GMT->current.proj.g_earth_radius = false;
 	GMT->current.proj.g_sphere = true; /* force spherical as default */
 
 	n_slashes = gmt_count_char (GMT, args, '/');	/* Count slashes to distinguish args */
@@ -4993,6 +4996,10 @@ GMT_LOCAL int gmtinit_parse_genper_deprecated (struct GMT_CTRL *GMT, char *args,
 	}
 	error += gmt_verify_expectations (GMT, GMT_IS_FLOAT, gmt_scanf (GMT, &(txt_arr[2][0]), GMT_IS_FLOAT, &GMT->current.proj.pars[4]), &(txt_arr[2][0]));
 	if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading altitude '%s'\n", &(txt_arr[2][0]));
+	if (!GMT->current.proj.g_radius && GMT->current.proj.pars[4] < -10.0)	/* Obsolete way to say altitude is distance from Earth center */
+		GMT->current.proj.g_radius = true;
+	else if (!GMT->current.proj.g_radius && GMT->current.proj.pars[4] < 10.0)	/* Gave Earth radii as unit instead of altitude */
+		GMT->current.proj.g_earth_radius = true;
 
 	/* g_az    GMT->current.proj.pars[5] = atof(txt_d); */
 	nlen = (int)strlen(&(txt_arr[3][0]));
@@ -5014,11 +5021,6 @@ GMT_LOCAL int gmtinit_parse_genper_deprecated (struct GMT_CTRL *GMT, char *args,
 
 	if (n > 6) {
 		/*g_twist   GMT->current.proj.pars[7] = atof(txt_f); */
-		nlen = (int)strlen(&(txt_arr[5][0]));
-		if (txt_arr[5][nlen-1] == 'n') {
-			GMT->current.proj.g_auto_twist = true;
-			txt_arr[5][nlen-1] = 0;
-		}
 		error += gmt_verify_expectations (GMT, GMT_IS_GEO, gmt_scanf (GMT, &(txt_arr[5][0]), GMT_IS_GEO, &GMT->current.proj.pars[7]), &(txt_arr[5][0]));
 		if (error) GMT_Report (GMT->parent, GMT_MSG_ERROR, "error reading twist '%s'\n", &(txt_arr[5][0]));
 
@@ -5470,7 +5472,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			/* Reset any genper related settings */
 			GMT->current.proj.g_debug = 0;
 			GMT->current.proj.g_box = GMT->current.proj.g_outside = GMT->current.proj.g_longlat_set =
-				GMT->current.proj.g_radius = GMT->current.proj.g_auto_twist = false;
+				GMT->current.proj.g_radius = GMT->current.proj.g_geosync = GMT->current.proj.g_earth_radius = false;
 			GMT->current.proj.g_sphere = true; /* force spherical as default */
 			GMT->current.proj.pars[5] = GMT->current.proj.pars[6] = GMT->current.proj.pars[7] = 0.0;
 			/* Intentionally fall through */
@@ -7262,7 +7264,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 				"<scale> can also be given as <radius>/<lat>, where <radius> is distance"
 				"in %s to the oblique parallel <lat>.", GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
 
-			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scale>|<width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>] (General Perspective). "
+			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scale>|<width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>[r|R]|g] (General Perspective). "
 				"<lon0>/<lat0> is the center of the projection. "
 				"The <scale> can also be given as <radius>/<lat>, where <radius> is distance "
 				"in %s to the oblique parallel <lat0>. "
@@ -7273,9 +7275,10 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 3, "+v Append restricted view: <vwidth> is width of the viewpoint in degree, and "
 				"<vheight> is the height of the viewpoint in degrees [unrestricted].");
 			GMT_Usage (API, 3, "+w Append the CW <twist> of the viewpoint in degree [0].");
-			GMT_Usage (API, 3, "+z Append <altitude> (in km) of the viewpoint above local sea level. "
-				"If <altitude> less than 10 then it is the distance from center of earth to viewpoint in earth radii. "
-				"If <altitude> has a suffix of 'r' then it is the radius from the center of earth in kilometers [infinity].");
+			GMT_Usage (API, 3, "+z Append <altitude> (in km) of viewpoint above local sea level [infinity]. "
+				"Alternatively, append r to give radius from center of Earth to viewpoint (in km); "
+				"use R instead if radius is given in Earth radii, or "
+				"set <altitude> = g to use the altitude of the geosynchronous orbit.");
 
 			GMT_Usage (API, 2, "-Jh|H[<lon0>/]<scale>|<width> (Hammer-Aitoff). Give optional central meridian and <scale>.");
 
@@ -7392,7 +7395,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scl> (or <radius>/<lat>)|<width> (Orthographic)");
 
-			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scl>|<width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>] (General Perspective)");
+			GMT_Usage (API, 2, "-Jg|G<lon0>/<lat0>/<scl>|<width>[+a<azimuth>][+t<tilt>][+v<vwidth>/<vheight>][+w<twist>][+z<altitude>[r|R]|g] (General Perspective)");
 
 			GMT_Usage (API, 2, "-Jh|H[<lon0>/]<scl>|<width> (Hammer-Aitoff)");
 

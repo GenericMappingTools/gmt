@@ -205,7 +205,7 @@ respectively):
         *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center (in
         degrees, <= 90, default 90). Give *scale* (with **-Jg**; as **1:**\ *xxxx* or *radius/lat*, where *radius* is
         distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*.
-    **-Jg**\|\ **G**\ *lon0/lat0*\ /\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*] (General Perspective).
+    **-Jg**\|\ **G**\ *lon0/lat0*\ /\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**] (General Perspective).
         *lon0/lat0* specifies the projection center. Give *scale* (with **-Jg**; as **1:**\ *xxxx* or *radius/lat*,
         where *radius* is distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*) or width
         (with **-JG**; in :ref:`plot-units <plt-units>`). Several optional modifiers control the perspective:
@@ -215,9 +215,10 @@ respectively):
        *tilt* is negative, then the viewpoint is centered on the horizon [0].
      - **+v** sets a restricted view: *vwidth* and *vheight* ( in degrees) limits the view from the viewpoint [unrestricted].
      - **+w** sets the clockwise *twist* of the viewpoint (in degrees) [0].
-     - **+z** sets the *altitude* (in km) of the viewpoint above local sea level [infinity]. If *altitude* is less than 10, then
-       it is the distance from the center of the earth to the viewpoint in earth radii. If *altitude* has a suffix **r**
-       then it is the radius from the center of the earth in kilometers.
+     - **+z** sets the *altitude* of the viewer above sea level in kilometers [infinity]. Alternatively append **R** if giving
+       the distance of the viewer from the center of the Earth in Earth radii, or **r** if giving the distance from the
+       center of the Earth in kilometers.  Finally, give *altitude* as **g** to compute and use the altitude for a
+       geosynchronous orbit.
 
 .. _-Js_full:
 
