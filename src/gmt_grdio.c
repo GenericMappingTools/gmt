@@ -3704,7 +3704,10 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
 		          GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
 		to_gdalread->R.region = strR;
-		/*to_gdalread->R.active = true;*/	/* Wait until we really know how to use it */
+		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
+ 		to_gdalread->registration.x_inc = I->header->inc[GMT_X];
+ 		to_gdalread->registration.y_inc = I->header->inc[GMT_Y];
+		to_gdalread->R.active = true;	/* Wait until we really know how to use it */
 	}
 
 	if (HH->pocket) {				/* See if we have a band request */
@@ -3712,13 +3715,15 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		to_gdalread->B.bands = HH->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
-	to_gdalread->p.pad = (int)pad[0];	/* Only 'square' padding allowed */
-	to_gdalread->p.active = (pad[0] > 0);
+	to_gdalread->p.pad = (int)P.pad[0];	/* Only 'square' padding allowed */
+	to_gdalread->p.active = (P.pad[0] > 0);
 	to_gdalread->I.active = true;		/* Means that image in I->data will be BIP interleaved */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
-	to_gdalread->c_ptr.active = true;
-	to_gdalread->c_ptr.grd = I->data;
+	if (I->data) {		/* Otherwise (subregion) memory is allocated in gdalread */
+		to_gdalread->c_ptr.active = true;
+		to_gdalread->c_ptr.grd = I->data;
+	}
 
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading image with gdalread.\n");
@@ -3739,13 +3744,16 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	I->n_indexed_colors  = from_gdalread->nIndexedColors;
 	I->header->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
-	if (expand) {	/* Must undo the region extension and reset n_columns, n_rows */
-		I->header->n_columns -= (int)(P.pad[XLO] + P.pad[XHI]);
-		I->header->n_rows -= (int)(P.pad[YLO] + P.pad[YHI]);
-		gmt_M_memcpy (I->header->wesn, wesn, 4, double);
-		I->header->nm = gmt_M_get_nm (GMT, I->header->n_columns, I->header->n_rows);
-	}
-	gmt_M_grd_setpad (GMT, I->header, pad);	/* Copy the pad to the header */
+	gmt_M_memcpy (I->header->wesn, from_gdalread->hdr, 4, double);	/* Set the actual w/e/s/n bounds */
+	//gmt_M_grd_setpad (GMT, I->header, pad);	/* Copy the pad to the header */
+	gmt_set_grddim (GMT, I->header);	/* Update header items */
+
+	//if (expand) {	/* Must undo the region extension and reset n_columns, n_rows */
+	//	I->header->n_columns -= (int)(P.pad[XLO] + P.pad[XHI]);
+	//	I->header->n_rows -= (int)(P.pad[YLO] + P.pad[YHI]);
+	//	gmt_M_memcpy (I->header->wesn, wesn, 4, double);
+	//	I->header->nm = gmt_M_get_nm (GMT, I->header->n_columns, I->header->n_rows);
+	//}
 
 	gmt_M_free (GMT, to_gdalread);
 	for (i = 0; i < from_gdalread->RasterCount; i++)

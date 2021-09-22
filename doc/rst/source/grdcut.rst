@@ -18,6 +18,7 @@ Synopsis
 |SYN_OPT-R|
 [ |-D|\ [**+t**] ]
 [ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
+[ |-I| ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ *lon/lat/radius*\ [**+n**] ]
@@ -82,6 +83,12 @@ Optional Arguments
     polygon will be set to NaN.  Append **+i** to invert that and set all
     nodes inside the polygon to NaN instead. Optionally, append **+c** to
     crop the grid region to reflect the bounding box of the polygon.
+
+.. _-FI:
+
+**-I**
+    Flag that input grid is actually an image. Only options **-R** and **-G**
+    are supported for images, i.e., you can cut out a subregion only.
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_

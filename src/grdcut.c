@@ -30,8 +30,8 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdcut"
 #define THIS_MODULE_MODERN_NAME	"grdcut"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Extract subregion from a grid"
-#define THIS_MODULE_KEYS	"<G{,FD(=,>DD,GG}"
+#define THIS_MODULE_PURPOSE	"Extract subregion from a grid or image"
+#define THIS_MODULE_KEYS	"<G{,FD(=,>DD,G?}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-JRVf"
 
@@ -57,6 +57,9 @@ struct GRDCUT_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDCUT_I {	/* -I */
+		bool active;
+	} I;
 	struct GRDCUT_N {	/* -N<nodata> */
 		bool active;
 		gmt_grdfloat value;
@@ -104,7 +107,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s -G%s %s [-D[+t]] [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s %s -G%s %s [-D[+t]] [-F<polygontable>[+c][+i]] [-I] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
 		name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -128,6 +131,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n%s", GMT_J_OPT);
 	GMT_Usage (API, -2, "Specify oblique projection and compute corresponding rectangular "
 		"region that needs to be extracted.");
+	GMT_Usage (API, 1, "\n-I Input is actually an image (only -R -G allowed)");
 	GMT_Usage (API, 1, "\n-N[<nodata>]");
 	GMT_Usage (API, -2, "Allow grid to be extended if new -R exceeds existing boundaries. "
 		"Optionally, append value to initialize nodes outside current region [Default is NaN].");
@@ -154,10 +158,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	 */
 
 	bool F_or_R_or_J;
-	unsigned int n_errors = 0, k, n_files = 0;
+	unsigned int n_errors = 0, k, n_files = 0, type = GMT_IS_GRID;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
+
+	for (opt = options; opt; opt = opt->next)
+		if (opt->option == 'I') type = GMT_IS_IMAGE;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -166,7 +173,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, type, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 			break;
 
 			/* Processes program-specific parameters */
@@ -211,6 +218,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
+			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
@@ -428,6 +438,23 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.quit)	/* Already reported information deep inside gmt_init_module */
 		Return (GMT_NOERROR);
+
+	if (Ctrl->I.active) {
+		struct GMT_IMAGE *I = NULL;
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+			Return (API->error);	/* Get header only */
+		}
+		if (grdcut_set_rectangular_subregion (GMT, wesn_new, I->header)) {
+			Return (API->error);	/* Get header only */
+		}
+		if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_new, Ctrl->In.file, I) == NULL) {	/* Get subset */
+			Return (API->error);
+		}
+		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
+			Return (API->error);
+		}
+		Return (GMT_NOERROR);
+	}
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
 	if (Ctrl->Z.active) {	/* Must determine new region via -Z, so get entire grid first */
