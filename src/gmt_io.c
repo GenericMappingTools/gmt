@@ -5702,6 +5702,27 @@ void gmt_ascii_format_one (struct GMT_CTRL *GMT, char *text, double x, unsigned 
 	}
 }
 
+void gmt_ascii_format_inc (struct GMT_CTRL *GMT, char *text, double x, unsigned int type) {
+	char unit;
+	double d_inc = GMT_DEG2SEC_F * x;
+	unsigned int inc = urint (d_inc);
+	if ((type & GMT_IS_GEO) == 0 || fabs (d_inc - inc) > GMT_CONV6_LIMIT) {	/* Cartesian or not a clear multiple of arc seconds */
+		sprintf (text, GMT->current.setting.format_float_out, x);
+		return;
+	}
+
+	unit = 's';
+	if (inc >= 60 && (inc % 60) == 0) {	/* Arc minutes perhaps */
+		inc /= 60;
+		unit = 'm';
+	}
+	if (inc >= 60 && (inc % 60) == 0) {	/* Arc seconds perhaps */
+		inc /= 60;
+		unit = 'd';
+	}
+	sprintf (text, "%d%c", inc, unit);
+}
+
 /*! . */
 GMT_LOCAL void gmtio_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Initialize (reset) information per column which may have changed due to -i -o */
