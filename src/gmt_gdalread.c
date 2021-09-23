@@ -1194,7 +1194,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 						/* Currently all calls to send image to GMT (BIP case) must come through here */
 						if (rowmajor) {
 							for (m = row_i; m < row_e; m++) {
-								off = nRGBA * pad_w + (pad_w+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
+								off = nRGBA * pad_w + (pad_n+m) * (nRGBA * (nXSize_withPad)); /* Remember, nRGBA is variable */
 								for (n = 0; n < nXSize; n++)
 									Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
 							}

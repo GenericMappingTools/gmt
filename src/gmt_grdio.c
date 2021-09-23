@@ -3662,7 +3662,6 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		gmt_set_geographic (GMT, GMT_IN);	/* A geographic image */
 
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
-	gmt_M_memset (I->header->pad, 4, unsigned int);	/* Enforce no image pad */
 	gmt_set_grddim (GMT, I->header);		/* This recomputes n_columns|n_rows. Dangerous if -R is not compatible with inc */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 
@@ -3693,8 +3692,6 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	gmt_M_unused(complex_mode);
 
 	expand = gmtgrdio_padspace (GMT, I->header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
-
-	/*gmt_M_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, image, P.wesn, P.pad, complex_mode));*/
 
 	/* Allocate new control structures */
 	to_gdalread   = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
@@ -3745,7 +3742,6 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	I->header->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
 	gmt_M_memcpy (I->header->wesn, from_gdalread->hdr, 4, double);	/* Set the actual w/e/s/n bounds */
-	//gmt_M_grd_setpad (GMT, I->header, pad);	/* Copy the pad to the header */
 	gmt_set_grddim (GMT, I->header);	/* Update header items */
 
 	//if (expand) {	/* Must undo the region extension and reset n_columns, n_rows */

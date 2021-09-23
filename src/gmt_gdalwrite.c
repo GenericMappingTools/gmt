@@ -127,6 +127,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	}
 
 	if (!strncmp (I->header->mem_layout, "TCB", 3)) {
+		/* Convert TCB to TRP as well as removing the pad */
 		to_GDALW->type = strdup("uint8");
 		data = gmt_M_memory (GMT, NULL, I->header->nm * I->header->n_bands, char);
 
@@ -148,15 +149,33 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		free_data = true;
 	}
 	else if (!strncmp (I->header->mem_layout, "TRP", 3) || !strncmp (I->header->mem_layout, "BRP", 3)) {
+		bool is_padded = gmt_grd_pad_status (GMT, I->header, NULL);	/* Do we have a pad */
 		to_GDALW->type = strdup("byte");
-		data = I->data;
-		if (to_GDALW->P.ProjRefPROJ4) {
-			to_GDALW->ULx = I->header->wesn[XLO];
-			to_GDALW->ULy = I->header->wesn[YHI];
-			to_GDALW->x_inc = I->header->inc[0];
-			to_GDALW->y_inc = I->header->inc[1];
+		if (is_padded) {	/* Must remove the pad by */
+			data = gmt_M_memory (GMT, NULL, I->header->nm * I->header->n_bands, char);
+			for (row = 0; row < I->header->n_rows; row++) {
+				ijk = (uint64_t)((row + I->header->pad[GMT_XLO]) * I->header->mx * I->header->n_bands);
+				gmt_M_memcpy (&data[row*I->header->n_columns*I->header->n_bands], &(I->data[ijk]), I->header->n_columns*I->header->n_bands, char);
+			}
+			if (I->alpha) {		/* We have a transparency layer */
+				to_GDALW->alpha = gmt_M_memory (GMT, NULL, I->header->nm, char);
+				for (row = 0; row < I->header->n_rows; row++) {
+					ijk = (uint64_t)((row + I->header->pad[GMT_XLO]) * I->header->mx);
+					gmt_M_memcpy (&to_GDALW->alpha[row*I->header->n_columns], &(I->alpha[ijk]), I->header->n_columns, char);
+				}
+			}
+			if (to_GDALW->P.ProjRefPROJ4) {
+				to_GDALW->ULx = I->header->wesn[XLO];
+				to_GDALW->ULy = I->header->wesn[YHI];
+				to_GDALW->x_inc = I->header->inc[0];
+				to_GDALW->y_inc = I->header->inc[1];
+			}
+			free_data = true;
 		}
-		to_GDALW->alpha = I->alpha;
+		else {	/* Use as is */
+			data = I->data;
+			if (I->alpha) to_GDALW->alpha = I->alpha;
+		}
 	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s memory layout is not supported, for now only: T(op)C(ol)B(and) or TRP & BRP\n",
