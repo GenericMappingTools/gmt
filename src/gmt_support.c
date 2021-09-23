@@ -192,7 +192,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Background pixels set to colors %s\n", gmt_putrgb (GMT, fill->b_rgb));
 					}
 					break;
-				case 'f':	/* Foreround color. Giving no argument means transparent [also checking for obsolete -] */
+				case 'f':	/* Foreground color. Giving no argument means transparent [also checking for obsolete -] */
 					if (p[1] == '\0' || p[1] == '-') {	/* Transparent */
 						fill->f_rgb[0] = fill->f_rgb[1] = fill->f_rgb[2] = -1,	fill->f_rgb[3] = 0;
 						GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Foreground pixels set to transparent!\n");
@@ -18298,4 +18298,17 @@ bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
 		if (strstr (string, this_modifier)) return (true);	/* Found it */
 	}
 	return (false);
+}
+
+unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned char rgbmap[]) {
+	unsigned int n, k = 0;
+	int red;
+	/* Repack column-stored RGBA integer values into a row-stored RGBA byte array */
+	for (n = 0; n < (unsigned int)I->n_indexed_colors && (red = gmt_M_get_rgba (I->colormap, n, 0, I->n_indexed_colors)) >= 0; n++) {
+		rgbmap[k++] = red;	/* Got this already */
+		rgbmap[k++] = gmt_M_get_rgba (I->colormap, n, 1, I->n_indexed_colors);
+		rgbmap[k++] = gmt_M_get_rgba (I->colormap, n, 2, I->n_indexed_colors);
+		rgbmap[k++] = gmt_M_get_rgba (I->colormap, n, 3, I->n_indexed_colors);
+	}
+	return (k/4);	/* Number of entries */
 }

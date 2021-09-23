@@ -537,25 +537,34 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 
 		Ctrl->nIndexedColors = GDALGetColorEntryCount(hTable);
 		Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
-		for (i = 0, j = 0; i < Ctrl->nIndexedColors; i++) {
+		for (i = 0; i < Ctrl->nIndexedColors; i++) {
 			GDALGetColorEntryAsRGB(hTable, i, &sEntry);
-			Ctrl->ColorMap[j++] = sEntry.c1;
-			Ctrl->ColorMap[j++] = sEntry.c2;
-			Ctrl->ColorMap[j++] = sEntry.c3;
-			Ctrl->ColorMap[j++] = sEntry.c4;
+			gmt_M_set_rgba (Ctrl->ColorMap, i, 0, Ctrl->nIndexedColors, sEntry.c1);
+			gmt_M_set_rgba (Ctrl->ColorMap, i, 1, Ctrl->nIndexedColors, sEntry.c2);
+			gmt_M_set_rgba (Ctrl->ColorMap, i, 2, Ctrl->nIndexedColors, sEntry.c3);
+			gmt_M_set_rgba (Ctrl->ColorMap, i, 3, Ctrl->nIndexedColors, sEntry.c4);
 		}
-		Ctrl->ColorMap[j++] = -1;
+		/* Mark the end of the colormap with red = -1 */
+		gmt_M_set_rgba (Ctrl->ColorMap, i, 0, Ctrl->nIndexedColors, -1);
 	}
 	else {
 		/* Before giving up, check if band is a 1-bit type */
 		const char *pszNBits = GDALGetMetadataItem(hBand, "NBITS", "IMAGE_STRUCTURE");
 		if (pszNBits && !strcmp(pszNBits, "1")) {
+			/* Create a two-color index table for black and white only */
 			Ctrl->nIndexedColors = 2;
 			Ctrl->ColorMap = gmt_M_memory(GMT, NULL, Ctrl->nIndexedColors*4+1, int);
-			Ctrl->ColorMap[0] = Ctrl->ColorMap[1] = Ctrl->ColorMap[2] = 0;		Ctrl->ColorMap[3] = 1;
-			Ctrl->ColorMap[4] = Ctrl->ColorMap[5] = Ctrl->ColorMap[6] = 255;	Ctrl->ColorMap[7] = 1;
+			for (j = 0; j < 3; j++) {	/* For R, G, B */
+				gmt_M_set_rgba (Ctrl->ColorMap, 0, j, Ctrl->nIndexedColors, 0);
+				gmt_M_set_rgba (Ctrl->ColorMap, 1, j, Ctrl->nIndexedColors, 255);
+			}
+			/* Then set A */
+			gmt_M_set_rgba (Ctrl->ColorMap, 0, 3, Ctrl->nIndexedColors, 255);	/* JL, THIS SHOULD BE 255, NO??? IT WAS 1*/
+			gmt_M_set_rgba (Ctrl->ColorMap, 1, 3, Ctrl->nIndexedColors, 255);
+			/* Mark the end of the colormap with red = -1 */
+			gmt_M_set_rgba (Ctrl->ColorMap, 2, 0, Ctrl->nIndexedColors, -1);
 		}
-		else {
+		else {	/* Apparently no colormap, set it */
 			Ctrl->ColorMap = NULL;
 			Ctrl->nIndexedColors  = 0;
 		}

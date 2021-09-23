@@ -996,8 +996,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 				/* Convert colormap from integer to unsigned char and count colors */
 				unsigned char *colormap = gmt_M_memory (GMT, NULL, 4 * 256, unsigned char);
 				int64_t n, j;
-				for (n = 0; n < 4 * 256 && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
-				n /= 4;
+				n = gmt_unpack_rgbcolors (GMT, I, colormap);	/* colormap will be RGBARGBA... */
 				/* Expand 8-bit indexed image to a 24-bit image */
 				I->data = gmt_M_memory (GMT, I->data, 3 * I->header->size, unsigned char);
 				n = 3 * I->header->size - 1;	/* Index or last pixel's blue value */
