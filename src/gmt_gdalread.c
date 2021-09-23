@@ -544,8 +544,8 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			gmt_M_set_rgba (Ctrl->ColorMap, i, 2, Ctrl->nIndexedColors, sEntry.c3);
 			gmt_M_set_rgba (Ctrl->ColorMap, i, 3, Ctrl->nIndexedColors, sEntry.c4);
 		}
-		/* Mark the end of the colormap with red = -1 */
-		gmt_M_set_rgba (Ctrl->ColorMap, i, 0, Ctrl->nIndexedColors, -1);
+		/* Mark the end of the ColorMap */
+		Ctrl->ColorMap[Ctrl->nIndexedColors*4] = -1;
 	}
 	else {
 		/* Before giving up, check if band is a 1-bit type */
@@ -561,10 +561,10 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			/* Then set A */
 			gmt_M_set_rgba (Ctrl->ColorMap, 0, 3, Ctrl->nIndexedColors, 255);	/* JL, THIS SHOULD BE 255, NO??? IT WAS 1*/
 			gmt_M_set_rgba (Ctrl->ColorMap, 1, 3, Ctrl->nIndexedColors, 255);
-			/* Mark the end of the colormap with red = -1 */
-			gmt_M_set_rgba (Ctrl->ColorMap, 2, 0, Ctrl->nIndexedColors, -1);
+			/* Mark the end of the colormap */
+			Ctrl->ColorMap[Ctrl->nIndexedColors*4] = -1;
 		}
-		else {	/* Apparently no colormap, set it */
+		else {	/* Apparently no ColorMap, set it */
 			Ctrl->ColorMap = NULL;
 			Ctrl->nIndexedColors  = 0;
 		}
