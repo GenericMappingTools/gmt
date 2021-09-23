@@ -824,12 +824,12 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			dfLRX = wesn[XHI] + dx;
 			dfLRY = wesn[YLO] - dy;
 			dfULY = wesn[YHI] + dy;
-			if (pad) {
-				pad_w = (int)((GMT->common.R.wesn[XLO] - wesn[XLO]) / prhs->registration.x_inc + 0.5);
-				pad_e = (int)((wesn[XHI] - GMT->common.R.wesn[XHI]) / prhs->registration.x_inc + 0.5);
-				pad_s = (int)((GMT->common.R.wesn[YLO] - wesn[YLO]) / prhs->registration.y_inc + 0.5);
-				pad_n = (int)((wesn[YHI] - GMT->common.R.wesn[YHI]) / prhs->registration.y_inc + 0.5);
-			}
+			//if (pad) {
+			//	pad_w = (int)((GMT->common.R.wesn[XLO] - wesn[XLO]) / prhs->registration.x_inc + 0.5);
+			//	pad_e = (int)((wesn[XHI] - GMT->common.R.wesn[XHI]) / prhs->registration.x_inc + 0.5);
+			//	pad_s = (int)((GMT->common.R.wesn[YLO] - wesn[YLO]) / prhs->registration.y_inc + 0.5);
+			//	pad_n = (int)((wesn[YHI] - GMT->common.R.wesn[YHI]) / prhs->registration.y_inc + 0.5);
+			//}
 		}
 	}
 

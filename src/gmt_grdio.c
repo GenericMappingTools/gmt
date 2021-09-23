@@ -3662,7 +3662,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		gmt_set_geographic (GMT, GMT_IN);	/* A geographic image */
 
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
-
+	gmt_M_memset (I->header->pad, 4, unsigned int);	/* Enforce no image pad */
 	gmt_set_grddim (GMT, I->header);		/* This recomputes n_columns|n_rows. Dangerous if -R is not compatible with inc */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 
