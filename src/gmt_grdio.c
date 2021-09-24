@@ -3749,6 +3749,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 
 	gmt_M_memcpy (I->header->wesn, from_gdalread->hdr, 4, double);	/* Set the actual w/e/s/n bounds */
 	gmt_set_grddim (GMT, I->header);	/* Update header items */
+	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
 
 	//if (expand) {	/* Must undo the region extension and reset n_columns, n_rows */
 	//	I->header->n_columns -= (int)(P.pad[XLO] + P.pad[XHI]);
