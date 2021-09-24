@@ -3394,11 +3394,17 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 			code = ( !strncmp( (const char *)data, "GIF87a", 6 ) || !strncmp( (const char *)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
 		case 'I':	/* TIF */
-			code = ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
-
+			if (strstr (file, "earth_day") || strstr (file, "earth_night"))	/* We know these are images, not data */
+				code = GMT_IS_IMAGE;
+			else
+				code = ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_GRID : GMT_NOTSET;
+			break;
 		case 'M':	/* TIF */
-			code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
-
+			if (strstr (file, "earth_day") || strstr (file, "earth_night"))	/* We know these are images, not data */
+				code = GMT_IS_IMAGE;
+			else
+				code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_GRID : GMT_NOTSET;
+			break;
 		case 'P':	/* PPM (also check that extension starts with p since the magic bytes are a bit weak ) */
 			code = (data[1] >= '1' && data[1] <= '6' && tolower (path[pos_ext]) == 'p') ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 

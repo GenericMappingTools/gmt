@@ -57,9 +57,6 @@ struct GRDCUT_CTRL {
 		bool active;
 		char *file;
 	} G;
-	struct GRDCUT_I {	/* -I */
-		bool active;
-	} I;
 	struct GRDCUT_N {	/* -N<nodata> */
 		bool active;
 		gmt_grdfloat value;
@@ -107,13 +104,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s -G%s %s [-D[+t]] [-F<polygontable>[+c][+i]] [-I] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
+	GMT_Usage (API, 0, "usage: %s %s -G%s %s [-D[+t]] [-F<polygontable>[+c][+i]] [%s] [-N[<nodata>]] [-S<lon>/<lat>/<radius>[+n]] [%s] [-Z[<min>/<max>][+n|N|r]] [%s] [%s]\n",
 		name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_J_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, 0, "Name of grid to extract a subset from");
+	gmt_ingrid_syntax (API, 0, "Name of grid (or image) to extract a subset from");
 	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	GMT_Option (API, "R");
 	GMT_Usage (API, -2, "Typically, the w/e/s/n you specify must be within the region of the input "
@@ -131,7 +128,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n%s", GMT_J_OPT);
 	GMT_Usage (API, -2, "Specify oblique projection and compute corresponding rectangular "
 		"region that needs to be extracted.");
-	GMT_Usage (API, 1, "\n-I Input is actually an image (only -R -G allowed)");
 	GMT_Usage (API, 1, "\n-N[<nodata>]");
 	GMT_Usage (API, -2, "Allow grid to be extended if new -R exceeds existing boundaries. "
 		"Optionally, append value to initialize nodes outside current region [Default is NaN].");
@@ -158,13 +154,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	 */
 
 	bool F_or_R_or_J;
-	unsigned int n_errors = 0, k, n_files = 0, type = GMT_IS_GRID;
+	unsigned int n_errors = 0, k, n_files = 0;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
-
-	for (opt = options; opt; opt = opt->next)
-		if (opt->option == 'I') type = GMT_IS_IMAGE;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -173,7 +166,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (API, type, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 			break;
 
 			/* Processes program-specific parameters */
@@ -218,9 +211,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
-			case 'I':
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
 			case 'N':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
@@ -400,7 +390,7 @@ GMT_LOCAL unsigned int grdcut_node_is_outside (struct GMT_CTRL *GMT, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
-	int error = 0;
+	int error = 0, ftype;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
 	bool outside[4] = {false, false, false, false}, all, bail = false, geo_to_cart = false;
@@ -439,8 +429,13 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->D.quit)	/* Already reported information deep inside gmt_init_module */
 		Return (GMT_NOERROR);
 
-	if (Ctrl->I.active) {
+	if ((ftype = gmt_raster_type (GMT, Ctrl->In.file)) == GMT_IS_IMAGE) {
+		/* The input file is an ordinary image instead of a grid and for now we are limited to subsets via -R only */
 		struct GMT_IMAGE *I = NULL;
+		if (!GMT->common.R.active[RSET]) {
+			GMT_Report (API, GMT_MSG_INFORMATION, "Image subsets requires -R.  Other schemes like -F, -S, -Z are not supported.\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);	/* Get header only */
 		}
