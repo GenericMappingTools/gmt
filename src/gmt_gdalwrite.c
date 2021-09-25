@@ -154,13 +154,13 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 		if (is_padded) {	/* Must remove the pad by */
 			data = gmt_M_memory (GMT, NULL, I->header->nm * I->header->n_bands, char);
 			for (row = 0; row < I->header->n_rows; row++) {
-				ijk = (uint64_t)((row + I->header->pad[GMT_XLO]) * I->header->mx * I->header->n_bands);
+				ijk = (uint64_t)(((row + I->header->pad[GMT_YHI]) * I->header->mx + I->header->pad[GMT_XLO]) * I->header->n_bands);
 				gmt_M_memcpy (&data[row*I->header->n_columns*I->header->n_bands], &(I->data[ijk]), I->header->n_columns*I->header->n_bands, char);
 			}
 			if (I->alpha) {		/* We have a transparency layer */
 				to_GDALW->alpha = gmt_M_memory (GMT, NULL, I->header->nm, char);
 				for (row = 0; row < I->header->n_rows; row++) {
-					ijk = (uint64_t)((row + I->header->pad[GMT_XLO]) * I->header->mx);
+					ijk = (uint64_t)((row + I->header->pad[GMT_YHI]) * I->header->mx + I->header->pad[GMT_XLO]);
 					gmt_M_memcpy (&to_GDALW->alpha[row*I->header->n_columns], &(I->alpha[ijk]), I->header->n_columns, char);
 				}
 			}
