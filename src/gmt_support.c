@@ -246,8 +246,7 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 			/* Convert colormap from integer to unsigned char and count colors */
 			unsigned char *colormap = gmt_M_memory (GMT, NULL, 4*256, unsigned char);
 			int64_t n, j, k;
-			for (n = 0; n < 4 * 256 && fill->I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)fill->I->colormap[n];
-			n /= 4;
+			n = gmt_unpack_rgbcolors (GMT, fill->I, colormap);	/* colormap will be RGBARGBA... */
 			/* Expand 8-bit indexed image to 24-bit image */
 			fill->I->data = gmt_M_memory (GMT, fill->I->data, 3 * fill->I->header->nm, unsigned char);
 			n = 3 * fill->I->header->nm - 1;

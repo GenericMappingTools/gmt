@@ -4398,7 +4398,7 @@ int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
 	   called by gmtapi_import_image, there are other cases when we need also to convert from indexed to RGB.
 	   For example in grdimage when the image was sent in via an external wrapper. In this case the code flow goes
 	   through gmtapi_get_image_data() (in GMT_Read_Data -> gmtapi_pass_object (API, S_obj, family, mode, wesn))
-	   and deliver that Image object directly to the calling module amd may thus have indexed pixels.
+	   and deliver that Image object directly to the calling module and may thus have indexed pixels.
 	*/
 	struct GMT_IMAGE* Irgb = NULL;
 	if ((*I_in)->header->n_bands == 1 && (*I_in)->n_indexed_colors > 0) {		/* Indexed image, convert to RGB */
