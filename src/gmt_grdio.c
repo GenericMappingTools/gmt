@@ -1248,6 +1248,13 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	}
 }
 
+bool gmtgrdio_pad_status (struct GMT_CTRL *GMT, unsigned int *pad) {
+	unsigned int side;
+	gmt_M_unused(GMT);
+	for (side = 0; side < 4; side++) if (pad[side]) return (true);	/* Grid has a pad */
+	return (false);	/* Grid has no pad */
+}
+
 bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int *pad) {
 	/* Determines if this grid has padding at all (pad = NULL) OR
 	 * if pad is given, determines if the pads are different.
@@ -1266,10 +1273,8 @@ bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, u
 		for (side = 0; side < 4; side++) if (header->pad[side] != pad[side]) return (false);	/* Pads differ */
 		return (true);	/* Pads match */
 	}
-	else {	/* We just want to determine if the grid has padding already (true) or not (false) */
-		for (side = 0; side < 4; side++) if (header->pad[side]) return (true);	/* Grid has a pad */
-		return (false);	/* Grid has no pad */
-	}
+	else	/* We just want to determine if the grid has padding already (true) or not (false) */
+		return (gmtgrdio_pad_status (GMT, header->pad));
 }
 
 int gmtlib_get_matrixtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_MATRIX *M) {
@@ -3718,8 +3723,10 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		to_gdalread->B.bands = HH->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
-	to_gdalread->p.pad = (int)P.pad[0];	/* Only 'square' padding allowed */
-	to_gdalread->p.active = (P.pad[0] > 0);
+	if (pad) {
+		gmt_M_memcpy (to_gdalread->p.pad, pad, 4U, unsigned int);
+		to_gdalread->p.active = gmtgrdio_pad_status (GMT, pad);
+	}
 	to_gdalread->I.active = true;		/* Means that image in I->data will be BIP interleaved */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
@@ -3727,7 +3734,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		to_gdalread->c_ptr.active = true;
 		to_gdalread->c_ptr.grd = I->data;
 	}
-
+	if (HH->grdtype > GMT_GRID_GEOGRAPHIC_LESS360) to_gdalread->R.periodic = true;	/* Let gmt_gdalread know we have a periodic image */
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading image with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);
