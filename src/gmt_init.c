@@ -15321,7 +15321,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 
 	if (options) {	/* Check if any filename argument is a remote tiled dataset */
-		bool first_time = true, parsed_R = false, dry_run = false, got_grdcut = false;
+		bool first_time = true, parsed_R = false, dry_run = false, got_grdcut = false, got_grdimage = false;
 		int k_data, registration;
 		unsigned int srtm_flag;
 		char *list = NULL, *c = NULL;
@@ -15332,6 +15332,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 		opt_R = GMT_Find_Option (API, 'R', *options);
 		opt_J = GMT_Find_Option (API, 'J', *options);
 		got_grdcut = !strncmp (mod_name, "grdcut", 6U);
+		got_grdimage = !strncmp (mod_name, "grdimage", 8U);	/* To ensure grdimage -A is allowed */
 		dry_run = (got_grdcut && (opt_D = GMT_Find_Option (API, 'D', *options)));	/* Do not want the grid, just the information */
 		if (dry_run && GMT_Find_Option (API, 'G', *options)) {	/* Check here since parse is in the future */
 			GMT_Report (API, GMT_MSG_ERROR, "Option -D: Cannot specify -G since no grid will be returned\n");
@@ -15361,7 +15362,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					GMT_Report (API, GMT_MSG_ERROR, "Cannot request automatic remote grid resolution without -R -J settings [%s]\n", opt->arg);
 					return NULL;
 				}
-				if (!(GMT->current.ps.active || got_grdcut)) {
+				if (!(GMT->current.ps.active || got_grdcut || got_grdimage)) {
 					GMT_Report (API, GMT_MSG_ERROR, "Except for grdcut, cannot request automatic remote grid resolution if not plotting [%s]\n", opt->arg);
 					return NULL;
 				}
