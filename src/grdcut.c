@@ -754,10 +754,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			char inc[GMT_LEN64] = {""};
 			Out = gmt_new_record (GMT, NULL, record);	/* The trailing text output record */
 			gmt_format_region (GMT, record, wesn_new);	/* Typeset the -Rw/e/s/n part */
-			gmt_ascii_format_inc (GMT, inc, G->header->inc[GMT_X], type);
+			gmt_ascii_format_inc (GMT, inc, h->inc[GMT_X], type);
 			strcat (record, " -I"); strcat (record, inc);
 			type = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
-			gmt_ascii_format_inc (GMT, inc, G->header->inc[GMT_Y], type);
+			gmt_ascii_format_inc (GMT, inc, h->inc[GMT_Y], type);
 			strcat (record, "/");	strcat (record, inc);	/* dlat or yinc */
 		}
 		else {
