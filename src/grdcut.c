@@ -438,7 +438,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->D.quit)	/* Already reported information deep inside gmt_init_module */
 		Return (GMT_NOERROR);
 
-	if (!Ctrl->Z.active) {	/* All of -F, -R, -S selections first needs the neader */
+	if (!Ctrl->Z.active) {	/* All of -F, -R, -S selections first needs the header */
 		if (Ctrl->In.type == GMT_IS_IMAGE) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing input image\n");
 			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
