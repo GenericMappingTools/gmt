@@ -185,6 +185,7 @@ EXTERN_MSC double gmt_fft_any_wave (uint64_t k, unsigned int mode, struct GMT_FF
 
 /* gmt_remote.c: */
 
+EXTERN_MSC struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const char *rfile, unsigned int *n);
 EXTERN_MSC int gmt_remote_no_resolution_given (struct GMTAPI_CTRL *API, const char *rfile, int *registration);
 EXTERN_MSC char *gmt_dataserver_url (struct GMTAPI_CTRL *API);
 EXTERN_MSC void gmt_refresh_server (struct GMTAPI_CTRL *API);
@@ -373,6 +374,7 @@ EXTERN_MSC void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *
 EXTERN_MSC void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table);
 EXTERN_MSC void gmt_free_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET **data);
 EXTERN_MSC void gmt_ascii_format_one (struct GMT_CTRL *GMT, char *text, double x, unsigned int type);
+EXTERN_MSC void gmt_ascii_format_inc (struct GMT_CTRL *GMT, char *text, double x, unsigned int type);
 
 EXTERN_MSC struct GMT_VECTOR * gmt_create_vector (struct GMT_CTRL *GMT, uint64_t n_columns, unsigned int direction);
 EXTERN_MSC void gmt_free_vector (struct GMT_CTRL *GMT, struct GMT_VECTOR **V, bool free_vector);
@@ -402,6 +404,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 /* gmt_support.c: */
 
 EXTERN_MSC unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned char rgbmap[]);
+EXTERN_MSC void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn);
 EXTERN_MSC FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]);
 EXTERN_MSC int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]);
 EXTERN_MSC bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods);
