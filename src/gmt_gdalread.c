@@ -784,7 +784,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	first_layer = (nReqBands) ? whichBands[0] : 1;		/* The one used to get data type and header info */
 
 	if (nReqBands && GMT->current.setting.verbose >= GMT_MSG_INFORMATION) {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Read band(s):");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_gdalread: Read band(s):");
 		for (k = 0; k < nReqBands; k++)
 			GMT_Message (GMT->parent, GMT_TIME_NONE, "\t%d", whichBands[k]);
 		GMT_Message (GMT->parent, GMT_TIME_NONE, "\n");
@@ -814,14 +814,14 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		prhs->O.mem_layout[3] = 'a';		/* If later we find image has 4 layers, this will become 'A' */
 	}
 
-	if (prhs->p.active) {	/* Initialize the pad for piece 0 only */
+	if (prhs->p.active) {	/* Initialize the pad for piece 0 only (other set as needed later) */
 		pad_w[0] = prhs->p.pad[XLO];
 		pad_e[0] = prhs->p.pad[XHI];
-		pad_s = prhs->p.pad[YLO];
-		pad_n = prhs->p.pad[YHI];
+		pad_s    = prhs->p.pad[YLO];
+		pad_n    = prhs->p.pad[YHI];
 	}
 
-	if (prhs->R.active) {
+	if (prhs->R.active) {	/* Decode -Rw/e/s/n string */
 		double wesn[4];
 		got_R = true;
 		error += (GMT_Get_Values (GMT->parent, prhs->R.region, wesn, 4) < 4);
@@ -838,8 +838,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			dfULY = wesn[YHI] + dy;
 		}
 	}
-
-	if (prhs->r.active) { 		/* Region is given in pixels */
+	else if (prhs->r.active) { 		/* Region is given in pixels instead */
 		double wesn[4];
 		got_r = true;
 		error += (GMT_Get_Values (GMT->parent, prhs->R.region, wesn, 4) < 4);
@@ -850,7 +849,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	}
 
 	if (error) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread failed to extract a Sub-region\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Failed to decode the specified Sub-region\n");
 		gmt_M_free (GMT, whichBands);
 		return (-1);
 	}
@@ -858,7 +857,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (prhs->P.active)
 		jump = atoi(prhs->P.jump);
 
-	if (prhs->Z.active) {
+	if (prhs->Z.active) {	/* Get either the real or imaginary pixels only */
 		complex_mode = prhs->Z.complex_mode;
 		if (complex_mode) incStep = 2;
 	}
@@ -879,7 +878,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 		else {
 			Ctrl->ProjRefWKT = NULL;
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread failed to convert the proj4 string\n%s\nto WKT\nThis happens for example when no conversion between PROJ4 and the WKT is done by GDAL.",
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread: Failed to convert the proj4 string\n%s\nto WKT\nThis happens for example when no conversion between PROJ4 and the WKT is done by GDAL.",
 					Ctrl->ProjRefPROJ4);
 		}
 
@@ -897,7 +896,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if ((hDriver = GDALGetDriverByName("JP2OpenJPEG")) != NULL && (hDriver = GDALGetDriverByName("JP2ECW")) != NULL)
 			GDALDeregisterDriver(hDriver);		/* Deregister the JP2ECW driver. That is, prefer the OpenJPEG one */
 
-	if (metadata_only) {
+	if (metadata_only) {	/* Just get the header info and return with it */
 		if (populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer))
 			return(-1);
 
@@ -910,10 +909,12 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		return (GMT_NOERROR);
 	}
 
+	/* Read the image */
+
 	hDataset = gdal_open (GMT, gdal_filename);
 
 	if (hDataset == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed %s\n", CPLGetLastErrorMsg());
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: gdal_open failed %s\n", CPLGetLastErrorMsg());
 		gmt_M_free (GMT, whichBands);
 		return (-1);
 	}
@@ -945,7 +946,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 		if (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR,
-			            "The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
+			            "gmt_gdalread: The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose(hDataset);
 			GDALDestroyDriverManager();
 			gmt_M_free (GMT, whichBands);
@@ -969,9 +970,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			anSrcWin[3] = (int) (dfULY - dfLRY);
 		}
 
-		/* First check if we are outside valid y-range since that check is always the same */
+		/* First check if we are outside valid y-range since that check is always Cartesian */
 		if (anSrcWin[1] < 0 || (anSrcWin[1] + anSrcWin[3]) > YDim) {
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Computed -srcwin falls outside raster size of %dx%d in the y-direction.\n",
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the y-direction.\n",
 				XDim, YDim);
 			GDALDestroyDriverManager();
 			gmt_M_free (GMT, whichBands);
@@ -995,7 +996,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 		else {	/* Same (Cartesian) test as for y-extent */
 			if (xOrigin[0] < 0 || (xOrigin[0] + anSrcWin[2]) > XDim) {
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Computed -srcwin falls outside raster size of %dx%d in the x-direction.\n",
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the x-direction.\n",
 					XDim, YDim);
 				GDALDestroyDriverManager();
 				gmt_M_free (GMT, whichBands);
@@ -1003,7 +1004,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			}
 		}
 	}
-	else {			/* Use entire dataset so only a single chunk */
+	else {			/* Use entire dataset so only need a single chunk */
 		xOrigin[0] = yOrigin = 0;
 		nXSize[0] = XDim;
 		nYSize = YDim;
@@ -1029,7 +1030,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (nReqBands) nBands = MIN(nBands,nReqBands);	/* If a band selection was made */
 
-	/* Determine allocation size for the subset (actual allocation depends on whether a pointer is passed or not) */
+	/* Determine allocation size for the subset (actual allocation depends on whether a pointer is passed in or not) */
 	n_alloc = ((size_t)nBands) * ((size_t)(nBufXSize[0] + nBufXSize[1] + MAX(pad_w[0],pad_w[1])) + MAX(pad_e[0],pad_e[1])) * ((size_t)nBufYSize + pad_s + pad_n);
 
 	switch (GDALGetRasterDataType(hBand)) {
@@ -1182,7 +1183,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 				if ((gdal_code = GDALRasterIO(hBand, GF_Read, xOrigin[piece], nYOff, nXSize[piece], buffy, tmp,
 			                 nBufXSize[piece], buffy, GDALGetRasterDataType(hBand), 0, 0)) != CE_None) {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
+					GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_gdalread: GDALRasterIO failed to open band %d [err = %d]\n", i, gdal_code);
 					continue;
 				}
 
@@ -1394,7 +1395,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	GDALClose(hDataset);
 
-	gmt_M_toc (GMT, "After gdalread data reading");
+	gmt_M_toc (GMT, "gmt_gdalread: After gdalread data reading");
 
 	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0]+nXSize[1], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer);
 
