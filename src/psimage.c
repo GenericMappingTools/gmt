@@ -464,6 +464,8 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
+		bool R_save = GMT->common.R.active[RSET];
+		GMT->common.R.active[RSET] = false;	/* Temporarily unset any active -R since we do not want a subset of this image! */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input raster via GDAL\n");
 		if (is_gdal) {	/* Need full name since there may be band requests */
 			gmt_M_str_free (file);
@@ -474,6 +476,7 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 			gmt_M_str_free (file);
 			Return (API->error);
 		}
+		GMT->common.R.active[RSET] = R_save;	/* Reset */
 		gmt_set_pad (GMT, API->pad);	/* Reset to GMT default */
 
 		/* Handle transparent images */
