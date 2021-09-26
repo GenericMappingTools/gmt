@@ -4703,6 +4703,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			}
 			I_obj = Irgb;
 		}
+		/* If we were unable to set BCs earlier we must do it now */
 		if (bc_not_set && gmt_M_err_pass (GMT, gmtlib_image_BC_set (GMT, I_obj), S_obj->filename))
 			return_null (API, GMT_IMAGE_BC_ERROR);	/* Failed to set boundary conditions */
 	}

@@ -12563,6 +12563,20 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 
 /* Clipper to ensure a byte stays in 0-255 range */
 static inline unsigned char gmtsupport_clip_to_byte (int byte) { if (byte < 0) return (0); else if (byte > 255) return (255); else return ((unsigned char)byte);}
+#if 0
+/* For debugging BC actions for images when the result is outside byte range  */
+unsigned char gmtsupport_clip_to_byte (int byte) {
+	if (byte < 0) {
+		fprintf (stderr, "byte = %d\n", byte);
+		return (0);
+	}
+	if (byte > 255) {
+		fprintf (stderr, "byte = %d\n", byte);
+		return (255);
+	}
+	return ((unsigned char)byte);
+}
+#endif
 
 /*! . */
 int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
