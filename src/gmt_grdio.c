@@ -3709,8 +3709,8 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active[RSET]) {
-		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", P.wesn[XLO], P.wesn[XHI],
-		     P.wesn[YLO], P.wesn[YHI]);
+		double *region = (expand) ? P.wesn : I->header->wesn;
+		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", region[XLO], region[XHI], region[YLO], region[YHI]);
 		to_gdalread->R.region = strR;
 		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
  		to_gdalread->registration.x_inc = I->header->inc[GMT_X];
