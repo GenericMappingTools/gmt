@@ -3709,8 +3709,8 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active[RSET]) {
-		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
-		          GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", P.wesn[XLO], P.wesn[XHI],
+		     P.wesn[YLO], P.wesn[YHI]);
 		to_gdalread->R.region = strR;
 		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
  		to_gdalread->registration.x_inc = I->header->inc[GMT_X];
@@ -3724,8 +3724,8 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	}
 
 	if (pad) {
-		gmt_M_memcpy (to_gdalread->p.pad, pad, 4U, unsigned int);
-		to_gdalread->p.active = gmtgrdio_pad_status (GMT, pad);
+		gmt_M_memcpy (to_gdalread->p.pad, P.pad, 4U, unsigned int);
+		to_gdalread->p.active = gmtgrdio_pad_status (GMT, P.pad);
 	}
 	to_gdalread->I.active = true;		/* Means that image in I->data will be BIP interleaved */
 
@@ -3755,15 +3755,12 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	I->header->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
 	gmt_M_memcpy (I->header->wesn, from_gdalread->hdr, 4, double);	/* Set the actual w/e/s/n bounds */
+
+	if (expand)	/* Must undo the region extension and reset n_columns, n_rows */
+		gmt_M_memcpy (I->header->wesn, wesn, 4, double);
+	gmt_M_grd_setpad (GMT, I->header, pad);	/* Copy the pad to the header */
 	gmt_set_grddim (GMT, I->header);	/* Update header items */
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
-
-	//if (expand) {	/* Must undo the region extension and reset n_columns, n_rows */
-	//	I->header->n_columns -= (int)(P.pad[XLO] + P.pad[XHI]);
-	//	I->header->n_rows -= (int)(P.pad[YLO] + P.pad[YHI]);
-	//	gmt_M_memcpy (I->header->wesn, wesn, 4, double);
-	//	I->header->nm = gmt_M_get_nm (GMT, I->header->n_columns, I->header->n_rows);
-	//}
 
 	gmt_M_free (GMT, to_gdalread);
 	for (i = 0; i < from_gdalread->RasterCount; i++)
