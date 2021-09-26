@@ -361,7 +361,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	float *weights = NULL, *intens = NULL, *alpha = NULL;
 
-	double rgb[4], wesn[4] = {0.0, 0.0, 0.0, 0.0};
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0};
 
 	struct GMT_GRID *G_in[N_ITEMS], *G = NULL;
 	struct GMT_IMAGE *I_in[N_ITEMS], *I = NULL;
@@ -465,6 +465,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (k < 3 && Ctrl->N.active[GMT_IN]) {	/* Normalize the 1-3 input grid */
 				double factor = 1.0 / Ctrl->N.factor[GMT_IN];	/* To avoid division in the loop */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Normalizing grid %s\n", Ctrl->In.file[k]);
+				G_in[k]->header->z_min *= factor;	G_in[k]->header->z_max *= factor;	/* Also update zmin/max */
 				gmt_M_grd_loop (GMT, G_in[k], row, col, node)
 					G_in[k]->data[node] *= factor;
 			}
@@ -575,6 +576,10 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		H = I->header;
+		for (band = 0; band < H->n_bands; band++) {	/* Check if any of the grids exceed the required 0-1 range */
+			if (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0)	/* Probably not normalized and forgot -Ni */
+				GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
+		}
 		if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)
