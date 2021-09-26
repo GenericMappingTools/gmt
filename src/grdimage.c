@@ -1279,7 +1279,6 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 #endif
 
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
-		bool save_R;
 		if (I && !need_to_project) {
 			gmt_M_memcpy (wesn, GMT->common.R.active[RSET] ? GMT->common.R.wesn : I->header->wesn, 4, double);
 			need_to_project = (gmt_whole_earth (GMT, I->header->wesn, wesn));	/* Must project global images even if not needed for grids */
@@ -1303,14 +1302,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
-		if (Ctrl->D.mode) {	/* Cannot let GMT_Read_Data use -R to read this plain image */
-			save_R = GMT->common.R.active[RSET];
-			GMT->common.R.active[RSET] = false;	/* Temporarily unset any active -R since we do not want a subset of this image! */
-		}
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
-		if (Ctrl->D.mode) GMT->common.R.active[RSET] = save_R;	/* Restore */
 		grid_registration = I->header->registration;	/* This is presumably pixel registration since it is an image */
 		if (grid_registration != GMT_GRID_PIXEL_REG)
 			GMT_Report(API, GMT_MSG_INFORMATION, "Your image has gridline registration yet all images ought to be pixel registered.\n");

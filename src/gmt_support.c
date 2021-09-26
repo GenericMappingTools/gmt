@@ -228,8 +228,6 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 	/* Attempt to convert to integer - will be 0 if not an integer and then we set it to -1 for a filename */
 	fill->pattern_no = atoi (fill->pattern);
 	if (fill->pattern_no == 0) {
-		bool R_save = GMT->common.R.active[RSET];
-		GMT->common.R.active[RSET] = false;	/* Temporarily unset any active -R since we do not want a subset of this image! */
 		fill->pattern_no = -1;
 		gmt_set_pad (GMT, 0); /* No padding */
 		
@@ -238,7 +236,6 @@ GMT_LOCAL int gmtsupport_parse_pattern_new (struct GMT_CTRL *GMT, char *line, st
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read image %s, no pattern set\n", fill->pattern);
 			return (GMT_RUNTIME_ERROR);
 		}
-		GMT->common.R.active[RSET] = R_save;	/* Reset */
 		gmt_set_pad (GMT, GMT->parent->pad); /* Restore to GMT Defaults */
 		fill->dim[0] = fill->I->header->n_columns;
 		fill->dim[1] = fill->I->header->n_rows;

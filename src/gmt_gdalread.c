@@ -746,6 +746,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int error = 0, gdal_code = 0, first_layer;
 	int piece, n_pieces = 1;	/* Normally 1, but will be 2 if the desired image subset is split across a periodic boundary */
 	int XDim, YDim;	/* Dimension of image */
+	int status;
 	bool   do_BIP;		/* For images if BIP == true data is stored Pixel interleaved, otherwise Band interleaved */
 	bool   metadata_only;
 	bool   pixel_reg = false;	/* GDAL decides everything is pixel reg, we make our decisions based on data type */
@@ -758,6 +759,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int64_t  n_alloc, n, m, nn, mm, ij;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
+	double	adfGeoTransform[6];
 	double  dfULX = 0.0, dfULY = 0.0, dfLRX = 0.0, dfLRY = 0.0;
 	double  z_min = DBL_MAX, z_max = -DBL_MAX;
 	GDALDatasetH	hDataset;
@@ -932,6 +934,13 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	XDim = GDALGetRasterXSize(hDataset);
 	YDim = GDALGetRasterYSize(hDataset);
 
+	/* See if there are geographic coordinates in the metadata */
+	status = GDALGetGeoTransform(hDataset, adfGeoTransform);
+	if (status == CE_Failure && got_R) {
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_gdalread: Image %s does not have geographic coordinates so -R is ignored for subregion\n", gdal_filename);
+		got_R = false;
+	}
+
 	if (got_R || got_r) {
 		/* -------------------------------------------------------------------- */
 		/*      Compute the source window from the projected source window      */
@@ -940,9 +949,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		/*      while the anSrcWin is xoff, yoff, xsize, ysize with the         */
 		/*      xoff,yoff being the ulx, uly in pixel/line.                     */
 		/* -------------------------------------------------------------------- */
-		double	adfGeoTransform[6];
 
-		GDALGetGeoTransform(hDataset, adfGeoTransform);
+		//GDALGetGeoTransform(hDataset, adfGeoTransform);
 
 		if (adfGeoTransform[2] != 0.0 || adfGeoTransform[4] != 0.0) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR,
