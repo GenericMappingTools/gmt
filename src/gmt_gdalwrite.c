@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org *
  *--------------------------------------------------------------------*/
 
-/* Program:	GMT_gdawrite.c
+/* Program:	GMT_gdalwrite.c
  * Purpose:	routine to write files supported by gdal
  *
  *		Note: this is a quite crude version tested only with RGB images.
@@ -55,7 +55,7 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 	uint32_t row, col, band;
 	uint64_t k, ijk, b;
 	bool     free_data = false;
-	char    *ext = NULL, *c = NULL, *pch;
+	char    *ext = NULL, *c = NULL, *pch = NULL;
 	unsigned char *data = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_GDALWRITE_CTRL *to_GDALW = NULL;
@@ -228,16 +228,16 @@ int gmt_export_image (struct GMT_CTRL *GMT, char *fname, struct GMT_IMAGE *I) {
 GMT_LOCAL int gmtgdalwrite_write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE_CTRL *prhs, GDALRasterBandH hBand, void *data, int n_rows, int n_cols) {
 	int error = 0, i, j;
 	float *t = (float *)data;
-	uint64_t k, n, nm = (uint64_t)n_rows * n_cols;
+	uint64_t k, n, nm = gmt_M_get_nm (GMT, n_rows, n_cols);
 	/* In gmt_gdal_write_grd we made the pointer to point to the beginning of the non-padded zone, so to make it
-	   coherent we retrieve pad[0]. However, nothing of this is taking into account a -R subregion so all of this
+	   coherent we retrieve pad[XLO]. However, nothing of this is taking into account a -R subregion so all of this
 	   (and not only this case) will probably fail for that case.
 	*/
-	t -= prhs->pad[0];
+	t -= prhs->pad[XLO];
 	if (prhs->orig_type == GMT_UCHAR) {
 		char *dataT = gmt_M_memory(GMT, NULL, nm, char);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[XLO];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (char)t[n + j];
 		}
@@ -247,7 +247,7 @@ GMT_LOCAL int gmtgdalwrite_write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE
 	else if (prhs->orig_type == GMT_USHORT) {
 		short int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned short int);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[XLO];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (unsigned short int)t[n + j];
 		}
@@ -257,7 +257,7 @@ GMT_LOCAL int gmtgdalwrite_write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE
 	else if (prhs->orig_type == GMT_SHORT) {
 		short int *dataT = gmt_M_memory(GMT, NULL, nm, short int);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[XLO];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (short int)t[n + j];
 		}
@@ -267,7 +267,7 @@ GMT_LOCAL int gmtgdalwrite_write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE
 	else if (prhs->orig_type == GMT_UINT) {
 		unsigned int *dataT = gmt_M_memory(GMT, NULL, nm, unsigned int);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[XLO];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (unsigned int)t[n + j];
 		}
@@ -277,7 +277,7 @@ GMT_LOCAL int gmtgdalwrite_write_jp2 (struct GMT_CTRL *GMT, struct GMT_GDALWRITE
 	else if (prhs->orig_type == GMT_INT) {
 		int *dataT = gmt_M_memory(GMT, NULL, nm, int);
 		for (i = 0, k = 0; i < n_rows; i++) {
-			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[0];
+			n = (uint64_t)i*prhs->nXSizeFull + prhs->pad[XLO];
 			for (j = 0; j < n_cols; j++)
 				dataT[k++] = (int)t[n + j];
 		}
@@ -306,9 +306,9 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	int  typeCLASS, typeCLASS_f, nColors, n_byteOffset, n_bands, registration;
 	int  is_geog = 0, gdal_err = 0;
 	uint64_t nn, ijk = 0;
-	void *data;
-	unsigned char *outByte = NULL, *img = NULL, *tmpByte;
-	float *ptr;
+	void *data = NULL;
+	unsigned char *outByte = NULL, *img = NULL, *tmpByte = NULL;
+	float *ptr = NULL;
 
 	if (prhs->driver) pszFormat = prhs->driver;		/* Otherwise use the default GTiff format */
 	adfGeoTransform[0] =  prhs->ULx;
