@@ -731,7 +731,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: Shows the gdal_translate command, in case you want to use this program "
 		"to create a geoTIFF file.");
 	GMT_Usage (API, 1, "\n-W[+a<mode>[<alt]][+c][+f<minfade>/<maxfade>][+g][+k][+l<lodmin>/<lodmax>][+n<name>][+o<folder>][+t<title>][+u<URL>]");
-	GMT_Usage (API, -2, "Write an ESRI type world file suitable to make e.g. .tif files "
+	GMT_Usage (API, -2, "Write an ESRI type world file suitable to make .tif files "
 		"recognized as geotiff by software that know how to do it. Be aware, "
 		"however, that different results are obtained depending on the image "
 		"contents and if the -B option has been used or not. The trouble with "
