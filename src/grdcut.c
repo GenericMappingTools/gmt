@@ -438,6 +438,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (Ctrl->D.quit)	/* Already reported information deep inside gmt_init_module */
 		Return (GMT_NOERROR);
 
+	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+
 	if (!Ctrl->Z.active) {	/* All of -F, -R, -S selections first needs the header */
 		if (Ctrl->In.type == GMT_IS_IMAGE) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing input image\n");
