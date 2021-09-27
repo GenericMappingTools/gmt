@@ -1195,9 +1195,9 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					continue;
 				}
 
-				/* If we didn't compute it yet, its time to do it now */
-				if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize[piece], nYSize, z_min, z_max);
-				z_min = adfMinMax[0];	z_max = adfMinMax[1];	/* Update z_min, z_max in case we get here twice */
+				/* If we didn't compute it yet, its time to do it now (for this block) */
+				if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize[piece], buffy, z_min, z_max);
+				z_min = adfMinMax[0];	z_max = adfMinMax[1];	/* Update z_min, z_max in case we get here more than once (multiple blocks or two pieces) */
 
 				/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 				if (jump) {
