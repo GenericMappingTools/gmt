@@ -302,7 +302,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	GDALColorEntry   sEntry;
 	GDALProgressFunc pfnProgress = GDALTermProgress;
 
-	int  n_cols, n_rows, i, k, error = GMT_NOERROR;
+	int  n_cols, n_rows, i, error = GMT_NOERROR;
 	int  typeCLASS, typeCLASS_f, nColors, n_byteOffset, n_bands, registration;
 	int  is_geog = 0, gdal_err = 0;
 	uint64_t nn, ijk = 0;

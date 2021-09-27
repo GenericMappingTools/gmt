@@ -421,10 +421,10 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			return(-1);
 		}
 
-		anSrcWin[0] = (int) ((dfULX - adfGeoTransform[0]) / adfGeoTransform[1] + 0.001);
-		anSrcWin[1] = (int) ((dfULY - adfGeoTransform[3]) / adfGeoTransform[5] + 0.001);
-		anSrcWin[2] = (int) ((dfLRX - dfULX) / adfGeoTransform[1] + 0.5);
-		anSrcWin[3] = (int) ((dfLRY - dfULY) / adfGeoTransform[5] + 0.5);
+		anSrcWin[0] = irint ((dfULX - adfGeoTransform[0]) / adfGeoTransform[1]);
+		anSrcWin[1] = irint ((dfULY - adfGeoTransform[3]) / adfGeoTransform[5]);
+		anSrcWin[2] = irint ((dfLRX - dfULX) / adfGeoTransform[1]);
+		anSrcWin[3] = irint ((dfLRY - dfULY) / adfGeoTransform[5]);
 
 		if (anSrcWin[0] < 0 || anSrcWin[1] < 0
 		    || anSrcWin[0] + anSrcWin[2] > GDALGetRasterXSize(hDataset)
@@ -741,7 +741,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int	jump = 0, nXSize[2] = {0,0}, nYSize = 0, nX[2] = {0,0}, nY;
 	int nBufXSize[2] = {0,0}, nBufYSize, buffy, startRow = 0, endRow;
 	int nRowsPerBlock, nBlocks, nYOff, row_i, row_e;
-	int k, pad = 0, pad_w[2] = {0,0}, pad_e[2] = {0,0}, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
+	int k, pad_w[2] = {0,0}, pad_e[2] = {0,0}, pad_s = 0, pad_n = 0;    /* Different pads for when sub-regioning near the edges */
 	int	incStep = 1;	/* 1 for real only arrays and 2 for complex arrays (index step increment) */
 	int error = 0, gdal_code = 0, first_layer;
 	int piece, n_pieces = 1;	/* Normally 1, but will be 2 if the desired image subset is split across a periodic boundary */
@@ -962,20 +962,20 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		}
 
 		if (got_R) {	/* Region in map coordinates */
-			anSrcWin[0] = irint (((dfULX - adfGeoTransform[0]) / adfGeoTransform[1] + 0.001));
-			anSrcWin[1] = irint (((dfULY - adfGeoTransform[3]) / adfGeoTransform[5] + 0.001));
-			anSrcWin[2] = irint (((dfLRX - dfULX) / adfGeoTransform[1] + 0.5));
-			anSrcWin[3] = irint (((dfLRY - dfULY) / adfGeoTransform[5] + 0.5));
+			anSrcWin[0] = irint (((dfULX - adfGeoTransform[0]) / adfGeoTransform[1]));
+			anSrcWin[1] = irint (((dfULY - adfGeoTransform[3]) / adfGeoTransform[5]));
+			anSrcWin[2] = irint (((dfLRX - dfULX) / adfGeoTransform[1]));
+			anSrcWin[3] = irint (((dfLRY - dfULY) / adfGeoTransform[5]));
 			if (GDAL_VERSION_NUM < 1700 && !strcmp(format,"netCDF")) {
 				/* PATCH against the old GDAL bugs of reading netCDF files */
 				anSrcWin[1] = GDALGetRasterYSize(hDataset) - (anSrcWin[1] + anSrcWin[3]) - 1;
 			}
 		}
 		else {		/* Region in pixel/line */
-			anSrcWin[0] = (int) (dfULX);
-			anSrcWin[1] = (int) (dfLRY);
-			anSrcWin[2] = (int) (dfLRX - dfULX);
-			anSrcWin[3] = (int) (dfULY - dfLRY);
+			anSrcWin[0] = irint (dfULX);
+			anSrcWin[1] = irint (dfLRY);
+			anSrcWin[2] = irint (dfLRX - dfULX);
+			anSrcWin[3] = irint (dfULY - dfLRY);
 		}
 
 		/* First check if we are outside valid y-range since that check is always Cartesian */
