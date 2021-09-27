@@ -19,7 +19,7 @@ PACKAGE="${PACKAGE:-false}"
 WIN_PLATFORM=x64-windows
 
 # install libraries
-vcpkg install netcdf-c gdal pcre2 fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
+vcpkg install netcdf-c gdal[core,tools] pcre2 fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
 # Executable files search for DLL files in the directories listed in the PATH environment variable.
 echo "${VCPKG_INSTALLATION_ROOT}/installed/${WIN_PLATFORM}/bin" >> $GITHUB_PATH
 # Tools like gdal_translate, ogr2ogr are located in tools/gdal
