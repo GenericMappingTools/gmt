@@ -286,10 +286,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	                                   "Must specify only one of the -F, -R, -S or the -Z options\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->D.active, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
-	if (n_errors == 0 && (ftype = gmt_raster_type (GMT, Ctrl->In.file)) == GMT_IS_IMAGE) {
-		Ctrl->In.type = GMT_IS_IMAGE;
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -N: Cannot be used with an image\n");
-		n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -Z: Cannot be used with an image\n");
+	if (n_errors == 0) {
+		if ((ftype = gmt_raster_type (GMT, Ctrl->In.file, true)) == GMT_IS_IMAGE || ftype == GMT_IS_GRID)
+			Ctrl->In.type = ftype;
+		else	/* Must assume it is a grid */
+			Ctrl->In.type = GMT_IS_GRID;
+		if (Ctrl->In.type == GMT_IS_IMAGE) {
+			n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -N: Cannot be used with an image\n");
+			n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -Z: Cannot be used with an image\n");
+		}
 	}
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);

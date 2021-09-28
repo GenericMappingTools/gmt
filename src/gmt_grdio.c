@@ -3292,7 +3292,7 @@ GMT_LOCAL int gmtgrdio_get_extension_period (char *file) {
 
 #define GMT_VF_TYPE_POS	13	/* Character in the virtual file name that indicates data family */
 
-int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
+int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 	/* Returns the type of the file (either grid or image).
 	 * We use the file extension to make these decisions:
 	 * GMT_IS_IMAGE: In this context, this means a plain image
@@ -3307,6 +3307,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	 *	TIF, JP2, IMG (ERDAS).  These are detected via magic bytes.
 	 * GMT_NOTSET: This covers anything that fails to land in the
 	 *	other two categories.
+	 * extra will try to open the image to count bands.
 	 */
 	FILE *fp = NULL;
 	unsigned char data[16] = {""};
@@ -3431,6 +3432,16 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 			break;
 	}
 
+	if (extra && code == GMT_IS_GRID && (data[0] == 'I' || data[0] == 'M')) {	/* Need to check more to determine if TIFF is grid or image */
+		/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
+		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
+		struct GMT_IMAGE *I = NULL;
+		if ((I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, file, NULL)) != NULL) {
+			HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
+			if (I->header->n_bands > 1 || (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)) code = GMT_IS_IMAGE;
+			GMT_Destroy_Data (GMT->parent, &I);
+		}
+	}
 	if (code == GMT_IS_IMAGE)
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s considered a valid image instead of grid. Open via GDAL\n", file);
 	else if (code == GMT_IS_GRID)
