@@ -355,6 +355,61 @@ int gmt_remote_no_resolution_given (struct GMTAPI_CTRL *API, const char *rfile, 
 	return (ID);	/* Start of the family or -1 */
 }
 
+struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const char *rfile, unsigned int *n) {
+	/* Return list of available resolutions and registrations for the specified data set family.
+	 * For instance, if file is "earth_relief" then we return an array of structs
+	 * with the resolution and registration from 01d (g&p) to 91s (g) .*/
+	char *c = NULL, *p = NULL, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""};
+	static char *registration = "gp";	/* The two types of registrations */
+	int id = 0, reg = GMT_NOTSET;
+	size_t L, n_alloc = GMT_SMALL_CHUNK;
+	struct GMT_RESOLUTION *R = NULL;
+
+	if (rfile == NULL || rfile[0] == '\0') return NULL;	/* No file name given */
+	if (rfile[0] != '@') return NULL;	/* No remote file name given */
+	strcpy (file, &rfile[1]);	/* Make a copy but skipping leading @ character */
+	if ((c = strchr (file, '+'))) c[0] = '\0';	/* Chop of modifiers such as in grdimage -I */
+	L = strlen (file);
+	if (!strncmp (&file[L-2], "_g", 2U)) {	/* Want a gridline-registered version */
+		reg = GMT_GRID_NODE_REG;
+		file[L-2] = '\0';
+	}
+	else if (!strncmp (&file[L-2], "_p", 2U)) {	/* Want a pixel-registered version */
+		reg = GMT_GRID_PIXEL_REG;
+		file[L-2] = '\0';
+	}
+	if ((R = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_RESOLUTION)) == NULL)
+		return NULL;	/* No memory */
+
+	for (int k = 0; k < API->n_remote_info; k++) {
+		strncpy (dir, API->remote_info[k].dir, strlen (API->remote_info[k].dir)-1);	/* Make a copy without the trailing slash */
+		p = strrchr (dir, '/');	/* Start of final subdirectory */
+		p++;	/* Skip past the slash */
+		if (!strcmp (p, file) && (reg == GMT_NOTSET || registration[reg] == API->remote_info[k].reg)) {	/* Got one to keep */
+			R[id].resolution = urint (1.0 / API->remote_info[k].d_inc);	/* Number of nodes per degree */
+			strncpy (R[id].inc, API->remote_info[k].inc, GMT_LEN8);	/* Copy the formatted inc string */
+			R[id].reg = API->remote_info[k].reg;	/* Copy the registration */
+			id++;
+		}
+		if (id == n_alloc) {	/* Need more memory */
+			n_alloc += GMT_SMALL_CHUNK;
+			if ((R = gmt_M_memory (API->GMT, NULL, n_alloc, struct GMT_RESOLUTION)) == NULL)
+				return NULL;	/* No memory */
+		}
+	}
+	if (id) {	/* Did find some */
+		if ((R = gmt_M_memory (API->GMT, R, id, struct GMT_RESOLUTION)) == NULL)
+			return NULL;	/* No memory */	
+		*n = id;
+	}
+	else {	/* No luck, probably filename typo */
+		gmt_M_free (API->GMT, R);
+		*n = 0;
+	}
+
+	return (R);	
+}
+
 int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	/* Return the entry in the remote file table of file is found, else -1.
 	 * Complications to consider before finding a match:

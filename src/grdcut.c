@@ -732,8 +732,15 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		if (Ctrl->D.text) {
+			enum gmt_col_enum type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+			char inc[GMT_LEN64] = {""};
 			Out = gmt_new_record (GMT, NULL, record);	/* The trailing text output record */
-			sprintf (record, "-R%.16lg/%.16lg/%.16lg/%.16lg -I%.16lg/%.16lg", wesn_new[XLO], wesn_new[XHI], wesn_new[YLO], wesn_new[YHI], G->header->inc[GMT_X], G->header->inc[GMT_Y]);
+			gmt_format_region (GMT, record, wesn_new);	/* Typeset the -Rw/e/s/n part */
+			gmt_ascii_format_inc (GMT, inc, G->header->inc[GMT_X], type);
+			strcat (record, " -I"); strcat (record, inc);
+			type = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
+			gmt_ascii_format_inc (GMT, inc, G->header->inc[GMT_Y], type);
+			strcat (record, "/");	strcat (record, inc);	/* dlat or yinc */
 		}
 		else {
 			Out = gmt_new_record (GMT, out, NULL);	/* The numerical output record */

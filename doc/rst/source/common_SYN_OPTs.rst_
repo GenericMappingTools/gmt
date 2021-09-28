@@ -87,6 +87,12 @@
     <cookbook/options:Coordinate transformations and map projections: The **-J** option>`
     :ref:`(See projections table) <proj-codes>`.
 
+.. |Add_-R_auto_table| replace:: **Note**: If using modern mode and |-R| is not provided, the region
+   will be set based on previous plotting commands. If this is the first plotting command in the
+   :ref:`modern mode levels <cookbook/features:GMT Modern Mode Hierarchical Levels>` and |-R| is not
+   provided, the region will be automatically determined based on the data in *table*
+   (equivalent to using **-Ra**). |Add_-R_links|
+
 .. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
     <cookbook/options:Data domain or map region: The **-R** option>`.
 

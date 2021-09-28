@@ -211,7 +211,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**+a**\ *altmode*\ [*alt*]][**+c**][**+f**\ *minfade/maxfade*][**+g**][**+k**][**+l**\ *minLOD/maxLOD*][**+n**\ *layername*][**+o**\ *foldername*][**+t**\ *docname*][**+u**\ *URL*]
-    Write a ESRI type world file suitable to make (e.g) .tif files be
+    Write an ESRI type world file suitable to make .tif files be
     recognized as geotiff by software that know how to do it. Be aware,
     however, that different results are obtained depending on the image
     contents and if the **-B** option has been used or not. The trouble
