@@ -464,6 +464,8 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 	}
 #ifdef HAVE_GDAL
 	else  {	/* Read a raster image */
+		bool R_save = GMT->common.R.active[RSET];
+		GMT->common.R.active[RSET] = false;	/* Temporarily unset any active -R since we do not want it to be used for a subset of this image! */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Processing input raster via GDAL\n");
 		if (is_gdal) {	/* Need full name since there may be band requests */
 			gmt_M_str_free (file);
@@ -474,13 +476,13 @@ EXTERN_MSC int GMT_psimage (void *V_API, int mode, void *args) {
 			gmt_M_str_free (file);
 			Return (API->error);
 		}
+		GMT->common.R.active[RSET] = R_save;	/* Reset */
 		gmt_set_pad (GMT, API->pad);	/* Reset to GMT default */
 
 		/* Handle transparent images */
 		if (I->colormap != NULL) {	/* Image has a color map */
 			/* Convert colormap from integer to unsigned char and count colors */
-			for (n = 0; n < (size_t)(4 * I->n_indexed_colors) && I->colormap[n] >= 0; n++) colormap[n] = (unsigned char)I->colormap[n];
-			n /= 4;
+			n = gmt_unpack_rgbcolors (GMT, I, colormap);	/* colormap will be RGBARGBA... */
 			if (n == 2 && Ctrl->G.active) {	/* Replace back or fore-ground color with color given in -G, or catch selection for transparency */
 				if (Ctrl->G.rgb[PSIMAGE_TRA][0] != -2) {
 					GMT_Report (API, GMT_MSG_WARNING, "Your -G<color>+t is ignored for 1-bit images; see +b/+f modifiers instead\n");

@@ -1248,6 +1248,13 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	}
 }
 
+bool gmtgrdio_pad_status (struct GMT_CTRL *GMT, unsigned int *pad) {
+	unsigned int side;
+	gmt_M_unused(GMT);
+	for (side = 0; side < 4; side++) if (pad[side]) return (true);	/* Grid has a pad */
+	return (false);	/* Grid has no pad */
+}
+
 bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int *pad) {
 	/* Determines if this grid has padding at all (pad = NULL) OR
 	 * if pad is given, determines if the pads are different.
@@ -1266,10 +1273,8 @@ bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, u
 		for (side = 0; side < 4; side++) if (header->pad[side] != pad[side]) return (false);	/* Pads differ */
 		return (true);	/* Pads match */
 	}
-	else {	/* We just want to determine if the grid has padding already (true) or not (false) */
-		for (side = 0; side < 4; side++) if (header->pad[side]) return (true);	/* Grid has a pad */
-		return (false);	/* Grid has no pad */
-	}
+	else	/* We just want to determine if the grid has padding already (true) or not (false) */
+		return (gmtgrdio_pad_status (GMT, header->pad));
 }
 
 int gmtlib_get_matrixtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_MATRIX *M) {
@@ -3287,7 +3292,7 @@ GMT_LOCAL int gmtgrdio_get_extension_period (char *file) {
 
 #define GMT_VF_TYPE_POS	13	/* Character in the virtual file name that indicates data family */
 
-int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
+int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 	/* Returns the type of the file (either grid or image).
 	 * We use the file extension to make these decisions:
 	 * GMT_IS_IMAGE: In this context, this means a plain image
@@ -3302,6 +3307,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	 *	TIF, JP2, IMG (ERDAS).  These are detected via magic bytes.
 	 * GMT_NOTSET: This covers anything that fails to land in the
 	 *	other two categories.
+	 * extra will try to open the image to count bands.
 	 */
 	FILE *fp = NULL;
 	unsigned char data[16] = {""};
@@ -3394,11 +3400,17 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 			code = ( !strncmp( (const char *)data, "GIF87a", 6 ) || !strncmp( (const char *)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
 		case 'I':	/* TIF */
-			code = ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
-
+			if (strstr (file, "earth_day") || strstr (file, "earth_night"))	/* We know these are images, not data */
+				code = GMT_IS_IMAGE;
+			else
+				code = ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_GRID : GMT_NOTSET;
+			break;
 		case 'M':	/* TIF */
-			code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
-
+			if (strstr (file, "earth_day") || strstr (file, "earth_night"))	/* We know these are images, not data */
+				code = GMT_IS_IMAGE;
+			else
+				code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_GRID : GMT_NOTSET;
+			break;
 		case 'P':	/* PPM (also check that extension starts with p since the magic bytes are a bit weak ) */
 			code = (data[1] >= '1' && data[1] <= '6' && tolower (path[pos_ext]) == 'p') ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
@@ -3420,6 +3432,16 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 			break;
 	}
 
+	if (extra && code == GMT_IS_GRID && (data[0] == 'I' || data[0] == 'M')) {	/* Need to check more to determine if TIFF is grid or image */
+		/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
+		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
+		struct GMT_IMAGE *I = NULL;
+		if ((I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, file, NULL)) != NULL) {
+			HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
+			if (I->header->n_bands > 1 || (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)) code = GMT_IS_IMAGE;
+			GMT_Destroy_Data (GMT->parent, &I);
+		}
+	}
 	if (code == GMT_IS_IMAGE)
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s considered a valid image instead of grid. Open via GDAL\n", file);
 	else if (code == GMT_IS_GRID)
@@ -3662,7 +3684,6 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		gmt_set_geographic (GMT, GMT_IN);	/* A geographic image */
 
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
-
 	gmt_set_grddim (GMT, I->header);		/* This recomputes n_columns|n_rows. Dangerous if -R is not compatible with inc */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 
@@ -3694,17 +3715,18 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 
 	expand = gmtgrdio_padspace (GMT, I->header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
-	/*gmt_M_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, image, P.wesn, P.pad, complex_mode));*/
-
 	/* Allocate new control structures */
 	to_gdalread   = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active[RSET]) {
-		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
-		          GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		double *region = (expand) ? P.wesn : I->header->wesn;
+		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", region[XLO], region[XHI], region[YLO], region[YHI]);
 		to_gdalread->R.region = strR;
-		/*to_gdalread->R.active = true;*/	/* Wait until we really know how to use it */
+		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
+ 		to_gdalread->registration.x_inc = I->header->inc[GMT_X];
+ 		to_gdalread->registration.y_inc = I->header->inc[GMT_Y];
+		to_gdalread->R.active = true;	/* Wait until we really know how to use it */
 	}
 
 	if (HH->pocket) {				/* See if we have a band request */
@@ -3712,14 +3734,18 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		to_gdalread->B.bands = HH->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
-	to_gdalread->p.pad = (int)pad[0];	/* Only 'square' padding allowed */
-	to_gdalread->p.active = (pad[0] > 0);
+	if (pad) {
+		gmt_M_memcpy (to_gdalread->p.pad, P.pad, 4U, unsigned int);
+		to_gdalread->p.active = gmtgrdio_pad_status (GMT, P.pad);
+	}
 	to_gdalread->I.active = true;		/* Means that image in I->data will be BIP interleaved */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
-	to_gdalread->c_ptr.active = true;
-	to_gdalread->c_ptr.grd = I->data;
-
+	if (I->data) {		/* Otherwise (subregion) memory is allocated in gdalread */
+		to_gdalread->c_ptr.active = true;
+		to_gdalread->c_ptr.grd = I->data;
+	}
+	if (HH->grdtype > GMT_GRID_GEOGRAPHIC_LESS360) to_gdalread->R.periodic = true;	/* Let gmt_gdalread know we have a periodic image */
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading image with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);
@@ -3739,13 +3765,13 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	I->n_indexed_colors  = from_gdalread->nIndexedColors;
 	I->header->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
-	if (expand) {	/* Must undo the region extension and reset n_columns, n_rows */
-		I->header->n_columns -= (int)(P.pad[XLO] + P.pad[XHI]);
-		I->header->n_rows -= (int)(P.pad[YLO] + P.pad[YHI]);
+	gmt_M_memcpy (I->header->wesn, from_gdalread->hdr, 4, double);	/* Set the actual w/e/s/n bounds */
+
+	if (expand)	/* Must undo the region extension and reset n_columns, n_rows */
 		gmt_M_memcpy (I->header->wesn, wesn, 4, double);
-		I->header->nm = gmt_M_get_nm (GMT, I->header->n_columns, I->header->n_rows);
-	}
 	gmt_M_grd_setpad (GMT, I->header, pad);	/* Copy the pad to the header */
+	gmt_set_grddim (GMT, I->header);	/* Update header items */
+	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
 
 	gmt_M_free (GMT, to_gdalread);
 	for (i = 0; i < from_gdalread->RasterCount; i++)

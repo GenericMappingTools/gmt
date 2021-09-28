@@ -1258,10 +1258,10 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 
 #ifdef HAVE_GDAL
-	if (!Ctrl->D.active && (ftype = gmt_raster_type (GMT, Ctrl->In.file)) == GMT_IS_IMAGE) {
+	if (!Ctrl->D.active && (ftype = gmt_raster_type (GMT, Ctrl->In.file, false)) == GMT_IS_IMAGE) {
 		/* The input file is an ordinary image instead of a grid and -R may be required to use it */
 		Ctrl->D.active = true;
-		if (GMT->common.R.active[RSET]) Ctrl->D.mode = true;
+		if (GMT->common.R.active[RSET] && !strstr (Ctrl->In.file, "earth_")) Ctrl->D.mode = true;
 	}
 
 	if (!Ctrl->D.active && ftype == GMT_IS_GRID) {	/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
@@ -1279,6 +1279,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 #endif
 
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
+		bool R_save = GMT->common.R.active[RSET];
 		if (I && !need_to_project) {
 			gmt_M_memcpy (wesn, GMT->common.R.active[RSET] ? GMT->common.R.wesn : I->header->wesn, 4, double);
 			need_to_project = (gmt_whole_earth (GMT, I->header->wesn, wesn));	/* Must project global images even if not needed for grids */
@@ -1300,11 +1301,16 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (!Ctrl->D.mode && use_intensity_grid && !GMT->common.R.active[RSET])	/* Apply illumination to an image but no -R provided; use intensity domain as -R region */
 			gmt_M_memcpy (GMT->common.R.wesn, Intens_orig->header->wesn, 4, double);
 
+		if (Ctrl->D.mode && GMT->common.R.active[RSET]) {
+			/* Need to assign given -R as the image's -R, so cannot pass -R in when reading */
+			GMT->common.R.active[RSET] = false;	/* Temporarily turn off -R if given */
+		}
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
 		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
+		GMT->common.R.active[RSET] = R_save;	/* Restore -R if it was set */
 		grid_registration = I->header->registration;	/* This is presumably pixel registration since it is an image */
 		if (grid_registration != GMT_GRID_PIXEL_REG)
 			GMT_Report(API, GMT_MSG_INFORMATION, "Your image has gridline registration yet all images ought to be pixel registered.\n");
@@ -1562,6 +1568,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (got_z_grid && (gmt_whole_earth (GMT, Grid_orig->header->wesn, wesn) == 1))
 		need_to_project = true;	/* This can only happen if reading a remote global geographic grid and the central meridian differs from that of the projection */
+	else if (Ctrl->D.active && (gmt_whole_earth (GMT, I->header->wesn, wesn) == 1))
+		need_to_project = true;	/* This can only happen if reading a remote global geographic image and the central meridian differs from that of the projection */
 
 	/* Get or calculate a color palette file */
 
