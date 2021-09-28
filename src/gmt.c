@@ -29,8 +29,8 @@
 #include "gmt_dev.h"
 
 #ifndef NO_SIGHANDLER
-	/* Include signal declarations */
-#	include "gmt_common_sighandler.h"
+/* Include signal declarations */
+#include "gmt_common_sighandler.h"
 #endif
 
 #define PROGRAM_NAME	"gmt"
@@ -56,8 +56,11 @@ int main (int argc, char *argv[]) {
 
 #ifndef NO_SIGHANDLER
 	/* Install a signal handler */
-#ifdef WIN32
-	signal (SIGINT, sig_handler_win32);	/* Only handle Ctrl-C under Windows */
+#ifdef WIN32	/* Only handle Ctrl-C under Windows */
+    if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)sig_handler_win32, TRUE)) {
+        fprintf (stderr, "Unable to install Windows signal handler!\n");
+        return EXIT_FAILURE;
+    }
 #else	/* Unix/Linux/macOS */
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */

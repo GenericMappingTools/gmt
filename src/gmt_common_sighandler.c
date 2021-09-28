@@ -37,13 +37,18 @@
 EXTERN_MSC void gmtlib_terminate_session ();
 
 #ifdef WIN32
+#include <windows.h>
 /* win32: Install Windows SIGINT handling only */
-void sig_handler_win32 (int sig) {
-	gmtlib_terminate_session ();	/* Delete session dir and call GMT_Destroy_Session */
-    exit (0);
+BOOL sig_handler_win32 (DWORD dwType)
+{
+    if (dwType == CTRL_C_EVENT) {
+		gmtlib_terminate_session ();	/* Delete session dir and call GMT_Destroy_Session */
+		exit (0);
+	}
+	return TRUE;
 }
-/* install signal handler like this: 
- *     sig_handler_win32 (SIGINT, sigHandler);
+/* install WIN32 signal handler like this: 
+ *  SetConsoleCtrlHandler((PHANDLER_ROUTINE)sig_handler_win32,TRUE));
  */
 #else
 /* unix: Install broader sighandler via backtrace handling of SIGINT, SIGILL, SIGFPE, SIGBUS and SIGSEGV */
