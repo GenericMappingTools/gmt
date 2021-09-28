@@ -1535,7 +1535,7 @@ Automatic CPTs
 
 A few modules (:doc:`/grdimage`, :doc:`/grdview`) that expects a CPT option will
 provide a default CPT if none is provided.  By default, the default CPT is the
-*turbo* color table, but this is overridden if the user uses the @eart_relief
+*turbo* color table, but this is overridden if the user uses the @earth_relief
 (we select *geo*) or @srtm_relief (we select *srtm*) data sets.  After selection,
 these CPTs are read and scaled to match the range of the grid values. You may append
 **+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
