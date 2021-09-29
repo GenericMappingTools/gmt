@@ -19124,6 +19124,7 @@ void gmtlib_terminate_session () {
 	 * As well as 
 	 */
 
+	bool die;
 	char dir[PATH_MAX] = {""};
 	struct GMTAPI_CTRL *API = NULL;
 
@@ -19136,7 +19137,9 @@ void gmtlib_terminate_session () {
 		if (gmt_remove_dir (API, dir, false))
 			GMT_Report (API, GMT_MSG_WARNING, "Unable to remove session directory %s [permissions?]\n", dir);
 	}
+	die = !API->external;	/* Only call exit from the CLI */
 	GMT_Destroy_Session (API);	/* Try to get out cleanly */
+	if (die) exit (0);
 }
 
 /*! . */

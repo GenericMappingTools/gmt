@@ -41,10 +41,8 @@ EXTERN_MSC void gmtlib_terminate_session ();
 /* win32: Install Windows SIGINT handling only */
 BOOL sig_handler_win32 (DWORD dwType)
 {
-    if (dwType == CTRL_C_EVENT) {
+    if (dwType == CTRL_C_EVENT)
 		gmtlib_terminate_session ();	/* Delete session dir and call GMT_Destroy_Session */
-		exit (0);
-	}
 	return TRUE;
 }
 /* install WIN32 signal handler like this: 
@@ -219,8 +217,8 @@ void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext) {
 		size = backtrace (array, 50); /* get void*'s for all entries on the stack */
 		fprintf (stderr, "Stack backtrace:\n");
 		backtrace_symbols_fd (array, size, STDERR_FILENO); /* print out all the frames to stderr */
+		exit (EXIT_FAILURE);	/* Now exit process */
 	}
-	exit (EXIT_FAILURE);	/* Now exit process */
 }
 
 /*
