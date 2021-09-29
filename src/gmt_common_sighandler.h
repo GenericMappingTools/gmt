@@ -35,7 +35,7 @@
 #   include <signal.h>
 #   ifdef WIN32
 #       include <windows.h>
-        EXTERN_MSC void sig_handler_win32 (DWORD dwType);
+        EXTERN_MSC BOOL sig_handler_win32 (DWORD dwType);
 #   else
         EXTERN_MSC void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
 #   endif
