@@ -126,7 +126,7 @@
 #define GMT_f_OPT	"-f[i|o]<colinfo>"
 #define GMT_g_OPT	"-gx|y|z|d|X|Y|D<gap>[<unit>][+a][+c<col>][+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
-#define GMT_i_OPT	"-i<cols>[+l][+d<divisor>][+s<scale>][+o<offset>][,...][,t[<word>]]"
+#define GMT_i_OPT	"-i<cols>[+l][+d<divisor>][+s<scale>|d|k][+o<offset>][,...][,t[<word>]]"
 #define GMT_j_OPT	"-je|f|g"
 #define GMT_l_OPT	"-l[<label>][+D<pen>][+G<gap>][+H<header>][+L[<code>/]<txt>][+N<cols>][+S<size>[/<height>]][+V[<pen>]][+f<font>][+g<fill>][+j<just>][+o<dx>[/<dy>]][+p<pen>][+s<scale>][+w<width>]"
 #ifdef DEBUG
