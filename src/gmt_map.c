@@ -6695,6 +6695,10 @@ GMT_LOCAL double gmtmap_auto_time_increment (double inc, char *unit) {
 	return (incs[kk]);
 }
 
+GMT_LOCAL bool gmtmap_polar_az (struct GMT_CTRL *GMT) {
+	return (gmt_M_is_azimuthal (GMT) && GMT->current.proj.polar && !GMT->common.R.oblique);
+}
+
 /*! . */
 void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned int item) {
 	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
@@ -6724,10 +6728,12 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	if (axis == GMT_X) {
 		f = sxy * fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
 		d = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
+		if (gmtmap_polar_az (GMT)) f *= M_PI_2;	/* Circle perimeter is the right comparison to circular longitudes */
 	}
 	else if (axis == GMT_Y) {
 		f = sxy * fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
 		d = fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
+		if (gmtmap_polar_az (GMT)) f /= 2;	/* Latitude range is only covering half the plot */
 	}
 	else {
 		f = sz * fabs (GMT->current.proj.zmax - GMT->current.proj.zmin);
