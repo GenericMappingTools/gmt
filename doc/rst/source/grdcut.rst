@@ -38,10 +38,12 @@ If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subreg
 indirectly via a range check on the node values or via distances from a
 given point. Finally, you can use **-J** for oblique projections to determine
 the corresponding rectangular **-R** setting that will give a grid that fully
-covers the oblique domain.  **Note**: If input grid is actually an image, then
-only options **-R** and **-G** are supported, i.e., you can cut out a sub-region only.
-Complementary to **grdcut** there is :doc:`grdpaste`, which
-will join together two grid files along a common edge.
+covers the oblique domain.  **Note**: If the input grid is actually an image (gray-scale,
+RGB, or RGBA), then options **-N** and **-Z** are unavailable, while for multi-layer
+Geotiff files only options **-R** and **-G** are supported, i.e., you can cut out
+a sub-region only (which we do via gdal_translate). Complementary to **grdcut**
+there is :doc:`grdpaste`, which will join together two grid files (not images)
+along a common edge.
 
 Required Arguments
 ------------------

@@ -409,7 +409,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
-	bool outside[4] = {false, false, false, false}, all, bail = false, geo_to_cart = false;
+	bool outside[4] = {false, false, false, false}, all, bail = false, geo_to_cart = false, do_via_gdal = false;
 
 	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
@@ -451,10 +451,12 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (!Ctrl->Z.active) {	/* All of -F, -R, -S selections first needs the header */
 		if (Ctrl->In.type == GMT_IS_IMAGE) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing input image\n");
-			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, Ctrl->In.file, NULL)) == NULL) {
 				Return (API->error);	/* Get header only */
 			}
 			h = I->header;
+			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file))
+				do_via_gdal = true;	/* Use gdal_translate for this image subset */
 		}
 		else {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
@@ -883,7 +885,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		else {
+		else if (!do_via_gdal) {
 			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_new, Ctrl->In.file, I) == NULL) { 	/* Get subset */
 				Return (API->error);
 			}
@@ -994,7 +996,16 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Write an image */
-		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
+		if (do_via_gdal) {
+			char cmd[GMT_LEN256] = {""};
+			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg -of GTiff %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], Ctrl->In.file, Ctrl->G.file);
+			GMT_Report (API, GMT_MSG_INFORMATION, "The gdal_translate command: \n%s\n", cmd);
+			if (system (cmd)) {	/* Execute the gdal_translate command */
+				GMT_Report (API, GMT_MSG_ERROR, "Error calling %s", cmd);
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+		else if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

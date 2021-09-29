@@ -3432,7 +3432,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 			break;
 	}
 
-	if (extra && code == GMT_IS_GRID && (data[0] == 'I' || data[0] == 'M')) {	/* Need to check more to determine if TIFF is grid or image */
+	if (extra && code != GMT_IS_IMAGE && (data[0] == 'I' || data[0] == 'M')) {	/* Need to check more to determine if TIFF is grid or image */
 		/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
 		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 		struct GMT_IMAGE *I = NULL;
@@ -3629,7 +3629,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	if (must_be_image && from_gdalread->band_field_names != NULL) {
+	if (from_gdalread->band_field_names != NULL) {	/* Know the data type */
 		if (!strcmp(from_gdalread->band_field_names[0].DataType, "Byte"))
 			I->type = GMT_UCHAR;
 		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "Int16"))
@@ -3640,7 +3640,11 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 			I->type = GMT_INT;
 		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "UInt32"))
 			I->type = GMT_UINT;
-		else {
+		else if (!must_be_image && !strcmp(from_gdalread->band_field_names[0].DataType, "Float32"))
+			I->type = GMT_FLOAT;
+		else if (!must_be_image && !strcmp(from_gdalread->band_field_names[0].DataType, "Float64"))
+			I->type = GMT_FLOAT;	/* No doubles for grids or images */
+		else  {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Using this data type (%s) is not implemented\n",
 			            from_gdalread->band_field_names[0].DataType);
 			gmt_M_free (GMT, to_gdalread);
@@ -3742,8 +3746,14 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
 	if (I->data) {		/* Otherwise (subregion) memory is allocated in gdalread */
-		to_gdalread->c_ptr.active = true;
-		to_gdalread->c_ptr.grd = I->data;
+		if (I->type == GMT_FLOAT || I->type == GMT_DOUBLE) {
+			to_gdalread->f_ptr.active = true;
+			to_gdalread->f_ptr.grd = (gmt_grdfloat *)I->data;
+		}
+		else {
+			to_gdalread->c_ptr.active = true;
+			to_gdalread->c_ptr.grd = I->data;
+		}
 	}
 	if (HH->grdtype > GMT_GRID_GEOGRAPHIC_LESS360) to_gdalread->R.periodic = true;	/* Let gmt_gdalread know we have a periodic image */
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
