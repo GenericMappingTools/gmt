@@ -1911,7 +1911,7 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 		while (gmt_getmodopt (GMT, 'D', input, modifiers[kind], &pos, word, &uerr) && uerr == 0) {
 			code = word[0];	/* This is the modifier. Check if 2D and 'z' and change to 'v' */
 			if (code == 'z' && dim == 2) code = 'd';
-			switch (word[0]) {
+			switch (code) {
 				case 'x':	/* Revise x-unit name */
 					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
 					if (strlen(word) > GMT_GRID_UNIT_LEN80)
