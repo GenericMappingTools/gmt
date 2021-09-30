@@ -2846,7 +2846,7 @@ GMT_LOCAL int gmtmap_init_merc (struct GMT_CTRL *GMT, bool *search) {
 		gmtlib_scale_eqrad (GMT);
 		D = GMT->current.setting.ref_ellipsoid[GMT->current.setting.proj_ellipsoid].eq_radius / GMT->current.proj.lat_swap_vals.rm;
 	}
-	if (GMT->common.R.wesn[YLO] <= -90.0 || GMT->common.R.wesn[YHI] >= 90.0) {
+	if (doubleAlmostEqual (GMT->common.R.wesn[YLO], -90.0) || doubleAlmostEqual (GMT->common.R.wesn[YHI], 90.0)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -R:  Cannot include south/north poles with Mercator projection!\n");
 		return GMT_PROJECTION_ERROR;
 	}
@@ -3443,6 +3443,10 @@ GMT_LOCAL int gmtmap_init_oblique (struct GMT_CTRL *GMT, bool *search) {
 		gmtproj_oblmrc (GMT, GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI], &xmax, &ymax);
 	}
 	else {	/* Gave oblique degrees */
+		if (doubleAlmostEqual (GMT->common.R.wesn[YLO], -90.0) || doubleAlmostEqual (GMT->common.R.wesn[YHI], 90.0)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -R:  Cannot include south/north oblique poles with Oblique Mercator projection!\n");
+			return GMT_PROJECTION_ERROR;
+		}
 		/* Convert oblique wesn in degrees to meters using regular Mercator */
 		if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI])) {
 			GMT->common.R.wesn[XLO] = -180.0;
