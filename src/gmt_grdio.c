@@ -1891,9 +1891,9 @@ GMT_LOCAL void gmtgrdio_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input
 
 GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, unsigned int dim, struct GMT_GRID_HEADER *h, struct GMT_CUBE *C) {
 	size_t k, n_slash = 0;
-	unsigned int uerr = 0, kind = dim - 2;
+	unsigned int uerr = 0;
 	bool old = false;
-	char *modifiers[2] = {"xydsontrv", "xyzdsontrv"}, code;
+	char *modifiers = "xyzdsontrv", code;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
@@ -1908,9 +1908,9 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 		char word[GMT_LEN256] = {""};
 		unsigned int pos = 0;
 		double d;
-		while (gmt_getmodopt (GMT, 'D', input, modifiers[kind], &pos, word, &uerr) && uerr == 0) {
+		while (gmt_getmodopt (GMT, 'D', input, modifiers, &pos, word, &uerr) && uerr == 0) {
 			code = word[0];	/* This is the modifier. Check if 2D and 'z' and change to 'v' */
-			if (code == 'z' && dim == 2) code = 'd';
+			if (code == 'z' && dim == 2) code = 'd';	/* Backwards compatibility for using +z with grids */
 			switch (code) {
 				case 'x':	/* Revise x-unit name */
 					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
