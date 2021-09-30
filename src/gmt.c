@@ -57,7 +57,7 @@ int main (int argc, char *argv[]) {
 #ifndef NO_SIGHANDLER
 	/* Install a signal handler */
 #ifdef WIN32	/* Only handle Ctrl-C under Windows */
-    if (!SetConsoleCtrlHandler((PHANDLER_ROUTINE)sig_handler_win32, TRUE)) {
+    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE)sig_handler_win32, TRUE)) {
         fprintf (stderr, "Unable to install Windows signal handler!\n");
         return EXIT_FAILURE;
     }

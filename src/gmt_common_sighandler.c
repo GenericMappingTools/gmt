@@ -26,23 +26,16 @@
 #ifndef NO_SIGHANDLER
 
 /* CMake definitions: This must be first! */
-#include "gmt_config.h"
 #include "declspec.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <string.h>
 
 EXTERN_MSC void gmtlib_terminate_session ();
 
 #ifdef WIN32
 #include <windows.h>
 /* win32: Install Windows SIGINT handling only */
-BOOL sig_handler_win32 (DWORD dwType)
-{
+BOOL sig_handler_win32 (DWORD dwType) {
     if (dwType == CTRL_C_EVENT)
-		gmtlib_terminate_session ();	/* Delete session dir and call GMT_Destroy_Session */
+		gmtlib_terminate_session ();	/* Delete session dir, call GMT_Destroy_Session, and for CLI call exit */
 	return TRUE;
 }
 /* install WIN32 signal handler like this: 
@@ -50,10 +43,15 @@ BOOL sig_handler_win32 (DWORD dwType)
  */
 #else
 /* unix: Install broader sighandler via backtrace handling of SIGINT, SIGILL, SIGFPE, SIGBUS and SIGSEGV */
+#include "gmt_config.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include <sys/ucontext.h>
 #include <sys/resource.h>
 #include <sys/time.h>
+#include <signal.h>
 
 #ifdef HAVE_EXECINFO_H_
 #include <execinfo.h>

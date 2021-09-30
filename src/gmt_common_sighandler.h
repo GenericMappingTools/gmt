@@ -32,11 +32,11 @@
 #define GMT_COMMON_SIGHANDLER_H
 
 #ifndef NO_SIGHANDLER
-#   include <signal.h>
 #   ifdef WIN32
 #       include <windows.h>
         EXTERN_MSC BOOL sig_handler_win32 (DWORD dwType);
 #   else
+#       include <signal.h>
         EXTERN_MSC void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext);
 #   endif
 #endif /* !defined(NO_SIGHANDLER) */
