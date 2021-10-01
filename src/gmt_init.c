@@ -7703,7 +7703,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 3, "+l Take log10 of column before any other transformations.");
 			GMT_Usage (API, 3, "+d Divide column by appended <divisor>.");
 			GMT_Usage (API, 3, "+o Add to column the appended <offset>.");
-			GMT_Usage (API, 3, "+s Multiply column by appended <scale>.");
+			GMT_Usage (API, 3, "+s Multiply column by appended <scale> or give d (convert km to degree) or k (degree to km)");
 			break;
 
 		case 'A':	/* -j option for spherical distance calculation mode */
@@ -9113,10 +9113,17 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 				pos_p = 0;	/* Reset to start of new word */
 				while (gmt_getmodopt (GMT, 'i', c, "dlos", &pos_p, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
+						case 'd': convert |= 1;	scale = 1.0 / atof (&word[1]); break;
 						case 'l': convert |= 2; break;
 						case 'o': convert |= 1; offset = atof (&word[1]); break;
-						case 's': convert |= 1; scale  = atof (&word[1]); break;
-						case 'd': convert |= 1; scale  = 1.0 / atof (&word[1]); break;
+						case 's':	/* Must check for special codes k (convert degrees to km) and d (convert km to degrees) */
+							convert |= 1;
+							switch (word[1]) {
+								case 'k': scale = GMT->current.proj.DIST_KM_PR_DEG; break;
+								case 'd': scale = 1.0 / GMT->current.proj.DIST_KM_PR_DEG; break;
+								default: scale  = atof (&word[1]); break;
+							}
+							break;
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
@@ -15476,7 +15483,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					strncpy (s_inc, API->remote_info[k_data2].inc, GMT_LEN8);
 					inc_set = true;
 				}
-				goto dry_run;
+				if (dry_run)
+					goto dry_run;
 			}
 			if ((c = strchr (opt->arg, '+'))) {	/* Maybe have things like -I@earth_relief_30m+d given to grdimage */
 				c[0] = '\0';
