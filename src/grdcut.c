@@ -455,8 +455,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				Return (API->error);	/* Get header only */
 			}
 			h = I->header;
-			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file))
-				do_via_gdal = true;	/* Use gdal_translate for this image subset */
+			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file) && strstr (Ctrl->In.file, ".tif"))
+				do_via_gdal = true;	/* Use gdal_translate for this multi-layer data subset */
 		}
 		else {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
@@ -996,9 +996,9 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Write an image */
-		if (do_via_gdal) {
+		if (do_via_gdal) {	/* Special case of multi-band geotiff */
 			char cmd[GMT_LEN256] = {""};
-			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg -of GTiff %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], Ctrl->In.file, Ctrl->G.file);
+			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg -of GTiff -co COMPRESS=DEFLATE %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], Ctrl->In.file, Ctrl->G.file);
 			GMT_Report (API, GMT_MSG_INFORMATION, "The gdal_translate command: \n%s\n", cmd);
 			if (system (cmd)) {	/* Execute the gdal_translate command */
 				GMT_Report (API, GMT_MSG_ERROR, "Error calling %s", cmd);
