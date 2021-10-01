@@ -3438,7 +3438,10 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 		struct GMT_IMAGE *I = NULL;
 		if ((I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, file, NULL)) != NULL) {
 			HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
-			if (I->header->n_bands > 1 || (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)) code = GMT_IS_IMAGE;
+			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request */
+				code = GMT_IS_GRID;
+			else if (I->header->n_bands > 1 || (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR))
+				code = GMT_IS_IMAGE;
 			GMT_Destroy_Data (GMT->parent, &I);
 		}
 	}

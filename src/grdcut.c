@@ -455,7 +455,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				Return (API->error);	/* Get header only */
 			}
 			h = I->header;
-			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file) && strstr (Ctrl->In.file, ".tif"))
+			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file) && strstr (Ctrl->In.file, ".tif") && strstr (Ctrl->G.file, ".tif"))
 				do_via_gdal = true;	/* Use gdal_translate for this multi-layer data subset */
 		}
 		else {
@@ -997,8 +997,18 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 	else {	/* Write an image */
 		if (do_via_gdal) {	/* Special case of multi-band geotiff */
-			char cmd[GMT_LEN256] = {""};
+			char cmd[GMT_LEN256] = {""}, *c = strchr (Ctrl->In.file, '='), *b = strstr (Ctrl->In.file, "+b");
+			if (c) c[0] = '\0';	/* Chop off =gd and any band request after that so that we only write the actual file name in the command */
 			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg -of GTiff -co COMPRESS=DEFLATE %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], Ctrl->In.file, Ctrl->G.file);
+			if (c) c[0] = '=';	/* Restore full file name */
+			if (b) {	/* Parse and add specific band request(s) to gdal_translate */
+				char p[GMT_LEN64] = {""};
+				unsigned int pos = 0;
+				while ((gmt_strtok (&b[2], ",", &pos, p))) {
+					strcat (cmd, " -b ");
+					strcat (cmd, p);
+				}
+			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "The gdal_translate command: \n%s\n", cmd);
 			if (system (cmd)) {	/* Execute the gdal_translate command */
 				GMT_Report (API, GMT_MSG_ERROR, "Error calling %s", cmd);
