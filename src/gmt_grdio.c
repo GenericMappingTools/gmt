@@ -3434,14 +3434,17 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 
 	if (extra && code != GMT_IS_IMAGE && (data[0] == 'I' || data[0] == 'M')) {	/* Need to check more to determine if TIFF is grid or image */
 		/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
-		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 		struct GMT_IMAGE *I = NULL;
 		if ((I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, file, NULL)) != NULL) {
-			HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
-			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request */
+			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
+			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
 				code = GMT_IS_GRID;
-			else if (I->header->n_bands > 1 || (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR))
+			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
 				code = GMT_IS_IMAGE;
+			else if (I->header->n_bands > 1)	/* Whatever it is we must return multiband as an image */
+				code = GMT_IS_IMAGE;
+			else	/* Here we only have one band so it is a grid */
+				code = GMT_IS_GRID;
 			GMT_Destroy_Data (GMT->parent, &I);
 		}
 	}

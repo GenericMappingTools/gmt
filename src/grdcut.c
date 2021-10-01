@@ -157,7 +157,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 
 	bool F_or_R_or_J, do_file_check = true;
 	unsigned int n_errors = 0, k, n_files = 0;
-	int ftype;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -290,9 +289,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->D.active, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
 	if (n_errors == 0) {
-		if ((ftype = gmt_raster_type (GMT, Ctrl->In.file, true)) == GMT_IS_IMAGE || ftype == GMT_IS_GRID)
-			Ctrl->In.type = ftype;
-		else	/* Must assume it is a grid */
+		int ftype = gmt_raster_type (GMT, Ctrl->In.file, true);
+		if (ftype == GMT_IS_IMAGE)	/* Must read file as an image */
+			Ctrl->In.type = GMT_IS_IMAGE;
+		else if (ftype == GMT_IS_GRID) {	/* Check extension in case of special case */
+			if (strstr (Ctrl->G.file, ".tif"))	/* Want to write a single band (normally written as a grid) to geotiff instead */
+				Ctrl->In.type = GMT_IS_IMAGE;
+			else
+				Ctrl->In.type = GMT_IS_GRID;
+		}
+		else	/* Just have to assume it is a grid */
 			Ctrl->In.type = GMT_IS_GRID;
 		if (Ctrl->In.type == GMT_IS_IMAGE) {
 			n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -N: Cannot be used with an image\n");
@@ -455,8 +461,13 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				Return (API->error);	/* Get header only */
 			}
 			h = I->header;
-			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file) && strstr (Ctrl->In.file, ".tif") && strstr (Ctrl->G.file, ".tif"))
+			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file) && strstr (Ctrl->In.file, ".tif")) {
 				do_via_gdal = true;	/* Use gdal_translate for this multi-layer data subset */
+				if (strstr (Ctrl->G.file, ".tif") == NULL) {
+					GMT_Report (API, GMT_MSG_INFORMATION, "Option -G: Must give a geotiff output file name when selecting multiband output from a geotiff file\n");
+					Return (GMT_RUNTIME_ERROR);	/* Get header only */
+				}
+			}
 		}
 		else {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
