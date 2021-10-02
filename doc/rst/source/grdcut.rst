@@ -40,7 +40,7 @@ fixed point. Finally, you can use **-J** for oblique projections to determine
 the corresponding rectangular **-R** setting that will give a subregion that fully
 covers the oblique domain.  **Note**: If the input grid is actually an image (gray-scale,
 RGB, or RGBA), then options **-N** and **-Z** are unavailable, while for multi-layer
-Geotiff files only options **-R** and **-G** are supported, i.e., you can cut out
+Geotiff files only options **-R**, **-S** and **-G** are supported, i.e., you can cut out
 a sub-region only (which we do via gdal_translate if you have multiple bands).
 Complementary to **grdcut** there is :doc:`grdpaste`, which will join together
 two grid files (not images) along a common edge.
