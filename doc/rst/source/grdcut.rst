@@ -185,15 +185,16 @@ that is using an oblique projection to display the remote Earth Relief data grid
 Notes
 -----
 
-If the input file is a geotiff with multiple data bands then the output will
-depend on your selection (if any) of which bands to keep: If you do not specify
+If the input file is a geotiff with multiple data bands then the output format will
+depend on your selection (if any) of the bands to keep: If you do not specify
 any bands (which means we consider all the available bands) or you select more
-than one band, then the output file will be another geotiff. If you select a
-single band from the input geotiff then GMT will normally read that in as a
-single grid layer and thus write a netCDF grid (unless you append another grid
-format specifier). However, if your output filename has a .tif or .tiff extension
-then we will instead write it as a one-band geotiff.  All geotiff output operations
-are done via GDAL's gdal_translate.
+than one band, then the output file can either be another geotiff (if you give
+a .tif[f] extension) or it can be a multiband netCDF file (if you give a .nc or .grd
+extension). If you select a single band from the input geotiff then GMT will
+normally read that in as a single grid layer and thus write a netCDF grid (unless
+you append another grid format specifier). However, if your output filename has
+a .tif[f] extension then we will instead write it as a one-band geotiff.
+All geotiff output operations are done via GDAL's gdal_translate.
 
 See Also
 --------

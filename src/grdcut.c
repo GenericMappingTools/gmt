@@ -463,8 +463,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			h = I->header;
 			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file) && strstr (Ctrl->In.file, ".tif")) {
 				do_via_gdal = true;	/* Use gdal_translate for this multi-layer data subset */
-				if (!Ctrl->D.active && strstr (Ctrl->G.file, ".tif") == NULL) {
-					GMT_Report (API, GMT_MSG_INFORMATION, "Option -G: Must give a geotiff output file name when selecting multiband output from a geotiff file\n");
+				if (!Ctrl->D.active && strstr (Ctrl->G.file, ".tif") == NULL && strstr (Ctrl->G.file, ".nc") == NULL && strstr (Ctrl->G.file, ".grd") == NULL)  {
+					GMT_Report (API, GMT_MSG_INFORMATION, "Option -G: Must give an output file name with extensions .tiff (geotiff) or .nc or .grd (netCDF) when selecting multiband output from a geotiff file\n");
 					Return (GMT_RUNTIME_ERROR);	/* Get header only */
 				}
 			}
@@ -1024,10 +1024,14 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 	else {	/* Write an image */
 		if (do_via_gdal) {	/* Special case of multi-band geotiff */
-			char cmd[GMT_LEN256] = {""}, *c = strchr (Ctrl->In.file, '='), *b = strstr (Ctrl->In.file, "+b");
+			char *driver, cmd[GMT_LEN256] = {""}, *c = strchr (Ctrl->In.file, '='), *b = strstr (Ctrl->In.file, "+b");
 			if (c) c[0] = '\0';	/* Chop off =gd and any band request after that so that we only write the actual file name in the command */
 			if (wesn_new[XLO] > 180.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;	/* GDAL expects -180/+180 */
-			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg -of GTiff -co COMPRESS=DEFLATE %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], Ctrl->In.file, Ctrl->G.file);
+			if (strstr (Ctrl->G.file, ".tif"))
+				driver = "GTiff";
+			else
+				driver = "netCDF -co FORMAT=NC4";
+			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg -of %s -co COMPRESS=DEFLATE %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], driver, Ctrl->In.file, Ctrl->G.file);
 			if (c) c[0] = '=';	/* Restore full file name */
 			if (b) {	/* Parse and add specific band request(s) to gdal_translate */
 				char p[GMT_LEN64] = {""};
