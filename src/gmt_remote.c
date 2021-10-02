@@ -1470,12 +1470,13 @@ int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *infile, unsigned in
 	return (k_data);
 }
 
-char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_data, unsigned int *n_tiles) {
-	/* Return the full list of tiles for this tiled dataset */
+char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_data, unsigned int *n_tiles, bool *need_filler) {
+	/* Return the full list of tiles for this tiled dataset. If need_filler is not NULL we return
+	 * true if some of the tiles inside the wesn do not exist based on the coverage map. */
 	char **list = NULL, YS, XS, file[GMT_LEN64] = {""};
 	int x, lon, lat, iw, ie, is, in,  t_size;
 	uint64_t node, row, col;
-	unsigned int n_alloc = GMT_CHUNK, n = 0;
+	unsigned int n_alloc = GMT_CHUNK, n = 0, n_missing = 0;
 	double wesn[4];
 	struct GMT_DATA_INFO *I = &API->remote_info[k_data];	/* Pointer to primary tiled dataset */
 	struct GMT_GRID *Coverage = NULL;
@@ -1522,7 +1523,10 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 				row  = gmt_M_grd_y_to_row (GMT, (double)lat, Coverage->header);
 				col  = gmt_M_grd_x_to_col (GMT, (double)lon, Coverage->header);
 				node = gmt_M_ijp (Coverage->header, row, col);
-				if (Coverage->data[node] == 0) continue;	/* No such tile exists */
+				if (Coverage->data[node] == 0) {	/* No such tile exists */
+					n_missing++;
+					continue;
+				}
 			}
 			lon = (x >= 180) ? x - 360 : x;	/* Need longitudes 0-179 for E and 1-180 for W */
 			XS = (lon < 0) ? 'W' : 'E';
@@ -1555,6 +1559,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 		API->error = GMT_RUNTIME_ERROR;
 		return NULL;
 	}
+	if (need_filler) *need_filler = (n_missing > 0);	/* Incomplete coverage of this data set within wesn */
 
 	return (list);
 }
@@ -1562,6 +1567,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, bool plot_region, unsigned int srtm_flag) {
 	/* Builds a list of the tiles to download for the chosen region, dataset and resolution.
 	 * Uses the optional tile information grid to know if a particular tile exists. */
+	bool need_filler;
 	char tile_list[PATH_MAX] = {""}, stem[GMT_LEN32] = {""}, *file = NULL, **tile = NULL, datatype[3] = {'L', 'O', 'X'}, regtype[2] = {'G', 'P'};
 	int k_filler = GMT_NOTSET;
 	unsigned int k, n_tiles = 0, ocean = (srtm_flag) ? 0 : 2;
@@ -1587,8 +1593,8 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	}
 	file = tile_list;	/* Pointer to the buffer with the name */
 
-	/* Get the primary tiles */
-	tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles);
+	/* Get the primary tiles and determine if the filler grid is needed */
+	tile = gmt_get_dataset_tiles (API, wesn, k_data, &n_tiles, &need_filler);
 
 	/* Write primary tiles to list file */
 	for (k = 0; k < n_tiles; k++)
@@ -1597,20 +1603,20 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	gmt_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
 
 	if (k_filler != GMT_NOTSET) {	/* Want the secondary tiles */
-		if ((tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles))) {
+		if (need_filler && (tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles, NULL))) {
 			/* Write secondary tiles to list file */
 			for (k = 0; k < n_tiles; k++)
 				fprintf (fp, "%s\n", tile[k]);
 			gmt_free_list (API->GMT, tile, n_tiles);	/* Free the secondary tile list */
-			if (Ip->d_inc < Is->d_inc) {
-				/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
-				/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
-				 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
-				wesn[XLO] = floor ((wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[XHI] = ceil  ((wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[YLO] = floor ((wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[YHI] = ceil  ((wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
-			}
+		}
+		if (Ip->d_inc < Is->d_inc) {
+			/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
+			/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
+			 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
+			wesn[XLO] = floor ((wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[XHI] = ceil  ((wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[YLO] = floor ((wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[YHI] = ceil  ((wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
 		}
 	}
 	fclose (fp);
