@@ -474,7 +474,8 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	 * can then be used to fill in the pad.  However, if the domain is taken from a grid
 	 * whose full domain exceeds the region of interest we are better off using the extra
 	 * data to fill those pad rows/columns.  Thus, this function tries to determine if the
-	 * input grid has the extra data we need to fill the BC pad with observations. */
+	 * input grid has the extra data we need to fill the BC pad with observations
+	 * P returns the correct region and pad to use regardless if function returns true or false */
 	bool wrap;
 	unsigned int side, n_sides = 0;
 	double wesn2[4];
@@ -482,14 +483,15 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	gmt_M_unused(GMT);
 
 	/* First copy over original settings to the Pad structure */
-	gmt_M_memset (P, 1, struct GRD_PAD);					/* Initialize to zero */
+	gmt_M_memset (P, 1, struct GRD_PAD);				/* Initialize to zero */
 	gmt_M_memcpy (P->pad, pad, 4, int);					/* Duplicate the pad */
-	if (!wesn) return (false);						/* No subset requested */
+	gmt_M_memcpy (P->wesn, header->wesn, 4, double);	/* Copy the header boundaries */
+	if (!wesn) return (false);							/* No subset requested */
 	if (wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]) return (false);	/* Subset not set */
 	if (gmtgrdio_eq (wesn[XLO], header->wesn[XLO], header->inc[GMT_X]) && gmtgrdio_eq (wesn[XHI], header->wesn[XHI], header->inc[GMT_X])
 		&& gmtgrdio_eq (wesn[YLO], header->wesn[YLO], header->inc[GMT_Y]) && gmtgrdio_eq (wesn[YHI], header->wesn[YHI], header->inc[GMT_Y]))
 		return (false);	/* Subset equals whole area */
-	gmt_M_memcpy (P->wesn, wesn, 4, double);					/* Copy the subset boundaries */
+	gmt_M_memcpy (P->wesn, wesn, 4, double);			/* Copy the subset boundaries */
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (false);	/* No padding requested */
 	if (!GMT->current.io.grid_padding) return (false);	/* Not requested */
 
@@ -3720,8 +3722,7 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active[RSET]) {
-		double *region = (expand) ? P.wesn : I->header->wesn;
-		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", region[XLO], region[XHI], region[YLO], region[YHI]);
+		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", P.wesn[XLO], P.wesn[XHI], P.wesn[YLO], P.wesn[YHI]);
 		to_gdalread->R.region = strR;
 		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
  		to_gdalread->registration.x_inc = I->header->inc[GMT_X];
