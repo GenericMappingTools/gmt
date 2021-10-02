@@ -1025,7 +1025,8 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	else {	/* Write an image */
 		if (do_via_gdal) {	/* Special case of multi-band geotiff */
 			char driver[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, *c = strchr (Ctrl->In.file, '='), *b = strstr (Ctrl->In.file, "+b");
-			if (c) c[0] = '\0';	/* Chop off =gd and any band request after that so that we only write the actual file name in the command */
+			if (c) c[0] = '\0';	/* Chop off =gd request after that so that we only write the actual file name in the command */
+			if (b) b[0] = '\0';	/* Chop offany band request after that so that we only write the actual file name in the command */
 			if (wesn_new[XLO] > 180.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;	/* GDAL expects -180/+180 */
 			if (strstr (Ctrl->G.file, ".tif"))
 				sprintf (driver, "-of GTiff -co COMPRESS=DEFLATE");
@@ -1033,6 +1034,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				sprintf (driver, "-of netCDF -co COMPRESS=DEFLATE -co FORMAT=NC4 -co ZLEVEL=%d -a_nodata NaN", GMT->current.setting.io_nc4_deflation_level);
 			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg %s %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], driver, Ctrl->In.file, Ctrl->G.file);
 			if (c) c[0] = '=';	/* Restore full file name */
+			if (b) b[0] = '+';	/* Restore band requests */
 			if (b) {	/* Parse and add specific band request(s) to gdal_translate */
 				char p[GMT_LEN64] = {""};
 				unsigned int pos = 0;
