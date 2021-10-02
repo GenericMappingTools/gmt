@@ -1602,21 +1602,21 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 
 	gmt_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
 
-	if (need_filler && k_filler != GMT_NOTSET) {	/* Want the secondary tiles */
-		if ((tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles, NULL))) {
+	if (k_filler != GMT_NOTSET) {	/* Want the secondary tiles */
+		if (need_filler && (tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles, NULL))) {
 			/* Write secondary tiles to list file */
 			for (k = 0; k < n_tiles; k++)
 				fprintf (fp, "%s\n", tile[k]);
 			gmt_free_list (API->GMT, tile, n_tiles);	/* Free the secondary tile list */
-			if (Ip->d_inc < Is->d_inc) {
-				/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
-				/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
-				 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
-				wesn[XLO] = floor ((wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[XHI] = ceil  ((wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[YLO] = floor ((wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
-				wesn[YHI] = ceil  ((wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
-			}
+		}
+		if (Ip->d_inc < Is->d_inc) {
+			/* If selected dataset has smaller increment that the filler grid then we adjust -R to be  a multiple of the larger spacing. */
+			/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given
+			 * region. The GMT_CONV8_LIMIT is there to ensure we won't round an almost exact x/dx away from the truth. */
+			wesn[XLO] = floor ((wesn[XLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[XHI] = ceil  ((wesn[XHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[YLO] = floor ((wesn[YLO] / Is->d_inc) + GMT_CONV8_LIMIT) * Is->d_inc;
+			wesn[YHI] = ceil  ((wesn[YHI] / Is->d_inc) - GMT_CONV8_LIMIT) * Is->d_inc;
 		}
 	}
 	fclose (fp);
