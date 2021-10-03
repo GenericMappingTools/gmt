@@ -296,7 +296,8 @@ void grd2xyz_out_triangle (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, u
 	/* Get the three point coordinates to use */
 	short unsigned int dummy = 0;
 	int64_t p, k, c[4] = {0, 1, 1, 0}, r[4] = {0, 0, -1, -1}, o[4] = {0, 1, 1-(int64_t)G->header->mx, -(int64_t)G->header->mx};
-	float P[3][3], N[3], A[3], B[3];
+	float P[3][3], N[3], A[3], B[3], L;
+	gmt_M_unused (GMT);
 	for (p = k = 0; p < 4; p++) {
 		if (p == kase) continue;
 		P[k][GMT_X] = G->x[col+c[p]];
@@ -309,7 +310,10 @@ void grd2xyz_out_triangle (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, u
 	N[GMT_X] = A[GMT_Y] * B[GMT_Z] - A[GMT_Z] * B[GMT_Y];
 	N[GMT_Y] = A[GMT_Z] * B[GMT_X] - A[GMT_X] * B[GMT_Z];
 	N[GMT_Z] = A[GMT_X] * B[GMT_Y] - A[GMT_Y] * B[GMT_X];
-	gmt_normalize3v (GMT, N);		/* Make sure N has unit length */
+	L = d_sqrt (N[GMT_X] * N[GMT_X] + N[GMT_Y] * N[GMT_Y] + N[GMT_Z] * N[GMT_Z]);
+	if (L > 0.0) {	/* OK to normalize */
+		for (k = 0; k < 3; k++) N[k] /= L;
+	}
 
 	if (binary) {
 		fwrite (N, sizeof (float), 3U, fp);
@@ -548,6 +552,18 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			unsigned int n_tri = 0, try;
 			int64_t se = 1, nw = -(int64_t)G->header->mx, ne = nw + 1;	/* Relative node indices */
 			FILE *fp = GMT->session.std[GMT_OUT];
+
+			/* Basic rule enforcement: Positive vectices only */
+
+			if (!gmt_M_is_zero (G->x[0])) {	/* Shift x coordinates */
+				double origin = G->x[0];
+				for (col = 0; col < G->header->n_columns; col++) G->x[col] -= origin;
+			}
+			if (!gmt_M_is_zero (G->y[0])) {	/* Shift y coordinates */
+				double origin = G->y[G->header->n_rows-1];
+				for (row = 0; row < G->header->n_columns; row++) G->y[row] -= origin;
+			}
+
 			if (Ctrl->T.binary) {
 #ifdef WIN32
 				gmt_setmode (GMT, GMT_OUT);
