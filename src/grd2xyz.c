@@ -56,6 +56,10 @@ struct GRD2XYZ_CTRL {
 		int item;
 		double value;
 	} L;
+	struct GRD2XYZ_T {	/* -T[a|b] */
+		bool active;
+		bool binary;
+	} T;
 	struct GRD2XYZ_W {	/* -W[a|<weight>][+u<unit>] */
 		bool active;
 		bool area;
@@ -89,7 +93,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-C[f|i]] [-Lc|r|x|y<value>] [%s] [%s] [-W[a[+u<unit>]|<weight>]] "
+	GMT_Usage (API, 0, "usage: %s %s [-C[f|i]] [-Lc|r|x|y<value>] [%s] [-T[a|b] [%s] [-W[a[+u<unit>]|<weight>]] "
 		"[-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_d_OPT, GMT_f_OPT, GMT_ho_OPT,
 		GMT_o_OPT, GMT_qo_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -110,6 +114,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "y: Append a row coordinate (ymin to ymax)");
 	GMT_Usage (API, -2, "Note: Selections outside the grid will result in no output.");
 	GMT_Option (API, "R,V");
+	GMT_Usage (API, 1, "\n-T[a[b]");
+	GMT_Usage (API, -2, "Write STL triangulation for 3-D printing. Append a for ASCII [Default] or b for binary.");
 	GMT_Usage (API, 1, "\n-W[a[+u<unit>]|<weight>]");
 	GMT_Usage (API, -2, "Write xyzw using supplied <weight> (or 1 if not given) [Default is xyz]. "
 		"Select -Wa to compute weights equal to the node areas.  If a geographic grid "
@@ -237,6 +243,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
+			case 'T':	/* Triangulation STL */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
+				switch (opt->arg[0]) {
+					case 'b': Ctrl->T.binary = true;	break;
+					case 'a':	case '\0':Ctrl->T.binary = false;	break;
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -T: Append a for ASCII [Default] or b (for binary format\n");
+						n_errors++;
+				}
+				break;
 			case 'W':	/* Add weight on output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
@@ -268,9 +284,44 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && Ctrl->L.mode == GRD2XYZ_COL && Ctrl->L.item < 0, "Option -Lc: Column cannot be negative\n");
 	n_errors += gmt_M_check_condition (GMT, n_files == 0, "Must specify at least one input file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->E.active, "Option -E can only handle one input file\n");
+	n_errors += gmt_M_check_condition (GMT, n_files > 1 && Ctrl->T.active, "Option -T can only handle one input file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && Ctrl->E.active, "Option -E is not compatible with -Z\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
+}
+
+void grd2xyz_out_triangle (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, uint64_t ij, unsigned int kase, bool binary) {
+	/* Output one triangle in STL format */
+	/* Get the three point coordinates to use */
+	unsigned int dummy = 0;
+	int64_t p, k, c[4] = {0, 1, 1, 0}, r[4] = {0, 0, -1, -1}, o[4] = {0, 1, 1-G->header->mx, -G->header->mx};
+	float P[3][3], N[3], A[3], B[3];
+	for (p = k = 0; p < 4; p++) {
+		if (p == kase) continue;
+		P[k][GMT_X] = G->x[col+c[p]];
+		P[k][GMT_Y] = G->y[row+r[p]];
+		P[k][GMT_Z] = G->data[ij+o[k]];
+		k++;
+	}
+	/* Get normal to triangle */
+	for (k = 0; k < 3; k++) { A[k] = P[1][k] - P[0][k];  B[k] = P[2][k] - P[1][k]; }
+	N[GMT_X] = A[GMT_Y] * B[GMT_Z] - A[GMT_Z] * B[GMT_Y];
+	N[GMT_Y] = A[GMT_Z] * B[GMT_X] - A[GMT_X] * B[GMT_Z];
+	N[GMT_Z] = A[GMT_X] * B[GMT_Y] - A[GMT_Y] * B[GMT_X];
+
+	if (binary) {
+		fwrite (N, sizeof (float), 3U, fp);
+		for (k = 0; k < 3; k++)
+			fwrite (P[k], sizeof (float), 3U, fp);
+		fwrite (&dummy, sizeof (unsigned int), 1U, fp);
+	}
+	else {
+		fprintf (fp, "facet normal %e %e %e\n", N[GMT_X], N[GMT_Y], N[GMT_Z]);
+		fprintf (fp, "outer loop\n");
+		for (k = 0; k < 3; k++)
+			fprintf (fp, "vertex %e %d %d\n", P[k][GMT_X], P[k][GMT_Y], P[k][GMT_Z]);
+		fprintf (fp, "endloop\nendfacet\n");
+	}
 }
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
@@ -488,6 +539,65 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			}
 			gmt_M_free (GMT, record);
 			gmt_M_free (GMT, Out);
+		}
+		else if (Ctrl->T.active) {	/* STL format */
+			bool dump = !Ctrl->T.binary;
+			char header[80] = {""};
+			unsigned int n_tri = 0, try;
+			int64_t se = 1, nw = -G->header->mx, ne = nw + 1;	/* Relative node indices */
+			FILE *fp = GMT->session.std[GMT_OUT];
+			if (Ctrl->T.binary) {
+#ifdef WIN32
+				gmt_setmode (GMT, GMT_OUT);
+#endif
+				snprintf (header, 80U, "GMT-to-STL conversion of file %s", opt->arg);
+				fwrite (header, sizeof (char), 80U, fp);
+			}
+			else {
+				fprintf (header, 80U, "solid %s", opt->arg);
+				fprintf (fp, "%s\n", header);
+			}
+			for (try = 0; try < Ctrl->T.binary + 1; try++) {	/* If binary we first count triangles, then write the header and the triangle count and triangles */
+				if (try) {	/* Only tru\y for 2nd entry in binary mode */
+					fwrite (&n_tri, sizeof (unsigned int), 1U, fp);
+					dump = true;
+				}
+				for (row = 1; row < G->header->n_rows; row++) {	/* Deal with triangles made up of nodes at row and row-1 */
+					for (col = 0; col < (G->header->n_columns-1); col++) {	/* Deal with triangles for col and col+1 */
+						ij = gmt_M_ijp (G->header, row, col);
+						/* Check for NaNs and special cases first */
+						if (gmt_M_is_fnan (G->data[ij])) {	/* See if we can do UR triangle */
+							if (gmt_M_is_fnan (G->data[ij+ne])) continue;	/* Nothing to do */
+							/* Do UR triangle */
+							if (dump) grd2xyz_out_triangle (GMT, fp, G, row, col, ij, 0, Ctrl->T.binary); else n_tri++;
+						}
+						else if (gmt_M_is_fnan (G->data[ij+se])) {	/* See if we can do UL triangle */
+							if (gmt_M_is_fnan (G->data[ij+nw])) continue;	/* Nothing to do */
+							/* Do UL triangle */
+							if (dump) grd2xyz_out_triangle (GMT, fp, G, row, col, ij, 1, Ctrl->T.binary); else n_tri++;
+						}
+						else if (gmt_M_is_fnan (G->data[ij+ne])) {	/* See if we can do LL triangle */
+							if (gmt_M_is_fnan (G->data[ij])) continue;	/* Nothing to do */
+							/* Do LL triangle */
+							if (dump) grd2xyz_out_triangle (GMT, fp, G, row, col, ij, 2, Ctrl->T.binary); else n_tri++;
+						}
+						else if (gmt_M_is_fnan (G->data[ij+nw])) {	/* See if we can do LR triangle */
+							if (gmt_M_is_fnan (G->data[ij+se])) continue;	/* Nothing to do */
+							/* Do LR triangle */
+							if (dump) grd2xyz_out_triangle (GMT, fp, G, row, col, ij, 3, Ctrl->T.binary); else n_tri++;
+						}
+						else {	/* No NaNs, do UL and LR trianges */
+							if (dump) {
+								grd2xyz_out_triangle (GMT, fp, G, row, col, ij, 1, Ctrl->T.binary);
+								grd2xyz_out_triangle (GMT, fp, G, row, col, ij, 3, Ctrl->T.binary);
+							}
+							else n_tri += 2;
+						}
+					}
+				}
+			}
+			if (!Ctrl->T.binary)
+				fprintf (fp, "endsolid %s\n");
 		}
 		else {	/* Regular x,y,z[,w], col,row,z[,w] or index,z[,w] output */
 			if (first && GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT, GMT_ADD_STDIO_IF_NONE, 0, options) != GMT_NOERROR) {	/* Establishes data output */
