@@ -321,7 +321,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	int     status, bSuccess;	/* success or failure */
 	int     nBand, raster_count;
 	int     bGotMin, bGotMax;	/* To know if driver transmitted Min/Max */
-	bool    got_noDataValue = false, pixel_reg = false;
+	bool    got_noDataValue = false, pixel_reg = false, compute_minmax = false;
 	double  adfGeoTransform[6];	/* bounds on the dataset */
 	double  tmpdble;		/* temporary value */
 	double  xy_c[2], xy_geo[4][2];	/* Corner coordinates in the local coords system and geogs (if it exists) */
@@ -546,6 +546,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 		}
 		/* Mark the end of the ColorMap */
 		Ctrl->ColorMap[Ctrl->nIndexedColors*4] = -1;
+		compute_minmax = true;
 	}
 	else {
 		/* Before giving up, check if band is a 1-bit type */
@@ -563,6 +564,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			gmt_M_set_rgba (Ctrl->ColorMap, 1, 3, Ctrl->nIndexedColors, 255);
 			/* Mark the end of the colormap */
 			Ctrl->ColorMap[Ctrl->nIndexedColors*4] = -1;
+			compute_minmax = true;
 		}
 		else {	/* Apparently no ColorMap, set it */
 			Ctrl->ColorMap = NULL;
@@ -652,8 +654,8 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
 		hBand = GDALGetRasterBand(hDataset, 1);	/* Ensure hBand points to the first layer */
-		if (z_min == DBL_MAX && GDALGetRasterDataType (hBand) != GDT_Byte) {	/* We don't know yet the dataset Min/Max and it seems to be a grid */
-			GDALComputeRasterMinMax(hBand, false, adfMinMax);	/* Unfortunately, cannot trust metadata min/max */
+		if (z_min == DBL_MAX && (compute_minmax || GDALGetRasterDataType (hBand) != GDT_Byte)) {	/* We don't know yet the dataset Min/Max and it seems to be a grid */
+			GDALComputeRasterMinMax(hBand, compute_minmax, adfMinMax);	/* Unfortunately, cannot always trust metadata min/max */
 			Ctrl->hdr[4] = adfMinMax[0];
 			Ctrl->hdr[5] = adfMinMax[1];
 		}
