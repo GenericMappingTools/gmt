@@ -8595,6 +8595,8 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
 	if (I->colormap) {	/* Also deal with the colormap for indexed images. If found we duplicate */
 		size_t nc = I->n_indexed_colors * 4 + 1;
+		if (I->n_indexed_colors > 2000)		/* If colormap is Mx4 or has encoded the alpha color */
+			nc = (uint64_t)(floor(I->n_indexed_colors / 1000.0)) * 4 + 1;
 		Inew->colormap = gmt_M_memory (GMT, NULL, nc, int);
 		gmt_M_memcpy (Inew->colormap, I->colormap, nc, int);
 		if (I->color_interp) Inew->color_interp = I->color_interp;
