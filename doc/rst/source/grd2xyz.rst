@@ -17,6 +17,7 @@ Synopsis
 [ |-L|\ [**c**\|\ **r**\|\ **x**\|\ **y**]\ *value* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
+[ |-T|\ [**a**\|\ **b**] ]
 [ |-W|\ [**a**\ [**+u**\ *unit*]\|\ *weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
@@ -74,6 +75,12 @@ Optional Arguments
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. _-T:
+
+**-T**\ [**a**\|\ **b**]
+    Write STL triangulation for 3-D printing to standard output.  By default (or **-Ta**) we write STL ASCII format.
+    Append **b** to instead write the STL binary format.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
