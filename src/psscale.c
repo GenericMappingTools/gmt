@@ -1685,6 +1685,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use gmt_xy_axis to draw a y-axis based on x parameters. */
 			void (*tmp) (struct GMT_CTRL *, double, double *) = NULL;
 			char *custum;
+			double wesn_cpy[4];
 
 			A = &GMT->current.map.frame.axis[GMT_X];
 			if (A->item[GMT_ANNOT_UPPER].generated) A->item[GMT_ANNOT_UPPER].interval = 0.0;	/* Reset annot so we can redo via automagic */
@@ -1711,7 +1712,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (label[0] && !flip) /* Can let gmt_xy_axis2 set the label directly, else do separately later */
 				strcpy (GMT->current.map.frame.axis[GMT_Y].label, label);
 			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[GMT_Y].item[i].parent = GMT_Y;
+			gmt_M_memcpy (wesn_cpy, GMT->common.R.wesn, 4U, double);	/* Must temporarily switch x and y in wesn since gmtlib_load_custom_annot relies on this range */
+			gmt_M_memcpy (&GMT->common.R.wesn[YLO], wesn_cpy, 2U, double);
 			gmt_xy_axis2 (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & PSSCALE_FLIP_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE] & GMT_AXIS_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE]);
+			gmt_M_memcpy (GMT->common.R.wesn, wesn_cpy, 4U, double);	/* Must temporarily switch x and y */
 			PSL_setorigin (PSL, 0.0, 0.0, 90.0, PSL_INV);	/* Rotate back to where we started in this branch */
 			GMT->current.map.frame.axis[GMT_Y].file_custom = custum;	/* Restore correct pointer */
 		}
