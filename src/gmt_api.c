@@ -4363,12 +4363,16 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	h = I->header;
 	data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char);	/* The new r,g,b image */
 
+	size_t n_colors = I->n_indexed_colors;
+	if (n_colors > 2000)			/* If colormap is Mx4 or has encoded the alpha color */
+		n_colors = (uint64_t)(floor(n_colors / 1000.0));
+
 	if (GMT->parent->GMT->current.gdal_read_in.O.mem_layout[0] && strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {	/* Band interleave */
 		strncpy (h->mem_layout, "TRB ", 4);	/* Fill out red, green, and blue bands */
 		for (c = 0; c < 3; c++) off[c] = c * h->size;
 		for (node = 0; node < h->size; node++) {	/* For all pixels, including the pad */
 			index = I->data[node];	/* Pixel index into color table */
-			for (c = 0; c < 3; c++) data[node+off[c]] = gmt_M_get_rgba (I->colormap, index, c, I->n_indexed_colors);	/* Place r,g,b in separate bands */
+			for (c = 0; c < 3; c++) data[node+off[c]] = gmt_M_get_rgba (I->colormap, index, c, n_colors);	/* Place r,g,b in separate bands */
 		}
 	}
 	else {	/* Pixel interleave */
@@ -4376,7 +4380,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 		strncpy (h->mem_layout, "TRP ", 4);	/* Fill out red, green, and blue pixels */
 		for (node = k = 0; node < h->size; node++) {	/* For all pixels, including the pad */
 			index = I->data[node];	/* Pixel index into color table */
-			for (c = 0; c < 3; c++, k++) data[k] = gmt_M_get_rgba (I->colormap, index, c, I->n_indexed_colors);	/* Place r,g,b in separate bands */
+			for (c = 0; c < 3; c++, k++) data[k] = gmt_M_get_rgba (I->colormap, index, c, n_colors);	/* Place r,g,b in separate bands */
 		}
 		/* If neither TRB or TRP we call for a changed layout, which may or may not have been implemented */
 		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);
