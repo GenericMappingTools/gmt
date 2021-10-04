@@ -1370,7 +1370,8 @@ GMT_LOCAL void gmtplot_rect_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 GMT_LOCAL void gmtplot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	bool dual = false;
 	unsigned int cap = PSL->internal.line_cap;
-	double thin_pen, fat_pen;
+	double thin_pen, fat_pen, lon_range = e - w;
+	double x0, x1, x2, y0, y1, y2, start, stop;
 
 	if (GMT->common.R.oblique) { /* Draw rectangular boundary and return */
 		gmtplot_rect_map_boundary (GMT, PSL, 0.0, 0.0, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI]);
@@ -1420,6 +1421,21 @@ GMT_LOCAL void gmtplot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, n, w, s, W_SIDE, dual);
 
 	gmtplot_rounded_framecorners (GMT, PSL, w, e, s, n, dual);
+
+	if (GMT->current.proj.north_pole && gmt_M_is_Npole (n) && !(doubleAlmostEqual (lon_range, 180.0) || doubleAlmostEqual (lon_range, 360.0))) {
+		/* Connect the outer straight borders with an arc using map frame pen */
+		double radius = fat_pen * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Get radius in inches */
+		PSL_setlinewidth (PSL, thin_pen);
+		gmt_geo_to_xy (GMT, w, n, &x0, &y0);
+		gmt_geo_to_xy (GMT, w, s, &x1, &y1);
+		stop = d_atan2d (y1 - y0, x1 - x0);
+		gmt_geo_to_xy (GMT, e, s, &x2, &y2);
+		start = d_atan2d (y2 - y0, x2 - x0);
+		if (stop < start) stop += 360.0;
+		PSL_plotarc (PSL, x0, y0, radius, start, stop, PSL_MOVE|PSL_STROKE);
+	}
+	else if (!GMT->current.proj.north_pole && gmt_M_is_Spole (s) && !(doubleAlmostEqual (lon_range, 180.0) || doubleAlmostEqual (lon_range, 360.0))) {
+	}
 }
 
 /*	CONIC PROJECTION MAP BOUNDARY	*/
