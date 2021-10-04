@@ -6728,12 +6728,12 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	if (axis == GMT_X) {
 		f = sxy * fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
 		d = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
-		if (gmtmap_polar_az (GMT)) f *= M_PI_2;	/* Circle perimeter is the right comparison to circular longitudes */
+		if (gmtmap_polar_az (GMT) && d > 120) f *= M_PI_2;	/* Circle perimeter is the right comparison to circular longitudes */
 	}
 	else if (axis == GMT_Y) {
 		f = sxy * fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
 		d = fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
-		if (gmtmap_polar_az (GMT)) f /= 2;	/* Latitude range is only covering half the plot */
+		if (gmtmap_polar_az (GMT)) f /= 4;	/* Latitude range is only covering half the plot */
 	}
 	else {
 		f = sz * fabs (GMT->current.proj.zmax - GMT->current.proj.zmin);
@@ -6751,7 +6751,10 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 #endif
 
 	/* First guess of interval */
-	d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.20));
+	if (gmtmap_polar_az (GMT))
+		d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.3));
+	else
+		d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.2));
 
 	/* Now determine 'round' major and minor tick intervals */
 	if (gmt_M_axis_is_geo (GMT, axis))	/* Geographical coordinate */
