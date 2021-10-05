@@ -1428,13 +1428,23 @@ GMT_LOCAL void gmtplot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 		PSL_setlinewidth (PSL, thin_pen);
 		gmt_geo_to_xy (GMT, w, n, &x0, &y0);
 		gmt_geo_to_xy (GMT, w, s, &x1, &y1);
-		stop = d_atan2d (y1 - y0, x1 - x0);
+		stop = d_atan2d (y1 - y0, x1 - x0) - 90;
 		gmt_geo_to_xy (GMT, e, s, &x2, &y2);
-		start = d_atan2d (y2 - y0, x2 - x0);
+		start = d_atan2d (y2 - y0, x2 - x0) + 90;
 		if (stop < start) stop += 360.0;
-		PSL_plotarc (PSL, x0, y0, radius, start, stop, PSL_MOVE|PSL_STROKE);
+		if (stop > start) PSL_plotarc (PSL, x0, y0, radius, start, stop, PSL_MOVE|PSL_STROKE);
 	}
 	else if (!GMT->current.proj.north_pole && gmt_M_is_Spole (s) && !(doubleAlmostEqual (lon_range, 180.0) || doubleAlmostEqual (lon_range, 360.0))) {
+		/* Connect the outer straight borders with an arc using map frame pen */
+		double radius = fat_pen * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Get radius in inches */
+		PSL_setlinewidth (PSL, thin_pen);
+		gmt_geo_to_xy (GMT, e, s, &x0, &y0);
+		gmt_geo_to_xy (GMT, e, n, &x1, &y1);
+		stop = d_atan2d (y1 - y0, x1 - x0) - 90;
+		gmt_geo_to_xy (GMT, w, n, &x2, &y2);
+		start = d_atan2d (y2 - y0, x2 - x0) + 90;
+		if (stop < start) stop += 360.0;
+		if (stop > start) PSL_plotarc (PSL, x0, y0, radius, start, stop, PSL_MOVE|PSL_STROKE);
 	}
 }
 
