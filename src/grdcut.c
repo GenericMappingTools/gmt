@@ -157,7 +157,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 
 	bool F_or_R_or_J, do_file_check = true;
 	unsigned int n_errors = 0, k, n_files = 0;
-	int ftype;
 	char za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
@@ -290,9 +289,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCUT_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->G.file && !Ctrl->D.active, "Option -G: Must specify output grid file\n");
 	n_errors += gmt_M_check_condition (GMT, n_files != 1, "Must specify one input grid file\n");
 	if (n_errors == 0) {
-		if ((ftype = gmt_raster_type (GMT, Ctrl->In.file, true)) == GMT_IS_IMAGE || ftype == GMT_IS_GRID)
-			Ctrl->In.type = ftype;
-		else	/* Must assume it is a grid */
+		int ftype = gmt_raster_type (GMT, Ctrl->In.file, true);
+		if (ftype == GMT_IS_IMAGE)	/* Must read file as an image */
+			Ctrl->In.type = GMT_IS_IMAGE;
+		else if (ftype == GMT_IS_GRID) {	/* Check extension in case of special case */
+			if (strstr (Ctrl->G.file, ".tif"))	/* Want to write a single band (normally written as a grid) to geotiff instead */
+				Ctrl->In.type = GMT_IS_IMAGE;
+			else
+				Ctrl->In.type = GMT_IS_GRID;
+		}
+		else	/* Just have to assume it is a grid */
 			Ctrl->In.type = GMT_IS_GRID;
 		if (Ctrl->In.type == GMT_IS_IMAGE) {
 			n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active, "Option -N: Cannot be used with an image\n");
@@ -409,7 +415,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int nx_old, ny_old, add_mode = 0U, side, extend, type = 0U, def_pad[4], pad[4];
 	uint64_t node;
-	bool outside[4] = {false, false, false, false}, all, bail = false, geo_to_cart = false;
+	bool outside[4] = {false, false, false, false}, all, bail = false, geo_to_cart = false, do_via_gdal = false;
 
 	char *name[2][4] = {{"left", "right", "bottom", "top"}, {"west", "east", "south", "north"}};
 
@@ -451,10 +457,17 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	if (!Ctrl->Z.active) {	/* All of -F, -R, -S selections first needs the header */
 		if (Ctrl->In.type == GMT_IS_IMAGE) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing input image\n");
-			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->In.file, NULL)) == NULL) {
+			if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, Ctrl->In.file, NULL)) == NULL) {
 				Return (API->error);	/* Get header only */
 			}
 			h = I->header;
+			if ((I->type == GMT_FLOAT || h->n_bands > 4) && !gmt_M_file_is_memory (Ctrl->In.file) && !gmt_M_file_is_memory (Ctrl->G.file) && strstr (Ctrl->In.file, ".tif")) {
+				do_via_gdal = true;	/* Use gdal_translate for this multi-layer data subset */
+				if (!Ctrl->D.active && strstr (Ctrl->G.file, ".tif") == NULL && strstr (Ctrl->G.file, ".nc") == NULL && strstr (Ctrl->G.file, ".grd") == NULL)  {
+					GMT_Report (API, GMT_MSG_INFORMATION, "Option -G: Must give an output file name with extensions .tiff (geotiff) or .nc or .grd (netCDF) when selecting multiband output from a geotiff file\n");
+					Return (GMT_RUNTIME_ERROR);	/* Get header only */
+				}
+			}
 		}
 		else {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Processing input grid\n");
@@ -592,7 +605,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		/* Note: The use of g and gmt_M_grd_row_to_y is correct since lon and lat args are not
 		 * coordinates computed from west or south in whole increments of dx dy. */
 		int row, col;
-		bool wrap;
+		bool wrap = gmt_M_360_range (h->wesn[XLO], h->wesn[XHI]);	/* true if grid is 360 global */
 
 		if (gmt_M_is_cartesian (GMT, GMT_IN)) {
 			GMT_Report (API, GMT_MSG_ERROR, "The -S option requires a geographic grid or image\n");
@@ -602,8 +615,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			Return (GMT_NOT_A_VALID_TYPE);
 		/* Set w/e to center and adjust in case of -/+ 360 stuff */
 		wesn_new[XLO] = wesn_new[XHI] = Ctrl->S.lon;
-		while (wesn_new[XLO] < h->wesn[XLO]) wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
-		while (wesn_new[XLO] > h->wesn[XHI]) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
+		if (wrap) {
+			while (wesn_new[XLO] < h->wesn[XLO]) wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
+			while (wesn_new[XLO] > h->wesn[XHI]) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
+		}
 		wesn_new[YLO] = wesn_new[YHI] = Ctrl->S.lat;
 		/* First adjust the S and N boundaries */
 		if (GMT->current.map.dist[GMT_MAP_DIST].arc)	/* Got arc distance */
@@ -647,7 +662,6 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			wesn_new[XHI] = h->wesn[XHI];
 		}
 		else {	/* Determine longitude limits */
-			wrap = gmt_M_360_range (h->wesn[XLO], h->wesn[XHI]);	/* true if grid is 360 global */
 			radius /= cosd (Ctrl->S.lat);	/* Approximate e-w width in degrees longitude at center point */
 			wesn_new[XLO] -= radius;	/* Approximate west limit in degrees */
 			if (!wrap && wesn_new[XLO] < h->wesn[XLO]) {	/* Outside non-periodic grid range */
@@ -677,6 +691,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				}
 				wesn_new[XHI] = lon - (1.0 - h->xy_off) * h->inc[GMT_X];	/* Go one back since last col was outside */
 			}
+			if ((wesn_new[XHI] - wesn_new[XLO]) > 360.0) wesn_new[XHI] -= 360.0;	/* One of them got off by 360 */
 			if (wesn_new[XHI] > 360.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;
 			if (wesn_new[XHI] < 0.0)   wesn_new[XLO] += 360.0, wesn_new[XHI] += 360.0;
 		}
@@ -758,6 +773,16 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 		if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
 			Return (API->error);
+		}
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {
+			if (wesn_new[XLO] < 0.0 && wesn_new[XHI] <= 0.0)
+				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
+			else if ((wesn_new[XHI] - wesn_new[XLO]) > 180.0)
+				GMT->current.io.geo.range = GMT_IS_GIVEN_RANGE;
+			else if (wesn_new[XLO] < 0.0 && wesn_new[XHI] >= 0.0)
+				GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
+			else
+				GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 		}
 		if (Ctrl->D.text) {
 			enum gmt_col_enum type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
@@ -844,6 +869,10 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "Old and new y_max do not differ by N * dy\n");
 		Return (GMT_RUNTIME_ERROR);
 	}
+	if (!GMT->common.R.active[RSET]) {	/* Got a new region indirectly via -S or -Z */
+		gmt_M_memcpy (GMT->common.R.wesn, wesn_new, 4, double);
+		GMT->common.R.active[RSET] = true;
+	}
 
 	gmt_grd_init (GMT, h, options, true);
 
@@ -883,7 +912,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 		}
-		else {
+		else if (!do_via_gdal) {
 			if (GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn_new, Ctrl->In.file, I) == NULL) { 	/* Get subset */
 				Return (API->error);
 			}
@@ -994,7 +1023,34 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Write an image */
-		if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
+		if (do_via_gdal) {	/* Special case of multi-band geotiff */
+			char driver[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""},the_band[GMT_LEN32] = {""},  *c = strchr (Ctrl->In.file, '='), *b = strstr (Ctrl->In.file, "+b");
+			if (c) c[0] = '\0';	/* Chop off =gd request after that so that we only write the actual file name in the command */
+			if (b) b[0] = '\0';	/* Chop offany band request after that so that we only write the actual file name in the command */
+			if (wesn_new[XLO] > 180.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;	/* GDAL expects -180/+180 */
+			if (strstr (Ctrl->G.file, ".tif"))
+				sprintf (driver, "-of GTiff -co COMPRESS=DEFLATE");
+			else
+				sprintf (driver, "-of netCDF -co COMPRESS=DEFLATE -co FORMAT=NC4 -co ZLEVEL=%d -a_nodata NaN", GMT->current.setting.io_nc4_deflation_level);
+			sprintf (cmd, "gdal_translate -projwin %.10lg %.10lg %.10lg %.10lg %s %s %s", wesn_new[XLO], wesn_new[YHI], wesn_new[XHI], wesn_new[YLO], driver, Ctrl->In.file, Ctrl->G.file);
+			if (c) c[0] = '=';	/* Restore full file name */
+			if (b) b[0] = '+';	/* Restore band requests */
+			if (b) {	/* Parse and add specific band request(s) to gdal_translate */
+				char p[GMT_LEN64] = {""};
+				unsigned int pos = 0, band;
+				while ((gmt_strtok (&b[2], ",", &pos, p))) {
+					band = atoi (p) + 1;	/* We start counting at 0, GDAL at 1 */
+					sprintf (the_band, " -b %d", band);
+					strcat (cmd, the_band);
+				}
+			}
+			GMT_Report (API, GMT_MSG_INFORMATION, "The gdal_translate command: \n%s\n", cmd);
+			if (system (cmd)) {	/* Execute the gdal_translate command */
+				GMT_Report (API, GMT_MSG_ERROR, "Error calling %s", cmd);
+				Return (GMT_RUNTIME_ERROR);
+			}
+		}
+		else if (GMT_Write_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Ctrl->G.file, I) != GMT_NOERROR) {
 			Return (API->error);
 		}
 	}

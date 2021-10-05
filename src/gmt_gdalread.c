@@ -758,7 +758,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int	   *whichBands = NULL;
 	int64_t *rowVec = NULL, *colVec = NULL;
 	int64_t  off, i_x_nXYSize, startColPos = 0, indent = 0, col_indent = 0, nXSize_withPad = 0, nYSize_withPad;
-	int64_t  n_alloc, n, m, nn, mm, ij;
+	int64_t  n_alloc, n, m, nn, mm, ij, layer_size, layer_offset = 0;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
 	double	adfGeoTransform[6];
@@ -1041,7 +1041,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (nReqBands) nBands = MIN(nBands,nReqBands);	/* If a band selection was made */
 
 	/* Determine allocation size for the subset (actual allocation depends on whether a pointer is passed in or not) */
-	n_alloc = ((size_t)nBands) * ((size_t)(nBufXSize[0] + nBufXSize[1] + MAX(pad_w[0],pad_w[1])) + MAX(pad_e[0],pad_e[1])) * ((size_t)nBufYSize + pad_s + pad_n);
+	layer_size = ((size_t)(nBufXSize[0] + nBufXSize[1] + MAX(pad_w[0],pad_w[1])) + MAX(pad_e[0],pad_e[1])) * ((size_t)nBufYSize + pad_s + pad_n);
+	n_alloc = ((size_t)nBands) * layer_size;
 
 	switch (GDALGetRasterDataType(hBand)) {
 		case GDT_Byte:
@@ -1145,7 +1146,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
 		for (m = 0; m < nY; m++) rowVec[m] = m * nX[piece];	/* Steps in pixels as we go down rows */
 		colVec = gmt_M_memory(GMT, NULL, (nX[piece]+pad_w[piece]+pad_e[piece]) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
-
 		for (i = 0; i < nBands; i++) {
 			if (!nReqBands)		/* No band selection, read them sequentially */
 				hBand = GDALGetRasterBand(hDataset, i+1);
@@ -1289,7 +1289,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 							/* PW: Special case of jp2 tile with possible NaNs that are not recognized without the .aux.xml file */
 							float f_NaN = GMT->session.f_NaN;	/* Shorthand */
 							for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-								nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+								nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 								for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 									if (prhs->f_ptr.active) {
 										int16_t tmpI16;
@@ -1302,7 +1302,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 						}
 						else {	/* All other short int cases */
 							for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-								nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+								nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 								for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 									if (prhs->f_ptr.active) {
 										int16_t tmpI16;
@@ -1317,7 +1317,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_UInt16:
 						if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 								if (prhs->f_ptr.active) {
 									uint16_t tmpUI16;
@@ -1331,7 +1331,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_Int32:
 						if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 								if (prhs->f_ptr.active) {
 									int32_t tmpI32;
@@ -1345,7 +1345,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_UInt32:
 						if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 								if (prhs->f_ptr.active) {
 									int32_t tmpUI32;
@@ -1359,7 +1359,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_Float32:
 						Ctrl->Float.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = 0; n < nXSize[piece]; n++) {
 								memcpy (&Ctrl->Float.data[nn], &tmp[(rowVec[mm]+n) * sizeof(float)], sizeof(float));
 								nn += incStep;
@@ -1369,7 +1369,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_Float64:	/* For now we don't care about doubles */
 						Ctrl->Float.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = 0; n < nXSize[piece]; n++) {
 								double tmpF64;
 								memcpy (&tmpF64, &tmp[(rowVec[mm]+n) * sizeof(double)], sizeof(double));
@@ -1389,6 +1389,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			gmt_M_str_free (tmp);
 		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		indent = pad_w[piece] + nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
+		layer_offset += layer_size;	/* As of now, this is never used after increment for float images */
 	}
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
 	if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
