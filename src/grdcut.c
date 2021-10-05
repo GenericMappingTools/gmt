@@ -1024,7 +1024,7 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 	}
 	else {	/* Write an image */
 		if (do_via_gdal) {	/* Special case of multi-band geotiff */
-			char driver[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, *c = strchr (Ctrl->In.file, '='), *b = strstr (Ctrl->In.file, "+b");
+			char driver[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""},the_band[GMT_LEN32] = {""},  *c = strchr (Ctrl->In.file, '='), *b = strstr (Ctrl->In.file, "+b");
 			if (c) c[0] = '\0';	/* Chop off =gd request after that so that we only write the actual file name in the command */
 			if (b) b[0] = '\0';	/* Chop offany band request after that so that we only write the actual file name in the command */
 			if (wesn_new[XLO] > 180.0) wesn_new[XLO] -= 360.0, wesn_new[XHI] -= 360.0;	/* GDAL expects -180/+180 */
@@ -1037,10 +1037,11 @@ EXTERN_MSC int GMT_grdcut (void *V_API, int mode, void *args) {
 			if (b) b[0] = '+';	/* Restore band requests */
 			if (b) {	/* Parse and add specific band request(s) to gdal_translate */
 				char p[GMT_LEN64] = {""};
-				unsigned int pos = 0;
+				unsigned int pos = 0, band;
 				while ((gmt_strtok (&b[2], ",", &pos, p))) {
-					strcat (cmd, " -b ");
-					strcat (cmd, p);
+					band = atoi (p) + 1;	/* We start counting at 0, GDAL at 1 */
+					sprintf (the_band, " -b %d", band);
+					strcat (cmd, the_band);
 				}
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "The gdal_translate command: \n%s\n", cmd);
