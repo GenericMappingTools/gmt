@@ -3138,16 +3138,18 @@ GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
 	else {
 		if (GMT->current.proj.polar) {	/* Polar aspect */
 			if (GMT->current.proj.north_pole) {
-				if (GMT->common.R.wesn[YLO] <= -90.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "South boundary cannot be -90.0 for north polar stereographic projection\n");
-					return GMT_PROJECTION_ERROR;
+				double hor_lat = 90.0 - GMT->current.proj.f_horizon;
+				if (GMT->common.R.wesn[YLO] < hor_lat) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "South boundary cannot be beyond the horizon for north polar stereographic projection (reset to horizon at %lg)\n", hor_lat);
+					GMT->common.R.wesn[YLO] = hor_lat;
 				}
 				if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 			}
 			else {
-				if (GMT->common.R.wesn[YHI] >= 90.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "North boundary cannot be +90.0 for south polar stereographic projection\n");
-					return GMT_PROJECTION_ERROR;
+				double hor_lat = GMT->current.proj.f_horizon - 90.0;
+				if (GMT->common.R.wesn[YHI] > hor_lat) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "North boundary cannot be beyond the horizon for south polar stereographic projection (reset to horizon at %lg)\n", hor_lat);
+					GMT->common.R.wesn[YHI] = hor_lat;
 				}
 				if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 			}
@@ -3886,16 +3888,18 @@ GMT_LOCAL int gmtmap_init_lambeq (struct GMT_CTRL *GMT, bool *search) {
 	else {
 		if (GMT->current.proj.polar) {	/* Polar aspect */
 			if (GMT->current.proj.north_pole) {
-				if (GMT->common.R.wesn[YLO] <= -90.0){
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "South boundary cannot be -90.0 for north polar Lambert azimuthal projection\n");
-					return GMT_PROJECTION_ERROR;
+				double hor_lat = 90.0 - GMT->current.proj.f_horizon;
+				if (GMT->common.R.wesn[YLO] < hor_lat) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "South boundary cannot be beyond the horizon for north polar Lambert azimuthal projection (reset to horizon at %lg)\n", hor_lat);
+					GMT->common.R.wesn[YLO] = hor_lat;
 				}
 				if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 			}
 			else {
-				if (GMT->common.R.wesn[YHI] >= 90.0) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "North boundary cannot be +90.0 for south polar Lambert azimuthal projection\n");
-					return GMT_PROJECTION_ERROR;
+				double hor_lat = GMT->current.proj.f_horizon - 90.0;
+				if (GMT->common.R.wesn[YHI] > hor_lat) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "North boundary cannot be beyond the horizon for south polar Lambert azimuthal projection (reset to horizon at %lg)\n", hor_lat);
+					GMT->common.R.wesn[YHI] = hor_lat;
 				}
 				if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 			}
@@ -3983,16 +3987,18 @@ GMT_LOCAL int gmtmap_init_ortho (struct GMT_CTRL *GMT, bool *search) {
 	else {
 		if (GMT->current.proj.polar) {	/* Polar aspect */
 			if (GMT->current.proj.north_pole) {
-				if (GMT->common.R.wesn[YLO] < 0.0) {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "South boundary cannot be < 0 for north polar orthographic projection (reset to 0)\n");
-					GMT->common.R.wesn[YLO] = 0.0;
+				double hor_lat = 90.0 - GMT->current.proj.f_horizon;
+				if (GMT->common.R.wesn[YLO] < hor_lat) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "South boundary cannot be beyond the horizon for north polar orthographic projection (reset to horizon at %lg)\n", hor_lat);
+					GMT->common.R.wesn[YLO] = hor_lat;
 				}
 				if (GMT->common.R.wesn[YHI] >= 90.0) GMT->current.proj.edge[2] = false;
 			}
 			else {
-				if (GMT->common.R.wesn[YHI] > 0.0) {
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "North boundary cannot be > 0 for south polar orthographic projection (reset to 0)\n");
-					GMT->common.R.wesn[YHI] = 0.0;
+				double hor_lat = GMT->current.proj.f_horizon - 90.0;
+				if (GMT->common.R.wesn[YHI] > hor_lat) {
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "North boundary cannot be beyond the horizon for south polar orthographic projection (reset to horizon at %lg)\n", hor_lat);
+					GMT->common.R.wesn[YHI] = hor_lat;
 				}
 				if (GMT->common.R.wesn[YLO] <= -90.0) GMT->current.proj.edge[0] = false;
 			}
@@ -6693,6 +6699,10 @@ GMT_LOCAL double gmtmap_auto_time_increment (double inc, char *unit) {
 	return (incs[kk]);
 }
 
+GMT_LOCAL bool gmtmap_polar_az (struct GMT_CTRL *GMT) {
+	return (gmt_M_is_azimuthal (GMT) && GMT->current.proj.polar && !GMT->common.R.oblique);
+}
+
 /*! . */
 void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned int item) {
 	/* Determine the annotation and frame tick interval when they are not set (interval = 0) */
@@ -6722,10 +6732,12 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 	if (axis == GMT_X) {
 		f = sxy * fabs (GMT->current.proj.rect[XHI] - GMT->current.proj.rect[XLO]);
 		d = fabs (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
+		if (gmtmap_polar_az (GMT) && d > 120) f *= M_PI_2;	/* Circle perimeter is the right comparison to circular longitudes */
 	}
 	else if (axis == GMT_Y) {
 		f = sxy * fabs (GMT->current.proj.rect[YHI] - GMT->current.proj.rect[YLO]);
 		d = fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO]);
+		if (gmtmap_polar_az (GMT)) f /= 4;	/* Latitude range is only covering half the plot */
 	}
 	else {
 		f = sz * fabs (GMT->current.proj.zmax - GMT->current.proj.zmin);
@@ -6743,7 +6755,10 @@ void gmt_auto_frame_interval (struct GMT_CTRL *GMT, unsigned int axis, unsigned 
 #endif
 
 	/* First guess of interval */
-	d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.20));
+	if (gmtmap_polar_az (GMT))
+		d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.3));
+	else
+		d *= MAX (0.05, MIN (5.0 * GMT->current.setting.font_annot[item].size / f, 0.2));
 
 	/* Now determine 'round' major and minor tick intervals */
 	if (gmt_M_axis_is_geo (GMT, axis))	/* Geographical coordinate */
