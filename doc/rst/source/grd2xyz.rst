@@ -79,8 +79,10 @@ Optional Arguments
 .. _-T:
 
 **-T**\ [**a**\|\ **b**]
-    Write STL triangulation for 3-D printing to standard output.  By default (or **-Ta**) we write STL ASCII format.
-    Append **b** to instead write the STL binary format.
+    Write STL triangulation for 3-D printing to standard output.  By default (or **-Ta**) we write an STL ASCII file.
+    Append **b** to instead write the STL binary (little-endian) format. For more information on STL, see the
+    `STL overview on Wikipedia <https://en.wikipedia.org/wiki/STL_(file_format)>`_.  **Note**: All coordinates are
+    adjusted so that *xmin = ymin = zmin = 0*.  For other adjustments, see :doc:`grdedit`, :doc:`grdproject` and :doc:`grdmath`.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
