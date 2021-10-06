@@ -352,7 +352,8 @@ enum GMT_enum_tracklayout {
 	GMT_EW_SN = 2,
 	GMT_LEFT_ONLY = 4,
 	GMT_RIGHT_ONLY = 8,
-	GMT_ALTERNATE = 16};
+	GMT_ALTERNATE = 16,
+	GMT_FIXED_AZIM = 32};
 
 /*! Codes for first segment header */
 enum GMT_enum_firstseg {
