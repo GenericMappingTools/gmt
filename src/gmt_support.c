@@ -5621,11 +5621,11 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	uint64_t tbl, row, left, right, seg, seg_no, n_tot_cols;
 	size_t n_x_seg = 0, n_x_seg_alloc = 0;
 
-	bool skip_seg_no;
+	bool skip_seg_no, set_fixed_azim = false;
 
 	char buffer[GMT_BUFSIZ] = {""}, seg_name[GMT_BUFSIZ] = {""}, ID[GMT_BUFSIZ] = {""};
 
-	double dist_inc, d_shift, orientation, sign = 1.0, az_cross, x, y;
+	double dist_inc, d_shift, orientation, sign = 1.0, az_cross, x, y, fixed_azim, dist_to_end;
 	double dist_across_seg, angle_radians, across_ds_radians, ds_phase = 0.0, n_cross_float;
 	double Rot[3][3], Rot0[3][3], E[3], P[3], L[3], R[3], T[3], X[3];
 
@@ -5639,6 +5639,11 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	}
 
 	if (mode & GMT_ALTERNATE) sign = -1.0;	/* Survey layout */
+	if (mode & GMT_FIXED_AZIM) {	/* Got fixed azimuth */
+		fixed_azim = deviation;
+		deviation = 0.0;	/* To prevent any deviation below */
+		set_fixed_azim = true;
+	}
 
 	/* Get resampling step size and zone width in degrees */
 
@@ -5649,10 +5654,14 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	cross_length = cross_length / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in meters [or degrees] */
 	n_cross++;	/* Since one more node than increments */
 	n_half_cross = (n_cross % 2) ? (n_cross - 1) / 2 : n_cross / 2;	/* Half-width of points in a cross profile depending on odd/even */
-	if (unit && strchr (GMT_ARC_UNITS, unit))	/* Gave increments in arc units (already in degrees at this point) */
+	if (unit && strchr (GMT_ARC_UNITS, unit)) {	/* Gave increments in arc units (already in degrees at this point) */
 		across_ds_radians = D2R * cross_length / (n_cross - 1);	/* Angular change from point to point */
-	else	/* Must convert distances to degrees */
+		dist_to_end = 0.5 * cross_length;	/* Distance from center to end of profile in degrees */
+	}
+	else {	/* Must convert distances to degrees */
+		dist_to_end = 0.5 * cross_length / GMT->current.proj.DIST_M_PR_DEG;		/* Distance from center to end of profile in degrees */
 		across_ds_radians = D2R * (cross_length / GMT->current.proj.DIST_M_PR_DEG) / (n_cross - 1);	/* Angular change from point to point */
+	}
 	if ((n_cross % 2) == 0) ds_phase = 0.5;
 	k_start = -n_half_cross;
 	k_stop = k_start + n_cross - 1;
@@ -5686,15 +5695,23 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 
 				x = Tin->segment[seg]->data[GMT_X][row];	y = Tin->segment[seg]->data[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
 				gmt_geo_to_cart (GMT, y, x, P, true);		/* 3-D vector of current point P */
-				left = (row) ? row - 1 : row;			/* Left point (if there is one) */
-				x = Tin->segment[seg]->data[GMT_X][left];	y = Tin->segment[seg]->data[GMT_Y][left];
-				gmt_geo_to_cart (GMT, y, x, L, true);		/* 3-D vector of left point L */
-				right = (row < (Tin->segment[seg]->n_rows-1)) ? row + 1 : row;	/* Right point (if there is one) */
-				x = Tin->segment[seg]->data[GMT_X][right];	y = Tin->segment[seg]->data[GMT_Y][right];
-				gmt_geo_to_cart (GMT, y, x, R, true);		/* 3-D vector of right point R */
-				gmt_cross3v (GMT, L, R, T);			/* Get pole T of plane trough L and R (and center of Earth) */
-				gmt_normalize3v (GMT, T);			/* Make sure T has unit length */
-				gmt_cross3v (GMT, T, P, E);			/* Get pole E to plane trough P normal to L,R (hence going trough P) */
+				if (set_fixed_azim) {	/* Need 2nd point in azim direction to cross with P */
+					double b_x, b_y;
+					gmt_translate_point (GMT, x, y, fixed_azim, dist_to_end, &b_x, &b_y, NULL);
+					gmt_geo_to_cart (GMT, b_y, b_x, R, true);		/* 3-D vector of end point R */
+					gmt_cross3v (GMT, P, R, E);			/* Get pole E to plane trough P and R */
+				}
+				else {	/* Erect an orthogonal (- deviation) profile */
+					left = (row) ? row - 1 : row;			/* Left point (if there is one) */
+					x = Tin->segment[seg]->data[GMT_X][left];	y = Tin->segment[seg]->data[GMT_Y][left];
+					gmt_geo_to_cart (GMT, y, x, L, true);		/* 3-D vector of left point L */
+					right = (row < (Tin->segment[seg]->n_rows-1)) ? row + 1 : row;	/* Right point (if there is one) */
+					x = Tin->segment[seg]->data[GMT_X][right];	y = Tin->segment[seg]->data[GMT_Y][right];
+					gmt_geo_to_cart (GMT, y, x, R, true);		/* 3-D vector of right point R */
+					gmt_cross3v (GMT, L, R, T);			/* Get pole T of plane trough L and R (and center of Earth) */
+					gmt_normalize3v (GMT, T);			/* Make sure T has unit length */
+					gmt_cross3v (GMT, T, P, E);			/* Get pole E to plane trough P normal to L,R (hence going trough P) */
+				}
 				gmt_normalize3v (GMT, E);			/* Make sure E has unit length */
 				if (!gmt_M_is_zero (deviation)) {	/* Must now rotate E about P by the deviation first */
 					gmtlib_load_rot_matrix (-D2R * deviation, Rot0, P);	/* Negative so that rotation goes clockwise */
@@ -5779,6 +5796,8 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 	 * Dout is the new data set with all the crossing profiles;
 	*/
 
+	bool set_fixed_azim = false;
+
 	int k, ndig, sdig, n_half_cross, k_start, k_stop;
 
 	unsigned int ii, np_cross;
@@ -5803,6 +5822,11 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 	}
 
 	if (mode & GMT_ALTERNATE) sign = -1.0;	/* Survey mode */
+	if (mode & GMT_FIXED_AZIM) {	/* Got fixed azimuth */
+		az_cross = deviation;
+		deviation = 0.0;	/* To prevent any deviation below */
+		set_fixed_azim = true;
+	}
 
 	/* Get resampling step size and zone width in degrees */
 
@@ -5837,7 +5861,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Working on cross profile %" PRIu64 " [local line orientation = %06.1f]\n", row, orientation);
 
 				x = Tin->segment[seg]->data[GMT_X][row];	y = Tin->segment[seg]->data[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
-				az_cross = fmod (Tin->segment[seg]->data[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
+				if (!set_fixed_azim) az_cross = fmod (Tin->segment[seg]->data[SEG_AZIM][row] + 270.0, 360.0);	/* Azimuth of cross-profile in 0-360 range */
 				if (mode & GMT_ALTERNATE)
 					sign = -sign;
 				else if (mode & GMT_EW_SN)
