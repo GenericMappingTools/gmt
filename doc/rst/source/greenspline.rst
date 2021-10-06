@@ -481,6 +481,12 @@ stable for a finite range of *scale* values; you must experiment to find
 the valid range and a useful setting. For more information on tension
 see the references below.
 
+Deprecations
+------------
+
+- 6.3.0: Replace **+m** and **+M** modifiers for **-C**. `#5714 <https://github.com/GenericMappingTools/gmt/pull/5714>`_
+- 6.3.0: Use **+n** instead of negative value for **-C** to set dry-run. `#5725 <https://github.com/GenericMappingTools/gmt/pull/5725/>`_
+
 References
 ----------
 
