@@ -5641,7 +5641,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 	if (mode & GMT_ALTERNATE) sign = -1.0;	/* Survey layout */
 	if (mode & GMT_FIXED_AZIM) {	/* Got fixed azimuth */
 		fixed_azim = deviation;
-		deviation = 0.0;
+		deviation = 0.0;	/* To prevent any deviation below */
 		set_fixed_azim = true;
 	}
 
@@ -5695,8 +5695,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_spherical (struct GMT_CTRL
 
 				x = Tin->segment[seg]->data[GMT_X][row];	y = Tin->segment[seg]->data[GMT_Y][row];	/* Reset since now we want lon/lat regardless of grid format */
 				gmt_geo_to_cart (GMT, y, x, P, true);		/* 3-D vector of current point P */
-				if (set_fixed_azim) {
-					/* Need 2nd point in azim direction */
+				if (set_fixed_azim) {	/* Need 2nd point in azim direction to cross with P */
 					double b_x, b_y;
 					gmt_translate_point (GMT, x, y, fixed_azim, dist_to_end, &b_x, &b_y, NULL);
 					gmt_geo_to_cart (GMT, b_y, b_x, R, true);		/* 3-D vector of end point R */
@@ -5825,7 +5824,7 @@ GMT_LOCAL struct GMT_DATASET * gmtsupport_crosstracks_cartesian (struct GMT_CTRL
 	if (mode & GMT_ALTERNATE) sign = -1.0;	/* Survey mode */
 	if (mode & GMT_FIXED_AZIM) {	/* Got fixed azimuth */
 		az_cross = deviation;
-		deviation = 0.0;
+		deviation = 0.0;	/* To prevent any deviation below */
 		set_fixed_azim = true;
 	}
 
