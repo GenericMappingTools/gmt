@@ -81,8 +81,9 @@ Optional Arguments
     flags in the CPT). The exception to this rule is for CPT files that were scaled to fit the range
     of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
     To specify custom text annotations for
-    intervals, you must append ;\ *annotation* to each z-slice in the CPT.
-    For standard **-B** operations, |Add_-B_links|
+    intervals, you must append ;\ *annotation* to each z-slice in the CPT. **Note**: The **-B**
+    option relies on the **-R** and **-J** settings of the :ref:`given hierarchical level <cookbook/features:GMT Modern Mode Hierarchical Levels>`
+    to plot correctly. For standard **-B** operations, |Add_-B_links|
 
 .. _-C:
 
