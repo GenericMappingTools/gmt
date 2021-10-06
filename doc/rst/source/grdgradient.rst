@@ -59,7 +59,7 @@ Optional Arguments
     angle in the x,y plane measured in degrees positive clockwise from
     north (the +y direction) toward east (the +x direction). The
     negative of the directional derivative, 
-    :math:`-(\frac{dz}{dx}sin(azim) + \frac{dz}{dy}cos(azim))`
+    :math:`-(\frac{dz}{dx}\sin(\mbox{azim}) + \frac{dz}{dy}\cos(\mbox{azim}))`
     , is found; negation yields positive values
     when the slope of :math:`z(x,y)` is downhill in the *azim* direction, the
     correct sense for shading the illumination of an image (see
@@ -115,14 +115,14 @@ Optional Arguments
     *amp* = 1. If *offset* is not given, it is set to the average of
     :math:`g`. The following forms are supported:
     
-    - **-N**: - Normalize using :math:`g_n = amp(\frac{g - offset}{max(|g - offset|)})`
+    - **-N**: - Normalize using :math:`g_n = \mbox{amp}(\frac{g - \mbox{offset}}{max(|g - \mbox{offset}|)})`
     - **-Ne** - Normalize using a cumulative Laplace distribution yielding:
-      :math:`g_n = amp(1 - \exp{(\sqrt{2}\frac{g - offset}{\sigma}))}`, where
-      :math:`\sigma` is estimated using the L1 norm of :math:`(g - offset)` if it is
+      :math:`g_n = \mbox{amp}(1 - \exp{(\sqrt{2}\frac{g - \mbox{offset}}{\sigma}))}`, where
+      :math:`\sigma` is estimated using the L1 norm of :math:`(g - \mbox{offset})` if it is
       not given.
     - **-Nt** - Normalize using a cumulative Cauchy distribution yielding:
-      :math:`g_n = \frac{2(amp)}{\pi}(atan( \frac{g - offset}{\sigma}))` where
-      :math:`\sigma` is estimated using the L2 norm of :math:`(g - offset)` if it
+      :math:`g_n = \frac{2(\mbox{amp})}{\pi}(\tan^{-1}(\frac{g - \mbox{offset}}{\sigma}))` where
+      :math:`\sigma` is estimated using the L2 norm of :math:`(g - \mbox{offset})` if it
       is not given.
       
     To use *offset* and/or :math:`\sigma` from a previous calculation,
