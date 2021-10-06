@@ -115,7 +115,7 @@ Optional Arguments
     *amp* = 1. If *offset* is not given, it is set to the average of
     :math:`g`. The following forms are supported:
     
-    - **-N**: - Normalize using :math:`g_n = \mbox{amp}(\frac{g - \mbox{offset}}{max(|g - \mbox{offset}|)})`
+    - **-N** - Normalize using :math:`g_n = \mbox{amp}(\frac{g - \mbox{offset}}{max(|g - \mbox{offset}|)})`
     - **-Ne** - Normalize using a cumulative Laplace distribution yielding:
       :math:`g_n = \mbox{amp}(1 - \exp{(\sqrt{2}\frac{g - \mbox{offset}}{\sigma}))}`, where
       :math:`\sigma` is estimated using the L1 norm of :math:`(g - \mbox{offset})` if it is
