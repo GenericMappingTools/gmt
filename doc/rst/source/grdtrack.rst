@@ -105,7 +105,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\**f**\ *value*][**l**\|\ **r**]
+**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
