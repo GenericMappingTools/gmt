@@ -52,10 +52,10 @@ Optional Arguments
 .. _-C:
 
 **-C**\ [*cval*\|\ *low/high/delta*] or **-C**\ **r**\ [*cval*\|\ *low/high*]
-    By default, report the area, volume, and mean height of the entire grid.
-    While the value in the first column will be 0, this does not mean that a
-    zero-contour was traced (unless **-C**\ 0 is used). Alternatively, use one
-    of the following to report a different statistic:
+    By default, report the area, volume, and mean height (where height = volume / area)
+    of the entire grid. While the value in the first column will be 0, this does not
+    mean that a zero-contour was traced (unless **-C**\ 0 is used). Alternatively, use
+    one of the following to report a different statistic:
 
         * **-C**\ *cval* - Report the area, volume, and mean height above the
           *cval* contour and below the grid surface.
