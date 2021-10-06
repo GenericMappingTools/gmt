@@ -667,6 +667,8 @@ static int parse (struct GMT_CTRL *GMT, struct SUBPLOT_CTRL *Ctrl, struct GMT_OP
 		opt = opt->next;
 	}
 
+	if (n_errors) return (GMT_PARSE_ERROR);
+
 	if (Ctrl->In.mode == SUBPLOT_BEGIN) {	/* Setting up a subplot system */
 		unsigned int px = 0, py = 0;
 		/* Was both -R -J given? */
