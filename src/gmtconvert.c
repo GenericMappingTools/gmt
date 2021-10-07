@@ -510,7 +510,7 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 
 	struct GMTCONVERT_CTRL *Ctrl = NULL;
 	struct GMT_DATASET *D[2] = {NULL, NULL};	/* Pointer to GMT multisegment table(s) in and out */
-	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASEGMENT *S = NULL, *Si = NULL, *So = NULL;
 	struct GMT_DATASET_HIDDEN *DHi = NULL, *DHo = NULL;
 	struct GMT_DATATABLE_HIDDEN *THi = NULL, *THo = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SHi = NULL, *SHo = NULL;
@@ -704,9 +704,10 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 		D[GMT_OUT]->table[tbl_ver]->n_records = 0;	/* Reset record count per table since we may return fewer than the original */
 		THo = gmt_get_DT_hidden (D[GMT_OUT]->table[tbl_ver]);
 		for (seg = 0; seg < D[GMT_IN]->table[tbl_ver]->n_segments; seg++) {	/* For each segment in the tables */
-			S = D[GMT_IN]->table[tbl_ver]->segment[seg];	/* Current segment */
+			S  = D[GMT_IN]->table[tbl_ver]->segment[seg];	/* Current input segment */
+			So = D[GMT_OUT]->table[tbl_ver]->segment[seg];	/* Current output segment */
 			SHi = gmt_get_DS_hidden (S);
-			SHo = gmt_get_DS_hidden (D[GMT_OUT]->table[tbl_ver]->segment[seg]);
+			SHo = gmt_get_DS_hidden (So);
 			if (Ctrl->L.active) SHo->mode = GMT_WRITE_HEADER;	/* Only write segment header */
 			if (Ctrl->S.active) {		/* See if the combined segment header has text matching our search string */
 				match = gmt_get_segtext_selection (GMT, Ctrl->S.select, S, match);
@@ -742,31 +743,37 @@ EXTERN_MSC int GMT_gmtconvert (void *V_API, int mode, void *args) {
 				/* Pull out current virtual row (may consist of a single or many (-A) table rows) */
 				for (tbl_hor = out_col = tlen = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
 					use_tbl = (Ctrl->A.active) ? tbl_hor : tbl_ver;
-					if (D[GMT_IN]->table[use_tbl]->segment[seg]->text && D[GMT_IN]->table[use_tbl]->segment[seg]->text[row]) tlen += strlen (D[GMT_IN]->table[use_tbl]->segment[seg]->text[row]) + 1;	/* String + separator */
-					for (col = 0; col < D[GMT_IN]->table[use_tbl]->segment[seg]->n_columns; col++, out_col++) {	/* Now go across all columns in current table */
-						val[out_col] = D[GMT_IN]->table[use_tbl]->segment[seg]->data[col][row];
+					Si = D[GMT_IN]->table[use_tbl]->segment[seg];	/* Current input segment in this table */
+					if (Si->text && Si->text[row]) tlen += strlen (Si->text[row]) + 1;	/* String + separator */
+					for (col = 0; col < Si->n_columns; col++, out_col++) {	/* Now go across all columns in current table */
+						val[out_col] = Si->data[col][row];
 					}
 				}
 				for (col = 0; col < n_cols_out; col++) {	/* Now go across the single virtual row */
 					if (col >= n_cols_in) continue;			/* This column is beyond end of this table */
-					D[GMT_OUT]->table[tbl_ver]->segment[seg]->data[col][n_rows] = val[col];
+					So->data[col][n_rows] = val[col];
 				}
-				if (tlen) {
-					if (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text == NULL) D[GMT_OUT]->table[tbl_ver]->segment[seg]->text = gmt_M_memory (GMT, NULL, S->n_rows, char *);
-					D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows] = calloc (tlen+1, sizeof(char));	/* Space for trailing \0 */
+				if (tlen) {	/* must deal with trailing text(s) */
+					bool add_separator = false;
+					if (So->text == NULL) So->text = gmt_M_memory (GMT, NULL, S->n_rows, char *);
+					So->text[n_rows] = calloc (tlen+1, sizeof(char));	/* Space for trailing \0 */
 					for (tbl_hor = 0; tbl_hor < n_horizontal_tbls; tbl_hor++) {	/* Number of tables to place horizontally */
 						use_tbl = (Ctrl->A.active) ? tbl_hor : tbl_ver;
-						if (use_tbl) strcat (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows], GMT->current.setting.io_col_separator);
-						if (D[GMT_IN]->table[use_tbl]->segment[seg]->text[row]) strcat (D[GMT_OUT]->table[tbl_ver]->segment[seg]->text[n_rows], D[GMT_IN]->table[use_tbl]->segment[seg]->text[row]);
+						Si = D[GMT_IN]->table[use_tbl]->segment[seg];	/* Current input segment in this table */
+						if (Si->text && Si->text[row]) {
+							if (add_separator) strcat (So->text[n_rows], GMT->current.setting.io_col_separator);
+							strcat (So->text[n_rows], Si->text[row]);
+							add_separator = true;
+						}
 					}
 				}
 				n_rows++;
 			}
 			SHo->id = out_seg++;
-			D[GMT_OUT]->table[tbl_ver]->segment[seg]->n_rows = n_rows;	/* Possibly shorter than originally allocated if -E is used */
+			So->n_rows = n_rows;	/* Possibly shorter than originally allocated if -E is used */
 			D[GMT_OUT]->table[tbl_ver]->n_records += n_rows;
 			D[GMT_OUT]->n_records = D[GMT_OUT]->table[tbl_ver]->n_records;
-			if (SHi->ogr) gmt_duplicate_ogr_seg (GMT, D[GMT_OUT]->table[tbl_ver]->segment[seg], S);
+			if (SHi->ogr) gmt_duplicate_ogr_seg (GMT, So, S);
 		}
 		THo->id = tbl_ver;
 	}
