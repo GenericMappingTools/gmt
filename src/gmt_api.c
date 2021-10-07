@@ -430,7 +430,7 @@ const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *can
 	return (M[module_id].component);
 }
 
-EXTERN_MSC void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API) {
+void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API) {
 	if (API->external < 2) GDALDestroyDriverManager();
 }
 
