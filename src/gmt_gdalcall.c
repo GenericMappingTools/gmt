@@ -51,14 +51,14 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 	hDS = GDALCreate(hDriver, "mem", 0, 0, 0, GDT_Unknown, NULL);
 	if (hDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creation of MEM file failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
 	hLayer = GDALDatasetCreateLayer(hDS, "point_out", NULL, wkbPoint, NULL);
 	if (hLayer == NULL ) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Layer creation failed.\n");
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
@@ -68,7 +68,7 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 
 	if (OGR_L_CreateField(hLayer, hFieldDefn, TRUE) != OGRERR_NONE) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Creating Name field failed.\n");
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
@@ -91,7 +91,7 @@ GMT_LOCAL GDALDatasetH gdal_vector (struct GMT_CTRL *GMT, char *fname) {
 
 				if (OGR_L_CreateFeature(hLayer, hFeature) != OGRERR_NONE) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to create feature in dataset.\n");
-					GDALDestroyDriverManager();
+					gmtlib_GDALDestroyDriverManager(GMT->parent);
 					return NULL;
 				}
 				OGR_F_Destroy(hFeature);
@@ -367,7 +367,7 @@ int gmt_gdal_info (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	if (args) free_args(GMT, args);
 	GDALClose(hSrcDS);
 	GDALInfoOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	return 0;
 }
 
@@ -394,7 +394,7 @@ int gmt_gdal_dem (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 
 	GDALDEMProcessingOptionsFree(psOptions);
     OGRCleanupAll();
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
@@ -427,7 +427,7 @@ int gmt_gdal_grid(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) {
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "grid");
 
 	GDALGridOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
@@ -460,7 +460,7 @@ int gmt_gdal_rasterize(struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GD
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "rasterize");
 
 	GDALRasterizeOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
@@ -483,7 +483,7 @@ int gmt_gdal_translate (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *G
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "translate");
 
 	GDALTranslateOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }
@@ -507,7 +507,7 @@ int gmt_gdal_warp (struct GMT_CTRL *GMT, struct GMT_GDALLIBRARIFIED_CTRL *GDLL) 
 	error = sanitize_and_save(GMT, GDLL, bUsageError, hSrcDS, hDstDS, Grid, args, "warp");
 
 	GDALWarpAppOptionsFree(psOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	if (hDstDS == NULL) return bUsageError;
 	return error;
 }

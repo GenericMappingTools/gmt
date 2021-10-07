@@ -466,7 +466,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 					            GDALGetDriverShortName(hDriver), GDALGetDriverLongName(hDriver));
 			}
 		}
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		gmt_M_free(GMT, outByte);
 		return(-1);
 	}
@@ -479,7 +479,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 
 	if (hDstDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GDALOpen failed - %d\n%s\n", CPLGetLastErrorNo(), CPLGetLastErrorMsg());
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		gmt_M_free(GMT, outByte);
 		return (-1);
 	}
@@ -613,7 +613,7 @@ int gmt_gdalwrite (struct GMT_CTRL *GMT, char *fname, struct GMT_GDALWRITE_CTRL 
 	gmt_M_free(GMT, outByte);
 	if (pszSRS_WKT != NULL) CPLFree(pszSRS_WKT);
 	if (papszOptions != NULL) CSLDestroy (papszOptions);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 
 	return error;
 }
