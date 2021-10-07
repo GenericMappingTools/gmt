@@ -39,7 +39,7 @@ Synopsis
 Description
 -----------
 
-**project** reads arbitrary :math:`x`, :math:`y` [,\ *z*]) data from standard input
+**project** reads arbitrary (:math:`x`, :math:`y` [,\ *z*]) data from standard input
 [or *table*] and writes to standard output any combination of (:math:`x, y`, *z*,
 :math:`p, q, r, s`), where (:math:`p, q`) are the coordinates in
 the projection, (:math:`r, s`) is the position in the (:math:`x, y`) coordinate
