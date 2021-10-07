@@ -430,10 +430,6 @@ const char *gmtlib_module_group (void *API, struct GMT_MODULEINFO M[], char *can
 	return (M[module_id].component);
 }
 
-void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API) {
-	if (API->external < 2) GDALDestroyDriverManager();
-}
-
 int GMT_Show_ModuleInfo (void *API, struct GMT_MODULEINFO M[], char *arg, unsigned int mode) {
 	/* API function to display module information from shared libraries */
 	if (API == NULL) return_error (API, GMT_NOT_A_SESSION);
@@ -4418,6 +4414,10 @@ int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
 		(*I_in) = Irgb;
 	}
 	return GMT_NOERROR;
+}
+
+void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API) {
+	if (API->external < 2) GDALDestroyDriverManager();
 }
 #endif
 
