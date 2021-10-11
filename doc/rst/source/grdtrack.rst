@@ -13,8 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdtrack** [ *table* ] |-G|\ *grd1* |-G|\ *grd2* ...
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
-[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**] ]
+[ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**] ]
+[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
 [ |-F|\ [**+b**][**+n**][**+r**][**+z**\ *z0*] ]
@@ -24,6 +24,7 @@ Synopsis
 [ |-T|\ [*radius*][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ]
 [ |-Z| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -63,9 +64,9 @@ Required Arguments
 ------------------
 
 *table*
-    This is an ASCII (or binary, see **-bi**)
-    file where the first 2 columns hold the (x,y) positions where the
-    user wants to sample the 2-D data set.
+    This is an ASCII (or binary, see **-bi**) file where the first 2 columns
+    hold the (x,y) positions where the user wants to sample the 2-D data set.
+    If no tables are given then we read from standard input, unless |-E| is set.
 
 .. _-G:
 
@@ -90,7 +91,7 @@ Optional Arguments
 
 .. _-A:
 
-**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
+**-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**]
     For track resampling (if **-C** or **-E** are set) we can select how this is to
     be performed. Append **f** to keep original points, but add
     intermediate points if needed [Default], **m** as **f**, but first
@@ -104,7 +105,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**]
+**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
@@ -124,7 +125,12 @@ Optional Arguments
     `Units`_ below). The default unit for geographic grids is meter while
     Cartesian grids implies the user unit.  The output columns will be
     *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ..., *zn* (The *zi* are
-    the sampled values for each of the *n* grids)
+    the sampled values for each of the *n* grids). Use **+d** to
+    change the profiles from being orthogonal to the line by the given
+    *deviation* [0]. Looking in the direction of the line, a positive *deviation*
+    will rotate the crosslines clockwise and a negative one will rotate them
+    counter-clockwise.  Finally, you can use **+f** to set a fixed azimuth
+    for all profiles.
 
 .. _-D:
 
@@ -254,9 +260,7 @@ Optional Arguments
     column becomes 0 instead of 2.  If specifying specific columns
     in **-s** then start numbering the z-columns from 0 instead of 2.
 
-**-:**
-    Toggles between (longitude,latitude) and (latitude,longitude)
-    input/output. [Default is (longitude,latitude)].
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -292,6 +296,10 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
+
+**-:**
+    Toggles between (longitude,latitude) and (latitude,longitude)
+    input/output. [Default is (longitude,latitude)].
 
 .. include:: explain_help.rst_
 

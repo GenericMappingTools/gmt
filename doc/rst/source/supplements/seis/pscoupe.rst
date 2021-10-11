@@ -12,9 +12,12 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt pscoupe** [ *table* ] |-J|\ *parameters*
-|SYN_OPT-R| |-A|\ *parameters*
-|-S|\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+**gmt pscoupe**
+[ *table* ]
+|-J|\ *parameters*
+|SYN_OPT-R|
+|-A|\ **a**\|\ **b**\|\ **c**\|\ **d**\ *params*\ [**+c**\ [**n**\|\ **t**]][**+d**\ *dip*][**+r**\ [**a**\|\ **e**\|\ *dx*]][**+w**\ *width*][**+z**\ [**s**]\ **a**\|\ **e**\|\ *dz*\|\ *min*/*max*]
+|-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *fill* ]
@@ -24,7 +27,7 @@ Synopsis
 [ |-I|\ [*intens*] ]
 [ |-K| ]
 [ |-L|\ *[pen]* ]
-[ |-M| ] [ |-N| ]
+[ |-N| ]
 [ |-O| ]
 [ |-Q| ]
 [ |-T|\ *nplane*\ [/*pen*] ]
@@ -43,7 +46,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: coupe_common.rst_
+.. include:: coupe.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: ../../common_classic.rst_
 

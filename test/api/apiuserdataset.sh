@@ -1,4 +1,4 @@
-#!/usr/bin/env bash -xv
+#!/usr/bin/env bash
 #
 # Test the C API for conversions between user matrices and
 # datasets.  A user input "dataset" is passed as a matrix to

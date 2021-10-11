@@ -301,20 +301,31 @@ FORMAT Parameters
         For geographic coordinates, see :term:`FORMAT_GEO_MAP`. [default is **%.12g**].
 
     **FORMAT_FLOAT_OUT**
-        Format (C language printf syntax) to be used when printing double
-        precision floating point numbers to output files. For geographic
-        coordinates, see :term:`FORMAT_GEO_OUT`. [default is **%.12g**]. To give
-        some columns a separate format, supply one or more comma-separated
-        *cols*:*format* specifications, where *cols* can be specific columns
-        (e.g., 5 for 6th since 0 is the first) or a range of columns (e.g.,
-        3-7). The last specification without column information will
-        override the format for all other columns.  Alternatively, you can
-        list N space-separated formats and these apply to the first N
-        columns.
+        Format (C language `printf <https://en.wikipedia.org/wiki/Printf_format_string>`_ syntax)
+        to be used when printing double precision floating point numbers to output files.
+        For geographic coordinates, see :term:`FORMAT_GEO_OUT`.
+        [default is **%.12g**]. To give some columns a separate format,
+        supply one or more comma-separated *cols*:*format* specifications,
+        where *cols* can be specific columns (e.g., 5 for 6th since 0 is the first)
+        or a range of columns (e.g.,3-7).
+        The last specification without column information will override the format for all other columns.
+        Alternatively, you canlist N space-separated formats and these apply to the first N columns.
 
-        The printf syntax is ``%[minimum width].[precision]type``, where
-        **type** may be **f**, **e**, **E**, **g** or **G**.
+        The printf syntax is ``%[minimum width].[precision]type``,
+        where **type** may be **f**, **e**, **E**, **g** or **G**.
         The default is ``%.12g``, i.e. no minimum width and 12 digit precision.
+
+        See table below for examples. Input is pi (3.14159265359).
+
+        ======   =============
+        Format   Output
+        ======   =============
+        %.12g    3.14159265359
+        %.2f     3.14
+        %8.4f      3.1416
+        %08.2f   003.1416
+        %.5f     3.14159
+        ======   =============
 
     **FORMAT_TIME_MAP**
         Sets both :term:`FORMAT_TIME_PRIMARY_MAP` and :term:`FORMAT_TIME_SECONDARY_MAP`
@@ -415,6 +426,12 @@ GMT Miscellaneous Parameters
         given size only, the one-time cost of the smart planner becomes
         significant. In that case, stick to the default planner, *estimate*,
         based on heuristics.
+
+    **GMT_GRAPHICS_DPU**
+        Default target dots-per-unit for images when a remote gridded data
+        set is requested without specifyin a resolution (e.g., @earth_relief).
+        Append "i" to indicate the DPU is dots-per-inches and "c" for dots-per-cm.
+        [default is 300i].
 
     **GMT_GRAPHICS_FORMAT**
         Default graphics format in modern mode [default is **pdf**].
@@ -824,7 +841,7 @@ MAP Parameters
     **MAP_POLAR_CAP**
         Controls the appearance of gridlines near the poles for all
         azimuthal projections and a few others in which the geographic poles
-        are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
+        are plotted as points (Lambert Conic, Oblique and Transverse Mercator, UTM, Hammer, Mollweide,
         Sinusoidal and van der Grinten). Specify either **none** (in which case
         there is no special handling) or *pc_lat*/*pc_dlon*. In that case, normal
         gridlines are only drawn between the latitudes -*pc_lat*/+\ *pc_lat*, and
@@ -1230,8 +1247,8 @@ Calendar/Time Parameters
     **TIME_UNIT**
         Specifies the units of relative time data since epoch (see
         :term:`TIME_EPOCH`). Choose **y** (year - assumes all years are 365.2425
-        days), **o** (month - assumes all months are of equal length y/12), **d**
-        (day), **h** (hour), **m** (minute), or **s** (second) [default is **s**].
+        days), **o** (month - assumes all months are of equal length y/12), *ww*
+        (week) **d** (day), **h** (hour), **m** (minute), or **s** (second) [default is **s**].
 
     **TIME_WEEK_START**
         When weeks are indicated on time axes, this parameter determines the

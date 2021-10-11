@@ -449,7 +449,7 @@ summary of these changes:
    Pablo Valdés during the GMT4 era. These are now complemented by new custom
    symbols for structural geology designed by José A. Álvarez-Gómez.
 
-*  The :doc:`PSL <postscriptlight>` library no longer needs run-time files to configure the
+*  The :doc:`PSL </devdocs/postscriptlight>` library no longer needs run-time files to configure the
    list of standard fonts and character encodings, reducing the number of configure
    files required.
 
@@ -668,7 +668,7 @@ as well. For specific enhancements, we have:
 *  All GMT-distributed color palette tables (CPTs, now a total of 44) are
    *dynamic* and many have a *hinge* and a default *range*.  What this means
    is that the range of all CPTs have been normalized to 0-1, expect that
-   those with a hinge are normalized to -1/+1, with 0 being the normalized
+   those with a hinge are normalized to ±1, with 0 being the normalized
    hinge location.  CPTs with a hinge are interpolated separately on either
    side of the hinge, since a hinge typically signifies a dramatic color
    change (e.g., at sea-level) and we do not want that color change to be
@@ -1153,7 +1153,7 @@ New Features in GMT 5
 GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding over 200 new features
 to an already extensive bag of tricks.  Our PostScript library
-:doc:`PSL <postscriptlight>` has seen a complete rewrite as well
+:doc:`PSL </devdocs/postscriptlight>` has seen a complete rewrite as well
 and produce shorter and more compact PostScript. However, the big news
 is aimed for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level

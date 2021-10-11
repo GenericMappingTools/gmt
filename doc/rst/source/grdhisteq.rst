@@ -15,8 +15,9 @@ Synopsis
 **gmt grdhisteq** *ingrid* [ |-G|\ *outgrid* ]
 [ |-C|\ *n_cells* ] [ |-D|\ [*file*] ] [ |-N|\ [*norm*] ]
 [ |-Q| ]
-|SYN_OPT-R|
-|SYN_OPT-V|
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -59,8 +60,10 @@ location of the most negative input value, and so on.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D grid file to be equalized. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D grid file to be equalized.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -77,16 +80,17 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of output 2-D grid file. Used with **-N** only. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file. Used with |-N| only.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-N:
 
 **-N**\ [*norm*]
     Gaussian output. Use with **-G** to make an output grid with
     standard normal scores. Append *norm* to force the scores to fall in
-    the <-1,+1> range [Default is standard normal scores].
+    the ±*norm* range [Default is standard normal scores].
 
 .. _-Q:
 
@@ -103,6 +107,9 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_
 

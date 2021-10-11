@@ -39,7 +39,7 @@ Synopsis
 Description
 -----------
 
-**project** reads arbitrary :math:`x`, :math:`y` [,\ *z*]) data from standard input
+**project** reads arbitrary (:math:`x`, :math:`y` [,\ *z*]) data from standard input
 [or *table*] and writes to standard output any combination of (:math:`x, y`, *z*,
 :math:`p, q, r, s`), where (:math:`p, q`) are the coordinates in
 the projection, (:math:`r, s`) is the position in the (:math:`x, y`) coordinate
@@ -96,6 +96,19 @@ will be in km.
 Calculations of specific great-circle and geodesic distances or for
 back-azimuths or azimuths are better done using :doc:`mapproject` as
 :doc:`project` is strictly spherical.
+
+
+.. figure:: /_images/project_setup.*
+   :width: 500 px
+   :align: center
+
+   Explanation of the coordinate system utilized by project.  The input point
+   (red circle) is given in the original *x-y* (or *lon-lat*) coordinate system and is projected to
+   the *p-q* coordinate system, defined by the center (**C**) and either the end-point
+   (**E**) or azimuth (:math:`\alpha`), or for geographic data a rotation pole **T** (not shown).
+   The blue point has projected coordinates (p,0) and is reported as (r,s) in the original
+   coordinate system.  Options **-L** (limit range of *p*) and **-W** (limit range of *q*)
+   can be used to exclude data outside the specified limits (light gray area).
 
 Required Arguments
 ------------------

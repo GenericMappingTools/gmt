@@ -89,7 +89,20 @@
 
 #define GMT_PAPER_DIM		32767	/* Upper limit on PostScript paper size under modern mode, in points (~11.6 meters) */
 #define GMT_PAPER_MARGIN_AUTO	5	/* Default paper margin under modern mode, in inches (12.7 centimeter) for auto-size mode */
-#define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (12.7 centimeter) for fixed-size mode */
+#define GMT_PAPER_MARGIN_FIXED	1	/* Default paper margin under modern mode, in inches (2.54 centimeter) for fixed-size mode */
+
+#define GMT_JPEG_DEF_QUALITY	90	/* Default JPG quality value for psconvert -Tj */
+
+/*! Constants for use with calls to gmt_solve_svd (used in greenspline and geodesy/gpsgridder) */
+enum GMT_enum_svd {
+	GMT_SVD_EIGEN_RATIO_CUTOFF		= 0,	/* Only use eigenvalues whose ratio to the first exceeds a cutoff [0 = all] */
+	GMT_SVD_EIGEN_NUMBER_CUTOFF		= 1,	/* Only use the first N largest eigenvalues */
+	GMT_SVD_EIGEN_PERCENT_CUTOFF	= 2,	/* Only use a percentage of the (sorted) eigenvalues */
+	GMT_SVD_EIGEN_VARIANCE_CUTOFF	= 3,	/* Find N eigenvalues that equals given percentage of variance explained */
+	GMT_SVD_NO_HISTORY				= 0,	/* Only obtain final solution for selected eigenvalues */
+	GMT_SVD_INCREMENTAL				= 1,	/* Evaluate incremental solution due to next added eigenvalue */
+	GMT_SVD_CUMULATIVE				= 2		/* Evaluate cumulative solution due to next added eigenvalue */
+};
 
 /*! whether to ignore/read/write history file gmt.history */
 enum GMT_enum_history {
@@ -192,12 +205,14 @@ enum GMT_time_period {
 #define GMT_LEN_UNITS	"dmsefkMnu"	/* Distances in arc-{degree,minute,second} or meter, foot, km, Mile, nautical mile, survey foot */
 #define GMT_ARC_UNITS	"dms"		/* Distances in arc-{degree,minute,second}t */
 #define GMT_TIME_UNITS	"yowdhms"	/* Time increments in year, month, week, day, hour, min, sec */
+#define GMT_TIME_FIX_UNITS	"wdhms"	/* Fixed time increment units */
 #define GMT_TIME_VAR_UNITS	"yo"	/* Variable time increments in year or month*/
 #define GMT_WESN_UNITS	"WESN"		/* Sign-letters for geographic coordinates */
 #define GMT_DIM_UNITS_DISPLAY	"c|i|p"			/* Same, used to display as options */
 #define GMT_LEN_UNITS_DISPLAY	"d|m|s|e|f|k|M|n|u"	/* Same, used to display as options */
 #define GMT_LEN_UNITS2_DISPLAY	"e|f|k|M|n|u"		/* Same, used to display as options */
 #define GMT_TIME_UNITS_DISPLAY	"y|o|w|d|h|m|s"		/* Same, used to display as options */
+#define GMT_TIME_FIX_UNITS_DISPLAY	"w|d|h|m|s"		/* Same, used to display as options */
 #define GMT_DEG2SEC_F	3600.0
 #define GMT_DEG2SEC_I	3600
 #define GMT_SEC2DEG	(1.0 / GMT_DEG2SEC_F)
@@ -212,6 +227,9 @@ enum GMT_time_period {
 #define GMT_HR2DAY	(1.0 / GMT_DAY2HR_F)
 #define GMT_WEEK2DAY_F	7.0
 #define GMT_WEEK2DAY_I	7
+#define GMT_WEEK2SEC_F	604800.0
+#define GMT_WEEK2SEC_I	604800
+#define GMT_SEC2WEEK	(1.0 / GMT_WEEK2SEC_F)
 #define GMT_DAY2WEEK	(1.0 / GMT_WEEK2DAY_F)
 #define GMT_DAY2MIN_F	1440.0
 #define GMT_DAY2MIN_I	1440
@@ -271,7 +289,7 @@ enum GMT_time_period {
 #define GMT_DEFAULT_CPT_NAME	"turbo"
 /* Default color list (or cpt) for automatic, sequential color choices */
 #define GMT_DEFAULT_COLOR_SET	"#0072BD,#D95319,#EDB120,#7E2F8E,#77AC30,#4DBEEE,#A2142F"
-	
+
 /* CPT extension is pretty fixed */
 #define GMT_CPT_EXTENSION	".cpt"
 #define GMT_CPT_EXTENSION_LEN	4U
@@ -299,16 +317,17 @@ enum GMT_time_period {
 /* Valid modifiers for various input files */
 
 /* Valid modifiers for -Tmin/max/inc array creator */
-#define GMT_ARRAY_MODIFIERS "abeilnt"
+#define GMT_ARRAY_MODIFIERS "abeilntu"
 
 /* Modifiers for grid files:
+ * +d<divisor> divides all grid values by this divisor
  * +o<offset>  adds this offset to all grid values
  * +n<nodata> sets what the no-data value is
  * +s<scl> scales all grid values by this scale
  * +u<unit> converts Cartesian x/y coordinates from given unit to meters
  * +U<unit> converts Cartesian x/y coordinates from meter to given unit
  */
-#define GMT_GRIDFILE_MODIFIERS "onsuU"
+#define GMT_GRIDFILE_MODIFIERS "donsuU"
 
 /* Modifiers for CPT files:
  * +h[<hinge>] to override soft-hinge value in CPT
@@ -317,6 +336,9 @@ enum GMT_time_period {
  * +U<unit> converts z-values from meter to given unit
  */
 #define GMT_CPTFILE_MODIFIERS "hiuU"
+
+/* Valid options to psconvert from figure and begin */
+#define GMT_PSCONVERT_LIST "ACDEHIMNQS"
 
 /* Settings for usage message indents and break/continue characters */
 
@@ -330,7 +352,8 @@ enum GMT_enum_tracklayout {
 	GMT_EW_SN = 2,
 	GMT_LEFT_ONLY = 4,
 	GMT_RIGHT_ONLY = 8,
-	GMT_ALTERNATE = 16};
+	GMT_ALTERNATE = 16,
+	GMT_FIXED_AZIM = 32};
 
 /*! Codes for first segment header */
 enum GMT_enum_firstseg {

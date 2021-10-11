@@ -586,19 +586,13 @@ iterative solutions, and the like. Since these messages are written to
 may optionally choose among six models of *verbosity*; each mode adds
 more messages with an increasing level of details. The modes are
 
-  **q** Complete silence, not even fatal error messages.
-
-  **e** Errors messages only.
-
-  **w** Warnings [Default].
-
-  **t** Timings (for time-intensive algorithms only).
-
-  **i** Informational messages.
-
-  **c** Compatibility warnings about deprecated usage (if compiled for compatibility).
-
-  **d** Debugging messages (mostly of interest to developers).
+  - **q** - Quiet, not even fatal error messages are produced.
+  - **e** - Error messages only.
+  - **w** - Warnings (same as running without **-V**)
+  - **t** - Timings (report runtimes for time-intensive algorithms).
+  - **i** - Informational messages (same as **-V** only).
+  - **c** - Compatibility warnings (if compiled with backward-compatibility).
+  - **d** - Debugging messages (mostly of interest to developers).
 
 The verbosity is cumulative, i.e., mode **w** means all messages of mode
 **e** as well will be reported.
@@ -698,9 +692,9 @@ binary metafile plot systems since such files cannot easily be modified
 after they have been created. GMT programs also write many comments to
 the plot file which make it easier for users to orient themselves should
 they need to edit the file (e.g., % Start of x-axis) [16]_. All
-GMT programs create PostScript code by calling the :doc:`PSL </postscriptlight>` plot
+GMT programs create PostScript code by calling the :doc:`PSL </devdocs/postscriptlight>` plot
 library (The user may call these functions from his/her own C or FORTRAN
-plot programs. See the manual pages for :doc:`PSL </postscriptlight>` syntax). Although
+plot programs. See the manual pages for :doc:`PSL </devdocs/postscriptlight>` syntax). Although
 GMT programs can create very individualized plot code, there will
 always be cases not covered by these programs. Some knowledge of
 PostScript will enable the user to add such features directly into the
@@ -1541,8 +1535,8 @@ Automatic CPTs
 
 A few modules (:doc:`/grdimage`, :doc:`/grdview`) that expects a CPT option will
 provide a default CPT if none is provided.  By default, the default CPT is the
-"turbo" color table, but this is overridden if the user uses the @eart_relief
-(we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
+*turbo* color table, but this is overridden if the user uses the @earth_relief
+(we select *geo*) or @srtm_relief (we select *srtm*) data sets.  After selection,
 these CPTs are read and scaled to match the range of the grid values. You may append
 **+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
 This is helpful if you plan to place a colorbar and prefer start and stop *z*-values
@@ -2319,18 +2313,18 @@ conventions for netCDF grids. Thus, products created under those
 conventions (provided the grid is 2-, 3-, 4-, or 5-dimensional) can be
 read directly by GMT and the netCDF grids written by GMT can be read
 by other programs that conform to those conventions. Three such programs are
-`ncview <http://meteora.ucsd.edu/~pierce/ncview_home_page.html>`_, `Panoply
+`ncview <https://cirrus.ucsd.edu/~pierce/software/ncview/index.html>`_, `Panoply
 <http://www.giss.nasa.gov/tools/panoply/>`_, and `ncBrowse
 <https://www.pmel.noaa.gov/epic/java/ncBrowse/>`_ ; others can be found on the
 `netCDF website <http://www.unidata.ucar.edu/software/netcdf/software.html>`_.
 Note that although many additional programs can read netCDF files, some are unable
-to read netcdf 4 files (if data compression has been applied).
+to read netCDF 4 files (if data compression has been applied).
 
 In addition, users with some C-programming experience may add their own
 read/write functions and link them with the GMT library to extend the
 number of predefined formats. Technical information on this topic can be
-found in the source file ``gmt_customio.c``. Users who are considering this approach
-should contact the GMT team.
+found in the source file ``gmt_customio.c``. Users who are considering this
+approach should contact the GMT team for guidance.
 
 .. _tbl-grdformats:
 
@@ -2402,17 +2396,18 @@ the data may need translation and scaling prior to use. Therefore, all
 GMT programs that read or write grid files will decode the given
 filename as follows:
 
-name[=\ *ID*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*]
+name[=\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*][**+o**\ *offset*][**+s**\ *scale*]
 
 where anything in brackets is optional. If you are reading a grid then
-no options are needed: just continue to pass the name of the grid file.
-However, if you write another format you must append the =\ *ID* string,
-where *ID* is the format code listed above. In addition, should you want
-to (1) multiply the data by a scale factor, and (2) add a constant
-offset you must append the **+s**\ *scale* and **+o**\ *offset* modifiers. Finally, if you
-need to indicate that a certain data value should be interpreted as a
-NaN (not-a-number) you must append **+n**\ *invalid* modifier to file name.
-You may the scale as *a* for auto-adjusting the scale and/or offset of
+no *ID* is needed: just continue to pass the name of the grid file.
+However, if you write another format than the default netCDF you must append
+the =\ *ID* string, where *ID* is the format code listed above. In addition,
+should you want to (1) multiply the data by a *scale* factor (or alternatively
+divide the data by a *divisor*), and (2) add a constant offset you must append
+the **+s**\ *scale* (or **+d**\ *divisor*) and **+o**\ *offset* modifiers.
+Finally, if you need to indicate that a certain data value should be interpreted
+as a NaN (not-a-number) you must append **+n**\ *invalid* modifier to file name.
+For output, you may specify scale as *a* for auto-adjusting the scale and/or offset of
 packed integer grids (=\ *ID*\ **+s**\ *a* is a shorthand for
 =\ *ID*\ **+s**\ *a*\ **+o**\ *a*).
 
@@ -2769,7 +2764,7 @@ simple example using :doc:`/grdinfo` would be
 
    ::
 
-    gmt grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
+    gmt grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0
 
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Title: Grid imported via GDAL
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Command:
@@ -2790,7 +2785,7 @@ via :doc:`/grdmath` first, i.e.,
 
    ::
 
-    gmt grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
+    gmt grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0 \
                 0.000717185 MUL -2 ADD = sst.nc
 
 then plot the ``sst.nc`` directly.
@@ -2803,7 +2798,7 @@ Writing grids and images
 Saving images in the common raster formats is possible but, for the time being, only from :doc:`/grdimage` and even
 that is restricted to raster type information. That is, vector data (for instance, coast lines) or text will not
 be saved. To save an image with :doc:`/grdimage` use the **-A**\ *outimg=driver* mechanism, where *driver*
-is the driver code name used by GDAL (e.g. GTiff).
+is the driver code name used by GDAL (e.g. GTiff) (run `gdal_translate --formats` for the full list.)
 
 For all other programs that create grids, it is also possible to save them using GDAL. To do it one need to use
 the =gd appended with the necessary information regarding the driver and the data type to use. Generically,
@@ -2815,6 +2810,10 @@ number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one 
 **+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO
 **Note**: You will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
+
+Consider setting :term:`IO_NC4_DEFLATION_LEVEL` to reduce file size and to further increase read/write performance.
+Especially when working with subsets of global grids, masks, and grids with repeating grid values, the improvement is
+usually significant.
 
 The NaN data value
 ------------------

@@ -52,13 +52,13 @@ jobs:
 
     steps:
       - name: Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.8.0
+        uses: styfle/cancel-workflow-action@0.9.1
 
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Setup vcpkg (Windows)
-        uses: dawidd6/action-download-artifact@v2.10.0
+        uses: dawidd6/action-download-artifact@v2.14.1
         with:
           workflow: ci-caches.yml
           name: vcpkg-cache
@@ -110,7 +110,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.10.0
+        uses: dawidd6/action-download-artifact@v2.14.1
         with:
           workflow: ci-caches.yml
           name: gmt-cache

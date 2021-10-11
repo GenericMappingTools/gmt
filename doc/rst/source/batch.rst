@@ -21,8 +21,9 @@ Synopsis
 [ |-Sb|\ *preflight* ]
 [ |-Sf|\ *postflight* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*workdir*] ]
+[ |-W|\ [*dir*] ]
 [ |-Z| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -125,19 +126,22 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*workdir*]
+**-W**\ [*dir*]
     By default, all temporary files and job products are created in the subdirectory *prefix* set via **-N**.
-    You can override that selection by giving another *workdir* as a relative or full directory path. If no
+    You can override that selection by giving another *dir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
     problems related to low space in the main directory.  The product files will still be placed in the *prefix*
-    directory.  The *workdir* is removed unless **-Q** is specified for debugging.
+    directory.  The *dir* is removed unless **-Q** is specified for debugging.
 
 .. _-Z:
 
 **-Z**
     Erase the *mainscript* and all input scripts given via **-I** and **-S** upon completion.  Not compatible
     with **-Q**.
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
 
 .. _-cores:
 
@@ -147,7 +151,7 @@ Optional Arguments
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
     The parallel processing does not depend on OpenMP; new jobs are launched when the previous ones
-    complete.
+    complete. **Note**: One core is reserved by **batch** so in effect *n-1* are used for the jobs.
 
 .. include:: explain_help.rst_
 
@@ -161,8 +165,8 @@ and those that change with the job number.  The constants are accessible by all 
 total number of jobs (given or inferred from **-T**). Also, if **-I** was used then any static parameters
 listed therein will be available to all the scripts as well. In addition, the *mainscript* also has access
 to parameters that vary with the job counter: **BATCH_JOB**\ : The current job number (an integer, e.g., 136),
-**BATCH_TAG**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
-The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_TAG**), Furthermore, if a *timefile*
+**BATCH_ITEM**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
+The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_ITEM**), Furthermore, if a *timefile*
 was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are also set, yielding one variable per
 column in *timefile*.  If *timefile* has trailing text then that text can be accessed via the variable
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to **-T** then the trailing

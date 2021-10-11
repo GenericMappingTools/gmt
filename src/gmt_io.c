@@ -3358,9 +3358,11 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		}
 		*tpos = pos;
 	}
-	if (found_text && col == 0 && !GMT->common.i.select) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
-		gmt_M_free (GMT, type);
-		return GMT_NOT_OUTPUT_OBJECT;
+	if (found_text && col == 0 && !GMT->common.i.select && phys_col_type != GMT_IS_STRING) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
+		if (strncmp (GMT->init.module_name, "batch", 5U) && strncmp (GMT->init.module_name, "movie", 5U)) {	/* Make exception for these modules what often will just read text lines */
+			gmt_M_free (GMT, type);
+			return GMT_NOT_OUTPUT_OBJECT;
+		}
 	}
 	*n_columns = col;	/* Pass back the numerical column count */
 	if (GMT->common.i.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
@@ -3655,7 +3657,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 				col_pos = col_no;
 			n_convert = gmt_scanf (GMT, token, gmt_M_type (GMT, GMT_IN, col_pos), &val);
 			//n_convert = gmt_scanf (GMT, token, gmt_M_type (GMT, GMT_IN, in_col), &val);
-			if (n_convert != GMT_IS_NAN && col_pos > 1 && gmt_input_is_nan_proxy (GMT, val))	/* Input matched no-data setting, so change to NaN */
+			if (n_convert != GMT_IS_NAN && col_pos > GMT_Y && gmt_input_is_nan_proxy (GMT, val))	/* Input matched no-data setting, so change to NaN */
 				n_convert = GMT_IS_NAN;
 			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
 				if (GMT->current.setting.io_nan_records || !GMT->current.io.skip_if_NaN[col_pos]) {	/* This field (or all fields) can be NaN so we pass it on */
@@ -4318,8 +4320,8 @@ void gmt_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir) {
 bool gmt_input_is_nan_proxy (struct GMT_CTRL *GMT, double value) {
 	if (!GMT->common.d.active[GMT_IN]) return false;	/* Not active */
 
-	if (GMT->common.d.is_zero[GMT_IN]) return doubleAlmostEqualZero (0.0, value);	/* Change to NaN if value is zero */
-	return doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], value);		/* Change to NaN if value ~nan_proxy */
+	if (GMT->common.d.is_zero[GMT_IN]) return doubleAlmostEqualZero (0.0, value);	/* Change to NaN if proxy value is ~zero */
+	return doubleAlmostEqual (GMT->common.d.nan_proxy[GMT_IN], value);		/* Change to NaN if value ~nan_proxy for a non-zero proxy */
 }
 
 /*! Appends one more metadata item to this OGR structure */
@@ -4606,7 +4608,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
 		if (!gmt_M_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
-			if (col_no > 1 && gmt_input_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
+			if (col_no > GMT_Y && gmt_input_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no]))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
 			else if (GMT->common.i.select)	/* Cannot check here, done in gmtio_bin_colselect instead when order is set */
 				continue;
@@ -4672,7 +4674,6 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && n_read >= 2)
 		gmt_M_double_swap (GMT->current.io.curr_rec[GMT_X], GMT->current.io.curr_rec[GMT_Y]);	/* Got lat/lon instead of lon/lat */
 	if (GMT->current.proj.inv_coordinates) gmtio_adjust_projected (GMT);	/* Must apply inverse projection to get lon, lat */
-	GMT->current.io.has_previous_rec = true;
 
 	if (set_nan_flag) GMT->current.io.status |= GMT_IO_NAN;
 	return (0);	/* 0 means OK regular record */
@@ -5699,6 +5700,27 @@ void gmt_ascii_format_one (struct GMT_CTRL *GMT, char *text, double x, unsigned 
 			sprintf (text, GMT->current.setting.format_float_out, x);
 			break;
 	}
+}
+
+void gmt_ascii_format_inc (struct GMT_CTRL *GMT, char *text, double x, unsigned int type) {
+	char unit;
+	double d_inc = GMT_DEG2SEC_F * x;
+	unsigned int inc = urint (d_inc);
+	if ((type & GMT_IS_GEO) == 0 || fabs (d_inc - inc) > GMT_CONV6_LIMIT) {	/* Cartesian or not a clear multiple of arc seconds */
+		sprintf (text, GMT->current.setting.format_float_out, x);
+		return;
+	}
+
+	unit = 's';
+	if (inc >= 60 && (inc % 60) == 0) {	/* Arc minutes perhaps */
+		inc /= 60;
+		unit = 'm';
+	}
+	if (inc >= 60 && (inc % 60) == 0) {	/* Arc seconds perhaps */
+		inc /= 60;
+		unit = 'd';
+	}
+	sprintf (text, "%d%c", inc, unit);
 }
 
 /*! . */
@@ -8140,6 +8162,100 @@ struct GMT_DATASEGMENT * gmt_duplicate_segment (struct GMT_CTRL *GMT, struct GMT
 	return (Sout);
 }
 
+/* gmt_realloc_dataset as not yet been tested and is not used anywhere !!!!!!!!!!!!!!!! */
+/*! . */
+unsigned int gmt_realloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *D, uint64_t dim[]) {
+	/* Reallocate this dataset given desired dimensions in dim.  Note: a dim of 0 means no change.
+	 * If the new dimension(s) are smaller than before then we free memory, else we allocate. */
+	uint64_t tbl, seg, col, n_seg, n_col, n_row;
+	unsigned int mode = 0;
+	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATASEGMENT *S;
+
+	if (D == NULL) return GMT_NOERROR;
+	if (D->table[0]->segment[0]->text) mode = GMT_WITH_STRINGS;
+	/* 1. First we eliminate anything no longer wanted */
+	if (dim[GMT_TBL] && dim[GMT_TBL] < D->n_tables) {	/* Remove unneeded tables and reallocate array */
+		for (tbl = dim[GMT_TBL]; tbl < D->n_tables; tbl++)
+			gmt_free_table (GMT, D->table[tbl]);
+		gmt_M_memory (GMT, D->table, dim[GMT_TBL], struct GMT_DATATABLE *);
+		D->n_tables = dim[GMT_TBL];
+	}
+	/* Here, any tables not needed have been removed */
+	for (tbl = 0; tbl < D->n_tables; tbl++) {	/* Loop over the tables we have kept */
+		T = D->table[tbl];	/* Short-cut */
+		n_seg = (dim[GMT_SEG] == 0) ? T->n_segments : dim[GMT_SEG];
+		n_col = (dim[GMT_COL] == 0) ? T->n_columns  : dim[GMT_COL];
+		if (dim[GMT_SEG] && dim[GMT_SEG] < T->n_segments) {	/* Remove unneeded segments and reallocate array for this table */
+			for (seg = dim[GMT_SEG]; seg < T->n_segments; seg++)
+				gmt_free_segment (GMT, &(T->segment[seg]));
+			gmt_M_memory (GMT, T->segment, dim[GMT_SEG], struct GMT_DATASEGMENT *);
+			T->n_segments = dim[GMT_SEG];
+			/* This table now has max dim[SEG] segments but might have fewer */
+		}
+		else if (dim[GMT_SEG] > T->n_segments) {	/* Want to add more segments */
+			gmt_M_memory (GMT, T->segment, dim[GMT_SEG], struct GMT_DATASEGMENT *);
+			for (seg = T->n_segments; seg < dim[GMT_SEG]; seg++) {
+				S = T->segment[seg];	/* Short-cut */
+				n_row = (dim[GMT_ROW] == 0) ? S->n_rows : dim[GMT_ROW];
+				T->segment[seg] = gmt_get_segment (GMT);
+				gmt_alloc_segment (GMT, T->segment[seg], n_row, n_col, mode, false);
+				S->n_rows = n_row;
+			}
+		}
+
+		for (seg = 0; seg < T->n_segments; seg++) {	/* Check each of the segments of this table */
+			S = T->segment[seg];	/* Short-cut */
+			n_row = (dim[GMT_ROW] == 0) ? S->n_rows : dim[GMT_ROW];
+			if (dim[GMT_COL] && dim[GMT_COL] < T->n_columns) {	/* Remove unneeded columns and reallocate array of columns */
+				for (col = dim[GMT_COL]; col < T->n_columns; col++)
+					gmt_M_free (GMT, S->data[col]);
+				S->n_columns = dim[GMT_COL];
+				gmt_M_memory (GMT, S->data, dim[GMT_COL], double *);
+				gmt_M_memory (GMT, S->min,  dim[GMT_COL], double *);
+				gmt_M_memory (GMT, S->max,  dim[GMT_COL], double *);
+				if (seg == 0) {	/* Only do this once for the table */
+					gmt_M_memory (GMT, T->min, dim[GMT_COL], double *);
+					gmt_M_memory (GMT, T->max, dim[GMT_COL], double *);
+					if (tbl == 0) {/* Only do this once for the dataset */
+						gmt_M_memory (GMT, D->min, dim[GMT_COL], double *);
+						gmt_M_memory (GMT, D->max, dim[GMT_COL], double *);
+					}
+				}
+			}
+			else if (dim[GMT_COL] > T->n_columns) {	/* Add new columns and reallocate arrays */
+				gmt_M_memory (GMT, S->data, dim[GMT_COL], double *);
+				gmt_M_memory (GMT, S->min,  dim[GMT_COL], double *);
+				gmt_M_memory (GMT, S->max,  dim[GMT_COL], double *);
+				for (col = T->n_columns; col < dim[GMT_COL]; col++)	/* Allocate the new data arrays */
+					gmt_M_memory (GMT, S->data[col], n_row, double);
+			}
+			if (dim[GMT_ROW] && dim[GMT_ROW] < S->n_rows) {	/* Remove unneeded rows by reallocating arrays */
+				for (col = dim[GMT_COL]; col < S->n_columns; col++)
+					gmt_M_memory (GMT, S->data[col], dim[GMT_ROW], double);
+				if (S->text)
+					gmt_M_memory (GMT, S->text, dim[GMT_ROW], char *);
+				S->n_rows = dim[GMT_ROW];
+			}
+		}
+		T->n_columns = S->n_columns;	/* This has either changed or not */
+	}
+
+	/* 2. Now we can expand anything that should grow */
+	if (dim[GMT_TBL] > D->n_tables) {	/* Add new tables and reallocate array */
+		gmt_M_memory (GMT, D->table, dim[GMT_TBL], struct GMT_DATATABLE *);
+		for (tbl = D->n_tables; tbl < dim[GMT_TBL]; tbl++) {
+			if ((D->table[tbl] = gmt_create_table (GMT, n_seg, n_row, n_col, mode, false)) == NULL)
+				return (GMT_MEMORY_ERROR);
+		}
+		D->n_tables = dim[GMT_TBL];
+	}
+
+	gmt_set_dataset_minmax (GMT, D);	/* Update all stats */
+
+	return (GMT_NOERROR);
+}
+
 /*! . */
 struct GMT_DATASET * gmt_alloc_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, uint64_t n_rows, uint64_t n_columns, unsigned int mode) {
 	/* Allocate new dataset structure with same # of tables, segments and rows/segment as input data set.
@@ -8479,6 +8595,8 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
 	if (I->colormap) {	/* Also deal with the colormap for indexed images. If found we duplicate */
 		size_t nc = I->n_indexed_colors * 4 + 1;
+		if (I->n_indexed_colors > 2000)		/* If colormap is Mx4 or has encoded the alpha color */
+			nc = (uint64_t)(floor(I->n_indexed_colors / 1000.0)) * 4 + 1;
 		Inew->colormap = gmt_M_memory (GMT, NULL, nc, int);
 		gmt_M_memcpy (Inew->colormap, I->colormap, nc, int);
 		if (I->color_interp) Inew->color_interp = I->color_interp;

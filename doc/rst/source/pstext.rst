@@ -43,7 +43,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: text_common.rst_
+.. include:: text.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -64,10 +66,6 @@ To plot a text at the upper left corner of a 10 cm map::
 To add a typeset figure caption for a 3-inch wide illustration, use::
 
     gmt pstext -R0/3/0/5 -JX3i -O -h1 -M -N -F+f12,Times-Roman+jLT << EOF >> figure.ps
-
-
-   ::
-
     This is an unmarked header record not starting with #
     > 0 -0.5 13p 3i j
     @%5%Figure 1.@%% This illustration shows nothing useful, but it still needs

@@ -383,13 +383,13 @@ GMT_LOCAL int gmtgrdio_parse_grd_format_scale_old (struct GMT_CTRL *Ctrl, struct
 }
 
 GMT_LOCAL int gmtgrdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
-	/* parses format string after = suffix: ff[+f<scale>][+o<offset>/][+n<invalid>]
+	/* parses format string after = suffix: ff[+d<divisor>][+s<scale>][+o<offset>/][+n<invalid>]
 	 * ff:      can be one of [abcegnrs][bsifd]
 	 * scale:   can be any non-zero normalized number or 'a' for scale and
 	 *          offset auto-adjust, defaults to 1.0 if omitted
 	 * offset:  can be any finite number or 'a' for offset auto-adjust, defaults to 0 if omitted
 	 * invalid: can be any finite number, defaults to NaN if omitted
-	 * scale and offset may be left empty (e.g., ns//a will auto-adjust the offset only)
+	 * E.g., ns+oa will auto-adjust the offset only.
 	 */
 
 	char type_code[3];
@@ -409,9 +409,14 @@ GMT_LOCAL int gmtgrdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct 
 			return err;
 	}
 
-	while (gmt_getmodopt (GMT, 0, format, "bnos", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +n, +o, +s */
+	while (gmt_getmodopt (GMT, 0, format, "bdnos", &pos, p, &uerr) && uerr == 0) {	/* Looking for +b, +d, +n, +o, +s */
 		switch (p[0]) {
-			case 'b':	/* bands */
+			case 'b':	/* bands - not parsed here */
+				break;
+			case 'd':	/* parse divisor */
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtgrdio_parse_grd_format_scale_new: Setting divisor as %s\n", &p[1]);
+				header->z_scale_factor = 1.0 / atof (&p[1]);	/* Just convert to a scale */
+				HH->z_scale_given = true;
 				break;
 			case 'n':	/* Nan value */
 				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtgrdio_parse_grd_format_scale_new: Using %s to represent missing value (NaN)\n", &p[1]);
@@ -451,7 +456,7 @@ GMT_LOCAL int gmtgrdio_parse_grd_format_scale_new (struct GMT_CTRL *GMT, struct 
 
 GMT_LOCAL int gmtgrdio_parse_grd_format_scale (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, char *format) {
 	int code;
-	if (strstr(format, "+s") || strstr(format, "+o") || strstr(format, "+n"))
+	if (gmt_found_modifier (GMT, format, "bdnos"))
 		code = gmtgrdio_parse_grd_format_scale_new (GMT, header, format);
 	else
 		code = gmtgrdio_parse_grd_format_scale_old (GMT, header, format);
@@ -469,7 +474,8 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	 * can then be used to fill in the pad.  However, if the domain is taken from a grid
 	 * whose full domain exceeds the region of interest we are better off using the extra
 	 * data to fill those pad rows/columns.  Thus, this function tries to determine if the
-	 * input grid has the extra data we need to fill the BC pad with observations. */
+	 * input grid has the extra data we need to fill the BC pad with observations
+	 * P returns the correct region and pad to use regardless if function returns true or false */
 	bool wrap;
 	unsigned int side, n_sides = 0;
 	double wesn2[4];
@@ -477,14 +483,15 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	gmt_M_unused(GMT);
 
 	/* First copy over original settings to the Pad structure */
-	gmt_M_memset (P, 1, struct GRD_PAD);					/* Initialize to zero */
+	gmt_M_memset (P, 1, struct GRD_PAD);				/* Initialize to zero */
 	gmt_M_memcpy (P->pad, pad, 4, int);					/* Duplicate the pad */
-	if (!wesn) return (false);						/* No subset requested */
+	gmt_M_memcpy (P->wesn, header->wesn, 4, double);	/* Copy the header boundaries */
+	if (!wesn) return (false);							/* No subset requested */
 	if (wesn[XLO] == wesn[XHI] && wesn[YLO] == wesn[YHI]) return (false);	/* Subset not set */
 	if (gmtgrdio_eq (wesn[XLO], header->wesn[XLO], header->inc[GMT_X]) && gmtgrdio_eq (wesn[XHI], header->wesn[XHI], header->inc[GMT_X])
 		&& gmtgrdio_eq (wesn[YLO], header->wesn[YLO], header->inc[GMT_Y]) && gmtgrdio_eq (wesn[YHI], header->wesn[YHI], header->inc[GMT_Y]))
 		return (false);	/* Subset equals whole area */
-	gmt_M_memcpy (P->wesn, wesn, 4, double);					/* Copy the subset boundaries */
+	gmt_M_memcpy (P->wesn, wesn, 4, double);			/* Copy the subset boundaries */
 	if (pad[XLO] == 0 && pad[XHI] == 0 && pad[YLO] == 0 && pad[YHI] == 0) return (false);	/* No padding requested */
 	if (!GMT->current.io.grid_padding) return (false);	/* Not requested */
 
@@ -1243,6 +1250,13 @@ void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header)
 	}
 }
 
+bool gmtgrdio_pad_status (struct GMT_CTRL *GMT, unsigned int *pad) {
+	unsigned int side;
+	gmt_M_unused(GMT);
+	for (side = 0; side < 4; side++) if (pad[side]) return (true);	/* Grid has a pad */
+	return (false);	/* Grid has no pad */
+}
+
 bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, unsigned int *pad) {
 	/* Determines if this grid has padding at all (pad = NULL) OR
 	 * if pad is given, determines if the pads are different.
@@ -1261,10 +1275,8 @@ bool gmt_grd_pad_status (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, u
 		for (side = 0; side < 4; side++) if (header->pad[side] != pad[side]) return (false);	/* Pads differ */
 		return (true);	/* Pads match */
 	}
-	else {	/* We just want to determine if the grid has padding already (true) or not (false) */
-		for (side = 0; side < 4; side++) if (header->pad[side]) return (true);	/* Grid has a pad */
-		return (false);	/* Grid has no pad */
-	}
+	else	/* We just want to determine if the grid has padding already (true) or not (false) */
+		return (gmtgrdio_pad_status (GMT, header->pad));
 }
 
 int gmtlib_get_matrixtype (struct GMT_CTRL *GMT, unsigned int direction, struct GMT_MATRIX *M) {
@@ -1881,14 +1893,13 @@ GMT_LOCAL void gmtgrdio_decode_grd_h_info_old (struct GMT_CTRL *GMT, char *input
 
 GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, unsigned int dim, struct GMT_GRID_HEADER *h, struct GMT_CUBE *C) {
 	size_t k, n_slash = 0;
-	unsigned int uerr = 0, kind = dim - 2;
+	unsigned int uerr = 0;
 	bool old = false;
-	char *modifiers[2] = {"xydsontrv", "xyzdsontrv"}, code;
+	char *modifiers = "xyzdsontrv", code;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	for (k = 0; k < strlen (input); k++) if (input[k] == '/') n_slash++;
-	if (!(input[0] == '+' && (strstr (input, "+x") || strstr (input, "+y") || strstr (input, "+z") || strstr (input, "+s") || \
-	    strstr (input, "+o") || strstr (input, "+n") || strstr (input, "+t") || strstr (input, "+r")))) {	/* Cannot be new syntax */
+	if (!(input[0] == '+' && gmt_found_modifier (GMT, input, "norstxyz"))) {	/* Cannot be new syntax */
 		old = (n_slash > 4);	/* Pretty sure this is the old syntax of that many slashes */
 	}
 	if (dim == 3 && old) return GMT_PARSE_ERROR;	/* Old syntax does not exist for cubes */
@@ -1899,10 +1910,10 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 		char word[GMT_LEN256] = {""};
 		unsigned int pos = 0;
 		double d;
-		while (gmt_getmodopt (GMT, 'D', input, modifiers[kind], &pos, word, &uerr) && uerr == 0) {
+		while (gmt_getmodopt (GMT, 'D', input, modifiers, &pos, word, &uerr) && uerr == 0) {
 			code = word[0];	/* This is the modifier. Check if 2D and 'z' and change to 'v' */
-			if (code == 'z' && dim == 2) code = 'd';
-			switch (word[0]) {
+			if (code == 'z' && dim == 2) code = 'd';	/* Backwards compatibility for using +z with grids */
+			switch (code) {
 				case 'x':	/* Revise x-unit name */
 					gmt_M_memset (h->x_units, GMT_GRID_UNIT_LEN80, char);
 					if (strlen(word) > GMT_GRID_UNIT_LEN80)
@@ -3283,7 +3294,7 @@ GMT_LOCAL int gmtgrdio_get_extension_period (char *file) {
 
 #define GMT_VF_TYPE_POS	13	/* Character in the virtual file name that indicates data family */
 
-int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
+int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 	/* Returns the type of the file (either grid or image).
 	 * We use the file extension to make these decisions:
 	 * GMT_IS_IMAGE: In this context, this means a plain image
@@ -3298,6 +3309,7 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 	 *	TIF, JP2, IMG (ERDAS).  These are detected via magic bytes.
 	 * GMT_NOTSET: This covers anything that fails to land in the
 	 *	other two categories.
+	 * extra will try to open the image to count bands.
 	 */
 	FILE *fp = NULL;
 	unsigned char data[16] = {""};
@@ -3390,11 +3402,17 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 			code = ( !strncmp( (const char *)data, "GIF87a", 6 ) || !strncmp( (const char *)data, "GIF89a", 6 ) ) ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
 		case 'I':	/* TIF */
-			code = ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
-
+			if (strstr (file, "earth_day") || strstr (file, "earth_night"))	/* We know these are images, not data */
+				code = GMT_IS_IMAGE;
+			else
+				code = ( !strncmp( (const char*)data, "\x49\x49\x2A\x00", 4 )) ? GMT_IS_GRID : GMT_NOTSET;
+			break;
 		case 'M':	/* TIF */
-			code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_GRID : GMT_NOTSET;	break;
-
+			if (strstr (file, "earth_day") || strstr (file, "earth_night"))	/* We know these are images, not data */
+				code = GMT_IS_IMAGE;
+			else
+				code = ( !strncmp( (const char*)data, "\x4D\x4D\x00\x2A", 4 )) ? GMT_IS_GRID : GMT_NOTSET;
+			break;
 		case 'P':	/* PPM (also check that extension starts with p since the magic bytes are a bit weak ) */
 			code = (data[1] >= '1' && data[1] <= '6' && tolower (path[pos_ext]) == 'p') ? GMT_IS_IMAGE : GMT_NOTSET;	break;
 
@@ -3416,6 +3434,22 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file) {
 			break;
 	}
 
+	if (extra && code != GMT_IS_IMAGE && (data[0] == 'I' || data[0] == 'M')) {	/* Need to check more to determine if TIFF is grid or image */
+		/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
+		struct GMT_IMAGE *I = NULL;
+		if ((I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, file, NULL)) != NULL) {
+			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
+			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
+				code = GMT_IS_GRID;
+			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
+				code = GMT_IS_IMAGE;
+			else if (I->header->n_bands > 1)	/* Whatever it is we must return multiband as an image */
+				code = GMT_IS_IMAGE;
+			else	/* Here we only have one band so it is a grid */
+				code = GMT_IS_GRID;
+			GMT_Destroy_Data (GMT->parent, &I);
+		}
+	}
 	if (code == GMT_IS_IMAGE)
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "%s considered a valid image instead of grid. Open via GDAL\n", file);
 	else if (code == GMT_IS_GRID)
@@ -3603,7 +3637,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	if (must_be_image && from_gdalread->band_field_names != NULL) {
+	if (from_gdalread->band_field_names != NULL) {	/* Know the data type */
 		if (!strcmp(from_gdalread->band_field_names[0].DataType, "Byte"))
 			I->type = GMT_UCHAR;
 		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "Int16"))
@@ -3614,7 +3648,11 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 			I->type = GMT_INT;
 		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "UInt32"))
 			I->type = GMT_UINT;
-		else {
+		else if (!must_be_image && !strcmp(from_gdalread->band_field_names[0].DataType, "Float32"))
+			I->type = GMT_FLOAT;
+		else if (!must_be_image && !strcmp(from_gdalread->band_field_names[0].DataType, "Float64"))
+			I->type = GMT_FLOAT;	/* No doubles for grids or images */
+		else  {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Using this data type (%s) is not implemented\n",
 			            from_gdalread->band_field_names[0].DataType);
 			gmt_M_free (GMT, to_gdalread);
@@ -3658,7 +3696,6 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		gmt_set_geographic (GMT, GMT_IN);	/* A geographic image */
 
 	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
-
 	gmt_set_grddim (GMT, I->header);		/* This recomputes n_columns|n_rows. Dangerous if -R is not compatible with inc */
 	GMT_Set_Index (GMT->parent, I->header, GMT_IMAGE_LAYOUT);
 
@@ -3690,17 +3727,17 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 
 	expand = gmtgrdio_padspace (GMT, I->header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
-	/*gmt_M_err_trap ((*GMT->session.readgrd[header->type]) (GMT, header, image, P.wesn, P.pad, complex_mode));*/
-
 	/* Allocate new control structures */
 	to_gdalread   = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active[RSET]) {
-		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI],
-		          GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]);
+		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", P.wesn[XLO], P.wesn[XHI], P.wesn[YLO], P.wesn[YHI]);
 		to_gdalread->R.region = strR;
-		/*to_gdalread->R.active = true;*/	/* Wait until we really know how to use it */
+		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
+ 		to_gdalread->registration.x_inc = I->header->inc[GMT_X];
+ 		to_gdalread->registration.y_inc = I->header->inc[GMT_Y];
+		to_gdalread->R.active = true;	/* Wait until we really know how to use it */
 	}
 
 	if (HH->pocket) {				/* See if we have a band request */
@@ -3708,14 +3745,24 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 		to_gdalread->B.bands = HH->pocket;	/* Band parsing and error testing is done in gmt_gdalread */
 	}
 
-	to_gdalread->p.pad = (int)pad[0];	/* Only 'square' padding allowed */
-	to_gdalread->p.active = (pad[0] > 0);
+	if (pad) {
+		gmt_M_memcpy (to_gdalread->p.pad, P.pad, 4U, unsigned int);
+		to_gdalread->p.active = gmtgrdio_pad_status (GMT, P.pad);
+	}
 	to_gdalread->I.active = true;		/* Means that image in I->data will be BIP interleaved */
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
-	to_gdalread->c_ptr.active = true;
-	to_gdalread->c_ptr.grd = I->data;
-
+	if (I->data) {		/* Otherwise (subregion) memory is allocated in gdalread */
+		if (I->type == GMT_FLOAT || I->type == GMT_DOUBLE) {
+			to_gdalread->f_ptr.active = true;
+			to_gdalread->f_ptr.grd = (gmt_grdfloat *)I->data;
+		}
+		else {
+			to_gdalread->c_ptr.active = true;
+			to_gdalread->c_ptr.grd = I->data;
+		}
+	}
+	if (HH->grdtype > GMT_GRID_GEOGRAPHIC_LESS360) to_gdalread->R.periodic = true;	/* Let gmt_gdalread know we have a periodic image */
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "ERROR reading image with gdalread.\n");
 		gmt_M_free (GMT, to_gdalread);
@@ -3735,13 +3782,13 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	I->n_indexed_colors  = from_gdalread->nIndexedColors;
 	I->header->n_bands = from_gdalread->nActualBands;	/* What matters here on is the number of bands actually read */
 
-	if (expand) {	/* Must undo the region extension and reset n_columns, n_rows */
-		I->header->n_columns -= (int)(P.pad[XLO] + P.pad[XHI]);
-		I->header->n_rows -= (int)(P.pad[YLO] + P.pad[YHI]);
+	gmt_M_memcpy (I->header->wesn, from_gdalread->hdr, 4, double);	/* Set the actual w/e/s/n bounds */
+
+	if (expand)	/* Must undo the region extension and reset n_columns, n_rows */
 		gmt_M_memcpy (I->header->wesn, wesn, 4, double);
-		I->header->nm = gmt_M_get_nm (GMT, I->header->n_columns, I->header->n_rows);
-	}
 	gmt_M_grd_setpad (GMT, I->header, pad);	/* Copy the pad to the header */
+	gmt_set_grddim (GMT, I->header);	/* Update header items */
+	HH->grdtype = gmtlib_get_grdtype (GMT, GMT_IN, I->header);
 
 	gmt_M_free (GMT, to_gdalread);
 	for (i = 0; i < from_gdalread->RasterCount; i++)

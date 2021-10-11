@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ [**+l**\ *min*][**+u**\ *max*][**+i**]]
 [ |-D|\ [*template*\ [**+o**\ *orig*]] ]
 [ |-E|\ [**f**\|\ **l**\|\ **m**\|\ **M**\ *stride*] ]
-[ |-F|\ [**c**\|\ **n**\|\ **r**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
+[ |-F|\ [**c**\|\ **n**\|\ **p**\|\ **v**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-I|\ [**tsr**] ]
 [ |-L| ]
 [ |-N|\ *col*\ [**+a**\|\ **d**] ]
@@ -341,7 +341,7 @@ where we reset the origin of the sequential numbering from 0 to 5000, try::
 
 To only read rows 100-200 and 500-600 from file junk.txt, try::
 
-    gmt convert junk.txt -q100-200,500-600 < subset.txt
+    gmt convert junk.txt -q100-200,500-600 > subset.txt
 
 To get all rows except those bad ones between rows 1000-2000, try::
 

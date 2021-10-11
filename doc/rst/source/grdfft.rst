@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfft** *ingrid* [ *ingrid2* ]
-[ |-G|\ *outfile*\|\ *table* ]
+|-G|\ *outfile*\|\ *table*
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\|\ **g**] ]
@@ -44,9 +44,11 @@ to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be operated on (see :ref:`Grid File Formats <grd_inout_full>`).
-    For cross-spectral operations, also give the second grid file *ingrid2*.
+.. |Add_ingrid| replace:: 2-D binary grid file to be operated on. For
+    cross-spectral operations, also give the second grid file *ingrid2*.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 **-G**\ *outfile*
     Specify the name of the output grid file (see :ref:`Grid File Formats

@@ -12,17 +12,19 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt gravfft** *ingrid* [ *ingrid2* ] |-G|\ *outfile*
-[ |-C|\ *n/wavelength/mean\_depth/tbw* ]
+**gmt gravfft** *ingrid* [ *ingrid2* ]
+|-G|\ *outgrid*
+[ |-C|\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w** ]
 [ |-D|\ *density*\|\ *rhogrid* ]
 [ |-E|\ *n_terms* ]
 [ |-F|\ [**f**\ [**+s**]\|\ **b**\|\ **g**\|\ **v**\|\ **n**\|\ **e**] ]
 [ |-I|\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k** ]
 [ |-N|\ *params* ]
 [ |-Q| ]
+[ |-S| ]
 [ |-T|\ *te/rl/rm/rw*\ [*/ri*]\ [**+m**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *wd*]
+[ |-W|\ *wd*\ [**k**] ]
 [ |-Z|\ *zm*\ [*zl*] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -60,28 +62,31 @@ are doing; see the examples for further guidance.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be operated on. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
-    For cross-spectral operations, also give the second grid file *ingrid2*.
+.. |Add_ingrid| replace:: 2-D binary grid file to be operated on. For
+    cross-spectral operations, also give the second grid file *ingrid2*.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outfile*
-    Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Specify the name of the output grid file or the 1-D spectrum table
+    (see |-E|)
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
 
 .. _-C:
 
-**-C**\ *n/wavelength/mean\_depth/tbw*
+**-C**\ *n/wavelength/mean\_depth*/**t**\|\ **b**\|\ **w**
     Compute only the theoretical admittance curves of the selected model
     and exit. *n* and *wavelength* are used to compute (n \* wavelength)
     the total profile length in meters. *mean\_depth* is the mean water
-    depth. Append dataflags (one or two) of *tbw* in any order. *t* =
-    use "from top" model, *b* = use "from below" model. Optionally
+    depth. Append dataflags (one or two) of **t**\|\ **b**\|\ **w** in any order.
+    Here, *t* = use "from top" model, *b* = use "from below" model. Optionally
     specify *w* to write wavelength instead of frequency.
 
 .. _-D:
@@ -168,7 +173,7 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ *wd*
+**-W**\ *wd*\ [**k**]
     Set water depth (or observation height) relative to topography [0].  Append **k** to indicate km.
 
 .. _-Z:

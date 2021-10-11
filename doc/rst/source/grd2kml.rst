@@ -12,13 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2kml** *grid*
+**gmt grd2kml** *ingrid*
 |-N|\ *prefix*
 [ |-A|\ **a**\|\ **g**\|\ **s**\ [*altitude*] ]
 [ |-C|\ *cpt* ]
 [ |-E|\ *URL* ]
 [ |-F|\ *filtercode* ]
-[ |-H|\ *factor* ]
+[ |-H|\ *scale* ]
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-L|\ *tilesize* ]
 [ |-S|\ [*extra*] ]
@@ -51,8 +51,10 @@ If plain tiles are selected (i.e., no contours specified) then the PNG tiles are
 Required Arguments
 ------------------
 
-*grid*
-    A 2-D gridded data set (see :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D gridded data set.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-N:
 
@@ -100,9 +102,9 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *factor*
-    Improve the quality of rasterization by passing the sub-pixel smoothing factor
-    to psconvert (same as **-H** option in psconvert) [no sub-pixel smoothing].
+**-H**\ *scale*
+    Improve the quality of rasterization by passing the sub-pixel smoothing scale
+    to psconvert (same as **-H** option in :doc:`psconvert`) [no sub-pixel smoothing].
     Ignored when **-W** is not used.
 
 .. _-I:

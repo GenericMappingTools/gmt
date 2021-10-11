@@ -26,6 +26,12 @@
 #ifndef GMT_REMOTE_H
 #define GMT_REMOTE_H
 
+struct GMT_RESOLUTION {	/* Struct to hold information about the various resolutions for a remote data set family */
+	char inc[GMT_LEN8];	/* Grid spacing in text format. E.g., 30m, 03s, etc. */
+	char reg;			/* Grid/Image registration (g or p). E.g., g */
+	double resolution;	/* In number of nodes per degree. E.g, for 01m that is 60 */
+};
+
 struct GMT_DATA_INFO {
 	int id;						/* Running number 0-(n-1) AFTER array is sorted */
 	bool used;					/* If true then do not repeat the attribution details */
@@ -62,5 +68,8 @@ struct GMT_DATA_HASH {			/* Holds file hashes (probably SHA256) */
 #define GMT_TILE_EXTENSION_REMOTE_LEN	3U		/* Length of JPEG2000 file extension */
 #define GMT_TILE_EXTENSION_LOCAL		"nc"	/* Tile extension of netCDF nc short int files to be saved */
 #define GMT_TILE_EXTENSION_LOCAL_LEN	2U		/* Length of nc short int file extension */
+
+#define GMT_IMAGE_DPU_VALUE	300	/* 300 dots per inch */
+#define GMT_IMAGE_DPU_UNIT	'i'	/* 300 dpts per inch */
 
 #endif /* GMT_REMOTE_H */

@@ -129,10 +129,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-C<closedfile>");
 	GMT_Usage (API, -2, "Write already-closed polygons to a separate <closedfile> [gmtconnect_closed.txt], "
-		"with the remaining open segments written separately to stdout "
+		"with the remaining open segments written separately to standard output "
 		"[All segments are written to a single output file; but see -D].");
 	GMT_Usage (API, 1, "\n-D[<template>]");
-	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one multisegment file to stdout]. "
+	GMT_Usage (API, -2, "Write individual segments to separate files [Default writes one multisegment file to standard output]. "
 		"Append file name template which MUST contain a C-format specifier for an integer (e.g., %%d). "
 		"If the format also includes a %%c string BEFORE the %%d part we replace it with C(losed) or O(pen) "
 		"[Default uses gmtconnect_segment_%%d.txt].");
@@ -163,47 +163,54 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 	int n = 0;
 	char A[GMT_LEN64] = {""}, B[GMT_LEN64] = {""};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Separate closed from open segments  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Write each segment to a separate output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				gmt_M_str_free (Ctrl->D.format);
 				if (opt->arg[0]) Ctrl->D.format = strdup (opt->arg);
 				break;
 			case 'L':	/* Write link information to file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				gmt_M_str_free (Ctrl->L.file);
 				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
 				break;
 			case 'Q':	/* Write names of individual files to list(s) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				gmt_M_str_free (Ctrl->Q.file);
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 			case 'T':	/* Set threshold distance */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[0]);
 				Ctrl->T.active[0] = true;
 				if (opt->arg[0]) {	/* Specified a distance */
 					char *c = NULL;
 					if ((c = strstr (opt->arg, "+s"))) {	/* Gave second distance via +s<dist> */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[1]);
 						c[0] = '\0';	/* Temporarily chop off modifier */
 						Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
 						Ctrl->T.dist[1] = atof (&c[2]);
@@ -214,6 +221,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTCONNECT_CTRL *Ctrl, struct GMT
 						n = sscanf (opt->arg, "%[^/]/%s", A, B);
 						Ctrl->T.mode = gmt_get_distance (GMT, A, &(Ctrl->T.dist[0]), &(Ctrl->T.unit));
 						if (n == 2) {	/* Gave second distance via /<dist> */
+							n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active[1]);
 							Ctrl->T.dist[1] = atof (B);
 							Ctrl->T.active[1] = true;
 						}

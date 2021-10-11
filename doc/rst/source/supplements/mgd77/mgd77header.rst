@@ -13,7 +13,7 @@ Synopsis
 .. include:: ../../common_SYN_OPTs.rst_
 
 **gmt mgd77header** *GEODAS-id.a77*
-[ |-H|\ *headervalues.txt* ]
+[ |-H|\ *headertable* ]
 [ |-M|\ **f**\ [*item*]\|\ **r**\|\ **t** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT--| ]
@@ -40,8 +40,8 @@ Optional Arguments
 
 .. _-H:
 
-**-H**\ *headervalues.txt*
-    Obtain header field values from the input text file. Each row of
+**-H**\ *headertable*
+    Obtain header field values from the appended file. Each row of
     the input file should consist of a header field name and its
     desired value, separated by a space. See below for a sample header
     file and for the full list of header field names.
