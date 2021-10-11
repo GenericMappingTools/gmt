@@ -334,7 +334,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	hDataset = gdal_open (GMT, gdal_filename);
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open %s.\n", gdal_filename);
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return (-1);
 	}
 
@@ -416,7 +416,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -projwin option was used, but the geotransform is rotated."
 			                                         " This configuration is not supported.\n");
 			GDALClose(hDataset);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
 			return(-1);
 		}
@@ -722,7 +722,7 @@ int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s reads with GDAL driver %s\n",
 	            HH->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	header->type = GMT_GRID_IS_GD;
 
 	return GMT_NOERROR;
@@ -958,7 +958,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			            "gmt_gdalread: The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose(hDataset);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
 			return (-1);
 		}
@@ -984,7 +984,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (anSrcWin[1] < 0 || (anSrcWin[1] + anSrcWin[3]) > YDim) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the y-direction.\n",
 				XDim, YDim);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
 			return (-1);
 		}
@@ -1008,7 +1008,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (xOrigin[0] < 0 || (xOrigin[0] + anSrcWin[2]) > XDim) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the x-direction.\n",
 					XDim, YDim);
-				GDALDestroyDriverManager();
+				gmtlib_GDALDestroyDriverManager(GMT->parent);
 				gmt_M_free (GMT, whichBands);
 				return (-1);
 			}
@@ -1132,7 +1132,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (!(just_copy || copy_flipud)) {	/* Need temp memory to hold return from GDAL */
 			if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize[piece], nPixelSize)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: failure to allocate enough memory\n");
-				GDALDestroyDriverManager();
+				gmtlib_GDALDestroyDriverManager(GMT->parent);
 				gmt_M_free (GMT, whichBands);
 				return(-1);
 			}
@@ -1410,7 +1410,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0]+nXSize[1], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer);
 
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 
 	/* Return registration based on data type of the actually read first band.
 	   We do this at the end because 'populate_metadata' scans all bands in file
