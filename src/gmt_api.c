@@ -4417,6 +4417,7 @@ int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
 }
 
 void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API) {
+    /* Cannot close connection to GDAL if calling enviroment expect it to be open */
 	if (API->external < 2) GDALDestroyDriverManager();
 }
 #endif
@@ -7938,7 +7939,8 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
-	API->external = (mode & GMT_SESSION_EXTERNAL) ? 2 : 0;	/* if false|0 then we don't list read and write as modules */
+    API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;  /* if false|0 then we don't list read and write as modules */
+    if (API->external && mode & GMT_SESSION_NOGDALCLOSE) API->external = 2;  /* Avoid calling GDALDestroyDriverManager */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
 	API->no_history = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */
