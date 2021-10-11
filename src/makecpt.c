@@ -677,17 +677,17 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
 		bool got_key_file= (Ctrl->F.key && !gmt_access (GMT, Ctrl->F.key, R_OK));	/* Want categorical labels read from file */
+		unsigned int ns = 0;
 		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
 		if (Ctrl->F.label || (Ctrl->F.key && !got_key_file)) {	/* Want auto-categorical labels appended to each CPT record */
-			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
 				if (label[k]) Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
 			}
 			gmt_M_free (GMT, label);	/* But the master array can go */
 		}
 		if (Ctrl->F.key) {	/* Want categorical labels */
-			unsigned int ns;
 			char **keys = NULL;
 			if (got_key_file) {	/* Got a file with category keys */
 				ns = gmt_read_list (GMT, Ctrl->F.key, &keys);
@@ -699,8 +699,8 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but only %d are needed - skipping the extra keys\n", Ctrl->F.key, ns, Pout->n_colors);
 			}
 			else	/* Got comma-separated keys */
-				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].key) gmt_M_str_free (Pout->data[k].key);
 				if (k < ns && keys[k]) {
 					Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */

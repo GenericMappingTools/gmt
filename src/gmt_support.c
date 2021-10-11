@@ -7744,7 +7744,7 @@ unsigned int gmt_validate_cpt_parameters (struct GMT_CTRL *GMT, struct GMT_PALET
 	return GMT_NOERROR;
 }
 
-char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *in_label, unsigned int n) {
+char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *in_label, unsigned int n, unsigned int *n_set) {
 	/* Generate categorical labels for n categories from the label magic argument.
 	 * Note: If n = 12 and label = M then we create month names.
 	 * Note: If n = 7 and label = D then we create day names
@@ -7827,6 +7827,7 @@ char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *in_label, unsigned int 
 			Clabel[k] = strdup (string);
 		}
 	}
+	*n_set = k;	/* How many we actually set */
 	return Clabel;
 }
 
