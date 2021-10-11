@@ -890,8 +890,9 @@ EXTERN_MSC int GMT_grd2cpt (void *V_API, int mode, void *args) {
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
 		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
 		if (Ctrl->F.label) {	/* Want categorical labels */
-			char **label = gmt_cat_cpt_strings (GMT, Ctrl->F.label, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+			unsigned int ns = 0;
+			char **label = gmt_cat_cpt_strings (GMT, Ctrl->F.label, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
 				Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
 			}

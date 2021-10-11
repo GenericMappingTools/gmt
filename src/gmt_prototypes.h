@@ -415,7 +415,7 @@ EXTERN_MSC uint64_t gmt_make_equidistant_array (struct GMT_CTRL *GMT, double min
 EXTERN_MSC double * gmt_duplicate_array (struct GMT_CTRL *GMT, double *array, uint64_t n);
 EXTERN_MSC bool gmt_is_barcolumn (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S);
 EXTERN_MSC unsigned int gmt_get_columbar_bands (struct GMT_CTRL *GMT, struct GMT_SYMBOL *S);
-EXTERN_MSC char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *label, unsigned int n);
+EXTERN_MSC char ** gmt_cat_cpt_strings (struct GMT_CTRL *GMT, char *label, unsigned int n, unsigned int *n_set);
 EXTERN_MSC bool gmt_same_fill (struct GMT_CTRL *GMT, struct GMT_FILL *F1, struct GMT_FILL *F2);
 EXTERN_MSC unsigned int gmt_contour_first_pos (struct GMT_CTRL *GMT, char *arg);
 EXTERN_MSC unsigned int gmt_contour_A_arg_parsing (struct GMT_CTRL *GMT, char *arg, struct CONTOUR_ARGS *A);
