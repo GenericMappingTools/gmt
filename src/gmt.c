@@ -28,11 +28,6 @@
 
 #include "gmt_dev.h"
 
-#ifndef NO_SIGHANDLER
-/* Include signal declarations */
-#include "gmt_common_sighandler.h"
-#endif
-
 #define PROGRAM_NAME	"gmt"
 
 /* Determine the system environmental parameter that leads to shared libraries */

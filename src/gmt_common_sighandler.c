@@ -25,10 +25,8 @@
 
 #ifndef NO_SIGHANDLER
 
-/* CMake definitions: This must be first! */
-#include "declspec.h"
-
-EXTERN_MSC void gmtlib_terminate_session ();
+#include "gmt_dev.h"
+#include "gmt_internals.h"
 
 #ifdef WIN32
 #include <windows.h>

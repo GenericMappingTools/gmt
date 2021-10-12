@@ -19146,8 +19146,7 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 /*! . */
 void gmtlib_terminate_session () {
 	/* If a modern mode session catches a CTRL-C interrupt then we must terminate
-	 * the session so not to leave behind a mess that requires gmt clear sessions
-	 * As well as 
+	 * the session so not to leave behind a mess that requires "gmt clear sessions".
 	 */
 
 	bool die;
