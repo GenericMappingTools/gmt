@@ -2287,7 +2287,7 @@ GMT_LOCAL size_t gmtapi_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID
 
 	if (!full_region (wesn)) {
 		gmt_M_memcpy (h_tmp->wesn, wesn, 4, double);    /* Use wesn instead of header info */
-		gmt_adjust_loose_wesn (GMT, wesn, h);           /* Subset requested; make sure wesn matches header spacing */
+		gmtlib_adjust_loose_wesn (GMT, wesn, h, GMT->common.R.via_polygon ? GMT_MSG_INFORMATION : GMT_MSG_WARNING);	/* Subset requested; make sure wesn matches header spacing */
 		gmt_M_memcpy(h_tmp->wesn, wesn, 4, double);	    /* And update the eventually adjusted wesn */
 	}
 	gmt_M_grd_setpad (GMT, h_tmp, GMT->current.io.pad);	/* Use the system pad setting by default */
