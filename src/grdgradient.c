@@ -79,6 +79,7 @@ struct GRDGRADIENT_CTRL {
 		/* Note: If -Qc is set with -N then -G is not required. GMT_Encode_Options turns off the primary output */
 		bool active;
 		unsigned int mode;
+		char *file;
 	} Q;
 	struct GRDGRADIENT_S {	/* -S<slopefile> */
 		bool active;
@@ -132,7 +133,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s %s -G%s [-A<azim>[/<azim2>]] [-D[a][c][o][n]] "
 		"[-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]] "
-		"[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s] [-S<slopegrid>] [%s] "
+		"[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R[+f<file>]] [%s] [-S<slopegrid>] [%s] "
 		"[-fg] [%s] [%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -173,12 +174,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+o Offset gradients by <offset> [Default estimates <offset> from the data].");
 	GMT_Usage (API, 3, "+s Normalize gradients by <sigma> [Default estimates <sigma> from the data].");
 	GMT_Usage (API, -2, "See -Q to use the same offset, sigma for multiple grid calculations.");
-	GMT_Usage (API, 1, "\n-Qc|r|R");
+	GMT_Usage (API, 1, "\n-Qc|r|R[+f<file>]");
 	GMT_Usage (API, -2, "Control handling of -N arguments from previous calculations. Append directive:");
 	GMT_Usage (API, 3, "c: Create statistics file and write the offset and sigma of this run.");
 	GMT_Usage (API, 3, "r: Read offset and sigma of the previous run from statistics file.");
 	GMT_Usage (API, 3, "R: Remove and read.  As r but also removes the statistics file after use.");
-	GMT_Usage (API, -2, "Note: The values obtained are used if +o and/or +s modifiers in -N are given no argument.");
+	GMT_Usage (API, -2, "Optionally, append +f<file> to write/read the statistics to/from a specified file. Note: The values "
+		"obtained are used if +o and/or +s modifiers in -N are given no argument.");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<slopegrid>");
 	GMT_Usage (API, -2, "Output file for |grad z|; requires -D.");
@@ -373,6 +375,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				break;
 			case 'Q':	/* Read/write normalization values */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				if (gmt_validate_modifiers (GMT, opt->arg, 'Q', "f", GMT_MSG_ERROR)) n_errors++;
+				if (gmt_get_modifier (opt->arg, 'f', p)) {
+					if (p[0]) Ctrl->Q.file = strdup (p);
+				}
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->Q.mode = 1; break;
@@ -461,13 +467,15 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode & 1) {	/* Read in previous statistics */
 		char sfile[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		GMT_Report (API, GMT_MSG_DEBUG, "Read statistics file [%s] with offset and sigma\n", sfile);
-		if (GMT->session.TMPDIR)
+		if (Ctrl->Q.file)
+			sprintf (sfile, "%s", Ctrl->Q.file);
+		else if (GMT->session.TMPDIR)
 			sprintf (sfile, "%s/grdgradient.stat", GMT->session.TMPDIR);
 		else if (API->tmp_dir)
 			sprintf (sfile, "%s/grdgradient.stat", API->tmp_dir);
 		else
 			sprintf (sfile, "grdgradient.stat");
+		GMT_Report (API, GMT_MSG_DEBUG, "Read statistics file [%s] with offset and sigma\n", sfile);
 		if (access (sfile, F_OK)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to find statistics file from last run [%s]!\n", sfile);
 			Return (GMT_FILE_NOT_FOUND);
@@ -855,13 +863,15 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode == 2) {	/* Write the new statistics */
 		char sfile[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		GMT_Report (API, GMT_MSG_DEBUG, "Create statistics file [%s] with offset and sigma\n", sfile);
-		if (GMT->session.TMPDIR)
+		if (Ctrl->Q.file)
+			sprintf (sfile, "%s", Ctrl->Q.file);
+		else if (GMT->session.TMPDIR)
 			sprintf (sfile, "%s/grdgradient.stat", GMT->session.TMPDIR);
 		else if (API->tmp_dir)
 			sprintf (sfile, "%s/grdgradient.stat", API->tmp_dir);
 		else
 			sprintf (sfile, "grdgradient.stat");
+		GMT_Report (API, GMT_MSG_DEBUG, "Create statistics file [%s] with offset and sigma\n", sfile);
 		if ((fp = fopen (sfile, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot create statistics file from this run [%s]!\n", sfile);
 			Return (GMT_ERROR_ON_FOPEN);

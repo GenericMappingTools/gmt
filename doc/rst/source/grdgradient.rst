@@ -16,7 +16,7 @@ Synopsis
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
 [ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
 [ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
-[ |-Q|\ **c**\|\ **r**\|\ **R** ]
+[ |-Q|\ **c**\|\ **r**\|\ **R**\ [**+f**\ *file*]]
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
 [ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
@@ -132,7 +132,7 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qc**\|\ **r**\|\ **R**
+**-Qc**\|\ **r**\|\ **R**\ [**+f**\ *file*]
     Controls how normalization via **-N** is carried out.  When multiple grids
     should be normalized the same way (i.e., with the same *offset* and/or *sigma*),
     we must pass these values via **-N**.  However, this is inconvenient if we
@@ -141,6 +141,8 @@ Optional Arguments
     for this run then do not specify **-G**. For subsequent runs, just use
     **-Qr** to read these values.  Using **-QR** will read then delete the
     statistics file. See :ref:`Tiles <grdgradient:Tiles>` for more information.
+    Optionally, append **+f**\ *file* to write/read the statistics to/from the
+    specified *file*.
 
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
