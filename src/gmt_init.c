@@ -8793,6 +8793,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		else
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
+		GMT->common.R.via_polygon = true;
 		return (GMT_NOERROR);
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Obsolete: Specified min/max in projected distance units */
