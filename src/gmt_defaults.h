@@ -187,7 +187,7 @@ struct GMT_DEFAULTS {
 	unsigned int ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
 	unsigned int ps_copies;		/* How man copies of each plot [>=1] [GMT4 COMPATIBILITY ONLY] */
 	int ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
-	bool ps_orientation;			/* Orientation of page [false = Landscape, true = Portrait] */
+	unsigned int ps_orientation;			/* Orientation of page [PSL_LANDSCAPE (0)] or PSL_PORTRAIT (1) */
 	bool ps_comments;			/* true if we write comments in the PS file */
 	char ps_transpmode[GMT_LEN16];		/* Transparency mode for PDF only */
 	char ps_convert[GMT_LEN256];		/* Arguments for implicit psconvert calls under modern mode [""] */

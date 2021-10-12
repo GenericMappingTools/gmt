@@ -5520,7 +5520,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);  /* As co-latitude it may be 180 so cannot parse as latitude */
 			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] > 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
 			error += (project == GMT_GNOMONIC && GMT->current.proj.pars[2] >= 90.0);
-			error += (project == GMT_ORTHO && GMT->current.proj.pars[2] >= 180.0);
+			//error += (project == GMT_ORTHO && GMT->current.proj.pars[2] >= 180.0);
+			error += (project == GMT_ORTHO && GMT->current.proj.pars[2] > 90.0);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
 
@@ -7705,7 +7706,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 			GMT_Usage (API, 3, "+l Take log10 of column before any other transformations.");
 			GMT_Usage (API, 3, "+d Divide column by appended <divisor>.");
 			GMT_Usage (API, 3, "+o Add to column the appended <offset>.");
-			GMT_Usage (API, 3, "+s Multiply column by appended <scale>.");
+			GMT_Usage (API, 3, "+s Multiply column by appended <scale> or give d (convert km to degree) or k (degree to km)");
 			break;
 
 		case 'A':	/* -j option for spherical distance calculation mode */
@@ -9115,10 +9116,17 @@ int gmt_parse_i_option (struct GMT_CTRL *GMT, char *arg) {
 				pos_p = 0;	/* Reset to start of new word */
 				while (gmt_getmodopt (GMT, 'i', c, "dlos", &pos_p, word, &uerr) && uerr == 0) {
 					switch (word[0]) {
+						case 'd': convert |= 1;	scale = 1.0 / atof (&word[1]); break;
 						case 'l': convert |= 2; break;
 						case 'o': convert |= 1; offset = atof (&word[1]); break;
-						case 's': convert |= 1; scale  = atof (&word[1]); break;
-						case 'd': convert |= 1; scale  = 1.0 / atof (&word[1]); break;
+						case 's':	/* Must check for special codes k (convert degrees to km) and d (convert km to degrees) */
+							convert |= 1;
+							switch (word[1]) {
+								case 'k': scale = GMT->current.proj.DIST_KM_PR_DEG; break;
+								case 'd': scale = 1.0 / GMT->current.proj.DIST_KM_PR_DEG; break;
+								default: scale  = atof (&word[1]); break;
+							}
+							break;
 						default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 					}
 				}
@@ -14824,6 +14832,44 @@ GMT_LOCAL double gmtinit_map_diagonal_inches (struct GMT_CTRL *GMT) {
 	return (L);
 }
 
+GMT_LOCAL int gmtinit_dryrun_report (struct GMTAPI_CTRL *API, double *wesn, double inc, char *incstring, struct GMT_OPTION **options) {
+	double out[6];	/* To hold w e s n dx dy */
+	char record[GMT_LEN256] = {""};	/* To hold -Rw/e/s/n -Idx/dy */
+	struct GMT_RECORD *Out = NULL;
+	struct GMT_OPTION *opt_D = GMT_Find_Option (API, 'D', *options);
+	bool text = (strstr (opt_D->arg, "+t"));
+	GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increments %s/%s\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], incstring, incstring);
+	if (GMT_Set_Columns (API, GMT_OUT, text ? 0 : 6, text ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
+		return API->error;
+	if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, *options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
+		return API->error;
+	}
+	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
+		return API->error;
+	}
+
+	if (text) {
+		Out = gmt_new_record (API->GMT, NULL, record);	/* The trailing text output record */
+		gmt_format_region (API->GMT, record, wesn);	/* Typeset the -Rw/e/s/n part */
+		strcat (record, " -I");	strcat (record, incstring);
+		strcat (record, "/");	strcat (record, incstring);
+	}
+	else {
+		Out = gmt_new_record (API->GMT, out, NULL);	/* The numerical output record */
+		gmt_M_memcpy (out, wesn, 4U, double);	/* Place the grid boundaries */
+		out[4] = out[5] = inc;
+	}
+	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
+		return API->error;
+	gmt_M_free (API->GMT, Out);
+	gmt_M_str_free (opt_D->arg);	/* Free any previous arguments */
+	strcpy (record, "done-in-gmt_init_module");
+	if (text) strcat (record, "+t");
+	opt_D->arg = strdup (record);	/* Flag so that grdcut can deal with the mixed cases later */
+	return (GMT_NOERROR);
+}
+
 /*! Prepare options if missing and initialize module */
 struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name, const char *mod_name, const char *keys, const char *in_required, struct GMT_KEYWORD_DICTIONARY *this_module_kw, struct GMT_OPTION **options, struct GMT_CTRL **Ccopy) {
 	/* For modern runmode only - otherwise we simply call gmtinit_begin_module_sub.
@@ -15323,11 +15369,11 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 	}
 
 	if (options) {	/* Check if any filename argument is a remote tiled dataset */
-		bool first_time = true, parsed_R = false, dry_run = false, got_grdcut = false, got_grdimage = false;
+		bool first_time = true, parsed_R = false, dry_run = false, got_grdcut = false, got_grdimage = false, inc_set = false;
 		int k_data, registration;
 		unsigned int srtm_flag;
-		char *list = NULL, *c = NULL;
-		double wesn[4];
+		char *list = NULL, *c = NULL, s_inc[GMT_LEN8] = {""};
+		double wesn[4], d_inc;
 		struct GMT_OPTION *opt_J = NULL, *opt_S = NULL, *opt_D = NULL, *opt_dash = NULL;
 		struct GMT_DATA_INFO *I = NULL;
 
@@ -15436,7 +15482,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, this_n_per_degree, opt->arg, file);
 					gmt_M_str_free (opt->arg);
 					opt->arg = strdup (file);
+					d_inc = API->remote_info[k_data2].d_inc;
+					strncpy (s_inc, API->remote_info[k_data2].inc, GMT_LEN8);
+					inc_set = true;
 				}
+				if (dry_run)
+					goto dry_run;
 			}
 			if ((c = strchr (opt->arg, '+'))) {	/* Maybe have things like -I@earth_relief_30m+d given to grdimage */
 				c[0] = '\0';
@@ -15454,7 +15505,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				 * Since -J may be needed if -R does oblique or give a region in projected units
 				 * we must also parse -J here first before parsing -R. If just -R -J then we must update from history now */
 
-				if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S is what we are running */
+dry_run:		if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S is what we are running */
 					if (!strncmp (mod_name, "grdcut", 6U) && (opt_S = GMT_Find_Option (API, 'S', *options))) {
 						char Sunit, za[GMT_LEN64] = {""}, zb[GMT_LEN64] = {""}, zc[GMT_LEN64] = {""}, *s = NULL;
 						int k = 0, Smode, n_errors = 0;
@@ -15509,53 +15560,28 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
 						if (gmt_map_setup (GMT, GMT->common.R.wesn))
 							return NULL;
+						if (gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false))	/* Refine without 0.1 degree padding */
+							return NULL;
 					}
 					GMT->common.R.active[RSET] = false;	/* Since we will need to parse it again officially in GMT_Parse_Common */
 					gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 				}
 				first_time = false;	/* Done with getting valid region */
 			}
-			I = &API->remote_info[k_data];
+			if (!inc_set) {
+				I = &API->remote_info[k_data];
+				d_inc = I->d_inc;
+				strncpy (s_inc, I->inc, GMT_LEN8);
+			}
 
 			/* Enforce multiple of tile grid resolution in wesn so requested region is in phase with tiles and at least covers the given region. */
-			wesn[XLO] = floor ((wesn[XLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
-			wesn[XHI] = ceil  ((wesn[XHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
-			wesn[YLO] = floor ((wesn[YLO] / I->d_inc) + GMT_CONV8_LIMIT) * I->d_inc;
-			wesn[YHI] = ceil  ((wesn[YHI] / I->d_inc) - GMT_CONV8_LIMIT) * I->d_inc;
+			wesn[XLO] = floor ((wesn[XLO] / d_inc) + GMT_CONV8_LIMIT) * d_inc;
+			wesn[XHI] = ceil  ((wesn[XHI] / d_inc) - GMT_CONV8_LIMIT) * d_inc;
+			wesn[YLO] = floor ((wesn[YLO] / d_inc) + GMT_CONV8_LIMIT) * d_inc;
+			wesn[YHI] = ceil  ((wesn[YHI] / d_inc) - GMT_CONV8_LIMIT) * d_inc;
 			if (dry_run) {	/* Only want to learn about the grid domain and resolution */
-				double out[6];	/* To hold w e s n dx dy */
-				char record[GMT_LEN256] = {""};	/* To hold -Rw/e/s/n -Idx/dy */
-				struct GMT_RECORD *Out = NULL;
-				bool text = (strstr (opt_D->arg, "+t"));
-				GMT_Report (API, GMT_MSG_INFORMATION, "Extracted grid region will be %g/%g/%g/%g for increments %s/%s\n", wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], I->inc, I->inc);
-				if (GMT_Set_Columns (API, GMT_OUT, text ? 0 : 6, text ? GMT_COL_FIX : GMT_COL_FIX_NO_TEXT) != GMT_NOERROR)
+				if (gmtinit_dryrun_report (API, wesn, d_inc, s_inc, options))
 					return NULL;
-				if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT, GMT_ADD_DEFAULT, 0, *options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
-					return NULL;
-				}
-				if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_OUT, GMT_HEADER_OFF) != GMT_NOERROR) {	/* Enables data output and sets access mode */
-					return NULL;
-				}
-
-				if (text) {
-					Out = gmt_new_record (GMT, NULL, record);	/* The trailing text output record */
-					gmt_format_region (GMT, record, wesn);	/* Typeset the -Rw/e/s/n part */
-					strcat (record, " -I");	strcat (record, I->inc);
-					strcat (record, "/");	strcat (record, I->inc);
-				}
-				else {
-					Out = gmt_new_record (GMT, out, NULL);	/* The numerical output record */
-					gmt_M_memcpy (out, wesn, 4U, double);	/* Place the grid boundaries */
-					out[4] = out[5] = I->d_inc;
-				}
-				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-				if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR)	/* Disables further data output */
-					return NULL;
-				gmt_M_free (GMT, Out);
-				gmt_M_str_free (opt_D->arg);	/* Free any previous arguments */
-				strcpy (record, "done-in-gmt_init_module");
-				if (text) strcat (record, "+t");
-				opt_D->arg = strdup (record);	/* Flag so that grdcut can deal with the mixed cases later */
 			}
 			else {
 				/* Get a file with a list of all needed tiles */

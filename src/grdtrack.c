@@ -164,7 +164,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -G%s -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+d<deviation>][+l|r]] "
+	GMT_Usage (API, 0, "usage: %s -G%s -G<grid2> ... [<table>] [-A[f|m|p|r|R][+l]] [-C<length>/<ds>[/<spacing>][+a|v][+d|f<value>][+l|r]] "
 		"[-D<dfile>] [-E<line1>[,<line2>,...][+a<az>][+c][+d][+g][+i<step>][+l<length>][+n<np][+o<az>][+r<radius>]] "
 		"[-F[+b][+n][+r][+z<z0>]] [-N] [%s] [-S[a|l|L|m|p|u|U][+a][+c][+d][+r][+s[<file>]]] [-T<radius>>[+e|p]] [%s] [-Z] [%s] [%s] [%s] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] %s] [%s] [%s] [%s] [%s]\n",
@@ -190,7 +190,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "r: Resample at equidistant locations; input points not necessarily included.");
 	GMT_Usage (API, 3, "R: Same, but adjust given spacing to fit the track length exactly.");
 	GMT_Usage (API, -2, "Append +l to compute distances along rhumblines (loxodromes) [no].");
-	GMT_Usage (API, 1, "\n-C<length>/<ds>[/<spacing>][+a|v][+d<deviation>][+l|r]");
+	GMT_Usage (API, 1, "\n-C<length>/<ds>[/<spacing>][+a|v][+d|f<value>][+l|r]");
 	GMT_Usage (API, -2, "Create equidistant cross-profiles from input line segments. Append 2-3 parameters:");
 	GMT_Usage (API, 3, "1. <length>: The full-length of each cross profile. "
 		"Append distance unit u (%s); this unit also applies to <ds> and <spacing>. "
@@ -200,6 +200,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Several modifiers controls the creation of the profiles:");
 	GMT_Usage (API, 3, "+a Alternate the direction of cross-profiles [Default orients all the same way].");
 	GMT_Usage (API, 3, "+d Set deviation (-90/+90 range) from orthogonal cross-profiles [0 (no deviation)].");
+	GMT_Usage (API, 3, "+f Set fixed azimuth for all cross-profiles.");
 	GMT_Usage (API, 3, "+l Only use the left half of the profiles [entire profile].");
 	GMT_Usage (API, 3, "+r Only use the right half of the profiles [entire profile].");
 	GMT_Usage (API, 3, "+v Adjust direction of cross-profiles for E-W or S-N viewing [Default orients all the same way].");
@@ -338,11 +339,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDTRACK_CTRL *Ctrl, struct GMT_O
 			case 'C':	/* Create cross profiles */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				if ((c = gmt_first_modifier (GMT, opt->arg, "adlrv"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "adflrv"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'C', c, "adlrv", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'C', c, "adflrv", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
 							case 'a': Ctrl->C.mode |= GMT_ALTERNATE; break;		/* Select alternating direction of cross-profiles */
+							case 'f': Ctrl->C.mode |= GMT_FIXED_AZIM;	/* Deliberatily fall through to get fixed azimuth */
 							case 'd': Ctrl->C.deviation = atof (&p[1]); break;		/* Less than orthogonal vy given deviation */
 							case 'l': Ctrl->C.mode |= GMT_LEFT_ONLY; break;		/* cross-profile starts at line and go to left side only */
 							case 'r': Ctrl->C.mode |= GMT_RIGHT_ONLY; break;	/* cross-profile starts at line and go to right side only */

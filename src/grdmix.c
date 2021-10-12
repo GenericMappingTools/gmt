@@ -404,7 +404,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	for (k = 0; k < N_ITEMS; k++) {	/* Determine if we got grids or images */
 		if (Ctrl->In.file[k] == NULL) continue;
-		Ctrl->In.type[k] = gmt_raster_type (GMT, Ctrl->In.file[k]);
+		Ctrl->In.type[k] = gmt_raster_type (GMT, Ctrl->In.file[k], true);
 	}
 
 	if (Ctrl->In.n_in == 1 && Ctrl->In.type[0] == GMT_NOTSET && !Ctrl->D.active) {

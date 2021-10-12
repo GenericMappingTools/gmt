@@ -44,7 +44,7 @@ Common Options (Classic Mode)
      - :ref:`Segment data by detecting gaps <-g_full>`
    * - **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
      - :ref:`ASCII tables have header record[s] <-h_full>`
-   * - **-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+   * - **-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*\|\ **d**\|\ **k**][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
      - :ref:`Selection of input columns <-icols_full>`
    * - **-je**\|\ **f**\|\ **g**
      - :ref:`Mode of spherical distance calculation <-distcalc_full>`

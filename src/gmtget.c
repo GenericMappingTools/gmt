@@ -282,7 +282,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				}
 				else {
 					if (API->remote_info[k].tile_size > 0.0) {	/* Must obtain all tiles */
-						char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles);
+						char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles, NULL);
 						for (t = 0; t < n_tiles; t++)
 							gmt_download_file_if_not_found (GMT, list[t], GMT_AUTO_DIR);
 						gmt_free_list (GMT, list, n_tiles);
