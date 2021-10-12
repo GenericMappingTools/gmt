@@ -8366,7 +8366,7 @@ GMT_LOCAL void gmtio_duplicate_dataset_cols (struct GMT_CTRL *GMT, struct GMT_DA
 /*! . */
 struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry) {
 	/* Make an exact replica, return geometry if not NULL */
-	uint64_t tbl, seg, n_columns;
+	uint64_t tbl, seg;
 	struct GMT_DATASET *D = NULL;
 
 	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {

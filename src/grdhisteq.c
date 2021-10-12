@@ -218,7 +218,7 @@ GMT_LOCAL struct GRDHISTEQ_CELL *grdhisteq_do_hist_equalization_cart (struct GMT
 	/* Do basic Cartesian histogram equalization */
 	uint64_t i, j, nxy;
 	unsigned int n_cells_m1 = 0, current_cell, pad[4];
-	double delta_cell, target, out[3];
+	double delta_cell, target;
 	struct GRDHISTEQ_CELL *cell = NULL;
 	struct GMT_GRID *Orig = NULL;
 
@@ -279,7 +279,7 @@ GMT_LOCAL struct GRDHISTEQ_CELL *grdhisteq_do_hist_equalization_geo (struct GMT_
 	/* Do basic area-weighted histogram equalization */
 	uint64_t i, j, node, nxy = 0;
 	unsigned int n_cells_m1 = 0, current_cell, row, col;
-	double cell_w, delta_w, target_w, wsum = 0.0, out[3];
+	double cell_w, delta_w, target_w, wsum = 0.0;
 	struct GRDHISTEQ_CELL *cell = gmt_M_memory (GMT, NULL, n_cells, struct GRDHISTEQ_CELL);
 	struct GMT_GRID *W = gmt_duplicate_grid (GMT, Grid, GMT_DUPLICATE_ALLOC);
 	struct GMT_OBSERVATION *pair = gmt_M_memory (GMT, NULL, Grid->header->nm, struct GMT_OBSERVATION);

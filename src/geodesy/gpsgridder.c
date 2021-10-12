@@ -605,7 +605,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	int n_use, error, out_ID;
 	bool geo, skip;
 
-	char *comp[2] = {"u(x,y)", "v(x,y)"}, *tag[2] = {"u", "v"};
+	char *comp[2] = {"u(x,y)", "v(x,y)"};
 
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
 	double *f_x = NULL, *f_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
@@ -1232,7 +1232,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (Ctrl->C.history) {	/* Write out U,V grids after adding contribution for each eigenvalue */
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			gmt_grdfloat *current[2] = {NULL, NULL}, *previous[2] = {NULL, NULL};
-			double predicted[4], l2_sum_n = 0.0, l2_sum_e = 0.0;
+			double l2_sum_n = 0.0, l2_sum_e = 0.0;
 			struct GMT_SINGULAR_VALUE *eigen = NULL;
 			struct GMT_DATASET *E = NULL;
 			struct GMT_DATASEGMENT *S = NULL;
