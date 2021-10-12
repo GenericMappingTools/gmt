@@ -18458,3 +18458,58 @@ void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
 		gmtlib_geo_C_format (GMT);
 	}
 }
+
+unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, double *min, double *max) {
+	/* Parse strings like low/high, NaN/high, low/NaN, /high, low/ and return min/max
+	 * with either set to NaN if not given */
+	size_t L;
+	int n;
+	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""};
+	if (!text || text[0] == '\0') {	/* Gave no argument */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Argument is required\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	if (strchr (text, '/') == NULL) {	/* Gave no valid argument */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Dividing slash is required\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	L = strlen (text) - 1;	/* Will be 0 or larger */
+	if (text[0] == '/') {	/* Gave /max with min implicitly set to NaN */
+		strcpy (txt_a, "NaN");
+		strcpy (txt_b, &text[1]);
+	}
+	else if (text[L] == '/') {	/* Gave min/ with max implicitly set to NaN */
+		strcpy (txt_a, text);	txt_a[L] = '\0';	/* Chop off the trailing / */
+		strcpy (txt_b, "NaN");
+	}
+	else if ((n = sscanf (text, "%[^/]/%s", txt_a, txt_b)) < 2) {	/* Got min/max (either could be NaN) */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Must specify min/max\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	/* Here we got txt_a and txt_b filled */
+	if (strcasecmp (txt_a, "NAN") == 0)
+		*min = GMT->session.d_NaN;
+	else if (gmt_is_float (GMT, txt_a))
+		*min = atof (txt_a);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unable to parse %s\n", option, txt_a);
+		return GMT_PARSE_ERROR;
+	}
+	if (strcasecmp (txt_b, "NAN") == 0)
+		*max = GMT->session.d_NaN;
+	else if (gmt_is_float (GMT, txt_b))
+		*max = atof (txt_b);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unable to parse %s\n", option, txt_b);
+		return GMT_PARSE_ERROR;
+	}
+	if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Both limits cannot be NaN\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	if (!(gmt_M_is_dnan (*min) || gmt_M_is_dnan (*max)) && *max <= *min) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: min must be less than max\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	return GMT_NOERROR;
+}
