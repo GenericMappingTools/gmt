@@ -5046,14 +5046,14 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	 * GMT->current.proj structure.  The function returns true if an error is encountered.
 	 */
 
-	int i, j, k = 0, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
+	int i, j, k = 0, n, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
 	int n_slashes = 0, last_pos = 0, error = 0;
 	unsigned int mod_flag = 0;
 	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *dd = NULL, *d = NULL, *args;
-	char txt_arr[11][GMT_LEN256], args_buf[GMT_LEN128] = {""};
+	char args_buf[GMT_LEN128] = {""};
 
 	if (args_in == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -J: No argument for parsing\n");
@@ -8795,6 +8795,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		else
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
+		GMT->common.R.via_polygon = true;
 		return (GMT_NOERROR);
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Obsolete: Specified min/max in projected distance units */
@@ -15399,7 +15400,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			if ((k_data = gmt_remote_no_resolution_given (API, opt->arg, &registration)) != GMT_NOTSET) {	/* Gave no resolution, e.g., just "eart_relief" */
 				bool at_least_one = false;
-				char codes[3] = {""}, reg[2] = {'g', 'p'}, unit, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""}, *p_dir = NULL;
+				char codes[3] = {""}, reg[2] = {'g', 'p'}, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""}, *p_dir = NULL;
 				unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
 				unsigned int k, n_R = 0;
 				int k_data2 = GMT_NOTSET;

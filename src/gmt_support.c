@@ -18438,7 +18438,7 @@ unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, un
 void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
 	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible */
 	enum gmt_col_enum type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
-	char text[GMT_LEN64] = {""}, inc[GMT_LEN64] = {""}, save[GMT_LEN64];
+	char text[GMT_LEN64] = {""}, save[GMT_LEN64];
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Try formal reporting */
 		strcpy (save, GMT->current.setting.format_geo_out);
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
