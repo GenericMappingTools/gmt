@@ -4816,15 +4816,20 @@ GMT_LOCAL int gmtmap_init_sinusoidal (struct GMT_CTRL *GMT, bool *search) {
 /*! . */
 GMT_LOCAL int gmtmap_init_cassini (struct GMT_CTRL *GMT, bool *search) {
 	bool too_big;
-	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0;
+	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, L = 0.0, R = 0.0;
 
 	*search = GMT->common.R.oblique;
 
 	if (gmtmap_central_meridian_not_set (GMT))
 		gmtmap_set_default_central_meridian (GMT);
-	if ((GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 90.0 || (GMT->common.R.wesn[XHI] - GMT->current.proj.pars[0]) > 90.0) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Max longitude extension away from central meridian is limited to +/- 90 degrees\n");
-		return GMT_PROJECTION_ERROR;
+	if ((L = (GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO])) > 90.0 || (R = (GMT->common.R.wesn[XHI] - GMT->current.proj.pars[0])) > 90.0) {
+		double D = 0.0;
+		if (L > 0.0) D = 360.0; else if (R > 0.0) D = -360.0;	/* Try the relevant 360-degree shift */
+		GMT->common.R.wesn[XLO] += D;	GMT->common.R.wesn[XHI] += D;	/* Try to shift the range */
+		if ((GMT->current.proj.pars[0] - GMT->common.R.wesn[XLO]) > 90.0 || (GMT->common.R.wesn[XHI] - GMT->current.proj.pars[0]) > 90.0) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Max longitude extension away from central meridian is limited to +/- 90 degrees\n");
+			return GMT_PROJECTION_ERROR;
+		}
 	}
 	too_big = gmtmap_quicktm (GMT, GMT->current.proj.pars[0], 4.0);
 	if (too_big) gmtmap_set_spherical (GMT, true);	/* Cannot use ellipsoidal series for this area */
