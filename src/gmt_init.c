@@ -124,6 +124,8 @@
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
 #define gmt_M_keyword_update(val) if (core) GMT_keyword_updated[val] = true
 
+void *global_API;
+
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
 /*--------------------------------------------------------------------*/
@@ -17942,6 +17944,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	int  local_count = 0;
 #endif
 
+	global_API = NULL;	/* Initialize global variable to NULL once in GMT_Create_Session.  Only used by gmtlib_terminate_session and assigned in gmt_manage_workflow */
+
 	gmt_M_memset (GMT_keyword_updated, GMT_N_KEYS, bool); /* Need to start with all set as false */
 
 #ifdef __FreeBSD__
@@ -19141,6 +19145,30 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 }
 
 /*! . */
+void gmtlib_terminate_session () {
+	/* If a modern mode session catches a CTRL-C interrupt then we must terminate
+	 * the session so not to leave behind a mess that requires "gmt clear sessions".
+	 */
+
+	bool die;
+	char dir[PATH_MAX] = {""};
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (global_API == NULL) return;	/* No session so nothing to clean up */
+	API = gmt_get_api_ptr (global_API);	/* COnvert void pointer to GMTAPI_CTRL pointer */
+	if (API->session_dir == NULL || API->session_name == NULL) return;	/* Cannot check */
+	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", API->session_dir, API->session_name);
+	GMT_Report (API, GMT_MSG_DEBUG, "Remove session directory %s before exiting due to Ctrl-C\n", dir);
+	if (!access (dir, F_OK)) {	/* Session directory exist, try to remove it */
+		if (gmt_remove_dir (API, dir, false))
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to remove session directory %s [permissions?]\n", dir);
+	}
+	die = !API->external;	/* Only call exit from the CLI */
+	GMT_Destroy_Session (API);	/* Try to get out cleanly */
+	if (die) exit (0);
+}
+
+/*! . */
 int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text) {
 	/* Manage the GMT workflow.  Mode can take the following values:
 	 *   GMT_BEGIN_WORKFLOW: Start a new GMT workflow and initialize a work flow directory.
@@ -19205,6 +19233,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);
+			global_API = API;	/* Make a pointer just for the no-argument gmtlib_terminate_session */
 			break;
 		case GMT_USE_WORKFLOW:
 			/* We always get here except when gmt begin | end are called. */
