@@ -425,7 +425,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		gmt_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
 	}
 	else {
-		if (!decorate_custom && gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
+		if (gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file: %s\n", tmp_file);
 	}
 	GMT->common.l.active = l_active;	/* Reset in case it was set */
@@ -2743,7 +2743,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 
-	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via call to psxy */
+	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via a separate call to psxy */
 		if ((error = psxy_plot_decorations (GMT, Decorate, &S.D, decorate_custom)) != 0)	/* Cannot possibly be a good thing */
 			Return (error);
 		if (GMT_Destroy_Data (API, &Decorate) != GMT_NOERROR) {	/* Might as well delete since no good later */
