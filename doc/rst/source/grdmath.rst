@@ -99,7 +99,7 @@ Optional Arguments
 **-N**
     Turn off strict domain match checking when multiple grids are
     manipulated [Default will insist that each grid domain is within
-    1e-4 \* grid_spacing of the domain of the first grid listed].
+    :math:`10^{-4}` times the grid spacing of the domain of the first grid listed].
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
