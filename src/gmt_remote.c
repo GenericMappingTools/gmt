@@ -950,15 +950,24 @@ void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 	}
 }
 
+GMT_LOCAL char * gmtremote_switch_to_srtm (char *file, char *res) {
+	/* There may be more than one remote Earth DEM product that needs to share the
+	 * same 1x1 degree SRTM tiles.  This function handles this overlap; add more cases if needed. */
+	char *c = NULL;
+	if ((c = strstr (file, ".earth_relief_01s_g")) || (c = strstr (file, ".earth_synbath_01s_g")))
+		*res = '1';
+	else if ((c = strstr (file, ".earth_relief_03s_g")) || (c = strstr (file, ".earth_synbath_03s_g")))
+		*res = '3';
+	return (c);	/* Returns pointer to this "extension" or NULL */
+}
+
 GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
-	/* Must do special legacy checks for  SRTMGL1|3 tag names for SRTM tiles.
+	/* Must do special legacy checks for SRTMGL1|3 tag names for SRTM tiles.
 	 * We also strip off the leading @ since we are building an URL for curl  */
-	char res = 0, *c = NULL, *new_file = NULL;
-	if ((c = strstr (file, ".earth_relief_01s_g")))
-		res = '1';
-	else if ((c = strstr (file, ".earth_relief_03s_g")))
-		res = '3';
-	if (c) {	/* Found one of the SRTM tile families */
+	char res, *c = NULL, *new_file = NULL;
+	
+	if ((c = gmtremote_switch_to_srtm (file, &res))) {
+		/* Found one of the SRTM tile families, now replace the tag with SRTMGL1|3 */
 		char remote_name[GMT_LEN64] = {""};
 		c[0] = '\0';	/* Temporarily chop off tag and beyond */
 		sprintf (remote_name, "%s.SRTMGL%c.%s", &file[1], res, GMT_TILE_EXTENSION_REMOTE);
@@ -1463,10 +1472,17 @@ int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *infile, unsigned in
 	return (k_data);
 }
 
+GMT_LOCAL bool gmtremote_is_earth_dem (struct GMT_DATA_INFO *I) {
+	/* Returns true if this data set is one of the earth_relief clones that must share SRTM tiles with @earth_relief.
+	 * SHould we add more such DEMs then just add more cases like the synbath test */
+	if (strstr (I->tag, "synbath") && (!strcmp (I->inc, "03s") || !strcmp (I->inc, "01s"))) return true;
+	return false;
+}
+
 char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_data, unsigned int *n_tiles, bool *need_filler) {
 	/* Return the full list of tiles for this tiled dataset. If need_filler is not NULL we return
 	 * true if some of the tiles inside the wesn do not exist based on the coverage map. */
-	char **list = NULL, YS, XS, file[GMT_LEN64] = {""};
+	char **list = NULL, YS, XS, file[GMT_LEN64] = {""}, tag[GMT_LEN64] = {""};
 	int x, lon, lat, iw, ie, is, in,  t_size;
 	uint64_t node, row, col;
 	unsigned int n_alloc = GMT_CHUNK, n = 0, n_missing = 0;
@@ -1476,6 +1492,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 
 	if (gmt_M_is_zero (I->tile_size)) return NULL;
 
+	strncpy (tag, I->tag, GMT_LEN64);	/* Initialize tag since it may change below */
 	if (strcmp (I->coverage, "-")) {	/* This primary tiled dataset has limited coverage as described by a named hit grid */
 		char coverage_file[GMT_LEN64] = {""};
 		sprintf (coverage_file, "@%s", I->coverage);	/* Prepend the remote flag since we may need to download the file */
@@ -1484,6 +1501,8 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 			API->error = GMT_RUNTIME_ERROR;
 			return NULL;
 		}
+		if (gmtremote_is_earth_dem (I))	/* Dataset shares SRTM1|3 tiles with @earth_relief */
+			sprintf (tag, "earth_relief_%s_%c", I->inc, I->reg);
 	}
 
 	if ((list = gmt_M_memory (API->GMT, NULL, n_alloc, char *)) == NULL) {
@@ -1532,7 +1551,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 					return NULL;
 				}
 			}
-			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(lat), XS, abs(lon), I->tag, GMT_TILE_EXTENSION_LOCAL);
+			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(lat), XS, abs(lon), tag, GMT_TILE_EXTENSION_LOCAL);
 			list[n++] = strdup (file);
 		}
 	}

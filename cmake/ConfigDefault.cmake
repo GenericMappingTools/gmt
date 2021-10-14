@@ -141,7 +141,8 @@ endif (NOT DEFINED GMT_RELEASE_PREFIX)
 
 # Default location of remote data server
 if (NOT DEFINED GMT_DATA_SERVER)
-	set (GMT_DATA_SERVER "oceania")
+	#set (GMT_DATA_SERVER "oceania")
+	set (GMT_DATA_SERVER "test")
 endif (NOT DEFINED GMT_DATA_SERVER)
 
 # Default name of ghostscript executable
