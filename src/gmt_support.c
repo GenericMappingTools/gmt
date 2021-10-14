@@ -4956,20 +4956,6 @@ FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension,
 	return (fp);
 }
 
-int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path) {
-	/* Replace an EPS file with a simple 1-liner custom file using an inline EPS command P instead.
-	 * path is updated to point to the replacement temp file */
-
-	FILE *fp = NULL;
-
-	if ((fp = gmt_create_tempfile (GMT->parent, "gmt_epssymbol", ".def", path)) == NULL)	/* Not good... */
-		return GMT_RUNTIME_ERROR;
-
-	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
-	fclose (fp);
-	return GMT_NOERROR;
-}
-
 /*! . */
 GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	/* Load in an initialize a new custom symbol.  These files can live in many places:
@@ -4990,8 +4976,18 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 
 	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
 
-	if (type == GMT_CUSTOM_EPS && gmtlib_convert_eps_to_def (GMT, in_name, path))	/* Must replace EPS with a simple 1-liner custom file with EPS command */
-		return GMT_RUNTIME_ERROR;
+	if (type == GMT_CUSTOM_EPS) {	/* Must replace EPS symbol with a simple 1-action custom symbl EPS command */
+		/* Single action with x=y=0, set size=1, and add in EPS loaded */
+		head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
+		strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
+		s = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM);
+		head->first = s;
+		s->action = GMT_SYMBOL_EPS;
+		s->p[0] = 1.0;
+		if ((s->eps = gmtsupport_load_eps_symbol (GMT, name, path)) == NULL) return GMT_RUNTIME_ERROR;
+		*S = head;
+		return (GMT_NOERROR);
+	}
 
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find custom symbol %s\n", &name[pos]);
@@ -5367,7 +5363,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 		previous = s;
 	}
 	fclose (fp);
-	head->n_required -= n_txt;	/* WOrds from trailing text is not part of required arguments (which are all numerical) */
+	head->n_required -= n_txt;	/* Words from trailing text is not part of required arguments (which are all numerical) */
 	*S = head;
 	return (GMT_NOERROR);
 }

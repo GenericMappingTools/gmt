@@ -324,7 +324,19 @@ GMT_LOCAL void psxy_decorate_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	}
 }
 
-EXTERN_MSC int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path);
+GMT_LOCAL int psxy_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path) {
+	/* Replace an EPS file with a simple 1-liner custom file using an inline EPS command P instead.
+	 * path is updated to point to the replacement temp file */
+
+	FILE *fp = NULL;
+
+	if ((fp = gmt_create_tempfile (GMT->parent, "gmt_epssymbol", ".def", path)) == NULL)	/* Not good... */
+		return GMT_RUNTIME_ERROR;
+
+	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
+	fclose (fp);
+	return GMT_NOERROR;
+}
 
 GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, struct GMT_DECORATE *G, bool decorate_custom) {
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
@@ -349,7 +361,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 			/* Update data file trailing text with new symbol name */
 			uint64_t seg, row;
 			struct GMT_DATASEGMENT *S = NULL;
-			if (gmtlib_convert_eps_to_def (GMT, &symbol_code[1], path))
+			if (psxy_convert_eps_to_def (GMT, &symbol_code[1], path))
 				return GMT_RUNTIME_ERROR;
 			sprintf (name, "k%s", path);	name[strlen(name)-4] = '\0';	/* Chop off extension in temp symbol file name */
 			for (seg = 0; seg < D->n_segments; seg++) {
