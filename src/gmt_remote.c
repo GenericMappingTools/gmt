@@ -1474,7 +1474,7 @@ int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *infile, unsigned in
 
 GMT_LOCAL bool gmtremote_is_earth_dem (struct GMT_DATA_INFO *I) {
 	/* Returns true if this data set is one of the earth_relief clones that must share SRTM tiles with @earth_relief.
-	 * SHould we add more such DEMs then just add more cases like the synbath test */
+	 * Should we add more such DEMs then just add more cases like the synbath test */
 	if (strstr (I->tag, "synbath") && (!strcmp (I->inc, "03s") || !strcmp (I->inc, "01s"))) return true;
 	return false;
 }
