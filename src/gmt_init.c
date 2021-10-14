@@ -124,6 +124,8 @@
    So far, only gmtset calls this function with core = true, but this is a too fragile solution */
 #define gmt_M_keyword_update(val) if (core) GMT_keyword_updated[val] = true
 
+void *global_API;
+
 /*--------------------------------------------------------------------*/
 /* Load private fixed array parameters from include files */
 /*--------------------------------------------------------------------*/
@@ -5044,14 +5046,14 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 	 * GMT->current.proj structure.  The function returns true if an error is encountered.
 	 */
 
-	int i, j, k = 0, m, n, nlen, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
+	int i, j, k = 0, n, slash, l_pos[3], p_pos[3], t_pos[3], d_pos[3], id, project;
 	int n_slashes = 0, last_pos = 0, error = 0;
 	unsigned int mod_flag = 0;
 	bool width_given = false;
 	double c, az, GMT_units[3] = {0.01, 0.0254, 1.0};      /* No of meters in a cm, inch, m */
 	char mod, args_cp[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""};
 	char txt_d[GMT_LEN256] = {""}, txt_e[GMT_LEN256] = {""}, last_char = 0, *dd = NULL, *d = NULL, *args;
-	char txt_arr[11][GMT_LEN256], args_buf[GMT_LEN128] = {""};
+	char args_buf[GMT_LEN128] = {""};
 
 	if (args_in == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -J: No argument for parsing\n");
@@ -5518,7 +5520,8 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);  /* As co-latitude it may be 180 so cannot parse as latitude */
 			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] > 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
 			error += (project == GMT_GNOMONIC && GMT->current.proj.pars[2] >= 90.0);
-			error += (project == GMT_ORTHO && GMT->current.proj.pars[2] >= 180.0);
+			//error += (project == GMT_ORTHO && GMT->current.proj.pars[2] >= 180.0);
+			error += (project == GMT_ORTHO && GMT->current.proj.pars[2] > 90.0);
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
 
@@ -8792,6 +8795,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		else
 			GMT->current.io.geo.range = GMT_IS_0_TO_P360_RANGE;
 		gmt_set_geographic (GMT, GMT_IN);
+		GMT->common.R.via_polygon = true;
 		return (GMT_NOERROR);
 	}
 	else if (strchr (GMT_LEN_UNITS2, item[0])) {	/* Obsolete: Specified min/max in projected distance units */
@@ -15396,7 +15400,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 			}
 			if ((k_data = gmt_remote_no_resolution_given (API, opt->arg, &registration)) != GMT_NOTSET) {	/* Gave no resolution, e.g., just "eart_relief" */
 				bool at_least_one = false;
-				char codes[3] = {""}, reg[2] = {'g', 'p'}, unit, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""}, *p_dir = NULL;
+				char codes[3] = {""}, reg[2] = {'g', 'p'}, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""}, *p_dir = NULL;
 				unsigned int n_to_set = 0, level = GMT->hidden.func_level;	/* Since we will need to increment prematurely since gmtinit_begin_module_sub has not been reached yet */
 				unsigned int k, n_R = 0;
 				int k_data2 = GMT_NOTSET;
@@ -17940,6 +17944,8 @@ struct GMT_CTRL *gmt_begin (struct GMTAPI_CTRL *API, const char *session, unsign
 	int  local_count = 0;
 #endif
 
+	global_API = NULL;	/* Initialize global variable to NULL once in GMT_Create_Session.  Only used by gmtlib_terminate_session and assigned in gmt_manage_workflow */
+
 	gmt_M_memset (GMT_keyword_updated, GMT_N_KEYS, bool); /* Need to start with all set as false */
 
 #ifdef __FreeBSD__
@@ -19139,6 +19145,30 @@ bool gmt_get_legend_info (struct GMTAPI_CTRL *API, double *width, double *scale,
 }
 
 /*! . */
+void gmtlib_terminate_session () {
+	/* If a modern mode session catches a CTRL-C interrupt then we must terminate
+	 * the session so not to leave behind a mess that requires "gmt clear sessions".
+	 */
+
+	bool die;
+	char dir[PATH_MAX] = {""};
+	struct GMTAPI_CTRL *API = NULL;
+
+	if (global_API == NULL) return;	/* No session so nothing to clean up */
+	API = gmt_get_api_ptr (global_API);	/* COnvert void pointer to GMTAPI_CTRL pointer */
+	if (API->session_dir == NULL || API->session_name == NULL) return;	/* Cannot check */
+	snprintf (dir, PATH_MAX, "%s/gmt_session.%s", API->session_dir, API->session_name);
+	GMT_Report (API, GMT_MSG_DEBUG, "Remove session directory %s before exiting due to Ctrl-C\n", dir);
+	if (!access (dir, F_OK)) {	/* Session directory exist, try to remove it */
+		if (gmt_remove_dir (API, dir, false))
+			GMT_Report (API, GMT_MSG_WARNING, "Unable to remove session directory %s [permissions?]\n", dir);
+	}
+	die = !API->external;	/* Only call exit from the CLI */
+	GMT_Destroy_Session (API);	/* Try to get out cleanly */
+	if (die) exit (0);
+}
+
+/*! . */
 int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text) {
 	/* Manage the GMT workflow.  Mode can take the following values:
 	 *   GMT_BEGIN_WORKFLOW: Start a new GMT workflow and initialize a work flow directory.
@@ -19203,6 +19233,7 @@ int gmt_manage_workflow (struct GMTAPI_CTRL *API, unsigned int mode, char *text)
 			API->GMT->current.setting.history_orig = API->GMT->current.setting.history;	/* Temporarily turn off history so nothing is copied into the workflow dir */
 			API->GMT->current.setting.history = GMT_HISTORY_OFF;	/* Turn off so that no history is copied into the workflow directory */
 			GMT_Report (API, GMT_MSG_DEBUG, "%s Workflow.  Session ID = %s. Directory %s %s.\n", smode[mode], API->session_name, API->gwf_dir, fstatus[2]);
+			global_API = API;	/* Make a pointer just for the no-argument gmtlib_terminate_session */
 			break;
 		case GMT_USE_WORKFLOW:
 			/* We always get here except when gmt begin | end are called. */

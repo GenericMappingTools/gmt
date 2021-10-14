@@ -235,7 +235,6 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int n;
 	bool q_active = false;
 	unsigned int n_errors = 0, n_files[2] = {0, 0}, n_categorical = 0;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL, *keys = NULL;
@@ -313,12 +312,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 			case 'G':	/* truncate incoming CPT */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
-				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += gmt_M_check_condition (GMT, n < 2, "Option -G: Must specify z_low/z_high\n");
-				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
-				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
-				                                   "Option -G: Both of zlo/zhi cannot be NaN\n");
+				n_errors += gmt_get_limits (GMT, 'G', opt->arg, &Ctrl->G.z_low, &Ctrl->G.z_high);
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
@@ -676,10 +670,12 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
+		bool got_key_file= (Ctrl->F.key && !gmt_access (GMT, Ctrl->F.key, R_OK));	/* Want categorical labels read from file */
+		unsigned int ns = 0;
 		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
-		if (Ctrl->F.label || Ctrl->F.key) {	/* Want categorical labels appended to each CPT record */
-			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+		if (Ctrl->F.label || (Ctrl->F.key && !got_key_file)) {	/* Want auto-categorical labels appended to each CPT record */
+			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
 				if (label[k]) Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
 			}
@@ -687,17 +683,24 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->F.key) {	/* Want categorical labels */
 			char **keys = NULL;
-			if (!gmt_access (GMT, Ctrl->F.key, R_OK)) {	/* Got a file with category keys */
-				unsigned int ns = gmt_read_list (GMT, Ctrl->F.key, &keys);
+			if (got_key_file) {	/* Got a file with category keys */
+				ns = gmt_read_list (GMT, Ctrl->F.key, &keys);
 				if (ns < Pout->n_colors) {
-					GMT_Report (API, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but %d were expected\n", Ctrl->F.key, ns, Pout->n_colors);
+					GMT_Report (API, GMT_MSG_ERROR, "The categorical keys file %s had %d entries but CPT has %d categories\n", Ctrl->F.key, ns, Pout->n_colors);
+					Return (GMT_RUNTIME_ERROR);
 				}
+				else if (ns > Pout->n_colors)
+					GMT_Report (API, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but only %d are needed - skipping the extra keys\n", Ctrl->F.key, ns, Pout->n_colors);
 			}
 			else	/* Got comma-separated keys */
-				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].key) gmt_M_str_free (Pout->data[k].key);
-				if (keys[k]) Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+				if (k < ns && keys[k]) {
+					Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+					if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+					Pout->data[k].label = strdup (keys[k]);
+				}
 			}
 			gmt_M_free (GMT, keys);	/* But the master array can go */
 			Pout->categorical = GMT_CPT_CATEGORICAL_KEY;

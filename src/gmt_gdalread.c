@@ -334,7 +334,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	hDataset = gdal_open (GMT, gdal_filename);
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open %s.\n", gdal_filename);
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return (-1);
 	}
 
@@ -416,7 +416,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -projwin option was used, but the geotransform is rotated."
 			                                         " This configuration is not supported.\n");
 			GDALClose(hDataset);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
 			return(-1);
 		}
@@ -722,7 +722,7 @@ int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s reads with GDAL driver %s\n",
 	            HH->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	header->type = GMT_GRID_IS_GD;
 
 	return GMT_NOERROR;
@@ -758,7 +758,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	int	   *whichBands = NULL;
 	int64_t *rowVec = NULL, *colVec = NULL;
 	int64_t  off, i_x_nXYSize, startColPos = 0, indent = 0, col_indent = 0, nXSize_withPad = 0, nYSize_withPad;
-	int64_t  n_alloc, n, m, nn, mm, ij;
+	int64_t  n_alloc, n, m, nn, mm, ij, layer_size, layer_offset = 0;
 	unsigned char *tmp = NULL;
 	double  adfMinMax[2];
 	double	adfGeoTransform[6];
@@ -958,7 +958,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			            "gmt_gdalread: The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose(hDataset);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
 			return (-1);
 		}
@@ -984,7 +984,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (anSrcWin[1] < 0 || (anSrcWin[1] + anSrcWin[3]) > YDim) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the y-direction.\n",
 				XDim, YDim);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
 			return (-1);
 		}
@@ -1008,7 +1008,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (xOrigin[0] < 0 || (xOrigin[0] + anSrcWin[2]) > XDim) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the x-direction.\n",
 					XDim, YDim);
-				GDALDestroyDriverManager();
+				gmtlib_GDALDestroyDriverManager(GMT->parent);
 				gmt_M_free (GMT, whichBands);
 				return (-1);
 			}
@@ -1041,7 +1041,8 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (nReqBands) nBands = MIN(nBands,nReqBands);	/* If a band selection was made */
 
 	/* Determine allocation size for the subset (actual allocation depends on whether a pointer is passed in or not) */
-	n_alloc = ((size_t)nBands) * ((size_t)(nBufXSize[0] + nBufXSize[1] + MAX(pad_w[0],pad_w[1])) + MAX(pad_e[0],pad_e[1])) * ((size_t)nBufYSize + pad_s + pad_n);
+	layer_size = ((size_t)(nBufXSize[0] + nBufXSize[1] + MAX(pad_w[0],pad_w[1])) + MAX(pad_e[0],pad_e[1])) * ((size_t)nBufYSize + pad_s + pad_n);
+	n_alloc = ((size_t)nBands) * layer_size;
 
 	switch (GDALGetRasterDataType(hBand)) {
 		case GDT_Byte:
@@ -1131,7 +1132,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (!(just_copy || copy_flipud)) {	/* Need temp memory to hold return from GDAL */
 			if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize[piece], nPixelSize)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: failure to allocate enough memory\n");
-				GDALDestroyDriverManager();
+				gmtlib_GDALDestroyDriverManager(GMT->parent);
 				gmt_M_free (GMT, whichBands);
 				return(-1);
 			}
@@ -1145,7 +1146,6 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		rowVec = gmt_M_memory(GMT, NULL, (nRowsPerBlock * nRGBA) * nBlocks, size_t);
 		for (m = 0; m < nY; m++) rowVec[m] = m * nX[piece];	/* Steps in pixels as we go down rows */
 		colVec = gmt_M_memory(GMT, NULL, (nX[piece]+pad_w[piece]+pad_e[piece]) * nRGBA, size_t);	/* For now this will be used only to select BIP ordering */
-
 		for (i = 0; i < nBands; i++) {
 			if (!nReqBands)		/* No band selection, read them sequentially */
 				hBand = GDALGetRasterBand(hDataset, i+1);
@@ -1289,7 +1289,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 							/* PW: Special case of jp2 tile with possible NaNs that are not recognized without the .aux.xml file */
 							float f_NaN = GMT->session.f_NaN;	/* Shorthand */
 							for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-								nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+								nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 								for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 									if (prhs->f_ptr.active) {
 										int16_t tmpI16;
@@ -1302,7 +1302,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 						}
 						else {	/* All other short int cases */
 							for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-								nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+								nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 								for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 									if (prhs->f_ptr.active) {
 										int16_t tmpI16;
@@ -1317,7 +1317,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_UInt16:
 						if (!prhs->f_ptr.active) Ctrl->UInt16.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 								if (prhs->f_ptr.active) {
 									uint16_t tmpUI16;
@@ -1331,7 +1331,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_Int32:
 						if (!prhs->f_ptr.active) Ctrl->Int32.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 								if (prhs->f_ptr.active) {
 									int32_t tmpI32;
@@ -1345,7 +1345,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_UInt32:
 						if (!prhs->f_ptr.active) Ctrl->UInt32.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = fliplr ? nXSize[piece]-1 : 0; fliplr ? n >= 0 : n < nXSize[piece]; fliplr ? n-- : n++)
 								if (prhs->f_ptr.active) {
 									int32_t tmpUI32;
@@ -1359,7 +1359,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_Float32:
 						Ctrl->Float.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = 0; n < nXSize[piece]; n++) {
 								memcpy (&Ctrl->Float.data[nn], &tmp[(rowVec[mm]+n) * sizeof(float)], sizeof(float));
 								nn += incStep;
@@ -1369,7 +1369,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					case GDT_Float64:	/* For now we don't care about doubles */
 						Ctrl->Float.active = true;
 						for (m = startRow, mm = 0; m < endRow; m++, mm++) {
-							nn = (pad_w[piece]+m)*nXSize_withPad + startColPos;
+							nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
 							for (n = 0; n < nXSize[piece]; n++) {
 								double tmpF64;
 								memcpy (&tmpF64, &tmp[(rowVec[mm]+n) * sizeof(double)], sizeof(double));
@@ -1389,6 +1389,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			gmt_M_str_free (tmp);
 		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		indent = pad_w[piece] + nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
+		layer_offset += layer_size;	/* As of now, this is never used after increment for float images */
 	}
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
 	if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
@@ -1409,7 +1410,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0]+nXSize[1], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer);
 
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 
 	/* Return registration based on data type of the actually read first band.
 	   We do this at the end because 'populate_metadata' scans all bands in file

@@ -242,6 +242,10 @@ using about 25% of the largest eigenvalues, try::
 
     gmt gpsgridder gps.txt -R-125/-114/31/41 -I2m -fg -W -r -Cn25% -Ggps_strain_%s.nc -V
 
+Deprecations
+------------
+
+- 6.3.0: Use **+n** instead of negative value for **-C** to set dry-run. `#5725 <https://github.com/GenericMappingTools/gmt/pull/5725/>`_
 
 References
 ----------

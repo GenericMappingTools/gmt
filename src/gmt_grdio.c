@@ -2334,7 +2334,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	return (2);
 }
 
-int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header) {
+int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header, unsigned int verbose_level) {
 	/* Used to ensure that sloppy w,e,s,n values are rounded to the gridlines or pixels in the referenced grid.
 	 * Upon entry, the boundaries w,e,s,n are given as a rough approximation of the actual subset needed.
 	 * The routine will limit the boundaries to the grids region and round w,e,s,n to the nearest gridline or
@@ -2399,13 +2399,13 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			was = wesn[XLO];
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			GMT_Report (GMT->parent, verbose_level,
 			            "(w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			snprintf (format, GMT_LEN256, "w reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			wesn[XLO] = val - header->inc[GMT_X];
 			if (wesn[XLO] < header->wesn[XLO]) val += header->inc[GMT_X];
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[XLO]);
+			GMT_Report (GMT->parent, verbose_level, format, was, wesn[XLO]);
 		}
 
 		val = header->wesn[XLO] + lrint ((wesn[XHI] - header->wesn[XLO]) * HH->r_inc[GMT_X]) * header->inc[GMT_X];
@@ -2413,13 +2413,13 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			was = wesn[XHI];
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			GMT_Report (GMT->parent, verbose_level,
 			            "(e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			snprintf (format, GMT_LEN256, "e reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			wesn[XHI] = val + header->inc[GMT_X];
 			if (wesn[XHI] > header->wesn[XHI]) val -= header->inc[GMT_X];
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[XHI]);
+			GMT_Report (GMT->parent, verbose_level, format, was, wesn[XHI]);
 		}
 	}
 
@@ -2429,27 +2429,32 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	val = header->wesn[YLO] + lrint ((wesn[YLO] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
 		was = wesn[YLO];
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
+		GMT_Report (GMT->parent, verbose_level, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
 		snprintf (format, GMT_LEN256, "s reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		wesn[YLO] = val - header->inc[GMT_Y];
 		if (wesn[YLO] < header->wesn[YLO]) val += header->inc[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[YLO]);
+		GMT_Report (GMT->parent, verbose_level, format, was, wesn[YLO]);
 	}
 
 	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
 		was = wesn[YHI];
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
+		GMT_Report (GMT->parent, verbose_level, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
 		snprintf (format, GMT_LEN256, "n reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		wesn[YHI] = val + header->inc[GMT_Y];
 		if (wesn[YHI] > header->wesn[YHI]) val -= header->inc[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[YHI]);
+		GMT_Report (GMT->parent, verbose_level, format, was, wesn[YHI]);
 	}
 	return (GMT_NOERROR);
+}
+
+int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header) {
+	/* Most places we wish to warn if w/e/s/n is sloppy */
+	return gmtlib_adjust_loose_wesn (GMT, wesn, header, GMT_MSG_WARNING);
 }
 
 void gmt_scale_and_offset_f (struct GMT_CTRL *GMT, gmt_grdfloat *data, size_t length, double scale, double offset) {
@@ -3434,13 +3439,19 @@ int gmt_raster_type (struct GMT_CTRL *GMT, char *file, bool extra) {
 			break;
 	}
 
-	if (extra && code == GMT_IS_GRID && (data[0] == 'I' || data[0] == 'M')) {	/* Need to check more to determine if TIFF is grid or image */
+	if (extra && code != GMT_IS_IMAGE && (data[0] == 'I' || data[0] == 'M')) {	/* Need to check more to determine if TIFF is grid or image */
 		/* See if input could be an image of a kind that could also be a grid and we don't yet know what it is.  Pass GMT_GRID_IS_IMAGE mode */
-		struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 		struct GMT_IMAGE *I = NULL;
 		if ((I = GMT_Read_Data (GMT->parent, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY | GMT_GRID_IS_IMAGE, NULL, file, NULL)) != NULL) {
-			HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
-			if (I->header->n_bands > 1 || (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)) code = GMT_IS_IMAGE;
+			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);	/* Get pointer to hidden structure */
+			if (HH->pocket && strchr (HH->pocket, ',') == NULL)	/* Got a single band request which we return as a grid */
+				code = GMT_IS_GRID;
+			else if (HH->orig_datatype == GMT_UCHAR || HH->orig_datatype == GMT_CHAR)	/* Got a gray or RGB image with or without transparency */
+				code = GMT_IS_IMAGE;
+			else if (I->header->n_bands > 1)	/* Whatever it is we must return multiband as an image */
+				code = GMT_IS_IMAGE;
+			else	/* Here we only have one band so it is a grid */
+				code = GMT_IS_GRID;
 			GMT_Destroy_Data (GMT->parent, &I);
 		}
 	}
@@ -3631,7 +3642,7 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 		gmt_M_free (GMT, from_gdalread);
 		return (GMT_GRDIO_READ_FAILED);
 	}
-	if (must_be_image && from_gdalread->band_field_names != NULL) {
+	if (from_gdalread->band_field_names != NULL) {	/* Know the data type */
 		if (!strcmp(from_gdalread->band_field_names[0].DataType, "Byte"))
 			I->type = GMT_UCHAR;
 		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "Int16"))
@@ -3642,7 +3653,11 @@ int gmtlib_read_image_info (struct GMT_CTRL *GMT, char *file, bool must_be_image
 			I->type = GMT_INT;
 		else if (!strcmp(from_gdalread->band_field_names[0].DataType, "UInt32"))
 			I->type = GMT_UINT;
-		else {
+		else if (!must_be_image && !strcmp(from_gdalread->band_field_names[0].DataType, "Float32"))
+			I->type = GMT_FLOAT;
+		else if (!must_be_image && !strcmp(from_gdalread->band_field_names[0].DataType, "Float64"))
+			I->type = GMT_FLOAT;	/* No doubles for grids or images */
+		else  {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Using this data type (%s) is not implemented\n",
 			            from_gdalread->band_field_names[0].DataType);
 			gmt_M_free (GMT, to_gdalread);
@@ -3722,6 +3737,10 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active[RSET]) {
+		if (gmt_M_360_range (I->header->wesn[XLO], I->header->wesn[XHI])) {	/* Ensure we handle -180/180 and 0/360 right */
+			if (P.wesn[XLO] > I->header->wesn[XHI]) P.wesn[XLO] -= 360.0, P.wesn[XHI] -= 360.0;
+			else if (P.wesn[XHI] < I->header->wesn[XLO]) P.wesn[XLO] += 360.0, P.wesn[XHI] += 360.0;
+		}
 		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", P.wesn[XLO], P.wesn[XHI], P.wesn[YLO], P.wesn[YHI]);
 		to_gdalread->R.region = strR;
 		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
@@ -3743,8 +3762,14 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 
 	/* Tell gmt_gdalread that we already have the memory allocated and send in the *data pointer */
 	if (I->data) {		/* Otherwise (subregion) memory is allocated in gdalread */
-		to_gdalread->c_ptr.active = true;
-		to_gdalread->c_ptr.grd = I->data;
+		if (I->type == GMT_FLOAT || I->type == GMT_DOUBLE) {
+			to_gdalread->f_ptr.active = true;
+			to_gdalread->f_ptr.grd = (gmt_grdfloat *)I->data;
+		}
+		else {
+			to_gdalread->c_ptr.active = true;
+			to_gdalread->c_ptr.grd = I->data;
+		}
 	}
 	if (HH->grdtype > GMT_GRID_GEOGRAPHIC_LESS360) to_gdalread->R.periodic = true;	/* Let gmt_gdalread know we have a periodic image */
 	if (gmt_gdalread (GMT, file, to_gdalread, from_gdalread)) {

@@ -841,7 +841,7 @@ MAP Parameters
     **MAP_POLAR_CAP**
         Controls the appearance of gridlines near the poles for all
         azimuthal projections and a few others in which the geographic poles
-        are plotted as points (Lambert Conic, Oblique Mercator, Hammer, Mollweide,
+        are plotted as points (Lambert Conic, Oblique and Transverse Mercator, UTM, Hammer, Mollweide,
         Sinusoidal and van der Grinten). Specify either **none** (in which case
         there is no special handling) or *pc_lat*/*pc_dlon*. In that case, normal
         gridlines are only drawn between the latitudes -*pc_lat*/+\ *pc_lat*, and

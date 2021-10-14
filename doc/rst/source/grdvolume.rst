@@ -51,16 +51,26 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *cval* or **-C**\ *low/high/delta* or **-Cr**\ *low/high* or **-Cr**\ *cval*
-    find area, volume and mean height (volume/area) inside and above the *cval* contour. Alternatively, search using
-    all contours from *low* to *high* in steps of *delta*. [Default returns area, volume and mean height
-    of the entire grid]. The area is measured in the plane of the contour. The **Cr** form on the other
-    hand computes the volume below the grid surface and above the planes defined by *low* and *high*,
-    or below *cval* and grid's minimum. Note that this is an *outside* volume whilst the other forms
-    compute an *inside* (below the surface) area volume. Use this form to compute for example the volume
-    of water between two contours. **Note**: If no **-C** is given then there is no contour and we return
-    the entire grid area, volume and the mean height; *cval* will be reported as 0 but we are not tracing
-    a zero-contour (which we do if **-C**\ 0 is given).
+**-C**\ [*cval*\|\ *low/high/delta*] or **-C**\ **r**\ [*cval*\|\ *low/high*]
+    By default, report the area, volume, and mean height (where height = volume / area)
+    of the entire grid. While the value in the first column will be 0, this does not
+    mean that a zero-contour was traced (unless **-C**\ 0 is used). Alternatively, use
+    one of the following to report a different statistic:
+
+        * **-C**\ *cval* - Report the area, volume, and mean height above the
+          *cval* contour and below the grid surface.
+
+        * **-C**\ *low/high/delta* - Report the area, volume, and mean height
+          above each contour from *low* to *high* in steps of *delta* and below
+          the grid surface. The area is calculated in the plane of the contour.
+
+        * **-C**\ **r**\ *cval* - Report the area, volume, and mean height
+          below the *cval* contour and above the grid surface. **Note**: This
+          defines an *outside* volume.
+
+        * **-C**\ **r**\ *low/high* - Report the area, volume, and mean height
+          between *low* and *high* and above the grid surface. For example, use
+          this form to compute the volume of water between to contours.
 
 .. _-D:
 

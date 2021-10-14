@@ -40,13 +40,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-V"
 
-#ifdef	__APPLE__
-	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
-#ifndef _Nullable
-#	define _Nullable
-#	endif
-#	endif
-
 #ifdef WIN32	/* Special for Windows */
 #	include <windows.h>
 #	include <process.h>
@@ -356,8 +349,7 @@ GMT_LOCAL int psconvert_parse_new_N_settings (struct GMT_CTRL *GMT, char *arg, s
 	/* Syntax: -N[+f<fade>][+g<fill>][+i][+p<pen>] */
 
 	unsigned int pos = 0, error = 0;
-	int j, k = 0;
-	char p[GMT_LEN128] = {""}, txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, txt_c[GMT_LEN64] = {""}, txt_d[GMT_LEN64] = {""};
+	char p[GMT_LEN128] = {""};
 
 	if (gmt_validate_modifiers (GMT, arg, 'N', "fgip", GMT_MSG_ERROR)) return (1);	/* Bail right away */
 
