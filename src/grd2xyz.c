@@ -327,7 +327,7 @@ GMT_LOCAL void grd2xyz_dump_triangle (FILE *fp, float N[], float P[3][3], bool b
 }
 
 void grd2xyz_out_triangle (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, uint64_t ij, unsigned int kase, bool binary) {
-	/* Output one triangle in STL format using 3 or the 4 corners (we skip corner kase) */
+	/* Prepare one triangle in STL format using 3 or the 4 corners (we skip corner kase) */
 	/* Get the three point coordinates to use */
 	int64_t p, k, c[4] = {0, 1, 1, 0}, r[4] = {0, 0, -1, -1}, o[4] = {0, 1, 1-(int64_t)G->header->mx, -(int64_t)G->header->mx};
 	float P[3][3], N[3], A[3], B[3], L;
@@ -345,55 +345,57 @@ void grd2xyz_out_triangle (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, u
 	N[GMT_Y] = A[GMT_Z] * B[GMT_X] - A[GMT_X] * B[GMT_Z];
 	N[GMT_Z] = A[GMT_X] * B[GMT_Y] - A[GMT_Y] * B[GMT_X];
 	L = d_sqrt (N[GMT_X] * N[GMT_X] + N[GMT_Y] * N[GMT_Y] + N[GMT_Z] * N[GMT_Z]);
-	if (L > 0.0) {	/* OK to normalize */
+	if (L > 0.0) {	/* OK to normalize the normal vector */
 		for (k = 0; k < 3; k++) N[k] /= L;
 	}
 	grd2xyz_dump_triangle (fp,  N, P, binary);
 }
 
 void place_SN_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, unsigned int kase, bool binary) {
+	/* Prepare two triangles along the S or N row */
 	int64_t ij, d_ij;
-	unsigned int cL, cR;
+	unsigned int col_L, col_R;
 	float P[3][3], N[3];
-	/* The two triangles shares the normal vector */
+	/* The two triangles shares the same normal vector in +/- y-direction */
 	N[GMT_X] = N[GMT_Z] = 0.0;	N[GMT_Z] = (row == 0) ? 1.0 : -1.0;	/* Points either north or south */
-	if (row == 0) cL = col+1, cR=col, d_ij = -1; else cL = col, cR = col+1, d_ij = 1;	/* Set left and right column of triangles */
-	ij = gmt_M_ijp (G->header, row, cL);	/* The "left" z index */
+	if (row == 0) col_L = col + 1, col_R = col, d_ij = -1; else col_L = col, col_R = col + 1, d_ij = 1;	/* Set left and right column of triangles */
+	ij = gmt_M_ijp (G->header, row, col_L);	/* The "left" z index */
 	/* BL-BR-TL triangle */
-	P[0][GMT_X] = G->x[cL];	P[0][GMT_Y] = G->y[row];	P[0][GMT_Z] = 0.0;
-	P[1][GMT_X] = G->x[cR];	P[1][GMT_Y] = G->y[row];	P[1][GMT_Z] = 0.0;
-	P[2][GMT_X] = G->x[cR];	P[2][GMT_Y] = G->y[row];	P[2][GMT_Z] = G->data[ij];
+	P[0][GMT_X] = G->x[col_L];	P[0][GMT_Y] = G->y[row];	P[0][GMT_Z] = 0.0;
+	P[1][GMT_X] = G->x[col_R];	P[1][GMT_Y] = G->y[row];	P[1][GMT_Z] = 0.0;
+	P[2][GMT_X] = G->x[col_R];	P[2][GMT_Y] = G->y[row];	P[2][GMT_Z] = G->data[ij];
 	grd2xyz_dump_triangle (fp,  N, P, binary);
 	/* BL-TR-TL triangle */
-	P[0][GMT_X] = G->x[cR];	P[0][GMT_Y] = G->y[row];	P[0][GMT_Z] = 0.0;
-	P[1][GMT_X] = G->x[cR];	P[1][GMT_Y] = G->y[row];	P[1][GMT_Z] = G->data[ij+d_ij];
-	P[2][GMT_X] = G->x[cL];	P[2][GMT_Y] = G->y[row];	P[2][GMT_Z] = G->data[ij];
+	P[0][GMT_X] = G->x[col_R];	P[0][GMT_Y] = G->y[row];	P[0][GMT_Z] = 0.0;
+	P[1][GMT_X] = G->x[col_R];	P[1][GMT_Y] = G->y[row];	P[1][GMT_Z] = G->data[ij+d_ij];
+	P[2][GMT_X] = G->x[col_L];	P[2][GMT_Y] = G->y[row];	P[2][GMT_Z] = G->data[ij];
 	grd2xyz_dump_triangle (fp,  N, P, binary);
 }
 
 void place_WE_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, unsigned int kase, bool binary) {
+	/* Prepare two triangles along the W or E column */
 	int64_t ij, d_ij;
-	unsigned int rL, rR;
+	unsigned int row_L, row_R;
 	float P[3][3], N[3];
-	/* The two triangles shares the normal vector */
+	/* The two triangles shares the same normal vector in +/- x-direction */
 	N[GMT_Y] = N[GMT_Z] = 0.0;	N[GMT_X] = (col == 0) ? -1.0 : 1.0;	/* Points either west or east */
-	if (col == 0) rL = row, rR=row+1, d_ij = G->header->mx; else rL = row+1, rR = row, d_ij = 1-G->header->mx;	/* Set left and right row of triangles */
-	ij = gmt_M_ijp (G->header, rL, col);	/* The "left" z index */
+	if (col == 0) row_L = row, row_R = row + 1, d_ij = G->header->mx; else row_L = row + 1, row_R = row, d_ij = -(int64_t)G->header->mx;	/* Set left and right row of triangles */
+	ij = gmt_M_ijp (G->header, row_L, col);	/* The "left" z index */
 	/* BL-BR-TL triangle */
-	P[0][GMT_Y] = G->y[rL];	P[0][GMT_X] = G->x[col];	P[0][GMT_Z] = 0.0;
-	P[1][GMT_Y] = G->y[rR];	P[1][GMT_X] = G->x[col];	P[1][GMT_Z] = 0.0;
-	P[2][GMT_Y] = G->y[rR];	P[2][GMT_X] = G->x[col];	P[2][GMT_Z] = G->data[ij];
+	P[0][GMT_Y] = G->y[row_L];	P[0][GMT_X] = G->x[col];	P[0][GMT_Z] = 0.0;
+	P[1][GMT_Y] = G->y[row_R];	P[1][GMT_X] = G->x[col];	P[1][GMT_Z] = 0.0;
+	P[2][GMT_Y] = G->y[row_R];	P[2][GMT_X] = G->x[col];	P[2][GMT_Z] = G->data[ij];
 	grd2xyz_dump_triangle (fp,  N, P, binary);
 	/* BL-TR-TL triangle */
-	P[0][GMT_Y] = G->y[rR];	P[0][GMT_X] = G->x[col];	P[0][GMT_Z] = 0.0;
-	P[1][GMT_Y] = G->y[rR];	P[1][GMT_X] = G->x[col];	P[1][GMT_Z] = G->data[ij+d_ij];
-	P[2][GMT_Y] = G->y[rL];	P[2][GMT_X] = G->x[col];	P[2][GMT_Z] = G->data[ij];
+	P[0][GMT_Y] = G->y[row_R];	P[0][GMT_X] = G->x[col];	P[0][GMT_Z] = 0.0;
+	P[1][GMT_Y] = G->y[row_R];	P[1][GMT_X] = G->x[col];	P[1][GMT_Z] = G->data[ij+d_ij];
+	P[2][GMT_Y] = G->y[row_L];	P[2][GMT_X] = G->x[col];	P[2][GMT_Z] = G->data[ij];
 	grd2xyz_dump_triangle (fp,  N, P, binary);
 }
 
 void place_base_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, bool binary) {
 	/* The two base triangles shares the normal vector */
-	float P[3][3], N[3] = {0.0, 0.0, -1.0};	/* Normal points down */
+	float P[3][3], N[3] = {0.0, 0.0, -1.0};	/* Normal points down in negative z-direction */
 	struct GMT_GRID_HEADER *h = G->header;
 	/* NE-SW-NW triangle */
 	P[0][GMT_X] = G->x[h->n_columns-1];	P[1][GMT_X] = P[2][GMT_X] = G->x[0];
