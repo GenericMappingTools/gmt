@@ -636,7 +636,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {
 				GMT_Report (API, GMT_MSG_ERROR, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
-				GMT_Report (API, GMT_MSG_ERROR, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
+				GMT_Report (API, GMT_MSG_ERROR, "(You are possibly mistaking xyz2grd for an interpolator; see 'greenspline|surface|triangulate' man pages)\n");
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, flag);
 				Return (GMT_RUNTIME_ERROR);
 			}
