@@ -9,7 +9,7 @@ gmt begin skipannots ps
   echo "-Bx -By+e" | gmt text -Bx -By+e -Y3.75c -F+cCM+f14p
   echo "-Bx -By+el" | gmt text -Bx -By+el -Y3.75c -F+cCM+f14p
   echo "-Bx -By+eu" | gmt text -Bx -By+eu -Y3.75c -F+cCM+f14p
-  echo "-Bx -By" | gmt text -R0/60/0/30 -Jq0.1c -Bx -By -X10 -F+cCM+f14p
+  echo "-Bx -By" | gmt text -R0/60/0/30 -Jq0.1c -Bx -By -X10c -F+cCM+f14p
   echo "-Bx+e -By+el" | gmt text -Bx+e -By+el -Y-3.75c -F+cCM+f14p
   echo "-Bx+e -By+eu" | gmt text -Bx+e -By+eu -Y-3.75c -F+cCM+f14p
   echo "-Bx+e -By+e" | gmt text -Bx+e -By+e -Y-3.75c -F+cCM+f14p
