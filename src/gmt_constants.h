@@ -341,9 +341,9 @@ enum GMT_time_period {
 #define GMT_PSCONVERT_LIST "ACDEHIMNQS"
 
 /* Valid frame setting modifiers */
-#define GMT_FRAME_LIST "bginotwxyz"
+#define GMT_FRAME_MODIFIERS "bginotwxyz"
 /* Valid axis setting modifiers */
-#define GMT_AXIS_LIST "aefLlpsSu"
+#define GMT_AXIS_MODIFIERS "aefLlpsSu"
 
 /* Settings for usage message indents and break/continue characters */
 
