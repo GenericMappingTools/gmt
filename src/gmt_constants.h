@@ -340,6 +340,11 @@ enum GMT_time_period {
 /* Valid options to psconvert from figure and begin */
 #define GMT_PSCONVERT_LIST "ACDEHIMNQS"
 
+/* Valid frame setting modifiers */
+#define GMT_FRAME_LIST "bginotwxyz"
+/* Valid axis setting modifiers */
+#define GMT_AXIS_LIST "aefLlpsSu"
+
 /* Settings for usage message indents and break/continue characters */
 
 #define GMT_LINE_BREAK	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
