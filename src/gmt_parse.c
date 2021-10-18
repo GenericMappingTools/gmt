@@ -503,7 +503,7 @@ GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_and_dash_options_order (struct G
 				this_priority = 2;
 			n_B++;
 		}
-		else if ((c = gmt_first_modifier (GMT, opt->arg, "aflLpsSu"))) {	/* Option has axis modifier(s) */
+		else if ((c = gmt_first_modifier (GMT, opt->arg, GMT_AXIS_MODIFIERS))) {	/* Option has axis modifier(s) */
 			c[0] = '\0';	/* Temporary chop them off */
 			j = 0;	/* Start of option string, then advance past any leading [p|s][x|y|z] */
 			if (strchr ("ps",  opt->arg[j])) j++;
