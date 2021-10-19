@@ -138,8 +138,8 @@ Pull requests will automatically have tests run by GitHub Actions. Github will s
 pull request. Try to get them all passing (green). If you have any trouble, leave a comment in the PR or
 :ref:`get in touch <devdocs/contributing:Getting Help>`.
 
-Editing the Documentation
--------------------------
+Contributing Documentation
+--------------------------
 
 If you're browsing the documentation and notice a typo or something that could be improved, please consider letting us
 know. You can either :ref:`create an issue <devdocs/contributing:Reporting a bug>` on GitHub, or click the "Edit on GitHub" button
