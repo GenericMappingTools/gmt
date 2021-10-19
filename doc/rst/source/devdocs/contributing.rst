@@ -155,3 +155,20 @@ You may need to know some basic reST syntax before making changes. Please refer 
 Usually you don't need to build the documentation locally for small changes. If you want, you can install Sphinx
 locally, then follow the instructions for `building GMT <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_
 and `building the documentation <https://github.com/GenericMappingTools/gmt/tree/master/MAINTENANCE.md#building-documentation>`_.
+
+Contributing Code
+-----------------
+
+The source code for GMT is locating in the `src/ <https://github.com/GenericMappingTools/gmt/tree/master/src>`_ directory.
+When contributing code, be sure to follow the general guidelines in the
+:ref:`pull request workflow <devdocs/contributing:Pull Request Workflow>` section.
+
+Code Style
+~~~~~~~~~~
+
+When modifying or submitting new source code, make sure that your code follows the GMT code style. Use the other
+functions/files in the `src/ <https://github.com/GenericMappingTools/gmt/tree/master/src>`_ directory as a basis.
+Here are some specific guidelines:
+
+- Use tabs, rather than spaces, for indentation.
+- Try to split lines at ~120 characters.
