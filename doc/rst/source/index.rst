@@ -84,7 +84,7 @@ Quick links
         :maxdepth: 1
         :caption: Development
 
-        Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
+        /devdocs/contributing
         Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
         /devdocs/team
         reStructuredText Cheatsheet </devdocs/rst-cheatsheet>
