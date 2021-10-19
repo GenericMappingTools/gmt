@@ -33,4 +33,3 @@ read it carefully.
 * [Getting Help](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html#getting-help)
 * [Reporting a Bug](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html#reporting-a-bug)
 * [Editing the Documentation](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html#editing-the-documentation)
-* [Contributing Code](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html#contributing-code)
