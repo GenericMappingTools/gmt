@@ -14835,11 +14835,11 @@ GMT_LOCAL double gmtinit_map_diagonal_degree (struct GMT_CTRL *GMT) {
 	return (D);
 }
 
-GMT_LOCAL double gmtinit_map_diagonal_inches (struct GMT_CTRL *GMT) {
+GMT_LOCAL double gmtinit_map_diagonal_inches (struct GMT_CTRL *GMT, double D) {
 	/* Return a diagonal or representative distance in degrees across the map */
 	/* For some global projections the D here may be 180 even though we see a full 360 degrees in longitude.  Hence these checks */
 	double L;
-	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))	/* Global maps */
+	if (doubleAlmostEqual (D, 360.0) || gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))	/* Global maps */
 		L = GMT->current.map.width;
 	else
 		L = hypot (GMT->current.map.height, GMT->current.map.width);	/* Approximate or actual "Diagonal" length of map in inches */
@@ -15462,8 +15462,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 				}
 				dpi = GMT->current.setting.graphics_dpu; if (GMT->current.setting.graphics_dpu_unit == 'c') dpi *= 2.54;	/* Convert dpc to dpi */
-				L = gmtinit_map_diagonal_inches (GMT);	/* Approximate or actual "Diagonal" length of map in inches */
 				D = gmtinit_map_diagonal_degree (GMT);	/* Approximate "Diagonal" or representative great circle distance in degrees */
+				L = gmtinit_map_diagonal_inches (GMT, D);	/* Approximate or actual "Diagonal" length of map in inches */
 				this_n_per_degree = L * dpi / D;	/* Number of equivalent nodes per degree needed */
 				R = gmt_remote_resolutions (API, opt->arg, &n_R);	/* List of available resolutions for this family */
 				for (k = 0; k < n_R; k++) {
