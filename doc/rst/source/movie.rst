@@ -605,7 +605,7 @@ macOS Issues
 ------------
 
 **Note**: The limit on the number of concurrently open files is relatively small by default on macOS and when building
-numerous frames at the same time it is not unusual to get failures in **movie* jobs with the message "Too many open files". 
+numerous frames at the same time it is not unusual to get failures in **movie** jobs with the message "Too many open files". 
 We refer you to this helpful
 `article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
 for various solutions. 
