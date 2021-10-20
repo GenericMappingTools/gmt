@@ -1482,8 +1482,9 @@ GMT_LOCAL bool gmtremote_is_earth_dem (struct GMT_DATA_INFO *I) {
 char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_data, unsigned int *n_tiles, bool *need_filler) {
 	/* Return the full list of tiles for this tiled dataset. If need_filler is not NULL we return
 	 * true if some of the tiles inside the wesn do not exist based on the coverage map. */
+	bool partial_tile = false;
 	char **list = NULL, YS, XS, file[GMT_LEN64] = {""}, tag[GMT_LEN64] = {""};
-	int x, lon, lat, iw, ie, is, in,  t_size;
+	int x, lon, clat, iw, ie, is, in, t_size;
 	uint64_t node, row, col;
 	unsigned int n_alloc = GMT_CHUNK, n = 0, n_missing = 0;
 	double wesn[4];
@@ -1525,20 +1526,24 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 	in = (int)( -90 + ceil  ((wesn[YHI] +  90) / I->tile_size) * I->tile_size);
 	t_size = rint (I->tile_size);
 
-	for (lat = is; lat < in; lat += t_size) {	/* Loop over the rows of tiles */
-		if (Coverage && (lat < Coverage->header->wesn[YLO] || lat > Coverage->header->wesn[YHI])) continue;	/* Outside Coverage band */
-		YS = (lat < 0) ? 'S' : 'N';
+	for (clat = is; clat < in; clat += t_size) {	/* Loop over the rows of tiles */
+		if (Coverage && (clat < Coverage->header->wesn[YLO] || clat >= Coverage->header->wesn[YHI])) continue;	/* Outside Coverage band */
+		YS = (clat < 0) ? 'S' : 'N';
 		for (x = iw; x < ie; x += t_size) {	/* Loop over the columns of tiles */
 			lon = (x < 0) ? x + 360 : x;	/* Get longitude in 0-360 range */
-			if (Coverage) {
-				if (lon < Coverage->header->wesn[XLO] || lon > Coverage->header->wesn[XHI]) continue;	/* Outside Coverage band */
-				row  = gmt_M_grd_y_to_row (GMT, (double)lat, Coverage->header);
-				col  = gmt_M_grd_x_to_col (GMT, (double)lon, Coverage->header);
+			if (Coverage) {	/* We will assume nothing about the west/east bounds of the coverage grid */
+				int clon = lon - 360;	/* Ensure we are far west */
+				while (clon < Coverage->header->wesn[XLO]) clon += 360;	/* Wind until past west */
+				if (clon > Coverage->header->wesn[XHI]) continue;	/* Outside Coverage band */
+				row  = gmt_M_grd_y_to_row (GMT, (double)clat, Coverage->header);
+				col  = gmt_M_grd_x_to_col (GMT, (double)clon, Coverage->header);
 				node = gmt_M_ijp (Coverage->header, row, col);
-				if (Coverage->data[node] == 0) {	/* No such tile exists */
-					n_missing++;
-					continue;
+				if (Coverage->data[node] == GMT_NO_TILE) {	/* No such tile exists */
+					n_missing++;	/* Add up missing tiles */
+					continue;		/* Go to next tile */
 				}
+				else if (Coverage->data[node] == GMT_PARTIAL_TILE)	/* Not missing, but still need ocean filler for partial tile */
+					partial_tile = true;	/* Note: We also get here with GMT < 6.3 so that @earth_relief_15s is always considered */
 			}
 			lon = (x >= 180) ? x - 360 : x;	/* Need longitudes 0-179 for E and 1-180 for W */
 			XS = (lon < 0) ? 'W' : 'E';
@@ -1551,7 +1556,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 					return NULL;
 				}
 			}
-			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(lat), XS, abs(lon), tag, GMT_TILE_EXTENSION_LOCAL);
+			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(clat), XS, abs(lon), tag, GMT_TILE_EXTENSION_LOCAL);
 			list[n++] = strdup (file);
 		}
 	}
@@ -1571,7 +1576,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 		API->error = GMT_RUNTIME_ERROR;
 		return NULL;
 	}
-	if (need_filler) *need_filler = (n_missing > 0);	/* Incomplete coverage of this data set within wesn */
+	if (need_filler) *need_filler = (partial_tile || n_missing > 0);	/* Incomplete coverage of this data set within wesn */
 
 	return (list);
 }
@@ -1613,7 +1618,6 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 		fprintf (fp, "%s\n", tile[k]);
 
 	gmt_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
-
 	if (k_filler != GMT_NOTSET) {	/* Want the secondary tiles */
 		if (need_filler && (tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles, NULL))) {
 			/* Write secondary tiles to list file */
