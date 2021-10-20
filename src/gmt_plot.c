@@ -1370,7 +1370,8 @@ GMT_LOCAL void gmtplot_rect_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 GMT_LOCAL void gmtplot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double w, double e, double s, double n) {
 	bool dual = false;
 	unsigned int cap = PSL->internal.line_cap;
-	double thin_pen, fat_pen;
+	double thin_pen, fat_pen, lon_range = e - w;
+	double x0, x1, x2, y0, y1, y2, start, stop;
 
 	if (GMT->common.R.oblique) { /* Draw rectangular boundary and return */
 		gmtplot_rect_map_boundary (GMT, PSL, 0.0, 0.0, GMT->current.proj.rect[XHI], GMT->current.proj.rect[YHI]);
@@ -1420,6 +1421,31 @@ GMT_LOCAL void gmtplot_polar_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL
 	gmtplot_fancy_frame_straight_outline (GMT, PSL, w, n, w, s, W_SIDE, dual);
 
 	gmtplot_rounded_framecorners (GMT, PSL, w, e, s, n, dual);
+
+	if (GMT->current.proj.north_pole && gmt_M_is_Npole (n) && !(doubleAlmostEqual (lon_range, 180.0) || doubleAlmostEqual (lon_range, 360.0))) {
+		/* Connect the outer straight borders with an arc using map frame pen */
+		double radius = fat_pen * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Get radius in inches */
+		PSL_setlinewidth (PSL, thin_pen);
+		gmt_geo_to_xy (GMT, w, n, &x0, &y0);
+		gmt_geo_to_xy (GMT, w, s, &x1, &y1);
+		stop = d_atan2d (y1 - y0, x1 - x0) - 90;
+		gmt_geo_to_xy (GMT, e, s, &x2, &y2);
+		start = d_atan2d (y2 - y0, x2 - x0) + 90;
+		if (stop < start) stop += 360.0;
+		if (stop > start) PSL_plotarc (PSL, x0, y0, radius, start, stop, PSL_MOVE|PSL_STROKE);
+	}
+	else if (!GMT->current.proj.north_pole && gmt_M_is_Spole (s) && !(doubleAlmostEqual (lon_range, 180.0) || doubleAlmostEqual (lon_range, 360.0))) {
+		/* Connect the outer straight borders with an arc using map frame pen */
+		double radius = fat_pen * GMT->session.u2u[GMT_PT][GMT_INCH];	/* Get radius in inches */
+		PSL_setlinewidth (PSL, thin_pen);
+		gmt_geo_to_xy (GMT, e, s, &x0, &y0);
+		gmt_geo_to_xy (GMT, e, n, &x1, &y1);
+		stop = d_atan2d (y1 - y0, x1 - x0) - 90;
+		gmt_geo_to_xy (GMT, w, n, &x2, &y2);
+		start = d_atan2d (y2 - y0, x2 - x0) + 90;
+		if (stop < start) stop += 360.0;
+		if (stop > start) PSL_plotarc (PSL, x0, y0, radius, start, stop, PSL_MOVE|PSL_STROKE);
+	}
 }
 
 /*	CONIC PROJECTION MAP BOUNDARY	*/
@@ -1745,6 +1771,14 @@ GMT_LOCAL double gmtplot_curved_boundary_offset (struct GMT_CTRL *GMT, double lo
 	return boost;
 }
 
+GMT_LOCAL bool gmtplot_skip_end_annotation (struct GMT_CTRL *GMT, unsigned int axis, double x, double length) {
+	/* Returns true if this is an annotation at the end of the axis and we are either in GMT_IS_INSIDE mode or user added modifer +e[l|u] to the axis annotation settings */
+	if (GMT->current.map.frame.axis[axis].skip[0] && fabs (x) < GMT_CONV4_LIMIT) return true;   /* Skip annotation if it falls ~exactly at the start of the axis */
+	if (GMT->current.map.frame.axis[axis].skip[1] && fabs (x - length) < GMT_CONV4_LIMIT) return true;   /* Skip annotation if t falls ~exactly at the end of the axis */
+	if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (x) < GMT_CONV4_LIMIT || fabs (x - length) < GMT_CONV4_LIMIT)) return true;   /* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+	return false;	/* No, let's plot it */
+}
+
 GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_XINGS *xings, char *label, unsigned int type, bool annot, unsigned int level, unsigned int form) {
 	/* type = 0 for lon and 1 for lat */
 
@@ -1781,7 +1815,10 @@ GMT_LOCAL void gmtplot_map_symbol (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, s
 		}
 
 		if (annot) {
+			double length = (type == GMT_X) ? GMT->current.map.width : GMT->current.map.height;
+			double pos = (type == GMT_X) ? xx[i] : yy[i];
 			if (gmtplot_annot_too_crowded (GMT, xx[i], yy[i], sides[i])) continue;
+			if (gmtplot_skip_end_annotation (GMT, type, pos, length)) continue;	/* Don't want annotations exactly at one or both ends of the axis */
 			if (GMT->current.proj.three_D && GMT->current.proj.z_project.cos_az > 0) {	/* Rotate annotation when seen "from North" */
 				if (!flip) justify = gmt_flip_justify (GMT, justify);
 				text_angle += 180.0;
@@ -5544,7 +5581,6 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 			for (i = 0; i < nx; i++) {
 				x = (*xyz_fwd) (GMT, knots[i]);	/* Convert to inches on the page */
 				if (x < (- GMT_CONV4_LIMIT) || x > (length + GMT_CONV4_LIMIT)) continue;	/* Outside the range */
-				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (x) < GMT_CONV4_LIMIT || fabs (x - length) < GMT_CONV4_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
 				if (gmtplot_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Minor tick marks skipped when coinciding with major */
 				if (horizontal)
 					PSL_plotsegment (PSL, x, 0.0, x, ((neg) ? -1.0 : 1.0) * GMT->current.setting.map_tick_length[k]);
@@ -5571,7 +5607,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				if (gmtlib_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
 				x = (*xyz_fwd) (GMT, knots[i]);	/* Convert to inches on the page */
-				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (x) < GMT_CONV4_LIMIT || fabs (x - length) < GMT_CONV4_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (gmtplot_skip_end_annotation (GMT, axis, x, length)) continue;	/* Don't want annotations exactly at one or both ends of the axis */
 				if (!is_interval && gmtplot_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				if (label_c && label_c[i] && label_c[i][0]) {
 					strncpy (string, label_c[i], GMT_LEN256-1);
@@ -5610,7 +5646,7 @@ void gmt_xy_axis (struct GMT_CTRL *GMT, double x0, double y0, double length, dou
 				if (gmtlib_annot_pos (GMT, val0, val1, T, &knots[i], &t_use)) continue;			/* Outside range */
 				if (axis == GMT_Z && fabs (knots[i] - GMT->current.proj.z_level) < GMT_CONV8_LIMIT) continue;	/* Skip z annotation coinciding with z-level plane */
 				x = (*xyz_fwd) (GMT, t_use);	/* Convert to inches on the page */
-				if (GMT->current.setting.map_frame_type & GMT_IS_INSIDE && (fabs (x) < GMT_CONV4_LIMIT || fabs (x - length) < GMT_CONV4_LIMIT)) continue;	/* Skip annotation on edges when MAP_FRAME_TYPE = inside */
+				if (gmtplot_skip_end_annotation (GMT, axis, x, length)) continue;	/* Don't want annotations exactly at one or both ends of the axis */
 				if (!is_interval && gmtplot_skip_second_annot (k, knots[i], knots_p, np, primary)) continue;	/* Secondary annotation skipped when coinciding with primary annotation */
 				/* Move to new anchor point */
 				PSL_command (PSL, "%d PSL_A%d_y MM\n", PSL_IZ (PSL, x), annot_pos);
@@ -8716,9 +8752,25 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 		}
 	}
 
-	/* Initialize the plot header and settings */
+    if (GMT->common.P.active) GMT->current.setting.ps_orientation = PSL_PORTRAIT;
 
-	if (GMT->common.P.active) GMT->current.setting.ps_orientation = true;
+    if (GMT->current.setting.run_mode == GMT_CLASSIC && !O_active) {  /* Warn if plot dimensions are larger than current paper size */
+		unsigned int X = (GMT->current.setting.ps_orientation == PSL_LANDSCAPE);
+		unsigned int Y = (GMT->current.setting.ps_orientation == PSL_PORTRAIT);
+		if ((((GMT->current.map.width + GMT->current.setting.map_origin[GMT_X]) * 72) > GMT->current.setting.ps_def_page_size[X]) ||
+			(((GMT->current.map.height + GMT->current.setting.map_origin[GMT_Y]) * 72) > GMT->current.setting.ps_def_page_size[Y])) {
+			double OX = GMT->current.setting.map_origin[GMT_X] * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			double OY = GMT->current.setting.map_origin[GMT_Y] * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			double W = GMT->current.map.width * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			double H = GMT->current.map.height * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+			double PW = GMT->current.setting.ps_def_page_size[X] * GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit];
+			double PH = GMT->current.setting.ps_def_page_size[Y] * GMT->session.u2u[GMT_PT][GMT->current.setting.proj_length_unit];
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Your plot (WxH = %.2lf x %.2lf %s) placed at (%.2lf, %.2lf %s) may exceed your PS_MEDIA (WxH = %.2lf x %.2lf %s)\n",
+				W, H, GMT->session.unit_name[GMT->current.setting.proj_length_unit], OX, OY, GMT->session.unit_name[GMT->current.setting.proj_length_unit], PW, PH, GMT->session.unit_name[GMT->current.setting.proj_length_unit]);
+		}
+	}
+
+	/* Initialize the plot header and settings */
 
 	/* Default for overlay plots is no shifting */
 

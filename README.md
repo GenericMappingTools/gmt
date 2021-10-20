@@ -23,8 +23,8 @@ support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/)
 coastlines, rivers, and political boundaries and optionally
 [DCW](http://www.soest.hawaii.edu/pwessel/dcw) country polygons.
 
-GMT is developed and maintained by [the GMT Team](AUTHORS.md),
-with help from a global set of [contributors](AUTHORS.md)
+GMT is developed and maintained by [the GMT Team](https://docs.generic-mapping-tools.org/dev/devdocs/team.html),
+with help from a global set of [contributors](THANKS.md)
 and support by the [National Science Foundation](http://www.nsf.gov/).
 
 ## The GMT World Domination

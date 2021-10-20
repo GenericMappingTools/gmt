@@ -35,7 +35,7 @@
 
 /* Control structure for psxy */
 
-#define PSXY_E_OPT "-E[x|y|X|Y][+a][+c[l|f]][+n][+p<pen>][+w<width>]"
+#define PSXY_E_OPT "-E[x|y|X|Y][+a|A][+c[l|f]][+n][+p<pen>][+w<width>]"
 
 struct PSXY_CTRL {
 	bool no_RJ_needed;	/* Special case of -T and no -B when -R -J is not required */
@@ -54,6 +54,7 @@ struct PSXY_CTRL {
 	} D;
 	struct PSXY_E {	/* -E[x[+]|X][y[+]|Y][cap][/[+|-]<pen>] */
 		bool active;
+		bool LU;	/* True if asymmetrical deviations are instead lower/upper values */
 		unsigned int xbar, ybar;	/* 0 = not used, 1 = error bar, 2 = asymmetrical error bar, 3 = box-whisker, 4 = notched box-whisker */
 		unsigned int mode;		/* 0 = normal, 1 = -C applies to error pen color, 2 = -C applies to symbol fill & error pen color */
 		double size;
@@ -323,7 +324,19 @@ GMT_LOCAL void psxy_decorate_debug (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, 
 	}
 }
 
-EXTERN_MSC int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path);
+GMT_LOCAL int psxy_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path) {
+	/* Replace an EPS file with a simple 1-liner custom file using an inline EPS command P instead.
+	 * path is updated to point to the replacement temp file */
+
+	FILE *fp = NULL;
+
+	if ((fp = gmt_create_tempfile (GMT->parent, "gmt_epssymbol", ".def", path)) == NULL)	/* Not good... */
+		return GMT_RUNTIME_ERROR;
+
+	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
+	fclose (fp);
+	return GMT_NOERROR;
+}
 
 GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D, struct GMT_DECORATE *G, bool decorate_custom) {
 	/* Accept the dataset D with records of {x, y, size, angle, symbol} and plot rotated symbols at those locations.
@@ -348,7 +361,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 			/* Update data file trailing text with new symbol name */
 			uint64_t seg, row;
 			struct GMT_DATASEGMENT *S = NULL;
-			if (gmtlib_convert_eps_to_def (GMT, &symbol_code[1], path))
+			if (psxy_convert_eps_to_def (GMT, &symbol_code[1], path))
 				return GMT_RUNTIME_ERROR;
 			sprintf (name, "k%s", path);	name[strlen(name)-4] = '\0';	/* Chop off extension in temp symbol file name */
 			for (seg = 0; seg < D->n_segments; seg++) {
@@ -424,7 +437,7 @@ GMT_LOCAL int psxy_plot_decorations (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		gmt_set_tableheader (GMT, GMT_OUT, was);	/* Restore what we had */
 	}
 	else {
-		if (!decorate_custom && gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
+		if (gmt_remove_file (GMT, tmp_file))	/* Just remove the symbol def file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failed to delete file: %s\n", tmp_file);
 	}
 	GMT->common.l.active = l_active;	/* Reset in case it was set */
@@ -521,6 +534,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"requiring four extra columns with the 0%%, 25%%, 75%%, and 100%% quantiles. "
 		"The x or y coordinate is expected to represent the 50%% quantile. Optional modifiers:");
 	GMT_Usage (API, 3, "+a Select asymmetrical errors (reads two columns) [symmetrical, reads one column].");
+	GMT_Usage (API, 3, "+A As +a, but reads lower and upper bounds instead.");
 	GMT_Usage (API, 3, "+p Set the error bar <pen> attributes.");
 	GMT_Usage (API, 3, "+n Select notched box-and whisker (notch width represents uncertainty "
 		"in the median); a 5th extra column with the sample size is required via the input.");
@@ -805,8 +819,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 			case 'E':	/* Get info for error bars and box-whisker bars */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
-				if (gmt_found_modifier (GMT, opt->arg, "acnpw")) {
-					/* New parser for -E[x|y|X|Y][+a][+cl|f][+n][+p<pen>][+w<capwidth>] */
+				if (gmt_found_modifier (GMT, opt->arg, "aAcnpw")) {
+					/* New parser for -E[x|y|X|Y][+a|A][+cl|f][+n][+p<pen>][+w<capwidth>] */
 					char p[GMT_LEN64] = {""};
 					unsigned int pos = 0;
 					j = 0;
@@ -823,9 +837,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSXY_CTRL *Ctrl, struct GMT_OPTIO
 						j++;
 					}
 					if (j == 0) Ctrl->E.xbar = Ctrl->E.ybar = EBAR_NORMAL;	/* Default is both x and y error bars */
-					while (gmt_getmodopt (GMT, 'E', &(opt->arg[j]), "acnpw", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'E', &(opt->arg[j]), "aAcnpw", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'a':	/* Asymmetrical error bars */
+							case 'A':	/* Asymmetrical error bars (lower/upper values)*/
+								Ctrl->E.LU = true;
+								/* Fall through on purpose */
+							case 'a':	/* Asymmetrical error bars (-devL/+dev_U) */
 								if (Ctrl->E.xbar == EBAR_NORMAL) Ctrl->E.xbar = EBAR_ASYMMETRICAL;
 								if (Ctrl->E.ybar == EBAR_NORMAL) Ctrl->E.ybar = EBAR_ASYMMETRICAL;
 								break;
@@ -1643,6 +1660,16 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				PSL_settransparencies (PSL, transp);
 			}
 
+			if (Ctrl->E.LU) {	/* Convert lower/upper values to deviations */
+				if (error_x) {	/* Asymmetrical x-errors */
+					in[xy_errors[GMT_X]]   -= in[GMT_X];
+					in[xy_errors[GMT_X]+1] -= in[GMT_X];
+				}
+				if (error_y) {	/* Asymmetrical y-errors */
+					in[xy_errors[GMT_Y]]   -= in[GMT_Y];
+					in[xy_errors[GMT_Y]+1] -= in[GMT_Y];
+				}
+			}
 			if (E_bar_below) {
 				if (Ctrl->E.mode) gmt_M_rgb_copy (Ctrl->E.pen.rgb, current_fill.rgb);
 				if (Ctrl->E.mode & 1) gmt_M_rgb_copy (current_fill.rgb, GMT->session.no_rgb);
@@ -2728,7 +2755,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 
 	gmt_plane_perspective (GMT, -1, 0.0);
 
-	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via call to psxy */
+	if (S.symbol == GMT_SYMBOL_DECORATED_LINE) {	/* Plot those line decorating symbols via a separate call to psxy */
 		if ((error = psxy_plot_decorations (GMT, Decorate, &S.D, decorate_custom)) != 0)	/* Cannot possibly be a good thing */
 			Return (error);
 		if (GMT_Destroy_Data (API, &Decorate) != GMT_NOERROR) {	/* Might as well delete since no good later */

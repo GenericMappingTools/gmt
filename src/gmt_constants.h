@@ -340,6 +340,11 @@ enum GMT_time_period {
 /* Valid options to psconvert from figure and begin */
 #define GMT_PSCONVERT_LIST "ACDEHIMNQS"
 
+/* Valid frame setting modifiers */
+#define GMT_FRAME_MODIFIERS "bginotwxyz"
+/* Valid axis setting modifiers */
+#define GMT_AXIS_MODIFIERS "aefLlpsSu"
+
 /* Settings for usage message indents and break/continue characters */
 
 #define GMT_LINE_BREAK	"\xe2\x8f\x8e"	/* Glyph for return symbol in UTF-8 */
@@ -352,7 +357,8 @@ enum GMT_enum_tracklayout {
 	GMT_EW_SN = 2,
 	GMT_LEFT_ONLY = 4,
 	GMT_RIGHT_ONLY = 8,
-	GMT_ALTERNATE = 16};
+	GMT_ALTERNATE = 16,
+	GMT_FIXED_AZIM = 32};
 
 /*! Codes for first segment header */
 enum GMT_enum_firstseg {

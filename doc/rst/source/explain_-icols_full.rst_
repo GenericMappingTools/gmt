@@ -3,7 +3,7 @@ The **-i** option
 
 **Syntax**
 
-**-i**\ *cols*\ [**+l**][**+d**\ *divisor*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+**-i**\ *cols*\ [**+l**][**+d**\ *divisor*][**+s**\ *scale*\|\ **d**\|\ **k**][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
     Select specific data columns for primary input, in arbitrary order.
 
 **Description**
@@ -16,7 +16,8 @@ one of the following modifiers to any column or column range to transform the in
 
 - **+l** to take the **log10** of the input values.
 - **+d** to divide the input values by the factor *divisor* [default is 1].
-- **+s** to multiply the input values by the factor *scale* [default is 1].
+- **+s** to multiply the input values by the factor *scale* [default is 1]. Alternatively, give **d** to convert
+  km to degrees or **k** to convert degrees to km using :term:`PROJ_MEAN_RADIUS`.
 - **+o** to add the given *offset* to the input values [default is 0].
 
 To read from a given column until the end of the record, leave off *stop* when specifying the column range. Normally,

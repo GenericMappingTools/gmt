@@ -596,6 +596,11 @@ should be approximately the same length as the video.  Then, simply combine the 
 
 For more information on audio manipulations, see the FFmpeg documentation.
 
+Deprecations
+------------
+
+- 6.3.0: Consolidate -A into -F for a more unified option. `#5613 <https://github.com/GenericMappingTools/gmt/pull/5613>`_
+
 See Also
 --------
 

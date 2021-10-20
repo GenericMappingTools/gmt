@@ -16,7 +16,7 @@ Synopsis
 [ |-A|\ *azim*\ [/*azim2*] ] [ |-D|\ [**a**][**c**][**o**][**n**] ]
 [ |-E|\ [**m**\|\ **s**\|\ **p**]\ *azim/elev*\ [**+a**\ *ambient*][**+d**\ *diffuse*][**+p**\ *specular*][**+s**\ *shine*] ]
 [ |-N|\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*] ]
-[ |-Q|\ **c**\|\ **r**\|\ **R** ]
+[ |-Q|\ **c**\|\ **r**\|\ **R**\ [**+f**\ *file*]]
 [ |SYN_OPT-R| ] [ |-S|\ *slopefile* ]
 [ |SYN_OPT-V| ] [ |SYN_OPT-f| ]
 [ |SYN_OPT-n| ]
@@ -28,8 +28,8 @@ Description
 -----------
 
 **grdgradient** may be used to compute the directional derivative in a
-given direction (**-A**), or to find the direction (**-S**) [and the magnitude
-(**-D**)] of the vector gradient of the data.
+given direction (|-A|), or to find the direction (|-S|) [and the magnitude
+(|-D|)] of the vector gradient of the data.
 
 Estimated values in the first/last row/column of output depend on
 boundary conditions (see **-n**).
@@ -58,9 +58,10 @@ Optional Arguments
     Azimuthal direction for a directional derivative; *azim* is the
     angle in the x,y plane measured in degrees positive clockwise from
     north (the +y direction) toward east (the +x direction). The
-    negative of the directional derivative, -[dz/dx\*sin(*azim*) +
-    dz/dy\*cos(\ *azim*)], is found; negation yields positive values
-    when the slope of z(x,y) is downhill in the *azim* direction, the
+    negative of the directional derivative, 
+    :math:`-(\frac{dz}{dx}\sin(\mbox{azim}) + \frac{dz}{dy}\cos(\mbox{azim}))`
+    , is found; negation yields positive values
+    when the slope of :math:`z(x,y)` is downhill in the *azim* direction, the
     correct sense for shading the illumination of an image (see
     :doc:`grdimage` and :doc:`grdview`) by a light source above the x,y plane
     shining from the *azim* direction. Optionally, supply two azimuths,
@@ -76,14 +77,16 @@ Optional Arguments
 .. _-D:
 
 **-D**\ [**a**][**c**][**o**][**n**]
-    Find the direction of the positive (up-slope) gradient of the data.
-    To instead find the aspect (the down-slope direction), use **-Da**.
-    By default, directions are measured clockwise from north, as *azim* in **-A**
-    above. Append **c** to use conventional Cartesian angles measured
-    counterclockwise from the positive x (east) direction. Append **o**
-    to report orientations (0-180) rather than directions (0-360).
-    Append **n** to add 90 degrees to all angles (e.g., to give
-    local strikes of the surface ).
+    Find the direction of the positive (up-slope) gradient of the data. The
+    following modifiers are supported:
+
+    - **a** - Find the aspect (i.e., the down-slope direction).
+    - **c** - Use the conventional Cartesian angles measured counterclockwise
+      from the positive x (east direction) [Default measures directions
+      clockwise from north, as *azim* in |-A|].
+    - **o** - Report orientations (0-180) rather than directions (0-360).
+    - **n** - Add 90 degrees to all angles (e.g., to give local strikes of the
+      surface).
 
 .. _-E:
 
@@ -106,26 +109,30 @@ Optional Arguments
 .. _-N:
 
 **-N**\ [**e**\|\ **t**][*amp*][**+a**\ *ambient*][**+s**\ *sigma*][**+o**\ *offset*]
-    Normalization. [Default is no normalization.] The actual gradients *g*
-    are offset and scaled to produce normalized gradients *gn* with a
+    Normalization [Default is no normalization.] The actual gradients :math:`g`
+    are offset and scaled to produce normalized gradients :math:`g_n` with a
     maximum output magnitude of *amp*. If *amp* is not given, default
     *amp* = 1. If *offset* is not given, it is set to the average of
-    *g*. **-N** yields *gn* = *amp* \* (*g* - *offset*)/max(abs(\ *g* -
-    *offset*)). **-Ne** normalizes using a cumulative Laplace
-    distribution yielding *gn* = *amp* \* (1.0 -
-    exp(sqrt(2) \* (*g* - *offset*)/ *sigma*)), where
-    *sigma* is estimated using the L1 norm of (*g* - *offset*) if it is
-    not given. **-Nt** normalizes using a cumulative Cauchy distribution
-    yielding *gn* = (2 \* *amp* / PI) \* atan( (*g* - *offset*)/
-    *sigma*) where *sigma* is estimated using the L2 norm of (*g* -
-    *offset*) if it is not given. To use *offset* and/or *sigma* from a
-    previous calculation, leave out the argument to the modifier(s) and
-    see **-Q** for usage.  As a final option, you may add **+a**\ *ambient*
-    to add *ambient* to all nodes after gradient calculations are completed.
+    :math:`g`. The following forms are supported:
+    
+    - **-N** - Normalize using :math:`g_n = \mbox{amp}(\frac{g - \mbox{offset}}{max(|g - \mbox{offset}|)})`
+    - **-Ne** - Normalize using a cumulative Laplace distribution yielding:
+      :math:`g_n = \mbox{amp}(1 - \exp{(\sqrt{2}\frac{g - \mbox{offset}}{\sigma}))}`, where
+      :math:`\sigma` is estimated using the L1 norm of :math:`(g - \mbox{offset})` if it is
+      not given.
+    - **-Nt** - Normalize using a cumulative Cauchy distribution yielding:
+      :math:`g_n = \frac{2(\mbox{amp})}{\pi}(\tan^{-1}(\frac{g - \mbox{offset}}{\sigma}))` where
+      :math:`\sigma` is estimated using the L2 norm of :math:`(g - \mbox{offset})` if it
+      is not given.
+      
+    To use *offset* and/or :math:`\sigma` from a previous calculation,
+    leave out the argument to the modifier(s) and see |-Q| for usage.  As a final
+    option, you may add **+a**\ *ambient* to add *ambient* to all nodes after
+    gradient calculations are completed.
 
 .. _-Q:
 
-**-Qc**\|\ **r**\|\ **R**
+**-Qc**\|\ **r**\|\ **R**\ [**+f**\ *file*]
     Controls how normalization via **-N** is carried out.  When multiple grids
     should be normalized the same way (i.e., with the same *offset* and/or *sigma*),
     we must pass these values via **-N**.  However, this is inconvenient if we
@@ -133,7 +140,9 @@ Optional Arguments
     *offset* and *sigma* to a statistics file; if grid output is not needed
     for this run then do not specify **-G**. For subsequent runs, just use
     **-Qr** to read these values.  Using **-QR** will read then delete the
-    statistics file. See TILES for more information.
+    statistics file. See :ref:`Tiles <grdgradient:Tiles>` for more information.
+    Optionally, append **+f**\ *file* to write/read the statistics to/from the
+    specified *file*.
 
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
@@ -169,21 +178,15 @@ specified unit to meter.  If your grid is geographic, convert distances to meter
 Hints
 -----
 
-If you don't know what **-N** options to use to make an intensity file
-for :doc:`grdimage` or :doc:`grdview`, a good first try is **-Ne**\ 0.6.
-
-Usually 255 shades are more than enough for visualization purposes. You
-can save 75% disk space by appending =nb/a to the output filename
-*outgrid*.
-
-If you want to make several illuminated maps of subregions of a large
-data set, and you need the illumination effects to be consistent across
-all the maps, use the **-N** option and supply the same value of *sigma*
-and *offset* to **grdgradient** for each map. A good guess is *offset* =
-0 and *sigma* found by :doc:`grdinfo` **-L2** or **-L1** applied to an
-unnormalized gradient grd.
-
-If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
+- If you don't know what **-N** options to use to make an intensity file for :doc:`grdimage` or :doc:`grdview`, a good
+  first try is **-Ne**\ 0.6.
+- Usually 255 shades are more than enough for visualization purposes. You can save 75% disk space by appending =nb/a to
+  the output filename *outgrid*.
+- If you want to make several illuminated maps of subregions of a large data set, and you need the illumination effects
+  to be consistent across all the maps, use the **-N** option and supply the same value of *sigma*
+  and *offset* to **grdgradient** for each map. A good guess is *offset* = 0 and *sigma* found by
+  :doc:`grdinfo` **-L2** or **-L1** applied to an unnormalized gradient grd.
+- If you simply need the *x*- or *y*-derivatives of the grid, use :doc:`grdmath`.
 
 Tiles
 -----

@@ -890,7 +890,7 @@ GMT_LOCAL int surface_write_grid (struct GMT_CTRL *GMT, struct SURFACE_INFO *C, 
 
 	strcpy (C->Grid->header->title, "Data gridded with continuous surface splines in tension");
 
-	if (GMT->common.R.active[GSET]) {	/* Pixel registration request. Reset region to the original extent */
+	if (GMT->common.R.registration == GMT_GRID_PIXEL_REG) {	/* Pixel registration request. Reset region to the original extent */
 		gmt_M_memcpy (C->Grid->header->wesn, C->wesn_orig, 4, double);
 		C->Grid->header->registration = GMT->common.R.registration;
 		/* Must reduce both n_columns,n_rows by 1 and make the eastmost column and northernmost row part of the grid pad */
@@ -1941,7 +1941,7 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_ERROR, "This may introduce a jump at either pole which will distort the grid near the poles.\n");
 		GMT_Report (API, GMT_MSG_ERROR, "Consider spherical gridding instead with greenspline or sphinterpolate.\n");
 	}
-	if (GMT->common.R.active[GSET]) {		/* Pixel registration request. Use the trick of offsetting area by x_inc(y_inc) / 2 */
+	if (GMT->common.R.registration == GMT_GRID_PIXEL_REG) {		/* Pixel registration request. Use the trick of offsetting area by x_inc(y_inc) / 2 */
 		/* Note that the grid remains node-registered and only gets tagged as pixel-registered upon writing the final grid to file */
 		wesn[XLO] += GMT->common.R.inc[GMT_X] / 2.0;	wesn[XHI] += GMT->common.R.inc[GMT_X] / 2.0;
 		wesn[YLO] += GMT->common.R.inc[GMT_Y] / 2.0;	wesn[YHI] += GMT->common.R.inc[GMT_Y] / 2.0;
@@ -1966,11 +1966,11 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 		GMT->current.setting.verbose = GMT_MSG_INFORMATION;
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) || Ctrl->Q.active) {
 		sprintf (C.format, "Grid domain: W: %s E: %s S: %s N: %s n_columns: %%d n_rows: %%d [", GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
-		(GMT->common.R.active[GSET]) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
+		(GMT->common.R.registration == GMT_GRID_PIXEL_REG) ? strcat (C.format, "pixel registration]\n") : strcat (C.format, "gridline registration]\n");
 		GMT_Report (API, GMT_MSG_INFORMATION, C.format, C.wesn_orig[XLO], C.wesn_orig[XHI], C.wesn_orig[YLO], C.wesn_orig[YHI], C.n_columns-one, C.n_rows-one);
 	}
 	if (C.current_stride == 1) GMT_Report (API, GMT_MSG_WARNING, "Your grid dimensions are mutually prime.  Convergence is very unlikely.\n");
-	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) || Ctrl->Q.active) surface_suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.active[GSET]);
+	if ((C.current_stride == 1 && gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) || Ctrl->Q.active) surface_suggest_sizes (GMT, C.Grid, C.factors, C.n_columns-1, C.n_rows-1, GMT->common.R.registration == GMT_GRID_PIXEL_REG);
 	if (Ctrl->Q.active) {	/* Reset verbosity and bail */
 		GMT->current.setting.verbose = old_verbose;
 		Return (GMT_NOERROR);
@@ -2138,7 +2138,8 @@ EXTERN_MSC int GMT_surface (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading input file in grdmask */
-		sprintf (cmd, "%s -G%s -R%g/%g/%g/%g -I%g/%g -NNaN/1/1 -S%s -V%c --GMT_HISTORY=readonly",
+		/* Hardwire -rg since internally, all grids are gridline registered (until output at least) */
+		sprintf (cmd, "%s -G%s -R%g/%g/%g/%g -I%g/%g -NNaN/1/1 -S%s -V%c -rg --GMT_HISTORY=readonly",
 		         input, mask, wesn[XLO], wesn[XHI], wesn[YLO], wesn[YHI], GMT->common.R.inc[GMT_X],
 				 GMT->common.R.inc[GMT_Y], Ctrl->M.arg, V_level[GMT->current.setting.verbose]);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Masking grid nodes away from data points via grdmask\n");

@@ -5702,6 +5702,27 @@ void gmt_ascii_format_one (struct GMT_CTRL *GMT, char *text, double x, unsigned 
 	}
 }
 
+void gmt_ascii_format_inc (struct GMT_CTRL *GMT, char *text, double x, unsigned int type) {
+	char unit;
+	double d_inc = GMT_DEG2SEC_F * x;
+	unsigned int inc = urint (d_inc);
+	if ((type & GMT_IS_GEO) == 0 || fabs (d_inc - inc) > GMT_CONV6_LIMIT) {	/* Cartesian or not a clear multiple of arc seconds */
+		sprintf (text, GMT->current.setting.format_float_out, x);
+		return;
+	}
+
+	unit = 's';
+	if (inc >= 60 && (inc % 60) == 0) {	/* Arc minutes perhaps */
+		inc /= 60;
+		unit = 'm';
+	}
+	if (inc >= 60 && (inc % 60) == 0) {	/* Arc seconds perhaps */
+		inc /= 60;
+		unit = 'd';
+	}
+	sprintf (text, "%d%c", inc, unit);
+}
+
 /*! . */
 GMT_LOCAL void gmtio_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Initialize (reset) information per column which may have changed due to -i -o */
@@ -8345,7 +8366,7 @@ GMT_LOCAL void gmtio_duplicate_dataset_cols (struct GMT_CTRL *GMT, struct GMT_DA
 /*! . */
 struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry) {
 	/* Make an exact replica, return geometry if not NULL */
-	uint64_t tbl, seg, n_columns;
+	uint64_t tbl, seg;
 	struct GMT_DATASET *D = NULL;
 
 	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
@@ -8574,6 +8595,8 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
 	if (I->colormap) {	/* Also deal with the colormap for indexed images. If found we duplicate */
 		size_t nc = I->n_indexed_colors * 4 + 1;
+		if (I->n_indexed_colors > 2000)		/* If colormap is Mx4 or has encoded the alpha color */
+			nc = (uint64_t)(floor(I->n_indexed_colors / 1000.0)) * 4 + 1;
 		Inew->colormap = gmt_M_memory (GMT, NULL, nc, int);
 		gmt_M_memcpy (Inew->colormap, I->colormap, nc, int);
 		if (I->color_interp) Inew->color_interp = I->color_interp;
