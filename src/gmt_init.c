@@ -15464,7 +15464,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				dpi = GMT->current.setting.graphics_dpu; if (GMT->current.setting.graphics_dpu_unit == 'c') dpi *= 2.54;	/* Convert dpc to dpi */
 				D = gmtinit_map_diagonal_degree (GMT);	/* Approximate "Diagonal" or representative great circle distance in degrees */
 				L = gmtinit_map_diagonal_inches (GMT, D);	/* Approximate or actual "Diagonal" length of map in inches */
-				this_n_per_degree = L * dpi / D;	/* Number of equivalent nodes per degree needed */
+				this_n_per_degree = 2.0 * L * dpi / D;	/* Number of equivalent nodes per degree needed (factor of 2 added for good measure) */
 				R = gmt_remote_resolutions (API, opt->arg, &n_R);	/* List of available resolutions for this family */
 				for (k = 0; k < n_R; k++) {
 					R[k].resolution = R[k].resolution - this_n_per_degree;	/* Compute deviation from desired resolution */
