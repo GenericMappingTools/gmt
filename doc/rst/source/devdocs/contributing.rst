@@ -172,3 +172,59 @@ Here are some specific guidelines:
 
 - Use tabs, rather than spaces, for indentation.
 - Try to split lines at ~120 characters.
+
+Managing Test Images Using Data Version Control (dvc)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+As the baseline images are large blob files that can change often, it is not ideal to store them in ``git``. Instead,
+we use `data version control (dvc) <https://dvc.org/>`_ to track the test images, which is like ``git`` but for data.
+``dvc`` stores the hash (md5sum) of a file or an md5sum that describes the contents of a directory. For each test
+``test/<module>/*.sh`` that generates a .PS file, there is a baseline image file in ``test/baseline/<module>/``
+that is compared to the test result using `GraphicsMagick <http://www.graphicsmagick.org/>`_. Each of the
+directories ``test/baseline/<module>`` are tracked by ``dvc`` using the file ``test/baseline/<module>.dvc``. This file
+contains the hash of a JSON .dir file stored in the .dvc cache. The .dir file contains information about each tracked
+file in the directory, which is used to push/pull the files to/from remote storage. The ``test/baseline/<module>.dvc``
+files are stored as usual on GitHub, while the .PS files are stored separately on the ``dvc`` remote at
+https://dagshub.com/GenericMappingTools/gmt.
+
+Setting up your local environment for dvc
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. `Install dvc <https://dvc.org/doc/install>`_
+#. If you will need to push baseline images to the remote, ask a GMT maintainer to add you as a collaborator on DAGsHub.
+#. If you will need to push baseline imaged to the remote, set up
+   `authentication for the DVC remote <https://dagshub.com/docs/reference/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
+
+Pulling files from the remote for testing
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+To pull or sync files from the ``dvc`` remote to your local repository, the commands are similar to ``git``:
+
+::
+
+    dvc status  # should report any files 'not_in_cache'
+    dvc pull    # pull down files from DVC remote cache (fetch + checkout)
+
+
+Once the sync is complete, you should notice that there are images stored in the ``test/baseline/<module>``
+directories (e.g., ``test/baseline/api/api_matrix_as_grid.ps``). These images are technically reflinks/symlinks/copies
+of the files under the ``.dvc/cache`` directory. You can now run the test suite as usual.
+
+Migrating existing test images to dvc
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+#. Sync with git and dvc remotes (``git checkout master; git pull; dvc pull``).
+#. Create a branch for the module that you are working on (``git switch -c migrate-<module>-tests``).
+#. Navigate to the test directory (``cd test``).
+#. Remove the test image from git tracking (``git rm --chached <module>/<test-image>.ps``).
+#. Create a new directory for the image in ``baseline``, if one does not already exist (``mkdir baseline/<module>``).
+#. Move the test image to the new directory (``mv <module>/<test-image>.ps baseline/<module>/``).
+#. Add a comment ``# DVC_TEST`` to the test script that references the image. This is used to specify that the testing
+   mechanism should search in ``baseline/<module>`` for the baseline image.
+#. Repeat steps 4, 6, and 7 for other .PS based tests for the module.
+#. Run the GMT test suite to check that the tests work properly with the new structure.
+#. Add the directory to dvc (``dvc add baseline/<module>``).
+#. Commit the .dvc and modified .gitignore files to git (``git add baseline/<module>.dvc baseline/.gitignore; git commit``).
+#. Push the changes to git (``git push -u origin migrate-<module>-tests``).
+#. Push the changes to dvc (``dvc push``).
+#. Open a pull request for the changes.
