@@ -26,4 +26,4 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Chd -Nanim04 -Tflight_path.txt -Sbpre.sh -Zs -H2 -Lf+o0.25c+f14p,Helvetica-Bold,white -Gmidnightblue $opt
+gmt movie main.sh -Chd -Nanim04 -Tflight_path.txt -Sbpre.sh -Zs -H2 -Lf+o0.25c+f14p,Helvetica-Bold,white -Gmidnightblue -V $opt
