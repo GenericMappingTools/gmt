@@ -25,7 +25,7 @@ if [ "$BUILD_DOCS" = "true" ]; then
 fi
 # packages for running GMT tests
 if [ "$RUN_TESTS" = "true" ]; then
-    packages+=" graphicsmagick"
+    packages+=" graphicsmagick dvc"
 fi
 
 if [ "$PACKAGE" = "true" ]; then

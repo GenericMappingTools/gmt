@@ -47,4 +47,11 @@ if [ "$BUILD_DOCS" = "true" ]; then
     echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi
 
+# Install dvc for running GMT tests
+if [ "$RUN_TESTS" = "true" ]; then
+    sudo wget https://dvc.org/deb/dvc.list -O /etc/apt/sources.list.d/dvc.list
+    sudo apt-get update
+    sudo apt-get install dvc
+fi
+
 set +x +e
