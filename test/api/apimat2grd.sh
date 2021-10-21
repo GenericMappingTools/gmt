@@ -2,6 +2,7 @@
 #
 # Test the C API for passing a global grid as a matrix to grdimage
 # and have the central meridian work correctly.
+# DVC_TEST
 
 ps=apimat2grd.ps
 testapi_grid2matrix
