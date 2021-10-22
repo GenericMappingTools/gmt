@@ -148,6 +148,7 @@ struct GMTAPI_CTRL {
 	bool is_file;					/* True if current rec-by-rec i/o is from a physical file */
 	bool cache;					/* true if we want to read a cache file via GDAL */
 	bool no_history;					/* true if we want to disable the gmt.history mechanism */
+	bool got_remote_wesn;				/* true if we obtained w/e/sn via a remote grid/image with no resolution given */
 	size_t n_objects_alloc;			/* Allocation counter for data objects */
 	int error;				/* Error code from latest API call [GMT_OK] */
 	int last_error;				/* Error code from previous API call [GMT_OK] */
