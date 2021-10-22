@@ -1307,6 +1307,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		if (Ctrl->D.mode && GMT->common.R.active[RSET]) {
 			/* Need to assign given -R as the image's -R, so cannot pass -R in when reading */
 			GMT->common.R.active[RSET] = false;	/* Temporarily turn off -R if given */
+            I_wesn = NULL;
 		}
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);

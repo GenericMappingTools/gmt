@@ -15572,6 +15572,7 @@ dry_run:		if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S 
 							return NULL;
 						}
 						GMT->common.J.active = GMT->common.R.active[RSET] = true;	/* Since we have set those here */
+
 						if (gmt_map_setup (GMT, GMT->common.R.wesn))
 							return NULL;
 						if (gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false))	/* Refine without 0.1 degree padding */
@@ -15628,22 +15629,31 @@ dry_run:		if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S 
 
 void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file) {
 	 /* Special check to catch two types of situations:
-	  * 1. We do an oblique projection and would like to know the rectangular w/e/s/n
-	  * 2. Same, but in connection with a remote grid or image so the w/e/sn should be rounded
+	  * 1. We do an oblique projection or some sorts and would like to know the rectangular w/e/s/n
+	  * 2. Same, but in connection with a remote grid or image so the w/e/sn should be rounded outwards by the increment.
+	  * Knowing this w/e/s/n can save a lot of work as we otherwise might be reading a large file due to -Rg|d
+	  *
+	  * We wish to "do no harm" as well, so only some situations will get through this function.
 	  */
 	int k_data;
-	double d_inc;
+	double d_inc, wesn[4];
 	struct GMTAPI_CTRL *API = GMT->parent;	/* Shorthand */
-	if (API->got_remote_wesn) return;	/* Already set */
+
+	if (API->got_remote_wesn) return;	/* Already set, probably in gmt_init_module */
 	if (gmt_M_is_linear (GMT) || GMT->current.proj.projection == GMT_POLAR) return;	/* Not a geographic projection */
 	if (!GMT->common.R.active[RSET]) return;	/* No -R given, presumably use whole grid or image */
 	if (!(gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_180_range (GMT->common.R.wesn[YLO], GMT->common.R.wesn[YHI]))) return;	/* Gave -Rd or -Rg so need to probe more*/
 	if (gmt_M_is_azimuthal (GMT) && doubleAlmostEqual (fabs (GMT->current.proj.lat0), 90.0) && !GMT->common.R.oblique) return;	/* Nothing to do */
+	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Save the region we were given */
 
-	if (gmt_map_setup (GMT, GMT->common.R.wesn))	/* Set up projection */
+ 	if (gmt_map_setup (GMT, GMT->common.R.wesn))	/* Set up projection */
 		return;	/* Something went wrong */
 	if (gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false))	/* Refine without 0.1 degree padding */
 		return;	/* Something went wrong */
+	if (GMT->common.R.wesn[XHI] < GMT->common.R.wesn[XLO] || GMT->common.R.wesn[YHI] < GMT->common.R.wesn[YLO])
+		gmt_M_memcpy (GMT->common.R.wesn, wesn, 4, double);	/* Reset to give region if junk resulted */
+	else if (gmt_M_360_range (wesn[XLO], wesn[XHI]) && gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))
+		gmt_M_memcpy (GMT->common.R.wesn, wesn, 2, double);	/* Reset to given global w/e in the same format */
 	gmt_M_memcpy (API->tile_wesn, GMT->common.R.wesn, 4, double);	/* Save the region we found */
 	d_inc = API->d_inc;	/* Increment in degrees, if set */
 	if (d_inc == 0.0 && file && file[0] == '@' && (k_data = gmt_remote_dataset_id (API, file)) != GMT_NOTSET) {	/* Got a remote file to work on */
