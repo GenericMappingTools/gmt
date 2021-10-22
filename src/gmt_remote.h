@@ -70,6 +70,9 @@ enum GMT_tile_coverage {	/* Values in any tile coverage grid (e.g., srtm_tiles.n
 #define GMT_HASH_SERVER_FILE "gmt_hash_server.txt"
 #define GMT_INFO_SERVER_FILE "gmt_data_server.txt"
 
+#define GMT_HASH_TIME_OUT		10L	/* Not waiting longer than this to time out on getting the hash file */
+#define GMT_CONNECT_TIME_OUT	10L	/* Not waiting longer than this to time out on getting a response from the server */
+
 #define GMT_TILE_EXTENSION_REMOTE  		"jp2"	/* Tile extension of JPEG2000 files to be downloaded */
 #define GMT_TILE_EXTENSION_REMOTE_LEN	3U		/* Length of JPEG2000 file extension */
 #define GMT_TILE_EXTENSION_LOCAL		"nc"	/* Tile extension of netCDF nc short int files to be saved */
