@@ -1280,6 +1280,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
 		bool R_save = GMT->common.R.active[RSET];
+		double *I_wesn = (API->got_remote_wesn) ? API->tile_wesn : NULL;
 		if (I && !need_to_project) {
 			gmt_M_memcpy (wesn, GMT->common.R.active[RSET] ? GMT->common.R.wesn : I->header->wesn, 4, double);
 			need_to_project = (gmt_whole_earth (GMT, I->header->wesn, wesn));	/* Must project global images even if not needed for grids */
@@ -1307,7 +1308,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		}
 		/* Read in the the entire image that is to be mapped */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Allocate memory and read image file %s\n", Ctrl->In.file);
-		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, NULL, Ctrl->In.file, NULL)) == NULL) {
+		if ((I = GMT_Read_Data (API, GMT_IS_IMAGE, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA | GMT_IMAGE_NO_INDEX, I_wesn, Ctrl->In.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 		GMT->common.R.active[RSET] = R_save;	/* Restore -R if it was set */
