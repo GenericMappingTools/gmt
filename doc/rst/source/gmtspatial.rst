@@ -127,7 +127,10 @@ Optional Arguments
     Determine the intersection locations between all pairs of polygons.
     Append **i** to only compute internal (i.e., self-intersecting
     polygons) crossovers or **e** to only compute external (i.e.,
-    between pairs of polygons) crossovers [Default is both].
+    between pairs of polygons) crossovers [Default is both].  Output
+    records will list the coordinates of the crossing, the relative times
+    along the two segments (i.e., floating point record numbers at the
+    crossing), and the names of the two segments (as trailing text).
 
 .. _-L:
 

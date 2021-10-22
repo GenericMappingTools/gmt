@@ -1635,7 +1635,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							if (!external && !same_feature) continue;	/* Do not do external crossings */
 						}
 						gmt_init_track (GMT, S2->data[GMT_Y], S2->n_rows, &ylist2);
-						nx = gmt_crossover (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist1, S1->n_rows, S2->data[GMT_X], S2->data[GMT_Y], NULL, ylist2, S2->n_rows, false, gmt_M_is_geographic (GMT, GMT_IN), &XC);
+						nx = gmt_crossover (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist1, S1->n_rows, S2->data[GMT_X], S2->data[GMT_Y], NULL, ylist2, S2->n_rows, (internal > 0), gmt_M_is_geographic (GMT, GMT_IN), &XC);
 						if (nx) {	/* Polygon pair generated crossings */
 							uint64_t px;
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */
