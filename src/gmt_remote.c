@@ -584,7 +584,7 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 		/* No header output: TODO 14.1 http-style HEAD output for ftp */
 		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, gmtremote_throw_away);
 		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
-		/* complete connection within 10 seconds */
+		/* Complete connection within 10 seconds */
 		 curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT);
 
 		res = curl_easy_perform (curl);
