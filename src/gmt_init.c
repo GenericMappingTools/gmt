@@ -14824,25 +14824,15 @@ GMT_LOCAL int gmtinit_compare_resolutions (const void *point_1, const void *poin
 	return (0);
 }
 
-GMT_LOCAL double gmtinit_map_diagonal_degree (struct GMT_CTRL *GMT) {
-	/* Return a diagonal or representative distance in degrees across the map */
-	double X = GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO];
+GMT_LOCAL double gmtinit_map_vertical_degree (struct GMT_CTRL *GMT) {
+	/* Return the max latitude separation in degrees across the map */
 	double Y = GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO];
-	double D = gmtlib_great_circle_dist_degree (GMT, GMT->common.R.wesn[XLO], GMT->common.R.wesn[YLO], GMT->common.R.wesn[XHI], GMT->common.R.wesn[YHI]);	/* "Diagonal" great circle distance in degrees */
-	/* For some global projections the D here may be 180 even though we see a full 360 degrees in longitude.  Hence these checks */
-	if (Y > D) D = Y;
-	if (X > D) D = X;
-	return (D);
+	return (Y);
 }
 
-GMT_LOCAL double gmtinit_map_diagonal_inches (struct GMT_CTRL *GMT) {
-	/* Return a diagonal or representative distance in degrees across the map */
-	/* For some global projections the D here may be 180 even though we see a full 360 degrees in longitude.  Hence these checks */
-	double L;
-	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]))	/* Global maps */
-		L = GMT->current.map.width;
-	else
-		L = hypot (GMT->current.map.height, GMT->current.map.width);	/* Approximate or actual "Diagonal" length of map in inches */
+GMT_LOCAL double gmtinit_map_vertical_inches (struct GMT_CTRL *GMT) {
+	/* Return the max map height in inches */
+	double L = GMT->current.map.height;
 	return (L);
 }
 
@@ -15462,12 +15452,12 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					}
 				}
 				dpi = GMT->current.setting.graphics_dpu; if (GMT->current.setting.graphics_dpu_unit == 'c') dpi *= 2.54;	/* Convert dpc to dpi */
-				L = gmtinit_map_diagonal_inches (GMT);	/* Approximate or actual "Diagonal" length of map in inches */
-				D = gmtinit_map_diagonal_degree (GMT);	/* Approximate "Diagonal" or representative great circle distance in degrees */
+				D = gmtinit_map_vertical_degree (GMT);	/* Map latitudinal extent in degrees */
+				L = gmtinit_map_vertical_inches (GMT);	/* Map height in inches */
 				this_n_per_degree = L * dpi / D;	/* Number of equivalent nodes per degree needed */
 				R = gmt_remote_resolutions (API, opt->arg, &n_R);	/* List of available resolutions for this family */
-				for (k = 0; k < n_R; k++) {
-					R[k].resolution = R[k].resolution - this_n_per_degree;	/* Compute deviation from desired resolution */
+				for (k = 0; k < n_R; k++) {	/* Compute deviation from desired resolution */
+					R[k].resolution = R[k].resolution - this_n_per_degree;
 					if (registration != GMT_NOTSET && reg[registration] != R[k].reg) continue;	/* Skip this registration */
 					if (R[k].resolution >= 0.0) at_least_one = true;	/* At least one resolution will be adequate */
 				}
@@ -15491,9 +15481,10 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					return NULL;
 				}
 				else {	/* Replace entry with correct version */
-					GMT_Report (API, GMT_MSG_INFORMATION, "Given -R%s -J%s, representative distances D_g = %g degrees, D_m = %g %s and dpu = %g%c (this_n_per_degree = %lg) we replace %s by %s\n",
+					GMT_Report (API, GMT_MSG_INFORMATION, "Given -R%s -J%s, representative distances D_y = %g degrees, D_h = %g %s and dpu = %g%c (this_n_per_degree = %lg) we replace %s by %s\n",
 						GMT->common.R.string, GMT->common.J.string, D, L * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit],
 						GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, this_n_per_degree, opt->arg, file);
+					//printf ("%g\t%g\t%lg\t%d\t%s\n", D, L * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit], this_n_per_degree, irint (1.0 / API->remote_info[k_data2].d_inc), file);
 					gmt_M_str_free (opt->arg);
 					opt->arg = strdup (file);
 					d_inc = API->remote_info[k_data2].d_inc;
