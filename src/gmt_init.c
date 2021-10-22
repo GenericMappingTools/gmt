@@ -15487,7 +15487,6 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					GMT_Report (API, GMT_MSG_INFORMATION, "Given -R%s -J%s, representative distances D_y = %g degrees, D_h = %g %s and dpu = %g%c (this_n_per_degree = %lg) we replace %s by %s\n",
 						GMT->common.R.string, GMT->common.J.string, D, L * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit],
 						GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, this_n_per_degree, opt->arg, file);
-					//printf ("%g\t%g\t%lg\t%d\t%s\n", D, L * GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit], this_n_per_degree, irint (1.0 / API->remote_info[k_data2].d_inc), file);
 					gmt_M_str_free (opt->arg);
 					opt->arg = strdup (file);
 					d_inc = API->remote_info[k_data2].d_inc;
