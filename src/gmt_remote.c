@@ -584,6 +584,8 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 		/* No header output: TODO 14.1 http-style HEAD output for ftp */
 		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, gmtremote_throw_away);
 		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
+		/* Complete connection within 10 seconds */
+		 curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT);
 
 		res = curl_easy_perform (curl);
 
@@ -627,6 +629,10 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 	}
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
+		return NULL;
+	}
+ 	if (curl_easy_setopt (Curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT)) {	/* Set connection timeout to 10s [300] */
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to limit connection timeout to %lds\n", GMT_CONNECT_TIME_OUT);
 		return NULL;
 	}
 	if (time_out) {	/* Set a timeout limit */
@@ -674,8 +680,6 @@ void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
 }
 
 /* Deal with hash values of cache/data files */
-
-#define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
 
 GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
 	bool turn_ctrl_C_off = false;
