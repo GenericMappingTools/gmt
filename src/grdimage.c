@@ -1278,6 +1278,8 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 	}
 #endif
 
+	gmt_detect_oblique_region (GMT, Ctrl->In.file);	/* Ensure a proper and smaller -R for oblique projections */
+
 	if (Ctrl->D.active) {	/* Main input is a single image and not a grid */
 		bool R_save = GMT->common.R.active[RSET];
 		double *I_wesn = (API->got_remote_wesn) ? API->tile_wesn : NULL;
