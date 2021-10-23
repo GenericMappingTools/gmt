@@ -15639,6 +15639,7 @@ void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file) {
 	double d_inc, wesn[4];
 	struct GMTAPI_CTRL *API = GMT->parent;	/* Shorthand */
 
+	if (gmt_M_is_cartesian (GMT, GMT_IN)) return;	/* This check only applies to geographic data */
 	if (API->got_remote_wesn) return;	/* Already set, probably in gmt_init_module */
 	if (gmt_M_is_linear (GMT) || GMT->current.proj.projection == GMT_POLAR) return;	/* Not a geographic projection */
 	if (!GMT->common.R.active[RSET]) return;	/* No -R given, presumably use whole grid or image */
