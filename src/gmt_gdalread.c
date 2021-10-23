@@ -1001,6 +1001,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				xOrigin[1] = 0;	/* The second starts all the way to the west */
 				nXSize[1] = xOrigin[0] + nXSize[0] - XDim;	/* What goes beyond XDim is the width of the west piece */
 				nXSize[0] = XDim - xOrigin[0];	/* Truncate the east piece width accordingly */
+				if (nXSize[1] > XDim) nXSize[1] = XDim - nXSize[0];	/* Safety valve since file only has XDim values along a row */
 				pad_w[1] = 0;	pad_e[1] = pad_e[0];	pad_e[0] = 0;	/* Set the "seam" pads to zero since no longer at the edges */
 			}
 		}
