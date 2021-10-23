@@ -3522,14 +3522,14 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
 	bool via = false, got_data = false, check_col_switch = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
-	uint64_t row, seg, col, ij, n_records = 0, n_columns = 0, col_pos, n_use;
+	uint64_t tbl = 0, tbl_in, row, seg, col, ij, n_records = 0, n_columns = 0, col_pos, n_use;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_getfunction api_get_val = NULL;
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
-	struct GMT_DATASET_HIDDEN *DH = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL, *DinH = NULL;
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
@@ -3652,17 +3652,36 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				via = true;	/* Since input came via a duplicate */
 				break;
 
+			//case GMT_IS_REFERENCE:	/* Just pass memory location, so free up what we allocated earlier */
+			//	gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated up front since we just wish to pass the pointer */
+			//	gmt_M_free (GMT, D_obj->hidden);
+			//	gmt_M_free (GMT, D_obj);
+			//	if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
+			//	if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
+			//		GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
+			//	GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from GMT_DATASET memory location\n");
+			//	if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+			//	check_col_switch = true;
+			//	DH = gmt_get_DD_hidden (D_obj);
+			//	break;
+
 			case GMT_IS_REFERENCE:	/* Just pass memory location, so free up what we allocated earlier */
-				gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated up front since we just wish to pass the pointer */
-				gmt_M_free (GMT, D_obj->hidden);
-				gmt_M_free (GMT, D_obj);
-				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
-					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE with GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from GMT_DATASET memory location\n");
-				if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				if ((Din_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				if ((tbl + Din_obj->n_tables) >= n_alloc) {	/* Need more space */
+					n_alloc += Din_obj->n_tables;
+					D_obj->table = gmt_M_memory (GMT, D_obj->table, n_alloc, struct GMT_DATATABLE *);
+				}
+				for (tbl_in = 0; tbl_in < Din_obj->n_tables; tbl_in++, tbl++)
+					D_obj->table[tbl] = Din_obj->table[tbl_in];
+				D_obj->n_tables = tbl;
 				check_col_switch = true;
+				DinH = gmt_get_DD_hidden (Din_obj);
 				DH = gmt_get_DD_hidden (D_obj);
+				DH->alloc_level = MIN(DH->alloc_level, DinH->alloc_level);	/* Since we cannot free D_obj before its contents */
+				update = true;		/* Have reason to update min/max when done */
 				break;
 
 		 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
