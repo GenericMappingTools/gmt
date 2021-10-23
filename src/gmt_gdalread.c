@@ -1246,7 +1246,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 									off = nRGBA * (indent+pad_w[piece]) + (pad_n+m) * (nRGBA * nXSize_withPad); /* Remember, nRGBA is variable */
 									for (n = 0; n < nXSize[piece]; n++) {
 										Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
-										//fprintf (stderr, "data(%d,%d) = data(%d) = %d  off = %d\n", (int)m, (int)(col_indent+colVec[n]), (int)(colVec[n] + off), Ctrl->UInt8.data[colVec[n] + off], (int)off);
+										fprintf (stderr, "row = %d col = %d data(%d,%d,%d) = data(%d) = %d  off = %d\n", (int)m, (int)(xOrigin[piece]+n), (int)m, (int)(col_indent+colVec[n]), (int)i, (int)(colVec[n] + off), Ctrl->UInt8.data[colVec[n] + off], (int)off);
 									}
 								}
 							}
