@@ -3633,7 +3633,10 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated earlier since gmt_duplicate_dataset does it all */
 				gmt_M_free (GMT, D_obj->hidden);
 				gmt_M_free (GMT, D_obj);
-				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
+				if (n_used) {
+					GMT_Report (API, GMT_MSG_ERROR, "API is unable to handle multiple virtual datasets for duplication during reading. Concatenate and pass one only\n");
+					return_null (API, GMT_ONLY_ONE_ALLOWED);
+				}
 				if ((Din_obj = S_obj->resource) == NULL)	/* Ooops, noting there? */
 					return_null (API, GMT_PTR_IS_NULL);
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
@@ -3656,7 +3659,10 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated up front since we just wish to pass the pointer */
 				gmt_M_free (GMT, D_obj->hidden);
 				gmt_M_free (GMT, D_obj);
-				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
+				if (n_used) {
+					GMT_Report (API, GMT_MSG_ERROR, "API is unable to handle multiple virtual datasets for reference during reading. Concatenate and pass one only\n");
+					return_null (API, GMT_ONLY_ONE_ALLOWED);
+				}
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from GMT_DATASET memory location\n");
