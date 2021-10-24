@@ -42,12 +42,12 @@ ull-featured movie with thousands of frames at HD or 4k resolution.
 
   :doc:`/animations/anim03`
 
-- .. youtube:: 7NQa4TORA3E
+- .. youtube:: j75MbWb4WCE
      :width: 100%
 
   :doc:`/animations/anim04`
   
-  - .. youtube:: j75MbWb4WCE
+  - .. youtube:: 7NQa4TORA3E
      :width: 100%
 
   :doc:`/animations/anim05`
