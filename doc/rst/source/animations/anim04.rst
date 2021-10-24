@@ -19,20 +19,5 @@ in a future version.
 .. literalinclude:: /_verbatim/anim04.txt
    :language: bash
 
-
-.. Need to include the following 0 px wide dummy image for video poster
-
-.. only:: html
-
-   .. image:: /_images/anim04.png
-      :width: 0 px
-
-.. raw:: html
-
-   <div class="figure align-center">
-     <video width="720" height="480" poster="../_images/anim04.png" controls>
-       <source src="../_static/anim04.mp4" type="video/mp4">
-       Your browser does not support the video tag.
-     </video>
-     <p class="caption">Satellite view at night.</p>
-   </div>
+..  youtube:: j75MbWb4WCE
+    :width: 100%
