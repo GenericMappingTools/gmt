@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 #               GMT ANIMATION 04
 #
-# Purpose:      Make custom full hd movie of NY to Miami flight
-# GMT modules:  set, grdimage, project, plot, movie
+# Purpose:      Make custom full HD movie of NY to Miami flight
+# GMT modules:  grdimage, project, movie
 # Unix progs:   cat
-# Note:         Run with any argument to build movie; otherwise 1st frame is plotted as PS only.
+#
+# Images:		@earth_night from the GMT data server (evaluates to 30s)
+# The finished movie is available in our YouTube channel as well:
+# https://youtu.be/xxxxxxxxxxxx
+# The movie took ~3 minutes to render on a 24-core MacPro 2013.
 
-if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
-	opt="-Mps"
-else	# Make movie in MP4 format and a thumbnail animated GIF using every 10th frame
-	opt="-Fmp4 -Fgif+l+s10"
-fi
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh
 # Set up flight path
@@ -22,8 +21,8 @@ EOF
 cat << 'EOF' > main.sh
 gmt begin
 	gmt grdimage -JG${MOVIE_COL0}/${MOVIE_COL1}/${MOVIE_WIDTH}+du+z160+a210+t55+v36 \
-	-Rg @earth_night_01m -Xc -Y-5c
+	-Rg @earth_night -Xc -Y-5c
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Chd -Nanim04 -Tflight_path.txt -Sbpre.sh -Zs -H2 -Lf+o0.25c+f14p,Helvetica-Bold,white -Gmidnightblue -V $opt
+gmt movie main.sh -Chd -Nanim04 -Tflight_path.txt -Sbpre.sh -Zs -H2 -Lf+o0.25c+f14p,Helvetica-Bold,white -Gmidnightblue -V -Fmp4
