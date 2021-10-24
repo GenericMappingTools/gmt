@@ -8521,21 +8521,27 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	gmt_M_free (GMT, table);
 }
 
-/*! . */
-void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
+void gmtlib_free_dataset_misc (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
 	/* This takes pointer to data array and thus can return it as NULL */
-	unsigned int tbl, k;
+	unsigned int k;
 	struct GMT_DATASET_HIDDEN *DH = NULL;
 	if (!data) return;	/* Do not try to free NULL pointer */
 	DH = gmt_get_DD_hidden (data);
-	for (tbl = 0; tbl < data->n_tables; tbl++) {
-		gmt_free_table (GMT, data->table[tbl]);
-	}
 	gmt_M_free (GMT, data->min);
 	gmt_M_free (GMT, data->max);
 	gmt_M_free (GMT, data->table);
 	for (k = 0; k < 2; k++) gmt_M_str_free (DH->file[k]);
 	gmt_M_free (GMT, data->hidden);
+}
+
+/*! . */
+void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
+	/* This takes pointer to data array and thus can return it as NULL */
+	uint64_t tbl;
+	if (!data) return;	/* Do not try to free NULL pointer */
+	for (tbl = 0; tbl < data->n_tables; tbl++)
+		gmt_free_table (GMT, data->table[tbl]);
+	gmtlib_free_dataset_misc (GMT, data);
 }
 
 /*! . */
