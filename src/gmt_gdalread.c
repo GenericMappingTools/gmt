@@ -1001,6 +1001,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				xOrigin[1] = 0;	/* The second starts all the way to the west */
 				nXSize[1] = xOrigin[0] + nXSize[0] - XDim;	/* What goes beyond XDim is the width of the west piece */
 				nXSize[0] = XDim - xOrigin[0];	/* Truncate the east piece width accordingly */
+				if (nXSize[1] > XDim) nXSize[1] = XDim - nXSize[0];	/* Safety valve since file only has XDim values along a row */
 				pad_w[1] = 0;	pad_e[1] = pad_e[0];	pad_e[0] = 0;	/* Set the "seam" pads to zero since no longer at the edges */
 			}
 		}
@@ -1245,7 +1246,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 									off = nRGBA * (indent+pad_w[piece]) + (pad_n+m) * (nRGBA * nXSize_withPad); /* Remember, nRGBA is variable */
 									for (n = 0; n < nXSize[piece]; n++) {
 										Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
-										//fprintf (stderr, "data(%d,%d) = data(%d) = %d  off = %d\n", (int)m, (int)(col_indent+colVec[n]), (int)(colVec[n] + off), Ctrl->UInt8.data[colVec[n] + off], (int)off);
+										//fprintf (stderr, "row = %d col = %d data(%d,%d,%d) = data(%d) = %d  off = %d\n", (int)m, (int)(xOrigin[piece]+n), (int)m, (int)(col_indent+colVec[n]), (int)i, (int)(colVec[n] + off), Ctrl->UInt8.data[colVec[n] + off], (int)off);
 									}
 								}
 							}
