@@ -8,7 +8,7 @@
 # Images:		@earth_night from the GMT data server (evaluates to 30s resolution here)
 # The finished movie is available in our YouTube channel as well:
 # https://youtu.be/xxxxxxxxxxxx
-# The movie took ~1 minute to render on a 24-core MacPro 2013.
+# The movie took ~9 minute to render on a 24-core MacPro 2013.
 
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh
