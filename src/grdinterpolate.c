@@ -35,9 +35,9 @@
 #define THIS_MODULE_MODERN_NAME	"grdinterpolate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate a 3-D cube, 2-D grids or 1-D series from a 3-D data cube or stack of 2-D grids"
-#define THIS_MODULE_KEYS	"<G{+,G?}"
+#define THIS_MODULE_KEYS	"<G{+,G?},ED),SD)"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"->RVfn"
+#define THIS_MODULE_OPTIONS "-:>RVbdefghinoqs"
 
 struct GRDINTERPOLATE_CTRL {
 	struct GRDINTERPOLATE_In {
