@@ -27,7 +27,7 @@ int main () {
 	/* Open a virtual file to hold the result */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, NULL, output);
 	/* Create the parameters string */
-	sprintf (command, "%s %s -Ie -Fl->%s", input1, input2, output);
+	sprintf (command, "%s %s -Ie -Fl ->%s", input1, input2, output);
 	/* Call the module */
 	GMT_Call_Module (API, "gmtspatial", GMT_MODULE_CMD, command);
 	/* Free input resources */

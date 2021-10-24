@@ -3520,7 +3520,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
 	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode, type = GMT_READ_DATA, col_pos_out;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
-	bool via = false, got_data = false, check_col_switch = false;
+	bool via = false, got_data = false, check_col_switch = false, regit = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
 	uint64_t tbl = 0, tbl_in, row, seg, col, ij, n_records = 0, n_columns = 0, col_pos, n_use;
 	p_func_uint64_t GMT_2D_to_index = NULL;
@@ -3530,7 +3530,7 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
 	struct GMT_DATASET_HIDDEN *DH = NULL, *DinH = NULL;
-	struct GMT_DATATABLE_HIDDEN *TH = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL, *TinH = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -3665,23 +3665,21 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 			//	DH = gmt_get_DD_hidden (D_obj);
 			//	break;
 
-			case GMT_IS_REFERENCE:	/* Just pass memory location, so free up what we allocated earlier */
+			case GMT_IS_REFERENCE:	/* Just pass memory locations to tables */
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
 					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE with GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from GMT_DATASET memory location\n");
 				if ((Din_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
-				if ((tbl + Din_obj->n_tables) >= n_alloc) {	/* Need more space */
+				if ((tbl + Din_obj->n_tables) >= n_alloc) {	/* Need more space to hold these tables */
 					n_alloc += Din_obj->n_tables;
 					D_obj->table = gmt_M_memory (GMT, D_obj->table, n_alloc, struct GMT_DATATABLE *);
 				}
-				for (tbl_in = 0; tbl_in < Din_obj->n_tables; tbl_in++, tbl++)
+				for (tbl_in = 0; tbl_in < Din_obj->n_tables; tbl_in++, tbl++)	/* Pass over the pointers only */
 					D_obj->table[tbl] = Din_obj->table[tbl_in];
 				D_obj->n_tables = tbl;
 				check_col_switch = true;
 				DinH = gmt_get_DD_hidden (Din_obj);
-				DH = gmt_get_DD_hidden (D_obj);
-				DH->alloc_level = MIN(DH->alloc_level, DinH->alloc_level);	/* Since we cannot free D_obj before its contents */
-				update = true;		/* Have reason to update min/max when done */
+				update = regit = via = true;		/* Have reason to update min/max as well as registering D_obj when done */
 				break;
 
 		 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
@@ -3901,6 +3899,13 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 		S_obj->status = GMT_IS_USED;	/* Mark input object as read */
 		S_obj->n_expected_fields = GMT_MAX_COLUMNS;	/* Since need to start over if this object is used again */
 		n_used++;	/* Number of items actually processed */
+	}
+	if (regit) {	/* Register the output */
+		new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
+		if ((new_item = gmtlib_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
+			return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
+		API->object[new_item]->resource = D_obj;
+		API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 	}
 	if (D_obj->n_tables == 0) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
 		D_obj->table = gmt_M_memory (GMT, D_obj->table, 1, struct GMT_DATATABLE *);

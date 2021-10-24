@@ -8505,6 +8505,7 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	if (!table) return;		/* Do not try to free NULL pointer */
 	TH = gmt_get_DT_hidden (table);
+	if (TH->alloc_mode == GMT_ALLOC_EXTERNALLY) return;	/* Not ours to free */
 	for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
 	gmt_M_free (GMT, table->header);
 	gmt_M_free (GMT, table->min);
