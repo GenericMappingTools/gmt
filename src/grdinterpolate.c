@@ -569,8 +569,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Si = In->table[0]->segment[0];	/* Short hand to the first and only segment */
 			Si->data[GMT_X][0] = Ctrl->S.x;
 			Si->data[GMT_Y][0] = Ctrl->S.y;
-			if (Ctrl->S.header)
-				Si->text[0] = strdup (Ctrl->S.header);	/* Set the fixed header here */
+			if (Ctrl->S.header)	/* Set the fixed header here via training text */
+				Si->text[0] = strdup (Ctrl->S.header);
 			Si->n_rows = 1;
 			gmt_set_dataset_minmax (GMT, In);
 		}
