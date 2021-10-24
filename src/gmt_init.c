@@ -1355,6 +1355,7 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 	unsigned int dir, k = 1, c, pos = 0, code, *col = NULL;
 	int64_t i, start = -1, stop = -1, inc;
 	enum gmt_enum_units unit = GMT_IS_METER;
+	enum gmt_col_enum ctype;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -f requires an argument */
 
@@ -1436,6 +1437,14 @@ GMT_LOCAL int gmtinit_parse_f_option (struct GMT_CTRL *GMT, char *arg) {
 		for (i = start; i <= stop; i += inc)
 			gmt_set_column_type (GMT, dir, (unsigned int)i, code);
 	}
+
+	/* Check in case anyone used -fT or -ft to set time axes for x, y, or z but forgot to use T in -JX.
+	 * If so we update the xyz_projection type */
+	for (unsigned int axis = GMT_X; axis <= GMT_Z; axis++) {
+		if ((ctype = gmt_get_column_type (GMT, GMT_IN, axis)) == GMT_IS_ABSTIME || ctype == GMT_IS_RELTIME)
+			GMT->current.proj.xyz_projection[axis] = GMT_TIME;
+	}
+
 	return (GMT_NOERROR);
 }
 
