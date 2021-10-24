@@ -1131,7 +1131,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int geometry = GMT_IS_POLY, internal = 0, external = 0, smode = GMT_NO_STRINGS;
-	bool mseg = false;
 
 	static char *kind[2] = {"CCW", "CW"};
 
@@ -1712,10 +1711,10 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							}
 							else {	/* Just report */
 								struct GMT_DATATABLE_HIDDEN *TH1 = gmt_get_DT_hidden (C->table[tbl1]), *TH2 = gmt_get_DT_hidden (C->table[tbl2]);
-								if (mseg)
-									sprintf (record, "%s-%" PRIu64 "%s%s-%" PRIu64, TH1->file[GMT_IN], seg1, GMT->current.setting.io_col_separator, TH2->file[GMT_IN], seg2);
-								else
-									sprintf (record, "%s%s%s", TH1->file[GMT_IN], GMT->current.setting.io_col_separator, TH2->file[GMT_IN]);
+								char F1[PATH_MAX] = {""}, F2[PATH_MAX] = {""};
+								if (TH1->file[GMT_IN] == NULL) snprintf (F1, PATH_MAX, "%" PRIu64 "-%" PRIu64, tbl1, seg1); else snprintf (F1, PATH_MAX, "%s-%" PRIu64, TH1->file[GMT_IN], seg1);
+								if (TH2->file[GMT_IN] == NULL) snprintf (F2, PATH_MAX, "%" PRIu64 "-%" PRIu64, tbl2, seg2); else snprintf (F2, PATH_MAX, "%s-%" PRIu64, TH2->file[GMT_IN], seg2);
+								sprintf (record, "%s%s%s", F1, GMT->current.setting.io_col_separator, F2);
 								Out.text = record;
 								for (px = 0; px < nx; px++) {	/* Write these to output */
 									out[GMT_X] = XC.x[px];  out[GMT_Y] = XC.y[px];
