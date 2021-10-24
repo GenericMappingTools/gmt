@@ -1001,11 +1001,11 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
 			save_col[GMT_X] = gmt_get_column_type (GMT, GMT_IN, GMT_X);	/* Save col type in case it is a time column */
 			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
-			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+			gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
-			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+			gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			gmt_set_column_type (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
@@ -1017,11 +1017,11 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 		save_col[GMT_Y] = gmt_get_column_type (GMT, GMT_IN, GMT_Y);	/* Save col type in case it is a time column */
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, gmt_get_column_type (GMT, GMT_IN, F.t_col));	/* Same units as time-series "t"*/
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the widths as floats */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 		if ((F.W = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error, "Error Reading input\n");
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
 		gmt_set_column_type (GMT, GMT_IN, GMT_Y, save_col[GMT_Y]);	/* Reset this col type to whatever it actually is */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.W->n_records, Ctrl->F.file);

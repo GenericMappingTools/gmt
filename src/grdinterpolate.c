@@ -595,7 +595,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the workings of grdtrack calls  */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the workings of grdtrack calls  */
 
 		for (k = start_k; k <= stop_k; k++) {	/* For all selected input levels k */
 			GMT_Init_VirtualFile (API, 0, i_file);	/* Reset so it can be read again */
@@ -695,7 +695,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			dim[GMT_ROW] = Out->table[0]->segment[0]->n_rows;	/* Update new row dim */
 		}
 
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 		if (Ctrl->S.active) {	/* Write the table(s) */
 			if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */

@@ -1575,7 +1575,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
-				gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+				gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 					Return (API->error);
 				}
@@ -1583,7 +1583,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 					Return (GMT_DIM_TOO_SMALL);
 				}
-				gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+				gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
 				uint64_t dim[GMT_DIM_SIZE] = {1, 1, 5, 2};
@@ -1778,7 +1778,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct DUP_INFO **Info = NULL, *I = NULL;
 
 		if (Ctrl->D.file) {	/* Get trial features via a file */
-			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -D files */
+			gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -D files */
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE|GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -1786,7 +1786,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
-			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+			gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			from = Ctrl->D.file;
 		}
 		else {
@@ -1930,7 +1930,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -CN files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -CN files */
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1938,7 +1938,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		nmode = (Ctrl->N.mode == 1) ? GMT_IS_NONE : GMT_IS_LINE;
 		if (GMT_Init_IO (API, GMT_IS_DATASET, nmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);
