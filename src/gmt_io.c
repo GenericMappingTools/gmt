@@ -8368,6 +8368,7 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 	/* Make an exact replica, return geometry if not NULL */
 	uint64_t tbl, seg;
 	struct GMT_DATASET *D = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL, *TinH = NULL;
 
 	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
 		/* Cannot copy segments but must go via -i */
@@ -8382,6 +8383,10 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 	gmt_M_memcpy (D->min, Din->min, Din->n_columns, double);
 	gmt_M_memcpy (D->max, Din->max, Din->n_columns, double);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
+		TH   = gmt_get_DT_hidden (D->table[tbl]);
+		TinH = gmt_get_DT_hidden (Din->table[tbl]);
+		for (unsigned int k = 0; k < 2; k++)
+			if (TinH->file[k]) TH->file[k] = strdup (TinH->file[k]);
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			gmtio_copy_segment (GMT, D->table[tbl]->segment[seg], Din->table[tbl]->segment[seg]);
 		}

@@ -3529,8 +3529,8 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_VECTOR *V_obj = NULL;
-	struct GMT_DATASET_HIDDEN *DH = NULL, *DinH = NULL;
-	struct GMT_DATATABLE_HIDDEN *TH = NULL, *TinH = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -3663,7 +3663,6 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				D_obj->n_tables = tbl;
 				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
 				check_col_switch = true;
-				DinH = gmt_get_DD_hidden (Din_obj);
 				update = regit = via = true;		/* Have reason to update min/max as well as registering D_obj when done */
 				break;
 

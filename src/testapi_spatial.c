@@ -9,7 +9,7 @@
 
 int main (int argc, char *argv[]) {
 	void *API;
-	unsigned int mode = (argc == 1) ? GMT_IS_REFERENCE : GMT_IS_DUPLICATE;
+	unsigned int mode = (argc == 2) ? GMT_IS_REFERENCE : GMT_IS_DUPLICATE;
 	int64_t row, col, nx = 0;
 	struct GMT_DATASET *D1 = NULL, *D2 = NULL;
 	struct GMT_DATASET *Dout = NULL;
@@ -17,6 +17,7 @@ int main (int argc, char *argv[]) {
 	char input1[GMT_VF_LEN] = {""}, input2[GMT_VF_LEN] = {""};
 	char output[GMT_VF_LEN] = {""};
 	char command[3*GMT_VF_LEN + 64];
+	char *outfile = argv[1];
 
 	/* Initialize the GMT session */
 	API = GMT_Create_Session ("GMT_spatial", 2, 0, NULL);
@@ -42,7 +43,7 @@ int main (int argc, char *argv[]) {
 	/* Close output virtual file */
 	GMT_Close_VirtualFile (API, output);
 	/* Print the result on stdout */
-	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, 0, NULL, "result.txt", Dout) != GMT_NOERROR) return EXIT_FAILURE;
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, 0, NULL, outfile, Dout) != GMT_NOERROR) return EXIT_FAILURE;
 	/* Free output */
 	GMT_Destroy_Data (API, &Dout);
 	/* Destroy session */
