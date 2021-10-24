@@ -637,9 +637,13 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 							sprintf (header, "Location %g,%g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
 						So->header = strdup (header);
 					}
-					for (col = 0; col < Si->n_columns; col++)	/* Copy over the various columns */
+					for (col = 0; col < GMT_Z; col++)	/* Copy over x,y */
 						So->data[col][k] = Si->data[col][row];
-					So->data[col][k] = level[k];	/* Add level as the last data column */
+					So->data[GMT_Z][k] = level[k];	/* Add level as the z value */
+					while (col < Si->n_columns) {	/* Copy over the various columns */
+						So->data[col+1][k] = Si->data[col][row];
+						col++;
+					}
 				}
 			}
 			for (col = GMT_Z; col < Si->n_columns; col++)
