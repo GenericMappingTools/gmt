@@ -595,6 +595,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
+		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the workings of grdtrack calls  */
+
 		for (k = start_k; k <= stop_k; k++) {	/* For all selected input levels k */
 			GMT_Init_VirtualFile (API, 0, i_file);	/* Reset so it can be read again */
 			if (Ctrl->Z.active)	/* Get the k'th file */
@@ -627,7 +629,6 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			for (seg = rec = 0; seg < D->table[0]->n_segments; seg++) {	/* For each point we sampled at */
 				Si = D->table[0]->segment[seg];	/* Short hand to this segment */
 
-
 				for (row = 0; row < Si->n_rows; row++, rec++) {	/* For each selected point which matches each output segment */
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
 					if (k == start_k) {	/* Set the segment header just once */
@@ -637,12 +638,19 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 							sprintf (header, "Location %g,%g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
 						So->header = strdup (header);
 					}
-					for (col = 0; col < GMT_Z; col++)	/* Copy over x,y */
-						So->data[col][k] = Si->data[col][row];
-					So->data[GMT_Z][k] = level[k];	/* Add level as the z value */
-					while (col < Si->n_columns) {	/* Copy over the various columns */
-						So->data[col+1][k] = Si->data[col][row];
-						col++;
+					if (Ctrl->S.active) {	/* Want x,y,z[,.....],value output */
+						for (col = 0; col < GMT_Z; col++)	/* Copy over x,y */
+							So->data[col][k] = Si->data[col][row];
+						So->data[GMT_Z][k] = level[k];	/* Add level as the z column */
+						while (col < Si->n_columns) {	/* Copy over the rest */
+							So->data[col+1][k] = Si->data[col][row];
+							col++;
+						}
+					}
+					else {	/* Format for -E is x,y[,....],value */
+						for (col = 0; col < Si->n_columns; col++)	/* Copy over the various columns */
+							So->data[col][k] = Si->data[col][row];
+						So->data[col][k] = level[k];	/* Add level as the last data column */
 					}
 				}
 			}
@@ -686,6 +694,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 			dim[GMT_ROW] = Out->table[0]->segment[0]->n_rows;	/* Update new row dim */
 		}
+
+		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 		if (Ctrl->S.active) {	/* Write the table(s) */
 			if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */
