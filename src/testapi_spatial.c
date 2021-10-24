@@ -3,11 +3,13 @@
 #include <string.h>
 /*
  * Replicate issue raised in https://github.com/GenericMappingTools/gmt/issues/5890.
- * Expects files I1.txt and I2.txt to have been made.
+ * Expects files I1.txt and I2.txt to have been made. If argument is given then we
+ * pass the two virtual datasets as duplicates, else as references.
  */
 
-int main () {
+int main (int argc, char *argv[]) {
 	void *API;
+	unsigned int mode = (argc == 1) ? GMT_IS_REFERENCE : GMT_IS_DUPLICATE;
 	int64_t row, col, nx = 0;
 	struct GMT_DATASET *D1 = NULL, *D2 = NULL;
 	struct GMT_DATASET *Dout = NULL;
@@ -22,8 +24,8 @@ int main () {
 	if ((D1 = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, "I1.txt", NULL)) == NULL) return EXIT_FAILURE;
 	if ((D2 = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, "I2.txt", NULL)) == NULL) return EXIT_FAILURE;
 	/* Open a virtual files to hold the data */
-	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D1, input1);
-	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D2, input2);
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|mode, D1, input1);
+	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|mode, D2, input2);
 	/* Open a virtual file to hold the result */
 	GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT, NULL, output);
 	/* Create the parameters string */
@@ -40,18 +42,7 @@ int main () {
 	/* Close output virtual file */
 	GMT_Close_VirtualFile (API, output);
 	/* Print the result on stdout */
-	if (Dout->n_tables) {
-		S = Dout->table[0]->segment[0];
-		nx = S->n_rows;
-	}
-	for (row = 0; row < nx; row++) {
-		for (col = 0; col < S->n_columns; col++)
-			printf("%lg\t", S->data[col][row]);
-		if (S->text)
-			printf ("%s\n", S->text[row]);
-		else
-			printf ("\n");
-	}
+	if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, 0, NULL, "result.txt", Dout) != GMT_NOERROR) return EXIT_FAILURE;
 	/* Free output */
 	GMT_Destroy_Data (API, &Dout);
 	/* Destroy session */
