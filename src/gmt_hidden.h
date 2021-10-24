@@ -87,8 +87,10 @@ struct GMT_DATATABLE_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;            /* The internal number of the table */
 	size_t n_alloc;         /* The current allocation length of segments */
 	double dist;            /* Distance from a point to this feature */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_write mode;	/* 0 = output table, 1 = output header only, 2 = skip table */
 	struct GMT_OGR *ogr;    /* Pointer to struct with all things GMT/OGR (if MULTI-geometry and not MULTIPOINT) */
+	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	char *file[2];          /* Name of file or source [0 = in, 1 = out] */
 };
 
