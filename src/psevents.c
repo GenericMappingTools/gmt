@@ -896,7 +896,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
 			Return (API->error);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the subsequent operations and module calls even though they may have been set to read the input correctly */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the subsequent operations and module calls even though they may have been set to read the input correctly */
 		/* Build mapproject command and run the module. Note: we want distances in inches since spacing is now in inches */
 		sprintf (cmd, "%s -R%s -J%s -G+uC --PROJ_LENGTH_UNIT=inch ->%s", source, GMT->common.R.string, GMT->common.J.string, destination);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 1: %s.\n", cmd);
@@ -1258,7 +1258,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 	if (fp_symbols || fp_labels) {	/* Finalize temporary files */
 		if (fp_symbols) fclose (fp_symbols);	/* Close the file so symbol output is flushed */
 		if (fp_labels)  fclose (fp_labels);		/* Close the file so label output is flushed */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from temp files in psxy or pstext below */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from temp files in psxy or pstext below */
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Set up map projection */
@@ -1336,7 +1336,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		}
 	}
 	if (fp_symbols || fp_labels)	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-		gmt_reenable_bghi_opts (GMT);
+		gmt_reenable_bghio_opts (GMT);
 
 	/* Finalize plot and we are done */
 

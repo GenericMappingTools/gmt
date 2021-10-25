@@ -73,8 +73,8 @@
  * gmtlib_set_bin_io
  * gmt_format_abstime_output
  * gmt_ascii_format_col
- * gmt_disable_bghi_opts
- * gmt_reenable_bghi_opts
+ * gmt_disable_bghio_opts
+ * gmt_reenable_bghio_opts
  * gmt_lon_range_adjust
  * gmt_quad_reset
  * gmt_quad_init
@@ -5789,9 +5789,10 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 }
 
 /*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
-void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
+void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
 	/* Temporarily turn off any -i, -h selections */
 	GMT->common.i.select = false;
+	GMT->common.o.select = false;
 	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
 	GMT->current.setting.io_header[GMT_IN] = false;
 	GMT->common.g.active = false;	/* Turn this off (if set) for now */
@@ -5804,9 +5805,10 @@ void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 }
 
 /*! Routine will re-enable any suspended -b, -i, -g, -h selections */
-void gmt_reenable_bghi_opts (struct GMT_CTRL *GMT) {
+void gmt_reenable_bghio_opts (struct GMT_CTRL *GMT) {
 	/* Turn on again any -i, -h selections */
 	GMT->common.i.select = GMT->common.i.orig;
+	GMT->common.o.select = GMT->common.o.orig;
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
 	GMT->common.g.active = GMT->common.g.selected;	/* Turn this back on (if set) */
 	if (GMT->common.b.bin_primary) {	/* Switch back to primary i/o mode which was binary */
