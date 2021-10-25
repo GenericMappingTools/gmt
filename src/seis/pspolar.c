@@ -264,15 +264,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Backwards compatible section for old way to set alternate coordinates. Now deprecated */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->OLD_C.active);
 				if (strchr (opt->arg, 'W') || strchr (opt->arg, 'P')) {	/* Old-style -C args, honor them */
 					if (gmt_M_compat_check (GMT, 6))
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
 					else {	/* Hard error */
 						n_errors += gmt_default_error (GMT, opt->option);
 						continue;
@@ -309,7 +310,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				else if (gmt_count_char (GMT, opt->arg, '/') == 1 && strstr (opt->arg, ".cpt") == NULL) {	/* Just old-style coordinates without modifiers */
 					if (gmt_M_compat_check (GMT, 6))
-						GMT_Report (GMT->parent, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
+						GMT_Report (API, GMT_MSG_COMPAT, "-Clon/lat[W<pen>][Psize] is deprecated; use -D<lon>/<lat>[+z<lon>/<lat>[+p<pen>][+s<size>]] instead.\n");
 					else {	/* Hard error */
 						n_errors += gmt_default_error (GMT, opt->option);
 						continue;
@@ -319,6 +320,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'D':	/* Location for focal sphere placement, with optional alternate location */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				/* Now get map location to place the focal sphere plot */
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) != 2) {
@@ -329,6 +331,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &Ctrl->D.lat), txt_b);
 				break;
 			case 'E':	/* Set color for station in extensive part */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
 					gmt_fill_syntax (GMT, 'E', NULL, " ");
@@ -336,6 +339,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'F':	/* Set background color of focal sphere */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->F.fill)) {
 					gmt_fill_syntax (GMT, 'F', NULL, " ");
@@ -343,6 +347,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'G':	/* Set color for station in compressive part */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
@@ -350,6 +355,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'Q':	/* Repeatable; Controls various symbol attributes  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'e':	/* Outline station symbol in extensive part */
@@ -413,6 +419,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'M':	/* Focal sphere size -M<scale>+m<magnitude>*/
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				sscanf(opt->arg, "%[^+]%s", txt_a, txt_b);
 				Ctrl->M.ech = gmt_M_to_inch (GMT, txt_a);
@@ -424,9 +431,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'N':	/* Do not skip points outside border */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Get symbol [and size] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a':	Ctrl->S.symbol = PSL_STAR;		break;
@@ -446,10 +455,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				Ctrl->S.size = gmt_M_to_inch (GMT, &opt->arg[1]);
 				break;
 			case 'T':	/* Information about label printing */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (strlen (opt->arg)) {
 					/* New syntax: -T+a<angle>+j<justify>+o<dx>/<dy>+f<font> */
-					if ((strstr (opt->arg, "+a")) || (strstr (opt->arg, "+f")) || strstr (opt->arg, "+o") || strstr (opt->arg, "+j")) {
+					if (gmt_found_modifier (GMT, opt->arg, "afjo")) {
 						char word[GMT_LEN64] = {""};
 						if (gmt_get_modifier (opt->arg, 'a', word))
 							Ctrl->T.angle = atof(word);
@@ -476,6 +486,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSPOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'W':	/* Set line attributes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);

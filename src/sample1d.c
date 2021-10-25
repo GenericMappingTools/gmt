@@ -35,7 +35,7 @@
 #define THIS_MODULE_PURPOSE	"Resample 1-D table data using splines"
 #define THIS_MODULE_KEYS	"<D{,ND(,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->Vbdefghioqsw" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "->Vbdefghijoqsw" GMT_OPT("HMm")
 
 #define INT_1D_CART	0	/* Regular 1-D interpolation */
 #define INT_2D_CART	1	/* Cartesian 2-D path interpolation */
@@ -190,18 +190,19 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change track resampling mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] != '+') {	/* Gave a mode */
 					switch (opt->arg[0]) {
@@ -217,6 +218,7 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;		/* Note: spherical only */
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'l':
@@ -294,11 +296,13 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 					Ctrl->N.col = col;
 				}
 				else {	/* Set output knots */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 					Ctrl->T.active = true;
 					t_arg = opt->arg;
 				}
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				if (opt->arg[0]) {
 					col = atoi (opt->arg);
 					n_errors += gmt_M_check_condition (GMT, col < 0, "Option -W: Column number cannot be negative\n");

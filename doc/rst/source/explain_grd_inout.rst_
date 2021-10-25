@@ -29,8 +29,8 @@ special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
 double quotes. The **?**\ *varname* suffix can also be used for output
 grids to specify a variable name different from the default: "z". See
-:doc:`grdconvert </grdconvert>` and Sections :ref:`modifiers-for-CF` and 
-:ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more 
+:doc:`grdconvert </grdconvert>` and Sections :ref:`modifiers-for-CF` and
+:ref:`grid-file-format` of the GMT Technical Reference and Cookbook for more
 information, particularly on how to read slices of 3-, 4-, or 5-dimensional grids.
 
 When writing a netCDF file, the grid is stored by default with the
@@ -39,3 +39,52 @@ variable name "z". To specify another variable name *varname*, append
 special meaning of **?** in your shell program by putting a backslash in
 front of it, or by placing the filename and suffix between quotes or
 double quotes.
+
+.. description-ends
+.. ingrid-syntax-begins
+
+*ingrid*\ [=\ *ID*\|\ ?\ *varname*][**+b**\ *band*][**+d**\ *divisor*][**+n**\ *invalid*]
+[**+o**\ *offset*][**+s**\ *scale*]
+
+    |Add_ingrid| Optionally, append =\ *ID* for reading a specific file
+    format [Default is =\ *nf*] or ?\ *varname* for a specific netCDF variable
+    [Default is the first 2-D grid found by GMT]
+    (:ref:`See full description <grd_inout_full>`). The following modifiers are
+    supported:
+
+       - **+b** - Select a *band* (for images only) [Default is 0].
+       - **+d** - Divide data values by the given *divisor* [Default is 1].
+       - **+n** - Replace data values matching *invalid* with NaN.
+       - **+o** - Offset data values by the given *offset* [Default is 0].
+       - **+s** - Scale data values by the given *scale* [Default is 1].
+
+    Note: Any offset is added after any scaling.
+
+.. ingrid-syntax-ends
+.. outgrid-syntax-begins
+
+**-G**\ *outgrid*\ [=\ *ID*][**+d**\ *divisor*][**+n**\ *invalid*]
+[**+o**\ *offset*\|\ **a**][**+s**\ *scale*\|\ **a**]
+[:*driver*\ [*dataType*][**+c**\ *options*]]
+
+    |Add_outgrid| Optionally, append =\ *ID* for writing a specific file format
+    (:ref:`See full description <grd_inout_full>`). The following modifiers are
+    supported:
+
+        - **+d** - Divide data values by given *divisor* [Default is 1].
+        - **+n** - Replace data values matching *invalid* with a NaN.
+        - **+o** - Offset data values by the given *offset*, or append **a** for
+          automatic range offset to preserve precision for integer grids
+          [Default is 0].
+        - **+s** - Scale data values by the given *scale*, or append **a** for
+          automatic scaling to preserve precision for integer grids [Default
+          is 1].
+
+    Note: Any offset is added before any scaling. **+sa** also sets **+oa**
+    (unless overridden). To write specific formats via GDAL, use = *gd*
+    and supply *driver* (and optionally *dataType*) and/or one or more
+    concatenated GDAL **-co** options using **+c**. See
+    the :ref:`"Writing grids and images" cookbook section <Write-grids-images>`
+    for more details.
+
+.. outgrid-syntax-ends

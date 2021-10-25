@@ -18,7 +18,7 @@ Synopsis
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
-[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
+[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **r**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill*\|\ **+z** ]
 [ |-H|\ [*scale*] ]
@@ -72,7 +72,7 @@ Required Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-R| replace:: |Add_-R_links|
+.. |Add_-R| replace:: |Add_-R_auto_table|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**
@@ -128,12 +128,13 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*]
+**-E**\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*]
     Draw symmetrical error bars. Append **x** and/or **y** to indicate which bars you
     want to draw (Default is both x and y). The x and/or y errors must be
     stored in the columns after the (x,y) pair [or (x,y,z) triplet]. If
     **+a** is appended then we will draw asymmetrical error bars; these requires
-    two rather than one extra data column, with the low and high value.
+    two rather than one extra data column, with the two signed deviations.
+    Use **+A** to read the low and high bounds rather than signed deviations.
     If upper case **X** and/or **Y** are used we will instead draw
     "box-and-whisker" (or "stem-and-leaf") symbols. The x (or y) coordinate
     is then taken as the median value, and four more columns are expected to
@@ -282,10 +283,10 @@ Optional Arguments
     give the name of a *file* with one z-value (read from the last column) for each polygon in the input data.
     To apply the color obtain to a fill, use **-G+z**; to apply it to the pen color, append **+z** to **-W**.
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is the required number of columns given the chosen settings].
 .. include:: explain_-bi.rst_
-
-.. include:: explain_-aspatial.rst_
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_

@@ -1,4 +1,4 @@
- /*--------------------------------------------------------------------
+/*--------------------------------------------------------------------
  *
  *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -42,7 +42,7 @@
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
 #define THIS_MODULE_NEEDS	"r"
-#define THIS_MODULE_OPTIONS "-:RVabdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:RVabdfghinr" GMT_OPT("F") GMT_ADD_x_OPT
 
 /* Some local macros to simplify coding */
 /*! Loop over all nodes including the pad */
@@ -114,6 +114,9 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c, or auto */
 	} D;
+	struct GRDMATH_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDMATH_M {	/* -M */
 		bool active;
 	} M;
@@ -500,21 +503,27 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Restrict GSHHS features */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Map units */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Relax domain check */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Only checked later */

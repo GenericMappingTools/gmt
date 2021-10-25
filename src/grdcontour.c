@@ -272,14 +272,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 GMT_LOCAL unsigned int grdcontour_parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDCONTOUR_CTRL *Ctrl) {
-	/* Parse the -Z option: -Z[+s<scale>][+o<offset>][+p] */
+	/* Parse the -Z option: -Z[+o<offset>][+p][+s<scale>] */
 	unsigned int uerr = 0;
 	if (!txt || txt[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR,
     		"Option -Z: No arguments given\n");
 		return (GMT_PARSE_ERROR);
 	}
-	if (strstr (txt, "+s") || strstr (txt, "+o") || strstr (txt, "+p")) {
+	if (gmt_found_modifier (GMT, txt, "ops")) {
 		char p[GMT_LEN64] = {""};
 		unsigned int pos = 0;
 		while (gmt_getmodopt (GMT, 'Z', txt, "sop", &pos, p, &uerr) && uerr == 0) {
@@ -321,12 +321,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Annotation control */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				k = gmt_contour_first_pos (GMT, opt->arg);	/* Do deal with backwards compatibility */
 				if ((c = gmt_first_modifier (GMT, &opt->arg[k], GMT_CONTSPEC_MODS))) {	/* Process any modifiers */
@@ -341,6 +342,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				if (c) c[0] = '+';	/* Restore modifiers */
 				break;
 			case 'C':	/* Contour interval/cpt */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (Ctrl->C.active) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -C: Given more than once\n");
 					n_errors++;
@@ -350,10 +352,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				n_errors += gmt_contour_C_arg_parsing (GMT, opt->arg, &Ctrl->C.info);
 				break;
 			case 'D':	/* Dump file name */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.file = strdup (opt->arg);
 				break;
 			case 'F':	/* Orient dump contours */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case 'l':
@@ -368,6 +372,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'G':	/* Contour labeling position control */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				n_errors += gmt_contlabel_info (GMT, 'G', opt->arg, &Ctrl->contour);
 				break;
@@ -375,6 +380,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				if (!gmt_M_compat_check (GMT, 4)) n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':	/* Limits on range */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'n': Ctrl->L.mode = -2; break;
@@ -387,6 +393,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'Q':	/* Skip small closed contours */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				if ((c = strstr (opt->arg, "+z"))) {
 					Ctrl->Q.zero = true;
 					c[0] = '\0';	/* Temporarily chop off modifier */
@@ -414,12 +421,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'S':	/* Smoothing of contours */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				j = atoi (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, j < 0, "Option -S: Smooth_factor must be > 0\n");
 				Ctrl->S.value = j;
 				break;
 			case 'T':	/* Ticking of innermost closed contours */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				n_errors += gmt_contour_T_arg_parsing (GMT, opt->arg, &Ctrl->T.info);
 				break;
@@ -475,6 +484,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 				if (Ctrl->W.cptmode) Ctrl->W.cpt_effect = true;
 				break;
 			case 'Z':	/* For scaling or phase data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				n_errors += grdcontour_parse_Z_opt (GMT, opt->arg, Ctrl);
 				break;
@@ -938,21 +948,18 @@ EXTERN_MSC int GMT_grdcontour (void *V_API, int mode, void *args) {
 					}
 					strcat (cmd2, string); break;
 				case 'C':	/* grdcontour, but maybe this is a cpt to be used in grdview as well */
-					got_cpt = true;
+					got_cpt = got_C_cpt = true;
 					strcat (cmd2, string);
 					if (optN->arg[0])	/* Use the -N cpt instead */
 						sprintf (string, " -C%s", optN->arg);
-					else if (gmt_M_file_is_memory (opt->arg)) {	/* CPT passed in as an object */
+					else if (gmt_M_file_is_memory (opt->arg))	/* CPT passed in as an object */
 						strcpy (cptfile, opt->arg);
-						got_C_cpt = true;
-					}
 					else if ((L = strlen (opt->arg)) >= 4 && !strncmp (&opt->arg[L-4], GMT_CPT_EXTENSION, GMT_CPT_EXTENSION_LEN)) {	/* Gave a -C<cpt> argument, check that it is valid */
 						if (!gmt_file_is_cache (API, opt->arg) && gmt_access (API->GMT, opt->arg, R_OK)) {
 							GMT_Report (API, GMT_MSG_ERROR, "Option -C: CPT file %s not found\n", opt->arg);
 							bailout (GMT_PARSE_ERROR);
 						}
 						strcpy (cptfile, opt->arg);
-						got_C_cpt = true;
 					}
 					else if (L < 4) {
 						GMT_Report (API, GMT_MSG_ERROR, "Options -C or -N: No CPT given\n");

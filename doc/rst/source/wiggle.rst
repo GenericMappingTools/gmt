@@ -66,7 +66,7 @@ Required Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
-.. |Add_-R| replace:: |Add_-R_links|
+.. |Add_-R| replace:: |Add_-R_auto_table|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**
@@ -172,6 +172,11 @@ Optional Arguments
 
 **-W**\ *pen*
     Specify outline pen attributes [Default is no outline].
+
+.. |Add_-XY| replace:: |Add_-XY_links|
+.. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_

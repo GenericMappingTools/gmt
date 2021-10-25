@@ -141,7 +141,18 @@ or in C shell::
 
     setenv GMT_SESSION_NAME $$
 
-This setting is prescribed if you create a new script with ``gmt --new-script``.
+This setting is prescribed if you create a new script with ``gmt --new-script``, as is the **-e** option
+that will stop the script if any command returns an error.
+
+Because of this mode of communication you can also not run two separate modern mode scripts
+from the same terminal at the same time (e.g., job_1.sh &; job_2.sh &) since they would share the
+same GMT_SESSION_NAME (unless you reassigned it explicitly in the scripts).  Finally, if you
+Ctrl-C a modern mode command it will first try to remove the hidden gmt_session.###### directory.
+Should you try to terminate a script with a mix of GMT and UNIX commands then whatever
+process is running when you hit Ctrl-C will be the one that stops, and if that is not a GMT command
+then the hidden directory will be left behind.  You can clean this up via::
+
+    gmt clear sessions
 
 See Also
 --------

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdedit** *grid* [ |-A| ] [ |-C| ]
+**gmt grdedit** *ingrid* [ |-A| ] [ |-C| ]
 [ |SYN_OPT-D2| ]
 [ |-E|\ [**a**\|\ **e**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**] ]
 [ |-G|\ *outgrid* ]
@@ -49,8 +49,10 @@ to save the modified grid to a new file.
 Required Arguments
 ------------------
 
-*grid*
-    Name of the 2-D grid file to modify. (See :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: Name of the 2-D grid file to modify.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -89,9 +91,11 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Normally, **grdedit** will overwrite the existing grid with the modified grid.
+.. |Add_outgrid| replace:: Normally, **grdedit** will overwrite the existing grid with the modified grid.
     Use **-G** to write the modified grid to the file *outgrid* instead.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be recognized by GDAL.

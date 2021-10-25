@@ -100,7 +100,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		double sensor_offset;
 	} A;
 	struct MGD77LIST_D {	/* -D */
-		bool active;
+		bool active[2];
 		bool mode;	/* true to skip recs with time == NaN */
 		double start;	/* Start time */
 		double stop;	/* Stop time */
@@ -113,7 +113,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		char *flags;
 	} F;
 	struct MGD77LIST_G {	/* -G */
-		bool active;
+		bool active[2];
 		uint64_t start;	/* Start rec */
 		uint64_t stop;	/* Stop rec */
 	} G;
@@ -136,7 +136,7 @@ struct MGD77LIST_CTRL {	/* All control options for this program (except common a
 		double max[3];
 	} Q;
 	struct MGD77LIST_S {	/* -S */
-		bool active;
+		bool active[2];
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
@@ -398,6 +398,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Adjustment flags */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				k = 0;
 				if (opt->arg[k] == '+') {	/* Recalculate anomalies even if original anomaly == NaN [Default leaves NaNs unchanged] */
@@ -501,7 +502,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'D':		/* Assign start/stop times for sub-section */
-				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 				 	case 'A':		/* Start date, skip records with time = NaN */
 						Ctrl->D.mode = true;
@@ -512,6 +512,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[0]);
+						Ctrl->D.active[0] = true;
 						break;
 					case 'B':		/* Stop date, skip records with time = NaN */
 						Ctrl->D.mode = true;
@@ -522,6 +524,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Db: Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[1]);
+						Ctrl->D.active[1] = true;
 						break;
 					default:
 						n_errors++;
@@ -530,10 +534,12 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'E':	/* Exact parameter match */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 
 			case 'F':	/* Selected output fields */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				strncpy (buffer, opt->arg, GMT_BUFSIZ-1);
 				if (!strcmp (buffer, "mgd77")) strncpy (buffer, MGD77_FMT, GMT_BUFSIZ);
@@ -576,13 +582,16 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'G':		/* Assign start/stop records for sub-section */
-				Ctrl->G.active = true;
 				switch (opt->arg[0]) {
 				 	case 'a':		/* Start record */
 						Ctrl->G.start = atol (&opt->arg[1]);
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[0]);
+						Ctrl->G.active[0] = true;
 						break;
 					case 'b':		/* Stop record */
 						Ctrl->G.stop = atol (&opt->arg[1]);
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[1]);
+						Ctrl->G.active[1] = true;
 						break;
 					default:
 						n_errors++;
@@ -591,6 +600,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))
@@ -607,6 +617,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'L':	/* Crossover correction table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.file = strdup (opt->arg);
 				break;
@@ -618,6 +629,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				}
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[N_D]);
 						Ctrl->N.active[N_D] = true;
 						Ctrl->N.unit[N_D][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_D][0])) {
@@ -626,6 +638,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 						}
 						break;
 					case 's':	/* Speed unit selection */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[N_S]);
 						Ctrl->N.active[N_S] = true;
 						Ctrl->N.unit[N_S][0] = opt->arg[1];
 						if (!strchr (GMT_LEN_UNITS2, (int)Ctrl->N.unit[N_S][0])) {
@@ -647,6 +660,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Qa: append min/max azimuth limits [0/360]\n");
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_A]);
 						Ctrl->Q.active[Q_A] = true;
 						break;
 					case 'C':	/* Course change min/max using absolute value of cc */
@@ -657,6 +671,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Qc: append min/max course change limits [-360/+360]\n");
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_C]);
 						Ctrl->Q.active[Q_C] = true;
 						break;
 					case 'v':	/* Velocity min/max */
@@ -667,6 +682,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Qv: append min[/max] velocity limits [0]\n");
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Q_V]);
 						Ctrl->Q.active[Q_V] = true;
 						break;
 					default:
@@ -677,14 +693,17 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				break;
 
 			case 'S':		/* Assign start/stop position for sub-section (converted to meters) */
-				Ctrl->S.active = true;
 				if (opt->arg[0] == 'a') {		/* Start position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.start = atof (&opt->arg[1]) * dist_scale;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[0]);
+					Ctrl->S.active[0] = true;
 				}
 				else if (opt->arg[0] == 'b') {	/* Stop position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.stop = atof (&opt->arg[1]) * dist_scale;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[1]);
+					Ctrl->S.active[1] = true;
 				}
 				else
 					n_errors++;
@@ -709,11 +728,13 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77LIST_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'W':		/* Assign a weight to these data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				Ctrl->W.value = (!strcmp (opt->arg, "NaN")) ? GMT->session.d_NaN : atof (opt->arg);
 				break;
 
 			case 'Z':		/* -Zn is negative down for depths */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				switch (opt->arg[0]) {
 					case '-':	case 'n':	Ctrl->Z.mode = true;	break;
@@ -942,7 +963,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 		auxlist[MGD77_AUX_AZ].requested = true;
 		auxlist[MGD77_AUX_SP].requested = true;
 	}
-	need_distances = (Ctrl->S.active || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
+	need_distances = (Ctrl->S.active[0] || Ctrl->S.active[1] || auxlist[MGD77_AUX_SP].requested || auxlist[MGD77_AUX_DS].requested || auxlist[MGD77_AUX_AZ].requested || auxlist[MGD77_AUX_CC].requested);	/* Distance is requested */
 	need_lonlat = (auxlist[MGD77_AUX_MG].requested || auxlist[MGD77_AUX_GR].requested || auxlist[MGD77_AUX_CT].requested || Ctrl->A.code[ADJ_MG] > MG_MAG_STORED || Ctrl->A.code[ADJ_DP] & DP_TWT_X_V_MINUS_CARTER || Ctrl->A.code[ADJ_CT] > CT_U_MINUS_DEPTH || Ctrl->A.code[ADJ_GR] > GR_FAA_STORED || Ctrl->A.fake_times || Ctrl->A.cable_adjust);	/* Need lon, lat to calculate reference fields or Carter correction */
 	need_time = (auxlist[MGD77_AUX_YR].requested || auxlist[MGD77_AUX_MO].requested || auxlist[MGD77_AUX_DY].requested ||
 	             auxlist[MGD77_AUX_HR].requested || auxlist[MGD77_AUX_MI].requested || auxlist[MGD77_AUX_SC].requested ||
@@ -955,7 +976,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 		 if (MGD77_Get_Column (GMT, "lon", &M) == MGD77_NOT_SET)
 		 	strcat (fx_setting, ",lon"), n_sub++;	/* Append lon to requested list */
 	}
-	if ((Ctrl->D.active || need_time || auxlist[MGD77_AUX_SP].requested) && MGD77_Get_Column (GMT, "time", &M) == MGD77_NOT_SET) strcat (fx_setting, ",time"), n_sub++;	/* Append time to requested list */
+	if ((Ctrl->D.active[0] || Ctrl->D.active[1] || need_time || auxlist[MGD77_AUX_SP].requested) && MGD77_Get_Column (GMT, "time", &M) == MGD77_NOT_SET) strcat (fx_setting, ",time"), n_sub++;	/* Append time to requested list */
 	need_twt = (auxlist[MGD77_AUX_CT].requested || (Ctrl->A.code[ADJ_CT] > 0 && Ctrl->A.code[ADJ_CT] <= CT_U_MINUS_CARTER) ||
 	            (Ctrl->A.code[ADJ_DP] > DP_DEPTH_STORED));
 	if (need_twt) {	/* Want to estimate Carter corrections */
@@ -1214,7 +1235,7 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 			tvalue[kk] = D->values[kk];
 		}
 
-		this_limit_on_time = Ctrl->D.active;	/* Since we might change it below */
+		this_limit_on_time = (Ctrl->D.active[0] || Ctrl->D.active[1]);	/* Since we might change it below */
 		if (time_column != MGD77_NOT_SET && D->H.no_time) {	/* Cannot know if ASCII MGD77 don't have time until after reading */
 			bool faked = false;
 			if (Ctrl->A.fake_times) {	/* Try to make fake times based on duration and distances */
@@ -1315,8 +1336,8 @@ EXTERN_MSC int GMT_mgd77list (void *V_API, int mode, void *args) {
 
 			/* Check if rec no, time or distance falls outside specified ranges */
 
-			if (Ctrl->G.active && (rec < Ctrl->G.start || rec > Ctrl->G.stop)) continue;
-			if (Ctrl->S.active && (cumulative_dist < Ctrl->S.start || cumulative_dist >= Ctrl->S.stop)) continue;
+			if ((Ctrl->G.active[0] || Ctrl->G.active[1]) && (rec < Ctrl->G.start || rec > Ctrl->G.stop)) continue;
+			if ((Ctrl->S.active[0] || Ctrl->S.active[1]) && (cumulative_dist < Ctrl->S.start || cumulative_dist >= Ctrl->S.stop)) continue;
 			if (Ctrl->D.mode && gmt_M_is_dnan (dvalue[t_col][rec])) continue;
 			if (this_limit_on_time && (dvalue[t_col][rec] < Ctrl->D.start || dvalue[t_col][rec] >= Ctrl->D.stop)) continue;
 			if (GMT->common.R.active[RSET]) {	/* Check is lat/lon is outside specified area */

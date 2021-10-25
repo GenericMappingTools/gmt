@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Initialize or terminate polygonal clip paths"
 #define THIS_MODULE_KEYS	"<D{,>X},C-("
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqstxy" GMT_OPT("EZMmc")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdefghipqtxy" GMT_OPT("EZMmc")
 
 struct PSCLIP_CTRL {
 	struct PSCLIP_A {	/* -A[m|y|p|x|r|t<step>] */
@@ -130,13 +130,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				n_files++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Turn off draw_arc mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'm': case 'y': case 'r': Ctrl->A.mode = GMT_STAIRS_Y; break;
@@ -147,6 +148,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'C':	/* Turn clipping off */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.n = PSL_ALL_CLIP;
 				switch (opt->arg[0]) {
@@ -163,12 +165,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSCLIP_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'N':	/* Use the outside of the polygons as clip area */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'T':	/* Select map clip */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 			case 'W':		/* Set line attributes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, "sets pen attributes [Default pen is %s]:", NULL, 11);

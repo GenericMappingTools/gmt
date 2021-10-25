@@ -32,7 +32,7 @@
 #define THIS_MODULE_PURPOSE	"Convert data table to a grid"
 #define THIS_MODULE_KEYS	"<D{,SD),GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:JRVbdefhiqrsw" GMT_OPT("FH")
+#define THIS_MODULE_OPTIONS "-:JRVbdefhiqrw" GMT_OPT("FH")
 
 struct XYZ2GRD_CTRL {
 	struct XYZ2GRD_In {
@@ -56,6 +56,9 @@ struct XYZ2GRD_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct XYZ2GRD_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct XYZ2GRD_S {	/* -S */
 		bool active;
 		char *file;
@@ -87,9 +90,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] -G%s %s %s [-A[d|f|l|m|n|r|S|s|u|z]] [%s] [%s] [-S[<zfile>]] [%s] "
-		"[-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT,
+		"[-Z[<flags>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT,
 		GMT_GRDEDIT2D, GMT_J_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT,
-		GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+		GMT_qi_OPT, GMT_r_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -145,7 +148,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"all nodes have data values.");
 	GMT_Option (API, "bi3,di");
 	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Also sets value for nodes without input xyz triplet [Default is NaN].");
-	GMT_Option (API, "e,f,h,i,qi,r,s,w,:,.");
+	GMT_Option (API, "e,f,h,i,qi,r,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -172,7 +175,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 			case '<':	/* Input files */
 				if (n_files++ > 0) break;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
 				else
 					Ctrl->In.active = true;
@@ -181,6 +184,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				if (!opt->arg[0] && gmt_M_compat_check (GMT, 4)) {	/* In GMT4, just -A implied -Az */
 					GMT_Report (API, GMT_MSG_COMPAT, "Option -A is deprecated; use -Az instead.\n");
 					Ctrl->A.active = true;
@@ -196,6 +200,7 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 				}
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.information = strdup (opt->arg);
 				break;
@@ -212,11 +217,14 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':
@@ -236,10 +244,12 @@ static int parse (struct GMT_CTRL *GMT, struct XYZ2GRD_CTRL *Ctrl, struct GMT_Z_
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0]) Ctrl->S.file = strdup (opt->arg);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				ptr_to_arg = opt->arg;
 				break;
@@ -626,7 +636,7 @@ EXTERN_MSC int GMT_xyz2grd (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Read separately because of all the possible formats */
 			if (ij == io.n_expected) {
 				GMT_Report (API, GMT_MSG_ERROR, "More than %" PRIu64 " records, only %" PRIu64 " was expected (aborting)!\n", ij, io.n_expected);
-				GMT_Report (API, GMT_MSG_ERROR, "(You are probably misterpreting xyz2grd with an interpolator; see 'surface' man page)\n");
+				GMT_Report (API, GMT_MSG_ERROR, "(You are possibly mistaking xyz2grd for an interpolator; see 'greenspline|surface|triangulate' man pages)\n");
 				gmt_M_free (GMT, data);		gmt_M_free (GMT, flag);
 				Return (GMT_RUNTIME_ERROR);
 			}

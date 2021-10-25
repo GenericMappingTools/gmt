@@ -354,6 +354,7 @@ Module help and configuration
 .. include:: explain_precision.rst_
 
 .. include:: explain_grd_inout.rst_
+    :end-before: .. description-ends
 
 Classic Mode Options
 --------------------
@@ -375,6 +376,12 @@ directories. For an explanation of the various GMT settings in this
 man page (like :term:`FORMAT_FLOAT_OUT`), see the man page of the GMT
 configuration file :doc:`gmt.conf`. Information is also available on the
 GMT documentation site https://docs.generic-mapping-tools.org/
+
+Deprecations
+------------
+
+- 6.3.0: Update -g syntax. `#5617 <https://github.com/GenericMappingTools/gmt/pull/5617>`_
+- 6.3.0: Update -JG syntax to use modifiers. `#5780 <https://github.com/GenericMappingTools/gmt/pull/5780>`_
 
 See Also
 --------

@@ -63,6 +63,9 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 	} G;
+	struct GRDLANDMASK_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDLANDMASK_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int wetdry;	/* 1 if dry/wet only, 0 if 5 mask levels */
@@ -156,15 +159,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Restrict GSHHS features */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
 				Ctrl->D.force = (opt->arg[1] == '+' && (opt->arg[2] == 'f' || opt->arg[2] == '\0'));
 				break;
 			case 'E':	/* On-boundary setting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0]) {	/* Trace lines through grid */
 					GMT_Report (API, GMT_MSG_WARNING, "-E<values> is presently being tested and is considered experimental\n");
@@ -185,11 +191,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GM
 					Ctrl->E.inside = GMT_INSIDE;
 				break;
 			case 'G':	/* Output filename */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Mask values */

@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdcontour** *grid*
+**gmt grdcontour** *ingrid*
 |-J|\ *parameters* [ |-A|\ [**n**\|\ *contours*][*labelinfo*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *contours*\|\ *cpt* ]
@@ -53,9 +53,10 @@ may be saved to one or more output files (or stdout) and no plot is produced.
 Required Arguments
 ------------------
 
-*grid*
-    2-D gridded data set to be contoured (see :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D gridded data set to be contoured.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
@@ -67,7 +68,7 @@ Optional Arguments
 
 .. _-A:
 
-**-A**\ [**n**]\|\ [*contours*][*labelinfo*]
+**-A**\ [**n**\|\ *contours*][*labelinfo*]
     *contours* is annotation interval in data units; it is ignored if
     contour levels are given in a file via **-C**. [Default is no annotations]. Prepend
     **n** to disable all annotations implied by **-C**. To just select a few specific

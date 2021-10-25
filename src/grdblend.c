@@ -67,6 +67,9 @@ struct GRDBLEND_CTRL {
 		unsigned int mode;
 		int sign;
 	} C;
+	struct GRDBLEND_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDBLEND_Q {	/* -Q */
 		bool active;
 	} Q;
@@ -461,11 +464,9 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 		if (do_sample) {	/* One or more reasons to call upon grdsample before using this grid */
 			gmt_filename_set (B[n].file);	/* Replace any spaces in filename with ASCII 29 */
 			if (do_sample & 1) {	/* Resampling of the grid into a netcdf grid */
-				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
-					sprintf (buffer, "%s/grdblend_resampled_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
-				else	/* Must dump it in current directory */
-					sprintf (buffer, "grdblend_resampled_%d_%d.nc", (int)getpid(), n);
-				//snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, h->registration ? "-r" : "",
+
+				if (gmt_get_tempname (GMT->parent, "grdblend_resampled", ".nc", buffer))
+					return GMT_RUNTIME_ERROR;
 				snprintf (cmd, GMT_LEN256, "%s %s %s %s -G%s -V%c", B[n].file, res,
 				         Iargs, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
@@ -480,10 +481,8 @@ GMT_LOCAL int grdblend_init_blend_job (struct GMT_CTRL *GMT, char **files, unsig
 				if (srtm_job)
 					GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
 					            "Convert tile from JPEG2000 to netCDF grid [%s]\n", B[n].file);
-				if (GMT->parent->tmp_dir)	/* Use the established temp directory */
-					sprintf (buffer, "%s/grdblend_reformatted_%d_%d.nc", GMT->parent->tmp_dir, (int)getpid(), n);
-				else	/* Must dump it in current directory */
-					sprintf (buffer, "grdblend_reformatted_%d_%d.nc", (int)getpid(), n);
+				if (gmt_get_tempname (GMT->parent, "grdblend_reformatted", ".nc", buffer))
+					return GMT_RUNTIME_ERROR;
 				snprintf (cmd, GMT_LEN256, "%s %s %s -V%c", B[n].file, Rargs, buffer, V_level[GMT->current.setting.verbose]);
 				if (gmt_M_is_geographic (GMT, GMT_IN)) strcat (cmd, " -fg");
 				strcat (cmd, " --GMT_HISTORY=readonly");
@@ -726,13 +725,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 				if (n_alloc <= Ctrl->In.n)
 					Ctrl->In.file = gmt_M_memory (GMT, Ctrl->In.file, n_alloc += GMT_SMALL_CHUNK, char *);
 				if (opt->arg[0]) Ctrl->In.file[Ctrl->In.n] = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n]))) n_errors++;
 				Ctrl->In.n++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Clobber mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'f': Ctrl->C.mode = BLEND_FIRST; break;
@@ -761,11 +761,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'G':	/* Output filename */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* NaN-value (deprecated 7.29.2021 PW, use -di) */
@@ -785,13 +788,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDBLEND_CTRL *Ctrl, struct GMT_O
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'Q':	/* No header on output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 			case 'W':	/* Write weights instead */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0] == 'z') Ctrl->W.mode = 1;
 				break;
 			case 'Z':	/* z-multiplier */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				Ctrl->Z.scale = atof (opt->arg);
 				break;
@@ -970,10 +976,8 @@ EXTERN_MSC int GMT_grdblend (void *V_API, int mode, void *args) {
 	else {
 		unsigned int w_mode;
 		if (reformat) {	/* Must use a temporary netCDF file then reformat it at the end */
-			if (API->tmp_dir)	/* Use the established temp directory */
-				sprintf (outtemp, "%s/grdblend_temp_%d.nc", API->tmp_dir, (int)getpid());	/* Get temporary file name */
-			else	/* Must dump it in current directory */
-				sprintf (outtemp, "grdblend_temp_%d.nc", (int)getpid());	/* Get temporary file name */
+			if (gmt_get_tempname (GMT->parent, "grdblend_temp", ".nc", outtemp))
+				return GMT_RUNTIME_ERROR;
 			outfile = outtemp;
 		}
 		else

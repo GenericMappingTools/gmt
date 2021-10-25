@@ -232,12 +232,13 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Supplemental parameters */
 
 			case 'A':	/* Output only an age-limited segment of the track */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0]) {	/* Gave specific limits for all input points */
 					k = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
@@ -263,6 +264,7 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'D':	/* Specify in which direction we should project */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 					case 'B':	/* Go from locations formed in the past towards present zero time */
@@ -284,17 +286,20 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
 				/* Intentionally fall through */
 			case 'E':	/* File with stage poles or a single rotation pole */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 
 			case 'F':	/* File with hotspot motion history */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 
 			case 'L':	/* Specify what kind of track to project */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				switch (opt->arg[0]) {
 					case 'F':	/* Calculate flowlines */
@@ -318,21 +323,25 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 				break;
 
 			case 'M':	/* Convert to total reconstruction rotation poles instead */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
 				break;
 
 			case 'N':	/* Extend oldest stage back to this time [no extension] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.t_upper = atof (opt->arg);
 				break;
 
 			case 'Q':	/* Fixed age for all points */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				Ctrl->Q.t_fix = atof (opt->arg);
 				break;
 
 			case 'S':	/* Set file stem for individual output files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0]) {
 					Ctrl->S.file = strdup (opt->arg);
@@ -345,11 +354,13 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 				break;
 
 			case 'T':	/* Current age [0 Ma] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.t_zero = atof (opt->arg);
 				break;
 
 			case 'W':	/* Report confidence ellipses */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				Ctrl->W.mode = opt->arg[0];
 				break;
@@ -492,7 +503,7 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->F.active) {	/* Get and use hotspot motion file */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 		if ((F = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -504,7 +515,7 @@ EXTERN_MSC int GMT_backtracker (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s does not start at the present\n", Ctrl->F.file);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		H = F->table[0]->segment[0];	/* Only one table with one segment for histories */
 		for (row = 0; row < H->n_rows; row++) H->data[GMT_Y][row] = gmt_lat_swap (GMT, H->data[GMT_Y][row], GMT_LATSWAP_G2O);	/* Convert to geocentric */
 	}

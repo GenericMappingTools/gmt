@@ -53,7 +53,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup vcpkg (Windows)
-        uses: dawidd6/action-download-artifact@v2.14.1
+        uses: dawidd6/action-download-artifact@v2.15.0
         with:
           workflow: ci-caches.yml
           name: vcpkg-cache
@@ -107,7 +107,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.14.1
+        uses: dawidd6/action-download-artifact@v2.15.0
         with:
           workflow: ci-caches.yml
           name: gmt-cache

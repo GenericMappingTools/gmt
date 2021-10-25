@@ -947,8 +947,10 @@ is a sum of bit flags and the various bits control the following settings:
 #. Bit 5 (16 or GMT_SESSION_RUNMODE): If set, the we enable GMT's modern run-mode (where -O -K are
    not allowed and PostScript is written to hidden temp file).  Default
    is the GMT classic run-mode.
-#. Bit 6 (32 or GMT_SESSION_NOHISTORY): If set, the we disable GMT's command shorthand via gmt.history files.
+#. Bit 6 (32 or GMT_SESSION_NOHISTORY): If set, then we disable GMT's command shorthand via gmt.history files.
    The default is to allow this communication between GMT modules.
+#. Bit 7 (64 or GMT_SESSION_NOGDALCLOSE): If set with GMT_SESSION_EXTERNAL, then we do not close the
+   GDAL connection as the calling environment requires it to stay open.
 
 The ``print_func`` argument is a pointer to a function that is used to print
 messages from GMT via GMT_Message_ or GMT_Report_ from external environments that cannot use the

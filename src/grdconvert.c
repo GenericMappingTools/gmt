@@ -106,14 +106,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 }
 
 GMT_LOCAL unsigned int grdconvert_parse_Z_opt (struct GMT_CTRL *GMT, char *txt, struct GRDCONVERT_CTRL *Ctrl) {
-	/* Parse the -Z option: -Z[+s<scale>][+o<offset>] */
+	/* Parse the -Z option: -Z[+o<offset>][+s<scale>] */
 	unsigned int uerr = 0;
 	if (!txt || txt[0] == '\0') {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR,
     		"Option -Z: No arguments given\n");
 		return (GMT_PARSE_ERROR);
 	}
-	if (strstr (txt, "+s") || strstr (txt, "+o")) {
+	if (gmt_found_modifier (GMT, txt, "os")) {
 		char p[GMT_LEN64] = {""};
 		unsigned int pos = 0;
 		while (gmt_getmodopt (GMT, 'Z', txt, "so", &pos, p, &uerr) && uerr == 0) {
@@ -148,13 +148,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				 * check for two input files and assign the 2nd as the actual output file */
 				if (n_in == 0) {
 					Ctrl->In.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 					n_in++;
 				}
 				else if (n_in == 1) {
 					Ctrl->G.active = true;
 					Ctrl->G.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 					n_in++;
 				}
 				else {
@@ -166,13 +166,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 			case '>':	/* Output file may be set this way from the external API */
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				n_in++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
 					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
@@ -180,15 +181,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				}
 				else {
 					Ctrl->G.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				}
 				break;
 
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 
 			case 'Z':	/* For scaling or phase data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				n_errors += grdconvert_parse_Z_opt (GMT, opt->arg, Ctrl);
 				break;

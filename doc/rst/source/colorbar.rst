@@ -81,8 +81,9 @@ Optional Arguments
     flags in the CPT). The exception to this rule is for CPT files that were scaled to fit the range
     of a grid exactly and thus have arbitrary color levels; these will trigger an automatic **-Baf** setting.
     To specify custom text annotations for
-    intervals, you must append ;\ *annotation* to each z-slice in the CPT.
-    For standard **-B** operations, |Add_-B_links|
+    intervals, you must append ;\ *annotation* to each z-slice in the CPT. **Note**: The **-B**
+    option relies on the **-R** and **-J** settings of the :ref:`given hierarchical level <cookbook/features:GMT Modern Mode Hierarchical Levels>`
+    to plot correctly. For standard **-B** operations, |Add_-B_links|
 
 .. _-C:
 
@@ -115,7 +116,10 @@ Optional Arguments
     away from the map frame.
     However, you can override any of these with these modifiers:
     Append **+w** followed by the *length* and *width* of the color bar.  If *width* is not
-    specified then it is set to 4% of the given *length*.
+    specified then it is set to 4% of the given *length*. If *length* is not given then it defaults
+    to 80% of the corresponding map side dimension.  If either *length* or *width* end with % then
+    those percentages are used instead to set the dimensions, where *width* is defined as a
+    percentage of the colorbar *length*.
     Give a negative *length* to reverse the scale bar, or append **+r**. Append **+h** to get a
     horizontal scale [Default is vertical (**+v**)].
     By default, the anchor point on the scale is assumed to be the bottom left corner (BL), but this

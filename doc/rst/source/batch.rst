@@ -23,6 +23,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [*dir*] ]
 [ |-Z| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -139,6 +140,9 @@ Optional Arguments
     Erase the *mainscript* and all input scripts given via **-I** and **-S** upon completion.  Not compatible
     with **-Q**.
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
 .. _-cores:
 
 **-x**\ [[-]\ *n*]
@@ -147,7 +151,7 @@ Optional Arguments
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
     The parallel processing does not depend on OpenMP; new jobs are launched when the previous ones
-    complete.
+    complete. **Note**: One core is reserved by **batch** so in effect *n-1* are used for the jobs.
 
 .. include:: explain_help.rst_
 
@@ -302,6 +306,15 @@ we combine all the individual PDFs into a single PDF file and delete the individ
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
 Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
+
+macOS Issues
+------------
+
+**Note**: The limit on the number of concurrently open files is relatively small by default on macOS and when executing
+numerous jobs at the same time it is not unusual to get failures in **batch** jobs with the message "Too many open files". 
+We refer you to this helpful
+`article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
+for various solutions. 
 
 See Also
 --------

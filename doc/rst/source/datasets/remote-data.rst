@@ -41,6 +41,13 @@ do specify a specific registration and that version is not available you will ge
 The codes for *rr*\ *u* and the optional *reg* that are supported will be listed in the sections
 below describing each of the available data sets.
 
+When used in plots (i.e., both when a region and map projection is selected to make an image) the data
+resolution is optional. If it is not given then we determine a data set resolution that will result
+in a final plot image dots-per-unit resolution that is the closest to the :term:`GMT_GRAPHICS_DPU` default
+setting. This eliminates the need for the user to determine what grid resolution will give a nice-looking
+image and not create a bloated file that exceeds what the eye (or printers) can discern. Use
+:doc:`/grdcut` with the **-D** option to inquire about the automatic resolution. **Note**: Grid
+processing tools require the data resolution to be specified since no plot is being generated.
 
 Currently, GMT provides the following datasets (with their special names in parentheses)
 
@@ -131,6 +138,15 @@ not depend on GMT, you can create that via :doc:`/grdcut`.  For instance, to mak
 eight tiles that make up the 2m x 2m gridline-registered data, try::
 
     gmt grdcut @earth_relief_02m_g -Gearth_at_2m.grd -Rg
+
+Finally, if you wish to determine the most suitable grid resolution that is adequate for making a map
+given a region and projection, you can inquire about this information by passing -D, e.g.::
+
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D -V > info.txt
+
+or obtain the required subset grid directly via::
+
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -Gsubset.grd -V
 
 ----
 

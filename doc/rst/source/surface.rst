@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt surface** [ *table* ] |-G|\ *outputfile.nc*
+**gmt surface** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *aspect_ratio*\|\ **m** ]
@@ -26,6 +26,7 @@ Synopsis
 [ |-S|\ *search_radius*\ [**m**\|\ **s**] ]
 [ |-T|\ [**b**\|\ **i**]\ *tension_factor* ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [*logfile*] ]
 [ |-Z|\ *over-relaxation_factor* ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
@@ -78,9 +79,11 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outputfile.nc*
-    Output file name. Output is a binary 2-D *.nc* file. Note that the
+.. |Add_outgrid| replace:: Give the name of the output grid file. Note that the
     smallest grid dimension must be at least 4.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -110,7 +113,7 @@ Optional Arguments
     maximum absolute change in any grid value is less than
     *convergence_limit*. (Units same as data z units). Alternatively,
     give limit in percentage of rms deviation by appending %.  [Default is
-    scaled to 1e-4 of the root-mean-square deviation of the data
+    scaled to :math:`10^{-4}` of the root-mean-square deviation of the data
     from a best-fit (least-squares) plane.].
     This is the final convergence limit at the desired grid spacing; for
     intermediate (coarser) grids the effective convergence limit is divided
@@ -205,6 +208,11 @@ Optional Arguments
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. _-W:
+
+**-W**\ [*logfile*]
+    Write convergence information to *logfile* [Default is *surface_log.txt*].
 
 .. _-Z:
 

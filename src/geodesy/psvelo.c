@@ -755,6 +755,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 	bool got_A = false, got_shape = false;
 	char txt[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, txt_c[GMT_LEN256] = {""}, symbol, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	symbol = (gmt_M_is_geographic (GMT, GMT_IN)) ? '=' : 'v';	/* Type of vector */
 
@@ -763,12 +764,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Change size of arrow head */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				got_A = true;
 				if (gmt_M_compat_check (GMT, 4) && (strchr (opt->arg, '/') && !strchr (opt->arg, '+'))) {	/* Old-style args */
 					sscanf (opt->arg, "%[^/]/%[^/]/%s", txt, txt_b, txt_c);
@@ -794,14 +796,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'C':	/* Select CPT for coloring */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Rescale sigmas */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.scale = atof (opt->arg);
 				break;
 			case 'E':	/* Set color for error ellipse  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->E.fill)) {
 					gmt_fill_syntax (GMT, 'E', NULL, " ");
 					n_errors++;
@@ -809,6 +814,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				Ctrl->E.active = true;
 				break;
 			case 'G':	/* Set Gray shade for polygon */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
@@ -816,6 +822,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'H':		/* Overall symbol/pen scale column provided */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				Ctrl->H.active = true;
 				if (opt->arg[0]) {	/* Gave a fixed scale - no reading from file */
 					Ctrl->H.value = atof (opt->arg);
@@ -823,6 +830,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'I':	/* Adjust symbol color via intensity */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0])
 					Ctrl->I.value = atof (opt->arg);
@@ -830,6 +838,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 					Ctrl->I.mode = 1;
 				break;
 			case 'L':	/* Draw the outline */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					Ctrl->L.error_pen = true;
@@ -840,9 +849,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'N':	/* Do not skip points outside border */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Get symbol [and size] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
  				txt_b[0] = '\0';
 				if ((c = strstr (opt->arg, "+f"))) {	/* Gave font directly so handle that first */
  					if (c[2] == '0')
@@ -898,7 +909,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 						Ctrl->S.readmode = READ_CROSS;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Unrecognized symbol code %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -S: Unrecognized symbol code %s\n", opt->arg);
 						n_errors++;
 						break;
 				}
@@ -906,6 +917,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				if (gmt_M_is_zero (Ctrl->S.scale)) Ctrl->S.read = true;	/* Must get size from input file */
 				break;
 			case 'W':	/* Set line attributes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0] && gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
@@ -913,6 +925,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'Z':	/* Set items to control CPT coloring */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				if (opt->arg[0] && (c = strstr (opt->arg, "+e"))) {	/* Paint error part of symbol instead (-E) */
 					Ctrl->Z.item = PSVELO_E_FILL;
@@ -925,7 +938,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 					case 'r':	Ctrl->Z.mode = PSVELO_R_MAG;	break;
 					case 'u':	Ctrl->Z.mode = PSVELO_V_USER;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Unrecognized mode %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Unrecognized mode %s\n", opt->arg);
 						n_errors++;
 						break;
 				}
@@ -938,7 +951,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSVELO_CTRL *Ctrl, struct GMT_OPT
 	}
 
 	if (Ctrl->S.symbol == CROSS && !got_shape) Ctrl->A.S.v.v_shape = 0.1;	/* Traditional default cross vector shape if none given */
-	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
         /* Only one allowed */
 	n_set = (Ctrl->S.readmode == READ_ELLIPSE) + (Ctrl->S.readmode == READ_ROTELLIPSE) + (Ctrl->S.readmode == READ_ANISOTROPY) + (Ctrl->S.readmode == READ_CROSS) + (Ctrl->S.readmode == READ_WEDGE);
@@ -979,7 +992,7 @@ GMT_LOCAL void psvelo_set_colorfill (struct GMT_CTRL *GMT, struct PSVELO_CTRL *C
 EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 	int ix = 0, iy = 1, n_rec = 0, justify;
 	int plot_ellipse = true, plot_vector = true, error = false;
-	unsigned int xcol = 0, tcol_f = 0, tcol_s = 0, scol = 0, icol = 0;
+	unsigned int xcol = 0, tcol_f = 0, tcol_s = 0, scol = 0, icol = 0, n_warn = 0;
 	bool set_g_fill, set_e_fill;
 
 	double plot_x, plot_y, vxy[2], plot_vx, plot_vy, length, s, dim[PSL_MAX_DIMS];
@@ -1262,8 +1275,10 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 				}
 				if (plot_vector) {	/* Verify that vector length is not ridiculously small */
 					length = hypot (plot_x-plot_vx, plot_y-plot_vy);	/* Length of arrow */
-					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0)	/* No shrink requested yet head length exceeds total vector length */
-						GMT_Report (API, GMT_MSG_WARNING, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+					if (length < Ctrl->A.S.v.h_length && Ctrl->A.S.v.v_norm < 0.0) {	/* No shrink requested yet head length exceeds total vector length */
+						GMT_Report (API, GMT_MSG_INFORMATION, "Vector head length exceeds overall vector length near line %d. Consider adding +n<norm> to -A\n", n_rec);
+						n_warn++;
+					}
 					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
 					hw = s * Ctrl->A.S.v.h_width;
 					hl = s * Ctrl->A.S.v.h_length;
@@ -1359,6 +1374,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 		PSL_settransparencies (PSL, transp);
 	}
 
+	if (n_warn) GMT_Report (API, GMT_MSG_INFORMATION, "%d vector heads had length exceeding the vector length and were skipped. Consider the +n<norm> modifier to -A\n", n_warn);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Number of records read: %li\n", n_rec);
 
 	if (!Ctrl->N.active) gmt_map_clip_off (GMT);

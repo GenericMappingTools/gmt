@@ -179,9 +179,11 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 			/* Supplemental parameters */
 
 			case 'A':	/* Angle, not time */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'D':	/* Dateline */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 
@@ -198,6 +200,7 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 				break;
 
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (strlen (opt->arg) != 1) {
 					GMT_Report (API, GMT_MSG_ERROR, "Must specify -F<out>\n");
@@ -229,27 +232,33 @@ static int parse (struct GMT_CTRL *GMT, struct ROTCONVERTER_CTRL *Ctrl, struct G
 				break;
 
 			case 'G':	/* GPlates output format */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				break;
 
 			case 'M':	/* Convert to total reconstruction rotation poles instead */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0]) Ctrl->M.value = atof (opt->arg);
 				break;
 
 			case 'N':	/* Ensure all poles reported are in northern hemisphere */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 
 			case 'S':	/* Ensure all poles reported are in southern hemisphere */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 
 			case 'T':	/* Transpose the final result (i.e., change sign of rotation) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 
 			case 'W':	/* Ensure all poles reported have negative opening angles */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				break;
 

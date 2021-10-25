@@ -136,6 +136,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 			/* Processes program-specific parameters */
 
 			case 'L':	/* Determine level of error/warning checking and log destination */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				for (i = 0; opt->arg[i]; i++) {
 					if (opt->arg[i] == 'e') Ctrl->L.mode |= 2;
@@ -144,6 +145,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'a':		/* Standard ASCII MGD77 file */
@@ -168,6 +170,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				code_pos = 0;
 				if (opt->arg[code_pos] == '+')
@@ -205,9 +208,11 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77CONVERT_CTRL *Ctrl, struct G
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			default:	/* Report bad options */

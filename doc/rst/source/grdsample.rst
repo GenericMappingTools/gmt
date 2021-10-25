@@ -46,15 +46,17 @@ have the same registration as the input grid.
 Required Arguments
 ------------------
 
-*ingrid*
-    The name of the input 2-D binary grid file. (See
-    :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D gridded data file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outgrid*
-    The name of the output grid file. (See
-    :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------

@@ -81,7 +81,7 @@ Required Arguments
 
 .. include:: explain_-Jz.rst_
 
-.. |Add_-R| replace:: |Add_-R_links|
+.. |Add_-R| replace:: |Add_-R_auto_table|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**

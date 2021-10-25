@@ -1535,8 +1535,8 @@ Automatic CPTs
 
 A few modules (:doc:`/grdimage`, :doc:`/grdview`) that expects a CPT option will
 provide a default CPT if none is provided.  By default, the default CPT is the
-"turbo" color table, but this is overridden if the user uses the @eart_relief
-(we select "geo") or @srtm_relief (we select "srtm") data sets.  After selection,
+*turbo* color table, but this is overridden if the user uses the @earth_relief
+(we select *geo*) or @srtm_relief (we select *srtm*) data sets.  After selection,
 these CPTs are read and scaled to match the range of the grid values. You may append
 **+i**\ *dz* to the CPT to have the exact range rounded to nearest multiple of *dz*.
 This is helpful if you plan to place a colorbar and prefer start and stop *z*-values
@@ -2764,7 +2764,7 @@ simple example using :doc:`/grdinfo` would be
 
    ::
 
-    gmt grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0"
+    gmt grdinfo A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0
 
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Title: Grid imported via GDAL
     HDF4_SDS:UNKNOWN:A20030012003365.L3m_YR_NSST_9:0: Command:
@@ -2785,7 +2785,7 @@ via :doc:`/grdmath` first, i.e.,
 
    ::
 
-    gmt grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9:0" \
+    gmt grdmath A20030012003365.L3m_YR_NSST_9=gd?HDF4_SDS:UNKNOWN:"A20030012003365.L3m_YR_NSST_9":0 \
                 0.000717185 MUL -2 ADD = sst.nc
 
 then plot the ``sst.nc`` directly.
@@ -2798,7 +2798,7 @@ Writing grids and images
 Saving images in the common raster formats is possible but, for the time being, only from :doc:`/grdimage` and even
 that is restricted to raster type information. That is, vector data (for instance, coast lines) or text will not
 be saved. To save an image with :doc:`/grdimage` use the **-A**\ *outimg=driver* mechanism, where *driver*
-is the driver code name used by GDAL (e.g. GTiff).
+is the driver code name used by GDAL (e.g. GTiff) (run `gdal_translate --formats` for the full list.)
 
 For all other programs that create grids, it is also possible to save them using GDAL. To do it one need to use
 the =gd appended with the necessary information regarding the driver and the data type to use. Generically,
@@ -2810,6 +2810,10 @@ number of GDAL *-co* options. For example, to write a lossless JPG2000 grid one 
 **+c**\ QUALITY=100\ **+c**\ REVERSIBLE=YES\ **+c**\ YCBCR420=NO
 **Note**: You will have to specify a *nan* value for integer data types unless you wish that all NaN data values
 should be replaced by zero.
+
+Consider setting :term:`IO_NC4_DEFLATION_LEVEL` to reduce file size and to further increase read/write performance.
+Especially when working with subsets of global grids, masks, and grids with repeating grid values, the improvement is
+usually significant.
 
 The NaN data value
 ------------------

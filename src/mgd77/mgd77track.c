@@ -72,7 +72,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 		struct MGD77TRACK_ANNOT info;
 	} A;
 	struct MGD77TRACK_D {	/* -D */
-		bool active;
+		bool active[2];
 		double start;	/* Start time */
 		double stop;	/* Stop time */
 	} D;
@@ -97,7 +97,7 @@ struct MGD77TRACK_CTRL {	/* All control options for this program (except common 
 		bool active;
 	} N;
 	struct MGD77TRACK_S {	/* -S */
-		bool active;
+		bool active[2];
 		double start;	/* Start dist */
 		double stop;	/* Stop dist */
 	} S;
@@ -324,6 +324,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				Ctrl->A.mode = 1;
 				if ((t = strstr (opt->arg, "+i"))) t[0] = '\0';	/* Chop off modifier */
@@ -350,7 +351,6 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'D':		/* Assign start/stop times for sub-section */
-				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 				 	case 'a':		/* Start date */
 						t = &opt->arg[1];
@@ -358,6 +358,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Da: Start time (%s) in wrong format\n", t);
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[0]);
+						Ctrl->D.active[0] = true;
 						break;
 					case 'b':		/* Stop date */
 						t = &opt->arg[1];
@@ -365,6 +367,8 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 							GMT_Report (API, GMT_MSG_ERROR, "Option -Db : Stop time (%s) in wrong format\n", t);
 							n_errors++;
 						}
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active[1]);
+						Ctrl->D.active[1] = true;
 						break;
 					default:
 						n_errors++;
@@ -373,6 +377,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'F':	/* Do NOT apply bitflags */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case '\0':	/* Both sets */
@@ -394,14 +399,17 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 			case 'G':
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance gap in km */
-					Ctrl->G.active[GAP_D]     = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[GAP_D]);
+						Ctrl->G.active[GAP_D]     = true;
 						Ctrl->G.value[GAP_D]  = urint (atof (&opt->arg[1]) * 1000.0);	/* Gap converted to m from km */
 						break;
 					case 't':	/* Distance gap in minutes */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[GAP_T]);
 						Ctrl->G.active[GAP_T] = true;
 						Ctrl->G.value[GAP_T]  = urint (atof (&opt->arg[1]) * 60.0);	/* Gap converted to seconds from minutes */
 						break;
 					case 'n':	/* Distance gap in number of points */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active[GAP_N]);
 						Ctrl->G.active[GAP_N] = true;
 						Ctrl->G.value[GAP_N]  = urint (atof (&opt->arg[1]));
 						break;
@@ -413,6 +421,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))
@@ -428,23 +437,28 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (mgd77track_get_annotinfo (opt->arg, &Ctrl->L.info)) n_errors++;
 				break;
 
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 
 			case 'S':		/* Assign start/stop position for sub-section (in meters) */
-				Ctrl->S.active = true;
 				if (opt->arg[0] == 'a') {		/* Start position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.start = atof (&opt->arg[1]) * dist_scale;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[0]);
+					Ctrl->S.active[0] = true;
 				}
 				else if (opt->arg[0] == 'b') {	/* Stop position */
 					MGD77_Set_Unit (GMT, &opt->arg[1], &dist_scale, 1);
 					Ctrl->S.stop = atof (&opt->arg[1]) * dist_scale;
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[1]);
+					Ctrl->S.active[1] = true;
 				}
 				else
 					n_errors++;
@@ -491,6 +505,7 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77TRACK_CTRL *Ctrl, struct GMT
 				break;
 
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);

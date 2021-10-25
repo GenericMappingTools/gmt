@@ -29,7 +29,7 @@
 #define THIS_MODULE_PURPOSE	"Compute grid from spherical harmonic coefficients"
 #define THIS_MODULE_KEYS	"<D{,GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "->RVbdhirs" GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "->RVbdhir" GMT_ADD_x_OPT
 
 #ifndef M_LN2
 #define M_LN2 0.69314718055994530942  /* log_e 2 */
@@ -49,16 +49,19 @@ struct SPH2GRD_CTRL {	/* All control options for this program (except common arg
 	struct SPH2GRD_E {	/* -E */
 		bool active;
 	} E;
-	struct SPH2GRD_G {	/* -G<grdfile> */
-		bool active;
-		char *file;
-	} G;
 	struct SPH2GRD_F {	/* -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi> */
 		bool active;
 		bool km;	/* True if filter was specified in km instead of harmonic degree */
 		int mode;
 		double lc, lp, hp, hc;
 	} F;
+	struct SPH2GRD_G {	/* -G<grdfile> */
+		bool active;
+		char *file;
+	} G;
+	struct SPH2GRD_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct SPH2GRD_N {	/* -Ng|m|s */
 		bool active;
 		char mode;
@@ -92,9 +95,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [coeff_file] -G%s %s %s [-Dg|n] [-E] [-F[k]<filter>] "
-		"[-Ng|m|s] [-Q] [%s] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
+		"[-Ng|m|s] [-Q] [%s] [%s] [%s] [%s] [%s] [%s]%s [%s]\n",
 		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_e_OPT, GMT_h_OPT,
-		GMT_i_OPT, GMT_r_OPT, GMT_s_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		GMT_i_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -123,7 +126,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "m: Mathematical normalization - inner products summed over surface equal 1 [Default].");
 	GMT_Usage (API, 3, "s: Schmidt normalization - as used in geomagnetism.");
 	GMT_Usage (API, 1, "\n-Q Coefficients have phase convention from physics, i.e., the (-1)^m factor.");
-	GMT_Option (API, "V,bi4,e,h,i,r,s,x,.");
+	GMT_Option (API, "V,bi4,e,h,i,r,x,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -144,21 +147,24 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Evaluate derivative solutions */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
 				GMT_Report (API, GMT_MSG_ERROR, "Comment -D: Not implemented yet.\n");
 				break;
 			case 'E':	/* Evaluate on ellipsoid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				GMT_Report (API, GMT_MSG_ERROR, "Comment -E: Not implemented yet.\n");
 				break;
 			case 'F':	/* Bandpass or Gaussian filter -F[k]<lc>/<lp>/<hp>/<hc> or -F[k]<lo>/<hi>*/
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				k = 0;
 				if (opt->arg[0] == 'k') Ctrl->F.km = true, k = 1;	/* Convert later when GMT is initialized */
@@ -181,18 +187,23 @@ static int parse (struct GMT_CTRL *GMT, struct SPH2GRD_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				Ctrl->N.mode = opt->arg[0];
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 

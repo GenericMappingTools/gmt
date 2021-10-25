@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdinfo** *grdfiles* [ |-C|\ [**n**\|\ **t**\] ]
+**gmt grdinfo** *ingrid* [ |-C|\ [**n**\|\ **t**\] ]
 [ |-D|\ [*xoff*\ [/*yoff*]][**+i**] ]
 [ |-E|\ [**x**\|\ **y**][**+l**\|\ **L**\|\ **u**\|\ **U**] ]
 [ |-F| ]
@@ -48,9 +48,10 @@ With option **-Q** we can also report information for 3-D data cubes.
 Required Arguments
 ------------------
 
-*grdfile*
-    The name of one or several 2-D grid files. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_ingrid| replace:: The name of one or several 2-D grid files. 
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------

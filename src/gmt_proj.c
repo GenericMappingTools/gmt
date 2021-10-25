@@ -437,35 +437,33 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 	N1 = a / sqrt (1.0 - (e2*sphi1*sphi1));
 	niter = 0;
 
-	if (GMT->current.proj.g_radius || altitude < -10.0) {
-		/* use altitude as the radial distance from the center of the earth */
-		H = fabs (altitude*1e3) - a;
+	if (GMT->current.proj.g_radius) {	/* Altitude given as the radial distance from the center of the Earth (in km) */
+		H = fabs (altitude * METERS_IN_A_KM) - a;
 		P = H/a + 1.0;
 		phig = lat;
 	}
-	else if (altitude <= 0.0) {
-		/* setup altitude of geosynchronous viewpoint n */
-		double temp = 86164.1/TWO_PI;
-		H = pow (3.98603e14*temp*temp, 0.3333) - a;
+	else if (GMT->current.proj.g_geosync) {/* Select implicit altitude of geosynchronous viewpoint */
+		double temp = 86164.1/TWO_PI;	/* Siderial day rotation rate */
+		H = pow (3.98603e14*temp*temp, 0.3333) - a;	/* Standard gravitational parameter GM for Earth */
 		P = H/a + 1.0;
-		phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
+		phig = lat - asind (N1*e2*sphi1*cphi1/(P*a));
 		sincosd (phig, &sphig, &cphig);
 		if (cphi1 != 0.0)
 			H = P*a*cphig/cphi1 - N1 - h0;
 		else
 			H = P*a - N1 - h0;
 	}
-	else if (altitude < 10.0) {
+	else if (GMT->current.proj.g_earth_radius) {	/* Altitude given (in Earth radii) */
 		P = altitude;
 		/* need to setup H from P equation */
-		phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
+		phig = lat - asind (N1*e2*sphi1*cphi1/(P*a));
 		sincosd (phig, &sphig, &cphig);
 		if (cphi1 != 0.0)
 			H = P*a*cphig/cphi1 - N1 - h0;
 		else
 			H = P*a - N1 - h0;
 	}
-	else {
+	else {	/* Altitude given as normal (in km) */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: altitude %f\n", altitude);
 		H = altitude*1e3;
 		/* need to setup P from iterating phig */

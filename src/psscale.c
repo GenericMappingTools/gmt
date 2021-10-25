@@ -40,8 +40,8 @@ EXTERN_MSC void plot_timex_grid (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, dou
 #define H_BORDER 16	/* 16p horizontal border space for -T [not used] */
 #define V_BORDER 8	/* 8p vertical border space for -T [not used] */
 
-#define PSSCALE_L_SCALE	0.80	/* Set scale length to 80% of map side length under auto-setting */
-#define PSSCALE_W_SCALE	0.04	/* Set scale width to 4% of scale length under auto-setting */
+#define PSSCALE_L_SCALE	80	/* Set scale length to 80% of map side length under auto-setting */
+#define PSSCALE_W_SCALE	4	/* Set scale width to 4% of scale length under auto-setting */
 #define PSSCALE_CYCLE_DIM 0.45	/* Cyclic symbol radius is 0.45 of width */
 #define N_FAVOR_IMAGE	1
 #define N_FAVOR_POLY	2
@@ -79,6 +79,7 @@ struct PSSCALE_CTRL {
 		unsigned int mmode;
 		double dim[2];
 		double off[2];
+		double scl[2];	/* Scales related to plot length */
 		bool extend;
 		unsigned int emode;
 		double elength;
@@ -137,6 +138,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->D.opt = strdup ("JBC");
+	C->D.scl[GMT_X] = PSSCALE_L_SCALE * 0.01;	/* Default for unspecified bar length is 80% of map side */
+	C->D.scl[GMT_Y] = PSSCALE_W_SCALE * 0.01;	/* Default for unspecified bar width is 4% of map side */
 	C->G.z_low = C->G.z_high = GMT->session.d_NaN;	/* No truncation */
 	C->N.dpi = 600.0;
 	C->I.min = -1.0;
@@ -186,7 +189,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+h Select a horizontal scale.");
 	GMT_Usage (API, 3, "+r Reverse the positive direction along the scale bar.");
 	GMT_Usage (API, 3, "+v Select a vertical scale [Default].");
-	GMT_Usage (API, 3, "+w Append <length>[/<width>] for the bar dimensions [Default width is 4%% of <length>].");
+	GMT_Usage (API, 3, "+w Append <length>[/<width>] for the bar dimensions [Default width is %d%% of <length> whose default is %d%% of map dimension]. "
+		"If either <length> or <width> has unit %% then those percentages are used instead.", PSSCALE_W_SCALE, PSSCALE_L_SCALE);
 	GMT_Usage (API, -2, "You may also further adjust the appearance of the bar:");
 	GMT_Usage (API, 3, "+e Add sidebar triangles for back- and foreground colors. "
 		"Specify b(ackground) or f(oreground) to get one only [Default is both]. "
@@ -284,13 +288,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
-				if (opt->arg[0] == '+' && (strstr (opt->arg, "+e") || strstr (opt->arg, "+n")) && strstr (opt->arg, "w") == NULL) {
+				if (opt->arg[0] == '+' && (gmt_found_modifier (GMT, opt->arg, "en")) && strstr (opt->arg, "w") == NULL) {
 					/* Only want +e or +n to be added to defaults */
 					sprintf (string, "%s%s", Ctrl->D.opt, opt->arg);
 					gmt_M_str_free (Ctrl->D.opt);
@@ -334,6 +340,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				if (c) *c = '+';	/* Put back the + sign */
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (gmt_getpanel (GMT, opt->option, opt->arg, &(Ctrl->F.panel))) {
 					gmt_mappanel_syntax (GMT, 'F', "Specify a rectangular panel behind the scale", 3);
@@ -341,14 +348,16 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'G':	/* truncate incoming CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
 				n_errors += gmt_M_check_condition (GMT, j < 2, "Option -G: Must specify z_low/z_high\n");
 				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
 				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high), "Option -G: Both of z_low/z_high cannot be NaN\n");
+				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high), "Option -G: Both of zlo/zhi cannot be NaN\n");
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0]) {
 					j = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
@@ -363,6 +372,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				j = 0;
 				if (opt->arg[0] == 'i') Ctrl->L.interval = true, j = 1;
@@ -370,9 +380,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				if (c) c[0] = '+';	/* Restore option string */
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				/* Default will use image@600 dpi or polygons according to what is simplest */
 				if (opt->arg[0] == 'p')	/* Preferentially use polygon fill if at all possible */
@@ -383,9 +395,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.mode = PSSCALE_ANNOT_NUMERICAL;	/* The default */
 				if (opt->arg[0]) {	/* Modern syntax with modifiers */
@@ -439,10 +453,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				Ctrl->Z.file = strdup (opt->arg);
 				break;
 			case 'W':	/* Dump out interpolated colors for debugging */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				Ctrl->W.scale = atof (opt->arg);
 				break;
@@ -501,14 +517,43 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 			Ctrl->D.reverse = true;
 		/* Required modifier +w */
 		if (gmt_get_modifier (Ctrl->D.refpoint->args, 'w', string)) {
+			unsigned int n_percent = gmt_count_char (GMT, string, '%');
 			if (string[(j = (int)strlen(string)-1)] == 'h') {	/* Be kind to those who forgot +h */
 				string[j] = '\0';
 				Ctrl->D.horizontal = true;
 			}
 			if ((n = gmt_get_pair (GMT, string, GMT_PAIR_DIM_NODUP, Ctrl->D.dim)) == 0)
 				n_errors++;
-			else if (n == 1)	/* Set height as 4% of width */
-				Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * fabs (Ctrl->D.dim[GMT_X]);
+			if (n_percent) { /* Gave at least one dimension as percent of plot dimension */
+				char *p = strchr (string, '%'), *slash = strchr (string, '/');
+				gmt_strrepc (string, '%', ' ');	/* Replace any % with spaces */
+				if (n == 2) {	/* Check if we got 0-2 percentage(s) */
+					slash[0] = ' ';	/* Replace / with space */
+					if (n_percent == 2) { /* Both length and width given as percentage of plot dimension */
+						sscanf (string, "%lf %lg", &Ctrl->D.scl[GMT_X], &Ctrl->D.scl[GMT_Y]);
+						Ctrl->D.scl[GMT_X] *= 0.01;	Ctrl->D.scl[GMT_Y] *= 0.01;	/* Convert to fraction */
+						gmt_M_memset (Ctrl->D.dim, 2U, double);	/* Wipe back to zero */
+					}
+					else {	/* Got one percent and one fixed */
+						if (p < slash) {	/* Gave length in percentage */
+							sscanf (string, "%lf %*s", &Ctrl->D.scl[GMT_X]);
+							Ctrl->D.scl[GMT_X] *= 0.01;	/* Convert to fraction */
+							Ctrl->D.dim[GMT_X] = 0.0;	/* Wipe back to zero */
+						}
+						else {	/* Gave width in percentage */
+							sscanf (string, "%*s %lf", &Ctrl->D.scl[GMT_Y]);
+							Ctrl->D.scl[GMT_Y] *= 0.01;	/* Convert to fraction */
+							Ctrl->D.dim[GMT_Y] = Ctrl->D.dim[GMT_X] * Ctrl->D.scl[GMT_Y];	/* Wipe back to zero */
+						}
+					}
+				}
+				else {	/* Only gave width in percentage */
+					Ctrl->D.scl[GMT_X] = atof (string) * 0.01;	/* Convert to fraction */
+					Ctrl->D.dim[GMT_X] = 0.0;	/* Wipe back to zero */
+				}
+			}
+			else if (n == 1 && fabs (Ctrl->D.dim[GMT_X]) > 0.0)	/* Set height as 4% of width */
+				Ctrl->D.dim[GMT_Y] = Ctrl->D.scl[GMT_Y] * fabs (Ctrl->D.dim[GMT_X]);
 			if (Ctrl->D.reverse) Ctrl->D.dim[GMT_X] = -fabs(Ctrl->D.dim[GMT_X]);
 		}
 		/* Optional modifiers +e, +h, +j, +m, +n, +o, +v */
@@ -567,7 +612,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 	else {	/* Old-style option: args are <length>/<width>[h][/<justify>][/<dx>/<dy>]] */
 		n = sscanf (Ctrl->D.refpoint->args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
 		if (n < 2) {	/* Gave not enough args  */
-			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: No bar dimensions provided\n");
+			GMT_Report (API, GMT_MSG_ERROR, "Option -D: No bar dimensions provided\n");
 			n_errors++;
 		}
 		else {	/* First deal with bar dimensions and horizontal vs vertical */
@@ -590,7 +635,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSCALE_CTRL *Ctrl, struct GMT_OP
 			}
 		}
 	}
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
+	GMT_Report (API, GMT_MSG_DEBUG, "Bar settings: justify = %d, dx = %g dy = %g\n", Ctrl->D.justify, Ctrl->D.off[GMT_X], Ctrl->D.off[GMT_Y]);
 
 	/* Check that the options selected are mutually consistent */
 
@@ -1640,6 +1685,7 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 		if (B_set) {	/* Used -B. Must kludge by copying x-axis and scaling to y since we must use gmt_xy_axis to draw a y-axis based on x parameters. */
 			void (*tmp) (struct GMT_CTRL *, double, double *) = NULL;
 			char *custum;
+			double wesn_cpy[4];
 
 			A = &GMT->current.map.frame.axis[GMT_X];
 			if (A->item[GMT_ANNOT_UPPER].generated) A->item[GMT_ANNOT_UPPER].interval = 0.0;	/* Reset annot so we can redo via automagic */
@@ -1666,7 +1712,10 @@ GMT_LOCAL void psscale_draw_colorbar (struct GMT_CTRL *GMT, struct PSSCALE_CTRL 
 			if (label[0] && !flip) /* Can let gmt_xy_axis2 set the label directly, else do separately later */
 				strcpy (GMT->current.map.frame.axis[GMT_Y].label, label);
 			for (i = 0; i < 5; i++) GMT->current.map.frame.axis[GMT_Y].item[i].parent = GMT_Y;
+			gmt_M_memcpy (wesn_cpy, GMT->common.R.wesn, 4U, double);	/* Must temporarily switch x and y in wesn since gmtlib_load_custom_annot relies on this range */
+			gmt_M_memcpy (&GMT->common.R.wesn[YLO], wesn_cpy, 2U, double);
 			gmt_xy_axis2 (GMT, -y_base, 0.0, length, start_val, stop_val, &GMT->current.map.frame.axis[GMT_Y], flip & PSSCALE_FLIP_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE] & GMT_AXIS_ANNOT, GMT->current.map.frame.side[flip & PSSCALE_FLIP_ANNOT ? W_SIDE : E_SIDE]);
+			gmt_M_memcpy (GMT->common.R.wesn, wesn_cpy, 4U, double);	/* Must temporarily switch x and y */
 			PSL_setorigin (PSL, 0.0, 0.0, 90.0, PSL_INV);	/* Rotate back to where we started in this branch */
 			GMT->current.map.frame.axis[GMT_Y].file_custom = custum;	/* Restore correct pointer */
 		}
@@ -1945,8 +1994,9 @@ EXTERN_MSC int GMT_psscale (void *V_API, int mode, void *args) {
 		gmt_set_refpoint (GMT, Ctrl->D.refpoint);	/* Finalize reference point plot coordinates, if needed */
 
 		if (Ctrl->D.dim[GMT_X] == 0.0) {	/* Automatically set scale width */
-			Ctrl->D.dim[GMT_X] = PSSCALE_L_SCALE * (Ctrl->D.horizontal ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI]);
-			Ctrl->D.dim[GMT_Y] = PSSCALE_W_SCALE * Ctrl->D.dim[GMT_X];
+			Ctrl->D.dim[GMT_X] = Ctrl->D.scl[GMT_X] * (Ctrl->D.horizontal ? GMT->current.proj.rect[XHI] : GMT->current.proj.rect[YHI]);
+			if (Ctrl->D.dim[GMT_Y] == 0.0)
+				Ctrl->D.dim[GMT_Y] = Ctrl->D.scl[GMT_Y] * Ctrl->D.dim[GMT_X];
 			if (Ctrl->D.reverse) Ctrl->D.dim[GMT_X] = -Ctrl->D.dim[GMT_X];
 			if (Ctrl->Q.active && GMT->current.map.frame.draw)
 				sprintf (text, "X%gil/%gi", Ctrl->D.dim[GMT_X], Ctrl->D.dim[GMT_Y]);

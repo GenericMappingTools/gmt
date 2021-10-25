@@ -2083,6 +2083,7 @@ GMT_LOCAL int gmtapi_init_matrix (struct GMTAPI_CTRL *API, uint64_t dim[], doubl
 	}
 	if (full_region (range) && (dims == 2 || (!range || range[ZLO] == range[ZHI]))) {	/* Not an equidistant vector arrangement, use dim */
 		double dummy_range[6] = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0};	/* Flag vector as such */
+		if (dim == NULL) return (GMT_VALUE_NOT_SET);
 		gmt_M_memcpy (M->range, dummy_range, 2 * dims, double);
 		gmt_M_memcpy (M->inc, dummy_range, dims, double);
 		M->n_rows    = dim[GMTAPI_DIM_ROW];
@@ -2286,7 +2287,7 @@ GMT_LOCAL size_t gmtapi_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID
 
 	if (!full_region (wesn)) {
 		gmt_M_memcpy (h_tmp->wesn, wesn, 4, double);    /* Use wesn instead of header info */
-		gmt_adjust_loose_wesn (GMT, wesn, h);           /* Subset requested; make sure wesn matches header spacing */
+		gmtlib_adjust_loose_wesn (GMT, wesn, h, GMT->common.R.via_polygon ? GMT_MSG_INFORMATION : GMT_MSG_WARNING);	/* Subset requested; make sure wesn matches header spacing */
 		gmt_M_memcpy(h_tmp->wesn, wesn, 4, double);	    /* And update the eventually adjusted wesn */
 	}
 	gmt_M_grd_setpad (GMT, h_tmp, GMT->current.io.pad);	/* Use the system pad setting by default */
@@ -3519,9 +3520,9 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	int item, first_item = 0, this_item = GMT_NOTSET, last_item, new_item, new_ID, status;
 	unsigned int geometry = GMT_IS_PLP, n_used = 0, method, smode, type = GMT_READ_DATA, col_pos_out;
 	bool allocate = false, update = false, diff_types, use_GMT_io, greenwich = true;
-	bool via = false, got_data = false, check_col_switch = false;
+	bool via = false, got_data = false, check_col_switch = false, regit = false;
 	size_t n_alloc, s_alloc = GMT_SMALL_CHUNK;
-	uint64_t row, seg, col, ij, n_records = 0, n_columns = 0, col_pos, n_use;
+	uint64_t tbl = 0, tbl_in, row, seg, col, ij, n_records = 0, n_columns = 0, col_pos, n_use;
 	p_func_uint64_t GMT_2D_to_index = NULL;
 	GMT_getfunction api_get_val = NULL;
 	struct GMT_DATASET *D_obj = NULL, *Din_obj = NULL;
@@ -3629,39 +3630,40 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				break;
 
 			case GMT_IS_DUPLICATE:	/* Duplicate the input dataset */
-				gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated earlier since gmt_duplicate_dataset does it all */
-				gmt_M_free (GMT, D_obj->hidden);
-				gmt_M_free (GMT, D_obj);
-				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
-				if ((Din_obj = S_obj->resource) == NULL)	/* Ooops, noting there? */
-					return_null (API, GMT_PTR_IS_NULL);
+				if (S_obj->resource == NULL) return_null (API, GMT_PTR_IS_NULL);
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
-					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_DUPLICATE GMT_IS_DATASET external memory objects\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_DUPLICATE with GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Duplicating data table from GMT_DATASET memory location\n");
-				check_col_switch = true;
-				D_obj = gmt_duplicate_dataset (GMT, Din_obj, GMT_ALLOC_NORMAL|GMT_ALLOC_VIA_ICOLS, NULL);
-				new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
-				if ((new_item = gmtlib_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
-					return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
-				API->object[new_item]->resource = D_obj;
-				API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
-				DH = gmt_get_DD_hidden (D_obj);
-				DH->alloc_level = API->object[new_item]->alloc_level;	/* Since allocated here */
+				Din_obj = gmt_duplicate_dataset (GMT, S_obj->resource, GMT_ALLOC_NORMAL|GMT_ALLOC_VIA_ICOLS, NULL);
+				if ((tbl + Din_obj->n_tables) >= n_alloc) {	/* Need more space to hold these new tables */
+					n_alloc += Din_obj->n_tables;
+					D_obj->table = gmt_M_memory (GMT, D_obj->table, n_alloc, struct GMT_DATATABLE *);
+				}
+				for (tbl_in = 0; tbl_in < Din_obj->n_tables; tbl_in++, tbl++)	/* Pass over the pointers only */
+					D_obj->table[tbl] = Din_obj->table[tbl_in];
+				gmtlib_free_dataset_misc (GMT, Din_obj);	/* Free this object but not its tables */
+				gmt_M_free (GMT, Din_obj);
+				D_obj->n_tables = tbl;
 				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
-				via = true;	/* Since input came via a duplicate */
+				check_col_switch = true;
+				update = regit = via = true;		/* Have reason to update min/max as well as registering D_obj when done */
 				break;
 
-			case GMT_IS_REFERENCE:	/* Just pass memory location, so free up what we allocated earlier */
-				gmt_M_free (GMT, D_obj->table);	/* Free up what we allocated up front since we just wish to pass the pointer */
-				gmt_M_free (GMT, D_obj->hidden);
-				gmt_M_free (GMT, D_obj);
-				if (n_used) return_null (API, GMT_ONLY_ONE_ALLOWED);
+			case GMT_IS_REFERENCE:	/* Just pass memory locations to tables */
+				if ((Din_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 				if (GMT->common.q.mode == GMT_RANGE_ROW_IN || GMT->common.q.mode == GMT_RANGE_DATA_IN)
-					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE GMT_IS_DATASET external memory objects\n");
+					GMT_Report (API, GMT_MSG_WARNING, "Row-selection via -qi is not implemented for GMT_IS_REFERENCE with GMT_IS_DATASET external memory objects\n");
 				GMT_Report (API, GMT_MSG_INFORMATION, "Referencing data table from GMT_DATASET memory location\n");
-				if ((D_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+				if ((tbl + Din_obj->n_tables) >= n_alloc) {	/* Need more space to hold these new tables */
+					n_alloc += Din_obj->n_tables;
+					D_obj->table = gmt_M_memory (GMT, D_obj->table, n_alloc, struct GMT_DATATABLE *);
+				}
+				for (tbl_in = 0; tbl_in < Din_obj->n_tables; tbl_in++, tbl++)	/* Pass over the pointers only */
+					D_obj->table[tbl] = Din_obj->table[tbl_in];
+				D_obj->n_tables = tbl;
+				D_obj->geometry = S_obj->geometry;	/* Since provided when registered */
 				check_col_switch = true;
-				DH = gmt_get_DD_hidden (D_obj);
+				update = regit = via = true;		/* Have reason to update min/max as well as registering D_obj when done */
 				break;
 
 		 	case GMT_IS_DUPLICATE|GMT_VIA_MATRIX:
@@ -3881,6 +3883,14 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 		S_obj->status = GMT_IS_USED;	/* Mark input object as read */
 		S_obj->n_expected_fields = GMT_MAX_COLUMNS;	/* Since need to start over if this object is used again */
 		n_used++;	/* Number of items actually processed */
+	}
+	GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_dataset processed %u resources\n", n_used);
+	if (regit) {	/* Register the output */
+		new_ID = GMT_Register_IO (API, GMT_IS_DATASET, GMT_IS_DUPLICATE, geometry, GMT_IN, NULL, D_obj);	/* Register a new resource to hold D_obj */
+		if ((new_item = gmtlib_validate_id (API, GMT_IS_DATASET, new_ID, GMT_IN, GMT_NOTSET)) == GMT_NOTSET)
+			return_null (API, GMT_OBJECT_NOT_FOUND);	/* Some internal error... */
+		API->object[new_item]->resource = D_obj;
+		API->object[new_item]->status = GMT_IS_USED;	/* Mark as read */
 	}
 	if (D_obj->n_tables == 0) {	/* Only found empty files (e.g., /dev/null) and we have nothing to show for our efforts.  Return an single empty table with no segments. */
 		D_obj->table = gmt_M_memory (GMT, D_obj->table, 1, struct GMT_DATATABLE *);
@@ -4333,7 +4343,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	bool new = false;
 	unsigned char *data = NULL;
 	uint64_t node, off[3];
-	unsigned int start_c, c, index;
+	unsigned int c, index;
 	struct GMT_IMAGE *I = NULL;
 	struct GMT_IMAGE_HIDDEN *IH = gmt_get_I_hidden (I_in);
 	struct GMT_GRID_HEADER *h = I_in->header;
@@ -4362,13 +4372,16 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	h = I->header;
 	data = gmt_M_memory_aligned (GMT, NULL, h->size * 3, unsigned char);	/* The new r,g,b image */
 
+	size_t n_colors = I->n_indexed_colors;
+	if (n_colors > 2000)			/* If colormap is Mx4 or has encoded the alpha color */
+		n_colors = (uint64_t)(floor(n_colors / 1000.0));
+
 	if (GMT->parent->GMT->current.gdal_read_in.O.mem_layout[0] && strncmp (GMT->parent->GMT->current.gdal_read_in.O.mem_layout, "TRB", 3U) == 0) {	/* Band interleave */
 		strncpy (h->mem_layout, "TRB ", 4);	/* Fill out red, green, and blue bands */
 		for (c = 0; c < 3; c++) off[c] = c * h->size;
 		for (node = 0; node < h->size; node++) {	/* For all pixels, including the pad */
 			index = I->data[node];	/* Pixel index into color table */
-			start_c = index * 4;	/* Start of the r,g,b entry in the color table for this index */
-			for (c = 0; c < 3; c++) data[node+off[c]] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
+			for (c = 0; c < 3; c++) data[node+off[c]] = gmt_M_get_rgba (I->colormap, index, c, n_colors);	/* Place r,g,b in separate bands */
 		}
 	}
 	else {	/* Pixel interleave */
@@ -4376,8 +4389,7 @@ GMT_LOCAL bool gmtapi_expand_index_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 		strncpy (h->mem_layout, "TRP ", 4);	/* Fill out red, green, and blue pixels */
 		for (node = k = 0; node < h->size; node++) {	/* For all pixels, including the pad */
 			index = I->data[node];	/* Pixel index into color table */
-			start_c = index * 4;	/* Start of the r,g,b entry in the color table for this index */
-			for (c = 0; c < 3; c++, k++) data[k] = I->colormap[start_c+c];	/* Place r,g,b in separate bands */
+			for (c = 0; c < 3; c++, k++) data[k] = gmt_M_get_rgba (I->colormap, index, c, n_colors);	/* Place r,g,b in separate bands */
 		}
 		/* If neither TRB or TRP we call for a changed layout, which may or may not have been implemented */
 		GMT_Change_Layout (GMT->parent, GMT_IS_IMAGE, GMT->parent->GMT->current.gdal_read_in.O.mem_layout, 0, I, NULL, NULL);
@@ -4399,7 +4411,7 @@ int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
 	   called by gmtapi_import_image, there are other cases when we need also to convert from indexed to RGB.
 	   For example in grdimage when the image was sent in via an external wrapper. In this case the code flow goes
 	   through gmtapi_get_image_data() (in GMT_Read_Data -> gmtapi_pass_object (API, S_obj, family, mode, wesn))
-	   and deliver that Image object directly to the calling module amd may thus have indexed pixels.
+	   and deliver that Image object directly to the calling module and may thus have indexed pixels.
 	*/
 	struct GMT_IMAGE* Irgb = NULL;
 	if ((*I_in)->header->n_bands == 1 && (*I_in)->n_indexed_colors > 0) {		/* Indexed image, convert to RGB */
@@ -4411,6 +4423,11 @@ int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
 		(*I_in) = Irgb;
 	}
 	return GMT_NOERROR;
+}
+
+void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API) {
+    /* Cannot close connection to GDAL if calling enviroment expect it to be open */
+	if (API->external < 2) GDALDestroyDriverManager();
 }
 #endif
 
@@ -4427,7 +4444,7 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 	 */
 
 	int item, new_item, new_ID;
-	bool done = true, via = false, must_be_image = true, no_index = false;
+	bool done = true, via = false, must_be_image = true, no_index = false, bc_not_set = true;
 	uint64_t i0, i1, j0, j1, ij, ij_orig, row, col;
 	unsigned int both_set = (GMT_CONTAINER_ONLY | GMT_DATA_ONLY);
 	double dx, dy, d;
@@ -4489,20 +4506,28 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			/* Here we will read the image data themselves. */
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
+            if (GMT->common.R.active[RSET] && !S_obj->region) { /* subregion not passed to object yet */
+                gmt_M_memcpy (S_obj->wesn, GMT->common.R.wesn, 4U, double);
+                S_obj->region = true;
+            }
+			size = gmtapi_set_grdarray_size (GMT, I_obj->header, mode, S_obj->wesn);    /* Get array dimension only, which includes padding. DANGER DANGER JL*/
 			if (!I_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
 				if (I_obj->type <= GMT_UCHAR)
-					I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned char);
+					I_obj->data = gmt_M_memory (GMT, NULL, size * I_obj->header->n_bands, unsigned char);
 				else if (I_obj->type <= GMT_USHORT)
-					I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned short);
-				else if (I_obj->type <= GMT_UINT)
-					I_obj->data = gmt_M_memory (GMT, NULL, I_obj->header->size * I_obj->header->n_bands, unsigned int);
+					I_obj->data = gmt_M_memory (GMT, NULL, size * I_obj->header->n_bands, unsigned short);
+                else if (I_obj->type <= GMT_UINT)
+                    I_obj->data = gmt_M_memory (GMT, NULL, size * I_obj->header->n_bands, unsigned int);
+                else if (I_obj->type <= GMT_FLOAT)
+                    I_obj->data = gmt_M_memory (GMT, NULL, size * I_obj->header->n_bands, float);
+                else if (I_obj->type <= GMT_DOUBLE)
+                    I_obj->data = gmt_M_memory (GMT, NULL, size * I_obj->header->n_bands, float);   /* Not doing double yet */
 				else {
 					GMT_Report (API, GMT_MSG_ERROR, "Unsupported image data type %d\n", I_obj->type);
 					return_null (API, GMT_NOT_A_VALID_TYPE);
 				}
 			}
 			else {	/* Already have allocated space; check that it is enough */
-				size = gmtapi_set_grdarray_size (GMT, I_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which includes padding. DANGER DANGER JL*/
 				if (size > I_obj->header->size) return_null (API, GMT_IMAGE_READ_ERROR);
 			}
 			GMT_Report (API, GMT_MSG_INFORMATION, "Reading image from file %s\n", S_obj->filename);
@@ -4511,8 +4536,11 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			else if (gmt_M_err_pass (GMT, gmtlib_read_image (GMT, S_obj->filename, I_obj, S_obj->wesn,
 				I_obj->header->pad, mode), S_obj->filename))
 				return_null (API, GMT_IMAGE_READ_ERROR);
-			if (gmt_M_err_pass (GMT, gmtlib_image_BC_set (GMT, I_obj), S_obj->filename))
-				return_null (API, GMT_IMAGE_BC_ERROR);	/* Set boundary conditions */
+			if (I_obj->n_indexed_colors == 0) {	/* May set the BCs */
+				if (gmt_M_err_pass (GMT, gmtlib_image_BC_set (GMT, I_obj), S_obj->filename))
+					return_null (API, GMT_IMAGE_BC_ERROR);	/* Set boundary conditions */
+				bc_not_set = false;
+			}
 			IH = gmt_get_I_hidden (I_obj);
 			IH->alloc_mode = GMT_ALLOC_INTERNALLY;
 #else
@@ -4694,11 +4722,16 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 	if (done) S_obj->status = GMT_IS_USED;	/* Mark as read (unless we just got the header) */
 
 #ifdef HAVE_GDAL
-	if (no_index && gmtapi_expand_index_image (API->GMT, I_obj, &Irgb)) {	/* true if we have a read-only indexed image and we had to allocate a new one */
-		if (GMT_Destroy_Data (API, &I_obj) != GMT_NOERROR) {
-			return_null (API, API->error);
+	if (no_index) {   /* true if we have an indexed image and we had to allocate a new one */
+		if (gmtapi_expand_index_image (API->GMT, I_obj, &Irgb)) {   /* true if we have a read-only indexed image and we had to allocate a new one */
+			if (GMT_Destroy_Data (API, &I_obj) != GMT_NOERROR) {
+				return_null (API, API->error);
+			}
+			I_obj = Irgb;
 		}
-		I_obj = Irgb;
+		/* If we were unable to set BCs earlier we must do it now */
+		if (bc_not_set && gmt_M_err_pass (GMT, gmtlib_image_BC_set (GMT, I_obj), S_obj->filename))
+			return_null (API, GMT_IMAGE_BC_ERROR);	/* Failed to set boundary conditions */
 	}
 #endif
 
@@ -7915,7 +7948,8 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 	API->pad = pad;		/* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
-	API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;	/* if false|0 then we don't list read and write as modules */
+    API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;  /* if false|0 then we don't list read and write as modules */
+    if (API->external && mode & GMT_SESSION_NOGDALCLOSE) API->external = 2;  /* Avoid calling GDALDestroyDriverManager */
 	API->shape = (mode & GMT_SESSION_COLMAJOR) ? GMT_IS_COL_FORMAT : GMT_IS_ROW_FORMAT;		/* if set then we must use column-major format [row-major] */
 	API->runmode = mode & GMT_SESSION_RUNMODE;		/* If nonzero we set up modern GMT run-mode, else classic */
 	API->no_history = mode & GMT_SESSION_NOHISTORY;		/* If nonzero we disable the gmt.history mechanism (shorthands) entirely */
@@ -9170,8 +9204,10 @@ void * GMT_Read_Data (void *V_API, unsigned int family, unsigned int method, uns
 		reg_here = true;
 	}
 	else {	/* Case 3: input == NULL && geometry == 0, so use all previously registered sources (unless already used). */
-		if (!multiple_files_ok (family))
+		if (!multiple_files_ok (family)) {
+			GMT_Report (API, GMT_MSG_ERROR, "GMT_Read_Data: Multiple input resources only allowed for DATASET.");
 			return_null (API, GMT_ONLY_ONE_ALLOWED);	/* Virtual source only applies to data and text tables */
+		}
 		API->shelf = family;	/* Save which one it is so we know in gmtapi_get_data */
 		API->module_input = true;	/* Since we are passing NULL as file name we must loop over registered resources */
 	}
@@ -9627,6 +9663,7 @@ struct GMT_RECORD *api_get_record_matrix (struct GMTAPI_CTRL *API, unsigned int 
 			col_pos_out = gmtlib_pick_in_col_number (GMT, (unsigned int)col, &col_pos_in);
 			ij = API->current_get_M_index (S->rec, col_pos_in, M->dim);
 			API->current_get_M_val (&(M->data), ij, &(GMT->current.io.curr_rec[col_pos_out]));
+			GMT->current.io.curr_rec[col_pos_out] = gmt_M_convert_col (GMT->current.io.col[GMT_IN][col], GMT->current.io.curr_rec[col_pos_out]);
 		}
 		S->rec++;
 		if ((status = gmtapi_bin_input_memory (GMT, S->n_columns, n_use)) < 0) {	/* Process the data record */
@@ -12652,8 +12689,8 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		/* Potential problem under modern mode: No -J -R set but will be provided later, and we are doing -E for coloring or lines */
 		if (GMT_Find_Option (API, 'M', *head)) type = 'D';	/* -M means dataset dump */
 		else if (GMT_Find_Option (API, 'C', *head) || GMT_Find_Option (API, 'G', *head) || GMT_Find_Option (API, 'I', *head) || GMT_Find_Option (API, 'N', *head) || GMT_Find_Option (API, 'W', *head)) type = 'X';	/* Clearly plotting GSHHG */
-		else if ((opt = GMT_Find_Option (API, 'E', *head)) && (strstr (opt->arg, "+g") || strstr (opt->arg, "+p"))) type = 'X';	/* Clearly plotting DCW polygons */
-		else if ((opt = GMT_Find_Option (API, 'E', *head)) && (strstr (opt->arg, "+l") || strstr (opt->arg, "+L"))) type = 'D';	/* Clearly requesting listing of DCW countries/states */
+		else if ((opt = GMT_Find_Option (API, 'E', *head)) && gmt_found_modifier (API->GMT, opt->arg, "cCgp")) type = 'X';	/* Clearly plotting DCW polygons */
+		else if ((opt = GMT_Find_Option (API, 'E', *head)) && gmt_found_modifier (API->GMT, opt->arg, "lL")) type = 'D';	/* Clearly requesting listing of DCW countries/states */
 		else if (!GMT_Find_Option (API, 'J', *head)) type = 'D';	/* No -M and no -J means -Rstring as dataset */
 		else type = 'X';	/* Otherwise we are still most likely plotting PostScript */
 	}
@@ -12848,6 +12885,12 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
     else if (!strncmp (module, "pscoupe", 7U)) {
         type = ((opt = GMT_Find_Option (API, 'A', *head)) && strstr (opt->arg, "+c")) ? 'D' : 'X';
     }
+    /* 1x. Check if grdcut is just getting information and if input is a grid or image */
+    else if (!strncmp (module, "grdcut", 6U)) {
+    	if (GMT_Find_Option (API, 'D', *head))
+			deactivate_output = true;   /* Turn off implicit output since none is in effect, only secondary -D output */
+		type = (GMT_Find_Option (API, 'I', *head)) ? 'I' : 'G'; /* Giving -I means we are reading an image */
+   }
 
 	/* 2a. Get the option key array for this module */
 	key = gmtapi_process_keys (API, keys, type, *head, n_per_family, &n_keys);	/* This is the array of keys for this module, e.g., "<D{,GG},..." */

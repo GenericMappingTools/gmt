@@ -64,7 +64,7 @@ Required Arguments
 
 .. _-R:
 
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. |Add_-Rgeo| replace:: |Add_-R_auto_table|
 .. include:: ../../explain_-Rgeo.rst_
 
 .. _-S:

@@ -676,7 +676,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				}
 				else {
 					Ctrl->In.file[Ctrl->In.n_grids] = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]))) n_errors++;;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]))) n_errors++;;
 					Ctrl->In.n_grids++;
 				}
 				break;
@@ -684,24 +684,28 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Directional derivative */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1,
 						"Option -A: Cannot read azimuth\n");
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_AZIMUTHAL_DERIVATIVE, 1, par);
 				break;
 			case 'C':	/* Upward/downward continuation */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				n_errors += gmt_M_check_condition (GMT, sscanf(opt->arg, "%lf", &par[0]) != 1,
 						"Option -C: Cannot read zlevel\n");
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_UP_DOWN_CONTINUE, 1, par);
 				break;
 			case 'D':	/* d/dz */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				par[0] = (opt->arg[0]) ? ((opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg)) : 1.0;
 				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Option -D: scale must be nonzero\n");
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_DIFFERENTIATE, 1, par);
 				break;
 			case 'E':	/* x,y,or radial spectrum, w for wavelength; k for km if geographical, n for normalize */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				/* Old syntax: -E[x|y|r][w[k]][n]  new syntax: -E[x|y|r][+w[k]][+n] */
 				Ctrl->E.active = true;
 				j = 0;
@@ -735,6 +739,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				grdfft_add_operation (GMT, Ctrl, GRDFFT_SPECTRUM, 1, par);
 				break;
 			case 'F':	/* Filter */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (!(f_info->set_already)) {
 					filter_type = gmt_count_char (GMT, opt->arg, '/');
@@ -745,10 +750,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				n_errors += gmt_M_check_condition (GMT, grdfft_parse_f_string (GMT, f_info, opt->arg), "Option -F");
 				break;
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				Ctrl->G.file = strdup (opt->arg);
 				break;
 			case 'I':	/* Integrate */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				par[0] = (opt->arg[0] == 'g' || opt->arg[0] == 'G') ? MGAL_AT_45 : atof (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, par[0] == 0.0, "Option -I: scale must be nonzero\n");
@@ -770,6 +777,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Grid dimension setting or inquiery */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (ptr && gmt_M_compat_check (GMT, 4)) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
@@ -780,13 +788,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFFT_CTRL *Ctrl, struct F_INFO 
 				if (Ctrl->N.info == NULL) n_errors++;
 				break;
 			case 'Q':	/* No operator */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 			case 'S':	/* Scale */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.scale = (opt->arg[0] == 'd' || opt->arg[0] == 'D') ? 1.0e6 : atof (opt->arg);
 				break;
 			case 'T':	/* Flexural isostasy */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				if (gmt_M_compat_check (GMT, 4)) {
 					GMT_Report (API, GMT_MSG_COMPAT,
 					            "Option -T is deprecated; see gravfft for isostasy and gravity calculations.\n");

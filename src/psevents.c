@@ -185,7 +185,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 0, "usage: %s [<table>] %s %s -T<now> [-Ar[<dpu>[c|i][+z[<z>]]]|s] [%s] [-C<cpt>] [-D[j|J]<dx>[/<dy>][+v[<pen>]]] "
 		"[-E[s|t][+o|O<dt>][+r<dt>][+p<dt>][+d<dt>][+f<dt>][+l<dt>]] [-F[+a<angle>][+f<font>][+r[<first>]|+z[<fmt>]][+j<justify>]] "
 		"[-G<fill>] [-H<labelinfo>] [-L[t|<length>]] [-Mi|s|t|z<val1>[+c<val2]] [-N[c|r]] [-Q<prefix>] [-S<symbol>[<size>]] [%s] [%s] [-W[<pen>]] [%s] [%s] [-Z\"<command>\"] "
-		"[%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT,
+		"[%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_a_OPT, GMT_b_OPT,
 		API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -270,7 +270,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Append core external <command> and required options that must include -S<format><size>. "
 		"The quoted <command> must start with [ps]coupe, [ps]meca, or [ps]velo. "
 		"(Note: The <command> cannot contain options -C, -G, -I, -J, -N, -R, -W, -t).");
-	GMT_Option (API, "bi2,c,di,e,f,h,i,p,qi,w,:,.");
+	GMT_Option (API, "a,bi2,c,di,e,f,h,i,p,qi,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -286,17 +286,19 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 	unsigned int s = (GMT->current.setting.run_mode == GMT_MODERN) ? 2 : 0;
 	char *c = NULL, *t_string = NULL, txt_a[GMT_LEN256] = {""}, *events = "psevents";
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Plotting lines or polygons, how are they given, or alternatively resample the line to an equivalent point file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'r':	/* Expects Ar[<dpu>[c|i]] */
@@ -314,14 +316,14 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 								else if (unit == 'i')	/* Explicitly said dpu is in inch - do nothing */
 									Ctrl->A.dpu *= 1;	/* Still dpi */
 								else if (isalpha (unit)) {	/* Gave some junk, if not true then unit is now probably the last digit in the dpu */
-									GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ar: Your dpu has a bad unit (%c)\n", unit);
+									GMT_Report (API, GMT_MSG_ERROR, "Option -Ar: Your dpu has a bad unit (%c)\n", unit);
 									n_errors++;
 								}
 								else if (GMT->current.setting.proj_length_unit == GMT_CM)	/* Default length unit is cm so convert */
 									Ctrl->A.dpu *= 2.54;	/* Now dpi */
 							}
 							else {
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Ar: Your dpu could not be processed (%s)\n", &opt->arg[1]);
+								GMT_Report (API, GMT_MSG_ERROR, "Option -Ar: Your dpu could not be processed (%s)\n", &opt->arg[1]);
 								n_errors++;
 							}
 							if (c) c[0] = '+';	/* Restore */
@@ -331,18 +333,20 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						break;
 					case 's':	Ctrl->A.mode = PSEVENTS_LINE_SEG; break;	/* Read polygons/lines segments */
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Specify -Ar[<dpu>]|s\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Specify -Ar[<dpu>]|s\n");
 						n_errors++;
 						break;
 				}
 				break;
 
 			case 'C':	/* Set a cpt for converting z column to color */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.string = strdup (opt->arg);
 				break;
@@ -353,6 +357,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					case 't':	id = PSEVENTS_TEXT;		k = 1;	break;
 					default:	id = PSEVENTS_SYMBOL;	k = 0;	break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[id]);
 				Ctrl->E.active[id] = true;
 				if (gmt_validate_modifiers (GMT, &opt->arg[k], 'E', PSEVENTS_MODS, GMT_MSG_ERROR)) n_errors++;
 				if ((c = gmt_first_modifier (GMT, &opt->arg[k], PSEVENTS_MODS)) == NULL) {	/* Just sticking to the event range */
@@ -369,7 +374,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						case 'o': Ctrl->E.dt[id][PSEVENTS_OFFSET]   = atof (&txt_a[1]);	break;	/* Event time offset */
 						case 'l':	/* Event length override for text */
 							if (id == PSEVENTS_SYMBOL) {
-								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E[s]: The +l modifier is only allowed for -Et\n");
+								GMT_Report (API, GMT_MSG_ERROR, "Option -E[s]: The +l modifier is only allowed for -Et\n");
 								n_errors++;
 							}
 							else
@@ -385,16 +390,19 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				break;
 
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.string = strdup (opt->arg);
 				break;
 
 			case 'G':	/* Set a fixed symbol fill */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.fill = strdup (opt->arg);
 				break;
 
 			case 'H':	/* Label text box settings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				Ctrl->H.active = true;
 				if (opt->arg[0] == '\0' || gmt_validate_modifiers (GMT, opt->arg, 'H', "cgprs", GMT_MSG_ERROR))
 					n_errors++;
@@ -421,7 +429,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 						Ctrl->H.soff[GMT_X] = GMT->session.u2u[GMT_PT][GMT_INCH] * GMT_FRAME_CLEARANCE;	/* Default is 4p */
 						Ctrl->H.soff[GMT_Y] = -Ctrl->H.soff[GMT_X];	/* Set the shadow offsets [default is (4p, -4p)] */
 						if (!Ctrl->H.boxfill) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -H: Modifier +h requires +g as well\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -H: Modifier +h requires +g as well\n");
 							n_errors++;
 						}
 						else if (string[0]) {	/* Gave an argument to +b */
@@ -445,6 +453,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				break;
 
 			case 'L':	/* Set length of events */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				n_col = 4;	/* Need to read one extra column, possibly */
 				if (opt->arg[0] == 't')	/* Get individual event end-times from column in file */
@@ -466,10 +475,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					case 't':	id = 2;	k = 1;	break;	/* Transparency settings */
 					case 'z':	id = 3;	k = 1;	break;	/* Delta z settings */
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Directive %c not valid\n", opt->arg[1]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -M: Directive %c not valid\n", opt->arg[1]);
 						n_errors++;
 						break;
 				}
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active[id]);
 				Ctrl->M.active[id] = true;
 				if ((c = strstr (&opt->arg[k], "+c"))) {
 					Ctrl->M.value[id][PSEVENTS_VAL2] = atof (&c[2]);
@@ -480,9 +490,10 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				break;
 
 			case 'N':		/* Do not skip points outside border and don't clip labels */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (!(opt->arg[0] == '\0' || strchr ("rc", opt->arg[0]))) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
 				else {	/* Create option to pass to plot/text */
@@ -491,11 +502,13 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'Q':	/* Save events file for posterity */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0]) Ctrl->Q.file = strdup (opt->arg);
 				break;
 
 			case 'S':	/* Set symbol type and size (append units) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (strchr ("kK", opt->arg[0])) {	/* Custom symbol may have a slash before size */
 					Ctrl->S.symbol = strdup (opt->arg);
@@ -522,22 +535,25 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				else {	/* Odd symbols not yet possible in this module */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Cannot (yet) handle symbol code %c\n", opt->arg[0]);
 					n_errors++;
 				}
 				break;
 
 			case 'T':	/* Get time (-fT will be set if these are absolute times and not dummy times or frames) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				t_string = opt->arg;
 				break;
 
 			case 'W':	/* Set symbol outline pen */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0]) Ctrl->W.pen = strdup (opt->arg);
 				break;
 
 			case 'Z':	/* Select advanced seismologic/geodetic symbols */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				if (opt->arg[0] && strstr (opt->arg, "-S")) {	/* Got the required -S option as part of the command */
 					if ((c = strchr (opt->arg, ' '))) {	/* First space in the command ends the module name */
@@ -552,8 +568,8 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 							Ctrl->S.mode = 1;
 						if (strstr (txt_a, "-C") || strstr (txt_a, "-G") || strstr (txt_a, "-H") || strstr (txt_a, "-I") || strstr (txt_a, "-J") || strstr (txt_a, "-N") || strstr (txt_a, "-R") \
 						  || strstr (txt_a, "-W") || strstr (txt_a, "-t")) {	/* Sanity check */
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -H, -I, -J, -N, -R, -W, or -t in the %s command\n", Ctrl->Z.module);
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: The -C, -G, -J, -N, -R, -W options may be given to %s instead, while -H, -I, -t are not allowed\n", &events[s]);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Cannot include options -C, -G, -H, -I, -J, -N, -R, -W, or -t in the %s command\n", Ctrl->Z.module);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Z: The -C, -G, -J, -N, -R, -W options may be given to %s instead, while -H, -I, -t are not allowed\n", &events[s]);
 							n_errors++;							
 						}
 						else	/* Keep a copy of the final command that has -S with no symbol-size specified */
@@ -561,7 +577,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 					}
 				}
 				if (Ctrl->Z.cmd == NULL || Ctrl->Z.module == NULL) {	/* Sanity checks */
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Z: Requires a core [ps]coupe, [ps]meca, or [ps]velo command with valid -S option and fixed size\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -Z: Requires a core [ps]coupe, [ps]meca, or [ps]velo command with valid -S option and fixed size\n");
 					n_errors++;
 				}
 				break;
@@ -578,7 +594,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 
 	if (Ctrl->debug.active) return (GMT_NOERROR);	/* No need the other things */
 
-	gmt_consider_current_cpt (GMT->parent, &Ctrl->C.active, &(Ctrl->C.file));
+	gmt_consider_current_cpt (API, &Ctrl->C.active, &(Ctrl->C.file));
 
 	if (Ctrl->C.active) n_col++;	/* Need to read one more column for z */
 	if (Ctrl->S.mode) n_col++;	/* Must allow for size in input before time and length */
@@ -587,7 +603,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, struct GMT_O
 		n_errors += gmt_verify_expectations (GMT, type, gmt_scanf_arg (GMT, t_string, type, false, &Ctrl->T.now), t_string);
 	}
 	else if (Ctrl->A.mode != PSEVENTS_LINE_TO_POINTS) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -T: -T<now> is a required option.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -T: -T<now> is a required option.\n");
 		n_errors++;
 	}
 	if (GMT->common.b.active[GMT_IN] && GMT->common.b.ncol[GMT_IN] == 0) GMT->common.b.ncol[GMT_IN] = n_col;
@@ -880,7 +896,7 @@ EXTERN_MSC int GMT_psevents (void *V_API, int mode, void *args) {
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_OUT|GMT_IS_REFERENCE, NULL, destination) == GMT_NOTSET) {
 			Return (API->error);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the subsequent operations and module calls even though they may have been set to read the input correctly */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the subsequent operations and module calls even though they may have been set to read the input correctly */
 		/* Build mapproject command and run the module. Note: we want distances in inches since spacing is now in inches */
 		sprintf (cmd, "%s -R%s -J%s -G+uC --PROJ_LENGTH_UNIT=inch ->%s", source, GMT->common.R.string, GMT->common.J.string, destination);
 		GMT_Report (API, GMT_MSG_INFORMATION, "Line sampling Step 1: %s.\n", cmd);
@@ -1242,7 +1258,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 	if (fp_symbols || fp_labels) {	/* Finalize temporary files */
 		if (fp_symbols) fclose (fp_symbols);	/* Close the file so symbol output is flushed */
 		if (fp_labels)  fclose (fp_labels);		/* Close the file so label output is flushed */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from temp files in psxy or pstext below */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from temp files in psxy or pstext below */
 	}
 
 	if (gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Set up map projection */
@@ -1320,7 +1336,7 @@ Do_txt:			if (Ctrl->E.active[PSEVENTS_TEXT] && has_text) {	/* Also plot trailing
 		}
 	}
 	if (fp_symbols || fp_labels)	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-		gmt_reenable_bghi_opts (GMT);
+		gmt_reenable_bghio_opts (GMT);
 
 	/* Finalize plot and we are done */
 
