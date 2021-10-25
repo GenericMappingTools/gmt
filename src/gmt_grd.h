@@ -115,7 +115,7 @@ enum gmt_enum_wesnids {
 /*! These macros calculate the number of nodes in x or y for the increment dx, dy */
 
 #define gmt_M_get_n(C,min,max,inc,off) (urint ((((max) - (min)) / (inc)) + 1 - (off)) )
-#define gmt_M_get_inc(C,min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
+#define gmt_M_get_inc(C,min,max,n,off) (((n) + (off) - 1 == 0) ? ((max) - (min)) : ((max) - (min)) / ((n) + (off) - 1))
 
 /*! The follow macros simplify using the 2 above macros when all info is in the struct header */
 

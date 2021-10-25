@@ -23,6 +23,7 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |-W|\ [*dir*] ]
 [ |-Z| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -139,6 +140,9 @@ Optional Arguments
     Erase the *mainscript* and all input scripts given via **-I** and **-S** upon completion.  Not compatible
     with **-Q**.
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
 .. _-cores:
 
 **-x**\ [[-]\ *n*]
@@ -147,7 +151,7 @@ Optional Arguments
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
     The parallel processing does not depend on OpenMP; new jobs are launched when the previous ones
-    complete.
+    complete. **Note**: One core is reserved by **batch** so in effect *n-1* are used for the jobs.
 
 .. include:: explain_help.rst_
 
@@ -161,8 +165,8 @@ and those that change with the job number.  The constants are accessible by all 
 total number of jobs (given or inferred from **-T**). Also, if **-I** was used then any static parameters
 listed therein will be available to all the scripts as well. In addition, the *mainscript* also has access
 to parameters that vary with the job counter: **BATCH_JOB**\ : The current job number (an integer, e.g., 136),
-**BATCH_TAG**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
-The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_TAG**), Furthermore, if a *timefile*
+**BATCH_ITEM**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
+The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_ITEM**), Furthermore, if a *timefile*
 was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are also set, yielding one variable per
 column in *timefile*.  If *timefile* has trailing text then that text can be accessed via the variable
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to **-T** then the trailing
@@ -302,6 +306,15 @@ we combine all the individual PDFs into a single PDF file and delete the individ
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
 Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
+
+macOS Issues
+------------
+
+**Note**: The limit on the number of concurrently open files is relatively small by default on macOS and when executing
+numerous jobs at the same time it is not unusual to get failures in **batch** jobs with the message "Too many open files". 
+We refer you to this helpful
+`article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
+for various solutions. 
 
 See Also
 --------

@@ -215,6 +215,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -230,10 +231,12 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Needed to report correctly */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'E':	/* Which model to fit */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'c':
@@ -258,16 +261,18 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 						Ctrl->E.mode = F_IS_SCALE_OFF;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized model: %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized model: %s\n", opt->arg);
 						n_errors++;
 						break;
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (!strcmp (opt->arg, "+u") || opt->arg[0] == 'u')		/* Report unweighted statistics anyway */
 					Ctrl->W.unweighted_stats = true;

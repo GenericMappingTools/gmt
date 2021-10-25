@@ -228,23 +228,25 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 	bool scan_slopes = false;
 	unsigned int n_errors = 0, j, k, n, col, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Explore E vs slope or force a limited angle range */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if ((c = strstr (opt->arg, "+f"))) {
 					Ctrl->A.force = true;
@@ -259,10 +261,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'C':	/* Set confidence level in %, convert to fraction */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.value = atof (opt->arg) * 0.01;
 				break;
 			case 'E':	/* Select regression type */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'x': Ctrl->E.mode = GMTREGRESS_X;   break; /* Regress on x */
@@ -270,12 +274,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					case 'o': Ctrl->E.mode = GMTREGRESS_XY;  break; /* Orthogonal Regression*/
 					case 'r': Ctrl->E.mode = GMTREGRESS_RMA; break; /* RMA Regression*/
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Unrecognized type %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unrecognized type %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
 				break;
 			case 'F':	/* Select output columns */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (!strcmp (opt->arg, "p")) {	/* Just want to return model parameters */
 					Ctrl->F.param = true;
@@ -285,7 +290,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					if (k < GMTREGRESS_N_FARGS) {
 						Ctrl->F.col[k] = opt->arg[j];
 						if (!strchr (GMTREGRESS_FARGS, opt->arg[j])) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Choose from -F%s\n", GMTREGRESS_FARGS);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -F: Choose from -F%s\n", GMTREGRESS_FARGS);
 							n_errors++;
 						}
 						Ctrl->F.n_cols++;
@@ -293,11 +298,12 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					}
 					else {
 						n_errors++;
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Too many output columns selected\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -F: Too many output columns selected\n");
 					}
 				}
 				break;
 			case 'N':	/* Select Norm for misfit calculations */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case '1': Ctrl->N.mode = GMTREGRESS_NORM_L1;	break;
@@ -305,16 +311,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					case 'r': Ctrl->N.mode = GMTREGRESS_NORM_LMS;	break;
 					case 'w': Ctrl->N.mode = GMTREGRESS_NORM_RLS;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -N: Unrecognized norm %c\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Unrecognized norm %c\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}
 				break;
 			case 'S':	/* Restrict output records */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.mode = (opt->arg[0] == 'r') ? GMTREGRESS_OUTPUT_BAD : GMTREGRESS_OUTPUT_GOOD;
 				break;
 			case 'T':	/* Output lattice or length */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (!strcmp (opt->arg, "0"))	/* -T0 means no model evaluation */
 					Ctrl->T.no_eval = true;
@@ -322,6 +330,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					n_errors += gmt_parse_array (GMT, 'T', opt->arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_UNIQUE, 0);
 				break;
 			case 'W':	/* Weights or not */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (opt->arg[0] == 'w') Ctrl->W.type = 1;	/* Got weights; determine their column position */
 				for (k = Ctrl->W.type, col = GMT_Z; opt->arg[k]; k++) {
@@ -329,17 +338,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTREGRESS_CTRL *Ctrl, struct GMT
 					else if (opt->arg[k] == 'y') Ctrl->W.col[GMT_Y] = col++;
 					else if (opt->arg[k] == 'r') Ctrl->W.col[GMT_Z] = col++;
 					else {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -W: Specify -W[w][x][y][r]\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -W: Specify -W[w][x][y][r]\n");
 						n_errors++;
 					}
 					Ctrl->W.n_weights++;
 				}
 				if (Ctrl->W.n_weights > 3) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -W: Gave more than 3 uncertainty types\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -W: Gave more than 3 uncertainty types\n");
 					n_errors++;
 				}
 				break;
 			case 'Z':	/* Set new zscore limit */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				Ctrl->Z.limit = fabs (atof (opt->arg));
 				switch (opt->arg[0]) {	/* Look for one-sided outliers */

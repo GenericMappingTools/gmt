@@ -661,7 +661,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		registration = GMT_GRID_NODE_REG;
 
 		/* Look for the x-coordinate vector */
-		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[0]], xy))) {
+		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[0]], xy)) && header->n_columns > 1) {
 			var_spacing = gmtnc_check_step (GMT, header->n_columns, xy, header->x_units, HH->name, save_xy_array);
 			if (save_xy_array && var_spacing) {
 				if (GMT->current.io.nc_xarray) gmt_M_free (GMT, GMT->current.io.nc_xarray);
@@ -671,6 +671,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			}
 			dx = fabs (xy[1] - xy[0]);	/* Grid spacing in x */
 		}
+		if (has_vector && header->n_columns == 1) has_vector = false;	/* One coordinate does not a vector make */
 
 		/* Look for the x-coordinate range attributes */
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[0]], "actual_range", dummy) ||
@@ -731,7 +732,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Determine grid step */
 		header->inc[GMT_X] = gmt_M_get_inc (GMT, dummy[0], dummy[1], header->n_columns, registration);
-		if (gmt_M_is_dnan(header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
+		if (gmt_M_is_dnan(header->inc[GMT_X]) || gmt_M_is_zero (header->inc[GMT_X])) header->inc[GMT_X] = 1.0;
+		if (header->n_columns == 1) registration = GMT_GRID_PIXEL_REG;	/* The only way to have a grid like that */
 
 #ifdef NC4_DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "x registration: %u\n", header->registration);
@@ -754,7 +756,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		registration = GMT_GRID_NODE_REG;
 
 		/* Read the y-coordinate vector (if available), otherwise just look for range attributes */
-		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[1]], xy))) {
+		if ((has_vector = !nc_get_var_double (ncid, ids[HH->xy_dim[1]], xy)) && header->n_rows > 1) {
 			var_spacing = gmtnc_check_step (GMT, header->n_rows, xy, header->y_units, HH->name, save_xy_array);
 			if (save_xy_array && var_spacing) {
 				if (GMT->current.io.nc_yarray) gmt_M_free (GMT, GMT->current.io.nc_yarray);
@@ -767,6 +769,7 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			dummy[0] = xy[0], dummy[1] = xy[header->n_rows-1];
 			dy = fabs (xy[1] - xy[0]);	/* Grid spacing in y */
 		}
+		if (has_vector && header->n_rows == 1) has_vector = false;	/* One coordinate does not a vector make */
 		has_range = (!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", dummy) ||
 			!nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_range", dummy) ||
 			!(nc_get_att_double (ncid, ids[HH->xy_dim[1]], "valid_min", &dummy[0]) +
@@ -844,7 +847,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 
 		/* Determine grid step */
 		header->inc[GMT_Y] = gmt_M_get_inc (GMT, dummy[0], dummy[1], header->n_rows, registration);
-		if (gmt_M_is_dnan(header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
+		if (gmt_M_is_dnan(header->inc[GMT_Y]) || gmt_M_is_zero (header->inc[GMT_Y])) header->inc[GMT_Y] = 1.0;
+		if (header->n_rows == 1) registration = GMT_GRID_PIXEL_REG;	/* The only way to have a grid like that */
 
 #ifdef NC4_DEBUG
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "y registration: %u\n", header->registration);

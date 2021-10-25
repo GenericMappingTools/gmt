@@ -1,4 +1,4 @@
- /*--------------------------------------------------------------------
+/*--------------------------------------------------------------------
  *
  *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
@@ -42,7 +42,7 @@
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for grids (element by element)"
 #define THIS_MODULE_KEYS	"<G(,=G}"
 #define THIS_MODULE_NEEDS	"r"
-#define THIS_MODULE_OPTIONS "-:RVabdfghinrs" GMT_OPT("F") GMT_ADD_x_OPT
+#define THIS_MODULE_OPTIONS "-:RVabdfghinr" GMT_OPT("F") GMT_ADD_x_OPT
 
 /* Some local macros to simplify coding */
 /*! Loop over all nodes including the pad */
@@ -114,6 +114,9 @@ struct GRDMATH_CTRL {	/* All control options for this program (except common arg
 		bool force;	/* if true, select next highest level if current set is not available */
 		char set;	/* One of f, h, i, l, c, or auto */
 	} D;
+	struct GRDMATH_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDMATH_M {	/* -M */
 		bool active;
 	} M;
@@ -168,15 +171,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [%s] [%s] [-D<resolution>[+f]] [%s] [-M] [-N] [-S] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
-		"[%s] [%s] [%s] [%s] [%s] %s A B op C op D op ... = <outgrid>\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
-		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+		"[%s] [%s] [%s] [%s] [%s] %s A B op C op D op ... = %s\n", name, GMT_Rgeo_OPT, GMT_A_OPT, GMT_I_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
+		GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT, GMT_OUTGRID);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n= <outgrid>");
-	GMT_Usage (API, -2, "Writes the current top of the stack to the named file and pops it off the stack. "
-		"Can be used more than once.");
+	gmt_outgrid_syntax (API, '=', "Writes the current top of the stack to the named file and pops it off the stack. "
+		"Can be used more than once");
 	GMT_Usage (API, 1, "\n<operands>");
 	GMT_Usage (API, -2, "A, B, etc. are grid files, constants, or symbols (see below). "
 		"The stack can hold up to %d entries (given enough memory).", GRDMATH_STACK_SIZE);
@@ -501,21 +503,27 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMATH_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Restrict GSHHS features */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
 				Ctrl->D.force = (opt->arg[1] == '+');
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'M':	/* Map units */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Relax domain check */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Only checked later */

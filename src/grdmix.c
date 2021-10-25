@@ -171,6 +171,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 
 	unsigned int n_errors = 0, k;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -178,11 +179,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 			case '<':	/* Input rasters */
 				if (Ctrl->In.n_in >= 3) {
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "A maximum of three rasters may be provided\n");
+					GMT_Report (API, GMT_MSG_ERROR, "A maximum of three rasters may be provided\n");
 				}
 				else {
 					Ctrl->In.file[Ctrl->In.n_in] = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_in]))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_in]))) n_errors++;
 					Ctrl->In.n_in++;
 				}
 				break;
@@ -190,30 +191,36 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->In.file[ALPHA] = grdmix_parseitem (GMT, opt, &(Ctrl->A));
 				if (Ctrl->A.mode == 2) n_errors++;
 				break;
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 
 			case 'G':	/* Does not matter if we pass GMT_IS_GRID or GMT_IS_IMAGE */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->In.file[INTENS] = grdmix_parseitem (GMT, opt, &(Ctrl->I));
 				if (Ctrl->I.mode == 2) n_errors++;
 			break;
 
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 
@@ -224,20 +231,25 @@ static int parse (struct GMT_CTRL *GMT, struct GRDMIX_CTRL *Ctrl, struct GMT_OPT
 					default:  k = GMT_IO; break;
 				}
 				if (k == GMT_IO) {	/* Turn on both in and out grid normalization */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[GMT_IN]);
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[GMT_OUT]);
 					Ctrl->N.active[GMT_IN] = Ctrl->N.active[GMT_OUT] = true;
 					if (opt->arg[0]) Ctrl->N.factor[GMT_IN] = Ctrl->N.factor[GMT_OUT] = atof (opt->arg);					
 				}
 				else {	/* Just activate in or out grid normalization */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[k]);
 					Ctrl->N.active[k] = true;
 					if (opt->arg[1]) Ctrl->N.factor[k] = atof (&opt->arg[1]);
 				}
 				break;
 
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->In.file[BLEND] = grdmix_parseitem (GMT, opt, &(Ctrl->W));
 				if (Ctrl->W.mode == 2) n_errors++;
 				break;
@@ -349,7 +361,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	float *weights = NULL, *intens = NULL, *alpha = NULL;
 
-	double rgb[4], wesn[4] = {0.0, 0.0, 0.0, 0.0};
+	double rgb[4] = {0.0, 0.0, 0.0, 0.0}, wesn[4] = {0.0, 0.0, 0.0, 0.0};
 
 	struct GMT_GRID *G_in[N_ITEMS], *G = NULL;
 	struct GMT_IMAGE *I_in[N_ITEMS], *I = NULL;
@@ -392,7 +404,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 
 	for (k = 0; k < N_ITEMS; k++) {	/* Determine if we got grids or images */
 		if (Ctrl->In.file[k] == NULL) continue;
-		Ctrl->In.type[k] = gmt_raster_type (GMT, Ctrl->In.file[k]);
+		Ctrl->In.type[k] = gmt_raster_type (GMT, Ctrl->In.file[k], true);
 	}
 
 	if (Ctrl->In.n_in == 1 && Ctrl->In.type[0] == GMT_NOTSET && !Ctrl->D.active) {
@@ -453,6 +465,7 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			if (k < 3 && Ctrl->N.active[GMT_IN]) {	/* Normalize the 1-3 input grid */
 				double factor = 1.0 / Ctrl->N.factor[GMT_IN];	/* To avoid division in the loop */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Normalizing grid %s\n", Ctrl->In.file[k]);
+				G_in[k]->header->z_min *= factor;	G_in[k]->header->z_max *= factor;	/* Also update zmin/max */
 				gmt_M_grd_loop (GMT, G_in[k], row, col, node)
 					G_in[k]->data[node] *= factor;
 			}
@@ -563,6 +576,10 @@ EXTERN_MSC int GMT_grdmix (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 		H = I->header;
+		for (band = 0; band < H->n_bands; band++) {	/* Check if any of the grids exceed the required 0-1 range */
+			if (G_in[band]->header->z_min < 0.0 || G_in[band]->header->z_max > 1.0)	/* Probably not normalized and forgot -Ni */
+				GMT_Report (API, GMT_MSG_WARNING, "Component grid values in %s exceed 0-1 range, probably need to specify -Ni\n", Ctrl->In.file[band]);
+		}
 		if (Ctrl->I.active && Ctrl->In.n_in == 3) {	/* Make the most work-intensive version under OpenMP */
 #ifdef _OPENMP
 #pragma omp parallel for private(row,col,node,band,rgb,pix) shared(GMT,I,G_in,H,intens)

@@ -1,6 +1,8 @@
 **-R**\ *west*/*east*/*south*/*north*\ [/*zmin*/*zmax*][**+r**][**+u**\ *unit*]
 
-    Specify the region of interest. |Add_-Rgeo| The region may be specified in one of six ways:
+    Specify the region of interest. |Add_-Rgeo|
+
+    The region may be specified in one of several ways:
 
     1. **-R**\ *west*/*east*/*south*/*north*\ [**+u**\ *unit*]. This is the standard way to specify geographic regions
        when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in

@@ -15,7 +15,7 @@ The **-V** option controls the verbosity mode, which determines which messages a
 
 - **q** - Quiet, not even fatal error messages are produced.
 - **e** - Error messages only.
-- **w** - Warnings.
+- **w** - Warnings (by default, same as running without **-V**)
 - **t** - Timings (report runtimes for time-intensive algorithms).
 - **i** - Informational messages (same as **-V** only).
 - **c** - Compatibility warnings (if compiled with backward-compatibility).

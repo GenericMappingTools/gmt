@@ -74,6 +74,7 @@ struct PSCOAST_CTRL {
 	} A;
 	struct PSCOAST_C {	/* -C<fill>[+l|r] */
 		bool active;
+		bool set[2];
 		struct GMT_FILL fill[2];	/* lake and riverlake fill */
 	} C;
 	struct PSCOAST_D {	/* -D<resolution>[+f] */
@@ -291,6 +292,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
@@ -309,17 +311,23 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 						gmt_fill_syntax (GMT, 'C', NULL, " ");
 						n_errors++;
 					}
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[k]);
+					Ctrl->C.set[k] = true;
 				}
 				else if (opt->arg[0]) {
 					if (gmt_getfill (GMT, opt->arg, &Ctrl->C.fill[LAKE])) {
 						gmt_fill_syntax (GMT, 'C', NULL, " ");
 						n_errors++;
 					}
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[RIVER]);
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->C.set[LAKE]);
+					Ctrl->C.set[RIVER] = Ctrl->C.set[LAKE] = true;
 					Ctrl->C.fill[RIVER] = Ctrl->C.fill[LAKE];
 				}
 				if (c) c[0] = '+';	/* Restore */
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.set = (opt->arg[0]) ? opt->arg[0] : 'l';
 				Ctrl->D.force = (opt->arg[1] == '+' && (opt->arg[2] == 'f' || opt->arg[2] == '\0'));
@@ -330,6 +338,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				Ctrl->E.info.options = options;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				if (gmt_M_compat_check (GMT, 5)) {	/* See if we got old -F for DCW stuff (now -E) */
 					if (strstr (opt->arg, "+l") || opt->arg[0] == '=' || isupper (opt->arg[0])) {
 						GMT_Report (API, GMT_MSG_COMPAT, "-F option for DCW is deprecated, use -E instead.\n");
@@ -355,6 +364,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'G':		/* Set Gray shade, pattern, or clipping */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0] == '\0' || (opt->arg[0] == 'c' && !opt->arg[1]))
 					Ctrl->G.clip = true;
@@ -413,6 +423,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0])
 					Ctrl->L.arg = strdup (opt->arg);
@@ -430,6 +441,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				}
 				/* Intentionally fall through */
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0] == 's') 	/* Write a single segment. Affects only external interfaces. */
 					Ctrl->M.single = true;
@@ -469,9 +481,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 			case 'S':		/* Set ocean color if needed */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0] == '\0' || (opt->arg[0] == 'c' && !opt->arg[1]))
 					Ctrl->S.clip = true;
@@ -481,6 +495,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCOAST_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				n_errors += gmt_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;

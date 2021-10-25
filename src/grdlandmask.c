@@ -63,6 +63,9 @@ struct GRDLANDMASK_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 	} G;
+	struct GRDLANDMASK_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDLANDMASK_N {	/* -N<maskvalues> */
 		bool active;
 		unsigned int wetdry;	/* 1 if dry/wet only, 0 if 5 mask levels */
@@ -107,14 +110,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s -G<outgrid> %s %s [%s] [-D<resolution>[+f]] [-E[<bordervalues>]] [-N<maskvalues>] "
-		"[%s] [%s] %s [%s]\n", name, GMT_I_OPT, GMT_Rgeo_OPT, GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s -G%s %s %s [%s] [-D<resolution>[+f]] [-E[<bordervalues>]] [-N<maskvalues>] "
+		"[%s] [%s] %s [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_A_OPT, GMT_V_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Specify file name for output mask grid file.");
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output mask grid");
 	GMT_Option (API, "I,R");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	gmt_GSHHG_syntax (API->GMT, 'A');
@@ -157,15 +159,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Restrict GSHHS features */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				n_errors += gmt_set_levels (GMT, opt->arg, &Ctrl->A.info);
 				break;
 			case 'D':	/* Set GSHHS resolution */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.set = opt->arg[0];
 				Ctrl->D.force = (opt->arg[1] == '+' && (opt->arg[2] == 'f' || opt->arg[2] == '\0'));
 				break;
 			case 'E':	/* On-boundary setting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0]) {	/* Trace lines through grid */
 					GMT_Report (API, GMT_MSG_WARNING, "-E<values> is presently being tested and is considered experimental\n");
@@ -186,11 +191,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GM
 					Ctrl->E.inside = GMT_INSIDE;
 				break;
 			case 'G':	/* Output filename */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Mask values */

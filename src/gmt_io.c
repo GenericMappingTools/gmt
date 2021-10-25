@@ -73,8 +73,8 @@
  * gmtlib_set_bin_io
  * gmt_format_abstime_output
  * gmt_ascii_format_col
- * gmt_disable_bghi_opts
- * gmt_reenable_bghi_opts
+ * gmt_disable_bghio_opts
+ * gmt_reenable_bghio_opts
  * gmt_lon_range_adjust
  * gmt_quad_reset
  * gmt_quad_init
@@ -3358,9 +3358,11 @@ GMT_LOCAL unsigned int gmtio_examine_current_record (struct GMT_CTRL *GMT, char 
 		}
 		*tpos = pos;
 	}
-	if (found_text && col == 0 && !GMT->common.i.select) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
-		gmt_M_free (GMT, type);
-		return GMT_NOT_OUTPUT_OBJECT;
+	if (found_text && col == 0 && !GMT->common.i.select && phys_col_type != GMT_IS_STRING) {	/* Has to be a non-GMT header with just text starting in the first column - treat as header */
+		if (strncmp (GMT->init.module_name, "batch", 5U) && strncmp (GMT->init.module_name, "movie", 5U)) {	/* Make exception for these modules what often will just read text lines */
+			gmt_M_free (GMT, type);
+			return GMT_NOT_OUTPUT_OBJECT;
+		}
 	}
 	*n_columns = col;	/* Pass back the numerical column count */
 	if (GMT->common.i.end)	/* Asked for unspecified last column on input (e.g., -i3,2,5:), supply the missing last column number */
@@ -5700,6 +5702,27 @@ void gmt_ascii_format_one (struct GMT_CTRL *GMT, char *text, double x, unsigned 
 	}
 }
 
+void gmt_ascii_format_inc (struct GMT_CTRL *GMT, char *text, double x, unsigned int type) {
+	char unit;
+	double d_inc = GMT_DEG2SEC_F * x;
+	unsigned int inc = urint (d_inc);
+	if ((type & GMT_IS_GEO) == 0 || fabs (d_inc - inc) > GMT_CONV6_LIMIT) {	/* Cartesian or not a clear multiple of arc seconds */
+		sprintf (text, GMT->current.setting.format_float_out, x);
+		return;
+	}
+
+	unit = 's';
+	if (inc >= 60 && (inc % 60) == 0) {	/* Arc minutes perhaps */
+		inc /= 60;
+		unit = 'm';
+	}
+	if (inc >= 60 && (inc % 60) == 0) {	/* Arc seconds perhaps */
+		inc /= 60;
+		unit = 'd';
+	}
+	sprintf (text, "%d%c", inc, unit);
+}
+
 /*! . */
 GMT_LOCAL void gmtio_init_io_columns (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Initialize (reset) information per column which may have changed due to -i -o */
@@ -5766,9 +5789,10 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 }
 
 /*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
-void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
+void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
 	/* Temporarily turn off any -i, -h selections */
 	GMT->common.i.select = false;
+	GMT->common.o.select = false;
 	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
 	GMT->current.setting.io_header[GMT_IN] = false;
 	GMT->common.g.active = false;	/* Turn this off (if set) for now */
@@ -5781,9 +5805,10 @@ void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 }
 
 /*! Routine will re-enable any suspended -b, -i, -g, -h selections */
-void gmt_reenable_bghi_opts (struct GMT_CTRL *GMT) {
+void gmt_reenable_bghio_opts (struct GMT_CTRL *GMT) {
 	/* Turn on again any -i, -h selections */
 	GMT->common.i.select = GMT->common.i.orig;
+	GMT->common.o.select = GMT->common.o.orig;
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
 	GMT->common.g.active = GMT->common.g.selected;	/* Turn this back on (if set) */
 	if (GMT->common.b.bin_primary) {	/* Switch back to primary i/o mode which was binary */
@@ -8343,8 +8368,9 @@ GMT_LOCAL void gmtio_duplicate_dataset_cols (struct GMT_CTRL *GMT, struct GMT_DA
 /*! . */
 struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry) {
 	/* Make an exact replica, return geometry if not NULL */
-	uint64_t tbl, seg, n_columns;
+	uint64_t tbl, seg;
 	struct GMT_DATASET *D = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL, *TinH = NULL;
 
 	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
 		/* Cannot copy segments but must go via -i */
@@ -8359,6 +8385,10 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 	gmt_M_memcpy (D->min, Din->min, Din->n_columns, double);
 	gmt_M_memcpy (D->max, Din->max, Din->n_columns, double);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
+		TH   = gmt_get_DT_hidden (D->table[tbl]);
+		TinH = gmt_get_DT_hidden (Din->table[tbl]);
+		for (unsigned int k = 0; k < 2; k++)
+			if (TinH->file[k]) TH->file[k] = strdup (TinH->file[k]);
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			gmtio_copy_segment (GMT, D->table[tbl]->segment[seg], Din->table[tbl]->segment[seg]);
 		}
@@ -8482,6 +8512,7 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	if (!table) return;		/* Do not try to free NULL pointer */
 	TH = gmt_get_DT_hidden (table);
+	if (TH->alloc_mode == GMT_ALLOC_EXTERNALLY) return;	/* Not ours to free */
 	for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
 	gmt_M_free (GMT, table->header);
 	gmt_M_free (GMT, table->min);
@@ -8497,21 +8528,27 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	gmt_M_free (GMT, table);
 }
 
-/*! . */
-void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
+void gmtlib_free_dataset_misc (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
 	/* This takes pointer to data array and thus can return it as NULL */
-	unsigned int tbl, k;
+	unsigned int k;
 	struct GMT_DATASET_HIDDEN *DH = NULL;
 	if (!data) return;	/* Do not try to free NULL pointer */
 	DH = gmt_get_DD_hidden (data);
-	for (tbl = 0; tbl < data->n_tables; tbl++) {
-		gmt_free_table (GMT, data->table[tbl]);
-	}
 	gmt_M_free (GMT, data->min);
 	gmt_M_free (GMT, data->max);
 	gmt_M_free (GMT, data->table);
 	for (k = 0; k < 2; k++) gmt_M_str_free (DH->file[k]);
 	gmt_M_free (GMT, data->hidden);
+}
+
+/*! . */
+void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
+	/* This takes pointer to data array and thus can return it as NULL */
+	uint64_t tbl;
+	if (!data) return;	/* Do not try to free NULL pointer */
+	for (tbl = 0; tbl < data->n_tables; tbl++)
+		gmt_free_table (GMT, data->table[tbl]);
+	gmtlib_free_dataset_misc (GMT, data);
 }
 
 /*! . */
@@ -8572,6 +8609,8 @@ struct GMT_IMAGE *gmtlib_duplicate_image (struct GMT_CTRL *GMT, struct GMT_IMAGE
 	gmt_copy_gridheader (GMT, Inew->header, I->header);
 	if (I->colormap) {	/* Also deal with the colormap for indexed images. If found we duplicate */
 		size_t nc = I->n_indexed_colors * 4 + 1;
+		if (I->n_indexed_colors > 2000)		/* If colormap is Mx4 or has encoded the alpha color */
+			nc = (uint64_t)(floor(I->n_indexed_colors / 1000.0)) * 4 + 1;
 		Inew->colormap = gmt_M_memory (GMT, NULL, nc, int);
 		gmt_M_memcpy (Inew->colormap, I->colormap, nc, int);
 		if (I->color_interp) Inew->color_interp = I->color_interp;

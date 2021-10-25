@@ -292,7 +292,8 @@ Optional Arguments
     By default we try to use all available cores.  Append *n* to only use *n* cores
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
-    The parallel processing does not depend on OpenMP.
+    The parallel processing does not depend on OpenMP. **Note**: One core is utilized by
+    **movie** so in effect *n-1* cores are used for the individual frames.
 
 .. include:: explain_help.rst_
 
@@ -310,8 +311,8 @@ and those that change with the frame number.  The constants are accessible by al
 Also, if **-I** was used then any static parameters listed there will be available to all the scripts as well.
 In addition, the *mainscript* also has access to parameters that vary with the frame counter:
 **MOVIE_FRAME**\ : The current frame number (an integer, e.g., 136),
-**MOVIE_TAG**\ : The formatted frame number (a string, e.g., 000136), and
-**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
+**MOVIE_ITEM**\ : The formatted frame number (a string, e.g., 000136), and
+**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_ITEM**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicitly requested by **-T+w** or
@@ -594,6 +595,20 @@ should be approximately the same length as the video.  Then, simply combine the 
     ffmpeg -loglevel warning -i yourslientmovie.mp4 -y -i narration.m4a final.mp4
 
 For more information on audio manipulations, see the FFmpeg documentation.
+
+Deprecations
+------------
+
+- 6.3.0: Consolidate -A into -F for a more unified option. `#5613 <https://github.com/GenericMappingTools/gmt/pull/5613>`_
+
+macOS Issues
+------------
+
+**Note**: The limit on the number of concurrently open files is relatively small by default on macOS and when building
+numerous frames at the same time it is not unusual to get failures in **movie** jobs with the message "Too many open files". 
+We refer you to this helpful
+`article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
+for various solutions. 
 
 See Also
 --------

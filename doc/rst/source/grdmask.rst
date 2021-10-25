@@ -12,12 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdmask** *table* |-G|\ *mask_grd_file*
+**gmt grdmask** *table* |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |-N|\ [**z**\|\ **Z**\|\ **p**\|\ **P**]\ *values* ]
 [ |-S|\ *search\_radius*\|\ *xlim*\ /*ylim* ] [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
@@ -29,7 +30,6 @@ Synopsis
 [ |SYN_OPT-n| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
-[ |SYN_OPT-s| ]
 [ |SYN_OPT-w| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT-:| ]
@@ -61,9 +61,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *mask_grd_file*
-    Name of resulting output mask grid file. (See :ref:`Grid File Formats
-    <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output mask grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -131,6 +132,8 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 2 input columns (3 with **-Sz**)].
 .. include:: explain_-bi.rst_
 
@@ -153,8 +156,6 @@ Optional Arguments
 
 .. include:: explain_distcalc.rst_
 
-.. include:: explain_-qi.rst_
-
 **-n**\ [**b**\|\ **c**\|\ **l**\|\ **n**][**+a**][**+b**\ *BC*][**+t**\ *threshold*]
    Append **+b**\ *BC* to set any boundary conditions to be used,
    adding **g** for geographic, **p** for periodic, or **n** for
@@ -162,10 +163,10 @@ Optional Arguments
    or **y** to specify just one direction, otherwise both are assumed.
    [Default is geographic if grid is geographic].
 
+.. include:: explain_-qi.rst_
+
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
-
-.. include:: explain_-s.rst_
 
 .. include:: explain_-w.rst_
 

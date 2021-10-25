@@ -87,10 +87,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 	int arg_category = GMT_NOTSET;
 	char p[GMT_LEN256] = {""};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	if ((opt = options) == NULL) {	/* Gave no arguments */
 		if (GMT->parent->external) return GMT_NOERROR;
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Required figure name not specified!\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Required figure name not specified!\n");
 		return GMT_PARSE_ERROR;
 	}
 	gmt_filename_set (opt->arg);
@@ -110,13 +111,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
 			if (arg_category == GMT_IS_FMT) {	/* Got format specifications, check if OK */
 				int k = gmt_get_graphics_id (GMT, p);
 				if (k == GMT_NOTSET) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", p);
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized graphics format %s\n", p);
 					n_errors++;
 				}
 			}
 			else {	/* Check if valid psconvert options */
 				if (!strchr (GMT_PSCONVERT_LIST, p[0])) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized psconvert option  -%s\n", p);
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized psconvert option  -%s\n", p);
 					n_errors++;
 				}
 			}

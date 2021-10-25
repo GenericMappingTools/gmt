@@ -16,7 +16,7 @@ Synopsis
 [ |-C|\ *slpfile* ]
 [ |-D|\ **x**\|\ **y** ]
 [ |-E|\ *empty* ]
-[ |-G|\ *grdfile* ]
+[ |-G|\ *outgrid* ]
 [ |SYN_OPT-I| ]
 [ |-J|\ *parameters* ]
 [ |-M| ]
@@ -47,7 +47,7 @@ Description
 
 **triangulate** reads one or more ASCII [or binary] files (or standard
 input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
-find how the points should be connected to give the most equilateral
+finds how the points should be connected to give the most equilateral
 triangulation possible. If a map projection (give **-R** and **-J**) is
 chosen then it is applied before the triangulation is calculated. By
 default, the output is triplets of point id numbers that make up each
@@ -96,14 +96,16 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Use triangulation to grid the data onto an even grid (specified with
-    **-R** **-I**). Append the name of the output grid file. The
+.. |Add_outgrid| replace:: Use triangulation to grid the data onto an even grid (specified with
+    |-R| and |-I|). Append the name of the output grid file. The
     interpolation is performed in the original coordinates, so if your
     triangles are close to the poles you are better off projecting all
     data to a local coordinate system before using **triangulate** (this
     is true of all gridding routines) or instead select **sphtriangulate**.
     For natural nearest neighbor gridding you must add **-Qn**.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 

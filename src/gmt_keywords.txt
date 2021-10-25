@@ -68,6 +68,7 @@ GMT_DATA_UPDATE_INTERVAL	# Frequency for refreshing local data catalog
 GMT_EXPORT_TYPE			# Default type when GMT exports data to external interfaces
 GMT_EXTRAPOLATE_VAL		# How to deal with 1D extrapolated values
 GMT_FFT				# Which FFT algorithm to use
+GMT_GRAPHICS_DPU		# Default image dpu target for grid plots
 GMT_GRAPHICS_FORMAT		# Default graphics format in modern mode
 GMT_HISTORY			# Should we update the command history?
 GMT_INTERPOLANT			# Spline interpolant

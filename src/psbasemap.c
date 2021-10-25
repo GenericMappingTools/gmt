@@ -154,10 +154,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'A':	/* No plot, just output region outline  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Draw map inset */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if (classic) {
 					Ctrl->D.active = true;
 					n_errors += gmt_getinset (GMT, 'D', opt->arg, &Ctrl->D.inset);
@@ -168,6 +170,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'd': get_panel[0] = true; break;
@@ -206,6 +209,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'L':	/* Draw map scale */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0])
 					Ctrl->L.arg = strdup (opt->arg);
@@ -215,6 +219,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSBASEMAP_CTRL *Ctrl, struct GMT_
 				}
 				break;
 			case 'T':	/* Draw map rose */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				n_errors += gmt_getrose (GMT, 'T', opt->arg, &Ctrl->T.rose);
 				break;

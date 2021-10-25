@@ -112,15 +112,18 @@ static int parse (struct GMT_CTRL *GMT, struct MGD77PATH_CTRL *Ctrl, struct GMT_
 				}
 				/* Intentionally fall through */
 			case 'A':	/* Show list of paths to MGD77 files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'c' || opt->arg[0] == '-') Ctrl->A.mode = true;
 				break;
 
 			case 'D':	/* Show list of directories with MGD77 files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (Ctrl->I.n < 3) {
 					if (strchr ("acmt", (int)opt->arg[0]))

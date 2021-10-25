@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grd2kml** *grid*
+**gmt grd2kml** *ingrid*
 |-N|\ *prefix*
 [ |-A|\ **a**\|\ **g**\|\ **s**\ [*altitude*] ]
 [ |-C|\ *cpt* ]
@@ -51,8 +51,10 @@ If plain tiles are selected (i.e., no contours specified) then the PNG tiles are
 Required Arguments
 ------------------
 
-*grid*
-    A 2-D gridded data set (see :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_ingrid| replace:: 2-D gridded data set.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-N:
 
