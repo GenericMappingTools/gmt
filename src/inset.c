@@ -283,7 +283,13 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the inset main code ----------------------------*/
 
-	if (got_RJ) gmt_M_memcpy (Ctrl->D.inset.dim, dim, 2U, double);	/* Copy the saved inset size determined from -R -J above */
+	if (got_RJ) {	/* Copy the saved inset size determined from -R -J above */
+		if (Ctrl->D.inset.dim[GMT_X] > 0.0 || Ctrl->D.inset.dim[GMT_Y] > 0.0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot define inset size both via -D..,+w as well as -R -J\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		gmt_M_memcpy (Ctrl->D.inset.dim, dim, 2U, double);
+	}
 
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
