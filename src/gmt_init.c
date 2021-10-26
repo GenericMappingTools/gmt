@@ -9804,7 +9804,7 @@ int gmt_parse_g_option (struct GMT_CTRL *GMT, char *txt) {
 			break;	/* Already set, or will be reset below  */
 	}
 	k++;	/* Skip to start of gap value */
-	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip deprected sign */
+	if (txt[k] == '-' || txt[k] == '+') k++;	/* Skip deprecated sign */
 	if ((GMT->common.g.gap[i] = atof (&txt[k])) == 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Gap value must be non-zero\n");
 		if (t) t[0] = '+';	/* Restore modifiers */

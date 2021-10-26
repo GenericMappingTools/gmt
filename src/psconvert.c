@@ -799,7 +799,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 
 			/* Processes program-specific parameters */
 
-			case 'A':	/* Crop settings (plus backwards comptible parsing of older -A option syntax) */
+			case 'A':	/* Crop settings (plus backwards compatible parsing of older -A option syntax) */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				n_errors += psconvert_parse_A_settings (GMT, opt->arg, Ctrl);
 				break;
