@@ -632,7 +632,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	if (hTransform != NULL)
 		OCTDestroyCoordinateTransformation(hTransform);
 
-	/* Must check that geog grids have not y_max > 90.0 We'll be eps tollerant ... but how do I know that it's geog?*/
+	/* Must check that geog grids have not y_max > 90.0 We'll be eps tolerant ... but how do I know that it's geog?*/
 
 	/* --------------------------------------------------------------------------------------
 	 * Record Geographical corners (if they exist)
@@ -653,8 +653,10 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
+		int type = GDALGetRasterDataType (hBand);
+		if (type == GDT_Float32 || type == GDT_Float64) compute_minmax = true;
 		hBand = GDALGetRasterBand(hDataset, 1);	/* Ensure hBand points to the first layer */
-		if (z_min == DBL_MAX && (compute_minmax || GDALGetRasterDataType (hBand) != GDT_Byte)) {	/* We don't know yet the dataset Min/Max and it seems to be a grid */
+		if (z_min == DBL_MAX && (compute_minmax || type != GDT_Byte)) {	/* We don't know yet the dataset Min/Max and it seems to be a grid */
 			GDALComputeRasterMinMax(hBand, compute_minmax, adfMinMax);	/* Unfortunately, cannot always trust metadata min/max */
 			Ctrl->hdr[4] = adfMinMax[0];
 			Ctrl->hdr[5] = adfMinMax[1];
@@ -1199,8 +1201,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				}
 
 				/* If we didn't compute it yet, its time to do it now (for this block) */
-				if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize[piece], buffy, z_min, z_max);
-				z_min = adfMinMax[0];	z_max = adfMinMax[1];	/* Update z_min, z_max in case we get here more than once (multiple blocks or two pieces) */
+				if (got_R) {	/* Update z_min, z_max in case we get here more than once (multiple blocks or two pieces) */
+					ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize[piece], buffy, z_min, z_max);
+					z_min = adfMinMax[0];	z_max = adfMinMax[1];
+				}
 
 				/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 				if (jump) {
@@ -1391,18 +1395,18 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		indent = pad_w[piece] + nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		layer_offset += layer_size;	/* As of now, this is never used after increment for float images */
-	}
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
-	if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
-		for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-			nn = (pad_w+m)*nXSize_withPad + startColPos;
-			for (n = 0; n < nXSize; n++) {
-				if (Ctrl->Float.data[nn] == prhs->N.nan_value) Ctrl->Float.data[nn] = (float)NAN;
-				nn += incStep;
+		if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
+			for (m = startRow, mm = 0; m < endRow ; m++, mm++) {
+				nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+				for (n = 0; n < nXSize[piece]; n++) {
+					if (Ctrl->Float.data[nn] == prhs->N.nan_value) Ctrl->Float.data[nn] = GMT->session.f_NaN;
+					nn += incStep;
+				}
 			}
 		}
-	}
 #endif
+	}
 	gmt_M_free (GMT, whichBands);
 
 	GDALClose(hDataset);
