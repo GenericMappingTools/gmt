@@ -371,7 +371,9 @@ enum GMT_enum_gridio {
 	GMT_GRID_IS_GEO		   = 256U,  /* Grid is a geographic grid, not Cartesian [Deprecated, use GMT_DATA_IS_GEO instead] */
 	GMT_GRID_IS_IMAGE	   = 512U,   /* Grid may be an image, only allowed with GMT_CONTAINER_ONLY */
 	GMT_IMAGE_NO_INDEX	   = 4096,	/* If reading an indexed grid, convert to rgb so we can interpolate */
-	GMT_IMAGE_ALPHA_LAYER  = 8192	/* Place any alpha layer in the image band, not alpha array */
+	GMT_IMAGE_ALPHA_LAYER  = 8192,	/* Place any alpha layer in the image band, not alpha array */
+	GMT_GRID_NEEDS_PAD1	   = 65536,	/* This module requires grids or images to have at least 1 boundary pad all around */
+	GMT_GRID_NEEDS_PAD2	   = 131072	/* This module requires grids or images to have at least 2 boundary pad all around */
 };
 
 #define GMT_GRID_ALL		0U   /* Backwards compatibility for < 5.3.3; See GMT_CONTAINER_AND_DATA */

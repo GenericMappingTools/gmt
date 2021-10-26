@@ -5193,6 +5193,14 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 	 	case GMT_IS_REFERENCE|GMT_VIA_MATRIX:	/* The user's 2-D grid array of some sort, + info in the args [NOT YET FULLY TESTED] */
 			/* Getting a matrix info S_obj->resource. Create grid header and then pass the grid pointer via the matrix pointer */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
+			/* If passed by reference and the module requires a pad then we must switch to duplication */
+			if (mode & GMT_GRID_NEEDS_PAD1 || mode & GMT_GRID_NEEDS_PAD2) {	/* Cannot do this by reference, switch to duplication */
+				method -= GMT_IS_REFERENCE;
+				method += GMT_IS_DUPLICATE;
+				start_over_method = GMT_IS_DUPLICATE;
+				GMT_Report (API, GMT_MSG_INFORMATION, "Subset selection requires GMT_IS_DUPLICATION instead of GMT_IS_REFERENCE due to pad requirement - method has been switched\n");
+				goto start_over_import_grid;
+			}
 			/* Determine if it is possible to use the matrix given the region selected and the fact we chose GMT_IS_REFERENCE. This test will
 			 * only kick in after we allocate the G_obj and come back the second time (after getting header) since otherwise S_obj->wesn is not set yet */
 			if (!(!S_obj->region ||
@@ -5201,7 +5209,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				method -= GMT_IS_REFERENCE;
 				method += GMT_IS_DUPLICATE;
 				start_over_method = GMT_IS_DUPLICATE;
-				GMT_Report (API, GMT_MSG_DEBUG, "Subset selection requires GMT_IS_DUPLICATION instead of GMT_IS_REFERENCE - method has been switched\n");
+				GMT_Report (API, GMT_MSG_INFORMATION, "Subset selection requires GMT_IS_DUPLICATION instead of GMT_IS_REFERENCE - method has been switched\n");
 				goto start_over_import_grid;
 			}
 
