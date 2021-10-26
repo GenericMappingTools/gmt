@@ -715,7 +715,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	int status, error, ks;
 	uint64_t n_points = 0, n_read = 0;
-	unsigned int g, k, xy_mode, dtype;
+	unsigned int g, k, xy_mode, dtype, pad_mode = 0;
 	bool img_conv_needed = false, some_outside = false;
 
 	char line[GMT_BUFSIZ] = {""}, run_cmd[BUFSIZ] = {""}, *cmd = NULL;
@@ -753,6 +753,8 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
 
+	pad_mode = (GMT->common.n.interpolant > BCR_BILINEAR) ? GMT_GRID_NEEDS_PAD2 : 0;
+
 	cmd = GMT_Create_Cmd (API, options);
 	sprintf (run_cmd, "# %s %s", GMT->init.module_name, cmd);	/* Build command line argument string */
 	gmt_M_free (GMT, cmd);
@@ -768,7 +770,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GC[g].type = Ctrl->G.type[g];
 		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grids */
-			if ((GC[g].G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|GMT_GRID_NEEDS_PAD2, NULL, Ctrl->G.file[g], NULL)) == NULL) {	/* Get header only */
+			if ((GC[g].G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|pad_mode, NULL, Ctrl->G.file[g], NULL)) == NULL) {	/* Get header only */
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
@@ -785,7 +787,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (GMT_NOERROR);
 			}
 
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY|GMT_GRID_NEEDS_PAD2, wesn, Ctrl->G.file[g], GC[g].G) == NULL) {	/* Get subset */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY|pad_mode, wesn, Ctrl->G.file[g], GC[g].G) == NULL) {	/* Get subset */
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
