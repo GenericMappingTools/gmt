@@ -431,6 +431,18 @@ The conversion of PNG frames to an animated GIF (**-F**\ *gif*) relies on `Graph
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
 PNG frames to an MP4 (**-F**\ *mp4*) or WebM (**-F**\ *webm*) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_.
 
+Shell Limitations
+-----------------
+
+As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
+involves a sub-shell), we advice against using commands in your main script that involve piping the result
+from one GMT module into another (e.g., gmt blockmean ..... | gmt surface ...).  Because **movie** is running
+many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
+In our experience, piping in the context of movie script may corrupt the GMT history files, resulting in
+stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
+a temporary file when writing movie main scripts. **Note**: Piping from a non-GMT module into a GMT module
+or vice versa is not a problem (e.g., echo ..... | gmt plot ...).
+
 Hints for Movie Makers
 ----------------------
 
