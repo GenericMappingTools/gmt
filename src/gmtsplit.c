@@ -456,7 +456,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 
 	nprofiles = 0;
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
-		T = D[GMT_IN]->table[tbl];	/* Shorthand for curent table */
+		T = D[GMT_IN]->table[tbl];	/* Shorthand for current table */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 			struct GMT_DATATABLE_HIDDEN *TH = gmt_get_DT_hidden (T);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Working on file %s\n", TH->file[GMT_IN]);

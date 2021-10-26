@@ -441,7 +441,7 @@ EXTERN_MSC int GMT_rotsmoother (void *V_API, int mode, void *args) {
 		GMT_Report (API, GMT_MSG_INFORMATION, "Found %d rots for the time interval %g <= t < %g\n", n_use, t_lo, t_hi);
 		if (n_use < n_minimum) continue;	/* Need at least 1 or 2 poles to do anything useful */
 
-		/* Now extimate the average rotation */
+		/* Now estimate the average rotation */
 
 		gmt_M_memset (xyz_mean_pole, 3, double);	/* Reset sum of mean components and weight sums */
 		gmt_M_memset (xyz_mean_quat, 4, double);	/* Reset sum of mean components and weight sums */

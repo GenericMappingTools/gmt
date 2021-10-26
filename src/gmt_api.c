@@ -4426,7 +4426,7 @@ int gmtlib_ind2rgb (struct GMT_CTRL *GMT, struct GMT_IMAGE **I_in) {
 }
 
 void gmtlib_GDALDestroyDriverManager (struct GMTAPI_CTRL *API) {
-    /* Cannot close connection to GDAL if calling enviroment expect it to be open */
+    /* Cannot close connection to GDAL if calling environment expect it to be open */
 	if (API->external < 2) GDALDestroyDriverManager();
 }
 #endif
