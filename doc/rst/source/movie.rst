@@ -440,7 +440,7 @@ from one GMT module into another (e.g., gmt blockmean ..... | gmt surface ...). 
 many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
 In our experience, piping in the context of movie script may corrupt the GMT history files, resulting in
 stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
-a temporary file when writing movie main scripts. **Note**: Piping from non-GMT module into a GMT module
+a temporary file when writing movie main scripts. **Note**: Piping from a non-GMT module into a GMT module
 or vice versa is not a problem (e.g., echo ..... | gmt plot ...).
 
 Hints for Movie Makers
