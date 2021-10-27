@@ -751,10 +751,6 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
-	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
-
-	pad_mode = (GMT->common.n.interpolant > BCR_BILINEAR) ? GMT_GRID_NEEDS_PAD2 : 0;
-
 	cmd = GMT_Create_Cmd (API, options);
 	sprintf (run_cmd, "# %s %s", GMT->init.module_name, cmd);	/* Build command line argument string */
 	gmt_M_free (GMT, cmd);
@@ -763,7 +759,16 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 4, double);
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
-	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+
+	pad_mode = (GMT->common.n.interpolant > BCR_BILINEAR) ? GMT_GRID_NEEDS_PAD2 : 0;
+	if (pad_mode) {
+		gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+		gmt_set_pad (GMT, 2U);	/* Ensure space for BCR BCs in case an API passed pad == 0 */
+	}
+	else {
+		gmt_grd_set_datapadding (GMT, false);	/* Turn off gridpadding when reading a subset */
+		gmt_set_pad (GMT, 0);	/* Pads not needed since bicubic or b-spline not selected */
+	}
 
 	GC = gmt_M_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
 
