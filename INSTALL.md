@@ -213,7 +213,7 @@ You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericM
 
 Install GMT via:
 
-    sudo emerge --verbose --ask gmt
+    sudo emerge --verbose --ask sci-geosciences/gmt
 
 ## Cross Platform Install Instructions
 
