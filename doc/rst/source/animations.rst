@@ -47,7 +47,7 @@ ull-featured movie with thousands of frames at HD or 4k resolution.
 
   :doc:`/animations/anim04`
   
-  - .. youtube:: 7NQa4TORA3E
+- .. youtube:: 7NQa4TORA3E
      :width: 100%
 
   :doc:`/animations/anim05`
