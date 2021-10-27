@@ -49,6 +49,7 @@ enum Opt_C_modes {
 	GRDINFO_TRAILING	= 2};
 
 struct GRDINFO_CTRL {
+	unsigned int n_files;	/* How many grids given */
 	struct GRDINFO_C {	/* -C[n|t] */
 		bool active;
 		unsigned int mode;
@@ -181,7 +182,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	bool no_file_OK, num_report;
-	unsigned int n_errors = 0, n_files = 0;
+	unsigned int n_errors = 0;
 	char text[GMT_LEN32] = {""}, *c = NULL;
 	static char *M[2] = {"minimum", "maximum"}, *V[3] = {"negative", "all", "positive"}, *T[2] = {"column", "row"};
 	struct GMT_OPTION *opt = NULL;
@@ -196,7 +197,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(opt->arg)))
 					n_errors++;
 				else
-					n_files++;
+					Ctrl->n_files++;
 				break;
 
 			/* Processes program-specific parameters */
@@ -335,15 +336,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 
 	num_report = (Ctrl->C.active && (Ctrl->D.active || Ctrl->C.mode != GRDINFO_TRADITIONAL));
 	no_file_OK = (Ctrl->D.active && Ctrl->D.mode == 0 && GMT->common.R.active[RSET]);
-	n_errors += gmt_M_check_condition (GMT, n_files == 0 && !no_file_OK,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->n_files == 0 && !no_file_OK,
 	                                   "Must specify one or more input files\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && n_files != 1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.mode && Ctrl->n_files != 1,
 	                                   "Option -D: The +n modifier requires a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && n_files != 1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->E.active && Ctrl->n_files != 1,
 	                                   "Option -E: Requires a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && Ctrl->T.inc < 0.0,
 	                                   "Option -T: The optional increment must be positive\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && n_files != 1,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && Ctrl->n_files != 1,
 	                                   "Option -T: The optional alpha-trim value can only work with a single grid file\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->T.alpha < 0.0 || Ctrl->T.alpha > 100.0),
 	                                   "Option -T: The optional alpha-trim value must be in the 0 < alpha < 100 %% range\n");
@@ -613,6 +614,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 		n_cols = 2;
 		cmode = GMT_COL_FIX_NO_TEXT;
 		geometry = GMT_IS_POLY;
+		if (Ctrl->n_files > 1) gmt_set_segmentheader (GMT, GMT_OUT, true);
 	}
 	else if (Ctrl->E.active) {
 		n_cols = 3;
@@ -869,7 +871,7 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->I.active && i_status == GRDINFO_GIVE_BOUNDBOX) {
-			sprintf (record, "> Bounding box for %s", HH->name);
+			sprintf (record, "Bounding box for %s", HH->name);
 			GMT_Put_Record (API, GMT_WRITE_SEGMENT_HEADER, record);
 			/* LL */
 			out[GMT_X] = header->wesn[XLO];	out[GMT_Y] = header->wesn[YLO];

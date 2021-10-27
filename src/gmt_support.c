@@ -16798,7 +16798,8 @@ unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 	for (k = 0; start == 0 && k < (len-1); k++) {
 		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exits the quote */
 		if (quoted) continue;		/* Not consider +<mod> inside quoted strings */
-		if (string[k] == '+') {	/*Possibly a modifier */
+		if (string[k] == '+') {	/* Possibly a modifier */
+			if (k && string[k-1] == 'e' && isdigit (string[k+1])) continue;	/* Exponential notation, e.g. 1e+5 */
 			if (strchr (valid_modifiers, string[k+1]))	/* Found a recognized valid modifier */
 				n_good++;
 			else {	/* Found an invalid modifier or some part of a filename that has + in it */

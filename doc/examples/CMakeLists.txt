@@ -73,17 +73,6 @@ if (SPHINX_FOUND)
 				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif)
 			list (APPEND _animations ${RST_BINARY_DIR}/_images/anim${_num}.gif)
 		endforeach ()
-
-		# copy video files for anim04
-		foreach (_num 04)
-			add_custom_command (
-				OUTPUT ${RST_STATIC_DIR}/anim${_num}.mp4
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.mp4
-				${RST_STATIC_DIR}/anim${_num}.mp4
-				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif)
-			list (APPEND _animations ${RST_STATIC_DIR}/anim${_num}.mp4)
-		endforeach ()
 		add_custom_target (animation DEPENDS ${_animations})
 
 		# clean target
