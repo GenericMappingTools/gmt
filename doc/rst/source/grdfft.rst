@@ -136,6 +136,9 @@ Optional Arguments
         using a 2nd-order Butterworth filter, with half-weight at 30, while
         **-F**\ 400/-/2 will highpass the data.
 
+    **Note**: For filtering in the time (or space) domain instead, see
+    :doc:`grdfilter`.
+
 .. _-G:
 
 **-G**\ *outfile*\|\ *table*
