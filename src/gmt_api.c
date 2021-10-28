@@ -4930,21 +4930,25 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 	switch (method) {
 		/* Status: This case is fully tested and operational */
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
-			if (gmt_file_is_tiled_list (API, S_obj->filename, NULL, NULL, NULL)) {	/* Special list file */
+			if (gmt_file_is_tiled_list (API, S_obj->filename, NULL, NULL, NULL)) {	/* Special list file of individual grid tiles */
 				if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
-					if (mode & GMT_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_DATA_ONLY grid must already be allocated */
-					{	/* Block for creation of tile header */
+					if (mode & GMT_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_DATA_ONLY the grid must already be allocated */
+                    if (API->got_remote_wesn) { /* Use the tile information */
 						unsigned g_reg = (API->tile_reg == 'g') ? GMT_GRID_NODE_REG : GMT_GRID_PIXEL_REG;
-						double g_inc[2] = {API->tile_inc, API->tile_inc};
+						double g_inc[2] = {API->tile_inc, API->tile_inc}; /* Must duplicate due to syntax below */
 	 					if ((G_obj = gmt_create_grid (API->GMT)) == NULL)
 	 						return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 						if (gmtapi_init_grid (API, NULL, NULL, API->tile_wesn, g_inc, g_reg, GMT_CONTAINER_ONLY, GMT_IN, G_obj))
 	 						return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 						S_obj->resource = grid = G_obj;	/* Set resource pointer to the grid */
 					}
+                    else {  /* Should not (cannot) happen */
+                        GMT_Report (API, GMT_MSG_ERROR, "No w/e/s/n dx/dy reg found for this tiled dataset? Internal error\n");
+                           return_null (API, GMT_RUNTIME_ERROR);    /* Allocation error */
+                    }
 					if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header, get out of here */
 				}
-				/* Here we must assemble to grid */
+				/* Here we must assemble to grid from the list of tiles */
 				if ((G_obj = gmtlib_assemble_tiles (API, NULL, S_obj->filename)) == NULL)
 					return_null (API, GMT_GRID_READ_ERROR);
 				if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), S_obj->filename))
@@ -4952,6 +4956,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				/* Sneaky internal recycling of the contents of the grid structure based on final results in G_obj */
 				GH  = gmt_get_G_hidden (grid);
 				GH2 = gmt_get_G_hidden (G_obj);
+                /* Copy over the hidden grid settings obtained in grdblend */
 				GH->alloc_mode  = GH2->alloc_mode;
 				GH->alloc_level = GH2->alloc_level;
 				GH->xy_alloc_mode[GMT_X] = GH2->xy_alloc_mode[GMT_X];
