@@ -90,7 +90,7 @@ struct GRDINFO_CTRL {
 		bool active;
 		unsigned int mode;
 		double inc;
-		double alpha;
+		double alpha[2];	/* XLO is lower and XHI is upper tail */
 	} T;
 };
 
@@ -101,7 +101,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	/* Initialize values whose defaults are not 0/false/NULL */
 	C->E.val = +1;	/* Default is to look for maxima */
-	C->T.alpha = 2.0;	/* 2 % alpha trim is default if selected */
+	C->T.alpha[XLO] = C->T.alpha[XHI] = 1.0;	/* 1 % alpha trim for both tails is default if not specified */
 	return (C);
 }
 
@@ -165,8 +165,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-T[<dv>][+a[<alpha>]][+s]");
 	GMT_Usage (API, -2, "Print global -Tvmin/vmax[/dv] (in rounded multiples of <dv>, if given). Optional modifiers:");
-	GMT_Usage (API, 3, "+a Trim grid range by excluding the two <alpha>/2 tails [2 %%]. "
-		"Note: +a is limited to a single grid.  Give <alpha> in percent.");
+	GMT_Usage (API, 3, "+a Trim grid range by excluding the <alpha>/2 from each tail [2 %%]. "
+		"Note: +a is limited to a single grid.  Give <alpha> in percent. "
+		"Give <alpha> as <alphaL>/<alphaR> to set unequal tail areas.");
 	GMT_Usage (API, 3, "+s Force a symmetrical range about zero.");
 	GMT_Option (API, "V,f,h,o,.");
 
@@ -323,7 +324,15 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 						Ctrl->T.mode |= 1;
 					if (gmt_get_modifier (text, 'a', string)) {	/* Want alpha-trimmed range before determining limits */
 						Ctrl->T.mode |= 2;
-						if (string[0]) Ctrl->T.alpha = atof (string);
+						if (string[0]) {	/* Gave a specific tail size or sizes */
+							int n = GMT_Get_Values (API, string, &Ctrl->T.alpha, 2);
+							if (n == 1) /* Split the total equally */
+								Ctrl->T.alpha[XLO] /= 2.0, Ctrl->T.alpha[XHI] /= 2.0;
+							if (Ctrl->T.alpha[XLO] < 0.0 || Ctrl->T.alpha[XHI] < 0.0 || Ctrl->T.alpha[XLO] > 100.0 || Ctrl->T.alpha[XHI] > 100.0) {
+								GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Alpha values must be in the 0-100%% range.\n");
+								n_errors++;
+							}
+						}
 					}
 				}
 				break;
@@ -346,8 +355,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 	                                   "Option -T: The optional increment must be positive\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.mode & 2 && Ctrl->n_files != 1,
 	                                   "Option -T: The optional alpha-trim value can only work with a single grid file\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && (Ctrl->T.alpha < 0.0 || Ctrl->T.alpha > 100.0),
-	                                   "Option -T: The optional alpha-trim value must be in the 0 < alpha < 100 %% range\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && ((Ctrl->T.alpha[XLO] + Ctrl->T.alpha[XHI]) > 100.0),
+	                                   "Option -T: The sum of the optional alpha-trim value(s) cannot exceed 100 %%\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.status == GRDINFO_GIVE_REG_ROUNDED &&
 	                                   (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
 									   "Option -I: Must specify a positive increment(s)\n");
@@ -1289,8 +1298,8 @@ EXTERN_MSC int GMT_grdinfo (void *V_API, int mode, void *args) {
 					tmp_grid = G->data;
 			}
 			gmt_sort_array (GMT, tmp_grid, size, GMT_FLOAT);	/* Sort so we can find quantiles */
-			global_vmin = gmt_quantile_f (GMT, tmp_grid, 0.5 * Ctrl->T.alpha, size);		/* "Left" quantile */
-			global_vmax = gmt_quantile_f (GMT, tmp_grid, 100.0-0.5* Ctrl->T.alpha, size);	/* "Right" quantile */
+			global_vmin = gmt_quantile_f (GMT, tmp_grid, Ctrl->T.alpha[XLO], size);		/* "Left" quantile */
+			global_vmax = gmt_quantile_f (GMT, tmp_grid, 100.0-Ctrl->T.alpha[XHI], size);	/* "Right" quantile */
 			if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
 				if (gmt_M_file_is_memory (file_ptr))	/* Now free temp grid */
 					gmt_M_free (GMT, tmp_grid);
