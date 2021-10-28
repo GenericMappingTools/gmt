@@ -15622,7 +15622,7 @@ dry_run:		if (opt_R == NULL) {	/* In this context we imply -Rd unless grdcut -S 
 				}
 				else
 					opt->arg = list;
-				API->got_remote_wesn = false;	/* Since we are making a grdblend job of tiles */
+				API->got_remote_wesn = true;	/* Since we are making a grdblend job of tiles */
 			}
 		}
 	}
