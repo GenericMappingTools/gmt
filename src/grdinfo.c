@@ -325,9 +325,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDINFO_CTRL *Ctrl, struct GMT_OP
 					if (gmt_get_modifier (text, 'a', string)) {	/* Want alpha-trimmed range before determining limits */
 						Ctrl->T.mode |= 2;
 						if (string[0]) {	/* Gave a specific tail size or sizes */
-							int n = GMT_Get_Values (API, string, &Ctrl->T.alpha, 2);
+							double *p = Ctrl->T.alpha;
+							int n = GMT_Get_Values (API, string, p, 2);
 							if (n == 1) /* Split the total equally */
-								Ctrl->T.alpha[XLO] /= 2.0, Ctrl->T.alpha[XHI] /= 2.0;
+								Ctrl->T.alpha[XLO] /= 2.0, Ctrl->T.alpha[XHI] = Ctrl->T.alpha[XLO];
 							if (Ctrl->T.alpha[XLO] < 0.0 || Ctrl->T.alpha[XHI] < 0.0 || Ctrl->T.alpha[XLO] > 100.0 || Ctrl->T.alpha[XHI] > 100.0) {
 								GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Alpha values must be in the 0-100%% range.\n");
 								n_errors++;
