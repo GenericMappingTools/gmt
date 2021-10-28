@@ -75,7 +75,8 @@ Required Arguments
     the numbering of the given jobs.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming jobs.  For instance, name_000010.grd has a tag width of 6.  By default, this is
     automatically set but if you are splitting large jobs across several computers (via **+s**) then you
-    must use the same tag width for all names.
+    must use the same tag width for all names. **Note**: If just *njobs* is given then only **BATCH_JOB**
+    is available as no data file is available.
 
 
 Optional Arguments

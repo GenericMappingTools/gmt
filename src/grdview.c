@@ -101,7 +101,7 @@ struct GRDVIEW_CTRL {
 		bool cpt;
 		int outline;
 		unsigned int mode;	/* GRDVIEW_MESH, GRDVIEW_SURF, GRDVIEW_IMAGE */
-		unsigned int dpi;
+		double dpi;
 		struct GMT_FILL fill;
 	} Q;
 	struct GRDVIEW_S {	/* -S<smooth> */
@@ -395,7 +395,8 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->T.pen = C->W.pen[0] = C->W.pen[1] = C->W.pen[2] = GMT->current.setting.map_default_pen;	/* Tile and mesh pens */
 	C->W.pen[0].width *= 3.0;	/* Contour pen */
 	C->W.pen[2].width *= 3.0;	/* Facade pen */
-	C->Q.dpi = 100;
+	C->Q.dpi = GMT->current.setting.graphics_dpu;	/* Set the default dpu for -Qi */
+	if (GMT->current.setting.graphics_dpu_unit == 'c') C->Q.dpi *= 2.54;	/* Convert dpc to dpi */
 	gmt_init_fill (GMT, &C->Q.fill, GMT->current.setting.ps_page_rgb[0], GMT->current.setting.ps_page_rgb[1], GMT->current.setting.ps_page_rgb[2]);
 	return (C);
 }
@@ -463,8 +464,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Alternatively, append x or -y for row or column \"waterfall\" profiles.",
 		gmt_putcolor (API->GMT, API->GMT->PSL->init.page_rgb));
 	GMT_Usage (API, 3, "s: Colored or shaded Surface. Append m to draw mesh-lines on the surface.");
-	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpi [100].");
-	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpi [100].");
+	GMT_Usage (API, 3, "i: Transform polygons to raster-image via scanline conversion.  Append effective dpu [%d%c].",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
+	GMT_Usage (API, 3, "c: As i, but use PS Level 3 color-masking for nodes with z = NaN.  Append effective dpu [%d%c].",
+		API->GMT->current.setting.graphics_dpu, API->GMT->current.setting.graphics_dpu_unit);
 	GMT_Usage (API, -2, "To force a monochrome image using the YIQ transformation, append +m.");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-S<smooth>");
@@ -487,6 +490,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "X,c,f,n,p,t,.");
 
 	return (GMT_MODULE_USAGE);
+}
+
+GMT_LOCAL double grdview_get_dpi (char *text) {
+	double dpi = atoi (text);
+	if (text[strlen(text)-1] == 'c') dpi *= 2.54;	/* Got dpc, convert to dpi */
+	return (dpi);
 }
 
 static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OPTION *options) {
@@ -640,7 +649,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 				}
 				switch (opt->arg[0]) {
 					case 'c':	/* Image with colormask */
-						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
+						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = grdview_get_dpi (&opt->arg[1]);
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
 						Ctrl->Q.cpt = true;	/* Will need a CPT */
 						Ctrl->Q.mask = true;
@@ -651,7 +660,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 						/* Intentionally fall through - to 'i' */
 					case 'i':	/* Image with clipmask */
 						Ctrl->Q.mode = GRDVIEW_IMAGE;
-						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = atoi (&opt->arg[1]);
+						if (opt->arg[1] && isdigit ((int)opt->arg[1])) Ctrl->Q.dpi = grdview_get_dpi (&opt->arg[1]);
 						Ctrl->Q.cpt = true;	/* Will need a CPT */
 						break;
 					case 'm':	/* Mesh plot */
@@ -791,7 +800,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 	                                   "Option -I: Must specify intensity file, value, or modifiers\n");
 	n_errors += gmt_M_check_condition (GMT, (Ctrl->Q.mode == GRDVIEW_SURF || Ctrl->Q.mode == GRDVIEW_IMAGE || Ctrl->W.contour) &&
 	                                   !Ctrl->C.file && Ctrl->G.n != 3 && !no_cpt && GMT->current.setting.run_mode == GMT_CLASSIC, "Must specify color palette table\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == GRDVIEW_IMAGE && Ctrl->Q.dpi <= 0.0,
 	                                 "Option -Qi: Must specify positive dpi\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.active && GMT->current.proj.JZ_set,
 	                                 "Option -T: Cannot specify -JZ|z\n");

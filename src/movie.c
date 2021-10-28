@@ -1322,7 +1322,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	unsigned int dd, hh, mm, ss, start, flavor[2] = {0, 0};
 
 	bool done = false, layers = false, one_frame = false, upper_case[2] = {false, false}, has_conf = false;
-	bool n_written = false, has_text = false, is_classic = false, place_background = false;
+	bool n_written = false, has_text = false, is_classic = false, place_background = false, issue_col0_par = false;
 
 	static char *movie_raster_format[2] = {"png", "PNG"}, *img_type[2] = {"opaque", "transparent"}, var_token[4] = "$$%";
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, *rmfile[3] = {"rm -f", "rm -f", "del"};
@@ -1715,8 +1715,10 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);	/* Set first input column type as absolute time */
 
 		}
-		else	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
+		else {	/* Just gave the number of frames (we hope, or we got a bad filename and atoi should return 0) */
 			n_frames = n_data_frames = atoi (Ctrl->T.file);
+			issue_col0_par = true;
+		}
 	}
 	if (n_frames == 0) {	/* So not good... */
 		GMT_Report (API, GMT_MSG_ERROR, "No frames specified! - exiting.\n");
@@ -2040,6 +2042,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			sprintf (string, "MOVIE_COL%u", col);
 			gmt_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_frame]);
 		}
+		if (issue_col0_par) gmt_set_ivalue (fp, Ctrl->In.mode, false, "MOVIE_COL0", data_frame);	/* Same as current frame number */
 		if (has_text) {	/* Also place any string parameter as a single string variable */
 			gmt_set_tvalue (fp, Ctrl->In.mode, false, "MOVIE_TEXT", D->table[0]->segment[0]->text[data_frame]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words MOVIE_WORD1, MOVIE_WORD2, etc. */

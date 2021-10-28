@@ -107,7 +107,8 @@ Required Arguments
     the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
     is automatically set but if you are splitting large jobs across several computers then you
-    must use the same tag width for all names.
+    must use the same tag width for all names. **Note**: If just *nframes* is given then only **MOVIE_FRAME**
+    is available as no data file is available.
 
 
 Optional Arguments
