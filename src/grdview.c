@@ -813,7 +813,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDVIEW_CTRL *Ctrl, struct GMT_OP
 
 EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	bool get_contours, bad, pen_set, begin, saddle, drape_resample = false;
-	bool nothing_inside = false, use_intensity_grid, do_G_reading = true;
+	bool nothing_inside = false, use_intensity_grid, do_G_reading = true, read_z = false;
 
 	unsigned int c, nk, n4, row, col, d_reg[3], i_reg = 0, id[2], good;
 	unsigned int t_reg, n_out, k, k1, ii, jj, PS_colormask_off = 0;
@@ -891,6 +891,14 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
 
+	if (gmt_file_is_tiled_list (API, Ctrl->In.file, NULL, NULL, NULL)) {	/* Must read it so we can get zmin/zmax set */
+		/* PW Note: This step could go away if we pre-saved the z-range of all remote global grids */
+		if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY|GMT_GRID_NEEDS_PAD2, wesn, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
+			Return (API->error);
+		}
+		read_z = true;	/* So we don't do it again later */
+	}
+	/* Set default z-range for plot to be that of the grid if not specified via -R */
 	if (GMT->common.R.wesn[ZLO] == 0.0 && GMT->common.R.wesn[ZHI] == 0.0) {
 		GMT->common.R.wesn[ZLO] = Topo->header->z_min;
 		GMT->common.R.wesn[ZHI] = Topo->header->z_max;
@@ -964,7 +972,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing shape grid\n");
 
-	if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY|GMT_GRID_NEEDS_PAD2, wesn, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
+	if (!read_z && GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY|GMT_GRID_NEEDS_PAD2, wesn, Ctrl->In.file, Topo) == NULL) {	/* Get topo data */
 		Return (API->error);
 	}
 	t_reg = gmt_change_grdreg (GMT, Topo->header, GMT_GRID_NODE_REG);	/* Ensure gridline registration */

@@ -4897,7 +4897,7 @@ GMT_LOCAL struct GMT_GRID *gmtapi_import_grid (struct GMTAPI_CTRL *API, int obje
 	struct GMT_GRID *G_obj = NULL, *G_orig = NULL;
 	struct GMT_MATRIX *M_obj = NULL;
 	struct GMT_MATRIX_HIDDEN *MH = NULL;
-	struct GMT_GRID_HIDDEN *GH = NULL;
+	struct GMT_GRID_HIDDEN *GH = NULL, *GH2 = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;
@@ -4930,20 +4930,48 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 	switch (method) {
 		/* Status: This case is fully tested and operational */
 		case GMT_IS_FILE:	/* Name of a grid file on disk */
-			if (gmt_file_is_tiled_list (API, S_obj->filename, NULL, NULL, NULL)) {	/* Special list file */
+			if (gmt_file_is_tiled_list (API, S_obj->filename, NULL, NULL, NULL)) {	/* Special list file of individual grid tiles */
 				if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
-					if ((G_obj = gmtlib_assemble_tiles (API, NULL, S_obj->filename)) == NULL)
-						return_null (API, GMT_GRID_READ_ERROR);
-					if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), S_obj->filename))
-						return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
-					GH = gmt_get_G_hidden (G_obj);
-					GH->alloc_mode = GMT_ALLOC_INTERNALLY;
+					if (mode & GMT_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_DATA_ONLY the grid must already be allocated */
+                    if (API->got_remote_wesn) { /* Use the tile information */
+						unsigned g_reg = (API->tile_reg == 'g') ? GMT_GRID_NODE_REG : GMT_GRID_PIXEL_REG;
+						double g_inc[2] = {API->tile_inc, API->tile_inc}; /* Must duplicate due to syntax below */
+	 					if ((G_obj = gmt_create_grid (API->GMT)) == NULL)
+	 						return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+						if (gmtapi_init_grid (API, NULL, NULL, API->tile_wesn, g_inc, g_reg, GMT_CONTAINER_ONLY, GMT_IN, G_obj))
+	 						return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
+						S_obj->resource = grid = G_obj;	/* Set resource pointer to the grid */
+					}
+                    else {  /* Should not (cannot) happen */
+                        GMT_Report (API, GMT_MSG_ERROR, "No w/e/s/n dx/dy reg found for this tiled dataset? Internal error\n");
+                           return_null (API, GMT_RUNTIME_ERROR);    /* Allocation error */
+                    }
+					if (mode & GMT_CONTAINER_ONLY) break;	/* Just needed the header, get out of here */
 				}
-				else
-					G_obj = grid;	/* We are working on a srtm grid already allocated and here we also read the data so nothing to do */
-				S_obj->resource = G_obj;	/* Set resource pointer to the grid */
-				break;
+				/* Here we must assemble to grid from the list of tiles */
+				if ((G_obj = gmtlib_assemble_tiles (API, NULL, S_obj->filename)) == NULL)
+					return_null (API, GMT_GRID_READ_ERROR);
+				if (gmt_M_err_pass (GMT, gmt_grd_BC_set (GMT, G_obj, GMT_IN), S_obj->filename))
+					return_null (API, GMT_GRID_BC_ERROR);	/* Set boundary conditions */
+				/* Sneaky internal recycling of the contents of the grid structure based on final results in G_obj */
+				GH  = gmt_get_G_hidden (grid);
+				GH2 = gmt_get_G_hidden (G_obj);
+                /* Copy over the hidden grid settings obtained in grdblend */
+				GH->alloc_mode  = GH2->alloc_mode;
+				GH->alloc_level = GH2->alloc_level;
+				GH->xy_alloc_mode[GMT_X] = GH2->xy_alloc_mode[GMT_X];
+				GH->xy_alloc_mode[GMT_Y] = GH2->xy_alloc_mode[GMT_Y];
+				gmt_copy_gridheader (API->GMT, grid->header, G_obj->header);	/* Update the header with more info, such as z_min/z_max */
+				grid->data = G_obj->data;	/* Pass long the data pointer... */
+				grid->x = G_obj->x;	/* ...and the x and y arrays */
+				grid->y = G_obj->y;
+				G_obj->x = G_obj->y = NULL;	/* Wipe them from the G_obj structure so we can free G_obj without clobbering the arrays now pointed to by grid */
+				G_obj->data = NULL;
+				GMT_Destroy_Data (API, &G_obj);	/* Destroy this registered object which has nothing of value anymore */
+				G_obj = grid;	/* Refresh the G_obj to be the original pointer so it can be returned */
+				break;	/* DOne with all operations involving reading a tiled dataset */
 			}
+
 			/* When source is an actual file we place the grid container into the S_obj->resource slot; no new object required */
 			if (grid == NULL) {	/* Only allocate grid struct when not already allocated */
 				if (mode & GMT_DATA_ONLY) return_null (API, GMT_NO_GRDHEADER);		/* For mode & GMT_DATA_ONLY grid must already be allocated */
