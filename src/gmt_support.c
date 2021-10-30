@@ -18456,9 +18456,10 @@ void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
 	}
 }
 
-unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, double *min, double *max) {
+unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, unsigned int mode, double *min, double *max) {
 	/* Parse strings like low/high, NaN/high, low/NaN, /high, low/ and return min/max
-	 * with either set to NaN if not given */
+	 * with either set to NaN if not given.  However, if mode - 1 then unset min/max becomes
+	 * -DBL_MAX or +DBL_MAX instead of NaNs */
 	size_t L;
 	int n;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""};
@@ -18500,7 +18501,13 @@ unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, doub
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unable to parse %s\n", option, txt_b);
 		return GMT_PARSE_ERROR;
 	}
-	if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
+	if (mode) {	/* Replace any NaNs with min and max doubles */
+		if (gmt_M_is_dnan (*min))
+			*min = -DBL_MAX;
+		if (gmt_M_is_dnan (*max))
+			*max = +DBL_MAX;
+	}
+	else if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Both limits cannot be NaN\n", option);
 		return GMT_PARSE_ERROR;
 	}
