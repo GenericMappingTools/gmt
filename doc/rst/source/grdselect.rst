@@ -19,14 +19,15 @@ Synopsis
 |SYN_OPT-I|
 [ |-I|\ [*dx*\ [/*dy*]\|\ **b**\|\ **i**\|\ **r**] ]
 [ |-M|\ *margins* ]
-[ |-N|\ **l**\|\ **u**\ [*n*] ]
+[ |-N|\ **l**\|\ **h**\ [*n*] ]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
-[ |-Z|\ [*zmin*\ /*zmax*][**+i**] ]
 [ |SYN_OPT-V| ]
+[ |-Z|\ [*zmin*\ /*zmax*][**+i**] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -83,11 +84,15 @@ Optional Arguments
     (for setting separate *x* and *y* margins), or the full set of four slash-separated margins
     (for setting separate west, east, south, and north margins) [no region extension].
 
+.. _-N:
+
+**-N**\ **l**\|\ **h**\ [*n*]
+    Only pass grids that have a total number of NaNs that is either **l**\ ower or **h**\ igher than *n* [0].
+
 .. _-Q:
 
 **-Q**
     All input files must be data 3-D netCDF data cube files [all files are 2-D grids].
-    Not compatible with **-D**, **-E**, **-F**, and **-Ib**.
 
 .. |Add_-R| replace:: Using the **-R** option will select a subsection of the input grid(s). If this subsection
     exceeds the boundaries of the grid, only the common region will be extracted. If **-Q** is used you must also
@@ -114,6 +119,11 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-ocols.rst_
+
+.. _-regg:
+
+**-r**\ [**g**\|\ **p**]
+    Onpy pass grids that have the same registration as that specified [no registration requirement].
 
 .. include:: explain_help.rst_
 

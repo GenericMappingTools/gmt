@@ -111,7 +111,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-Ai|u[+il|h|<incs>]] [-C] [-G] [-I<xinc>[/<yinc>]] [-L] [-M<margins>] [-Nl|u[<n_nans>]] "
+	GMT_Usage (API, 0, "usage: %s %s [-Ai|u[+il|h|<incs>]] [-C] [-G] [-I<xinc>[/<yinc>]] [-M<margins>] [-Nl|h[<n_nans>]] "
 		"[-Q] [%s] [-Z[<min>]/[<max>][+i]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -120,8 +120,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-Ai|u[+il|h|<incs>]");
-	GMT_Usage (API, -2, "Select i for intersection or u for union in determining the joint area [union]. "
+	GMT_Usage (API, -2, "Report a unifying data region for all the grids: "
+		"Append i for intersection or u for union in determining the joint area [union]. "
 		"Optionally, append +i to round region using the (l)owest, (h)ighest, or specified increments [no rounding].");
+	GMT_Usage (API, -2, "Note: Without -A we simply report the list of grids passing other tests.");
 	GMT_Usage (API, 1, "\n-C Report information in fields on a single line using the format "
 		"<w e s n> [Default reports a -R<w/e/s/n> string].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
@@ -131,10 +133,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add space around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
 		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side.");
-	GMT_Usage (API, 1, "\n-Nl|u[<n_nans>]");
+	GMT_Usage (API, 1, "\n-Nl|h[<n_nans>]");
 	GMT_Usage (API, -2, "Only consider grids that satisfy a NaN-condition [Consider all input grids]:");
-	GMT_Usage (API, 3, "l: Only grids with fewer than <n_nans> NaNs will pass [0].");
-	GMT_Usage (API, 3, "h: Only grids with more than <n_nans>  NaNs will pass [0].");
+	GMT_Usage (API, 3, "l: Only grids with lower than <n_nans> NaNs will pass [0].");
+	GMT_Usage (API, 3, "h: Only grids with higher than <n_nans>  NaNs will pass [0].");
 	GMT_Usage (API, 1, "\n-Q Input file(s) is 3-D data cube(s), not grid(s) [2-D grids].");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-Z[<min>]/[<max>][+i]");
@@ -207,10 +209,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 					n_errors++;
 				}
 				break;
-			case 'L':	/* Selects lilst output */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
-				Ctrl->L.active = true;
-				break;
 			case 'M':	/* Extend the region */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
@@ -231,9 +229,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	Ctrl->N.mode = GRDSELECT_LESS_NANS;	break;
-					case 'u':	Ctrl->N.mode = GRDSELECT_MORE_NANS;	break;
+					case 'h':	Ctrl->N.mode = GRDSELECT_MORE_NANS;	break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Bad directive, must be -Ml or -Mu\n");
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -M: Bad directive, must be -Ml or -Mh\n");
 						n_errors++;
 				}
 				if (opt->arg[1]) Ctrl->N.n_nans = atoi (&opt->arg[1]);
@@ -284,7 +282,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	unsigned int GMT_W = GMT_Z;
 	bool first_r = true, first = true, is_cube;
 
-	double wesn[8], out[8];
+	double wesn[8], out[8], *subset = NULL;
 
 	char record[GMT_BUFSIZ] = {""};
 
@@ -342,6 +340,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	if (GMT->common.R.active[RSET]) {	/* Gave a sub region so set the first region limit */
 		gmt_M_memcpy (wesn, GMT->common.R.wesn, 6U, double);
 		first_r = false;
+		subset = GMT->common.R.wesn;	/* Read subsets */
 	}
 	wesn[ZLO] = wesn[WLO] = DBL_MAX;	wesn[ZHI] = wesn[WHI] = -DBL_MAX;
 
@@ -393,17 +392,18 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip grids that fail the test */
 			uint64_t level, here = 0, ij, n_nan = 0;
 			unsigned int col, row;
-			gmt_grdfloat *data = (is_cube) ? U->data : G->data;
+			gmt_grdfloat *data = NULL;
 			if (is_cube) {
-				if (GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_DATA_ONLY, wesn, opt->arg, U) == NULL) {
+				if (GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_DATA_ONLY, subset, opt->arg, U) == NULL) {
 					Return (API->error);
 				}
 			}
 			else {
-				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, opt->arg, G) == NULL) {
+				if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, subset, opt->arg, G) == NULL) {
 					Return (API->error);
 				}
 			}
+			data = (is_cube) ? U->data : G->data;
 
 			for (level = 0; level < header->n_bands; level++) {
 				for (row = 0; row < header->n_rows; row++) {
@@ -437,8 +437,9 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			wesn[WHI] = header->z_max;
 			if (Ctrl->A.mode == GRDSELECT_MIN_INC || Ctrl->A.mode == GRDSELECT_MAX_INC)	/* Copy the first grid increments */
 				gmt_M_memcpy (Ctrl->A.inc, header->inc, 2U, double);
+			first = false;
 		}
-		if (Ctrl->L.active) {	/* Only wanted to list the grid files */
+		if (!Ctrl->A.active) {	/* Only wanted to list the grid files */
 			sprintf (record, "%s", opt->arg);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
@@ -448,16 +449,14 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				wesn[YHI] = MIN (wesn[YHI], header->wesn[YHI]);
 				if (wesn[YHI] <= wesn[YLO]) {	/* No common region can be found - no point to continue */
 					GMT_Report (API, GMT_MSG_WARNING, "No common area for all grids is possible.\n");
-					//gmt_M_memcpy (wesn, wesn_nothing, 8U, double);
-					goto reporting;
+					goto nothing;
 				}
 				if (is_cube) {
 					wesn[ZLO] = MAX (wesn[ZLO], U->z[0]);
 					wesn[ZHI] = MIN (wesn[ZHI], U->z[header->n_bands-1]);
 					if (wesn[ZHI] <= wesn[ZLO]) {	/* No common cube region can be found - no point to continue */
 						GMT_Report (API, GMT_MSG_WARNING, "No common area for all cubes is possible.\n");
-						//gmt_M_memcpy (wesn, wesn_nothing, 8U, double);
-						goto reporting;
+						goto nothing;
 					}
 				}
 				if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Easy, peasy */
@@ -472,8 +471,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				}
 				if (wesn[XHI] <= wesn[XLO]) {	/* No common region can be found - no point to continue */
 					GMT_Report (API, GMT_MSG_WARNING, "No common area for all grids is possible.\n");
-					//gmt_M_memcpy (wesn, wesn_nothing, 8U, double);
-					goto reporting;
+					goto nothing;
 				}
 			}
 			else {	/* Find the union of all regions */
@@ -494,6 +492,8 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 					wesn[ZHI] = MAX (wesn[ZHI], U->z[header->n_bands-1]);
 				}
 			}
+			wesn[WLO] = MIN (wesn[WLO], header->z_min);
+			wesn[WHI] = MAX (wesn[WHI], header->z_max);
 		}
 		if (Ctrl->A.mode == GRDSELECT_MIN_INC) {	/* Update the smallest increments found */
 			if (header->inc[GMT_X] < Ctrl->A.inc[GMT_X]) Ctrl->A.inc[GMT_X] = header->inc[GMT_X];	/* Update the smallest x-increments found */
@@ -505,9 +505,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		}
 	}
 
-reporting:
-
-	if (!Ctrl->L.active) {
+	if (Ctrl->A.active) {
 		/* Possible round the region */
 		if (Ctrl->A.mode != GRDSELECT_NO_INC) {
 			wesn[XLO] = floor (wesn[XLO] / Ctrl->A.inc[GMT_X]) * Ctrl->A.inc[GMT_X];
@@ -531,8 +529,22 @@ reporting:
 				gmt_M_memcpy (&out[4], &wesn[WLO], 2, double);
 			}
 		}
+		else {
+			char text[GMT_LEN512] = {""};
+			sprintf (record, "-R");
+			gmt_ascii_format_col (GMT, text, wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, wesn[XHI], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, wesn[YLO], GMT_OUT, GMT_Y);	strcat (record, text);	strcat (record, "/");
+			gmt_ascii_format_col (GMT, text, wesn[YHI], GMT_OUT, GMT_Y);	strcat (record, text);
+			if (is_cube) {
+				gmt_ascii_format_col (GMT, text, wesn[ZLO], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
+				gmt_ascii_format_col (GMT, text, wesn[ZHI], GMT_OUT, GMT_Z);	strcat (record, text);
+			}
+		}
 		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
+
+nothing:
 
 	gmt_M_free (GMT, Out);
 
