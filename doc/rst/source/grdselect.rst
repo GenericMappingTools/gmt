@@ -1,9 +1,9 @@
 .. index:: ! grdselect
 .. include:: module_core_purpose.rst_
 
-*******
+*********
 grdselect
-*******
+*********
 
 |grdselect_purpose|
 
