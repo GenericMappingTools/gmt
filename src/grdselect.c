@@ -75,37 +75,33 @@ struct GRDSELECT_CTRL {
 		unsigned int mode;		/* 0 = intersection [i], 1 = union [r] */
 		double inc[2];	/* Optional increments */
 	} A;
-	struct GRDSELECT_C {	/* -C[n|t] */
+	struct GRDSELECT_C {	/* -C */
 		bool active;
-		unsigned int mode;
 	} C;
-	struct GRDSELECT_D {	/* -D<dx[/dy] */
+	struct GRDSELECT_D {	/* -D<dx[/dy[/dz]] */
 		bool active;
-		double inc[2];
+		double inc[3];
 	} D;
 	struct GRDSELECT_G {	/* -G */
 		bool active;
 	} G;
-	struct GRDSELECT_I {	/* -Idnrz */
+	struct GRDSELECT_I {	/* -Idnrwz */
 		bool active;
 		bool pass[GRD_SELECT_N_TESTS];	/* One flag for each setting */
 	} I;
-	struct GRDSELECT_L {	/* Just list the passing data sources */
-		bool active;
-	} L;
 	struct GRDSELECT_M {	/* -M */
 		bool active;
 		double margin[4];	/* Optional margins [none] */
 	} M;
-	struct GRDSELECT_N {	/* -Nl|u<nans> */
+	struct GRDSELECT_N {	/* -Nl|h<nans> */
 		bool active;
 		unsigned int mode;
-		uint64_t n_nans;	/* Optional margins [none] */
+		int64_t n_nans;	/* Limit on nans [0] */
 	} N;
 	struct GRDSELECT_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct GRDSELECT_W {	/* -Wzmin/zmax */
+	struct GRDSELECT_W {	/* -Wwmin/wmax */
 		bool active;
 		double w_min, w_max;
 	} W;
@@ -121,7 +117,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDSELECT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	for (unsigned int i = 0; i < GRD_SELECT_N_TESTS; i++) C->I.pass[i] = true;    /* Default is to include the grid if we pass the test */
+	for (unsigned int k = 0; k < GRD_SELECT_N_TESTS; k++) C->I.pass[k] = true;    /* Default is to include the grid if we pass the test */
 	return (C);
 }
 
@@ -133,7 +129,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s data1 data2 ... [-Ai|u[+il|h|<incs>]] [-C] [-D<xinc>[/<yinc>]] [-G] [-Idnrwz] [-M<margins>] [-Nl|h[<n_nans>]] "
+	GMT_Usage (API, 0, "usage: %s grid1 grid2 ... [-Ai|u[+il|h|<inc>]] [-C] [-D<inc>] [-G] [-Idnrwz] [-M<margins>] [-Nl|h[<n_nans>]] "
 		"[-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -141,27 +137,28 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	gmt_ingrid_syntax (API, 0, "Name of one or more grid or cube files");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-Ai|u[+il|h|<incs>]");
-	GMT_Usage (API, -2, "Report a unifying data region for all the data sources: "
-		"Append i for intersection or u for union in determining the joint area [union]. "
-		"Optionally, append +i to round region using the (l)owest, (h)ighest, or specified increments [no rounding].");
-	GMT_Usage (API, -2, "Note: Without -A we simply report the list of data sources passing other tests.");
+	GMT_Usage (API, 1, "\n-Ai|u[+il|h|<inc>]");
+	GMT_Usage (API, -2, "Report a unifying data region for all the data sources. Append:");
+	GMT_Usage (API, 3, "i: Determine the intersection of all passed data source regions.");
+	GMT_Usage (API, 3, "u: Determine the union of all passed data source regions.");
+	GMT_Usage (API, -2, "Optionally, append +i to round region using the (l)owest, (h)ighest, or specified increments [no rounding]." 
+		"Note: Without -A we simply report the list of data sources passing any imposed tests.");
 	GMT_Usage (API, 1, "\n-C Report information in fields on a single line using the format "
-		"<w e s n> [Default reports a -R<w/e/s/n> string].");
-	GMT_Usage (API, 1, "\n-D<xinc>[/<yinc>]");
+		"<w e s n {b t} w0 w1> [Default reports a -R<w/e/s/n>[/b/t] string].");
+	GMT_Usage (API, 1, "\n-D<inc>");
 	GMT_Usage (API, -2, "Only consider data sources that match the given increments [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
 	GMT_Usage (API, 1, "\n-Idnrwz");
-	GMT_Usage (API, -2, "Reverse the tests, i.e., pass data sources outside the selection. "
+	GMT_Usage (API, -2, "Reverse the tests, i.e., pass data sources when the test fails. "
 		"Supply any combination of dnrwz where each flag means:");
 	GMT_Usage (API, 3, "d: Pass data sources that do not match the increment set in -D.");
 	GMT_Usage (API, 3, "n: Pass data sources that fail the NaN-test in -N.");
 	GMT_Usage (API, 3, "r: Pass data sources with the opposite registration than given in -r.");
-	GMT_Usage (API, 3, "w: Pass data sources outside the range given in -W.");
-	GMT_Usage (API, 3, "z: Pass cubes outside the range given in -Z (requires -Q).");
+	GMT_Usage (API, 3, "w: Pass data sources outside the data range given in -W.");
+	GMT_Usage (API, 3, "z: Pass cubes outside the z-coordinate range given in -Z (requires -Q).");
 	GMT_Usage (API, 1, "\n-M<margins>");
-	GMT_Usage (API, -2, "Add space around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
-		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side.");
+	GMT_Usage (API, -2, "Add padding around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
+		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no padding].");
 	GMT_Usage (API, 1, "\n-Nl|h[<n_nans>]");
 	GMT_Usage (API, -2, "Only consider data sources that satisfy a NaN-condition [Consider all input data sources]:");
 	GMT_Usage (API, 3, "l: Only data sources with lower than <n_nans> NaNs will pass [0].");
@@ -170,13 +167,13 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-W[<min>]/[<max>]");
 	GMT_Usage (API, -2, "Only consider data sources that have data-values in the given range [Consider all input data sources]. "
-		"At least one of <min> or <max> must be specified, as well as the slash.");
+		"At least one of <min> or <max> must be specified, as well as the slash [-infinity/+infinity].");
 	GMT_Usage (API, 1, "\n-Z[<min>]/[<max>]");
 	GMT_Usage (API, -2, "Only consider cubes that have z-coordinates in the given range [Consider all input cubes]. "
-		"At least one of <min> or <max> must be specified, as well as the slash. Requires -Q.");
+		"At least one of <min> or <max> must be specified, as well as the slash [-infinity/+infinity]. Requires -Q.");
 	GMT_Usage (API, 1, "\n-r[g|p]");
 	GMT_Usage (API, -2, "Only consider data sources that have the specified registration [Consider all input data sources].");
-	GMT_Option (API, "V,f,h,o,.");
+	GMT_Option (API, "V,f,h,o,r,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -222,7 +219,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 						case 'l': Ctrl->A.i_mode = GRDSELECT_MIN_INC; break;
 						case 'h': Ctrl->A.i_mode = GRDSELECT_MAX_INC; break;
 						default:
-							if (gmt_getinc (GMT, &string[1], Ctrl->A.inc)) n_errors++;
+							if (gmt_getinc (GMT, string, Ctrl->A.inc)) n_errors++;
 							Ctrl->A.i_mode = GRDSELECT_SET_INC;
 							break;
 					}
@@ -237,11 +234,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->D.inc)) {
-					gmt_inc_syntax (GMT, 'I', 1);
+					gmt_inc_syntax (GMT, 'D', 1);
 					n_errors++;
 				}
 				break;
-			case 'I':	/* Invert these tests */
+			case 'I':	/* Invert selected tests */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				for (k = 0; opt->arg[k]; k++) {
@@ -252,7 +249,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 						case 'w': Ctrl->I.pass[GRD_SELECT_W] = false; break;
 						case 'z': Ctrl->I.pass[GRD_SELECT_Z] = false; break;
 						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Expects -Idnrwz\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Expects any combination of dnrwz\n");
 							n_errors++;
 							break;
 					}
@@ -310,12 +307,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->n_files == 0,
 	                                   "Must specify one or more input files\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->A.i_mode ==  GRDSELECT_SET_INC && (Ctrl->A.inc[GMT_X] <= 0.0 || Ctrl->A.inc[GMT_Y] <= 0.0),
+									   "Option -A: Must specify a positive increment(s) via +i<inc>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] <= 0.0),
-									   "Option -I: Must specify a positive increment(s)\n");
+									   "Option -D: Must specify a positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && Ctrl->C.active,
 	                                   "The -o option requires -C\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.n_nans < 0,
+	                                   "The -N option argument cannot be negative\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->Q.active,
-	                                   "The -Z option requires -Q\n");
+	                                   "The -Z option requires -Q since the limits applies to the 3-D z-dimension (see -W for data range limits)\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -363,6 +364,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	/* OK, done parsing, now process all input data sources in a loop */
 
 	gmt_M_memset (wesn, 8, double);	/* Initialize */
+	gmt_M_memset (out, 8, double);	/* Initialize */
 
 	if (Ctrl->C.active) {
 		n_cols = (Ctrl->Q.active) ? 8 : 6;	/* w e s n [z0 z1] [w0 w1] */
@@ -475,26 +477,23 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		}
 
 		/* OK, here the grid/cube passed any other obstacles */
-		if (first_r) {	/* No w/e/s/n initialized via -R, use the first header */
+		if (first_r) {	/* No w/e/s/n initialized via -R, use the first header to initialize wesn */
 			gmt_M_memcpy (wesn, header->wesn, 4U, double);	/* The first grid needs to set the extent of the region for now */
 			first_r = false;
 		}
 		if (first) {	/* This is the first grid/cube */
-			if (Ctrl->Q.active) {
+			if (Ctrl->Q.active) {	/* Cube: Keep track of z-dimension range */
 				wesn[ZLO] = U->z[0];
 				wesn[ZHI] = U->z[header->n_bands-1];
 			}
+			/* Set the initial data range */
 			wesn[WLO] = header->z_min;
 			wesn[WHI] = header->z_max;
-			if (Ctrl->A.mode == GRDSELECT_MIN_INC || Ctrl->A.mode == GRDSELECT_MAX_INC)	/* Copy the first grid increments */
+			if (Ctrl->A.i_mode == GRDSELECT_MIN_INC || Ctrl->A.i_mode == GRDSELECT_MAX_INC)	/* Copy the first grid increments */
 				gmt_M_memcpy (Ctrl->A.inc, header->inc, 2U, double);
 			first = false;
 		}
-		if (!Ctrl->A.active) {	/* Only wanted to list the grid files that passed the tests */
-			sprintf (record, "%s", opt->arg);
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-		}
-		else {	/* Want region information */
+		if (Ctrl->A.active) {	/* Want region information */
 			if (Ctrl->A.mode == GRDSELECT_INTERSECTION) {	/* Retain only region common to all data sources (i.e., their intersection) */
 				wesn[YLO] = MAX (wesn[YLO], header->wesn[YLO]);
 				wesn[YHI] = MIN (wesn[YHI], header->wesn[YHI]);
@@ -545,19 +544,23 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			}
 			wesn[WLO] = MIN (wesn[WLO], header->z_min);
 			wesn[WHI] = MAX (wesn[WHI], header->z_max);
+			if (Ctrl->A.i_mode == GRDSELECT_MIN_INC) {	/* Update the smallest increments found */
+				if (header->inc[GMT_X] < Ctrl->A.inc[GMT_X]) Ctrl->A.inc[GMT_X] = header->inc[GMT_X];	/* Update the smallest x-increments found */
+				if (header->inc[GMT_Y] < Ctrl->A.inc[GMT_Y]) Ctrl->A.inc[GMT_Y] = header->inc[GMT_Y];	/* Update the smallest y-increments found */
+			}
+			if (Ctrl->A.i_mode == GRDSELECT_MAX_INC) {	/* Update the largest increments found */
+				if (header->inc[GMT_X] > Ctrl->A.inc[GMT_X]) Ctrl->A.inc[GMT_X] = header->inc[GMT_X];	/* Update the largest x-increments found */
+				if (header->inc[GMT_Y] > Ctrl->A.inc[GMT_Y]) Ctrl->A.inc[GMT_Y] = header->inc[GMT_Y];	/* Update the largest y-increments found */
+			}
 		}
-		if (Ctrl->A.mode == GRDSELECT_MIN_INC) {	/* Update the smallest increments found */
-			if (header->inc[GMT_X] < Ctrl->A.inc[GMT_X]) Ctrl->A.inc[GMT_X] = header->inc[GMT_X];	/* Update the smallest x-increments found */
-			if (header->inc[GMT_Y] < Ctrl->A.inc[GMT_Y]) Ctrl->A.inc[GMT_Y] = header->inc[GMT_Y];	/* Update the smallest y-increments found */
-		}
-		if (Ctrl->A.mode == GRDSELECT_MAX_INC) {	/* Update the largest increments found */
-			if (header->inc[GMT_X] > Ctrl->A.inc[GMT_X]) Ctrl->A.inc[GMT_X] = header->inc[GMT_X];	/* Update the largest x-increments found */
-			if (header->inc[GMT_Y] > Ctrl->A.inc[GMT_Y]) Ctrl->A.inc[GMT_Y] = header->inc[GMT_Y];	/* Update the largest y-increments found */
+		else {	/* Only wanted to list the grid files that passed the tests */
+			sprintf (record, "%s", opt->arg);
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 	}
 
-	if (Ctrl->A.active) {	/* Finalize then report the region */
-		if (Ctrl->A.mode != GRDSELECT_NO_INC) {	/* Must round the region via the increments */
+	if (Ctrl->A.active) {	/* Finalize region via rounding/padding, then report it */
+		if (Ctrl->A.round) {	/* Must round the region via the increments */
 			wesn[XLO] = floor (wesn[XLO] / Ctrl->A.inc[GMT_X]) * Ctrl->A.inc[GMT_X];
 			wesn[XHI] = ceil  (wesn[XHI] / Ctrl->A.inc[GMT_X]) * Ctrl->A.inc[GMT_X];
 			wesn[YLO] = floor (wesn[YLO] / Ctrl->A.inc[GMT_Y]) * Ctrl->A.inc[GMT_Y];
@@ -569,17 +572,28 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			wesn[YLO] -= Ctrl->M.margin[YLO];
 			wesn[YHI] += Ctrl->M.margin[YHI];
 		}
+		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Trim to fit the sphere */
+			if ((wesn[XHI] - wesn[XLO] > 360.0)) {	/* Trim to 360 range */
+				if (wesn[XLO] >= 0.0 || wesn[XHI] > 300.0)	/* Mostly positive longitudes so use 0/360 */
+					wesn[XLO] = 0.0, wesn[XHI] = 360.0;
+				else	/* Use dateline as the jump */
+					wesn[XLO] = -180.0, wesn[XHI] = 18.0;
+			}
+			/* Ensure latitudes are not out of bound */
+			if (wesn[YLO] < -90.0) wesn[YLO] = -90.0;
+			if (wesn[YHI] > +90.0) wesn[YHI] = +90.0;
+		}
 		if (Ctrl->C.active) {	/* Want numerical output */
-			if (is_cube) {
+			if (is_cube) {	/* Need w e s n b t w0 w1 */
 				gmt_M_memcpy (out, wesn, 6, double);
 				gmt_M_memcpy (&out[6], &wesn[WLO], 2, double);
 			}
-			else {
+			else {	/* Need w e s n w0 w1 */
 				gmt_M_memcpy (out, wesn, 4, double);
 				gmt_M_memcpy (&out[4], &wesn[WLO], 2, double);
 			}
 		}
-		else {	/* Give the string -Rw/e/sn only */
+		else {	/* Give the string -Rw/e/s/n[/b/t] only */
 			char text[GMT_LEN64] = {""};
 			sprintf (record, "-R");
 			gmt_ascii_format_col (GMT, text, wesn[XLO], GMT_OUT, GMT_X);	strcat (record, text);	strcat (record, "/");
