@@ -86,7 +86,7 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [**dnrwz**]
-    Reverses the sense of the test for each of the items specified:
+    Reverses the sense of the test for each of the items specified by a code:
 
     - **d** - select data sources *not* having the specified increment in **-D**.
     - **n** - select data sources *failing* the NaN criterion in **-N**.
@@ -94,6 +94,7 @@ Optional Arguments
     - **w** - select data sources whose data range is *not* overlapping the range specified by **-W**.
     - **z** - select cubes whose z-dimension range is *not* overlapping the range specified by **-Z** (requires **-Q**).
 
+   If no argument is given then we reverse all the tests, i.e, the same as **-Idnrwz**.
 .. _-M:
 
 **-M**\ *margins*

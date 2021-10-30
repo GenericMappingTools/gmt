@@ -156,6 +156,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "r: Pass data sources with the opposite registration than given in -r.");
 	GMT_Usage (API, 3, "w: Pass data sources outside the data range given in -W.");
 	GMT_Usage (API, 3, "z: Pass cubes outside the z-coordinate range given in -Z (requires -Q).");
+	GMT_Usage (API, -2, "Note: If no argument is given then we default to -Idnrwz.");
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add padding around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
 		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no padding].");
@@ -241,17 +242,22 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 			case 'I':	/* Invert selected tests */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
-				for (k = 0; opt->arg[k]; k++) {
-					switch (opt->arg[k]) {
-						case 'd': Ctrl->I.pass[GRD_SELECT_D] = false; break;
-						case 'n': Ctrl->I.pass[GRD_SELECT_N] = false; break;
-						case 'r': Ctrl->I.pass[GRD_SELECT_r] = false; break;
-						case 'w': Ctrl->I.pass[GRD_SELECT_W] = false; break;
-						case 'z': Ctrl->I.pass[GRD_SELECT_Z] = false; break;
-						default:
-							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Expects any combination of dnrwz\n");
-							n_errors++;
-							break;
+				if (opt->arg[0] == '\0') {   /* If -I is given then all tests are reversed */
+					for (k = 0; k < GRD_SELECT_N_TESTS; k++) C->I.pass[k] = false;
+				}
+				else {	/* Reverse those requested only */
+					for (k = 0; opt->arg[k]; k++) {
+						switch (opt->arg[k]) {
+							case 'd': Ctrl->I.pass[GRD_SELECT_D] = false; break;
+							case 'n': Ctrl->I.pass[GRD_SELECT_N] = false; break;
+							case 'r': Ctrl->I.pass[GRD_SELECT_r] = false; break;
+							case 'w': Ctrl->I.pass[GRD_SELECT_W] = false; break;
+							case 'z': Ctrl->I.pass[GRD_SELECT_Z] = false; break;
+							default:
+								GMT_Report (API, GMT_MSG_ERROR, "Option -I: Expects any combination of dnrwz (%c is not valid)\n", opt->arg[k]);
+								n_errors++;
+								break;
+						}
 					}
 				}
 				break;
