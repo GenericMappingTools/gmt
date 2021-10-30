@@ -243,7 +243,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0] == '\0') {   /* If -I is given then all tests are reversed */
-					for (k = 0; k < GRD_SELECT_N_TESTS; k++) C->I.pass[k] = false;
+					for (k = 0; k < GRD_SELECT_N_TESTS; k++) Ctrl->I.pass[k] = false;
 				}
 				else {	/* Reverse those requested only */
 					for (k = 0; opt->arg[k]; k++) {
