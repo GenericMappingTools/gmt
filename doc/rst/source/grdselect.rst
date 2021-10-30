@@ -17,13 +17,14 @@ Synopsis
 [ |-C| ]
 [ |-D|\ [*dx*\ [/*dy*]] ]
 [ |-G| ]
-[ |-I|\ [**dnrz**] ]
+[ |-I|\ [**dnrwz**] ]
 [ |-M|\ *margins* ]
 [ |-N|\ **l**\|\ **h**\ [*n*] ]
 [ |-Q| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
-[ |-Z|\ [*zmin*\ /*zmax*][**+i**] ]
+[ |-W|\ [*wmin*\ /*wmax*] ]
+[ |-Z|\ [*zmin*\ /*zmax*]] ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-o| ]
@@ -35,14 +36,14 @@ Synopsis
 Description
 -----------
 
-**grdselect** reads several grids and skips those that fail any tests that
-have been specified.  It then either reports the names of the grids that pass
-or determines the intersection or union of the regions of those grids.
+**grdselect** reads several grids (or cubes) and skips those that fail any tests that
+have been specified.  It then either reports the names of the sources that passed the tests
+or determines the intersection or union of the regions of those sources.
 
 Required Arguments
 ------------------
 
-.. |Add_ingrid| replace:: The name of one or several 2-D grid files. 
+.. |Add_ingrid| replace:: The name of one or several 2-D grid or 3-D cube files. 
 .. include:: explain_grd_inout.rst_
     :start-after: ingrid-syntax-begins
     :end-before: ingrid-syntax-ends
@@ -54,9 +55,9 @@ Optional Arguments
 
 **-A**
     Append either directive **i** for intersection or **u** for union.  We
-    then report either the common region for all the grids that passes the
-    tests (if any) or the maximum extent of all the grids that passed the tests.
-    If **-A** is not used then we just list the names of the grids that passed
+    then report either the common region for all the grids (or cubes) that passes the
+    tests (if any) or the maximum extent of all the sources that passed the tests.
+    If **-A** is not used then we just list the names of the sources that passed
     the test.
 
 . _-C:
@@ -64,12 +65,13 @@ Optional Arguments
 **-C**
     Formats the report using tab-separated fields on a single line. The
     output is *w e s n {b t} v0 v1*. The data in braces only apply if **-Q** is
-    used with 3-D data cubes.
+    used with 3-D data cubes.  **Note**: The *v0 v1* range reflects the full range of the
+    data values and not just for the nodes inside the determined region.
 
 .. _-D:
 
 **-D**\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]]
-    Only pass grids whose grid spacing matches the given spacing.
+    Only pass grids (or cubes) whose spacings match the given spacing.
     Optionally append a suffix modifier.
     **Geographical (degrees) coordinates**: Append
     **m** to indicate arc minutes or **s** to indicate arc seconds. If one
@@ -98,26 +100,27 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**dnrz**]
-    Reverses the sense of the test for each of the criteria specified:
+**-I**\ [**dnrwz**]
+    Reverses the sense of the test for each of the items specified:
 
-    - **d** - select grids NOT having the specified increment in **-D**.
-    - **n** - select grids failing the NaN criterion in **-N**.
-    - **r** - select grids NOT having the specified registration in **-r**.
-    - **z** - select grids whose data are NOT within the range specified by **-Z**.
+    - **d** - select data sources NOT having the specified increment in **-D**.
+    - **n** - select data sources failing the NaN criterion in **-N**.
+    - **r** - select data sources NOT having the specified registration in **-r**.
+    - **w** - select data sources whose data are NOT within the range specified by **-W**.
+    - **z** - select cubes whose z-levels are NOT within the range specified by **-Z** (requires **-Q**).
 
 .. _-M:
 
 **-M**\ *margins*
-    This is additional space that is added to the region determined via **-A**.  The margins can be specified as
-    a single value (for same margin on all sides), a pair of values separated by slashes
-    (for setting separate *x* and *y* margins), or the full set of four slash-separated margins
+    Extend the region determined via **-A** by the *margins*.  The *margins* can be specified as
+    a single value (the same margin on all sides), a pair of values separated by slashes
+    (setting separate *x* and *y* margins), or the full set of four slash-separated margins
     (for setting separate west, east, south, and north margins) [no region extension].
 
 .. _-N:
 
 **-N**\ **l**\|\ **h**\ [*n*]
-    Only pass grids that have a total number of NaNs that is either **l**\ ower or **h**\ igher than *n* [0].
+    Only pass data sources that have a total number of NaNs that is either **l**\ ower or **h**\ igher than *n* [0].
 
 .. _-Q:
 
@@ -131,11 +134,17 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. _-W:
+
+**-W**\ [*wmin*\ /*wmax*]
+    Only pass data sources whose data range overlaps with the stated range.  If *wmin* is not
+    given it defaults to -infinity, while if *wmax* is not given it defaults to +infinity.
+
 .. _-Z:
 
 **-Z**\ [*zmin*\ /*zmax*]
-    Only pass grids whose data range overlaps with the stated range.  If *zmin* is not
-    given it defaults to -infinity, while if *max* is not given it defaults to +infinity.
+    Requires **-Q**. Only pass cubes whose z-range overlaps with the stated range.  If *zmin* is not
+    given it defaults to -infinity, while if *zmax* is not given it defaults to +infinity.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
@@ -150,25 +159,25 @@ Optional Arguments
 
 .. include:: explain_-ocols.rst_
 
-.. _-regg:
+.. _-reg:
 
 **-r**\ [**g**\|\ **p**]
-    Onpy pass grids that have the same registration as that specified [no registration requirement].
+    Only pass data sources that have the same registration as that specified [no registration requirement].
 
 .. include:: explain_help.rst_
 
 Examples
 --------
 
-To find the common region to all the grids given, try::
+To find the extended region (union) of all the grids given, try::
 
     gmt grdselect *.grd -Au
 
-To find the extended region that fits all the grids given, try::
+To find the common region (intersection) that all the grids share, try::
 
     gmt grdselect *.grd -Ai
 
-To list all the files that more than 10 NaN and are pixel registered, try::
+To list all the files that have more than 10 NaN nodes and are pixel registered, try::
 
     gmt grdselect *.grd -Nh10 -rp
 
