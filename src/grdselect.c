@@ -128,13 +128,13 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-Ai|u[+il|h|<incs>]] [-C] [-D<xinc>[/<yinc>]] [-G] [-Idnrwz] [-M<margins>] [-Nl|h[<n_nans>]] "
-		"[-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s data1 data2 ... [-Ai|u[+il|h|<incs>]] [-C] [-D<xinc>[/<yinc>]] [-G] [-Idnrwz] [-M<margins>] [-Nl|h[<n_nans>]] "
+		"[-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
+	gmt_ingrid_syntax (API, 0, "Name of one or more grid or cube files");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-Ai|u[+il|h|<incs>]");
 	GMT_Usage (API, -2, "Report a unifying data region for all the data sources: "
@@ -151,8 +151,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Supply any combination of dnrwz where each flag means:");
 	GMT_Usage (API, 3, "d: Pass data sources that do not match the increment set in -D.");
 	GMT_Usage (API, 3, "n: Pass data sources that fail the NaN-test in -N.");
-	GMT_Usage (API, 3, "w: Pass data sources outside the range given in -W.");
 	GMT_Usage (API, 3, "r: Pass data sources with the opposite registration than given in -r.");
+	GMT_Usage (API, 3, "w: Pass data sources outside the range given in -W.");
 	GMT_Usage (API, 3, "z: Pass cubes outside the range given in -Z (requires -Q).");
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add space around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
@@ -167,7 +167,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Only consider data sources that have data-values in the given range [Consider all input data sources]. "
 		"At least one of <min> or <max> must be specified, as well as the slash.");
 	GMT_Usage (API, 1, "\n-Z[<min>]/[<max>]");
-	GMT_Usage (API, -2, "Only consider cubes that have z-values in the given range [Consider all input cubes]. "
+	GMT_Usage (API, -2, "Only consider cubes that have z-coordinates in the given range [Consider all input cubes]. "
 		"At least one of <min> or <max> must be specified, as well as the slash. Requires -Q.");
 	GMT_Usage (API, 1, "\n-r[g|p]");
 	GMT_Usage (API, -2, "Only consider data sources that have the specified registration [Consider all input data sources].");
