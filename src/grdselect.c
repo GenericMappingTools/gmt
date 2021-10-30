@@ -48,6 +48,13 @@ enum Opt_N_modes {
 	GRDSELECT_LESS_NANS	= 1,
 	GRDSELECT_MORE_NANS	= 2};
 
+enum GRDSELECT {	/* Indices for the various tests */
+	GRD_SELECT_r = 0,
+	GRD_SELECT_D,
+	GRD_SELECT_N,
+	GRD_SELECT_Z,
+	GRD_SELECT_N_TESTS	/* Number of specific tests available */
+};
 
 #define WLO	6
 #define WHI	7
@@ -65,12 +72,16 @@ struct GRDSELECT_CTRL {
 		bool active;
 		unsigned int mode;
 	} C;
+	struct GRDSELECT_D {	/* -D<dx[/dy] */
+		bool active;
+		double inc[2];
+	} D;
 	struct GRDSELECT_G {	/* -G */
 		bool active;
 	} G;
-	struct GRDSELECT_I {	/* -I<dx[/dy] */
+	struct GRDSELECT_I {	/* -Idnrz */
 		bool active;
-		double inc[2];
+		bool pass[GRD_SELECT_N_TESTS];	/* One flag for each setting */
 	} I;
 	struct GRDSELECT_L {	/* Just list the passing grids*/
 		bool active;
@@ -87,9 +98,8 @@ struct GRDSELECT_CTRL {
 	struct GRDSELECT_Q {	/* -Q */
 		bool active;
 	} Q;
-	struct GRDSELECT_Z {	/* -Zzmin/zmax[+i] */
+	struct GRDSELECT_Z {	/* -Zzmin/zmax */
 		bool active;
-		bool inverse;
 		double z_min, z_max;
 	} Z;
 };
@@ -100,6 +110,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct GRDSELECT_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
+	for (unsigned int i = 0; i < GRD_SELECT_N_TESTS; i++) C->I.pass[i] = true;    /* Default is to pass if we are inside */
 	return (C);
 }
 
@@ -111,8 +122,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-Ai|u[+il|h|<incs>]] [-C] [-G] [-I<xinc>[/<yinc>]] [-M<margins>] [-Nl|h[<n_nans>]] "
-		"[-Q] [%s] [-Z[<min>]/[<max>][+i]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s [-Ai|u[+il|h|<incs>]] [-C] [-D<xinc>[/<yinc>]] [-G] [-Idnrz] [-M<margins>] [-Nl|h[<n_nans>]] "
+		"[-Q] [%s] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -126,10 +137,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, -2, "Note: Without -A we simply report the list of grids passing other tests.");
 	GMT_Usage (API, 1, "\n-C Report information in fields on a single line using the format "
 		"<w e s n> [Default reports a -R<w/e/s/n> string].");
-	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
-	GMT_Usage (API, 1, "\n-I<xinc>[/<yinc>]");
+	GMT_Usage (API, 1, "\n-D<xinc>[/<yinc>]");
 	GMT_Usage (API, -2, "Only consider grids that match the given increments [Consider all input grids].");
-	GMT_Usage (API, 1, "\n-L Just list the passing grids with no region iformation [Output the region only].");
+	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
+	GMT_Usage (API, 1, "\n-Idnrz");
+	GMT_Usage (API, -2, "Reverse the tests, i.e., pass grids outside the selection. "
+		"Supply any combination of dnrz where each flag means:");
+	GMT_Usage (API, 3, "d: Pass grids that do not match the increment set in -D.");
+	GMT_Usage (API, 3, "n: Pass grids that fail the NaN-test in -N.");
+	GMT_Usage (API, 3, "r: Pass grids with the opposite registration than given in -r.");
+	GMT_Usage (API, 3, "z: Pass grids outside the range given in -Z.");
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add space around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
 		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side.");
@@ -151,14 +168,14 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	/* This parses the options provided to grdcut and sets parameters in CTRL.
+	/* This parses the options provided to grdselect and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
 	 */
 
 	unsigned int n_errors = 0, k = 0;
-	char string[GMT_LEN128] = {""}, *c = NULL;
+	char string[GMT_LEN128] = {""};
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -201,12 +218,28 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
-			case 'I':	/* Specified grid increments */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
-				Ctrl->I.active = true;
-				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
+			case 'D':	/* Specified grid increments */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
+				Ctrl->D.active = true;
+				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->D.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
 					n_errors++;
+				}
+				break;
+			case 'I':	/* Invert these tests */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
+				for (k = 0; opt->arg[k]; k++) {
+					switch (opt->arg[k]) {
+						case 'd': Ctrl->I.pass[GRD_SELECT_D] = false; break;
+						case 'n': Ctrl->I.pass[GRD_SELECT_N] = false; break;
+						case 'r': Ctrl->I.pass[GRD_SELECT_r] = false; break;
+						case 'z': Ctrl->I.pass[GRD_SELECT_Z] = false; break;
+						default:
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Expects -Idnrz\n");
+							n_errors++;
+							break;
+					}
 				}
 				break;
 			case 'M':	/* Extend the region */
@@ -244,12 +277,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 			case 'Z':	/* z range */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
-				if ((c = strstr (opt->arg, "+i"))) {
-					Ctrl->Z.inverse = true;
-					c[0] = '\0';	/* Hide modifier */
-				}
 				n_errors += gmt_get_limits (GMT, 'Z', opt->arg, 1, &Ctrl->Z.z_min, &Ctrl->Z.z_max);
-				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 
 			default:	/* Report bad options */
@@ -260,7 +288,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 
 	n_errors += gmt_M_check_condition (GMT, Ctrl->n_files == 0,
 	                                   "Must specify one or more input files\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && (Ctrl->I.inc[GMT_X] <= 0.0 || Ctrl->I.inc[GMT_Y] <= 0.0),
+	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] <= 0.0),
 									   "Option -I: Must specify a positive increment(s)\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && Ctrl->C.active,
 	                                   "The -o option requires -C\n");
@@ -280,7 +308,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
 	unsigned int n_cols = 0, level, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	unsigned int GMT_W = GMT_Z;
-	bool first_r = true, first = true, is_cube;
+	bool first_r = true, first = true, is_cube, skip;
 
 	double wesn[8], out[8], *subset = NULL;
 
@@ -380,16 +408,18 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		}
 
 		if (GMT->common.R.active[GSET]) {	/* Specified -r to only keep those grids with the same registration */
-			if (header->registration != GMT->common.R.registration) continue;
+			skip = (header->registration != GMT->common.R.registration);
+			if (skip != Ctrl->I.pass[GRD_SELECT_r]) continue;	/* Skip if wrong (or right via -Ir) registration */
 		}
-		if (Ctrl->I.active) {	/* Only pass grids with the same increments */
-			if (!doubleAlmostEqual (Ctrl->I.inc[GMT_X], header->inc[GMT_X]) || !doubleAlmostEqual (Ctrl->I.inc[GMT_Y], header->inc[GMT_Y])) continue;
+		if (Ctrl->D.active) {	/* Only pass grids with the same increments */
+			skip = (!doubleAlmostEqual (Ctrl->D.inc[GMT_X], header->inc[GMT_X]) || !doubleAlmostEqual (Ctrl->D.inc[GMT_Y], header->inc[GMT_Y]));
+			if (skip != Ctrl->I.pass[GRD_SELECT_D]) continue;	/* Skip if grid spacing is different (or the same via -Id) */
 		}
 		if (Ctrl->Z.active) {	/* Skip grids outside the imposed z-range */
-			bool outside = (header->z_max < Ctrl->Z.z_min || header->z_min > Ctrl->Z.z_max);
-			if (outside != Ctrl->Z.inverse) continue;	/* Skip if outside (or inside via +i) the range */
+			skip = (header->z_max < Ctrl->Z.z_min || header->z_min > Ctrl->Z.z_max);
+			if (skip != Ctrl->I.pass[GRD_SELECT_Z]) continue;	/* Skip if outside (or inside via -Iz) the range */
 		}
-		if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip grids that fail the test */
+		if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip grids that fail the test (or pass if -In) */
 			uint64_t level, here = 0, ij, n_nan = 0;
 			unsigned int col, row;
 			gmt_grdfloat *data = NULL;
@@ -419,8 +449,10 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			if (Ctrl->N.mode == GRDSELECT_LESS_NANS && n_nan > Ctrl->N.n_nans) continue;	/* Skip this item */
-			if (Ctrl->N.mode == GRDSELECT_MORE_NANS && n_nan < Ctrl->N.n_nans) continue;	/* Skip this item */
+			skip = false;
+			if (Ctrl->N.mode == GRDSELECT_LESS_NANS && n_nan > Ctrl->N.n_nans) skip = true;	/* Skip this item */
+			else if (Ctrl->N.mode == GRDSELECT_MORE_NANS && n_nan < Ctrl->N.n_nans) skip = true;	/* Skip this item */
+			if (skip != Ctrl->I.pass[GRD_SELECT_N]) continue;	/* Skip if outside (or inside via +i) the range */
 		}
 
 		/* OK, here the grid passed any other obstacles */
