@@ -55,7 +55,7 @@ Optional Arguments
 
 **-A**
     Append either directive **i** for intersection or **u** for union.  We
-    then report either the common region for all the grids (or cubes) that passes the
+    then report either the common region for all the data sources that passed the
     tests (if any) or the maximum extent of all the sources that passed the tests.
     If **-A** is not used then we just list the names of the sources that passed
     the test.
@@ -71,7 +71,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *xinc*\ [**+e**\|\ **n**][/\ *yinc*\ [**+e**\|\ **n**]]
-    Only pass grids (or cubes) whose spacings match the given spacing.
+    Only pass data sources whose spacings match the given spacing.
     Optionally append a suffix modifier.
     **Geographical (degrees) coordinates**: Append
     **m** to indicate arc minutes or **s** to indicate arc seconds. If one

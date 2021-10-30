@@ -16,11 +16,12 @@
  *--------------------------------------------------------------------*/
 /*
  * Author:	Paul Wessel
- * Date:	1-JAN-2010
+ * Date:	1-NOV-2021
  * Version:	6 API
  *
- * Brief synopsis: grdselect reads one or more grid/cube file and determines the
- * union or intersection of the regions, modulated by other options.
+ * Brief synopsis: grdselect reads one or more grid/cube files and determines the
+ * union or intersection of the regions, modulated by other options. Alternatively
+ * it just writes the names of the data sources that pass the tests.
  *
  */
 
@@ -29,7 +30,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdselect"
 #define THIS_MODULE_MODERN_NAME	"grdselect"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Select from a list of 2-D grids or 3-D cubes"
+#define THIS_MODULE_PURPOSE	"Determine common regions from 2-D grids or 3-D cubes"
 #define THIS_MODULE_KEYS	"<?{+,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVfho"
@@ -37,16 +38,16 @@
 /* Control structure for grdselect */
 
 enum Opt_A_modes {
-	GRDSELECT_INTERSECTION	= 0,
-	GRDSELECT_UNION			= 1,
+	GRDSELECT_INTERSECTION	= 0,	/* -Ai */
+	GRDSELECT_UNION			= 1,	/* -Au */
 	GRDSELECT_NO_INC	= 0,
 	GRDSELECT_MIN_INC	= 1,	/* +il */
 	GRDSELECT_MAX_INC	= 2,	/* +ih */
 	GRDSELECT_SET_INC	= 3};	/* +i<incs> */
 
 enum Opt_N_modes {
-	GRDSELECT_LESS_NANS	= 1,
-	GRDSELECT_MORE_NANS	= 2};
+	GRDSELECT_LESS_NANS	= 1,	/* -Nl */
+	GRDSELECT_MORE_NANS	= 2};	/* -Nh */
 
 enum GRDSELECT {	/* Indices for the various tests */
 	GRD_SELECT_r = 0,
@@ -61,7 +62,7 @@ enum GRDSELECT {	/* Indices for the various tests */
 #define WHI	7
 
 struct GRDSELECT_CTRL {
-	unsigned int n_files;	/* How many grids given */
+	unsigned int n_files;	/* How many data sources given */
 	struct GRDSELECT_A {	/* -A[i|u][+il|h|arg>]*/
 		bool active;
 		bool round;		/* True if +i is used to set rounding */
@@ -84,7 +85,7 @@ struct GRDSELECT_CTRL {
 		bool active;
 		bool pass[GRD_SELECT_N_TESTS];	/* One flag for each setting */
 	} I;
-	struct GRDSELECT_L {	/* Just list the passing grids*/
+	struct GRDSELECT_L {	/* Just list the passing data sources */
 		bool active;
 	} L;
 	struct GRDSELECT_M {	/* -M */
@@ -136,40 +137,40 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-Ai|u[+il|h|<incs>]");
-	GMT_Usage (API, -2, "Report a unifying data region for all the grids: "
+	GMT_Usage (API, -2, "Report a unifying data region for all the data sources: "
 		"Append i for intersection or u for union in determining the joint area [union]. "
 		"Optionally, append +i to round region using the (l)owest, (h)ighest, or specified increments [no rounding].");
-	GMT_Usage (API, -2, "Note: Without -A we simply report the list of grids passing other tests.");
+	GMT_Usage (API, -2, "Note: Without -A we simply report the list of data sources passing other tests.");
 	GMT_Usage (API, 1, "\n-C Report information in fields on a single line using the format "
 		"<w e s n> [Default reports a -R<w/e/s/n> string].");
 	GMT_Usage (API, 1, "\n-D<xinc>[/<yinc>]");
-	GMT_Usage (API, -2, "Only consider grids that match the given increments [Consider all input grids].");
+	GMT_Usage (API, -2, "Only consider data sources that match the given increments [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
 	GMT_Usage (API, 1, "\n-Idnrwz");
-	GMT_Usage (API, -2, "Reverse the tests, i.e., pass grids outside the selection. "
-		"Supply any combination of dnrz where each flag means:");
-	GMT_Usage (API, 3, "d: Pass grids that do not match the increment set in -D.");
-	GMT_Usage (API, 3, "n: Pass grids that fail the NaN-test in -N.");
-	GMT_Usage (API, 3, "w: Pass grids outside the range given in -W.");
-	GMT_Usage (API, 3, "r: Pass grids with the opposite registration than given in -r.");
-	GMT_Usage (API, 3, "z: Pass cubes outside the range given in -Z.");
+	GMT_Usage (API, -2, "Reverse the tests, i.e., pass data sources outside the selection. "
+		"Supply any combination of dnrwz where each flag means:");
+	GMT_Usage (API, 3, "d: Pass data sources that do not match the increment set in -D.");
+	GMT_Usage (API, 3, "n: Pass data sources that fail the NaN-test in -N.");
+	GMT_Usage (API, 3, "w: Pass data sources outside the range given in -W.");
+	GMT_Usage (API, 3, "r: Pass data sources with the opposite registration than given in -r.");
+	GMT_Usage (API, 3, "z: Pass cubes outside the range given in -Z (requires -Q).");
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add space around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
 		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side.");
 	GMT_Usage (API, 1, "\n-Nl|h[<n_nans>]");
-	GMT_Usage (API, -2, "Only consider grids that satisfy a NaN-condition [Consider all input grids]:");
-	GMT_Usage (API, 3, "l: Only grids with lower than <n_nans> NaNs will pass [0].");
-	GMT_Usage (API, 3, "h: Only grids with higher than <n_nans>  NaNs will pass [0].");
+	GMT_Usage (API, -2, "Only consider data sources that satisfy a NaN-condition [Consider all input data sources]:");
+	GMT_Usage (API, 3, "l: Only data sources with lower than <n_nans> NaNs will pass [0].");
+	GMT_Usage (API, 3, "h: Only data sources with higher than <n_nans>  NaNs will pass [0].");
 	GMT_Usage (API, 1, "\n-Q Input file(s) is 3-D data cube(s), not grid(s) [2-D grids].");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-W[<min>]/[<max>]");
-	GMT_Usage (API, -2, "Only consider grid or cubes that have data-values in the given range [Consider all input grids or cubes]. "
+	GMT_Usage (API, -2, "Only consider data sources that have data-values in the given range [Consider all input data sources]. "
 		"At least one of <min> or <max> must be specified, as well as the slash.");
 	GMT_Usage (API, 1, "\n-Z[<min>]/[<max>]");
 	GMT_Usage (API, -2, "Only consider cubes that have z-values in the given range [Consider all input cubes]. "
 		"At least one of <min> or <max> must be specified, as well as the slash. Requires -Q.");
 	GMT_Usage (API, 1, "\n-r[g|p]");
-	GMT_Usage (API, -2, "Only consider grids that have the specified registration [Consider all input grids].");
+	GMT_Usage (API, -2, "Only consider data sources that have the specified registration [Consider all input data sources].");
 	GMT_Option (API, "V,f,h,o,.");
 
 	return (GMT_MODULE_USAGE);
@@ -354,7 +355,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdselect main code ----------------------------*/
 
-	/* OK, done parsing, now process all input grids in a loop */
+	/* OK, done parsing, now process all input data sources in a loop */
 
 	gmt_M_memset (wesn, 8, double);	/* Initialize */
 
@@ -419,15 +420,15 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			header = G->header;
 		}
 
-		if (GMT->common.R.active[GSET]) {	/* Specified -r to only keep those grids with the same registration */
+		if (GMT->common.R.active[GSET]) {	/* Specified -r to only keep those data sources with the same registration */
 			skip = (header->registration != GMT->common.R.registration);
 			if (skip != Ctrl->I.pass[GRD_SELECT_r]) continue;	/* Skip if wrong (or right via -Ir) registration */
 		}
-		if (Ctrl->D.active) {	/* Only pass grids with the same increments */
+		if (Ctrl->D.active) {	/* Only pass data sources with the same increments */
 			skip = (!doubleAlmostEqual (Ctrl->D.inc[GMT_X], header->inc[GMT_X]) || !doubleAlmostEqual (Ctrl->D.inc[GMT_Y], header->inc[GMT_Y]));
 			if (skip != Ctrl->I.pass[GRD_SELECT_D]) continue;	/* Skip if grid spacing is different (or the same via -Id) */
 		}
-		if (Ctrl->W.active) {	/* Skip grids outside the imposed z-range */
+		if (Ctrl->W.active) {	/* Skip data sources outside the imposed w-range */
 			skip = (header->z_max < Ctrl->W.w_min || header->z_min > Ctrl->W.w_max);
 			if (skip != Ctrl->I.pass[GRD_SELECT_W]) continue;	/* Skip if outside (or inside via -Iw) the range */
 		}
@@ -435,7 +436,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			skip = (U->z[header->n_bands-1] < Ctrl->Z.z_min || U->z[0] > Ctrl->Z.z_max);
 			if (skip != Ctrl->I.pass[GRD_SELECT_Z]) continue;	/* Skip if outside (or inside via -Iz) the range */
 		}
-		if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip grids that fail the test (or pass if -In) */
+		if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip data sources that fail the test (or pass if -In) */
 			uint64_t level, here = 0, ij, n_nan = 0;
 			gmt_grdfloat *data = NULL;
 			if (is_cube) {
@@ -489,7 +490,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else {	/* Want region information */
-			if (Ctrl->A.mode == GRDSELECT_INTERSECTION) {	/* Retain only region common to all grids (i.e., their intersection) */
+			if (Ctrl->A.mode == GRDSELECT_INTERSECTION) {	/* Retain only region common to all data sources (i.e., their intersection) */
 				wesn[YLO] = MAX (wesn[YLO], header->wesn[YLO]);
 				wesn[YHI] = MIN (wesn[YHI], header->wesn[YHI]);
 				if (wesn[YHI] <= wesn[YLO]) {	/* No common region can be found - no point to continue */
