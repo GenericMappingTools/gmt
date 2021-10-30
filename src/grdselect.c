@@ -75,8 +75,9 @@ struct GRDSELECT_CTRL {
 		unsigned int mode;		/* 0 = intersection [i], 1 = union [r] */
 		double inc[2];	/* Optional increments */
 	} A;
-	struct GRDSELECT_C {	/* -C */
+	struct GRDSELECT_C {	/* -C[b] */
 		bool active;
+		bool box;
 	} C;
 	struct GRDSELECT_D {	/* -D<dx[/dy[/dz]] */
 		bool active;
@@ -230,6 +231,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 			case 'C':	/* Column format */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
+				if (opt->arg[0] == 'b') Ctrl->C.box = true;
 				break;
 			case 'D':	/* Specified grid increments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -373,9 +375,16 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	gmt_M_memset (out, 8, double);	/* Initialize */
 
 	if (Ctrl->C.active) {
-		n_cols = (Ctrl->Q.active) ? 8 : 6;	/* w e s n [z0 z1] [w0 w1] */
-		cmode = GMT_COL_FIX_NO_TEXT;
-		geometry = GMT_IS_NONE;
+		if (Ctrl->C.box) {	/* Write polygon */
+			n_cols = 2;
+			cmode = GMT_COL_FIX_NO_TEXT;
+			geometry = GMT_IS_POLYGON;
+		}
+		else {
+			n_cols = (Ctrl->Q.active) ? 8 : 6;	/* w e s n [z0 z1] [w0 w1] */
+			cmode = GMT_COL_FIX_NO_TEXT;
+			geometry = GMT_IS_NONE;
+		}
 	}
 
 	GMT_Set_Columns (GMT->parent, GMT_OUT, n_cols, cmode);
@@ -589,7 +598,14 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			if (wesn[YLO] < -90.0) wesn[YLO] = -90.0;
 			if (wesn[YHI] > +90.0) wesn[YHI] = +90.0;
 		}
-		if (Ctrl->C.active) {	/* Want numerical output */
+		if (Ctrl->C.box) {	/* Output closed polygon */
+			out[GMT_X] = wesn[XLO];	out[GMT_Y] = wesn[YLO]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			out[GMT_X] = wesn[XHI];	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			out[GMT_Y] = wesn[YHI]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			out[GMT_X] = wesn[XLO]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			out[GMT_Y] = wesn[YLO]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+		}
+		else if (Ctrl->C.active) {	/* Want numerical output */
 			if (is_cube) {	/* Need w e s n b t w0 w1 */
 				gmt_M_memcpy (out, wesn, 6, double);
 				gmt_M_memcpy (&out[6], &wesn[WLO], 2, double);
@@ -598,6 +614,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				gmt_M_memcpy (out, wesn, 4, double);
 				gmt_M_memcpy (&out[4], &wesn[WLO], 2, double);
 			}
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else {	/* Give the string -Rw/e/s/n[/b/t] only */
 			char text[GMT_LEN64] = {""};
@@ -610,8 +627,8 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				gmt_ascii_format_col (GMT, text, wesn[ZLO], GMT_OUT, GMT_Z);	strcat (record, text);	strcat (record, "/");
 				gmt_ascii_format_col (GMT, text, wesn[ZHI], GMT_OUT, GMT_Z);	strcat (record, text);
 			}
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
-		GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 	}
 
 nothing:

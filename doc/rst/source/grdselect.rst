@@ -14,7 +14,7 @@ Synopsis
 
 **gmt grdselect** *grid1 grid2 ...*
 [ |-A|\ **i**\|\ **u**\ [**+il**\|\ **h**\|\ *inc*] ]
-[ |-C| ]
+[ |-C|\ [**b**] ]
 [ |-D|\ *inc* ]
 [ |-G| ]
 [ |-I|\ [**dnrwz**] ]
@@ -65,11 +65,12 @@ Optional Arguments
 
 .. _-C:
 
-**-C**
+**-C**\ [**b**]
     Formats the report using tab-separated fields on a single line. The
     output is *w e s n {b t} v0 v1*. The data in braces only apply if **-Q** is
     used with 3-D data cubes.  **Note**: The *v0 v1* range reflects the full range of the
-    data values and not just for the nodes inside the determined region.
+    data values and not just for the nodes inside the determined region. Alternatively,
+    append directive **b** to output the closed polygon corresponding to the region.
 
 .. _-D:
 
@@ -113,7 +114,7 @@ Optional Arguments
 **-Q**
     All input files must be data 3-D netCDF data cube files [all files are 2-D grids].
 
-.. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via **-A**. If **-Q** is used you must also
+.. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via **-A**, as well as limit the reading to that subset. If **-Q** is used you must also
     append limits in the *z* dimension. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
