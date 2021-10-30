@@ -306,8 +306,7 @@ struct GMT_TILES {
 
 EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
-	unsigned int n_cols = 0, level, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
-	unsigned int GMT_W = GMT_Z;
+	unsigned int n_cols = 0, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	bool first_r = true, first = true, is_cube, skip;
 
 	double wesn[8], out[8], *subset = NULL;
@@ -315,9 +314,8 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	char record[GMT_BUFSIZ] = {""};
 
 	struct GRDSELECT_CTRL *Ctrl = NULL;
-	struct GMT_GRID *G = NULL, *W = NULL;
+	struct GMT_GRID *G = NULL;
 	struct GMT_GRID_HEADER *header = NULL;
-	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GMT_CUBE *U = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *opt = NULL;
