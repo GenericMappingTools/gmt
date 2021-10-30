@@ -68,9 +68,9 @@ Optional Arguments
 **-C**\ [**b**]
     Formats the report using tab-separated fields on a single line. The
     output is *w e s n {b t} v0 v1*. The data in braces only apply if **-Q** is
-    used with 3-D data cubes.  **Note**: The *v0 v1* range reflects the full range of the
-    data values and not just for the nodes inside the determined region. Alternatively,
-    append directive **b** to output the closed polygon corresponding to the region.
+    used with 3-D data cubes.  **Note**: The *v0 v1* range reflects the full range of all
+    data values inside the determined region. Alternatively, append directive **b**
+    to output a closed polygon corresponding to the common region.
 
 .. _-D:
 
@@ -163,6 +163,10 @@ To find the extended region (union) of all the grids given, plus a padding of 2 
 To find the common region (intersection) that all the grids share, try::
 
     gmt grdselect *.grd -Ai
+
+To find the common region (intersection) that all the grids share but extend it by 2 degrees and the write the polygon, try::
+
+    gmt grdselect *.grd -Ai -M2 -Cb > wesn_polygon.txt
 
 To list all the files that have more than 10 NaN nodes and are pixel registered, try::
 

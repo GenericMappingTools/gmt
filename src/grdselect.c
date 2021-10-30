@@ -144,8 +144,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "u: Determine the union of all passed data source regions.");
 	GMT_Usage (API, -2, "Optionally, append +i to round region using the (l)owest, (h)ighest, or specified increments [no rounding]." 
 		"Note: Without -A we simply report the list of data sources passing any imposed tests.");
-	GMT_Usage (API, 1, "\n-C Report information in fields on a single line using the format "
-		"<w e s n {b t} w0 w1> [Default reports a -R<w/e/s/n>[/b/t] string].");
+	GMT_Usage (API, 1, "\n-C Report information in form of a single data record using the format "
+		"<w e s n {b t} w0 w1> [Default reports a -R<w/e/s/n>[/b/t] string]. If -Ai is in effect then we recompute <w0 w1> for that common region. "
+		"Alternatively, append b to output the determined regions bounding box polygon instead.");
 	GMT_Usage (API, 1, "\n-D<inc>");
 	GMT_Usage (API, -2, "Only consider data sources that match the given increments [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
@@ -333,9 +334,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_set_pad (GMT, GMT_PAD_DEFAULT); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
-	int error = 0, k_data, k_tile_id;
+	int f = -1, error = 0, k_data, k_tile_id;
 	unsigned int n_cols = 0, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
-	bool first_r = true, first = true, is_cube, pass;
+	bool first_r = true, first = true, is_cube, pass, *use = NULL;
 
 	double wesn[8], out[8], *subset = NULL;
 
@@ -373,6 +374,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 8, double);	/* Initialize */
 	gmt_M_memset (out, 8, double);	/* Initialize */
+	use = gmt_M_memory (GMT, NULL, Ctrl->n_files, bool);
 
 	if (Ctrl->C.active) {
 		if (Ctrl->C.box) {	/* Write polygon */
@@ -411,6 +413,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 
 		if (opt->option != '<') continue;	/* We are only processing filenames here */
 
+		f++;	/* Here we are at data source number f */
 		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
 		k_tile_id = k_data = GMT_NOTSET;
 		if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET || (k_tile_id = gmt_get_tile_id (API, opt->arg)) != GMT_NOTSET) {
@@ -508,6 +511,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				gmt_M_memcpy (Ctrl->A.inc, header->inc, 2U, double);
 			first = false;
 		}
+		use[f] = true;	/* May need to read a subset from this grid */
 		if (Ctrl->A.active) {	/* Want region information */
 			if (Ctrl->A.mode == GRDSELECT_INTERSECTION) {	/* Retain only region common to all data sources (i.e., their intersection) */
 				wesn[YLO] = MAX (wesn[YLO], header->wesn[YLO]);
@@ -606,6 +610,36 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			out[GMT_Y] = wesn[YLO]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
 		else if (Ctrl->C.active) {	/* Want numerical output */
+			if (Ctrl->A.mode == GRDSELECT_INTERSECTION) {	/* Must revisit the grid subsets to learn about actual w-range */
+				wesn[WLO] = DBL_MAX;	wesn[WHI] = -DBL_MAX;	/* Need to redo these within the intersection region only */
+				f = -1;	/* Start index over again */
+				for (opt = options; opt; opt = opt->next) {	/* Loop over arguments, skip options */
+
+					if (opt->option != '<') continue;	/* We are only processing filenames here */
+
+					f++;	/* Here we are at data source number f */
+					if (!use[f]) continue;	/* This one failed some test earlier */
+					if (is_cube) {
+						if (GMT_Read_Data (API, GMT_IS_CUBE, GMT_IS_FILE, GMT_IS_VOLUME, GMT_CONTAINER_AND_DATA, wesn, opt->arg, U) == NULL) {
+							Return (API->error);
+						}
+					}
+					else {
+						if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, wesn, opt->arg, G) == NULL) {
+							Return (API->error);
+						}
+					}
+					/* Update the common data range */
+					wesn[WLO] = MIN (wesn[WLO], header->z_min);
+					wesn[WHI] = MAX (wesn[WHI], header->z_max);
+					if (is_cube && GMT_Destroy_Data (API, &U) != GMT_NOERROR) {
+						Return (API->error);
+					}
+					else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
+						Return (API->error);
+					}
+				}
+			}
 			if (is_cube) {	/* Need w e s n b t w0 w1 */
 				gmt_M_memcpy (out, wesn, 6, double);
 				gmt_M_memcpy (&out[6], &wesn[WLO], 2, double);
