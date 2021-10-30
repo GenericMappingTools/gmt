@@ -38,7 +38,7 @@
 #define THIS_MODULE_PURPOSE	"Determine common regions from 2-D grids or 3-D cubes"
 #define THIS_MODULE_KEYS	"<?{+,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "->RVfho"
+#define THIS_MODULE_OPTIONS "->RVfhor"
 
 /* Control structure for grdselect */
 
@@ -326,7 +326,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	int error = 0, k_data, k_tile_id;
 	unsigned int n_cols = 0, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
-	bool first_r = true, first = true, is_cube, skip;
+	bool first_r = true, first = true, is_cube, pass;
 
 	double wesn[8], out[8], *subset = NULL;
 
@@ -426,20 +426,20 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		}
 
 		if (GMT->common.R.active[GSET]) {	/* Specified -r to only keep those data sources with the same registration */
-			skip = (header->registration != GMT->common.R.registration);
-			if (skip != Ctrl->I.pass[GRD_SELECT_r]) continue;	/* Skip if wrong (or right via -Ir) registration */
+			pass = (header->registration == GMT->common.R.registration);
+			if (pass != Ctrl->I.pass[GRD_SELECT_r]) continue;	/* Skip if wrong (or right via -Ir) registration */
 		}
 		if (Ctrl->D.active) {	/* Only pass data sources with the same increments */
-			skip = (!doubleAlmostEqual (Ctrl->D.inc[GMT_X], header->inc[GMT_X]) || !doubleAlmostEqual (Ctrl->D.inc[GMT_Y], header->inc[GMT_Y]));
-			if (skip != Ctrl->I.pass[GRD_SELECT_D]) continue;	/* Skip if grid spacing is different (or the same via -Id) */
+			pass = (doubleAlmostEqual (Ctrl->D.inc[GMT_X], header->inc[GMT_X]) && doubleAlmostEqual (Ctrl->D.inc[GMT_Y], header->inc[GMT_Y]));
+			if (pass != Ctrl->I.pass[GRD_SELECT_D]) continue;	/* Skip if grid spacing is different (or the same via -Id) */
 		}
 		if (Ctrl->W.active) {	/* Skip data sources outside the imposed w-range */
-			skip = (header->z_max < Ctrl->W.w_min || header->z_min > Ctrl->W.w_max);
-			if (skip != Ctrl->I.pass[GRD_SELECT_W]) continue;	/* Skip if outside (or inside via -Iw) the range */
+			pass = !(header->z_max < Ctrl->W.w_min || header->z_min > Ctrl->W.w_max);
+			if (pass != Ctrl->I.pass[GRD_SELECT_W]) continue;	/* Skip if outside (or inside via -Iw) the range */
 		}
 		if (Ctrl->Z.active) {	/* Skip cubes outside the imposed z-range */
-			skip = (U->z[header->n_bands-1] < Ctrl->Z.z_min || U->z[0] > Ctrl->Z.z_max);
-			if (skip != Ctrl->I.pass[GRD_SELECT_Z]) continue;	/* Skip if outside (or inside via -Iz) the range */
+			pass = !(U->z[header->n_bands-1] < Ctrl->Z.z_min || U->z[0] > Ctrl->Z.z_max);
+			if (pass != Ctrl->I.pass[GRD_SELECT_Z]) continue;	/* Skip if outside (or inside via -Iz) the range */
 		}
 		if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip data sources that fail the test (or pass if -In) */
 			uint64_t level, here = 0, ij, n_nan = 0;
@@ -468,10 +468,10 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			else if (!is_cube && GMT_Destroy_Data (API, &G) != GMT_NOERROR) {
 				Return (API->error);
 			}
-			skip = false;
-			if (Ctrl->N.mode == GRDSELECT_LESS_NANS && n_nan > Ctrl->N.n_nans) skip = true;	/* Skip this item */
-			else if (Ctrl->N.mode == GRDSELECT_MORE_NANS && n_nan < Ctrl->N.n_nans) skip = true;	/* Skip this item */
-			if (skip != Ctrl->I.pass[GRD_SELECT_N]) continue;	/* Skip if outside (or inside via +i) the range */
+			pass = true;
+			if (Ctrl->N.mode == GRDSELECT_LESS_NANS && n_nan > Ctrl->N.n_nans) pass = false;	/* Skip this item */
+			else if (Ctrl->N.mode == GRDSELECT_MORE_NANS && n_nan < Ctrl->N.n_nans) pass = false;	/* Skip this item */
+			if (pass != Ctrl->I.pass[GRD_SELECT_N]) continue;	/* Skip if outside (or inside via +i) the range */
 		}
 
 		/* OK, here the grid/cube passed any other obstacles */
