@@ -23,6 +23,11 @@
  * union or intersection of the regions, modulated by other options. Alternatively
  * it just writes the names of the data sources that pass the tests.
  *
+ * Notes: IDeas for other features:
+ * -F<pol> Only consider grids that overlap this polygon
+ * -L<line> Only consider grids that are crossed by this line
+ * -P<point> Only consider grids that contain this point
+ * 
  */
 
 #include "gmt_dev.h"
