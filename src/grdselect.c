@@ -129,7 +129,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s grid1 grid2 ... [-Ai|u[+il|h|<inc>]] [-C] [-D<inc>] [-G] [-Idnrwz] [-M<margins>] [-Nl|h[<n_nans>]] "
+	GMT_Usage (API, 0, "usage: %s grid1 grid2 ... [-Ai|u[+il|h|<inc>]] [-C] [-D<inc>] [-G] [-Idnrwz] [-M<margins>] [-Nl|h[<n>]] "
 		"[-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -159,10 +159,10 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add padding around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
 		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no padding].");
-	GMT_Usage (API, 1, "\n-Nl|h[<n_nans>]");
+	GMT_Usage (API, 1, "\n-Nl|h[<n>]");
 	GMT_Usage (API, -2, "Only consider data sources that satisfy a NaN-condition [Consider all input data sources]:");
-	GMT_Usage (API, 3, "l: Only data sources with lower than <n_nans> NaNs will pass [0].");
-	GMT_Usage (API, 3, "h: Only data sources with higher than <n_nans>  NaNs will pass [0].");
+	GMT_Usage (API, 3, "l: Only data sources with lower than <n> NaNs will pass [0].");
+	GMT_Usage (API, 3, "h: Only data sources with higher than <n>  NaNs will pass [0].");
 	GMT_Usage (API, 1, "\n-Q Input file(s) is 3-D data cube(s), not grid(s) [2-D grids].");
 	GMT_Option (API, "R");
 	GMT_Usage (API, 1, "\n-W[<min>]/[<max>]");

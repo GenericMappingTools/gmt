@@ -57,13 +57,13 @@ Optional Arguments
     Append either directive **i** for intersection or **u** for union.  We
     then report either the common region for all the data sources that passed the
     tests (if any) or the maximum extent of all the sources that passed the tests.
-    Optionally, append modifier **i** and specify a rounding increment to be apolied
-    to the final region.  Specify **l** for the lowest increment of all passed data
+    Optionally, append modifier **+i** and specify a rounding increment to be applied
+    to the final region: Specify **l** for the lowest increment of all passed data
     sources, **h** for the highest increment, or *inc* to set a specific increment.
     If **-A** is not used then we just list the names of the sources that passed
     any tests selected from **-D -I -N -W -Z -r**.
 
-. _-C:
+.. _-C:
 
 **-C**
     Formats the report using tab-separated fields on a single line. The
@@ -75,7 +75,7 @@ Optional Arguments
 
 **-D**\ *inc*
     Only pass data sources whose increments match the given increment [do not
-    consider the increment when passing of skipping data sources].
+    consider the increments when passing or skipping data sources].
 
 .. _-G:
 
@@ -89,7 +89,7 @@ Optional Arguments
     Reverses the sense of the test for each of the items specified:
 
     - **d** - select data sources *not* having the specified increment in **-D**.
-    - **n** - select data sources failing the NaN criterion in **-N**.
+    - **n** - select data sources *failing* the NaN criterion in **-N**.
     - **r** - select data sources *not* having the specified registration in **-r**.
     - **w** - select data sources whose data range is *not* overlapping the range specified by **-W**.
     - **z** - select cubes whose z-dimension range is *not* overlapping the range specified by **-Z** (requires **-Q**).
@@ -97,7 +97,7 @@ Optional Arguments
 .. _-M:
 
 **-M**\ *margins*
-    Extend the region determined via **-A** by the *margins*.  The *margins* can be specified as
+    Extend the region determined via **-A** by the given *margins*.  The *margins* can be specified as
     a single value (use the same margin on all sides), a pair of values separated by slashes
     (set separate *x* and *y* margins), or the full set of four slash-separated margins
     (set separate west, east, south, and north margins) [no region padding].
@@ -120,13 +120,13 @@ Optional Arguments
 
 .. _-W:
 
-**-W**\ [*wmin*\ /*wmax*]
+**-W**\ [*wmin*]\ /[*wmax*]
     Only pass data sources whose data range overlaps with the specified range.  If *wmin* is not
     given it defaults to -infinity, while if *wmax* is not given it defaults to +infinity.
 
 .. _-Z:
 
-**-Z**\ [*zmin*\ /*zmax*]
+**-Z**\ [*zmin*]\ /[*zmax*]
     Requires **-Q**. Only pass cubes whose z-dimension range overlaps with the specified range.  If *zmin* is not
     given it defaults to -infinity, while if *zmax* is not given it defaults to +infinity.
 
