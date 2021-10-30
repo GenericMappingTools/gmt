@@ -111,38 +111,37 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-Ai|u[+il|h|<incs>] [-C] [-G] [-I<xinc>[/<yinc>]] [-L] [-M<margins>] [-Nl|u<n_nans>] "
-		"[-Q] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s [-Ai|u[+il|h|<incs>]] [-C] [-G] [-I<xinc>[/<yinc>]] [-L] [-M<margins>] [-Nl|u[<n_nans>]] "
+		"[-Q] [%s] [-Z[<min>]/[<max>][+i]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	gmt_ingrid_syntax (API, 0, "Name of one or more grid files");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-Ai|u[+il|h|<incs>");
+	GMT_Usage (API, 1, "\n-Ai|u[+il|h|<incs>]");
 	GMT_Usage (API, -2, "Select i for intersection or u for union in determining the joint area [union]. "
-		"Optionally, append +i to round region using the (l)oest, (h)ighest, or specified increments [none].");
-	GMT_Usage (API, 1, "\n-C");
-	GMT_Usage (API, -2, "Report information in fields on a single line using the format "
-		"<w e s n> [Default reports a -R<w/e/s/n> string]");
+		"Optionally, append +i to round region using the (l)owest, (h)ighest, or specified increments [no rounding].");
+	GMT_Usage (API, 1, "\n-C Report information in fields on a single line using the format "
+		"<w e s n> [Default reports a -R<w/e/s/n> string].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
 	GMT_Usage (API, 1, "\n-I<xinc>[/<yinc>]");
-	GMT_Usage (API, -2, "Only consider the grids that matches the given increments [Consider all input grids].");
-	GMT_Usage (API, 1, "\n-L Just list the passing grids with no region iformation [Output the region only]");
+	GMT_Usage (API, -2, "Only consider grids that match the given increments [Consider all input grids].");
+	GMT_Usage (API, 1, "\n-L Just list the passing grids with no region iformation [Output the region only].");
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add space around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
 		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side.");
-	GMT_Usage (API, 1, "\n-Nl|u<n_nans>");
-	GMT_Usage (API, -2, "Only consider the grids that satisfies a NaN-condition [Consider all input grids]:");
-	GMT_Usage (API, 3, "l: Only grids with fewer than <n_nans> NaNs will pass");
-	GMT_Usage (API, 3, "h: Only grids with more than <n_nans>  NaNs will pass");
+	GMT_Usage (API, 1, "\n-Nl|u[<n_nans>]");
+	GMT_Usage (API, -2, "Only consider grids that satisfy a NaN-condition [Consider all input grids]:");
+	GMT_Usage (API, 3, "l: Only grids with fewer than <n_nans> NaNs will pass [0].");
+	GMT_Usage (API, 3, "h: Only grids with more than <n_nans>  NaNs will pass [0].");
 	GMT_Usage (API, 1, "\n-Q Input file(s) is 3-D data cube(s), not grid(s) [2-D grids].");
 	GMT_Option (API, "R");
-	GMT_Usage (API, 1, "\n-Z[<min>]/[<max>]");
-	GMT_Usage (API, -2, "Only consider the grids that have z-values in the given range [Consider all input grids]. "
-		"At least one of <min> or <max> must be specified, as well as the slash.");
+	GMT_Usage (API, 1, "\n-Z[<min>]/[<max>][+i]");
+	GMT_Usage (API, -2, "Only consider grids that have z-values in the given range [Consider all input grids]. "
+		"At least one of <min> or <max> must be specified, as well as the slash.  Append +i to invert the test.");
 	GMT_Usage (API, 1, "\n-r[g|p]");
-	GMT_Usage (API, -2, "Only consider the grids that have the specified registration [Consider all input grids].");
+	GMT_Usage (API, -2, "Only consider grids that have the specified registration [Consider all input grids].");
 	GMT_Option (API, "V,f,h,o,.");
 
 	return (GMT_MODULE_USAGE);
