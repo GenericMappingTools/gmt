@@ -686,6 +686,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 nothing:
 
 	gmt_M_free (GMT, Out);
+	gmt_M_free (GMT, use);
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */
 		Return (API->error);
