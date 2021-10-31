@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ [**b**] ]
 [ |-D|\ *inc* ]
 [ |-G| ]
-[ |-I|\ [**dnrwz**] ]
+[ |-I|\ [**DNRWZr**] ]
 [ |-M|\ *margins* ]
 [ |-N|\ **l**\|\ **h**\ [*n*] ]
 [ |-Q| ]
@@ -89,16 +89,17 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**dnrwz**]
+**-I**\ [**DNRWZr**]
     Reverses the sense of the test for each of the items specified by a code:
 
-    - **d** - select data sources *not* having the specified increment in **-D**.
-    - **n** - select data sources *failing* the NaN criterion in **-N**.
+    - **D** - select data sources *not* having the specified increment in **-D**.
+    - **N** - select data sources *failing* the NaN criterion in **-N**.
+    - **R** - select data sources *not* having any overlap with region set in **-R**.
+    - **W** - select data sources whose data range is *not* overlapping the range specified by **-W**.
+    - **Z** - select cubes whose z-dimension range is *not* overlapping the range specified by **-Z** (requires **-Q**).
     - **r** - select data sources *not* having the specified registration in **-r**.
-    - **w** - select data sources whose data range is *not* overlapping the range specified by **-W**.
-    - **z** - select cubes whose z-dimension range is *not* overlapping the range specified by **-Z** (requires **-Q**).
 
-   If no argument is given then we reverse all the tests, i.e, the same as **-Idnrwz**.
+   If no argument is given then we reverse all the tests, i.e, the same as **-IDNRWZr**.
 .. _-M:
 
 **-M**\ *margins*

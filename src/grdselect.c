@@ -56,6 +56,7 @@ enum Opt_N_modes {
 
 enum GRDSELECT {	/* Indices for the various tests */
 	GRD_SELECT_r = 0,
+	GRD_SELECT_R,
 	GRD_SELECT_D,
 	GRD_SELECT_N,
 	GRD_SELECT_W,
@@ -130,7 +131,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s grid1 grid2 ... [-Ai|u[+il|h|<inc>]] [-C] [-D<inc>] [-G] [-Idnrwz] [-M<margins>] [-Nl|h[<n>]] "
+	GMT_Usage (API, 0, "usage: %s grid1 grid2 ... [-Ai|u[+il|h|<inc>]] [-C] [-D<inc>] [-G] [-IDNRWZr] [-M<margins>] [-Nl|h[<n>]] "
 		"[-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -150,15 +151,16 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D<inc>");
 	GMT_Usage (API, -2, "Only consider data sources that match the given increments [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
-	GMT_Usage (API, 1, "\n-Idnrwz");
+	GMT_Usage (API, 1, "\n-IDNRWZr");
 	GMT_Usage (API, -2, "Reverse the tests, i.e., pass data sources when the test fails. "
-		"Supply any combination of dnrwz where each flag means:");
-	GMT_Usage (API, 3, "d: Pass data sources that do not match the increment set in -D.");
-	GMT_Usage (API, 3, "n: Pass data sources that fail the NaN-test in -N.");
+		"Supply any combination of DNRWZr where each flag means:");
+	GMT_Usage (API, 3, "D: Pass data sources that do not match the increment set in -D.");
+	GMT_Usage (API, 3, "N: Pass data sources that fail the NaN-test in -N.");
+	GMT_Usage (API, 3, "R: Pass data sources that do not overlap with region in -R.");
+	GMT_Usage (API, 3, "W: Pass data sources outside the data range given in -W.");
+	GMT_Usage (API, 3, "Z: Pass cubes outside the z-coordinate range given in -Z (requires -Q).");
 	GMT_Usage (API, 3, "r: Pass data sources with the opposite registration than given in -r.");
-	GMT_Usage (API, 3, "w: Pass data sources outside the data range given in -W.");
-	GMT_Usage (API, 3, "z: Pass cubes outside the z-coordinate range given in -Z (requires -Q).");
-	GMT_Usage (API, -2, "Note: If no argument is given then we default to -Idnrwz.");
+	GMT_Usage (API, -2, "Note: If no argument is given then we default to -IDNRWZr.");
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add padding around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
 		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no padding].");
@@ -251,13 +253,14 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				else {	/* Reverse those requested only */
 					for (k = 0; opt->arg[k]; k++) {
 						switch (opt->arg[k]) {
-							case 'd': Ctrl->I.pass[GRD_SELECT_D] = false; break;
-							case 'n': Ctrl->I.pass[GRD_SELECT_N] = false; break;
+							case 'D': Ctrl->I.pass[GRD_SELECT_D] = false; break;
+							case 'N': Ctrl->I.pass[GRD_SELECT_N] = false; break;
+							case 'R': Ctrl->I.pass[GRD_SELECT_R] = false; break;
+							case 'W': Ctrl->I.pass[GRD_SELECT_W] = false; break;
+							case 'Z': Ctrl->I.pass[GRD_SELECT_Z] = false; break;
 							case 'r': Ctrl->I.pass[GRD_SELECT_r] = false; break;
-							case 'w': Ctrl->I.pass[GRD_SELECT_W] = false; break;
-							case 'z': Ctrl->I.pass[GRD_SELECT_Z] = false; break;
 							default:
-								GMT_Report (API, GMT_MSG_ERROR, "Option -I: Expects any combination of dnrwz (%c is not valid)\n", opt->arg[k]);
+								GMT_Report (API, GMT_MSG_ERROR, "Option -I: Expects any combination of DNRWZr (%c is not valid)\n", opt->arg[k]);
 								n_errors++;
 								break;
 						}
@@ -460,6 +463,21 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		if (Ctrl->Z.active) {	/* Skip cubes outside the imposed z-range */
 			pass = !(U->z[header->n_bands-1] < Ctrl->Z.z_min || U->z[0] > Ctrl->Z.z_max);
 			if (pass != Ctrl->I.pass[GRD_SELECT_Z]) continue;	/* Skip if outside (or inside via -Iz) the range */
+		}
+		if (GMT->common.R.active[RSET]) {	/* Specified -R to check for overlap */
+			bool pass_x, pass_y = !(header->wesn[YLO] > GMT->common.R.wesn[YHI] || header->wesn[YHI] < GMT->common.R.wesn[YLO]);	/* true if there is y-overlap */
+			pass = false;
+			if (pass_y) {	/* Still alive, now check for x-overlap */
+				if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Easy, peasy */
+					pass_x = !(header->wesn[XLO] > GMT->common.R.wesn[XHI] || header->wesn[XHI] < GMT->common.R.wesn[XLO]);	/* true if there is x-overlap */
+				else {	/* Must worry about wrapping */
+					double w = header->wesn[XLO] - 720.0, e = header->wesn[XHI] - 720.0;	/* Ensure we are far west */
+					while (e < GMT->common.R.wesn[XLO]) w += 360.0, e += 360.0;	/* Wind to the west */
+					pass_x = (w < GMT->common.R.wesn[XHI]);
+				}
+				pass = pass_x && pass_y;	/* Only true if we have both x and y overlap */
+			}
+			if (pass != Ctrl->I.pass[GRD_SELECT_r]) continue;	/* Skip if wrong (or right via -IR) registration */
 		}
 		if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip data sources that fail the test (or pass if -In) */
 			uint64_t level, here = 0, ij, n_nan = 0;
