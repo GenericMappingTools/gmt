@@ -36,9 +36,11 @@ Synopsis
 Description
 -----------
 
-**grdselect** reads several grids (or cubes) and skips those that fail any tests that
+**grdselect** reads several grids (or cubes) and skips those that fail any tests that may
 have been specified.  It then either reports the names of the sources that passed the tests
-or determines the intersection or union of the regions of those sources.
+or determines the intersection or union of the regions of those sources and the range of
+data values inside that region. The region may be rounded and padded outwards, then reported
+either by its coordinates, a bounding polygon, or a -Rw/e/s/n string.
 
 Required Arguments
 ------------------
@@ -66,11 +68,12 @@ Optional Arguments
 .. _-C:
 
 **-C**\ [**b**]
-    Formats the report using tab-separated fields on a single line. The
-    output is *w e s n {b t} v0 v1*. The data in braces only apply if **-Q** is
-    used with 3-D data cubes.  **Note**: The *v0 v1* range reflects the full range of all
-    data values inside the determined region. Alternatively, append directive **b**
-    to output a closed polygon corresponding to the common region.
+    Formats an output data record using tab-separated fields on a single line. The
+    columns are *w e s n {b t} v0 v1*. The data in braces only apply if **-Q** is
+    used with 3-D data cubes [Default outputs a single -Rw/e/s/n{/b/t} string].
+    Alternatively, append directive **b** to output the region's closed polygon.
+    **Note**: The *v0 v1* range reflects the full range of all data nodes that lie
+    inside the final region after any rounding or padding have taken place.
 
 .. _-D:
 
@@ -175,5 +178,8 @@ To list all the files that have more than 10 NaN nodes and are pixel registered,
 See Also
 --------
 
-:doc:`gmt`, :doc:`grd2cpt`,
-:doc:`grd2xyz`, :doc:`grdedit`, :doc:`grdinfo`
+:doc:`gmt`,
+:doc:`grd2cpt`,
+:doc:`grd2xyz`,
+:doc:`grdedit`,
+:doc:`grdinfo`
