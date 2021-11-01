@@ -89,7 +89,8 @@ Optional Arguments (begin mode)
     This is clearance that is added around the inside of the inset.  Plotting will take place
     within the inner region only. The margins can be a single value, a pair of values separated by slashes
     (for setting separate horizontal and vertical margins), or the full set of four margins (for setting
-    separate left, right, bottom, and top margins) [no margins].
+    separate left, right, bottom, and top margins) [no margins]. Append units as desired [Default is set
+    by :term:`PROJ_LENGTH_UNIT`].
 
 .. _-N:
 
