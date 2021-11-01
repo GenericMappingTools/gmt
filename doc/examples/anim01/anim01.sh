@@ -16,8 +16,8 @@ else	# Make animated GIF
 fi
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh
-gmt math -T0/360/20 T SIND = sin_point.txt
-gmt math -T0/360/2 T SIND = sin_curve.txt
+gmt math -T0/360/10 T SIND = sin_point.txt
+gmt math -T0/360/1 T SIND = sin_curve.txt
 gmt begin
 	gmt basemap -R0/360/-1.2/1.6 -JX22c/11.5c -X1c -Y1c \
 	-BWSne+glightskyblue -Bxa90g90f30+u@. -Bya0.5f0.1g1 --FONT_ANNOT_PRIMARY=9p
