@@ -4,16 +4,10 @@
 # Purpose:      Make simple MP4 of sine function
 # GMT modules:  math, basemap, text, plot, movie
 # Unix progs:   echo, convert, cat
-# Note:         Run with any argument to build movie; otherwise 1st frame is plotted only.
 #
 # The finished movie is available in our YouTube channel as well:
 # <youtube-link>
 
-if [ $# -eq 0 ]; then	# Just make master PostScript frame 0
-	opt="-Mps"
-else	# Make animated GIF
-	opt="-Fmp4"
-fi
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh
 gmt math -T0/360/10 T SIND = sin_point.txt
@@ -36,4 +30,4 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Sbpre.sh -Chd -Tsin_point.txt -Vi -D5 -Zs -Nanim01 $opt
+gmt movie main.sh -Sbpre.sh -Chd -Tsin_point.txt -Vi -D5 -Zs -Nanim01 -Fmp4
