@@ -95,7 +95,7 @@ The Axes settings are specified by
 
 but you may also split this into two separate invocations for clarity, i.e.,
 
-   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+f**]\
+   | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**][**+a**\ *angle*\|\ **n**\|\ **p**][**+e**\ [**l**\|\ **u**]][**+f**]\
      [**+l**\|\ **L**\ *label*][**+p**\ *prefix*][**+s**\|\ **S**\ *seclabel*][**+u**\ *unit*]
    | **-B**\ [**p**\|\ **s**][**x**\|\ **y**\|\ **z**]\ *intervals*
 
@@ -109,7 +109,9 @@ The following modifiers can be appended to **-B** to control the Axes settings:
   (e.g., days) while the "secondary" annotation interval typically is larger (e.g., months).
 - **x**\|\ **y**\|\ **z** to set which axes the modifiers apply to [default is **xy**]. If you wish to give different
   annotation intervals or labels for the various axes then you must repeat the **B** option for each axis. For a
-  3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the verical axis.
+  3-D plot with the **-p** and **-Jz** options used, **-Bz** can be used to provide settings for the vertical axis.
+- **+e** to give skip annotations that fall exactly at the ends of the axis.  Append **l** or **u** to only
+  skip the lower or upper annotation, respectively.
 - **+f** (for geographic axes only) to give fancy annotations with W\|\ E\|\ S\|\ N suffices encoding the sign.
 - **+l**\|\ **+L**\ *label* (for Cartesian plots only) to add a label to an axis. **+l** uses the default
   label orientation; **+L** forces a horizontal label for *y*-axes, which is useful for very short labels.

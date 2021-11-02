@@ -120,9 +120,9 @@ Optional Arguments
     #. Specify **m** for mesh plot [Default], and optionally append *color* for a different mesh paint [white].
     #. Specify **mx** or **my** for waterfall plots (row or column profiles). Specify color as for plain **m**
     #. Specify **s** for surface plot, and optionally append **m** to have mesh lines drawn on top of surface.
-    #. Specify **i** for image plot, and optionally append the effective dpi resolution for the rasterization [100].
+    #. Specify **i** for image plot, and optionally append the effective dots-per-unit resolution for the rasterization [Default is :term:`GMT_GRAPHICS_DPU`].
     #. Specify **c**. Same as **-Qi** but will make nodes with z = NaN transparent, using the colormasking
-       feature in PostScript Level 3 (the PS device must support PS Level 3). .
+       feature in PostScript Level 3 (the PS device must support PS Level 3).
 
     **Note**: If the CPT is categorical then only **-Qm** is available (but see **-T**).
 
@@ -214,34 +214,26 @@ To make a mesh plot from the file hawaii_grav.nc and drawing the
 contours given in the CPT hawaii.cpt on a Lambert map at
 1.5 cm/degree along the standard parallels 18 and 24, with vertical
 scale 20 mgal/cm, and looking at the surface from SW at 30 degree
-elevation, run
-
-   ::
+elevation, run::
 
     gmt grdview hawaii_grav.nc -Jl18/24/1.5c -Chawaii.cpt -Jz0.05c -Qm -N-100 -p225/30 -Wc -pdf hawaii_grav_image
 
 To create an illuminated color perspective plot of the gridded data set
 image.nc, using the CPT color.cpt, with linear scaling at
 10 cm/x-unit and tickmarks every 5 units, with intensities provided by
-the file intens.nc, and looking from the SE, use
-
-   ::
+the file intens.nc, and looking from the SE, use::
 
     gmt grdview image.nc -Jx10c -Ccolor.cpt -Qs -p135/30 -Iintens.nc -pdf image3D
 
-To make the same plot using the rastering option with dpi = 50, use
+To make the same plot using the rastering option with dots-per-cm of 50, use::
 
-   ::
-
-    gmt grdview image.nc -Jx10c -Ccolor.cpt -Qi50 -p135/30 -Iintens.nc -pdf image3D
+    gmt grdview image.nc -Jx10c -Ccolor.cpt -Qi50c -p135/30 -Iintens.nc -pdf image3D
 
 To create a color perspective plot of the gridded data set
 magnetics.nc, using the CPT mag_intens.cpt, draped over
 the relief given by the file topography.nc, with Mercator map width of 6
 inch and tickmarks every 1 degree, with intensities provided by the file
-topo_intens.nc, and looking from the SE, run
-
-   ::
+topo_intens.nc, and looking from the SE, run::
 
     gmt grdview topography.nc -JM6i -Gmagnetics.nc -Cmag_intens.cpt -Qs -p140/30 -Itopo_intens.nc -pdf draped3D
 

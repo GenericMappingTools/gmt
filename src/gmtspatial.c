@@ -1131,7 +1131,6 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSPATIAL_CTRL *Ctrl, struct GMT
 EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int geometry = GMT_IS_POLY, internal = 0, external = 0, smode = GMT_NO_STRINGS;
-	bool mseg = false;
 
 	static char *kind[2] = {"CCW", "CW"};
 
@@ -1576,7 +1575,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 
 		if (Ctrl->S.mode == POL_CLIP) {	/* Need to set up a separate table with the clip polygon */
 			if (Ctrl->T.file) {
-				gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+				gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 				if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 					Return (API->error);
 				}
@@ -1584,7 +1583,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 					Return (GMT_DIM_TOO_SMALL);
 				}
-				gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+				gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			}
 			else {	/* Design a table based on -Rw/e/s/n */
 				uint64_t dim[GMT_DIM_SIZE] = {1, 1, 5, 2};
@@ -1635,7 +1634,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							if (!external && !same_feature) continue;	/* Do not do external crossings */
 						}
 						gmt_init_track (GMT, S2->data[GMT_Y], S2->n_rows, &ylist2);
-						nx = gmt_crossover (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist1, S1->n_rows, S2->data[GMT_X], S2->data[GMT_Y], NULL, ylist2, S2->n_rows, false, gmt_M_is_geographic (GMT, GMT_IN), &XC);
+						nx = gmt_crossover (GMT, S1->data[GMT_X], S1->data[GMT_Y], NULL, ylist1, S1->n_rows, S2->data[GMT_X], S2->data[GMT_Y], NULL, ylist2, S2->n_rows, (internal > 0), gmt_M_is_geographic (GMT, GMT_IN), &XC);
 						if (nx) {	/* Polygon pair generated crossings */
 							uint64_t px;
 							if (Ctrl->S.active) {	/* Do the spatial clip operation */
@@ -1712,10 +1711,10 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							}
 							else {	/* Just report */
 								struct GMT_DATATABLE_HIDDEN *TH1 = gmt_get_DT_hidden (C->table[tbl1]), *TH2 = gmt_get_DT_hidden (C->table[tbl2]);
-								if (mseg)
-									sprintf (record, "%s-%" PRIu64 "%s%s-%" PRIu64, TH1->file[GMT_IN], seg1, GMT->current.setting.io_col_separator, TH2->file[GMT_IN], seg2);
-								else
-									sprintf (record, "%s%s%s", TH1->file[GMT_IN], GMT->current.setting.io_col_separator, TH2->file[GMT_IN]);
+								char F1[PATH_MAX] = {""}, F2[PATH_MAX] = {""};
+								if (TH1->file[GMT_IN] == NULL) snprintf (F1, PATH_MAX, "%" PRIu64 "-%" PRIu64, tbl1, seg1); else snprintf (F1, PATH_MAX, "%s-%" PRIu64, TH1->file[GMT_IN], seg1);
+								if (TH2->file[GMT_IN] == NULL) snprintf (F2, PATH_MAX, "%" PRIu64 "-%" PRIu64, tbl2, seg2); else snprintf (F2, PATH_MAX, "%s-%" PRIu64, TH2->file[GMT_IN], seg2);
+								sprintf (record, "%s%s%s", F1, GMT->current.setting.io_col_separator, F2);
 								Out.text = record;
 								for (px = 0; px < nx; px++) {	/* Write these to output */
 									out[GMT_X] = XC.x[px];  out[GMT_Y] = XC.y[px];
@@ -1779,7 +1778,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct DUP_INFO **Info = NULL, *I = NULL;
 
 		if (Ctrl->D.file) {	/* Get trial features via a file */
-			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -D files */
+			gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -D files */
 			if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE|GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->D.file, NULL)) == NULL) {
 				Return (API->error);
 			}
@@ -1787,7 +1786,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 				Return (GMT_DIM_TOO_SMALL);
 			}
-			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+			gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 			from = Ctrl->D.file;
 		}
 		else {
@@ -1931,7 +1930,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 		struct GMT_DATASEGMENT *S = NULL, *S2 = NULL;
 		struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -CN files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -CN files */
 		if ((C = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->N.file, NULL)) == NULL) {
 			Return (API->error);
 		}
@@ -1939,7 +1938,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)C->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		nmode = (Ctrl->N.mode == 1) ? GMT_IS_NONE : GMT_IS_LINE;
 		if (GMT_Init_IO (API, GMT_IS_DATASET, nmode, GMT_OUT, GMT_ADD_DEFAULT, 0, options) != GMT_NOERROR) {	/* Registers default output destination, unless already set */
 			Return (API->error);

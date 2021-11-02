@@ -148,7 +148,8 @@ Optional Arguments (begin mode)
     to the automatic space added for tick marks, annotations, and labels.  The margins can be specified as
     a single value (for same margin on all sides), a pair of values separated by slashes
     (for setting separate horizontal and vertical margins), or the full set of four slash-separated margins
-    (for setting separate left, right, bottom, and top margins).  The actual gap created is always a sum of
+    (for setting separate left, right, bottom, and top margins).  Append units as desired [Default is set
+    by :term:`PROJ_LENGTH_UNIT`]. The actual gap created is always a sum of
     the margins for the two opposing sides (e.g., east plus west or south plus north margins) [Default is
     half the primary annotation font size, giving the full annotation font size as the default gap].
 

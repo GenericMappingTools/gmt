@@ -75,7 +75,8 @@ Required Arguments
     the numbering of the given jobs.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming jobs.  For instance, name_000010.grd has a tag width of 6.  By default, this is
     automatically set but if you are splitting large jobs across several computers (via **+s**) then you
-    must use the same tag width for all names.
+    must use the same tag width for all names. **Note**: If just *njobs* is given then only **BATCH_JOB**
+    is available as no data file is available.
 
 
 Optional Arguments
@@ -230,6 +231,18 @@ these special (and empty) files is how **batch** learns that a particular job ha
 launch another one.
 
 
+Shell Limitations
+-----------------
+
+As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
+involves a sub-shell), we advice against using commands in your main script that involve piping the result
+from one GMT module into another (e.g., gmt blockmean ..... | gmt surface ...).  Because **batch** is running
+many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
+In our experience, piping in the context of batch script may corrupt the GMT history files, resulting in
+stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
+a temporary file when writing batch main scripts. **Note**: Piping from a non-GMT module into a GMT module
+or vice versa is not a problem (e.g., echo ..... | gmt convert ...).
+
 Hints for Batch Makers
 ----------------------
 
@@ -306,6 +319,15 @@ we combine all the individual PDFs into a single PDF file and delete the individ
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
 Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
+
+macOS Issues
+------------
+
+**Note**: The limit on the number of concurrently open files is relatively small by default on macOS and when executing
+numerous jobs at the same time it is not unusual to get failures in **batch** jobs with the message "Too many open files". 
+We refer you to this helpful
+`article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
+for various solutions. 
 
 See Also
 --------

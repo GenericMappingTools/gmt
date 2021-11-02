@@ -185,12 +185,9 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 	}
 
 	if (Ctrl->In.mode == INSET_BEGIN) {
-		/* Was -R -J given */
+		/* Was -R -J given? */
 		n_errors += gmt_M_check_condition (GMT, !Ctrl->D.active, "Option -D is required for gmt inset begin\n");
 		n_errors += gmt_M_check_condition (GMT, GMT->common.J.active && !GMT->common.R.active[RSET], "Option -J: Requires -R as well!\n");
-		if (!n_errors && GMT->common.J.active) {	/* Compute map height */
-			if (gmt_map_setup (GMT, GMT->common.R.wesn)) n_errors++;
-		}
 	}
 	else {	/* gmt inset end was given, when -D -F -M -N are not allowed */
 		if (Ctrl->D.active) {
@@ -219,12 +216,14 @@ static int parse (struct GMT_CTRL *GMT, struct INSET_CTRL *Ctrl, struct GMT_OPTI
 
 EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 	int error = 0, fig, k;
-	bool exist;
-	char file[PATH_MAX] = {""}, ffile[PATH_MAX] = {""}, Bopts[GMT_LEN256] = {""};
+	bool exist, got_RJ = false;
+	char tag[GMT_LEN16] = {""}, file[PATH_MAX] = {""}, ffile[PATH_MAX] = {""}, Bopts[GMT_LEN256] = {""};
+	char inset_history[GMT_LEN256] = {""};
+	double dim[2] = {0.0, 0.0};
 	FILE *fp = NULL;
 	struct GMT_CTRL *GMT = NULL, *GMT_cpy = NULL;
 	struct PSL_CTRL *PSL = NULL;		/* General PSL internal parameters */
-	struct GMT_OPTION *options = NULL;
+	struct GMT_OPTION *options = NULL, *R = NULL, *J = NULL;
 	struct INSET_CTRL *Ctrl = NULL;
 	struct GMTAPI_CTRL *API = gmt_get_api_ptr (V_API);	/* Cast from void to GMTAPI_CTRL pointer */
 
@@ -240,6 +239,41 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		bailout (GMT_NOT_MODERN_MODE);
 	}
 
+	/* Check if -R -J was given explicitly on the command line to define the inset size */
+	if ((R = GMT_Find_Option (API, 'R', options)) && (J = GMT_Find_Option (API, 'J', options))) {	/* Yes they were */
+		/* Create a mapproject command with -R -J -W -Di to get the dimensions of the inset */
+		char ofile[GMT_VF_LEN] = {""}, cmd[GMT_LEN128] = {""};
+		struct GMT_DATASET *Out = NULL;
+
+		/* We also will need to make a special gmt.history file for commands to follow in the inset */
+		sprintf(inset_history, "# GMT 6 Session common arguments shelf\nBEGIN GMT %s\nJ\t%c\nJ%c\t%s\nR\t%s\n", GMT_version(), J->arg[0], J->arg[0], J->arg, R->arg);
+		/* Open Virtual file to hold the result from mapproject */
+		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_OUT|GMT_IS_REFERENCE, NULL, ofile) == GMT_NOTSET)
+			bailout (API->error);
+		/* Build the mapproject command that takes no input but returns dimensions in inches. Turn off updating of history file */
+		sprintf (cmd, "-R%s -J%s -W -Di ->%s --GMT_HISTORY=false", R->arg, J->arg, ofile);
+		if (GMT_Call_Module (API, "mapproject", GMT_MODULE_CMD, cmd) != GMT_OK)	/* Get the inset size via mapproject */
+			return (API->error);
+		/* Retrieve the answers */
+		if ((Out = GMT_Read_VirtualFile (API, ofile)) == NULL)
+			bailout (API->error);
+		/* Store the size in dim */
+		dim[GMT_X] = Out->table[0]->segment[0]->data[GMT_X][0];
+		dim[GMT_Y] = Out->table[0]->segment[0]->data[GMT_Y][0];
+		/* Close virtual file and free the Out dataset */
+		if (GMT_Close_VirtualFile (API, ofile) != GMT_NOERROR)
+			bailout (API->error);
+		if (GMT_Destroy_Data (API, &Out) != GMT_OK)
+			bailout (API->error);
+		/* Remove the -R -J options from the options list to process below (since we expect -R -J to come from history */
+		if (GMT_Delete_Option (API, R, &options))
+			bailout (API->error);
+		if (GMT_Delete_Option (API, J, &options))
+			bailout (API->error);
+		gmt_reload_history (API->GMT);	/* Prevent gmt from copying previous -R -J history to this inset */
+		got_RJ = true;	/* Meaning we got the -R -J to be used inside the inset before the inset was finalized */
+	}
+
 	/* Parse the command-line arguments */
 
 	if ((GMT = gmt_init_module (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_KEYS, THIS_MODULE_NEEDS, NULL, &options, &GMT_cpy)) == NULL) bailout (API->error); /* Save current state */
@@ -248,6 +282,14 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 	if ((error = parse (GMT, Ctrl, options)) != 0) Return (error);
 
 	/*---------------------------- This is the inset main code ----------------------------*/
+
+	if (got_RJ) {	/* Copy the saved inset size determined from -R -J above */
+		if (Ctrl->D.inset.dim[GMT_X] > 0.0 || Ctrl->D.inset.dim[GMT_Y] > 0.0) {
+			GMT_Report (API, GMT_MSG_ERROR, "Cannot define inset size both via -D..,+w as well as -R -J\n");
+			Return (GMT_RUNTIME_ERROR);
+		}
+		gmt_M_memcpy (Ctrl->D.inset.dim, dim, 2U, double);
+	}
 
 	fig = gmt_get_current_figure (API);	/* Get current figure number */
 
@@ -258,7 +300,7 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 
 	sprintf (file, "%s/gmt.inset.%d", API->gwf_dir, fig);	/* Inset information file */
 
-	exist = !access (file, F_OK);	/* Determine if inset information file exists */
+	exist = !access (file, F_OK);	/* Determine if an inset information file exists */
 	if (Ctrl->In.mode == INSET_BEGIN && exist) {	/* Inset information file already exists which is a failure */
 		GMT_Report (API, GMT_MSG_ERROR, "In begin mode but inset information file already exists: %s\n", file);
 		Return (GMT_RUNTIME_ERROR);
@@ -271,11 +313,16 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 	if ((PSL = gmt_plotinit (GMT, options)) == NULL) Return (GMT_RUNTIME_ERROR);
 
 	if (Ctrl->In.mode == INSET_BEGIN) {	/* Determine and save inset attributes */
-		/* Here we need to compute dimensions and save those plus current -R -J to the inset information file,
-		 * then inset a gsave command, translate origin to the inset, adjust for any margins, compute new scales/widths and maybe
-		 * draw the panel. */
+		/* Here we need to compute dimensions and save those plus current plot -R -J to the inset information file,
+		 * then inset a gsave command, translate origin to the inset, adjust for any margins, compute new scales/widths
+		 * and maybe draw the panel. */
 
 		char *cmd = NULL;
+
+		/* Was -R -J given via history? */
+		if (GMT->common.J.active && gmt_map_setup (GMT, GMT->common.R.wesn)) {	/* Compute map height */
+			Return (GMT_RUNTIME_ERROR);
+		}
 
 		/* OK, no other inset set for this figure (or panel).  Save graphics state before we draw the inset */
 		PSL_command (PSL, "V %% Begin inset\n");
@@ -315,12 +362,23 @@ EXTERN_MSC int GMT_inset (void *V_API, int mode, void *args) {
 		fclose (fp);
 		GMT_Report (API, GMT_MSG_DEBUG, "inset: Wrote inset settings to information file %s\n", file);
 		gmt_reset_history (GMT);	/* Prevent gmt from copying previous -R -J history to this inset */
+
+		if (got_RJ) {	/* Must write the given -R -J to inset history so subsequent commands can use them */
+			gmt_hierarchy_tag (API, GMT_HISTORY_FILE, GMT_OUT, tag);
+			sprintf (ffile, "%s/%s%s", API->gwf_dir, GMT_HISTORY_FILE, tag);
+			if ((fp = fopen (ffile, "w")) == NULL) {	/* Not good */
+				GMT_Report (API, GMT_MSG_ERROR, "Cannot create inset history file %s\n", ffile);
+				Return (GMT_ERROR_ON_FOPEN);
+			}
+			fprintf (fp, "%s", inset_history);	/* Write just the -R -J history */
+			fclose (fp);
+		}
 	}
 	else {	/* INSET_END */
 		/* Here we need to finish the inset with a grestore and restate the original -R -J in the history file,
 		 * and finally remove the inset information file */
 
-		char tag[GMT_LEN16] = {""}, legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
+		char legend_justification[4] = {""}, pen[GMT_LEN32] = {""}, fill[GMT_LEN32] = {""}, off[GMT_LEN32] = {""};
 		double legend_width = 0.0, legend_scale = 1.0;
 
 		if (gmt_get_legend_info (API, &legend_width, &legend_scale, legend_justification, pen, fill, off)) {	/* Unplaced legend file */
