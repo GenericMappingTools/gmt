@@ -301,9 +301,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 }
 
 GMT_LOCAL void grd2xyz_dump_triangle (FILE *fp, float N[], float P[3][3], bool binary) {
+	/* Write the 3 facets of a single triangle and its normal vector to STL file */
 	short unsigned int dummy = 0;
 	unsigned int k, p;
-	if (binary) {
+	if (binary) {	/* Use the binary STL format */
 #ifdef WORDS_BIGENDIAN	/* Need to ensure little-endian output */
 		/* Must swab all things except dummy which is all 0000 anyway */
 		for (k = 0; k < 3; k++) {
@@ -312,12 +313,12 @@ GMT_LOCAL void grd2xyz_dump_triangle (FILE *fp, float N[], float P[3][3], bool b
 				P[p][k] = bswap32 (P[p][k]);
 		}
 #endif
-		fwrite (N, sizeof (float), 3U, fp);
-		for (k = 0; k < 3; k++)
+		fwrite (N, sizeof (float), 3U, fp);	/* Write unit outwards normal vector */
+		for (k = 0; k < 3; k++)	/* Write the three vertices */
 			fwrite (P[k], sizeof (float), 3U, fp);
-		fwrite (&dummy, sizeof (short unsigned int), 1U, fp);
+		fwrite (&dummy, sizeof (short unsigned int), 1U, fp);	/* Write dummy filler 2 bytes */
 	}
-	else {
+	else {	/* Write the ASCII STL format */
 		fprintf (fp, "facet normal %e %e %e\n", N[GMT_X], N[GMT_Y], N[GMT_Z]);
 		fprintf (fp, "\touter loop\n");
 		for (k = 0; k < 3; k++)
@@ -327,32 +328,32 @@ GMT_LOCAL void grd2xyz_dump_triangle (FILE *fp, float N[], float P[3][3], bool b
 }
 
 void grd2xyz_out_triangle (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, uint64_t ij, unsigned int kase, bool binary) {
-	/* Prepare one triangle in STL format using 3 or the 4 corners (we skip corner kase) */
+	/* Prepare one triangle in STL format using 3 of the 4 corners (we skip corner number <kase>) */
 	/* Get the three point coordinates to use */
-	int64_t p, k, c[4] = {0, 1, 1, 0}, r[4] = {0, 0, -1, -1}, o[4] = {0, 1, 1-(int64_t)G->header->mx, -(int64_t)G->header->mx};
+	int64_t p, k, col_off[4] = {0, 1, 1, 0}, row_off[4] = {0, 0, -1, -1}, node_off[4] = {0, 1, 1-(int64_t)G->header->mx, -(int64_t)G->header->mx};
 	float P[3][3], N[3], A[3], B[3], L;
 	gmt_M_unused (GMT);
-	for (p = k = 0; p < 4; p++) {
+	for (p = k = 0; p < 4; p++) {	/* Build a CCW-oriented triangle */
 		if (p == kase) continue;
-		P[k][GMT_X] = G->x[col+c[p]];
-		P[k][GMT_Y] = G->y[row+r[p]];
-		P[k][GMT_Z] = G->data[ij+o[p]];
+		P[k][GMT_X] = G->x[col+col_off[p]];
+		P[k][GMT_Y] = G->y[row+row_off[p]];
+		P[k][GMT_Z] = G->data[ij+node_off[p]];
 		k++;
 	}
-	/* Get normal to triangle */
+	/* Get unit normal vector to triangle via cross-product */
 	for (k = 0; k < 3; k++) { A[k] = P[1][k] - P[0][k];  B[k] = P[2][k] - P[1][k]; }
 	N[GMT_X] = A[GMT_Y] * B[GMT_Z] - A[GMT_Z] * B[GMT_Y];
 	N[GMT_Y] = A[GMT_Z] * B[GMT_X] - A[GMT_X] * B[GMT_Z];
 	N[GMT_Z] = A[GMT_X] * B[GMT_Y] - A[GMT_Y] * B[GMT_X];
 	L = d_sqrt (N[GMT_X] * N[GMT_X] + N[GMT_Y] * N[GMT_Y] + N[GMT_Z] * N[GMT_Z]);
-	if (L > 0.0) {	/* OK to normalize the normal vector */
+	if (L > 0.0) {	/* OK to normalize the normal vector by L */
 		for (k = 0; k < 3; k++) N[k] /= L;
 	}
 	grd2xyz_dump_triangle (fp,  N, P, binary);
 }
 
 void place_SN_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, unsigned int kase, bool binary) {
-	/* Prepare two triangles along the S or N row */
+	/* Prepare two triangles along the S or N row from the base (0) up */
 	int64_t ij, d_ij;
 	unsigned int col_L, col_R;
 	float P[3][3], N[3];
@@ -373,7 +374,7 @@ void place_SN_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, uns
 }
 
 void place_WE_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, unsigned int kase, bool binary) {
-	/* Prepare two triangles along the W or E column */
+	/* Prepare two triangles along the W or E column from the base up */
 	int64_t ij, d_ij;
 	unsigned int row_L, row_R;
 	float P[3][3], N[3];
@@ -394,7 +395,7 @@ void place_WE_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, uns
 }
 
 void place_base_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, bool binary) {
-	/* The two base triangles shares the normal vector */
+	/* The two base triangles shares the same -z_hat normal vector */
 	float P[3][3], N[3] = {0.0, 0.0, -1.0};	/* Normal points down in negative z-direction */
 	struct GMT_GRID_HEADER *h = G->header;
 	/* NE-SW-NW triangle */
@@ -666,7 +667,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			}
 			/* Compute the number of triangles needed for the surface, the 4 sides plus the base */
 			n_tri = 2 * (G->header->n_columns * G->header->n_rows + G->header->n_columns + G->header->n_rows - 2);
-			if (Ctrl->T.binary) {	/* Must write header recrod with count */
+			if (Ctrl->T.binary) {	/* Must write a header record with triangle count */
 #ifdef WORDS_BIGENDIAN	/* Need to ensure little-endian output */
 				n_tri_write = bswap32 (n_tri);
 #else
@@ -691,7 +692,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				place_WE_triangles (GMT, fp, G, row, 0, GMT_Y, Ctrl->T.binary);
 				place_WE_triangles (GMT, fp, G, row, G->header->n_columns-1, GMT_Y, Ctrl->T.binary);
 			}
-			place_base_triangles (GMT, fp, G, Ctrl->T.binary);	/* Two large triangles */
+			place_base_triangles (GMT, fp, G, Ctrl->T.binary);	/* Two large base triangles */
 
 			if (!Ctrl->T.binary)
 				fprintf (fp, "endsolid %s\n", opt->arg);
