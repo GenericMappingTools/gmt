@@ -318,7 +318,7 @@ GMT_LOCAL int x2syscross_combo_ok (char *name_1, char *name_2, struct X2SYS_CROS
 }
 
 GMT_LOCAL void x2syscross_free_pairs (struct GMT_CTRL *GMT, struct X2SYS_CROSS_PAIR *pair, uint64_t n_pairs) {
-	/* Free the array of pairs */
+	/* Free the strings in the array of pairs */
 	uint64_t k;
 	for (k = 0; k < n_pairs; k++) {
 		gmt_M_str_free (pair[k].id1);
@@ -1034,7 +1034,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Free up other arrays */
 
-	if (Ctrl->A.active) {
+	if (Ctrl->A.active) {	/* Free strings in pairs, then pairs itself */
 		x2syscross_free_pairs (GMT, pair, n_pairs);
 		gmt_M_free (GMT, pair);
 	}
