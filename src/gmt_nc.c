@@ -1007,11 +1007,13 @@ L100:
 		gmtnc_put_units (ncid, ids[HH->xy_dim[0]], header->x_units);
 		dummy[0] = header->wesn[XLO], dummy[1] = header->wesn[XHI];
 		gmt_M_err_trap (nc_put_att_double (ncid, ids[HH->xy_dim[0]], "actual_range", NC_DOUBLE, 2U, dummy));
+		gmt_M_err_trap (nc_put_att_text (ncid, ids[HH->xy_dim[0]], "axis", 1U, "X"));
 
 		/* Define y variable */
 		gmtnc_put_units (ncid, ids[HH->xy_dim[1]], header->y_units);
 		dummy[0] = header->wesn[YLO], dummy[1] = header->wesn[YHI];
 		gmt_M_err_trap (nc_put_att_double (ncid, ids[HH->xy_dim[1]], "actual_range", NC_DOUBLE, 2U, dummy));
+		gmt_M_err_trap (nc_put_att_text (ncid, ids[HH->xy_dim[1]], "axis", 1U, "Y"));
 
 		/* When varname is given, and z_units is default, overrule z_units with varname */
 		if (HH->varname[0] && !strcmp (header->z_units, cube ? "cube" : "z"))
