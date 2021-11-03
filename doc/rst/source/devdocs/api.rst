@@ -947,8 +947,10 @@ is a sum of bit flags and the various bits control the following settings:
 #. Bit 5 (16 or GMT_SESSION_RUNMODE): If set, the we enable GMT's modern run-mode (where -O -K are
    not allowed and PostScript is written to hidden temp file).  Default
    is the GMT classic run-mode.
-#. Bit 6 (32 or GMT_SESSION_NOHISTORY): If set, the we disable GMT's command shorthand via gmt.history files.
+#. Bit 6 (32 or GMT_SESSION_NOHISTORY): If set, then we disable GMT's command shorthand via gmt.history files.
    The default is to allow this communication between GMT modules.
+#. Bit 7 (64 or GMT_SESSION_NOGDALCLOSE): If set with GMT_SESSION_EXTERNAL, then we do not close the
+   GDAL connection as the calling environment requires it to stay open.
 
 The ``print_func`` argument is a pointer to a function that is used to print
 messages from GMT via GMT_Message_ or GMT_Report_ from external environments that cannot use the
@@ -3823,11 +3825,11 @@ allocated will be *size * n_bands*, where the latter is one of the parameters in
 .. code-block:: c
 
   struct GMT_CUBE {
-       struct GMT_GRID_HEADER *header;      /* The full GMT header for the grid */
+       struct GMT_GRID_HEADER *header;      /* The full GMT header for the cube */
        float                  *data;        /* Pointer to the float 3-D array */
        unsigned int           mode;         /* Indicates data originated as a list of 2-D grids rather than a cube */
-       double                 z_range[2];   /* Minimum/max z values (complements header->wesn) */
-       double                 z_inc;        /* z increment (complements header->inc) (0 if variable z spacing) */
+       double                 z_range[2];   /* Minimum/maximum z-dimension values (complements header->wesn) */
+       double                 z_inc;        /* z-dimension increment (complements header->inc) (0 if variable z spacing) */
        double                 *x, *y, *z;   /* Arrays of x,y,z coordinates */
        char name[GMT_GRID_UNIT_LEN80];      /* Name of variable, if read from file (empty if default) */
        char units[GMT_GRID_UNIT_LEN80];     /* Units in 3rd direction (complements x_units, y_units, z_units)  */

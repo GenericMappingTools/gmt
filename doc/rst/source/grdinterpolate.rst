@@ -127,7 +127,8 @@ Optional Arguments
     a series of points defined by an origin and an end point or similar, you can make
     such a file first with :doc:`project`.  By default we simply sample the cube at
     each level.  Use **-T** to interpolate the series.  The grid level (e.g., depth or time)
-    will be appended as the last numerical value in the series records.  Use the optional
+    will be inserted as the third numerical value in the series records, with optional input
+    columns appended, ending with the sampled cube value.  Use the optional
     **+h** modifier to append *header* to the trailing text of these input points.
     On output the trailing text will become the segment header for the series that originate
     from each point.  By default, the table output is written to standard output.  Use **-G**

@@ -28,13 +28,6 @@
 #include <sys/utime.h>
 #endif
 
-#ifdef	__APPLE__
-	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
-#ifndef _Nullable
-#	define _Nullable
-#	endif
-#	endif
-
 #define GMT_HASH_INDEX	0
 #define GMT_INFO_INDEX	1
 
@@ -591,6 +584,8 @@ GMT_LOCAL size_t gmtremote_skip_large_files (struct GMT_CTRL *GMT, char * URL, s
 		/* No header output: TODO 14.1 http-style HEAD output for ftp */
 		curl_easy_setopt (curl, CURLOPT_HEADERFUNCTION, gmtremote_throw_away);
 		curl_easy_setopt (curl, CURLOPT_HEADER, 0L);
+		/* Complete connection within 10 seconds */
+		 curl_easy_setopt (curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT);
 
 		res = curl_easy_perform (curl);
 
@@ -634,6 +629,10 @@ CURL * gmtremote_setup_curl (struct GMTAPI_CTRL *API, char *url, char *local_fil
 	}
  	if (curl_easy_setopt (Curl, CURLOPT_URL, url)) {	/* Set the URL to copy */
 		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to read from %s\n", url);
+		return NULL;
+	}
+ 	if (curl_easy_setopt (Curl, CURLOPT_CONNECTTIMEOUT, GMT_CONNECT_TIME_OUT)) {	/* Set connection timeout to 10s [300] */
+		GMT_Report (API, GMT_MSG_ERROR, "Failed to set curl option to limit connection timeout to %lds\n", GMT_CONNECT_TIME_OUT);
 		return NULL;
 	}
 	if (time_out) {	/* Set a timeout limit */
@@ -681,8 +680,6 @@ void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
 }
 
 /* Deal with hash values of cache/data files */
-
-#define GMT_HASH_TIME_OUT 10L	/* Not waiting longer than this to time out on getting the hash file */
 
 GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
 	bool turn_ctrl_C_off = false;
@@ -957,15 +954,24 @@ void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 	}
 }
 
+GMT_LOCAL char * gmtremote_switch_to_srtm (char *file, char *res) {
+	/* There may be more than one remote Earth DEM product that needs to share the
+	 * same 1x1 degree SRTM tiles.  This function handles this overlap; add more cases if needed. */
+	char *c = NULL;
+	if ((c = strstr (file, ".earth_relief_01s_g")) || (c = strstr (file, ".earth_synbath_01s_g")))
+		*res = '1';
+	else if ((c = strstr (file, ".earth_relief_03s_g")) || (c = strstr (file, ".earth_synbath_03s_g")))
+		*res = '3';
+	return (c);	/* Returns pointer to this "extension" or NULL */
+}
+
 GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
-	/* Must do special legacy checks for  SRTMGL1|3 tag names for SRTM tiles.
+	/* Must do special legacy checks for SRTMGL1|3 tag names for SRTM tiles.
 	 * We also strip off the leading @ since we are building an URL for curl  */
-	char res = 0, *c = NULL, *new_file = NULL;
-	if ((c = strstr (file, ".earth_relief_01s_g")))
-		res = '1';
-	else if ((c = strstr (file, ".earth_relief_03s_g")))
-		res = '3';
-	if (c) {	/* Found one of the SRTM tile families */
+	char res, *c = NULL, *new_file = NULL;
+	
+	if ((c = gmtremote_switch_to_srtm (file, &res))) {
+		/* Found one of the SRTM tile families, now replace the tag with SRTMGL1|3 */
 		char remote_name[GMT_LEN64] = {""};
 		c[0] = '\0';	/* Temporarily chop off tag and beyond */
 		sprintf (remote_name, "%s.SRTMGL%c.%s", &file[1], res, GMT_TILE_EXTENSION_REMOTE);
@@ -1470,11 +1476,19 @@ int gmt_file_is_a_tile (struct GMTAPI_CTRL *API, const char *infile, unsigned in
 	return (k_data);
 }
 
+GMT_LOCAL bool gmtremote_is_earth_dem (struct GMT_DATA_INFO *I) {
+	/* Returns true if this data set is one of the earth_relief clones that must share SRTM tiles with @earth_relief.
+	 * Should we add more such DEMs then just add more cases like the synbath test */
+	if (strstr (I->tag, "synbath") && (!strcmp (I->inc, "03s") || !strcmp (I->inc, "01s"))) return true;
+	return false;
+}
+
 char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_data, unsigned int *n_tiles, bool *need_filler) {
 	/* Return the full list of tiles for this tiled dataset. If need_filler is not NULL we return
 	 * true if some of the tiles inside the wesn do not exist based on the coverage map. */
-	char **list = NULL, YS, XS, file[GMT_LEN64] = {""};
-	int x, lon, lat, iw, ie, is, in,  t_size;
+	bool partial_tile = false;
+	char **list = NULL, YS, XS, file[GMT_LEN64] = {""}, tag[GMT_LEN64] = {""};
+	int x, lon, clat, iw, ie, is, in, t_size;
 	uint64_t node, row, col;
 	unsigned int n_alloc = GMT_CHUNK, n = 0, n_missing = 0;
 	double wesn[4];
@@ -1483,6 +1497,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 
 	if (gmt_M_is_zero (I->tile_size)) return NULL;
 
+	strncpy (tag, I->tag, GMT_LEN64);	/* Initialize tag since it may change below */
 	if (strcmp (I->coverage, "-")) {	/* This primary tiled dataset has limited coverage as described by a named hit grid */
 		char coverage_file[GMT_LEN64] = {""};
 		sprintf (coverage_file, "@%s", I->coverage);	/* Prepend the remote flag since we may need to download the file */
@@ -1491,6 +1506,8 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 			API->error = GMT_RUNTIME_ERROR;
 			return NULL;
 		}
+		if (gmtremote_is_earth_dem (I))	/* Dataset shares SRTM1|3 tiles with @earth_relief */
+			sprintf (tag, "earth_relief_%s_%c", I->inc, I->reg);
 	}
 
 	if ((list = gmt_M_memory (API->GMT, NULL, n_alloc, char *)) == NULL) {
@@ -1513,20 +1530,24 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 	in = (int)( -90 + ceil  ((wesn[YHI] +  90) / I->tile_size) * I->tile_size);
 	t_size = rint (I->tile_size);
 
-	for (lat = is; lat < in; lat += t_size) {	/* Loop over the rows of tiles */
-		if (Coverage && (lat < Coverage->header->wesn[YLO] || lat > Coverage->header->wesn[YHI])) continue;	/* Outside Coverage band */
-		YS = (lat < 0) ? 'S' : 'N';
+	for (clat = is; clat < in; clat += t_size) {	/* Loop over the rows of tiles */
+		if (Coverage && (clat < Coverage->header->wesn[YLO] || clat >= Coverage->header->wesn[YHI])) continue;	/* Outside Coverage band */
+		YS = (clat < 0) ? 'S' : 'N';
 		for (x = iw; x < ie; x += t_size) {	/* Loop over the columns of tiles */
 			lon = (x < 0) ? x + 360 : x;	/* Get longitude in 0-360 range */
-			if (Coverage) {
-				if (lon < Coverage->header->wesn[XLO] || lon > Coverage->header->wesn[XHI]) continue;	/* Outside Coverage band */
-				row  = gmt_M_grd_y_to_row (GMT, (double)lat, Coverage->header);
-				col  = gmt_M_grd_x_to_col (GMT, (double)lon, Coverage->header);
+			if (Coverage) {	/* We will assume nothing about the west/east bounds of the coverage grid */
+				int clon = lon - 360;	/* Ensure we are far west */
+				while (clon < Coverage->header->wesn[XLO]) clon += 360;	/* Wind until past west */
+				if (clon > Coverage->header->wesn[XHI]) continue;	/* Outside Coverage band */
+				row  = gmt_M_grd_y_to_row (GMT, (double)clat, Coverage->header);
+				col  = gmt_M_grd_x_to_col (GMT, (double)clon, Coverage->header);
 				node = gmt_M_ijp (Coverage->header, row, col);
-				if (Coverage->data[node] == 0) {	/* No such tile exists */
-					n_missing++;
-					continue;
+				if (Coverage->data[node] == GMT_NO_TILE) {	/* No such tile exists */
+					n_missing++;	/* Add up missing tiles */
+					continue;		/* Go to next tile */
 				}
+				else if (Coverage->data[node] == GMT_PARTIAL_TILE)	/* Not missing, but still need ocean filler for partial tile */
+					partial_tile = true;	/* Note: We also get here with GMT < 6.3 so that @earth_relief_15s is always considered */
 			}
 			lon = (x >= 180) ? x - 360 : x;	/* Need longitudes 0-179 for E and 1-180 for W */
 			XS = (lon < 0) ? 'W' : 'E';
@@ -1539,7 +1560,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 					return NULL;
 				}
 			}
-			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(lat), XS, abs(lon), I->tag, GMT_TILE_EXTENSION_LOCAL);
+			sprintf (file, "@%c%2.2d%c%3.3d.%s.%s", YS, abs(clat), XS, abs(lon), tag, GMT_TILE_EXTENSION_LOCAL);
 			list[n++] = strdup (file);
 		}
 	}
@@ -1559,7 +1580,7 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 		API->error = GMT_RUNTIME_ERROR;
 		return NULL;
 	}
-	if (need_filler) *need_filler = (n_missing > 0);	/* Incomplete coverage of this data set within wesn */
+	if (need_filler) *need_filler = (partial_tile || n_missing > 0);	/* Incomplete coverage of this data set within wesn */
 
 	return (list);
 }
@@ -1601,7 +1622,6 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 		fprintf (fp, "%s\n", tile[k]);
 
 	gmt_free_list (API->GMT, tile, n_tiles);	/* Free the primary tile list */
-
 	if (k_filler != GMT_NOTSET) {	/* Want the secondary tiles */
 		if (need_filler && (tile = gmt_get_dataset_tiles (API, wesn, k_filler, &n_tiles, NULL))) {
 			/* Write secondary tiles to list file */

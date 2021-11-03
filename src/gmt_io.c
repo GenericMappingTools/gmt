@@ -73,8 +73,8 @@
  * gmtlib_set_bin_io
  * gmt_format_abstime_output
  * gmt_ascii_format_col
- * gmt_disable_bghi_opts
- * gmt_reenable_bghi_opts
+ * gmt_disable_bghio_opts
+ * gmt_reenable_bghio_opts
  * gmt_lon_range_adjust
  * gmt_quad_reset
  * gmt_quad_init
@@ -5789,9 +5789,10 @@ void gmtlib_io_init (struct GMT_CTRL *GMT) {
 }
 
 /*! Routine will temporarily suspend any -b, -i, -g, h selections for secondary inputs */
-void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
+void gmt_disable_bghio_opts (struct GMT_CTRL *GMT) {
 	/* Temporarily turn off any -i, -h selections */
 	GMT->common.i.select = false;
+	GMT->common.o.select = false;
 	GMT->current.setting.io_header_orig = GMT->current.setting.io_header[GMT_IN];
 	GMT->current.setting.io_header[GMT_IN] = false;
 	GMT->common.g.active = false;	/* Turn this off (if set) for now */
@@ -5804,9 +5805,10 @@ void gmt_disable_bghi_opts (struct GMT_CTRL *GMT) {
 }
 
 /*! Routine will re-enable any suspended -b, -i, -g, -h selections */
-void gmt_reenable_bghi_opts (struct GMT_CTRL *GMT) {
+void gmt_reenable_bghio_opts (struct GMT_CTRL *GMT) {
 	/* Turn on again any -i, -h selections */
 	GMT->common.i.select = GMT->common.i.orig;
+	GMT->common.o.select = GMT->common.o.orig;
 	GMT->current.setting.io_header[GMT_IN] = GMT->current.setting.io_header_orig;
 	GMT->common.g.active = GMT->common.g.selected;	/* Turn this back on (if set) */
 	if (GMT->common.b.bin_primary) {	/* Switch back to primary i/o mode which was binary */
@@ -8366,8 +8368,9 @@ GMT_LOCAL void gmtio_duplicate_dataset_cols (struct GMT_CTRL *GMT, struct GMT_DA
 /*! . */
 struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATASET *Din, unsigned int mode, unsigned int *geometry) {
 	/* Make an exact replica, return geometry if not NULL */
-	uint64_t tbl, seg, n_columns;
+	uint64_t tbl, seg;
 	struct GMT_DATASET *D = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL, *TinH = NULL;
 
 	if (mode & GMT_ALLOC_VIA_ICOLS && GMT->common.i.select) {
 		/* Cannot copy segments but must go via -i */
@@ -8382,6 +8385,10 @@ struct GMT_DATASET *gmt_duplicate_dataset (struct GMT_CTRL *GMT, struct GMT_DATA
 	gmt_M_memcpy (D->min, Din->min, Din->n_columns, double);
 	gmt_M_memcpy (D->max, Din->max, Din->n_columns, double);
 	for (tbl = 0; tbl < Din->n_tables; tbl++) {
+		TH   = gmt_get_DT_hidden (D->table[tbl]);
+		TinH = gmt_get_DT_hidden (Din->table[tbl]);
+		for (unsigned int k = 0; k < 2; k++)
+			if (TinH->file[k]) TH->file[k] = strdup (TinH->file[k]);
 		for (seg = 0; seg < Din->table[tbl]->n_segments; seg++) {
 			gmtio_copy_segment (GMT, D->table[tbl]->segment[seg], Din->table[tbl]->segment[seg]);
 		}
@@ -8505,6 +8512,7 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	if (!table) return;		/* Do not try to free NULL pointer */
 	TH = gmt_get_DT_hidden (table);
+	if (TH->alloc_mode == GMT_ALLOC_EXTERNALLY) return;	/* Not ours to free */
 	for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
 	gmt_M_free (GMT, table->header);
 	gmt_M_free (GMT, table->min);
@@ -8520,21 +8528,27 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	gmt_M_free (GMT, table);
 }
 
-/*! . */
-void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
+void gmtlib_free_dataset_misc (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
 	/* This takes pointer to data array and thus can return it as NULL */
-	unsigned int tbl, k;
+	unsigned int k;
 	struct GMT_DATASET_HIDDEN *DH = NULL;
 	if (!data) return;	/* Do not try to free NULL pointer */
 	DH = gmt_get_DD_hidden (data);
-	for (tbl = 0; tbl < data->n_tables; tbl++) {
-		gmt_free_table (GMT, data->table[tbl]);
-	}
 	gmt_M_free (GMT, data->min);
 	gmt_M_free (GMT, data->max);
 	gmt_M_free (GMT, data->table);
 	for (k = 0; k < 2; k++) gmt_M_str_free (DH->file[k]);
 	gmt_M_free (GMT, data->hidden);
+}
+
+/*! . */
+void gmtlib_free_dataset_ptr (struct GMT_CTRL *GMT, struct GMT_DATASET *data) {
+	/* This takes pointer to data array and thus can return it as NULL */
+	uint64_t tbl;
+	if (!data) return;	/* Do not try to free NULL pointer */
+	for (tbl = 0; tbl < data->n_tables; tbl++)
+		gmt_free_table (GMT, data->table[tbl]);
+	gmtlib_free_dataset_misc (GMT, data);
 }
 
 /*! . */

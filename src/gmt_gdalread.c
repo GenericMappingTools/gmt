@@ -334,7 +334,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	hDataset = gdal_open (GMT, gdal_filename);
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open %s.\n", gdal_filename);
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return (-1);
 	}
 
@@ -416,7 +416,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "The -projwin option was used, but the geotransform is rotated."
 			                                         " This configuration is not supported.\n");
 			GDALClose(hDataset);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
 			return(-1);
 		}
@@ -632,7 +632,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	if (hTransform != NULL)
 		OCTDestroyCoordinateTransformation(hTransform);
 
-	/* Must check that geog grids have not y_max > 90.0 We'll be eps tollerant ... but how do I know that it's geog?*/
+	/* Must check that geog grids have not y_max > 90.0 We'll be eps tolerant ... but how do I know that it's geog?*/
 
 	/* --------------------------------------------------------------------------------------
 	 * Record Geographical corners (if they exist)
@@ -653,8 +653,10 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	/* ------------------------------------------------------------------------- */
 	/* Fill in the rest of the GMT header values (If ...) */
 	if (raster_count > 0) {
+		int type = GDALGetRasterDataType (hBand);
+		if (type == GDT_Float32 || type == GDT_Float64) compute_minmax = true;
 		hBand = GDALGetRasterBand(hDataset, 1);	/* Ensure hBand points to the first layer */
-		if (z_min == DBL_MAX && (compute_minmax || GDALGetRasterDataType (hBand) != GDT_Byte)) {	/* We don't know yet the dataset Min/Max and it seems to be a grid */
+		if (z_min == DBL_MAX && (compute_minmax || type != GDT_Byte)) {	/* We don't know yet the dataset Min/Max and it seems to be a grid */
 			GDALComputeRasterMinMax(hBand, compute_minmax, adfMinMax);	/* Unfortunately, cannot always trust metadata min/max */
 			Ctrl->hdr[4] = adfMinMax[0];
 			Ctrl->hdr[5] = adfMinMax[1];
@@ -722,7 +724,7 @@ int gmtlib_is_gdal_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "File %s reads with GDAL driver %s\n",
 	            HH->name, GDALGetDriverShortName(GDALGetDatasetDriver(hDataset)));
 	GDALClose (hDataset);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	header->type = GMT_GRID_IS_GD;
 
 	return GMT_NOERROR;
@@ -958,7 +960,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			GMT_Report (GMT->parent, GMT_MSG_ERROR,
 			            "gmt_gdalread: The -projwin option was used, but the geotransform is rotated. This configuration is not supported.\n");
 			GDALClose(hDataset);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
 			return (-1);
 		}
@@ -984,7 +986,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (anSrcWin[1] < 0 || (anSrcWin[1] + anSrcWin[3]) > YDim) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the y-direction.\n",
 				XDim, YDim);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
 			return (-1);
 		}
@@ -1001,6 +1003,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				xOrigin[1] = 0;	/* The second starts all the way to the west */
 				nXSize[1] = xOrigin[0] + nXSize[0] - XDim;	/* What goes beyond XDim is the width of the west piece */
 				nXSize[0] = XDim - xOrigin[0];	/* Truncate the east piece width accordingly */
+				if (nXSize[1] > XDim) nXSize[1] = XDim - nXSize[0];	/* Safety valve since file only has XDim values along a row */
 				pad_w[1] = 0;	pad_e[1] = pad_e[0];	pad_e[0] = 0;	/* Set the "seam" pads to zero since no longer at the edges */
 			}
 		}
@@ -1008,7 +1011,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			if (xOrigin[0] < 0 || (xOrigin[0] + anSrcWin[2]) > XDim) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Computed -srcwin falls outside raster size of %dx%d in the x-direction.\n",
 					XDim, YDim);
-				GDALDestroyDriverManager();
+				gmtlib_GDALDestroyDriverManager(GMT->parent);
 				gmt_M_free (GMT, whichBands);
 				return (-1);
 			}
@@ -1132,7 +1135,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		if (!(just_copy || copy_flipud)) {	/* Need temp memory to hold return from GDAL */
 			if ((tmp = calloc((size_t)nRowsPerBlock * (size_t)nBufXSize[piece], nPixelSize)) == NULL) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: failure to allocate enough memory\n");
-				GDALDestroyDriverManager();
+				gmtlib_GDALDestroyDriverManager(GMT->parent);
 				gmt_M_free (GMT, whichBands);
 				return(-1);
 			}
@@ -1198,8 +1201,10 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				}
 
 				/* If we didn't compute it yet, its time to do it now (for this block) */
-				if (got_R) ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize[piece], buffy, z_min, z_max);
-				z_min = adfMinMax[0];	z_max = adfMinMax[1];	/* Update z_min, z_max in case we get here more than once (multiple blocks or two pieces) */
+				if (got_R) {	/* Update z_min, z_max in case we get here more than once (multiple blocks or two pieces) */
+					ComputeRasterMinMax(GMT, tmp, hBand, adfMinMax, nXSize[piece], buffy, z_min, z_max);
+					z_min = adfMinMax[0];	z_max = adfMinMax[1];
+				}
 
 				/* In the "Preview" mode those guys below are different and what we need is the BufSize */
 				if (jump) {
@@ -1245,7 +1250,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 									off = nRGBA * (indent+pad_w[piece]) + (pad_n+m) * (nRGBA * nXSize_withPad); /* Remember, nRGBA is variable */
 									for (n = 0; n < nXSize[piece]; n++) {
 										Ctrl->UInt8.data[colVec[n] + off] = tmp[rowVec[m]+n];
-										//fprintf (stderr, "data(%d,%d) = data(%d) = %d  off = %d\n", (int)m, (int)(col_indent+colVec[n]), (int)(colVec[n] + off), Ctrl->UInt8.data[colVec[n] + off], (int)off);
+										//fprintf (stderr, "row = %d col = %d data(%d,%d,%d) = data(%d) = %d  off = %d\n", (int)m, (int)(xOrigin[piece]+n), (int)m, (int)(col_indent+colVec[n]), (int)i, (int)(colVec[n] + off), Ctrl->UInt8.data[colVec[n] + off], (int)off);
 									}
 								}
 							}
@@ -1390,18 +1395,18 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 		col_indent = nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		indent = pad_w[piece] + nXSize[piece];	/* The second time (if there is one) we must step in to pick up western section */
 		layer_offset += layer_size;	/* As of now, this is never used after increment for float images */
-	}
 #if 0	/* This code is problematic and commented out for now. PW, 5/15/2016 */
-	if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
-		for (m = startRow, mm = 0; m < nYSize + startRow ; m++, mm++) {
-			nn = (pad_w+m)*nXSize_withPad + startColPos;
-			for (n = 0; n < nXSize; n++) {
-				if (Ctrl->Float.data[nn] == prhs->N.nan_value) Ctrl->Float.data[nn] = (float)NAN;
-				nn += incStep;
+		if (Ctrl->Float.active && !isnan(prhs->N.nan_value)) {
+			for (m = startRow, mm = 0; m < endRow ; m++, mm++) {
+				nn = layer_offset + (pad_w[piece]+m)*nXSize_withPad + startColPos;
+				for (n = 0; n < nXSize[piece]; n++) {
+					if (Ctrl->Float.data[nn] == prhs->N.nan_value) Ctrl->Float.data[nn] = GMT->session.f_NaN;
+					nn += incStep;
+				}
 			}
 		}
-	}
 #endif
+	}
 	gmt_M_free (GMT, whichBands);
 
 	GDALClose(hDataset);
@@ -1410,7 +1415,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0]+nXSize[1], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer);
 
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 
 	/* Return registration based on data type of the actually read first band.
 	   We do this at the end because 'populate_metadata' scans all bands in file

@@ -527,7 +527,8 @@ static int parse (struct GMT_CTRL *GMT, struct MAPPROJECT_CTRL *Ctrl, struct GMT
 				if (opt->arg[0]) {	/* Also gave shifts */
 					n_errors += gmt_M_check_condition (GMT, sscanf (opt->arg, "%lf/%lf", &Ctrl->C.easting, &Ctrl->C.northing) != 2,
 					                                 "Option -C: Expected -C[<false_easting>/<false_northing>]\n");
-					Ctrl->C.shift = true;
+					if (!(gmt_M_is_zero (Ctrl->C.easting) && gmt_M_is_zero (Ctrl->C.northing)))	/* Only shift if both is nonzero */
+						Ctrl->C.shift = true;
 				}
 				will_need_RJ = true;	/* Since -C is used with projections only */
 				if (p) p[0] = '+';	/* Restore modifier */
@@ -1187,7 +1188,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			Return (API->error);
 		}
 
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -L files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -L files */
 		if ((Lin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, Ctrl->L.file, NULL)) == NULL) {
 			gmt_M_free (GMT, Out);
 			Return (API->error);
@@ -1197,7 +1198,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, Out);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		gmt_set_segmentheader (GMT, GMT_OUT, false);	/* Since processing of -L file might have turned it on [should be determined below] */
 		xyline = Lin->table[0];			/* Can only be one table since we read a single file */
 		if (proj_type == GMT_GEO2CART) {	/* Must convert the line points first */

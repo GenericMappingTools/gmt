@@ -605,7 +605,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 	int n_use, error, out_ID;
 	bool geo, skip;
 
-	char *comp[2] = {"u(x,y)", "v(x,y)"}, *tag[2] = {"u", "v"};
+	char *comp[2] = {"u(x,y)", "v(x,y)"};
 
 	double **X = NULL, *A = NULL, *u = NULL, *v = NULL, *obs = NULL;
 	double *f_x = NULL, *f_y = NULL, *in = NULL, *orig_u = NULL, *orig_v = NULL;
@@ -831,7 +831,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		}
 	}
 	else if (Ctrl->N.active) {	/* Read output locations from file */
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -C,-F,-L files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -C,-F,-L files */
 		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 			Return (error);
 		if ((Nin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL,
@@ -844,7 +844,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Input file %s has %d column(s) but at least 2 are needed\n", Ctrl->N.file, (int)Nin->n_columns);
 			Return (GMT_DIM_TOO_SMALL);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		T = Nin->table[0];
 	}
 	else {	/* Fill in an equidistant output table or grid */
@@ -1232,7 +1232,7 @@ EXTERN_MSC int GMT_gpsgridder (void *V_API, int mode, void *args) {
 		if (Ctrl->C.history) {	/* Write out U,V grids after adding contribution for each eigenvalue */
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};
 			gmt_grdfloat *current[2] = {NULL, NULL}, *previous[2] = {NULL, NULL};
-			double predicted[4], l2_sum_n = 0.0, l2_sum_e = 0.0;
+			double l2_sum_n = 0.0, l2_sum_e = 0.0;
 			struct GMT_SINGULAR_VALUE *eigen = NULL;
 			struct GMT_DATASET *E = NULL;
 			struct GMT_DATASEGMENT *S = NULL;

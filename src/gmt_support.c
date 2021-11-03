@@ -4956,20 +4956,6 @@ FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension,
 	return (fp);
 }
 
-int gmtlib_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char *path) {
-	/* Replace an EPS file with a simple 1-liner custom file using an inline EPS command P instead.
-	 * path is updated to point to the replacement temp file */
-
-	FILE *fp = NULL;
-
-	if ((fp = gmt_create_tempfile (GMT->parent, "gmt_epssymbol", ".def", path)) == NULL)	/* Not good... */
-		return GMT_RUNTIME_ERROR;
-
-	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
-	fclose (fp);
-	return GMT_NOERROR;
-}
-
 /*! . */
 GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name, struct GMT_CUSTOM_SYMBOL **S) {
 	/* Load in an initialize a new custom symbol.  These files can live in many places:
@@ -4990,8 +4976,18 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 
 	if ((type = gmt_locate_custom_symbol (GMT, in_name, name, path, &pos)) == 0) return GMT_RUNTIME_ERROR;
 
-	if (type == GMT_CUSTOM_EPS && gmtlib_convert_eps_to_def (GMT, in_name, path))	/* Must replace EPS with a simple 1-liner custom file with EPS command */
-		return GMT_RUNTIME_ERROR;
+	if (type == GMT_CUSTOM_EPS) {	/* Must replace EPS symbol with a simple 1-action custom symbl EPS command */
+		/* Single action with x=y=0, set size=1, and add in EPS loaded */
+		head = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL);
+		strncpy (head->name, basename (&name[pos]), GMT_LEN64-1);
+		s = gmt_M_memory (GMT, NULL, 1, struct GMT_CUSTOM_SYMBOL_ITEM);
+		head->first = s;
+		s->action = GMT_SYMBOL_EPS;
+		s->p[0] = 1.0;
+		if ((s->eps = gmtsupport_load_eps_symbol (GMT, name, path)) == NULL) return GMT_RUNTIME_ERROR;
+		*S = head;
+		return (GMT_NOERROR);
+	}
 
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not find custom symbol %s\n", &name[pos]);
@@ -5367,7 +5363,7 @@ GMT_LOCAL int gmtsupport_init_custom_symbol (struct GMT_CTRL *GMT, char *in_name
 		previous = s;
 	}
 	fclose (fp);
-	head->n_required -= n_txt;	/* WOrds from trailing text is not part of required arguments (which are all numerical) */
+	head->n_required -= n_txt;	/* Words from trailing text is not part of required arguments (which are all numerical) */
 	*S = head;
 	return (GMT_NOERROR);
 }
@@ -10976,7 +10972,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		if (gmt_file_is_cache (GMT->parent, G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading this file */
 		if ((G->X = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {	/* Failure to read the file */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Crossing file %s does not exist or had no data records\n", G->flag, G->file);
 			error++;
@@ -10997,7 +10993,7 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 				}
 			}
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	}
 	else if (G->fixed) {
 		unsigned int first = 0;
@@ -11011,13 +11007,13 @@ int gmt_decorate_prep (struct GMT_CTRL *GMT, struct GMT_DECORATE *G, double xyz[
 		if (gmt_file_is_cache (GMT->parent, G->file)) {	/* Must be a cache file */
 			first = gmt_download_file_if_not_found (GMT, G->file, 0);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 		if ((T = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_READ_NORMAL, NULL, &G->file[first], NULL)) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c:  Could not open file %s\n", G->flag, G->file);
 			error++;
 			return (error);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (T->n_columns < 2) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Data file %s has only %" PRIu64 " data columns!\n", G->file, T->n_columns);
 			return (error);
@@ -15100,7 +15096,7 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 	if (!GMT->common.R.oblique)	/* Eliminate items outside rectangular w/e/s/n/z0/z1 bounds */
 		limit[0] = GMT->common.R.wesn[2*A->id], limit[1] = GMT->common.R.wesn[2*A->id+1];
 
-	gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+	gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 	GMT->current.io.max_cols_to_read = 1;
 	if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX)) != GMT_NOERROR) return (1);
 	if ((D = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, A->file_custom, NULL)) == NULL) {
@@ -15108,7 +15104,7 @@ unsigned int gmtlib_load_custom_annot (struct GMT_CTRL *GMT, struct GMT_PLOT_AXI
 		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 		return (0);
 	}
-	gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+	gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 	gmt_set_column_type (GMT, GMT_IN, GMT_X, save_coltype);
 	GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 	GMT->current.io.max_cols_to_read = save_max_cols_to_read;
@@ -16802,7 +16798,8 @@ unsigned int gmt_validate_modifiers (struct GMT_CTRL *GMT, const char *string, c
 	for (k = 0; start == 0 && k < (len-1); k++) {
 		if (string[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exits the quote */
 		if (quoted) continue;		/* Not consider +<mod> inside quoted strings */
-		if (string[k] == '+') {	/*Possibly a modifier */
+		if (string[k] == '+') {	/* Possibly a modifier */
+			if (k && string[k-1] == 'e' && isdigit (string[k+1])) continue;	/* Exponential notation, e.g. 1e+5 */
 			if (strchr (valid_modifiers, string[k+1]))	/* Found a recognized valid modifier */
 				n_good++;
 			else {	/* Found an invalid modifier or some part of a filename that has + in it */
@@ -17589,7 +17586,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		save_coltype[GMT_IN]  = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 		save_coltype[GMT_OUT] = gmt_get_column_type (GMT, GMT_OUT, GMT_X);
 		if (T->temporal) gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading this file */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading this file */
 		GMT->current.io.record_type[GMT_IN] = GMT_READ_NORMAL;
 		GMT->current.io.trailing_text[GMT_IN] = false;
 		if ((error = GMT_Set_Columns (GMT->parent, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR) return (GMT_PARSE_ERROR);
@@ -17601,7 +17598,7 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		gmt_set_column_type (GMT, GMT_OUT, GMT_X, save_coltype[GMT_OUT]);
 		GMT->current.io.trailing_text[GMT_IN] = save_trailing;
 		GMT->current.io.max_cols_to_read = save_max_cols_to_read;
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		if (D->n_segments > 1) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: File %s has more than one segment\n", option, T->file);
 			GMT_Destroy_Data (GMT->parent, &D);
@@ -18438,7 +18435,7 @@ unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, un
 void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
 	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible */
 	enum gmt_col_enum type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
-	char text[GMT_LEN64] = {""}, inc[GMT_LEN64] = {""}, save[GMT_LEN64];
+	char text[GMT_LEN64] = {""}, save[GMT_LEN64];
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Try formal reporting */
 		strcpy (save, GMT->current.setting.format_geo_out);
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
@@ -18457,4 +18454,59 @@ void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
 		strcpy (GMT->current.setting.format_geo_out, save);
 		gmtlib_geo_C_format (GMT);
 	}
+}
+
+unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, double *min, double *max) {
+	/* Parse strings like low/high, NaN/high, low/NaN, /high, low/ and return min/max
+	 * with either set to NaN if not given */
+	size_t L;
+	int n;
+	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""};
+	if (!text || text[0] == '\0') {	/* Gave no argument */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Argument is required\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	if (strchr (text, '/') == NULL) {	/* Gave no valid argument */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Dividing slash is required\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	L = strlen (text) - 1;	/* Will be 0 or larger */
+	if (text[0] == '/') {	/* Gave /max with min implicitly set to NaN */
+		strcpy (txt_a, "NaN");
+		strcpy (txt_b, &text[1]);
+	}
+	else if (text[L] == '/') {	/* Gave min/ with max implicitly set to NaN */
+		strcpy (txt_a, text);	txt_a[L] = '\0';	/* Chop off the trailing / */
+		strcpy (txt_b, "NaN");
+	}
+	else if ((n = sscanf (text, "%[^/]/%s", txt_a, txt_b)) < 2) {	/* Got min/max (either could be NaN) */
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Must specify min/max\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	/* Here we got txt_a and txt_b filled */
+	if (strcasecmp (txt_a, "NAN") == 0)
+		*min = GMT->session.d_NaN;
+	else if (gmt_is_float (GMT, txt_a))
+		*min = atof (txt_a);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unable to parse %s\n", option, txt_a);
+		return GMT_PARSE_ERROR;
+	}
+	if (strcasecmp (txt_b, "NAN") == 0)
+		*max = GMT->session.d_NaN;
+	else if (gmt_is_float (GMT, txt_b))
+		*max = atof (txt_b);
+	else {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unable to parse %s\n", option, txt_b);
+		return GMT_PARSE_ERROR;
+	}
+	if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Both limits cannot be NaN\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	if (!(gmt_M_is_dnan (*min) || gmt_M_is_dnan (*max)) && *max <= *min) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: min must be less than max\n", option);
+		return GMT_PARSE_ERROR;
+	}
+	return GMT_NOERROR;
 }

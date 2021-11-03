@@ -113,7 +113,7 @@ Optional Arguments
     maximum absolute change in any grid value is less than
     *convergence_limit*. (Units same as data z units). Alternatively,
     give limit in percentage of rms deviation by appending %.  [Default is
-    scaled to 1e-4 of the root-mean-square deviation of the data
+    scaled to :math:`10^{-4}` of the root-mean-square deviation of the data
     from a best-fit (least-squares) plane.].
     This is the final convergence limit at the desired grid spacing; for
     intermediate (coarser) grids the effective convergence limit is divided

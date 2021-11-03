@@ -3125,7 +3125,7 @@ GMT_LOCAL int gmtmath_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 			wmode = gmt_mode_weighted (GMT, pair, k);
 			/* 3. Compute the absolute deviations from this mode */
 			for (row = 0; row < k; row++) pair[row].value = (gmt_grdfloat)fabs (pair[row].value - wmode);
-			/* 4. Find the weighted median absolue deviation and scale it */
+			/* 4. Find the weighted median absolute deviation and scale it */
 			lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
 		}
@@ -3138,7 +3138,7 @@ GMT_LOCAL int gmtmath_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	wmode = gmt_mode_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this mode */
 	for (row = 0; row < k; row++) pair[row].value = (gmt_grdfloat)fabs (pair[row].value - wmode);
-	/* 4. Find the weighted median absolue deviation and scale it */
+	/* 4. Find the weighted median absolute deviation and scale it */
 	lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
@@ -3373,7 +3373,7 @@ GMT_LOCAL int gmtmath_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 			wmed = gmt_median_weighted (GMT, pair, k);
 			/* 3. Compute the absolute deviations from this median */
 			for (row = 0; row < k; row++) pair[row].value = (gmt_grdfloat)fabs (pair[row].value - wmed);
-			/* 4. Find the weighted median absolue deviation */
+			/* 4. Find the weighted median absolute deviation */
 			wmad = gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmad;
 		}
@@ -6384,12 +6384,12 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot have data files when -A is specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -A files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -A files */
 		if ((A_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", Ctrl->A.file);
 			Return (API->error);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		rhs = A_in->table[0];	/* Only one table */
 		if (Ctrl->A.w_mode) {	/* Need at least 3 columns */
 			if (rhs->n_columns < 3) {

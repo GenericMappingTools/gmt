@@ -49,6 +49,7 @@ EXTERN_MSC int gmt_nc_create (struct GMT_CTRL *GMT, char *path, int mode, int *i
 
 /* gmt_init.c: */
 
+EXTERN_MSC void gmt_detect_oblique_region (struct GMT_CTRL *GMT, char *file);
 EXTERN_MSC unsigned int gmt_subplot_status (struct GMTAPI_CTRL *API, int fig);
 EXTERN_MSC void gmt_round_wesn (double wesn[], bool geo);
 EXTERN_MSC int gmt_get_dim_unit (struct GMT_CTRL *GMT, char c);
@@ -309,8 +310,8 @@ EXTERN_MSC void gmt_quit_bad_record (struct GMTAPI_CTRL *API, struct GMT_RECORD 
 EXTERN_MSC int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 EXTERN_MSC bool gmt_is_float (struct GMT_CTRL *GMT, char *text);
 EXTERN_MSC void gmt_replace_backslash_in_path (char *dir);
-EXTERN_MSC void gmt_disable_bghi_opts (struct GMT_CTRL *GMT);
-EXTERN_MSC void gmt_reenable_bghi_opts (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_disable_bghio_opts (struct GMT_CTRL *GMT);
+EXTERN_MSC void gmt_reenable_bghio_opts (struct GMT_CTRL *GMT);
 EXTERN_MSC void gmt_insert_tableheader (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T, char *txt);
 EXTERN_MSC void gmt_list_aspatials (struct GMT_CTRL *GMT, char buffer[]);
 EXTERN_MSC void gmt_find_range (struct GMT_CTRL *GMT, struct GMT_RANGE *Z, uint64_t n_items, double *west, double *east);
@@ -403,6 +404,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
+EXTERN_MSC unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, double *min, double *max);
 EXTERN_MSC unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned char rgbmap[]);
 EXTERN_MSC void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn);
 EXTERN_MSC FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]);

@@ -324,7 +324,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 	int error = 0;
 
 	uint64_t dim[GMT_DIM_SIZE] = {1, 0, 0, 0};	/* Output dataset will have one table only */
-	uint64_t tbl, col, n_out = 0, k, n, row, seg, seg2 = 0, begin, end, n_total = 0, n_columns = 0, nprofiles = 0, *rec = NULL;
+	uint64_t tbl, n_out = 0, k, n, row, seg, seg2 = 0, begin, end, n_total = 0, n_columns = 0, nprofiles = 0, *rec = NULL;
 
 	size_t n_alloc_seg = 0, n_alloc = 0;
 
@@ -456,7 +456,7 @@ EXTERN_MSC int GMT_gmtsplit (void *V_API, int mode, void *args) {
 
 	nprofiles = 0;
 	for (tbl = 0; tbl < D[GMT_IN]->n_tables; tbl++) {
-		T = D[GMT_IN]->table[tbl];	/* Shorthand for curent table */
+		T = D[GMT_IN]->table[tbl];	/* Shorthand for current table */
 		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
 			struct GMT_DATATABLE_HIDDEN *TH = gmt_get_DT_hidden (T);
 			GMT_Report (API, GMT_MSG_INFORMATION, "Working on file %s\n", TH->file[GMT_IN]);

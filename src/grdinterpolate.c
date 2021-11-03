@@ -35,9 +35,9 @@
 #define THIS_MODULE_MODERN_NAME	"grdinterpolate"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate a 3-D cube, 2-D grids or 1-D series from a 3-D data cube or stack of 2-D grids"
-#define THIS_MODULE_KEYS	"<G{+,G?}"
+#define THIS_MODULE_KEYS	"<G{+,G?},ED(,SD("
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS	"->RVfn"
+#define THIS_MODULE_OPTIONS "-:>RVbdefghinoqs"
 
 struct GRDINTERPOLATE_CTRL {
 	struct GRDINTERPOLATE_In {
@@ -569,7 +569,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			Si = In->table[0]->segment[0];	/* Short hand to the first and only segment */
 			Si->data[GMT_X][0] = Ctrl->S.x;
 			Si->data[GMT_Y][0] = Ctrl->S.y;
-			if (Ctrl->S.header) Si->header = strdup (Ctrl->S.header);	/* Set the fixed header here */
+			if (Ctrl->S.header)	/* Set the fixed header here via training text */
+				Si->text[0] = strdup (Ctrl->S.header);
 			Si->n_rows = 1;
 			gmt_set_dataset_minmax (GMT, In);
 		}
@@ -594,6 +595,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for time-series\n");
 			Return (API->error);
 		}
+
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the workings of grdtrack calls  */
 
 		for (k = start_k; k <= stop_k; k++) {	/* For all selected input levels k */
 			GMT_Init_VirtualFile (API, 0, i_file);	/* Reset so it can be read again */
@@ -627,7 +630,6 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			for (seg = rec = 0; seg < D->table[0]->n_segments; seg++) {	/* For each point we sampled at */
 				Si = D->table[0]->segment[seg];	/* Short hand to this segment */
 
-
 				for (row = 0; row < Si->n_rows; row++, rec++) {	/* For each selected point which matches each output segment */
 					So = Out->table[0]->segment[rec];	/* Short hand to this output segment */
 					if (k == start_k) {	/* Set the segment header just once */
@@ -637,9 +639,20 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 							sprintf (header, "Location %g,%g", Si->data[GMT_X][row], Si->data[GMT_Y][row]);
 						So->header = strdup (header);
 					}
-					for (col = 0; col < Si->n_columns; col++)	/* Copy over the various columns */
-						So->data[col][k] = Si->data[col][row];
-					So->data[col][k] = level[k];	/* Add level as the last data column */
+					if (Ctrl->S.active) {	/* Want x,y,z[,.....],value output */
+						for (col = 0; col < GMT_Z; col++)	/* Copy over x,y */
+							So->data[col][k] = Si->data[col][row];
+						So->data[GMT_Z][k] = level[k];	/* Add level as the z column */
+						while (col < Si->n_columns) {	/* Copy over the rest */
+							So->data[col+1][k] = Si->data[col][row];
+							col++;
+						}
+					}
+					else {	/* Format for -E is x,y[,....],value */
+						for (col = 0; col < Si->n_columns; col++)	/* Copy over the various columns */
+							So->data[col][k] = Si->data[col][row];
+						So->data[col][k] = level[k];	/* Add level as the last data column */
+					}
 				}
 			}
 			for (col = GMT_Z; col < Si->n_columns; col++)
@@ -682,6 +695,8 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 			}
 			dim[GMT_ROW] = Out->table[0]->segment[0]->n_rows;	/* Update new row dim */
 		}
+
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 
 		if (Ctrl->S.active) {	/* Write the table(s) */
 			if (Ctrl->G.file && strchr (Ctrl->G.file, '%')) {	/* Want separate files per series, so change mode and build file names per segment */

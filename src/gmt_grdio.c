@@ -468,7 +468,7 @@ GMT_LOCAL bool gmtgrdio_eq (double this, double that, double inc) {
 	return ((fabs (this - that) / inc) < GMT_CONV4_LIMIT);
 }
 
-GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *wesn, unsigned int *pad, struct GRD_PAD *P) {
+GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, double *wesn, bool image, unsigned int *pad, struct GRD_PAD *P) {
 	/* When padding is requested it is usually used to set boundary conditions based on
 	 * two extra rows/columns around the domain of interest.  BCs like natural or periodic
 	 * can then be used to fill in the pad.  However, if the domain is taken from a grid
@@ -496,7 +496,7 @@ GMT_LOCAL int gmtgrdio_padspace (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h
 	if (!GMT->current.io.grid_padding) return (false);	/* Not requested */
 
 	/* Determine if data exist for a pad on all four sides.  If not we give up */
-	wrap = gmt_grd_is_global (GMT, header);	/* If global wrap then we cannot be outside */
+	wrap = !image && gmt_grd_is_global (GMT, header);	/* If global grid wrap then we cannot be outside */
 	if ((wesn2[XLO] = wesn[XLO] - pad[XLO] * header->inc[GMT_X]) < header->wesn[XLO] && !wrap)	/* Cannot extend west/xmin */
 		{ n_sides++; wesn2[XLO] = wesn[XLO]; }
 	else	/* OK to load left pad with data */
@@ -1536,7 +1536,7 @@ int gmtlib_read_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID_HEADER *h
 	/* If we are reading a 2nd grid (e.g., real, then imag) we must update info about the file since it will be a different file */
 	if (header->complex_mode && (header->complex_mode & complex_mode) == 0) gmt_M_err_trap (gmt_grd_get_format (GMT, file, header, true));
 
-	expand = gmtgrdio_padspace (GMT, header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
+	expand = gmtgrdio_padspace (GMT, header, wesn, false, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
 	if ((err = gmtgrdio_grd_layout (GMT, header, grid, complex_mode & GMT_GRID_IS_COMPLEX_MASK, GMT_IN)))	/* Deal with complex layout */
 		return err;
@@ -2334,7 +2334,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	return (2);
 }
 
-int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header) {
+int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header, unsigned int verbose_level) {
 	/* Used to ensure that sloppy w,e,s,n values are rounded to the gridlines or pixels in the referenced grid.
 	 * Upon entry, the boundaries w,e,s,n are given as a rough approximation of the actual subset needed.
 	 * The routine will limit the boundaries to the grids region and round w,e,s,n to the nearest gridline or
@@ -2399,13 +2399,13 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			was = wesn[XLO];
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			GMT_Report (GMT->parent, verbose_level,
 			            "(w - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			snprintf (format, GMT_LEN256, "w reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			wesn[XLO] = val - header->inc[GMT_X];
 			if (wesn[XLO] < header->wesn[XLO]) val += header->inc[GMT_X];
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[XLO]);
+			GMT_Report (GMT->parent, verbose_level, format, was, wesn[XLO]);
 		}
 
 		val = header->wesn[XLO] + lrint ((wesn[XHI] - header->wesn[XLO]) * HH->r_inc[GMT_X]) * header->inc[GMT_X];
@@ -2413,13 +2413,13 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 		if (gmt_M_x_is_lon (GMT, GMT_IN)) dx = fmod (dx, 360.0);
 		if (dx > small) {
 			was = wesn[XHI];
-			GMT_Report (GMT->parent, GMT_MSG_WARNING,
+			GMT_Report (GMT->parent, verbose_level,
 			            "(e - x_min) must equal (NX + eps) * x_inc), where NX is an integer and |eps| <= %g.\n", GMT_CONV4_LIMIT);
 			snprintf (format, GMT_LEN256, "e reset from %s to %s\n",
 			          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 			wesn[XHI] = val + header->inc[GMT_X];
 			if (wesn[XHI] > header->wesn[XHI]) val -= header->inc[GMT_X];
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[XHI]);
+			GMT_Report (GMT->parent, verbose_level, format, was, wesn[XHI]);
 		}
 	}
 
@@ -2429,27 +2429,32 @@ int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_
 	val = header->wesn[YLO] + lrint ((wesn[YLO] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YLO] - val) > small) {
 		was = wesn[YLO];
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
+		GMT_Report (GMT->parent, verbose_level, "(s - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
 		snprintf (format, GMT_LEN256, "s reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		wesn[YLO] = val - header->inc[GMT_Y];
 		if (wesn[YLO] < header->wesn[YLO]) val += header->inc[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[YLO]);
+		GMT_Report (GMT->parent, verbose_level, format, was, wesn[YLO]);
 	}
 
 	val = header->wesn[YLO] + lrint ((wesn[YHI] - header->wesn[YLO]) * HH->r_inc[GMT_Y]) * header->inc[GMT_Y];
 	if (fabs (wesn[YHI] - val) > small) {
 		was = wesn[YHI];
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
+		GMT_Report (GMT->parent, verbose_level, "(n - y_min) must equal (NY + eps) * y_inc), where NY is an integer and |eps| <= %g.\n",
 		            GMT_CONV4_LIMIT);
 		snprintf (format, GMT_LEN256, "n reset from %s to %s\n",
 		          GMT->current.setting.format_float_out, GMT->current.setting.format_float_out);
 		wesn[YHI] = val + header->inc[GMT_Y];
 		if (wesn[YHI] > header->wesn[YHI]) val -= header->inc[GMT_Y];
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, format, was, wesn[YHI]);
+		GMT_Report (GMT->parent, verbose_level, format, was, wesn[YHI]);
 	}
 	return (GMT_NOERROR);
+}
+
+int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header) {
+	/* Most places we wish to warn if w/e/s/n is sloppy */
+	return gmtlib_adjust_loose_wesn (GMT, wesn, header, GMT_MSG_WARNING);
 }
 
 void gmt_scale_and_offset_f (struct GMT_CTRL *GMT, gmt_grdfloat *data, size_t length, double scale, double offset) {
@@ -3725,13 +3730,17 @@ int gmtlib_read_image (struct GMT_CTRL *GMT, char *file, struct GMT_IMAGE *I, do
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (I->header);
 	gmt_M_unused(complex_mode);
 
-	expand = gmtgrdio_padspace (GMT, I->header, wesn, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
+	expand = gmtgrdio_padspace (GMT, I->header, wesn, true, pad, &P);	/* true if we can extend the region by the pad-size to obtain real data for BC */
 
 	/* Allocate new control structures */
 	to_gdalread   = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_IN_CTRL);
 	from_gdalread = gmt_M_memory (GMT, NULL, 1, struct GMT_GDALREAD_OUT_CTRL);
 
 	if (GMT->common.R.active[RSET]) {
+		if (gmt_M_360_range (I->header->wesn[XLO], I->header->wesn[XHI])) {	/* Ensure we handle -180/180 and 0/360 right */
+			if (P.wesn[XLO] > I->header->wesn[XHI]) P.wesn[XLO] -= 360.0, P.wesn[XHI] -= 360.0;
+			else if (P.wesn[XHI] < I->header->wesn[XLO]) P.wesn[XLO] += 360.0, P.wesn[XHI] += 360.0;
+		}
 		snprintf (strR, GMT_LEN128, "%.10f/%.10f/%.10f/%.10f", P.wesn[XLO], P.wesn[XHI], P.wesn[YLO], P.wesn[YHI]);
 		to_gdalread->R.region = strR;
 		to_gdalread->registration.val = I->header->registration;	/* Due to pix-reg only by GDAL we need to inform it about our reg type */
