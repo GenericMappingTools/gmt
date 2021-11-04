@@ -251,6 +251,45 @@ the following commands within the build directory::
   - Refer to the file ``admin/bashrc_for_gmt`` for useful aliases for building the documentation.
   - `pngquant <https://pngquant.org/>`_ is needed for optimizing images.
 
+Contributing an animation
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The animations are built from the scripts in ``doc/examples/anim*/``. To add a new animation:
+
+- Open an `issue <https://github.com/GenericMappingTools/gmt/issues>`_ with your idea for a new animation. It is best to
+  get some feedback on your idea before starting work on the animation. If you do have an animation already made, you
+  can share it as part of the new issue.
+- Create a new script ``doc/examples/anim??/anim??.sh``, where ?? is the number of the new example. Be sure to follow the
+  style of the existing animations, including using ``#!/usr/bin/env bash`` and including the purpose, list of modules
+  and unix programs used, and any relevant notes. Use enough comments in your script to make it easily interpretable.
+- Create a new ReStructured Text document ``doc/rst/source/animations/anim??.rst``, where ?? is the number of the new
+  example. Follow the same format as the other anim??.rst files, including the ReST target ``.. _anim??:`` at the top,
+  a title, and a description of the animation.
+- Add a directive that will include the source code in the built documentation in ``doc/rst/source/animations/anim??.rst``::
+
+    .. literalinclude:: /_verbatim/anim??.txt
+      :language: bash
+
+- Add a placeholder ``.. youtube::`` directive to the ``doc/rst/source/animations/anim??.rst`` file::
+
+    ..  youtube:: Pvvc4vb8G4Y
+      :width: 100%
+
+- Add a placeholder gallery item to the end of the list of animations in ``doc/rst/source/animations.rst``::
+
+    .. youtube:: Pvvc4vb8G4Y
+      :width: 100%
+  
+      :doc:`/animations/anim??`
+
+- :ref:`Submit a pull request <devdocs/contributing:Pull Request Workflow>` with your new animation. Please be sure
+  to follow the pull request template and include the built animation in the pull request or provide a link to the built
+  animation.
+
+- If the pull request is approved, one of the GMT maintainers will build the animation, upload it to the
+  `Generic Mapping Tools YouTube channel <https://www.youtube.com/channel/UCo1drOh0OZPcB7S8TmIyf8Q>`_, and update the
+  links to the YouTube video in ``doc/rst/source/animations/anim??.rst`` and ``doc/rst/source/animations.rst``.
+
 Contributing Code
 -----------------
 
