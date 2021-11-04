@@ -5185,7 +5185,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				i1 = G_obj->header->n_columns - 1;
 			}
 			else {	/* Want a subset */
-                /* Use dx/dy which will be nonzero for pixel grids */
+				/* Use dx/dy which will be nonzero for pixel grids */
 				dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
 				if (gmt_M_is_geographic (GMT, GMT_IN)) { /* Must first wrap S_obj->wesn to fit the data if necessary */
 					if (S_obj->wesn[XLO] > G_obj->header->wesn[XHI]) { /* Must first wrap G_obj->header->wesn west to fit the data */
@@ -5194,7 +5194,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					else if (S_obj->wesn[XHI] < G_obj->header->wesn[XLO]) { /* Must first wrap G_obj->header->wesn east to fit the data */
 						G_obj->header->wesn[XLO] -= 360.0;	G_obj->header->wesn[XHI] -= 360.0;
 					}
-                }
+				}
 				j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YLO]+dy, G_obj->header);
 				j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, G_obj->header);
 				i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XLO]+dx, G_obj->header);
@@ -5991,7 +5991,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 					else if (S_obj->wesn[XHI] < U_obj->header->wesn[XLO]) { /* Must first wrap G_obj->header->wesn east to fit the data */
 						U_obj->header->wesn[XLO] -= 360.0;	U_obj->header->wesn[XHI] -= 360.0;
 					}
-                }
+				}
 				j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YLO]+dy, U_obj->header);
 				j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, U_obj->header);
 				i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XLO]+dx, U_obj->header);
