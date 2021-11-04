@@ -73,7 +73,9 @@ Optional Arguments
     used with 3-D data cubes [Default outputs a single -Rw/e/s/n{/b/t} string].
     Alternatively, append directive **b** to output the region's closed polygon.
     **Note**: The *v0 v1* range reflects the full range of all data nodes that lie
-    inside the final region after any rounding or padding have taken place.
+    inside the final region after any rounding or padding have taken place.  Also,
+    if the grids have different increments then a rounding increment is required
+    to be set via **-A+i** unless **-Cb** is used.
 
 .. _-D:
 

@@ -341,7 +341,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	unsigned int n_cols = 0, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	bool first_r = true, first = true, is_cube, pass, *use = NULL;
 
-	double wesn[8], out[8], *subset = NULL;
+	double wesn[8], out[8], last_inc[2], *subset = NULL;
 
 	char record[GMT_BUFSIZ] = {""};
 	static char *type[2] = {"grid", "cube"};
@@ -527,7 +527,15 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			wesn[WHI] = header->z_max;
 			if (Ctrl->A.i_mode == GRDSELECT_MIN_INC || Ctrl->A.i_mode == GRDSELECT_MAX_INC)	/* Copy the first grid increments */
 				gmt_M_memcpy (Ctrl->A.inc, header->inc, 2U, double);
+			gmt_M_memcpy (last_inc, header->inc, 2U, double);
 			first = false;
+		}
+		if (!(doubleAlmostEqual (header->inc[GMT_X], last_inc[GMT_X]) && doubleAlmostEqual (header->inc[GMT_Y], last_inc[GMT_Y]))) {
+			/* The grids have different increments */
+			if (Ctrl->C.active && !Ctrl->A.round && !Ctrl->C.box) {
+				GMT_Report (API, GMT_MSG_ERROR, "Using -C with mixed-increment grids requires a suitable -A+i rounding selection\n");
+				Return (GMT_RUNTIME_ERROR);
+			}
 		}
 		use[f] = true;	/* May need to read a subset from this grid */
 		if (Ctrl->A.active) {	/* Want region information */
