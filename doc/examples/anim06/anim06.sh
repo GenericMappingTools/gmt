@@ -37,7 +37,7 @@ gmt begin
 	gmt legend -Dx12c/3.5c+w20c+jTC+l1.2 -C0.3c -F+p+gazure1 <<- END
 	N 3
 	V 0 1p
-	S 1.5c - 2.5c - 1p,red 3.2c Chirp (pheonomenon)
+	S 1.5c - 2.5c - 1p,red 3.2c Chirp (phenomenon)
 	S 1.5c c 0.3c blue - 2c Sampled values
 	S 0.5c - 2.5c - 2.5p,blue 2.2c Spline interpolator
 	END
