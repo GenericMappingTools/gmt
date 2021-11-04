@@ -5,4 +5,4 @@ Datasets
 
    datasets/remote-data
    datasets/gshhg
-   datasets/dcw
+   The Digital Chart of the World (DCW) <https://github.com/GenericMappingTools/dcw-gmt#readme>
