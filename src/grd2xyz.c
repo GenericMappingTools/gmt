@@ -364,9 +364,9 @@ void place_SN_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, uns
 	/* BL-BR-TL triangle */
 	P[0][GMT_X] = G->x[col_L];	P[0][GMT_Y] = G->y[row];	P[0][GMT_Z] = 0.0;
 	P[1][GMT_X] = G->x[col_R];	P[1][GMT_Y] = G->y[row];	P[1][GMT_Z] = 0.0;
-	P[2][GMT_X] = G->x[col_R];	P[2][GMT_Y] = G->y[row];	P[2][GMT_Z] = G->data[ij];
+	P[2][GMT_X] = G->x[col_L];	P[2][GMT_Y] = G->y[row];	P[2][GMT_Z] = G->data[ij];
 	grd2xyz_dump_triangle (fp,  N, P, binary);
-	/* BL-TR-TL triangle */
+	/* BR-TR-TL triangle */
 	P[0][GMT_X] = G->x[col_R];	P[0][GMT_Y] = G->y[row];	P[0][GMT_Z] = 0.0;
 	P[1][GMT_X] = G->x[col_R];	P[1][GMT_Y] = G->y[row];	P[1][GMT_Z] = G->data[ij+d_ij];
 	P[2][GMT_X] = G->x[col_L];	P[2][GMT_Y] = G->y[row];	P[2][GMT_Z] = G->data[ij];
@@ -385,9 +385,9 @@ void place_WE_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, uns
 	/* BL-BR-TL triangle */
 	P[0][GMT_Y] = G->y[row_L];	P[0][GMT_X] = G->x[col];	P[0][GMT_Z] = 0.0;
 	P[1][GMT_Y] = G->y[row_R];	P[1][GMT_X] = G->x[col];	P[1][GMT_Z] = 0.0;
-	P[2][GMT_Y] = G->y[row_R];	P[2][GMT_X] = G->x[col];	P[2][GMT_Z] = G->data[ij];
+	P[2][GMT_Y] = G->y[row_L];	P[2][GMT_X] = G->x[col];	P[2][GMT_Z] = G->data[ij];
 	grd2xyz_dump_triangle (fp,  N, P, binary);
-	/* BL-TR-TL triangle */
+	/* BR-TR-TL triangle */
 	P[0][GMT_Y] = G->y[row_R];	P[0][GMT_X] = G->x[col];	P[0][GMT_Z] = 0.0;
 	P[1][GMT_Y] = G->y[row_R];	P[1][GMT_X] = G->x[col];	P[1][GMT_Z] = G->data[ij+d_ij];
 	P[2][GMT_Y] = G->y[row_L];	P[2][GMT_X] = G->x[col];	P[2][GMT_Z] = G->data[ij];
