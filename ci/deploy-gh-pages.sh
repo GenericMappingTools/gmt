@@ -13,7 +13,11 @@ set -x -e
 if [[ "$GITHUB_EVENT_NAME" == "release" ]]; then
     # Get the tag name without the "refs/tags/" part
     version="${GITHUB_REF#refs/*/}"
-elif [[ "$GITHUB_EVENT_NAME" == "push" ]] && [[ "${GITHUB_REF#refs/*/}" =~ ^6\.[0-9]+$ ]]; then
+    # Truncate the version to X.Y
+    if [[ "${GITHUB_REF#refs/*/}" =~ ^[6-9]\.[0-9]+\.[0-9]+ ]]; then
+        version="${version%.*}"
+    fi
+elif [[ "$GITHUB_EVENT_NAME" == "push" ]] && [[ "${GITHUB_REF#refs/*/}" =~ ^[6-9]\.[0-9]+$ ]]; then
     version="${GITHUB_REF#refs/*/}"
 elif [[ "$GITHUB_EVENT_NAME" == "push" ]] && [[ "${GITHUB_REF#refs/*/}" == "master" ]]; then
     version=dev
