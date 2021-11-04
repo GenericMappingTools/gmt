@@ -100,6 +100,7 @@ Optional Arguments
     - **r** - select data sources *not* having the specified registration in **-r**.
 
    If no argument is given then we reverse all the tests, i.e, the same as **-IDNRWZr**.
+
 .. _-M:
 
 **-M**\ *margins*

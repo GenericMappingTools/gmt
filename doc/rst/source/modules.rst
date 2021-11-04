@@ -250,7 +250,7 @@ Core Modules
     - :doc:`grdpaste`
     - :doc:`grdproject`
     - :doc:`grdsample`
-    - :doc:`grdselect
+    - :doc:`grdselect`
     - :doc:`grdtrack`
     - :doc:`grdtrend`
     - :doc:`grdvector`
