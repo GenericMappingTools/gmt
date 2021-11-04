@@ -30,4 +30,4 @@ gmt begin
 gmt end
 EOF
 # 3. Run the movie
-gmt movie main.sh -Chd -Nanim02 -Tangles.txt -Vi -Sbpre.sh -Zs $opt
+gmt movie main.sh -Chd -Nanim02 -Tangles.txt -Vi -Sbpre.sh -Zs -Fmp4
