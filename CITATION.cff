@@ -1,0 +1,39 @@
+cff-version: 1.2.0
+message: "If you think it is appropriate, you may consider paying us back by including our latest article in the reference list of your future publications that will benefit from the availability of GMT."
+title: "The Generic Mapping Tools Version 6"
+version: 6.2.0
+doi: 10.5281/zenodo.4900001
+date-released: 2021-06-05
+url: "https://github.com/GenericMappingTools/gmt"
+preferred-citation:
+  type: article
+  authors:
+  - family-names: "Wessel"
+    given-names: "Paul"
+    orcid: "https://orcid.org/0000-0001-5708-7336"
+  - family-names: "Luis"
+    given-names: "Joaquim"
+    orcid: "https://orcid.org/0000-0002-9035-4069"
+  - family-names: "Uieda"
+    given-names: "Leonardo"
+    orcid: "https://orcid.org/0000-0001-6123-9515"
+  - family-names: "Scharroo"
+    given-names: "Remko"
+    orcid: "https://orcid.org/0000-0002-2118-131X"
+  - family-names: "Wobbe"
+    given-names: "Florian"
+  - family-names: "Smith"
+    given-names: "Walter"
+    orcid: "https://orcid.org/0000-0002-8814-015X"
+  - family-names: "Tian"
+    given-names: "Dongdong"
+    orcid: "https://orcid.org/0000-0001-7967-1197"
+  doi: "10.1029/2019GC008515"
+  journal: "Geochemistry, Geophysics, Geosystems"
+  month: 11
+  start:  5556 # First page number
+  end: 5564 # Last page number
+  title: " The Generic Mapping Tools version 6"
+  issue: 11
+  volume: 20
+  year: 2019
