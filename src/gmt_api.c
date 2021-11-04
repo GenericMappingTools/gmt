@@ -4874,10 +4874,12 @@ unsigned int gmt_whole_earth (struct GMT_CTRL *GMT, double we_in[], double we_ou
 	return 1;	/* Different central meridians */
 }
 
-GMT_LOCAL unsigned int gmtapi_switch_method (struct GMTAPI_CTRL *API, unsigned int *method, char *message) {
+GMT_LOCAL unsigned int gmtapi_switch_method (struct GMTAPI_CTRL *API, struct GMTAPI_DATA_OBJECT *S, unsigned int *method, char *message) {
 	/* Flip input method from GMT_IS_REFERENCE to GMT_IS_DUPLICATE */
 	*method -= GMT_IS_REFERENCE;
 	*method += GMT_IS_DUPLICATE;
+	S->method -= GMT_IS_REFERENCE;
+	S->method += GMT_IS_DUPLICATE;
 	GMT_Report (API, GMT_MSG_INFORMATION, message);
 	return GMT_IS_DUPLICATE;
 }
@@ -5183,7 +5185,16 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 				i1 = G_obj->header->n_columns - 1;
 			}
 			else {	/* Want a subset */
+				/* Use dx/dy which will be nonzero for pixel grids */
 				dx = G_obj->header->inc[GMT_X] * G_obj->header->xy_off;	dy = G_obj->header->inc[GMT_Y] * G_obj->header->xy_off;
+				if (gmt_M_is_geographic (GMT, GMT_IN)) { /* Must first wrap S_obj->wesn to fit the data if necessary */
+					if (S_obj->wesn[XLO] > G_obj->header->wesn[XHI]) { /* Must first wrap G_obj->header->wesn west to fit the data */
+						G_obj->header->wesn[XLO] += 360.0;	G_obj->header->wesn[XHI] += 360.0;
+					}
+					else if (S_obj->wesn[XHI] < G_obj->header->wesn[XLO]) { /* Must first wrap G_obj->header->wesn east to fit the data */
+						G_obj->header->wesn[XLO] -= 360.0;	G_obj->header->wesn[XHI] -= 360.0;
+					}
+				}
 				j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YLO]+dy, G_obj->header);
 				j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, G_obj->header);
 				i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XLO]+dx, G_obj->header);
@@ -5233,12 +5244,12 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			/* If passed by reference and the module requires a pad then we must switch to duplication */
 			if (mode & GMT_GRID_NEEDS_PAD1 || mode & GMT_GRID_NEEDS_PAD2) {	/* Cannot do this by reference, switch to duplication */
-				start_over_method = gmtapi_switch_method (API, &method, "Grid via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE due to a padding requirement - method has been switched\n");
+				start_over_method = gmtapi_switch_method (API, S_obj, &method, "Grid via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE due to a padding requirement - method has been switched\n");
 				goto start_over_import_grid;
 			}
 			/* This method requires the input data to be a GMT_GRD_FORMAT matrix - otherwise we should be DUPLICATING */
 			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0)) {
-				start_over_method = gmtapi_switch_method (API, &method, "Grid via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE due to incompatible data type for a grid - method has been switched\n");
+				start_over_method = gmtapi_switch_method (API, S_obj, &method, "Grid via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE due to incompatible data type for a grid - method has been switched\n");
 				goto start_over_import_grid;
 			}
 			/* Determine if it is possible to use the matrix given the region selected and the fact we chose GMT_IS_REFERENCE. This test will
@@ -5246,7 +5257,7 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			if (!(!S_obj->region ||
 				(S_obj->wesn[XLO] >= M_obj->range[XLO] && S_obj->wesn[XHI] <= M_obj->range[XHI] && S_obj->wesn[YLO] >= M_obj->range[YLO] && S_obj->wesn[YHI] <= M_obj->range[YHI]) ||
 				gmt_whole_earth (GMT, M_obj->range, S_obj->wesn))) {	/* Cannot do this by reference, switch to duplication */
-				start_over_method = gmtapi_switch_method (API, &method, "Subset selection for grid via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE - method has been switched\n");
+				start_over_method = gmtapi_switch_method (API, S_obj, &method, "Subset selection for grid via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE - method has been switched\n");
 				goto start_over_import_grid;
 			}
 
@@ -5973,6 +5984,14 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			}
 			else {	/* Want a subset */
 				dx = U_obj->header->inc[GMT_X] * U_obj->header->xy_off;	dy = U_obj->header->inc[GMT_Y] * U_obj->header->xy_off;
+				if (gmt_M_is_geographic (GMT, GMT_IN)) { /* Must first wrap S_obj->wesn to fit the data if necessary */
+					if (S_obj->wesn[XLO] > U_obj->header->wesn[XHI]) { /* Must first wrap U_obj->header->wesn west to fit the data */
+						U_obj->header->wesn[XLO] += 360.0;	U_obj->header->wesn[XHI] += 360.0;
+					}
+					else if (S_obj->wesn[XHI] < U_obj->header->wesn[XLO]) { /* Must first wrap G_obj->header->wesn east to fit the data */
+						U_obj->header->wesn[XLO] -= 360.0;	U_obj->header->wesn[XHI] -= 360.0;
+					}
+				}
 				j1 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YLO]+dy, U_obj->header);
 				j0 = (unsigned int)gmt_M_grd_y_to_row (GMT, S_obj->wesn[YHI]-dy, U_obj->header);
 				i0 = (unsigned int)gmt_M_grd_x_to_col (GMT, S_obj->wesn[XLO]+dx, U_obj->header);
@@ -6027,7 +6046,7 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			/* Getting a matrix info S_obj->resource. Create cube header and then pass the cube pointer via the matrix pointer */
 			if ((M_obj = S_obj->resource) == NULL) return_null (API, GMT_PTR_IS_NULL);
 			if (mode & GMT_GRID_NEEDS_PAD1 || mode & GMT_GRID_NEEDS_PAD2) {	/* Cannot do this by reference, switch to duplication */
-				start_over_method = gmtapi_switch_method (API, &method, "Cube via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE due to a padding requirement - method has been switched\n");
+				start_over_method = gmtapi_switch_method (API, S_obj, &method, "Cube via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE due to a padding requirement - method has been switched\n");
 				goto start_over_import_cube;
 			}
 			/* Determine if it is possible to use the matrix given the region selected and the fact we chose GMT_IS_REFERENCE. This test will
@@ -6035,12 +6054,12 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			if (!(!S_obj->region ||
 				(S_obj->wesn[XLO] >= M_obj->range[XLO] && S_obj->wesn[XHI] <= M_obj->range[XHI] && S_obj->wesn[YLO] >= M_obj->range[YLO] && S_obj->wesn[YHI] <= M_obj->range[YHI]) ||
 				gmt_whole_earth (GMT, M_obj->range, S_obj->wesn))) {	/* Cannot do this by reference, switch to duplication */
-				start_over_method = gmtapi_switch_method (API, &method, "Cube subset selection via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE - method has been switched\n");
+				start_over_method = gmtapi_switch_method (API, S_obj, &method, "Cube subset selection via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE - method has been switched\n");
 				goto start_over_import_cube;
 			}
 			/* This method requires the input data to be a GMT_GRD_FORMAT matrix - otherwise we should be DUPLICATING */
 			if (!(M_obj->shape == GMT_IS_ROW_FORMAT && M_obj->type == GMT_GRDFLOAT && (mode & GMT_GRID_IS_COMPLEX_MASK) == 0)) {
-				start_over_method = gmtapi_switch_method (API, &method, "Cube via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE due to incompatible data type for a cube - method has been switched\n");
+				start_over_method = gmtapi_switch_method (API, S_obj, &method, "Cube via a user matrix requires method GMT_IS_DUPLICATE instead of GMT_IS_REFERENCE due to incompatible data type for a cube - method has been switched\n");
 				goto start_over_import_cube;
 			}
 
