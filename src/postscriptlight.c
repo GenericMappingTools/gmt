@@ -4232,6 +4232,53 @@ int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, do
 	return (PSL_NO_ERROR);
 }
 
+int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, double *rgb, struct imageinfo *h) {
+   /* Plots an Latex EPS image
+    * x,y      : Position of image (in plot coordinates)
+    * xsize, ysize   : Size of image (in user units)
+    * justify  : Indicate which corner (x,y) refers to (see graphic)
+    * buffer   : EPS file (buffered)
+    * rgb      : Font color
+    * h        : Image buffer header
+    *
+    *   9       10      11
+    *   |----------------|
+    *   5    <image>     7
+    *   |----------------|
+    *   1       2        3
+    */
+   double width, height;
+
+   /* If one of [xy]size is 0, keep the aspect ratio */
+   width = h->trx - h->llx;
+   height = h->try - h->lly;
+   if (PSL_eq (xsize, 0.0)) xsize = ysize * width / height;
+   if (PSL_eq (ysize, 0.0)) ysize = xsize * height / width;
+
+   /* Correct origin (x,y) in case of justification */
+   if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
+      x -= 0.5 * ((justify + 3) % 4) * xsize;
+      y -= 0.5 * (int)(justify / 4) * ysize;
+   }
+
+   PSL_command (PSL, "PSL_eps_begin\n");
+   PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb));
+   PSL_command (PSL, "%d %d T %.12g %.12g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / width, ysize * PSL->internal.dpu / height);
+   PSL_command (PSL, "%.12g %.12g T\n", -h->llx, -h->lly);
+   PSL_command (PSL, "N %.12g %.12g M %.12g %.12g L %.12g %.12g L %.12g %.12g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
+   PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
+   if (PSL->internal.memory) {
+      psl_prepare_buffer (PSL, h->length); /* Make sure we have enough memory to hold the EPS */
+      strncat (&(PSL->internal.buffer[PSL->internal.n]), (char *)buffer, h->length);
+      PSL->internal.n += h->length;
+   }
+   else
+      fwrite (buffer, 1U, (size_t)h->length, PSL->internal.fp);
+   PSL_command (PSL, "%%%%EndDocument\n");
+   PSL_command (PSL, "PSL_eps_end\n");
+   return (PSL_NO_ERROR);
+}
+
 int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
 	/* Plot a (portion of a) line. This can be a line from start to finish, or a portion of it, depending
 	 * on the type argument. Optionally, the line can be stroked (using the current pen), closed.

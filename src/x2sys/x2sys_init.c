@@ -181,6 +181,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Distance calculation flag */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				if (gmt_M_compat_check (API->GMT, 6)) {
 					GMT_Report (API, GMT_MSG_COMPAT, "The -C option is deprecated; use the GMT common option -j<mode> instead\n");
 					Ctrl->C.active = true;
@@ -196,6 +197,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if ((c = strstr (opt->arg, "." X2SYS_FMT_EXT)) == NULL && (c = strstr (opt->arg, "." X2SYS_FMT_EXT_OLD)) == NULL)
 					Ctrl->D.file = strdup (opt->arg);	/* Gave no extension so store everything */
@@ -206,17 +208,21 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				Ctrl->E.string = strdup (opt->arg);
 				break;
 			case 'G':	/* Geographical coordinates, set discontinuity */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				Ctrl->G.string = strdup (opt->arg);
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0] && gmt_getinc (GMT, opt->arg, Ctrl->I.inc)) {
 					gmt_inc_syntax (GMT, 'I', 1);
@@ -225,6 +231,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 				Ctrl->I.string = strdup (opt->arg);
 				break;
 			case 'N':	/* Distance and speed unit selection */
+				k = 0;
 				switch (opt->arg[0]) {
 					case 'd':	/* Distance unit selection */
 						k = 1;
@@ -241,11 +248,13 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 						break;
 				}
 				if (!n_errors) {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active[k]);
 					Ctrl->N.active[k] = true;
 					Ctrl->N.string[k] = strdup (opt->arg);
 				}
 				break;
 			case 'W':
+				k = 0;
 				switch (opt->arg[0]) {
 					case 'd':	/* Get new distgap */
 						k = 1;
@@ -257,6 +266,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_INIT_CTRL *Ctrl, struct GMT
 						break;
 				}
 				if (!n_errors) {
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active[k]);
 					Ctrl->W.active[k] = true;
 					Ctrl->W.string[k] = strdup (opt->arg);
 				}

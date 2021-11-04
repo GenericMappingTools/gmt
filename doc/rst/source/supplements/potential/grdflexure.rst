@@ -70,7 +70,9 @@ Required Arguments
     =\ *flist*, where *flist* is an ASCII table with one *topogrd* filename
     and load time per record.  These load times can be different from
     the evaluation times given via **-T**.  For load time format, see
-    **-T**.
+    **-T**. **Note**: If *flist* has an optional third column it will be
+    interpreted as a load density and used for that layer instead of
+    the fixed *rl* setting in **-D**.
 
 .. _-D:
 
@@ -93,12 +95,14 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outfile*
-    If **-T** is set then *grdfile* must be a filename template that contains
+.. |Add_outgrid| replace:: If |-T| is set then *outgrid* must be a filename template that contains
     a floating point format (C syntax).  If the filename template also contains
     either %s (for unit name) or %c (for unit letter) then we use the corresponding time
-    (in units specified in **-T**) to generate the individual file names, otherwise
+    (in units specified in |-T|) to generate the individual file names, otherwise
     we use time in years with no unit.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -335,7 +339,6 @@ In the most common scenario, :math:`N_s` are all zero and the elastic response f
 .. math::
 
     \Phi_e(k_r) = \left [ 1 + \alpha_r^4 \right ]^{-1}.
-
 
 Firmoviscous response function
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

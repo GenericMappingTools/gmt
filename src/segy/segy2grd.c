@@ -112,16 +112,15 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s <segyfile> -G<outgrid> %s %s [-A[n|z]] [%s] [-L<nsamp>] "
+	GMT_Usage (API, 0, "usage: %s <segyfile> -G%s %s %s [-A[n|z]] [%s] [-L<nsamp>] "
 		"[-M<ntraces>] [-Q<mode><value>] [-S<header>] [%s] [%s] [%s] [%s]\n",
-		name, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_GRDEDIT2D, GMT_V_OPT, GMT_di_OPT, GMT_r_OPT, GMT_PAR_OPT);
+		name, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_GRDEDIT2D, GMT_V_OPT, GMT_di_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n<segyfile> is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.");
-	GMT_Usage (API, 1, "\n-G<outgrid>");
-	GMT_Usage (API, -2, "Set name the output grid file.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
 	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
 	GMT_Usage (API, -2, "Specify grid size(s).");
 	GMT_Option (API, "R");
@@ -172,12 +171,13 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'n')
 					Ctrl->A.mode = COUNT;
@@ -189,15 +189,19 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.text = strdup (opt->arg);
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Deprecated 7.29.2021 PW, use -di */
@@ -219,25 +223,30 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 			case 'Q':
 				switch (opt->arg[0]) {
 					case 'x': /* over-rides of header info */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[X_ID]);
 						Ctrl->Q.active[X_ID] = true;
 						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Y_ID]);
 						Ctrl->Q.active[Y_ID] = true;
 						Ctrl->Q.value[Y_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.value = atoi (opt->arg);
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				Ctrl->M.value = atoi (opt->arg);
 				break;
 			/* variable spacing */
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				if (Ctrl->S.active) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Can only be set once\n");
 					n_errors++;

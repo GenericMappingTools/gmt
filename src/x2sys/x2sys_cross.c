@@ -74,7 +74,7 @@ struct X2SYS_CROSS_CTRL {
 		int mode;
 	} I;
 	struct X2SYS_CROSS_S {	/* -S */
-		bool active[2];
+		bool active[3];
 		double limit[3];
 	} S;
 	struct X2SYS_CROSS_T {	/* -T */
@@ -194,16 +194,19 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Get list of approved filepair combinations to check */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (strlen(opt->arg))
 					Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Determines if projection should happen for geographic coordinates */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				switch (opt->arg[0]) {
 					case 'S':	Ctrl->D.mode = -1; break;	/* Force projection using S pole */
@@ -212,6 +215,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				switch (opt->arg[0]) {
 					case 'l':
@@ -236,16 +240,19 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 					case 'L':
 					case 'l':	/* Lower cutoff speed */
 						Ctrl->S.limit[VLO] = atof (&opt->arg[1]);
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[VLO]);
 						Ctrl->S.active[VLO] = true;
 						break;
 					case 'U':
 					case 'u':	/* Upper cutoff speed */
 						Ctrl->S.limit[VHI] = atof (&opt->arg[1]);
-						Ctrl->S.active[VLO] = true;
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[VHI]);
+						Ctrl->S.active[VHI] = true;
 						break;
 					case 'H':
 					case 'h':	/* Heading calculation cutoff speed */
 						Ctrl->S.limit[HHI] = atof (&opt->arg[1]);
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active[HHI]);
 						Ctrl->S.active[HHI] = true;
 						break;
 					default:
@@ -255,20 +262,24 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_CROSS_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'W':	/* Get new window half-width as number of points */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				Ctrl->W.width = atoi (opt->arg);
 				break;
 			case 'Q':	/* Specify internal or external only */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = X2SYS_EXTERNAL;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = X2SYS_INTERNAL;
 				else Ctrl->Q.mode = X2SYS_BOTH;
 				break;
 			case 'Z':	/* Return z1, z1 rather than (z1-z1) and 0.5 * (z1 + z2) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				break;
 			case 'J':
@@ -306,16 +317,13 @@ GMT_LOCAL int x2syscross_combo_ok (char *name_1, char *name_2, struct X2SYS_CROS
 	return (false);
 }
 
-GMT_LOCAL void x2syscross_free_pairs (struct GMT_CTRL *GMT, struct X2SYS_CROSS_PAIR **pair, uint64_t n_pairs) {
-	/* Free the array of pairs */
+GMT_LOCAL void x2syscross_free_pairs (struct GMT_CTRL *GMT, struct X2SYS_CROSS_PAIR *pair, uint64_t n_pairs) {
+	/* Free the strings in the array of pairs */
 	uint64_t k;
-	struct X2SYS_CROSS_PAIR *P = *pair;
 	for (k = 0; k < n_pairs; k++) {
-		gmt_M_str_free (P[k].id1);
-		gmt_M_str_free (P[k].id2);
+		gmt_M_str_free (pair[k].id1);
+		gmt_M_str_free (pair[k].id2);
 	}
-	gmt_M_free (GMT, pair);
-
 }
 
 GMT_LOCAL bool x2syscross_is_outside_region (struct GMT_CTRL *GMT, double lon, double lat, bool geo) {
@@ -349,7 +357,7 @@ GMT_LOCAL void x2syscross_local_xy_to_geo (double *x, double *y, int plat) {
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
-#define Crashout(code) {gmt_M_free (GMT, duplicate); x2syscross_free_pairs (GMT, &pair, n_pairs); x2sys_free_list (GMT, trk_name, n_tracks); if (fpC) fclose (fpC); x2sys_end (GMT, s); Return (error);}
+#define Crashout(code) {gmt_M_free (GMT, duplicate); x2syscross_free_pairs (GMT, pair, n_pairs); gmt_M_free (GMT, pair); x2sys_free_list (GMT, trk_name, n_tracks); if (fpC) fclose (fpC); x2sys_end (GMT, s); Return (error);}
 
 EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	char **trk_name = NULL;			/* Name of tracks */
@@ -1026,7 +1034,11 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 
 	/* Free up other arrays */
 
-	if (Ctrl->A.active) x2syscross_free_pairs (GMT, &pair, n_pairs);
+	if (Ctrl->A.active) {	/* Free strings in pairs, then pairs itself */
+		x2syscross_free_pairs (GMT, pair, n_pairs);
+		gmt_M_free (GMT, pair);
+	}
+
 	gmt_M_free (GMT, Out);
 	gmt_M_free (GMT, xdata[SET_A]);
 	gmt_M_free (GMT, xdata[SET_B]);

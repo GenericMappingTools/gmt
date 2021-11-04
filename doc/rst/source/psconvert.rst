@@ -211,7 +211,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ [**+a**\ *altmode*\ [*alt*]][**+c**][**+f**\ *minfade/maxfade*][**+g**][**+k**][**+l**\ *minLOD/maxLOD*][**+n**\ *layername*][**+o**\ *foldername*][**+t**\ *docname*][**+u**\ *URL*]
-    Write a ESRI type world file suitable to make (e.g) .tif files be
+    Write an ESRI type world file suitable to make .tif files be
     recognized as geotiff by software that know how to do it. Be aware,
     however, that different results are obtained depending on the image
     contents and if the **-B** option has been used or not. The trouble
@@ -427,6 +427,11 @@ for saving space and for grouping related files together.  The bash function
 **gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
 do this.  You need to source gmt_shell_functions.sh first before you can
 use it.
+
+Deprecations
+------------
+
+- 6.3.0: Modifiers +m, +g et al of **-A** option are moved to **-I**, **-N**, or **-W** option. `#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_
 
 See Also
 --------

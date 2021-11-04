@@ -83,8 +83,9 @@ version requires a computer with the M1 Apple Silicon chip.
 | **GMT Version** | **Minimum MacOS** |
 |-------------|-------------|
 | 6.2         | macOS 10.15 |
-| 6.1         | macOS 10.12 |
-| 6.0         | macOS 10.12 |
+| 6.1.1       | macOS 10.15 |
+| 6.1.0       | macOS 10.15 |
+| 6.0.0       | macOS 10.13 |
 | 5.4         | macOS 10.12 |
 
 ### Install via Homebrew
@@ -212,7 +213,7 @@ You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericM
 
 Install GMT via:
 
-    sudo emerge gmt
+    sudo emerge --verbose --ask sci-geosciences/gmt
 
 ## Cross Platform Install Instructions
 

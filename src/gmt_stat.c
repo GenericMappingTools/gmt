@@ -2641,7 +2641,7 @@ double gmt_grd_mad (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID *W
 			/* 3. Compute the absolute deviations from this median */
 			for (node = 0; node < n; node++) pair[node].value = (gmt_grdfloat)fabs (pair[node].value - wmed);
 		}
-		/* 4. Find the weighted median absolue deviation */
+		/* 4. Find the weighted median absolute deviation */
 		wmad = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, n);
 		gmt_M_free (GMT, pair);
 	}
@@ -2734,7 +2734,7 @@ double gmt_grd_lmsscl (struct GMT_CTRL *GMT, struct GMT_GRID *G, struct GMT_GRID
 			/* 3. Compute the absolute deviations from this mode */
 			for (node = 0; node < n; node++) pair[node].value = (gmt_grdfloat)fabs (pair[node].value - wmode);
 		}
-		/* 4. Find the weighted median absolue deviation and scale it */
+		/* 4. Find the weighted median absolute deviation and scale it */
 		lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, n);
 		gmt_M_free (GMT, pair);
 	}

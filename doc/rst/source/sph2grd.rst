@@ -47,9 +47,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See
-    :ref:`Grid File Formats <grd_inout_full>`).
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -95,6 +96,11 @@ Optional Arguments
     normalization - inner products summed over surface equal 1 [Default].
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
+
+.. _-Q:
+
+**-Q**
+    Coefficients have phase convention from physics, i.e., the :math:`(-1)^m` factor.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

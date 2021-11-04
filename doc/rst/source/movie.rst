@@ -107,7 +107,8 @@ Required Arguments
     the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
     is automatically set but if you are splitting large jobs across several computers then you
-    must use the same tag width for all names.
+    must use the same tag width for all names. **Note**: If just *nframes* is given then only **MOVIE_FRAME**
+    is available as no data file is available.
 
 
 Optional Arguments
@@ -292,7 +293,8 @@ Optional Arguments
     By default we try to use all available cores.  Append *n* to only use *n* cores
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
-    The parallel processing does not depend on OpenMP.
+    The parallel processing does not depend on OpenMP. **Note**: One core is utilized by
+    **movie** so in effect *n-1* cores are used for the individual frames.
 
 .. include:: explain_help.rst_
 
@@ -310,8 +312,8 @@ and those that change with the frame number.  The constants are accessible by al
 Also, if **-I** was used then any static parameters listed there will be available to all the scripts as well.
 In addition, the *mainscript* also has access to parameters that vary with the frame counter:
 **MOVIE_FRAME**\ : The current frame number (an integer, e.g., 136),
-**MOVIE_TAG**\ : The formatted frame number (a string, e.g., 000136), and
-**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
+**MOVIE_ITEM**\ : The formatted frame number (a string, e.g., 000136), and
+**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_ITEM**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicitly requested by **-T+w** or
@@ -429,6 +431,18 @@ Multi-treaded GMT modules will therefore be limited to a single core as well.
 The conversion of PNG frames to an animated GIF (**-F**\ *gif*) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
 PNG frames to an MP4 (**-F**\ *mp4*) or WebM (**-F**\ *webm*) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_.
+
+Shell Limitations
+-----------------
+
+As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
+involves a sub-shell), we advice against using commands in your main script that involve piping the result
+from one GMT module into another (e.g., gmt blockmean ..... | gmt surface ...).  Because **movie** is running
+many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
+In our experience, piping in the context of movie script may corrupt the GMT history files, resulting in
+stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
+a temporary file when writing movie main scripts. **Note**: Piping from a non-GMT module into a GMT module
+or vice versa is not a problem (e.g., echo ..... | gmt plot ...).
 
 Hints for Movie Makers
 ----------------------
@@ -594,6 +608,20 @@ should be approximately the same length as the video.  Then, simply combine the 
     ffmpeg -loglevel warning -i yourslientmovie.mp4 -y -i narration.m4a final.mp4
 
 For more information on audio manipulations, see the FFmpeg documentation.
+
+Deprecations
+------------
+
+- 6.3.0: Consolidate -A into -F for a more unified option. `#5613 <https://github.com/GenericMappingTools/gmt/pull/5613>`_
+
+macOS Issues
+------------
+
+**Note**: The limit on the number of concurrently open files is relatively small by default on macOS and when building
+numerous frames at the same time it is not unusual to get failures in **movie** jobs with the message "Too many open files". 
+We refer you to this helpful
+`article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
+for various solutions. 
 
 See Also
 --------

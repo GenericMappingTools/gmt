@@ -28,17 +28,6 @@
 
 #include "gmt_dev.h"
 
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
-#ifdef	__APPLE__
-	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
-#ifndef _Nullable
-#	define _Nullable
-#	endif
-#	endif
-#	include <signal.h>
-#	include "gmt_common_sighandler.h"
-#endif
-
 #define PROGRAM_NAME	"gmt"
 
 /* Determine the system environmental parameter that leads to shared libraries */
@@ -60,21 +49,25 @@ int main (int argc, char *argv[]) {
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
-	/* Install signal handler */
+#ifndef NO_SIGHANDLER
+	/* Install a signal handler */
+#ifdef WIN32	/* Only handle Ctrl-C under Windows */
+    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE)sig_handler_win32, TRUE)) {
+        fprintf (stderr, "Unable to install Windows signal handler!\n");
+        return EXIT_FAILURE;
+    }
+#else	/* Unix/Linux/macOS */
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
-	act.sa_sigaction = sig_handler;
-#if 0 /* summit 2016 decision: disable CTRL-C interrupt feature */
-	act.sa_flags = SA_SIGINFO | SA_NODEFER; /* Do not prevent the signal from being received from within its own signal handler. */
-	sigaction (SIGINT,  &act, NULL);
-#endif
+	act.sa_sigaction = sig_handler_unix;
 	act.sa_flags = SA_SIGINFO;
-	sigaction (SIGILL,  &act, NULL);
+	sigaction (SIGINT,  &act, NULL);	/* Catching Ctrl-C will also wipe a session work directory and destroy GMT session */
+	sigaction (SIGILL,  &act, NULL);	/* The other signals will exit with a full backtrace */
 	sigaction (SIGFPE,  &act, NULL);
 	sigaction (SIGBUS,  &act, NULL);
 	sigaction (SIGSEGV, &act, NULL);
-#endif /* !(defined(WIN32) || defined(NO_SIGHANDLER)) */
+#endif	/* Unix/Linux/macOS */
+#endif	/* !defined(NO_SIGHANDLER) */
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */

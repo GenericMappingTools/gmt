@@ -61,6 +61,9 @@ struct BLOCK_CTRL {
 		unsigned int n;			/* Number of output grids specified via -G */
 		char *file[BLK_N_FIELDS];	/* Only first is used for commandline but API may need many */
 	} G;
+	struct I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct N {	/* -N<empty> */
 		bool active;
 		double no_data;

@@ -114,7 +114,7 @@
         geographical instead of plot-distance units.  For degenerate ellipses (i.e.,
         circles) with just a *diameter* given via the input data, use **-SE-**. For a
         linear projection we assume the dimensions are given in the same units as **-R**.
-        For allowable geographical units, see `Units`_ [Default is **k** for km].
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s) [Default is k for km].
         The shape of the ellipse will be affected by the properties of the map projection.
 
     **-Sj**\ *direction*/*width*/*height*
@@ -130,7 +130,7 @@
         instead of plot-distance units. For a degenerate rectangle (i.e., square)
         with one *dimension* expected to be given via the input data, use **-SJ-**. For
         a linear projection we assume the dimensions are given in the same units as **-R**.
-        For allowable geographical units, see `Units`_ [Default is k for km].
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s) [Default is k for km].
         The shape of the rectangle will be affected by the properties of the map projection.
 
     **-Sr**\ *width*/*height*

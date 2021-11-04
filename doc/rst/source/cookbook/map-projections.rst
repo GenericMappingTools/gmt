@@ -404,23 +404,27 @@ Perspective projection (**-Jg** **-JG**)
 
 **Syntax**
 
-    **-Jg**\|\ **G**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/*\ *scale*\|\ *width*
+    **-Jg**\|\ **G**\ *lon0/lat0*\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**]
 
-**Parameters**
+**Required Parameters**
 
 - The longitude (*lon0*) and latitude (*lat0*) of the projection center.
-- The *altitude* of the viewer above sea level in kilometers. If this value is less than 10, it is assumed to instead be
-  the distance of the viewer from the center of the earth in earth radii. If **r** is appended, it is assumed to instead
-  be the distance from the center of the earth in kilometers.
-- The *azimuth* in degrees. This is the direction in which you are looking, measured clockwise from north.
-- The *tilt* in degrees. This is the viewing angle relative to zenith. For example, a tilt of 0° is looking straight
-  down, and 60° is looking from 30° above the horizon.
-- The *twist* in degrees. This is the boresight rotation (clockwise) of the image.
-- The *Width* and *Height* of the viewpoint in degrees. This number depends on whether you are looking with the naked
-  eye (in which case the view is about 60° wide), or with binoculars, for example.
 - The *scale* as 1:xxxxx or as radius/latitude where radius is distance on map in :ref:`plot-units <plt-units>` from
   projection center to a particular oblique latitude (with **-Jg**), or map width in :ref:`plot-units <plt-units>`
   (with **-JG**).
+
+**Optional Parameters**
+
+- The *azimuth* in degrees. This is the direction in which you are looking, measured clockwise from north [0].
+- The *tilt* in degrees. This is the viewing angle relative to zenith. For example, a tilt of 0° is looking straight
+  down, and 60° is looking from 30° above the horizon [0].
+- The *vwidth* and *vheight* of the viewpoint in degrees. This number depends on whether you are looking with the naked
+  eye (in which case the view is about 60° wide), or with binoculars, for example [unrestricted].
+- The *twist* in degrees. This is the boresight rotation (clockwise) of the image [0].
+- The *altitude* of the viewer above sea level in kilometers [infinity]. Alternatively, append **R** if giving
+  the distance of the viewer from the center of the Earth in Earth radii, or **r** if giving the distance from the
+  center of the Earth in kilometers.  Finally, give *altitude* as **g** to compute and use the altitude for a
+  geosynchronous orbit.
 
 **Description**
 
@@ -431,7 +435,7 @@ in GMT is very flexible, and thus requires many input variables.
 
 The imagined view of northwest Europe from a Space Shuttle at 230 km looking due east is thus accomplished by the
 following :doc:`/coast` command (*lon0*\ =4; *lat0*\ =52; *altitude*\ =230 km; *azimuth*\ = 90°; *tilt*\ = 60°;
-*twist*\ = 180°; *Width*\ = 60°; *Height*\ = 60°; and *width* = 12 cm):
+*twist*\ = 180°; *vwidth*\ = *vheight*\ = 60°; and *width* = 12 cm):
 
 .. literalinclude:: /_verbatim/GMT_perspective.txt
 

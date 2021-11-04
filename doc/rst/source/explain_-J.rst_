@@ -205,15 +205,20 @@ respectively):
         *lon0/lat0* specifies the projection center. *horizon* specifies the max distance from projection center (in
         degrees, <= 90, default 90). Give *scale* (with **-Jg**; as **1:**\ *xxxx* or *radius/lat*, where *radius* is
         distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*.
-    **-Jg**\|\ **G**\ *lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/*\ *scale*\|\ *width* (General Perspective).
-        *lon0/lat0* specifies the projection center. *altitude* is the height (in km) of the viewpoint above local sea
-        level. If *altitude* is less than 10, then it is the distance from the center of the earth to the viewpoint in
-        earth radii. If *altitude* has a suffix **r** then it is the radius from the center of the earth in kilometers.
-        *azimuth* is measured to the east of north of view. *tilt* is the upward tilt of the plane of projection. If
-        *tilt* is negative, then the viewpoint is centered on the horizon. Further, specify the clockwise *twist*,
-        *Width*, and *Height* of the viewpoint in degrees. Give *scale* (with **-Jg**; as **1:**\ *xxxx* or
-        *radius/lat*, where *radius* is distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude
-        *lat*) or width (with **-JG**; in :ref:`plot-units <plt-units>`).
+    **-Jg**\|\ **G**\ *lon0/lat0*\ /\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**] (General Perspective).
+        *lon0/lat0* specifies the projection center. Give *scale* (with **-Jg**; as **1:**\ *xxxx* or *radius/lat*,
+        where *radius* is distance in :ref:`plot-units <plt-units>` from origin to the oblique latitude *lat*) or width
+        (with **-JG**; in :ref:`plot-units <plt-units>`). Several optional modifiers control the perspective:
+
+     - **+a** sets *azimuth* measured to the east of north of view [0].
+     - **+t** sets the upward *tilt* of the plane of projection. If
+       *tilt* is negative, then the viewpoint is centered on the horizon [0].
+     - **+v** sets a restricted view: *vwidth* and *vheight* ( in degrees) limits the view from the viewpoint [unrestricted].
+     - **+w** sets the clockwise *twist* of the viewpoint (in degrees) [0].
+     - **+z** sets the *altitude* of the viewer above sea level in kilometers [infinity]. Alternatively append **R** if giving
+       the distance of the viewer from the center of the Earth in Earth radii, or **r** if giving the distance from the
+       center of the Earth in kilometers.  Finally, give *altitude* as **g** to compute and use the altitude for a
+       geosynchronous orbit.
 
 .. _-Js_full:
 

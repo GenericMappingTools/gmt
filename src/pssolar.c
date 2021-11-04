@@ -165,8 +165,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 
 	int    j, TZ = 0, n_files = 0, n_errors = 0;
 	char  *pch = NULL, *date = NULL;
-	struct GMT_OPTION *opt = NULL;
 	double t;
+	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -179,9 +180,11 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'C':		/* Format -I output as a vector. No text. */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'G':		/* Set fill for symbols or polygon */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0] == '\0' || (opt->arg[0] == 'c' && !opt->arg[1]))
 					Ctrl->G.clip = true;
@@ -191,6 +194,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'I':		/* Infos -I[<lon>/<lat>][+d<date>][+z<TZ>] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0]) {	/* Also gave location */
 					Ctrl->I.position = true;
@@ -210,12 +214,15 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Use the outside of the polygon as clip area */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'T':		/* -Tdcna[+d<date>][+z<TZ>] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				gmt_M_memset (Ctrl->T.radius, 4, double);	/* Reset to nothing before parsing */
 				if ((pch = strchr (opt->arg, '+')) != NULL) {	/* Have one or two extra options */
@@ -246,6 +253,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 
 				break;
 			case 'W':		/* Pen */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (gmt_getpen (GMT, opt->arg, &Ctrl->W.pen)) {
 					gmt_pen_syntax (GMT, 'W', NULL, " ", NULL, 0);
@@ -263,7 +271,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSSOLAR_CTRL *Ctrl, struct GMT_OP
 		if (Ctrl->T.radius[j] > 0.0) Ctrl->T.n_terminators++;
 
 	if (Ctrl->N.active && GMT->current.map.frame.init) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -B cannot be used in combination with Option -N. -B is ignored.\n");
 		GMT->current.map.frame.draw = false;
 	}
 	if (!Ctrl->I.active && !Ctrl->M.active) {	/* Allow plotting without specifying -R and/or -J */

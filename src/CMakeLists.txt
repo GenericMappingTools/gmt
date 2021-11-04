@@ -94,7 +94,7 @@ endif (GM)
 find_program (FFMPEG ffmpeg)
 if (FFMPEG)
 	execute_process(COMMAND ffmpeg -version OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
-	string (REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" answer "${answer}")
+	string (REGEX MATCH "[0-9]+(.[0-9]+)?(.[0-9]+)?" answer "${answer}")
 	set (GMT_CONFIG_FFMPEG_MESSAGE "yes (${answer})" CACHE INTERNAL "FFMPEG config message")
 else (FFMPEG)
 	message (WARNING "Cannot find ffmpeg - gmt movie will be unable to make movies from frames")
@@ -381,7 +381,7 @@ set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
-	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
+	gmt_common_runpath.h gmt_common_sighandler.h gmt_common_string.h clear.c begin.c
 	gmt_color_rgb.h gmt_colornames.h gmt_media_size.h gmt_mgg_header2.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
 	figure.c gmt_dev.h gmt_common.h gmt_common_longoptions.h gmt_constants.h compat/qsort.h

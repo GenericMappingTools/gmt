@@ -32,6 +32,11 @@
 #ifndef GMT_SYNOPSIS_H
 #define GMT_SYNOPSIS_H
 
+/* Full syntax of input grids */
+#define GMT_INGRID   "<ingrid>[=<ID>|?<varname>][+b<band>][+d<divisor>][+n<invalid>][+o<offset>][+s<scale>]"
+/* Full syntax of output grids */
+#define GMT_OUTGRID  "<outgrid>[=<ID>][+d<divisor>][+n<invalid>][+o<offset>|a][+s<scale>|a][:<driver>[/<dataType>][+c<options>]]"
+
 #define GMT_inc_OPT	"<xinc>[+e|n][/<yinc>[+e|n]]"
 #define GMT_Id_OPT	"-I<xinc>[m|s][/<yinc>[m|s]]"
 #define GMT_Jx_OPT	"-Jx|X<args>"
@@ -121,7 +126,7 @@
 #define GMT_f_OPT	"-f[i|o]<colinfo>"
 #define GMT_g_OPT	"-gx|y|z|d|X|Y|D<gap>[<unit>][+a][+c<col>][+n|p]"
 #define GMT_h_OPT	"-h[i|o][<nrecs>][+c][+d][+m<segheader>][+r<remark>][+t<title>]"
-#define GMT_i_OPT	"-i<cols>[+l][+d<divisor>][+s<scale>][+o<offset>][,...][,t[<word>]]"
+#define GMT_i_OPT	"-i<cols>[+l][+d<divisor>][+s<scale>|d|k][+o<offset>][,...][,t[<word>]]"
 #define GMT_j_OPT	"-je|f|g"
 #define GMT_l_OPT	"-l[<label>][+D<pen>][+G<gap>][+H<header>][+L[<code>/]<txt>][+N<cols>][+S<size>[/<height>]][+V[<pen>]][+f<font>][+g<fill>][+j<just>][+o<dx>[/<dy>]][+p<pen>][+s<scale>][+w<width>]"
 #ifdef DEBUG
