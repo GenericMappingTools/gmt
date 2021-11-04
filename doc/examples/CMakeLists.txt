@@ -58,39 +58,14 @@ if (SPHINX_FOUND)
 	# Animations
 	if (UNIX AND DO_ANIMATIONS)
 		configure_file (animate.in animate @ONLY)
-
-		foreach (_num 01)
-			add_custom_command (
-				OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif
-				COMMAND ${BASH} animate anim${_num}/anim${_num}.sh
-				WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-				DEPENDS gmt_for_img_convert ${CMAKE_CURRENT_SOURCE_DIR}/anim${_num}/anim${_num}.sh)
-			add_custom_command (
-				OUTPUT ${RST_BINARY_DIR}/_images/anim${_num}.gif
-				COMMAND ${CMAKE_COMMAND} -E copy_if_different
-				${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif
-				${RST_BINARY_DIR}/_images/anim${_num}.gif
-				DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/anim${_num}/anim${_num}.gif)
-			list (APPEND _animations ${RST_BINARY_DIR}/_images/anim${_num}.gif)
-		endforeach ()
-		add_custom_target (animation DEPENDS ${_animations})
-
-		# clean target
-		foreach (_num 01)
-			add_custom_target (_anim_clean${_num}
-				COMMAND ${CMAKE_COMMAND} -E remove_directory
-				${CMAKE_CURRENT_BINARY_DIR}/anim${_num}
-				COMMENT "Removing animation ${_num}")
-			add_depend_to_target (spotless _anim_clean${_num})
-		endforeach ()
 	endif (UNIX AND DO_ANIMATIONS)
+
 endif (SPHINX_FOUND)
 
 # run examples (test)
 file (GLOB _examples RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/ex*/*.sh")
 # Remove a few known failed examples from tests
 list (REMOVE_ITEM _examples "doc/examples/ex51/ex51.sh")
-file (GLOB _anims RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/anim0[1]/*.sh")
 if (DO_EXAMPLES AND BASH)
 	foreach (_job ${_examples} ${_anims})
 		add_test (NAME ${_job}

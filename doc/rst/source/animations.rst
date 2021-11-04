@@ -19,18 +19,12 @@ ull-featured movie with thousands of frames at HD or 4k resolution.
 
 .. cssclass:: gmtgallery
 
-.. jinja::
-
-    {% for i in [1] %}
-    {% set i = '%02d' % i %}
-    -  .. figure:: /_images/anim{{i}}.*
-          :target: ./animations/anim{{i}}.html
-
-          :ref:`anim{{i}}`
-
-    {% endfor %}
-
 .. cssclass:: gmtmovie
+
+- .. youtube:: 5m3gRhFFFLA
+     :width: 100%
+
+  :doc:`/animations/anim01`
 
 - .. youtube:: WQ6JrtEu_Fk
      :width: 100%
