@@ -5692,7 +5692,7 @@ GMT_LOCAL double gmtmap_rudoe_dist_meter (struct GMT_CTRL *GMT, double lonS, dou
 	 * If the station is in the southern hemisphere and the event in
 	 * in the northern, these equations give the longer, not the
 	 * shorter distance between the two locations.  Since the equations
-	 * are fairly messy, the simplist solution is to reverse the
+	 * are fairly messy, the simplest solution is to reverse the
 	 * meanings of the two locations for this case.)
 	 */
 

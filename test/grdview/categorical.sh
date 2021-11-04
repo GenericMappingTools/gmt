@@ -33,7 +33,7 @@ gmt grdview tt.nc -Ctt.cpt -JU31/2.75 -P -B5g5 -BWSne+t"-Qs" -Qs -K --MAP_TITLE_
 gmt grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-T" -T -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
 gmt psscale -Ctt.cpt -Dx3/3+w1.5/0.2+jML -L0.1i -O -K >> $ps
 # Then plot as image -Qi100
-gmt grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-Qi100" -Qi100 -X-3.5 -Y5.0 --MAP_TITLE_OFFSET=-1i >> $ps
+gmt grdview tt.nc -Ctt.cpt -J -O -K -B5g5 -BWSne+t"-Qi100" -Qi100i -X-3.5 -Y5.0 --MAP_TITLE_OFFSET=-1i >> $ps
 # Finally plot as texture image -Qt100
-gmt grdview tt.nc -Ctt.cpt -J -O -B5g5 -BWSne+t"-Qt100" -Qt100 -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
+gmt grdview tt.nc -Ctt.cpt -J -O -B5g5 -BWSne+t"-Qt100" -Qt100i -X3.5 --MAP_TITLE_OFFSET=-1i >> $ps
 

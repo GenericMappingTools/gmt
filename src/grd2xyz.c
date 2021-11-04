@@ -586,6 +586,9 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->L.active)	/* Reset */
 			Ctrl->L.mode = orig_mode;
+		if (GMT_Destroy_Data (API, &G) != GMT_NOERROR) {	/* Free the grid since there may be more of them */
+			Return (API->error);
+		}
 	}
 
 	if (GMT_End_IO (API, GMT_OUT, 0) != GMT_NOERROR) {	/* Disables further data output */

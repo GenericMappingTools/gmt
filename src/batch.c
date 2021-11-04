@@ -420,7 +420,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused, n_to_run;
 	unsigned int n_jobs_not_started = 0, n_jobs_completed = 0, first_job = 0, data_job;
 
-	bool done = false, n_written = false, has_text = false, is_classic = false, has_conf = false;
+	bool done = false, n_written = false, has_text = false, is_classic = false, has_conf = false, issue_col0_par = false;
 
 	static char *extension[3] = {"sh", "csh", "bat"}, *load[3] = {"source", "source", "call"}, var_token[4] = "$$%";
 	static char *rmdir[3] = {"rm -rf", "rm -rf", "rd /s /q"}, *export[3] = {"export ", "setenv ", ""};
@@ -677,8 +677,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			if (strchr (Ctrl->T.file, 'T'))	/* Check here since gmtmath does not pass that info back */
 				gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_ABSTIME);	/* Set first input column type as absolute time */
 		}
-		else	/* Just gave the number of jobs (we hope, or we got a bad filename and atoi should return 0) */
+		else {	/* Just gave the number of jobs (we hope, or we got a bad filename and atoi should return 0) */
 			n_jobs = atoi (Ctrl->T.file);
+			issue_col0_par = true;
+		}
 	}
 	if (n_jobs == 0) {	/* So not good... */
 		GMT_Report (API, GMT_MSG_ERROR, "No jobs specified! - exiting.\n");
@@ -785,6 +787,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			sprintf (string, "BATCH_COL%u", col);
 			gmt_set_value (GMT, fp, Ctrl->In.mode, col, string, D->table[0]->segment[0]->data[col][data_job]);
 		}
+		if (issue_col0_par) gmt_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_COL0", data_job);	/* Same as current job number */
 		if (has_text) {	/* Also place any string parameter as a single string variable */
 			gmt_set_tvalue (fp, Ctrl->In.mode, false, "BATCH_TEXT", D->table[0]->segment[0]->text[data_job]);
 			if (Ctrl->T.split) {	/* Also split the string into individual words BATCH_WORD1, BATCH_WORD2, etc. */

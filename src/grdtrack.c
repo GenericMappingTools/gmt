@@ -715,7 +715,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	int status, error, ks;
 	uint64_t n_points = 0, n_read = 0;
-	unsigned int g, k, xy_mode, dtype;
+	unsigned int g, k, xy_mode, dtype, pad_mode = 0;
 	bool img_conv_needed = false, some_outside = false;
 
 	char line[GMT_BUFSIZ] = {""}, run_cmd[BUFSIZ] = {""}, *cmd = NULL;
@@ -751,8 +751,6 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	/*---------------------------- This is the grdtrack main code ----------------------------*/
 
-	gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
-
 	cmd = GMT_Create_Cmd (API, options);
 	sprintf (run_cmd, "# %s %s", GMT->init.module_name, cmd);	/* Build command line argument string */
 	gmt_M_free (GMT, cmd);
@@ -761,14 +759,23 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 
 	gmt_M_memset (wesn, 4, double);
 	if (GMT->common.R.active[RSET]) gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);	/* Specified a subset */
-	gmt_set_pad (GMT, 2U);	/* Ensure space for BCs in case an API passed pad == 0 */
+
+	pad_mode = (GMT->common.n.interpolant > BCR_BILINEAR) ? GMT_GRID_NEEDS_PAD2 : 0;
+	if (pad_mode) {
+		gmt_grd_set_datapadding (GMT, true);	/* Turn on gridpadding when reading a subset */
+		gmt_set_pad (GMT, 2U);	/* Ensure space for BCR BCs in case an API passed pad == 0 */
+	}
+	else {
+		gmt_grd_set_datapadding (GMT, false);	/* Turn off gridpadding when reading a subset */
+		gmt_set_pad (GMT, 0);	/* Pads not needed since bicubic or b-spline not selected */
+	}
 
 	GC = gmt_M_memory (GMT, NULL, Ctrl->G.n_grids, struct GRD_CONTAINER);
 
 	for (g = 0; g < Ctrl->G.n_grids; g++) {
 		GC[g].type = Ctrl->G.type[g];
 		if (Ctrl->G.type[g] == 0) {	/* Regular GMT grids */
-			if ((GC[g].G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY, NULL, Ctrl->G.file[g], NULL)) == NULL) {	/* Get header only */
+			if ((GC[g].G = GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_CONTAINER_ONLY|pad_mode, NULL, Ctrl->G.file[g], NULL)) == NULL) {	/* Get header only */
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
@@ -785,7 +792,7 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 				Return (GMT_NOERROR);
 			}
 
-			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, wesn, Ctrl->G.file[g], GC[g].G) == NULL) {	/* Get subset */
+			if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY|pad_mode, wesn, Ctrl->G.file[g], GC[g].G) == NULL) {	/* Get subset */
 				gmt_M_free (GMT, GC);
 				Return (API->error);
 			}
@@ -798,14 +805,6 @@ EXTERN_MSC int GMT_grdtrack (void *V_API, int mode, void *args) {
 			img_conv_needed = true;
 		}
 		GC[g].HH = gmt_get_H_hidden (GC[g].G->header);
-		/* Temporary fix for external grids with no pad; see discussion at https://github.com/GenericMappingTools/pygmt/issues/1309 */
-		if (GC[g].G->header->pad[XLO] < 2 || GC[g].G->header->pad[XHI] < 2 || GC[g].G->header->pad[YLO] < 2 || GC[g].G->header->pad[YHI] < 2) {
-			if (GMT->common.n.interpolant > BCR_BILINEAR)
-				GMT_Report (API, GMT_MSG_WARNING, "Interpolation method reset to bilinear due to grid type.\n");
-			GMT->common.n.interpolant = MIN (GMT->common.n.interpolant, BCR_BILINEAR);	/* Can only do near-neighbor or bilinear without 2 pad */
-			GC[g].HH->bcr_interpolant = GMT->common.n.interpolant;
-			GC[g].HH->bcr_n = (GC[g].HH->bcr_interpolant == BCR_NEARNEIGHBOR) ? 1 : 2;
-		}
 	}
 
 	if (Ctrl->E.active) {	/* Create profiles rather than read them */

@@ -155,6 +155,7 @@ struct GRDFLEXURE_GRID {
 	struct GMT_GRID *Grid;		/* Pointer to the grid, or NULL if it does not exist */
 	struct GMT_MODELTIME *Time;	/* Pointer to time info for this load */
 	struct GMT_FFT_WAVENUMBER *K;	/* Pointer to FFT struct, unless G is NULL */
+	double rho_load;			/* Density of this load layer (may be constant or variable with time) */
 };
 
 #define	YOUNGS_MODULUS	7.0e10		/* Pascal = Nt/m**2  */
@@ -1023,6 +1024,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 	int error;
 	bool retain_original;
 	gmt_grdfloat *orig_load = NULL;
+	double fixed_rho_load;
 	char file[PATH_MAX] = {""}, time_fmt[GMT_LEN64] = {""};
 
 	struct GMT_FFT_WAVENUMBER *K = NULL;
@@ -1071,14 +1073,16 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		for (t_load = 0; t_load < n_load_times; t_load++) {	/* For each time step there may be a load file */
 			gmt_modeltime_name (GMT, file, Ctrl->In.file, &Ctrl->T.time[t_load]);	/* Load time equal eval time */
 			Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, file, &Ctrl->T.time[t_load]);
+			Load[t_load]->rho_load = Ctrl->D.rhol;
 		}
 	}
 	else if (Ctrl->In.list) {	/* Must read a list of files and their load times (format: filename loadtime) */
 		struct GMT_DATASET *Tin = NULL;
 		struct GMT_MODELTIME this_time = {0.0, 0.0, 0, 0};
+		int ns;
 		uint64_t seg, row;
 		double s_time, s_scale;
-		char t_arg[GMT_LEN256] = {""}, s_unit;
+		char t_arg[GMT_LEN256] = {""}, r_arg[GMT_LEN64] = {""}, s_unit;
 		if ((Tin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->In.file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading load file list %s\n", Ctrl->In.file);
 			Return (API->error);
@@ -1088,13 +1092,14 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);		/* Allocate load grid array structure */
 		for (seg = 0, t_load = 0; seg < Tin->table[0]->n_segments; seg++) {	/* Read in from possibly more than one segment */
 			for (row = 0; row < Tin->table[0]->segment[seg]->n_rows; row++, t_load++) {
-				sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s", file, t_arg);
+				ns = sscanf (Tin->table[0]->segment[seg]->text[row], "%s %s %s", file, t_arg, r_arg);
 				s_time = gmt_get_modeltime (t_arg, &s_unit, &s_scale);
 				this_time.value = s_time;
 				this_time.scale = s_scale;
 				this_time.unit  = s_unit;
 				this_time.u = (s_unit == 'M') ? 2 : ((s_unit == 'k') ? 1 : 0);
 				Load[t_load] = grdflexure_prepare_load (GMT, options, Ctrl, file, &this_time);
+				Load[t_load]->rho_load = (ns == 3) ? atof (r_arg) : Ctrl->D.rhol;
 			}
 		}
 		if (GMT_Destroy_Data (API, &Tin) != GMT_NOERROR) {
@@ -1106,6 +1111,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		n_load_times = 1;
 		Load = gmt_M_memory (GMT, NULL, n_load_times, struct GRDFLEXURE_GRID *);		/* Allocate grid array structure with one entry */
 		Load[0] = grdflexure_prepare_load (GMT, options, Ctrl, Ctrl->In.file, NULL);	/* The single load grid (no time info) */
+		Load[0]->rho_load = Ctrl->D.rhol;
 	}
 
 	if (n_load_times > 1) {	/* Sort to ensure load array goes from old to young loads */
@@ -1113,6 +1119,7 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 		qsort (Load, n_load_times, sizeof (struct GRDFLEXURE_GRID *), grdflexure_compare_loads);
 	}
 	K = Load[0]->K;	/* We only need one pointer to get to wavenumbers as they are all the same for all grids */
+	fixed_rho_load = Ctrl->D.rhol;	/* Remember the setting since we may change it temporarily below */
 
 	/* 3. DETERMINE AND POSSIBLY CREATE ONE OUTPUT GRID */
 
@@ -1182,12 +1189,14 @@ EXTERN_MSC int GMT_grdflexure (void *V_API, int mode, void *args) {
 				GMT_Report (API, GMT_MSG_INFORMATION, "  Accumulating flexural deformation for load # %d emplaced at unspecified time\n", t_load);
 			}
 			/* 4b. COMPUTE THE RESPONSE DUE TO THIS LOAD */
+			Ctrl->D.rhol = This_Load->rho_load;	/* Since it may be variable and grdflexure_apply_transfer_function uses Ctrl->D.rhol to set things up */
 			if (retain_original) gmt_M_memcpy (orig_load, This_Load->Grid->data, This_Load->Grid->header->size, gmt_grdfloat);	/* Make a copy of H(kx,ky) before operations */
 			grdflexure_apply_transfer_function (GMT, This_Load->Grid, Ctrl, This_Load->K, R);	/* Multiplies H(kx,ky) by transfer function, yielding W(kx,ky) */
 			if (retain_original) {	/* Must add this contribution to our total output grid */
 				grdflexure_accumulate_solution (GMT, Out, This_Load->Grid);
 				gmt_M_memcpy (This_Load->Grid->data, orig_load, This_Load->Grid->header->size, gmt_grdfloat);	/* Restore H(kx,ky) to what it was before operations */
 			}
+			Ctrl->D.rhol = fixed_rho_load;	/* Reset */
 		}
 
 		/* 4c. TAKE THE INVERSE FFT TO GET w(x,y) */

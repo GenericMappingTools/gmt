@@ -75,7 +75,8 @@ Required Arguments
     the numbering of the given jobs.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming jobs.  For instance, name_000010.grd has a tag width of 6.  By default, this is
     automatically set but if you are splitting large jobs across several computers (via **+s**) then you
-    must use the same tag width for all names.
+    must use the same tag width for all names. **Note**: If just *njobs* is given then only **BATCH_JOB**
+    is available as no data file is available.
 
 
 Optional Arguments
@@ -229,6 +230,18 @@ many products each batch job makes, we ensure each job creates a unique file whe
 these special (and empty) files is how **batch** learns that a particular job has completed and it is time to
 launch another one.
 
+
+Shell Limitations
+-----------------
+
+As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
+involves a sub-shell), we advice against using commands in your main script that involve piping the result
+from one GMT module into another (e.g., gmt blockmean ..... | gmt surface ...).  Because **batch** is running
+many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
+In our experience, piping in the context of batch script may corrupt the GMT history files, resulting in
+stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
+a temporary file when writing batch main scripts. **Note**: Piping from a non-GMT module into a GMT module
+or vice versa is not a problem (e.g., echo ..... | gmt convert ...).
 
 Hints for Batch Makers
 ----------------------
