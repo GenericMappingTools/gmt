@@ -58,6 +58,7 @@ if (SPHINX_FOUND)
 	# Animations
 	if (UNIX AND DO_ANIMATIONS)
 		configure_file (animate.in animate @ONLY)
+		add_custom_target (animation DEPENDS ${_animations})
 	endif (UNIX AND DO_ANIMATIONS)
 
 endif (SPHINX_FOUND)
