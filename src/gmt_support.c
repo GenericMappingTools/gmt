@@ -12202,20 +12202,20 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 		if (HH->BC[i] == GMT_BC_IS_DATA) {set[i] = false; n_skip++;}	/* No need to set since there is data in the pad area */
 	}
 	if (n_skip == 4) {	/* No need to set anything since there is data in the pad area on all sides */
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "All boundaries set via extended data.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: All boundaries set via extended data.\n");
 		return (GMT_NOERROR);
 	}
 
 	/* Check minimum size:  */
 	if (G->header->n_columns < 1 || G->header->n_rows < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "requires n_columns,n_rows at least 1.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Requires n_columns,n_rows at least 1.\n");
 		return (GMT_NOERROR);
 	}
 
 	/* Check that pad is at least 2 */
 	for (i = bok = 0; i < 4; i++) if (G->header->pad[i] < 2) bok++;
 	if (bok > 0) {
-		if (direction == GMT_IN) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "called with a pad < 2; skipped.\n");
+		if (direction == GMT_IN) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Called with a pad < 2; skipped.\n");
 		return (GMT_NOERROR);
 	}
 
@@ -12277,7 +12277,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[jn + i] != G->data[jn + iw]) bok++;
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at North pole.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at North pole.\n", bok, G->header->n_columns);
 		}
 
 		if (HH->gs) {	/* South pole case */
@@ -12288,7 +12288,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			else {	/* First is not NaN so all should be identical */
 				for (i = iw+1; i <= ie; i++) if (G->data[js + i] != G->data[js + iw]) bok++;
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at South pole.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South pole.\n", bok, G->header->n_columns);
 		}
 	}
 
@@ -12310,7 +12310,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
 
 			/* periodic Y rows copied.  Now do X naturals.
 				This is easy since y's are done; no corner problems.
@@ -12355,15 +12355,15 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
 			if (set[YLO] && set[YHI]) {
 				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 
 			return (GMT_NOERROR);
@@ -12414,17 +12414,17 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				if (set[XHI]) G->data[ieo2 + jmx] = G->data[iei1 + jmx] + (gmt_grdfloat)(5.0 * (G->data[ieo1 + jmx] - G->data[ie + jmx]))
 					+ (G->data[ie + jmx - mx] - G->data[ieo1 + jmx - mx]) + (G->data[ie + jmx + mx] - G->data[ieo1 + jmx + mx]);
 			}
-			/* DONE with X not periodic, Y not periodic case.  Loaded all but three cornermost points at each corner.  */
+			/* DONE with X not periodic, Y not periodic case.  Loaded all but three corner-most points at each corner.  */
 
 			for (i = n_set = 0; i < 4; i++) if (set[i]) {
 				n_set++;
 				HH->BC[i] = GMT_BC_IS_NATURAL;
 			}
 			if (n_set == 4) {
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
 			}
 			for (i = 0; i < 4; i++) if (set[i]) {
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
 			}
 			return (GMT_NOERROR);
 		}
@@ -12446,7 +12446,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 				G->data[ieo2 + jmx] = G->data[ieo2k + jmx];
 			}
 		}
-		if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->n_rows);
+		if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at West and East boundaries for repeated nodes.\n", bok, G->header->n_rows);
 
 		if (HH->nyp > 0) {	/* Y is periodic.  copy all, including boundary cols:  */
 			for (i = iwo2, bok = 0; i <= ieo2; ++i) {
@@ -12461,20 +12461,20 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 					G->data[jso2 + i] = G->data[jso2k + i];
 				}
 			}
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "%d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: %d (of %d) inconsistent grid values at South and North boundaries for repeated nodes.\n", bok, G->header->n_columns);
 			/* DONE with X and Y both periodic.  Fully loaded.  */
 
 			if (set[YLO] && set[YHI]) {
 				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for bottom and top edges: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 			return (GMT_NOERROR);
 		}
@@ -12497,7 +12497,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			}
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 		else {
@@ -12525,7 +12525,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			/* End of X is periodic, north (top) is Natural.  */
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 
@@ -12547,7 +12547,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			}
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 		else {
@@ -12575,7 +12575,7 @@ int gmt_grd_BC_set (struct GMT_CTRL *GMT, struct GMT_GRID *G, unsigned int direc
 			/* End of X is periodic, south (bottom) is Natural.  */
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_grd_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 
@@ -12650,13 +12650,13 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 
 	/* Check minimum size:  */
 	if (I->header->n_columns < 1 || I->header->n_rows < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "requires n_columns,n_rows at least 1.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmtlib_image_BC_set: Requires n_columns,n_rows at least 1.\n");
 		return (-1);
 	}
 
 	/* Check if pad is requested */
 	if (I->header->pad[0] < 2 ||  I->header->pad[1] < 2 ||  I->header->pad[2] < 2 ||  I->header->pad[3] < 2) {
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Pad not large enough for BC assignments; no BCs applied\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_image_BC_set: Pad not large enough for BC assignments; no BCs applied\n");
 		return (GMT_NOERROR);
 	}
 
@@ -12714,12 +12714,12 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 		if (HH->gn) {	/* North pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (img[nb*(jn + i)+b] != img[nb*(jn + iw)+b]) bok++;
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Inconsistent image values at North pole.\n");
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtlib_image_BC_set: Inconsistent image values at North pole.\n");
 		}
 		if (HH->gs) {	/* South pole case */
 			bok = 0;
 			for (i = iw+1; i <= ie; i++) for (b = 0; b < nb; b++) if (img[nb*(js + i)+b] != img[nb*(js + iw)+b]) bok++;
-			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "Inconsistent grid values at South pole.\n");
+			if (bok > 0) GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmtlib_image_BC_set: Inconsistent grid values at South pole.\n");
 		}
 	}
 
@@ -12805,15 +12805,15 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			/* DONE with X not periodic, Y periodic case.  Fully loaded.  */
 			if (set[YLO] && set[YHI]) {
 				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 
 			return (GMT_NOERROR);
@@ -12938,10 +12938,10 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 				n_set++;
 			}
 			if (n_set == 4)
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for all edges: %s\n", kind[HH->BC[XLO]]);
 			else {
 				for (i = 0; i < 4; i++) if (set[i]) {
-					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
+					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[i], kind[HH->BC[i]]);
 				}
 			}
 			return (GMT_NOERROR);
@@ -12982,15 +12982,15 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 
 			if (set[YLO] && set[YHI]) {
 				HH->BC[YLO] = HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for bottom and top edge: %s\n", kind[HH->BC[YLO]]);
 			}
 			else if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 			else if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_PERIODIC;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 			return (GMT_NOERROR);
 		}
@@ -13015,7 +13015,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			}
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 		else {
@@ -13052,7 +13052,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			/* End of X is periodic, north (top) is Natural.  */
 			if (set[YHI]) {
 				HH->BC[YHI] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YHI], kind[HH->BC[YHI]]);
 			}
 		}
 
@@ -13076,7 +13076,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			}
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_GEO;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 		else {
@@ -13114,7 +13114,7 @@ int gmtlib_image_BC_set (struct GMT_CTRL *GMT, struct GMT_IMAGE *I) {
 			/* End of X is periodic, south (bottom) is Natural.  */
 			if (set[YLO]) {
 				HH->BC[YLO] = GMT_BC_IS_NATURAL;
-				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmtlib_image_BC_set: Set boundary condition for %s edge: %s\n", edge[YLO], kind[HH->BC[YLO]]);
 			}
 		}
 
