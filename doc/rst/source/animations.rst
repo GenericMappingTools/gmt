@@ -21,7 +21,7 @@ ull-featured movie with thousands of frames at HD or 4k resolution.
 
 .. cssclass:: gmtmovie
 
-- .. youtube:: WQ6JrtEu_Fk
+- .. youtube:: 5m3gRhFFFLA
      :width: 100%
 
   :doc:`/animations/anim01`

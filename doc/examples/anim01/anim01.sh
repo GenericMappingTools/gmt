@@ -6,7 +6,7 @@
 # Unix progs:   echo, convert, cat
 #
 # The finished movie is available in our YouTube channel as well:
-# <youtube-link>
+# https://youtu.be/5m3gRhFFFLA
 
 # 1. Create files needed in the loop
 cat << 'EOF' > pre.sh

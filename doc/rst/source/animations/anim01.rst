@@ -21,5 +21,5 @@ use for the map projection, the region, the spacing around the frame,
 etc. so that the final result gave a reasonable layout. Do this planning
 on a single PostScript plot before running a lengthy animation script.
 
-..  youtube:: WQ6JrtEu_Fk
+..  youtube:: 5m3gRhFFFLA
     :width: 100%
