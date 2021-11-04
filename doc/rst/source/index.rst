@@ -84,8 +84,9 @@ Quick links
         :maxdepth: 1
         :caption: Development
 
-        /devdocs/contributing
         Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+        /devdocs/contributing
+        /devdocs/maintenance
         /devdocs/team
         reStructuredText Cheatsheet </devdocs/rst-cheatsheet>
         Debugging GMT </devdocs/debug>

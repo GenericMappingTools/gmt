@@ -138,6 +138,86 @@ Pull requests will automatically have tests run by GitHub Actions. Github will s
 pull request. Try to get them all passing (green). If you have any trouble, leave a comment in the PR or
 :ref:`get in touch <devdocs/contributing:Getting Help>`.
 
+Setting up your environment
+---------------------------
+
+For editing the documentation locally and contributing code, you will need a development environment. To set up a
+development environment, follow the steps for `building GMT <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`__
+paying attention to several "Note for developers" that provide helpful or necessary information for running tests and
+building the documentation.
+
+To enable testing, you need to *uncomment* the following lines in your ``ConfigUserAdvanced.cmake`` when
+`configuring GMT <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md#configuring>`_::
+
+  enable_testing()
+  set (DO_EXAMPLES TRUE)
+  set (DO_TESTS TRUE)
+  set (DO_ANIMATIONS TRUE)
+
+  set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
+
+  set (DO_API_TESTS ON)
+
+Optionally, uncomment the following line and change ``4`` to the number of ctest jobs to run simultaneously::
+
+  set (N_TEST_JOBS 4)
+
+Updating the development source codes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Assuming you did not delete the build directory, this is just as simple as::
+
+  cd <path-to-gmt>
+  git pull
+  cd build
+  cmake --build .
+  cmake --build . --target install
+
+CMake will detect any changes to the source files and will automatically reconfigure. If you deleted all files inside
+the build directory you have to run CMake again manually.
+
+Using build and test aliases
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The file ``/admin/bashrc_for_gmt`` contains useful aliases for building and testing GMT that some developers chose to
+use. New pull requests with other aliases that you find helpful are welcome. This file is version controlled, so you
+should copy the file to a different location in order to edit and use it. For example, use these commands to copy it to
+your home directory::
+
+  cd <path-to-gmt>
+  cp admin/bashrc_for_gmt ~/.bashrc_for_gmt
+
+Here are the steps for setting up ``bashrc_for_gmt`` after copying it to a new location:
+
+- If you do not have `ninja <https://ninja-build.org/>`_ installed, you will need to change ``builder=ninja`` to
+  ``builder=make`` and ``Bname="Ninja"`` to ``Bname="Unix Makefiles"``. Ninja is recommended for speeding up build times.
+- You may need to update ``pngview=open`` and ``pdfview=open`` depending on your preferred program for viewing files.
+- Optionally, change ``ncores=4`` to the number of cores to use for building and running tests.
+- Change ``MATLAB=/Applications/MATLAB_R2019a.app`` to the path for your version of the MATLAB app.
+- Set ``REPO_DIR`` to the path that contains the local ``git clone`` copy of the GMT repository.
+- Set ``DATA_DIR`` to the path that contains the folders ``dcw-gmt-2.0.0/`` and ``gshhg-gmt-2.3.7/`` for the dcw and gshhg
+  datasets respectively. If these folders are not located in the same path, you can instead delete the line
+  (``DATA_DIR=<path to directory containing GSHHG and DCW>``) and set the individual paths to the GSHHG and DCW source
+  by changing (``export GMT_GSHHG_SOURCE=${DATA_DIR}/gshhg-gmt-2.3.7``) and (``export GMT_DCW_SOURCE=${DATA_DIR}/dcw-gmt-2.0.0``).
+- Edit the file ``~/.bashrc`` to include the line ``source <path>/bashrc_for_gmt``. If you set up ``bashrc_for_gmt`` as a
+  hidden file in your home directory, this line should be ``source ~/.bashrc_for_gmt``.
+
+Here are some of the shortcuts included in ``bashrc_for_gmt``:
+
+- ``gmt6`` and ``gtop`` can be used to quickly ``cd`` to the top of the GMT source directory and repository base respectively.
+- ``gmtfind`` can be used to list all source, docs, scripts, and text files where a string appears in the file
+  (e.g., ``gmtfind "Grid increment is"`` returns all files that contain the string 'Grid increment is'). This includes all
+  files recursively from the current working directory; ``gtop`` or ``gmt6`` can be used prior to this command to get
+  to the source directory or repository base.
+- ``cmakegmtd``, ``cmakegmtr``, and ``cmakegmtx`` configures cmake for debug, release, and XCode debug respectively.
+- ``dlog`` and ``rlog`` can be used to open the debug and release build check error logs respectively.
+- There are several aliases with various combinations of pulling new changes, deleting the build directories,
+  configuring cmake, and building the source code. Each of these are documented with comments in ``bashrc_for_gmt``.
+- ``checkdbuild`` and ``checkrbuild`` can be used to run the tests for the debug and release builds respectively.
+- ``vpngdbuild`` and ``vpdfdbuild`` can be used to open the results from all failing image-based tests.
+- ``view_png_failures_r`` and ``view_pdf_failures_r`` can be used for view failures of the release build with a lag between
+  opening each file.
+
 Contributing Documentation
 --------------------------
 
@@ -147,14 +227,29 @@ at the top right corner of the documentation, and submit a pull request.
 
 The GMT documentation is written in the plaintext markup language
 `reStructuredText (reST) <https://docutils.sourceforge.io/rst.html>`_ and built
-by documentation generator `Sphinx <https://www.sphinx-doc.org/en/master/>`_.
+by documentation generator `Sphinx <https://www.sphinx-doc.org/>`__.
 The reST plaintext files for the GMT documentation are located in the `doc/rst/source <https://github.com/GenericMappingTools/gmt/tree/master/doc/rst/source>`_ folder.
 You may need to know some basic reST syntax before making changes. Please refer to our
 :ref:`reStructuredText Cheatsheet <devdocs/rst-cheatsheet:reStructuredText Cheatsheet>` for details.
 
-Usually you don't need to build the documentation locally for small changes. If you want, you can install Sphinx
-locally, then follow the instructions for `building GMT <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_
-and `building the documentation <https://github.com/GenericMappingTools/gmt/tree/master/MAINTENANCE.md#building-documentation>`_.
+Building the documentation
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Usually you don't need to build the documentation locally for small changes. To build the GMT documentation you need
+to install the `Sphinx <http://www.sphinx-doc.org/>`_ documentation builder. After configuring and
+`building GMT <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_, you can build GMT documentation using
+the following commands within the build directory::
+
+  cmake --build . --target docs_depends     # Generate images included in the documentation
+  cmake --build . --target optimize_images  # Optimize PNG images for documentation [optional]
+  cmake --build . --target animation        # Generate animations included in the documentation [optional]
+  cmake --build . --target docs_man         # UNIX manual pages
+  cmake --build . --target docs_html        # HTML manual, tutorial, cookbook, and API reference
+
+.. note::
+
+  - Refer to the file ``admin/bashrc_for_gmt`` for useful aliases for building the documentation.
+  - `pngquant <https://pngquant.org/>`_ is needed for optimizing images.
 
 Contributing Code
 -----------------
@@ -172,3 +267,75 @@ Here are some specific guidelines:
 
 - Use tabs, rather than spaces, for indentation.
 - Try to split lines at ~120 characters.
+
+
+Testing GMT
+~~~~~~~~~~~
+
+GMT ships with more than 1000 tests to make sure that any changes won't break its functionality. In addition to the
+tests located in the ``/test`` directory, GMT tests all the plots included in its documentation. The
+documentation tests are located in the ``/doc/scripts`` directory. The majority of GMT tests are plot-based,
+with each test requiring a bash script for generating the plot and a reference PostScript file. These tests pass if the
+difference between a new plot generated using the test script and the reference PostScript file is less than a defined
+threshold. Other tests compute grids, tables, or other output, with the test passing if a suitable comparison is made
+against a reference case.
+
+Tests that are known to fail are excluded by adding ``# GMT_KNOWN_FAILURE`` anywhere in the test script.
+
+Running tests
+^^^^^^^^^^^^^
+
+After configuring CMake and building GMT, you can run all the tests by running this command in the build directory::
+
+  cmake --build . --target check
+
+You can also run ``ctest`` commands in the build directory. Below are some common used ctest commands.
+
+-  Run all tests in 4 parallel jobs::
+
+    test -j 4
+
+-  Re-run all failing tests in previous run in 4 parallel jobs::
+
+    ctest -j 4 --rerun-failed
+
+-  Select individual tests using regexp with ctest::
+
+    ctest --output-on-failure -R ex2[3-6]
+
+.. note::
+
+  Refer to the file `admin/bashrc_for_gmt` for useful aliases for running the tests.
+
+Reviewing test failures
+^^^^^^^^^^^^^^^^^^^^^^^
+
+There are several tests that are "known to fail" for GMT. Unless the ``GMT_ENABLE_KNOWN2FAIL`` variable is set when
+configuring CMake or setting up ``ConfigUserAdvanced.cmake``, these tests are excluded when running ctest using the
+instructions provided in the :ref:`Running tests <devdocs/contributing:Running tests>` section. Therefore, you should
+expect all tests to pass unless something new is broken.
+
+Information about failing tests is produced in ``test/fail_count.txt`` inside the build directory. For plot-based tests,
+the subdirectories ``test/`` and ``doc/scripts/`` inside the build directory contain folders for each failing test. For
+plot-based tests, the directory associated with each failing tests contains a ``gmtest.sh`` script, a ``gmt.conf`` file,
+an alias to the test script, a PostScript file and PDF document generated by the test script, and a PNG image that shows
+differences between the reference plot and new plot in magenta. In addition to these files, running the failing tests
+with verbose output can be helpful for evaluating failures::
+
+  ctest --rerun-failed --verbose
+
+Updating reference plots for tests
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Pull requests should avoid needing to change PostScript files in the ``/test`` and ``doc/scripts/``
+directories. However, if this is unavoidable, new PostScript reference files can be generated by running
+``ctest -R <test-script-name>`` in the build directory after following the
+`building guide <https://github.com/GenericMappingTools/gmt/tree/master/BUILDING.md>`_  and the
+:ref:`Setting up your environment <devdocs/contributing:Setting up your environment>` instructions. The new
+PostScript file can then be copied from the appropriate subdirectory within ``build/test/`` or ``build/doc/scripts/``
+to ``/test`` or ``/doc/scripts`` respectively.
+
+Debugging GMT
+~~~~~~~~~~~~~
+
+Guides for debugging GMT are provided in the :doc:`Debugging GMT </devdocs/debug>` section of the GMT documentation.
