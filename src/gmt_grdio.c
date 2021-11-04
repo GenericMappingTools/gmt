@@ -94,9 +94,6 @@ struct GRD_PAD {	/* Local structure */
 
 /* Local functions */
 
-GMT_LOCAL inline struct GMT_GRID    * gmtgrdio_get_grid_data (struct GMT_GRID *ptr) {return (ptr);}
-GMT_LOCAL inline struct GMT_IMAGE   * gmtgrdio_get_image_data (struct GMT_IMAGE *ptr) {return (ptr);}
-
 /*! gmt_M_grd_get_size computes grid size including the padding, and doubles it if complex values */
 GMT_LOCAL size_t gmtgrdio_grd_get_size (struct GMT_GRID_HEADER *h) {
 	return ((((h->complex_mode & GMT_GRID_IS_COMPLEX_MASK) > 0) + 1ULL) * h->mx * h->my);
@@ -3230,60 +3227,6 @@ bool gmtlib_found_url_for_gdal (char *fname) {
 	}
 	else
 		return false;
-}
-
-unsigned int gmtlib_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn) {
-	unsigned int tmp_pad[4] = {0, 0, 0, 0}, delta[4] = {0, 0, 0, 0}, k = 0;
-	/* When using subset with memory grids we cannot actually cut the grid but instead
-	 * must temporarily change the pad to match the desired inner region wesn.  This means
-	 * the pads will change and can be quite large. */
-	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
-
-	gmt_M_memcpy (tmp_pad, h->pad, 4, unsigned int);	/* Initialize new pad to the original pad */
-	/* First determine which (and how many, k) of the 4 new boundaries are inside the original region and update the padding: */
-	if (new_wesn[XLO] > h->wesn[XLO]) k++, tmp_pad[XLO] += urint ((new_wesn[XLO] - h->wesn[XLO]) * HH->r_inc[GMT_X]);
-	if (new_wesn[XHI] < h->wesn[XHI]) k++, tmp_pad[XHI] += urint ((h->wesn[XHI] - new_wesn[XHI]) * HH->r_inc[GMT_X]);
-	if (new_wesn[YLO] > h->wesn[YLO]) k++, tmp_pad[YLO] += urint ((new_wesn[YLO] - h->wesn[YLO]) * HH->r_inc[GMT_Y]);
-	if (new_wesn[YHI] < h->wesn[YHI]) k++, tmp_pad[YHI] += urint ((h->wesn[YHI] - new_wesn[YHI]) * HH->r_inc[GMT_Y]);
-	if (k) {	/* Yes, pad will change since region is different for k of the 4 sides */
-		for (k = 0; k < 4; k++) delta[k] = tmp_pad[k] - h->pad[k];	/* Columns with data being passed as padding */
-		gmt_M_memcpy (orig_pad, h->pad, 4, unsigned int);	/* Place the original grid pad in the provided array */
-		gmt_M_memcpy (orig_wesn, h->wesn, 4, double);		/* Place the original grid wesn in the provided array */
-		gmt_M_memcpy (h->pad, tmp_pad, 4, unsigned int);	/* Place the new pad in the grid header */
-		gmt_M_memcpy (h->wesn, new_wesn, 4, double);		/* Place the new wesn in the grid header */
-		gmt_set_grddim (GMT, h);	/* This recomputes n_columns|n_rows. */
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_expand_headerpad: %d pad sides changed. Now %u/%u/%u/%u\n",
-		            k, h->pad[XLO], h->pad[XHI], h->pad[YLO], h->pad[YHI]);
-		for (k = 0; k < 4; k++) {	/* If pad now contains data then change the BC to reflect this */
-			if (delta[k] >= orig_pad[k]) HH->BC[k] = GMT_BC_IS_DATA;
-		}
-	}
-	else
-		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_expand_headerpad: No pad adjustment needed\n");
-	return k;
-}
-
-void gmtlib_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int *orig_pad, double *orig_wesn) {
-	/* When using subset with memory grids we must reset the pad back to the original setting when done */
-	if (h == NULL) return;	/* Nothing for us to work with */
-	gmt_M_memcpy (h->pad, orig_pad, 4, unsigned int);	/* Place the original pad in the grid header */
-	gmt_M_memcpy (h->wesn, orig_wesn, 4, double);		/* Place the orig_pad wesn in the grid header */
-	gmt_set_grddim (GMT, h);	/* This recomputes n_columns|n_rows. */
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtlib_contract_headerpad: Pad and wesn reset to original values\n");
-}
-
-void gmtlib_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn) {
-	/* When using subset with memory grids we must reset the pad back to the original setting when done */
-	struct GMT_GRID_HEADER *h = NULL;
-	if (family == GMT_IS_GRID) {
-		struct GMT_GRID *G = gmtgrdio_get_grid_data (object);
-		if (G) h = G->header;
-	}
-	else if (family == GMT_IS_IMAGE) {
-		struct GMT_IMAGE *I = gmtgrdio_get_image_data (object);
-		if (I) h = I->header;
-	}
-	gmtlib_contract_headerpad (GMT, h, orig_pad, orig_wesn);
 }
 
 GMT_LOCAL int gmtgrdio_get_extension_period (char *file) {
