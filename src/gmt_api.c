@@ -2829,7 +2829,7 @@ bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file) {
 }
 
 /*! . */
-unsigned int gmtapi_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn) {
+GMT_LOCAL unsigned int gmtapi_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn) {
 	unsigned int tmp_pad[4] = {0, 0, 0, 0}, delta[4] = {0, 0, 0, 0}, k = 0;
 	/* When using subset with memory grids we cannot actually cut the grid but instead
 	 * must temporarily change the pad to match the desired inner region wesn.  This means
@@ -2905,7 +2905,7 @@ GMT_LOCAL void gmtapi_update_cube_minmax (struct GMT_CTRL *GMT, struct GMT_CUBE 
 }
 
 /*! . */
-void gmtapi_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int *orig_pad, double *orig_wesn) {
+GMT_LOCAL void gmtapi_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int *orig_pad, double *orig_wesn) {
 	/* When using subset with memory grids we must reset the pad back to the original setting when done */
 	if (h == NULL) return;	/* Nothing for us to work with */
 	gmt_M_memcpy (h->pad, orig_pad, 4, unsigned int);	/* Place the original pad in the grid header */
@@ -2915,7 +2915,7 @@ void gmtapi_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h,
 }
 
 /*! . */
-void gmtapi_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn) {
+GMT_LOCAL void gmtapi_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn) {
 	/* When using subset with memory grids we must reset the pad back to the original setting when done */
 	struct GMT_GRID_HEADER *h = NULL;
 	if (family == GMT_IS_GRID) {
