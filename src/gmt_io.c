@@ -7796,6 +7796,7 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 			if (alloc_only) T->segment[seg]->n_rows = 0;
 		}
 	}
+	TH->alloc_mode = GMT_ALLOC_INTERNALLY;
 
 	return (T);
 }
