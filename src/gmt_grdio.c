@@ -2087,7 +2087,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		/* Set the variables that are not initialized to 0/false/NULL */
 		header->z_scale_factor = 1.0;
 		HH->row_order   	   = k_nc_start_south; /* S->N */
-		HH->z_id         	  = -1;
+		HH->z_id         	   = GMT_NOTSET;
 		header->n_bands        = 1; /* Grids have at least one band but images may have 3 (RGB) or 4 (RGBA) */
 		header->z_min          = GMT->session.d_NaN;
 		header->z_max          = GMT->session.d_NaN;

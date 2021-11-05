@@ -308,16 +308,16 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	}
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
 	len = (int)MIN(strlen (fill->pattern),PATH_MAX) - 1;
-	for (i = 0, pos = -1; i < len && fill->pattern[i] && pos == -1; i++)
+	for (i = 0, pos = GMT_NOTSET; i < len && fill->pattern[i] && pos == GMT_NOTSET; i++)
 		if (i < len && fill->pattern[i] == ':' && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;	/* THe extra i < len is needed to defeat cppcheck confusion */
-	if (pos > -1) fill->pattern[pos] = '\0';
+	if (pos != GMT_NOTSET) fill->pattern[pos] = '\0';
 	fill->pattern_no = atoi (fill->pattern);
-	if (fill->pattern_no == 0) fill->pattern_no = -1;
+	if (fill->pattern_no == 0) fill->pattern_no = GMT_NOTSET;
 
 	/* See if fore- and background colors are given */
 
 	len = (int)strlen (line);
-	for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
+	for (i = 0, pos = GMT_NOTSET; line[i] && pos == GMT_NOTSET; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
 	pos++;
 
 	if (pos > 0 && line[pos]) {	/* Gave colors */

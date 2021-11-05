@@ -387,7 +387,7 @@ static int parse (struct GMT_CTRL *GMT, struct BACKTRACKER_CTRL *Ctrl, struct GM
 #define SPOTTER_FWD  +1
 
 GMT_LOCAL int backtracker_spotter_track (struct GMT_CTRL *GMT, int way, double xp[], double yp[], double tp[], unsigned int np, struct EULER p[], unsigned int ns, double d_km, double t_zero, unsigned int time_flag, double wesn[], double **c) {
-	int n = -1;
+	int n = GMT_NOTSET;
 	/* Call either spotter_forthtrack (way = 1) or spotter_backtrack (way = -1) */
 
 	switch (way) {

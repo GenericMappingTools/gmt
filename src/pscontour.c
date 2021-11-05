@@ -323,14 +323,14 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 
 		/* Now try to find a data point inside this contour */
 
-		for (j = 0, k = -1; k < 0 && j < nn; j++) {
+		for (j = 0, k = GMT_NOTSET; k == GMT_NOTSET && j < nn; j++) {
 			if (gmt_M_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
 			if (gmt_M_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use gmt_M_y_is_outside since projected x-coordinates)*/
 
 			inside = gmt_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
 			if (inside == 2) k = j;	/* OK, this point is inside */
 		}
-		if (k < 0) continue;	/* Unable to determine */
+		if (k == GMT_NOTSET) continue;	/* Unable to determine */
 		save[pol].high = (z[k] > save[pol].cval);
 
 		if (save[pol].high && !I->high) continue;	/* Do not tick highs */
