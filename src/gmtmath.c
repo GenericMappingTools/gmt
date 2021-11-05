@@ -6478,7 +6478,8 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Create orderly output */
-		dim[GMT_COL] = 3;	dim[GMT_ROW] = n_rows;
+		dim[GMT_COL] = 3;	/* To store the 3 different flavors of T */
+		dim[GMT_ROW] = n_rows;
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
         	info.T->segment[0]->n_rows = n_rows;
