@@ -554,11 +554,19 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		header->n_columns = (uint32_t) lens[HH->xy_dim[0]];
 		header->n_rows = (uint32_t) lens[HH->xy_dim[1]];
 
-		/* Check if the spatial_ref attribute exists */
-		for (i = 0; i < nvars && gm_id == GMT_NOTSET; i++) {	/* Look for the spatial_ref attribute among the variables */
-			if (nc_inq_attlen (ncid, i, "spatial_ref", &len) == NC_NOERR)	/* Found it */
-				gm_id = i;
+		/* Check if the spatial_ref attribute exists, first via the z_id variable, and if not then via a global attribute */
+		if (nc_inq_attlen (ncid, z_id, "grid_mapping", &len) == NC_NOERR) {	/* The data layer has an attribute with the name of the variable that has the spatial_ref */
+			char *v_name = gmt_M_memory (GMT, NULL, len+1, char);           /* Allocate the needed space for the variable name */
+			if (nc_get_att_text (ncid, z_id, "grid_mapping", v_name) == NC_NOERR) {	/* Get the name of the variable */
+				if (nc_inq_varid (ncid, v_name, &i) == NC_NOERR) {	/* Got the id of this variable */
+					if (nc_inq_attlen (ncid, i, "spatial_ref", &len) == NC_NOERR)	/* Yep, here it is */
+						gm_id = i;
+				}
+			}
+			gmt_M_free (GMT, v_name);
 		}
+		else if (nc_inq_varid (ncid, "grid_mapping", &i) == NC_NOERR)	/* A global variable has it */
+			gm_id = i;
 	} /* if (job == 'r' || job == 'u') */
 	else {
 		/* Define dimensions of z variable */
@@ -636,13 +644,13 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		}
 
 		if (gm_id != GMT_NOTSET) {
-			char *pch = NULL;
+			char *attrib = NULL;
 			gmt_M_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
 			gmt_M_str_free (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
-			pch = gmt_M_memory (GMT, NULL, len+1, char);           /* and allocate the needed space */
-			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", pch));
-			header->ProjRefWKT = strdup (pch);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
-			gmt_M_free (GMT, pch);
+			attrib = gmt_M_memory (GMT, NULL, len+1, char);           /* and allocate the needed space */
+			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", attrib));
+			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
+			gmt_M_free (GMT, attrib);
 		}
 
 		/* Explanation for the logic below: Not all netCDF grids are proper COARDS grids and hence we sometime must guess
