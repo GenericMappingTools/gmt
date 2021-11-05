@@ -235,7 +235,7 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **ignore = NULL;
 	char fmt_record[GMT_BUFSIZ] = {""};
 
-	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;
+	int error = 0, this_col, xpos = GMT_NOTSET, ypos = GMT_NOTSET, tpos = GMT_NOTSET;
 	bool cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
 	unsigned int ocol, bad, n_data_col_out = 0, k, n_ignore = 0, cmode;
 	uint64_t row, trk_no, n_tracks;

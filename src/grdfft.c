@@ -495,7 +495,7 @@ GMT_LOCAL bool grdfft_parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_inf
 	else if (line[i] == 'y') {
 		i++;	f_info->k_type = GMT_FFT_K_IS_KY;
 	}
-	fourvals[0] = fourvals[1] = fourvals[2] = fourvals[3] = -1.0;
+	fourvals[0] = fourvals[1] = fourvals[2] = fourvals[3] = GMT_NOTSET;
 
 	n_tokens = pos = 0;
 	while ((gmt_strtok (&line[i], "/", &pos, p))) {
@@ -504,7 +504,7 @@ GMT_LOCAL bool grdfft_parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_inf
 			return (true);
 		}
 		if(p[0] == '-')
-			fourvals[n_tokens] = -1.0;
+			fourvals[n_tokens] = GMT_NOTSET;
 		else {
 			if ((sscanf(p, "%lf", &fourvals[n_tokens])) != 1) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, " Cannot read token %d.\n", n_tokens);
@@ -522,7 +522,7 @@ GMT_LOCAL bool grdfft_parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_inf
 	if (f_info->kind == GRDFFT_FILTER_BW && n_tokens == 3) n_tokens = 2;	/* So we don't check the order as a wavelength */
 
 	for (i = 1; i < n_tokens; i++) {
-		if (fourvals[i] == -1.0 || fourvals[i-1] == -1.0) continue;
+		if (fourvals[i] == GMT_NOTSET || fourvals[i-1] == GMT_NOTSET) continue;
 		if (fourvals[i] > fourvals[i-1]) descending = false;
 	}
 	if (!(descending)) {
@@ -552,14 +552,14 @@ GMT_LOCAL bool grdfft_parse_f_string (struct GMT_CTRL *GMT, struct F_INFO *f_inf
 		f_info->filter = &grdfft_cosine_weight_grdfft;
 	}
 	else if (f_info->kind == GRDFFT_FILTER_BW) {	/* Butterworth specification */
-		f_info->llambda[j] = (fourvals[0] == -1.0) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
-		f_info->hlambda[j] = (fourvals[1] == -1.0) ? -1.0 : fourvals[1] / TWO_PI;
+		f_info->llambda[j] = (fourvals[0] == GMT_NOTSET) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
+		f_info->hlambda[j] = (fourvals[1] == GMT_NOTSET) ? -1.0 : fourvals[1] / TWO_PI;
 		f_info->bw_order = 2.0 * fourvals[2];
 		f_info->filter = &grdfft_bw_weight;
 	}
 	else {	/* Gaussian half-amp specifications */
-		f_info->llambda[j] = (fourvals[0] == -1.0) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
-		f_info->hlambda[j] = (fourvals[1] == -1.0) ? -1.0 : fourvals[1] / TWO_PI;
+		f_info->llambda[j] = (fourvals[0] == GMT_NOTSET) ? -1.0 : fourvals[0] / TWO_PI;	/* TWO_PI is used to counteract the 2*pi in the wavenumber */
+		f_info->hlambda[j] = (fourvals[1] == GMT_NOTSET) ? -1.0 : fourvals[1] / TWO_PI;
 		f_info->filter = &grdfft_gauss_weight;
 	}
 	f_info->arg = f_info->kind - GRDFFT_FILTER_EXP;

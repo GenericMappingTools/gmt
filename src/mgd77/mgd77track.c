@@ -695,7 +695,7 @@ EXTERN_MSC int GMT_mgd77track (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading header sequence for cruise %s\n", list[argno]);
 			continue;
 		}
-		last_julian = -1;
+		last_julian = GMT_NOTSET;
 
 		if (abs (Ctrl->A.mode) == 2)	/* Use MGD77 cruise ID */
 			strncpy (name, D->H.mgd77[use]->Survey_Identifier, GMT_LEN64-1);

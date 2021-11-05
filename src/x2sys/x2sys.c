@@ -327,7 +327,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	X->TAG = strdup (TAG);
 	X->info = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_DATA_INFO);
 	X->file_type = X2SYS_ASCII;
-	X->x_col = X->y_col = X->t_col = -1;
+	X->x_col = X->y_col = X->t_col = GMT_NOTSET;
 	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s/%s.%s", TAG, fname, X2SYS_FMT_EXT);
 	X->dist_flag = 0;	/* Cartesian distances */
