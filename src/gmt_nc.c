@@ -558,10 +558,8 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		if (nc_inq_attlen (ncid, z_id, "grid_mapping", &len) == NC_NOERR) {	/* The data layer has an attribute with the name of the variable that has the spatial_ref */
 			char *v_name = gmt_M_memory (GMT, NULL, len+1, char);           /* Allocate the needed space for the variable name */
 			if (nc_get_att_text (ncid, z_id, "grid_mapping", v_name) == NC_NOERR) {	/* Get the name of the variable */
-				if (nc_inq_varid (ncid, v_name, &i) == NC_NOERR) {	/* Got the id of this variable */
-					if (nc_inq_attlen (ncid, i, "spatial_ref", &len) == NC_NOERR)	/* Yep, here it is */
-						gm_id = i;
-				}
+				if (nc_inq_varid (ncid, v_name, &i) == NC_NOERR)	/* Got the id of this variable */
+					gm_id = i;
 			}
 			gmt_M_free (GMT, v_name);
 		}
@@ -643,11 +641,10 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 			set_reg = false;	/* Do not update it below since we know the registration */
 		}
 
-		if (gm_id != GMT_NOTSET) {
+		if (gm_id != GMT_NOTSET && nc_inq_attlen (ncid, gm_id, "spatial_ref", &len) == NC_NOERR) {	/* Good to go */
 			char *attrib = NULL;
-			gmt_M_err_trap (nc_inq_attlen (ncid, gm_id, "spatial_ref", &len));	/* Get attrib length */
-			gmt_M_str_free (header->ProjRefWKT);   /* Make sure we didn't have a previously allocated one */
-			attrib = gmt_M_memory (GMT, NULL, len+1, char);           /* and allocate the needed space */
+			gmt_M_str_free (header->ProjRefWKT);	/* Make sure we didn't have a previously allocated one */
+			attrib = gmt_M_memory (GMT, NULL, len+1, char);		/* and allocate the needed space */
 			gmt_M_err_trap (nc_get_att_text (ncid, gm_id, "spatial_ref", attrib));
 			header->ProjRefWKT = strdup (attrib);	/* Turn it into a strdup allocation to be compatible with other instances elsewhere */
 			gmt_M_free (GMT, attrib);
