@@ -3203,6 +3203,7 @@ GMT_LOCAL struct GMT_DATATABLE *gmtio_alloc_table (struct GMT_CTRL *GMT, struct 
 		T->n_records += nr;
 		if (Tin->segment[seg]->label)  T->segment[seg]->label = strdup (Tin->segment[seg]->label);
 	}
+	TH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	return (T);
 }
 
