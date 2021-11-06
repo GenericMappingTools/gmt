@@ -3766,7 +3766,6 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				for (tbl_in = 0; tbl_in < Din_obj->n_tables; tbl_in++, tbl++) {	/* Pass over the pointers only */
 					D_obj->table[tbl] = Din_obj->table[tbl_in];
 					Din_obj->table[tbl_in] = NULL;	/* Since passed to D_obj */
-					TH = gmt_get_DT_hidden (D_obj->table[tbl]);
 				}
 				Din_obj->n_tables = 0;	/* Only the husk remains of this fruit */
 				D_obj->n_tables = tbl;
