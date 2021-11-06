@@ -7747,22 +7747,30 @@ double *gmtlib_assign_vector (struct GMT_CTRL *GMT, uint64_t n_rows, uint64_t co
 
 struct GMT_DATASET * gmt_get_dataset (struct GMT_CTRL *GMT) {
 	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASET_HIDDEN *DH = NULL;
 	D = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET);
-	D->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET_HIDDEN);
+	D->hidden = DH = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASET_HIDDEN);
+	DH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT_* modules can free this memory */
+	DH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level */
 	return (D);
 }
 
 struct GMT_DATATABLE * gmt_get_table (struct GMT_CTRL *GMT) {
 	struct GMT_DATATABLE *T = NULL;
+	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	T = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE);
-	T->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE_HIDDEN);
+	T->hidden = TH = gmt_M_memory (GMT, NULL, 1, struct GMT_DATATABLE_HIDDEN);
+	TH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT_* modules can free this memory */
+	TH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level */
 	return (T);
 }
 
 struct GMT_DATASEGMENT * gmt_get_segment (struct GMT_CTRL *GMT) {
 	struct GMT_DATASEGMENT *S = NULL;
+	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
 	S = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT);
-	S->hidden = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT_HIDDEN);
+	S->hidden = SH = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT_HIDDEN);
+	SH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* So GMT_* modules can free this memory */
 	return (S);
 }
 
@@ -7796,7 +7804,6 @@ struct GMT_DATATABLE * gmt_create_table (struct GMT_CTRL *GMT, uint64_t n_segmen
 			if (alloc_only) T->segment[seg]->n_rows = 0;
 		}
 	}
-	TH->alloc_mode = GMT_ALLOC_INTERNALLY;
 
 	return (T);
 }
@@ -7827,8 +7834,6 @@ struct GMT_DATASET * gmtlib_create_dataset (struct GMT_CTRL *GMT, uint64_t n_tab
 	for (tbl = 0; tbl < n_tables; tbl++)
 		if ((D->table[tbl] = gmt_create_table (GMT, n_segments, n_rows, n_columns, mode, alloc_only)) == NULL)
 			return (NULL);
-	DH->alloc_level = GMT->hidden.func_level;	/* Must be freed at this level. */
-	DH->alloc_mode = GMT_ALLOC_INTERNALLY;		/* So GMT_* modules can free this memory. */
 	DH->id = GMT->parent->unique_var_ID++;		/* Give unique identifier */
 
 	return (D);
