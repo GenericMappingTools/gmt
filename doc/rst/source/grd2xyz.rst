@@ -88,6 +88,13 @@ Optional Arguments
     of NaN values.  If your grid contains NaNs then we automatically replace these with the minimum value in the grid;
     use :doc:`grdmath` to pre-process the grid if you wish to select another value.
 
+.. figure:: /_images/GMT_STL.jpg
+   :width: 600 px
+   :align: center
+
+   3-D print of Vailulu’u crater multibeam data (2006, Kilo Moana in Samoa via a GMT STL file with GMT.  Original
+   multibeam data processed with MB-System seen on the right. Photos courtesy of Jasper Konter, U of Hawaii at Manoa.
+
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
     :start-after: **Syntax**
