@@ -1948,14 +1948,14 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		len = strlen (ps_file);
 		j = (unsigned int)len - 1;
-		pos_file = -1;
-		pos_ext = -1;	/* In case file has no extension */
+		pos_file = GMT_NOTSET;
+		pos_ext  = GMT_NOTSET;	/* In case file has no extension */
 		for (i = 0; i < len; i++, j--) {
-			if (pos_ext < 0 && ps_file[j] == '.') pos_ext = j;	/* Beginning of file extension */
-			if (pos_file < 0 && (ps_file[j] == '/' || ps_file[j] == '\\')) pos_file = j + 1;	/* Beginning of file name */
+			if (pos_ext == GMT_NOTSET && ps_file[j] == '.') pos_ext = j;	/* Beginning of file extension */
+			if (pos_file == GMT_NOTSET && (ps_file[j] == '/' || ps_file[j] == '\\')) pos_file = j + 1;	/* Beginning of file name */
 		}
-		if (pos_ext == -1) pos_ext = (unsigned int)len;	/* File has no extension */
-		if (!Ctrl->D.active || pos_file == -1) pos_file = 0;	/* File either has no leading directory or we want to use it */
+		if (pos_ext == GMT_NOTSET) pos_ext = (unsigned int)len;	/* File has no extension */
+		if (!Ctrl->D.active || pos_file == GMT_NOTSET) pos_file = 0;	/* File either has no leading directory or we want to use it */
 
 		/* Adjust to a tight BoundingBox if user requested so */
 

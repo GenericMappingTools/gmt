@@ -424,7 +424,7 @@ GMT_LOCAL int64_t grdspotter_get_flowline (struct GMT_CTRL *GMT, double xx, doub
 
 	/* Find the first point on the flowline inside the desired CVA region */
 
-	for (m = 0, ky = 2, first = -1; m < n_track && first == -1; m++, ky += step) {	/* For each point along flowline */
+	for (m = 0, ky = 2, first = GMT_NOTSET; m < n_track && first == GMT_NOTSET; m++, ky += step) {	/* For each point along flowline */
 		if (c[ky] < wesn[YLO] || c[ky] > wesn[YHI]) continue;	/* Latitude outside region */
 		kx = ky - 1;						/* Index for the x-coordinate */
 		while (c[kx] > wesn[XHI]) c[kx] -= TWO_PI;		/* Elaborate W/E test because of 360 periodicity */
@@ -440,7 +440,7 @@ GMT_LOCAL int64_t grdspotter_get_flowline (struct GMT_CTRL *GMT, double xx, doub
 
 	/* Here we know searching from the end will land inside the grid eventually so last can never exit as -1 */
 
-	for (m = n_track - 1, ky = step * m + 2, last = -1; m >= 0 && last == -1; m--, ky -= step) {	/* For each point along flowline */
+	for (m = n_track - 1, ky = step * m + 2, last = GMT_NOTSET; m >= 0 && last == GMT_NOTSET; m--, ky -= step) {	/* For each point along flowline */
 		if (c[ky] < wesn[YLO] || c[ky] > wesn[YHI]) continue;	/* Latitude outside region */
 		kx = ky - 1;						/* Index for the x-coordinate */
 		while (c[kx] > wesn[XHI]) c[kx] -= TWO_PI;		/* Elaborate W/E test because of 360 periodicity */

@@ -914,7 +914,7 @@ GMT_LOCAL int gmtapi_winppid (int pidin) {
 	/* If pidin == 0 get the PPID of current process
 	   otherwise, get the PPID of pidin process
 	*/
-	int pid, ppid = -1;
+	int pid, ppid = GMT_NOTSET;
 	if (pidin)
 		pid = pidin;
 	else
@@ -927,7 +927,7 @@ GMT_LOCAL int gmtapi_winppid (int pidin) {
 		do {
 			if (pe.th32ProcessID == (unsigned int)pid)
 				ppid = pe.th32ParentProcessID;
-		} while (ppid == -1 && Process32Next(h, &pe));
+		} while (ppid == GMT_NOTSET && Process32Next(h, &pe));
 	}
 	CloseHandle (h);
 	return (ppid);
@@ -952,7 +952,7 @@ GMT_LOCAL char * gmtapi_alnum_only (struct GMTAPI_CTRL *API, char *string) {
 /*! . */
 GMT_LOCAL char * gmtapi_get_ppid (struct GMTAPI_CTRL *API) {
 	/* Return the parent process ID [i.e., shell for command line use or gmt app for API] */
-	int ppid = -1;
+	int ppid = GMT_NOTSET;
 	unsigned int k = 0;
 	static char *source[4] = {"GMT_SESSION_NAME", "parent", "app", "hardwired choice"};
 	char *str = NULL, string[GMT_LEN8];
@@ -963,7 +963,7 @@ GMT_LOCAL char * gmtapi_get_ppid (struct GMTAPI_CTRL *API) {
 	}
 	/* Here we just need to get the PPID and format to string */
 #ifdef DEBUG_MODERN	/* To simplify debugging we set it to 1 */
-	if (ppid == -1) ppid = 1, k = 3;
+	if (ppid == GMT_NOTSET) ppid = 1, k = 3;
 #elif defined(WIN32)
 	/* OK, the trouble is the following. On Win, if the Windows executables are run from within a bash window
 	   gmtapi_get_ppid returns different values for each call, and this completely breaks the idea
@@ -973,13 +973,13 @@ GMT_LOCAL char * gmtapi_get_ppid (struct GMTAPI_CTRL *API) {
 	   is that Windows users running many bash windows concurrently should use GMT_SESSION_NAME in their scripts
 	   to give unique values to different scripts.  */
 	if ((str = getenv ("SHELL")) != NULL) {	/* GMT_SESSION_NAME was set in the environment */
-		//if (ppid == -1) ppid = 0, k = 3;
+		//if (ppid == GMT_NOTSET) ppid = 0, k = 3;
 		ppid = gmtapi_winppid(0);		/* First time get PPID of current process */
 		ppid = gmtapi_winppid(ppid);	/* Second time get PPPID of current process */
 		k = 1;
 	}
 	else {
-		if (ppid == -1) ppid = gmtapi_winppid(0), k = 1;
+		if (ppid == GMT_NOTSET) ppid = gmtapi_winppid(0), k = 1;
 	}
 #else	/* Normal situation */
 	else if (API->external)	/* Return PID of the controlling app instead for external interfaces */
@@ -2558,7 +2558,7 @@ GMT_LOCAL int gmtapi_next_io_source (struct GMTAPI_CTRL *API, unsigned int direc
 	GMT->current.io.data_record_number_in_tbl[direction] = GMT->current.io.data_record_number_in_seg[direction] = 0;	/* Start at zero for new table */
 	if (direction == GMT_IN) {	/* Set reading mode */
 		mode = GMT->current.io.r_mode;
-		GMT->current.io.curr_pos[GMT_IN][GMT_SEG] = -1;	/* First segment of input is set to -1 until first segment header have been dealt with */
+		GMT->current.io.curr_pos[GMT_IN][GMT_SEG] = GMT_NOTSET;	/* First segment of input is set to -1 until first segment header have been dealt with */
 	}
 	else	/* Set writing mode (but could be changed to append if GMT_IS_FILE and filename starts with >) */
 		mode = GMT->current.io.w_mode;
@@ -2829,6 +2829,107 @@ bool gmtlib_data_is_geographic (struct GMTAPI_CTRL *API, const char *file) {
 }
 
 /*! . */
+GMT_LOCAL unsigned int gmtapi_expand_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *new_wesn, unsigned int *orig_pad, double *orig_wesn) {
+	unsigned int tmp_pad[4] = {0, 0, 0, 0}, delta[4] = {0, 0, 0, 0}, k = 0;
+	/* When using subset with memory grids we cannot actually cut the grid but instead
+	 * must temporarily change the pad to match the desired inner region wesn.  This means
+	 * the pads will change and can be quite large. */
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+
+	gmt_M_memcpy (tmp_pad, h->pad, 4, unsigned int);    /* Initialize new pad to the original pad */
+	/* First determine which (and how many, k) of the 4 new boundaries are inside the original region and update the padding: */
+	if (new_wesn[XLO] > h->wesn[XLO]) k++, tmp_pad[XLO] += urint ((new_wesn[XLO] - h->wesn[XLO]) * HH->r_inc[GMT_X]);
+	if (new_wesn[XHI] < h->wesn[XHI]) k++, tmp_pad[XHI] += urint ((h->wesn[XHI] - new_wesn[XHI]) * HH->r_inc[GMT_X]);
+	if (new_wesn[YLO] > h->wesn[YLO]) k++, tmp_pad[YLO] += urint ((new_wesn[YLO] - h->wesn[YLO]) * HH->r_inc[GMT_Y]);
+	if (new_wesn[YHI] < h->wesn[YHI]) k++, tmp_pad[YHI] += urint ((h->wesn[YHI] - new_wesn[YHI]) * HH->r_inc[GMT_Y]);
+	if (k) {    /* Yes, pad will change since region is different for k of the 4 sides */
+		for (k = 0; k < 4; k++) delta[k] = tmp_pad[k] - h->pad[k];  /* Columns with data being passed as padding */
+		gmt_M_memcpy (orig_pad, h->pad, 4, unsigned int);   /* Place the original grid pad in the provided array */
+		gmt_M_memcpy (orig_wesn, h->wesn, 4, double);       /* Place the original grid wesn in the provided array */
+		gmt_M_memcpy (h->pad, tmp_pad, 4, unsigned int);    /* Place the new pad in the grid header */
+		gmt_M_memcpy (h->wesn, new_wesn, 4, double);        /* Place the new wesn in the grid header */
+		gmt_set_grddim (GMT, h);    /* This recomputes n_columns|n_rows. */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtapi_expand_headerpad: %d pad sides changed. Now %u/%u/%u/%u\n",
+			k, h->pad[XLO], h->pad[XHI], h->pad[YLO], h->pad[YHI]);
+		for (k = 0; k < 4; k++) {   /* If pad now contains data then change the BC to reflect this */
+			if (delta[k] >= orig_pad[k]) HH->BC[k] = GMT_BC_IS_DATA;
+		}
+	}
+    else
+        GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtapi_expand_headerpad: No pad adjustment needed\n");
+    return k;
+}
+
+/*! . */
+GMT_LOCAL void gmtapi_update_grid_minmax (struct GMT_CTRL *GMT, struct GMT_GRID *G) {
+	/* Update grid header z_min/z_max to reflect the range within the subset */
+	uint64_t ij;
+	unsigned int row, col;
+	struct GMT_GRID_HEADER *h = G->header;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+
+	h->z_min = +DBL_MAX;    h->z_max = -DBL_MAX;    /* Reset the min/max before we search */
+	HH->has_NaNs = GMT_GRID_NO_NANS;    /* We are about to check for NaNs and if none are found we retain 1, else 2 */
+	gmt_M_grd_loop (GMT, G, row, col, ij) {
+		if (gmt_M_is_fnan (G->data[ij]))
+			HH->has_NaNs = GMT_GRID_HAS_NANS;
+		else {
+			h->z_min = MIN (h->z_min, G->data[ij]);
+			h->z_max = MAX (h->z_max, G->data[ij]);
+		}
+	}
+}
+
+/*! . */
+GMT_LOCAL void gmtapi_update_cube_minmax (struct GMT_CTRL *GMT, struct GMT_CUBE *U) {
+	/* Update cube header z_min/z_max to reflect the range within the subset */
+	uint64_t ij, node, here = 0;
+	unsigned int k, row, col;
+	struct GMT_GRID_HEADER *h = U->header;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+
+	h->z_min = +DBL_MAX;    h->z_max = -DBL_MAX;    /* Reset the min/max before we search */
+	HH->has_NaNs = GMT_GRID_NO_NANS;    /* We are about to check for NaNs and if none are found we retain 1, else 2 */
+	for (k = 0; k < h->n_bands; k++) {
+		gmt_M_grd_loop (GMT, U, row, col, ij) {
+			node = ij + here;
+			if (gmt_M_is_fnan (U->data[node]))
+				HH->has_NaNs = GMT_GRID_HAS_NANS;
+			else {
+				h->z_min = MIN (h->z_min, U->data[node]);
+				h->z_max = MAX (h->z_max, U->data[node]);
+			}
+		}
+		here += h->size;
+	}
+}
+
+/*! . */
+GMT_LOCAL void gmtapi_contract_headerpad (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, unsigned int *orig_pad, double *orig_wesn) {
+	/* When using subset with memory grids we must reset the pad back to the original setting when done */
+	if (h == NULL) return;	/* Nothing for us to work with */
+	gmt_M_memcpy (h->pad, orig_pad, 4, unsigned int);	/* Place the original pad in the grid header */
+	gmt_M_memcpy (h->wesn, orig_wesn, 4, double);		/* Place the orig_pad wesn in the grid header */
+	gmt_set_grddim (GMT, h);	/* This recomputes n_columns|n_rows. */
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtapi_contract_headerpad: Pad and wesn reset to original values\n");
+}
+
+/*! . */
+GMT_LOCAL void gmtapi_contract_pad (struct GMT_CTRL *GMT, void *object, int family, unsigned int *orig_pad, double *orig_wesn) {
+	/* When using subset with memory grids we must reset the pad back to the original setting when done */
+	struct GMT_GRID_HEADER *h = NULL;
+	if (family == GMT_IS_GRID) {
+		struct GMT_GRID *G = gmtapi_get_grid_data (object);
+		if (G) h = G->header;
+	}
+	else if (family == GMT_IS_IMAGE) {
+		struct GMT_IMAGE *I = gmtapi_get_image_data (object);
+		if (I) h = I->header;
+	}
+	gmtapi_contract_headerpad (GMT, h, orig_pad, orig_wesn);
+}
+
+/*! . */
 GMT_LOCAL int gmtapi_get_object (struct GMTAPI_CTRL *API, int sfamily, void *ptr) {
 	/* Returns the ID of the first object whose resource pointer matches ptr.
 	 * Unless family is GMT_NOTSET the object must be of the specified family.
@@ -2879,15 +2980,17 @@ GMT_LOCAL void * gmtapi_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA
 					}
 				}
 				else if (object->region) {	/* Possibly adjust the pad so inner region matches requested wesn */
-					/* NOTE: This assumes the memory cannot be adjusted. Probably should distinaguish between GMT_IS_REFERENCE and GMT_IS_DUPLICATE
+					/* NOTE: This assumes the memory cannot be adjusted. Probably should distinguish between GMT_IS_REFERENCE and GMT_IS_DUPLICATE
 					 * and offer different behavior.  As it is we assume read-only grids */
 					if (object->reset_pad) {	/* First undo any prior sub-region used with this memory grid */
-						gmtlib_contract_headerpad (API->GMT, G->header, object->orig_pad, object->orig_wesn);
+						gmtapi_contract_headerpad (API->GMT, G->header, object->orig_pad, object->orig_wesn);
 						object->reset_pad = HH->reset_pad = 0;
 					}
 					/* Then apply the new pad adjustment.  Basically we cannot mess with the data so we change what constitute the pad */
-					if (gmtlib_expand_headerpad (API->GMT, G->header, object->wesn, object->orig_pad, object->orig_wesn))
+					if (gmtapi_expand_headerpad (API->GMT, G->header, object->wesn, object->orig_pad, object->orig_wesn)) {
 						object->reset_pad = HH->reset_pad = 1;
+						gmtapi_update_grid_minmax (API->GMT, G);	/* Update z-range */
+					}
 				}
 			}
 			if (mode & GMT_CONTAINER_ONLY) break;	/* No grid yet */
@@ -2915,11 +3018,11 @@ GMT_LOCAL void * gmtapi_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA
 					/* NOTE: This assumes the memory cannot be adjusted. Probably should distinaguish between GMT_IS_REFERENCE and GMT_IS_DUPLICATE
 					 * and offer different behavior.  As it is we assume read-only images */
 					if (object->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
-						gmtlib_contract_headerpad (API->GMT, I->header, object->orig_pad, object->orig_wesn);
+						gmtapi_contract_headerpad (API->GMT, I->header, object->orig_pad, object->orig_wesn);
 						object->reset_pad = HH->reset_pad = 0;
 					}
 					/* Then apply the new pad adjustment.  Basically we cannot mess with the data so we change what constitute the pad */
-					if (gmtlib_expand_headerpad (API->GMT, I->header, object->wesn, object->orig_pad, object->orig_wesn))
+					if (gmtapi_expand_headerpad (API->GMT, I->header, object->wesn, object->orig_pad, object->orig_wesn))
 						object->reset_pad = HH->reset_pad = 1;
 				}
 			}
@@ -4615,10 +4718,10 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				HH = gmt_get_H_hidden (I_obj->header);
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory image */
-					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					gmtapi_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
 					S_obj->reset_pad = HH->reset_pad = 0;
 				}
-				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+				if (gmtapi_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
 					S_obj->reset_pad = HH->reset_pad = 1;
 			}
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_image: Return from GMT_IS_REFERENCE\n");
@@ -4659,10 +4762,10 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			via = true;
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory image */
-					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					gmtapi_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
 					S_obj->reset_pad = HH->reset_pad = 0;
 				}
-				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+				if (gmtapi_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
 					S_obj->reset_pad = HH->reset_pad = 1;
 			}
 			break;
@@ -4701,10 +4804,10 @@ GMT_LOCAL struct GMT_IMAGE *gmtapi_import_image (struct GMTAPI_CTRL *API, int ob
 			via = true;
 			if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory image */
-					gmtlib_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					gmtapi_contract_headerpad (GMT, I_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
 					S_obj->reset_pad = HH->reset_pad = 0;
 				}
-				if (gmtlib_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+				if (gmtapi_expand_headerpad (GMT, I_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
 					S_obj->reset_pad = HH->reset_pad = 1;
 			}
 			break;
@@ -5118,11 +5221,13 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			if (done && S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				HH = gmt_get_H_hidden (G_obj->header);
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
-					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					gmtapi_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
 					S_obj->reset_pad = HH->reset_pad = 0;
 				}
-				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+				if (gmtapi_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn)) {
 					S_obj->reset_pad = HH->reset_pad = 1;
+					gmtapi_update_grid_minmax (API->GMT, G_obj);	/* Update z-range */
+				}
 			}
 			GMT_Report (API, GMT_MSG_DEBUG, "gmtapi_import_grid: Return from GMT_IS_REFERENCE\n");
 			break;
@@ -5318,11 +5423,13 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			}
 			else if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory grid */
-					gmtlib_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					gmtapi_contract_headerpad (GMT, G_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
 					S_obj->reset_pad = 0;
 				}
-				if (gmtlib_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+				if (gmtapi_expand_headerpad (GMT, G_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn)) {
 					S_obj->reset_pad = 1;
+					gmtapi_update_grid_minmax (GMT, G_obj);	/* Update z-range */
+				}
 			}
 			break;
 
@@ -6126,11 +6233,13 @@ start_over_import_cube:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			}
 			else if (S_obj->region) {	/* Possibly adjust the pad so inner region matches wesn */
 				if (S_obj->reset_pad) {	/* First undo a prior sub-region used with this memory cube */
-					gmtlib_contract_headerpad (GMT, U_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
+					gmtapi_contract_headerpad (GMT, U_obj->header, S_obj->orig_pad, S_obj->orig_wesn);
 					S_obj->reset_pad = 0;
 				}
-				if (gmtlib_expand_headerpad (GMT, U_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn))
+				if (gmtapi_expand_headerpad (GMT, U_obj->header, S_obj->wesn, S_obj->orig_pad, S_obj->orig_wesn)) {
 					S_obj->reset_pad = 1;
+					gmtapi_update_cube_minmax (API->GMT, U_obj);	/* Update z-range */
+				}
 			}
 			break;
 
@@ -7711,7 +7820,7 @@ void gmtlib_garbage_collection (struct GMTAPI_CTRL *API, int level) {
 		if (!(level == GMT_NOTSET || S_obj->alloc_level == u_level)) {	/* Not the right module level (or not end of session yet) */
 			if (S_obj->reset_pad && S_obj->no_longer_owner == false) {	/* Temporarily changed pad to access a sub-region of a memory grid - now reset this if still the owner */
 				address = S_obj->resource;	/* Try to get the data object */
-				gmtlib_contract_pad (API->GMT, address, S_obj->actual_family, S_obj->orig_pad, S_obj->orig_wesn);
+				gmtapi_contract_pad (API->GMT, address, S_obj->actual_family, S_obj->orig_pad, S_obj->orig_wesn);
 				S_obj->reset_pad = 0;
 			}
 			i++;	continue;
@@ -9565,7 +9674,7 @@ int GMT_Write_Data_ (unsigned int *family, unsigned int *method, unsigned int *g
 
 static inline int gmtapi_wind_to_next_datarecord (int64_t *count, struct GMT_DATASET *D, unsigned int mode) {
 	/* Increment row, seg, tbl to next record and return current record status */
-	if (count[GMT_SEG] == -1) {	/* Special flag to processes table header(s) */
+	if (count[GMT_SEG] == GMT_NOTSET) {	/* Special flag to processes table header(s) */
 		if (count[GMTAPI_HDR_POS] < D->table[count[GMT_TBL]]->n_headers) {	/* Must first handle table headers */
 			count[GMTAPI_HDR_POS]++;	/* Increment counter for each one we return until done */
 			return GMT_IO_TABLE_HEADER;
@@ -9579,7 +9688,7 @@ static inline int gmtapi_wind_to_next_datarecord (int64_t *count, struct GMT_DAT
 		count[GMT_ROW] = 0;
 		if (count[GMT_SEG] == (int64_t)D->table[count[GMT_TBL]]->n_segments) {		/* Also the end of a table ("file") */
 			count[GMT_TBL]++;	/* Next table number */
-			count[GMT_SEG] = -1;	/* Reset to start at first segment in this table */
+			count[GMT_SEG] = GMT_NOTSET;	/* Reset to start at first segment in this table */
 			count[GMTAPI_HDR_POS] = 0;	/* Ready to process headers from next table */
 			if (count[GMT_TBL] == (int64_t)D->n_tables)	/* End of entire data set */
 				return GMT_IO_EOF;
@@ -10017,7 +10126,7 @@ GMT_LOCAL int gmtapi_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int m
 		case GMT_WRITE_TABLE_HEADER:	/* Export a table header record; skip if binary */
 			s = (record) ? (char *)record : GMT->current.io.curr_text;	/* Default to last input record if NULL */
 			/* Hook into table header list */
-			if (count[GMT_SEG] == -1 && strlen(s)) {	/* Only allow headers for first segment in a table */
+			if (count[GMT_SEG] == GMT_NOTSET && strlen(s)) {	/* Only allow headers for first segment in a table */
 				T->header = gmt_M_memory (GMT, T->header, T->n_headers+1, char *);
 				T->header[T->n_headers++] = strdup (s);
 			}
@@ -10045,7 +10154,7 @@ GMT_LOCAL int gmtapi_put_record_dataset (struct GMTAPI_CTRL *API, unsigned int m
 		case GMT_WRITE_DATA:		/* Export a segment row */
 			if (gmt_skip_output (GMT, record->data, T->n_columns))	/* Record was skipped via -s[a|r] */
 				break;
-			if (count[GMT_SEG] == -1) {	/* Most likely a file with one segment but no segment header */
+			if (count[GMT_SEG] == GMT_NOTSET) {	/* Most likely a file with one segment but no segment header */
 				GMT_Report (API, GMT_MSG_DEBUG, "GMTAPI: GMT_Put_Record (double) called before any segments declared\n");
 				count[GMT_SEG] = 0;
 			}
@@ -10293,7 +10402,7 @@ GMT_LOCAL int gmtapi_put_record_init (struct GMTAPI_CTRL *API, unsigned int mode
 				smode = (GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_TEXT) ? GMT_WITH_STRINGS : GMT_NO_STRINGS;
 				D_obj = gmtlib_create_dataset (GMT, 1, GMT_TINY_CHUNK, 0, 0, S_obj->geometry, smode, true);	/* 1 table, alloc segments array; no cols or rows yet */
 				S_obj->resource = D_obj;	/* Save this pointer for next time we call GMT_Put_Record */
-				GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = -1;	/* Start at seg = -1 and increment at first segment header */
+				GMT->current.io.curr_pos[GMT_OUT][GMT_SEG] = GMT_NOTSET;	/* Start at seg = -1 and increment at first segment header */
 				col = (GMT->common.o.select) ? GMT->common.o.n_cols : GMT->common.b.ncol[GMT_OUT];	/* Number of columns needed to hold the data records */
 				if ((GMT->current.io.record_type[GMT_OUT] & GMT_WRITE_DATA) && col == 0) {	/* Still don't know # of columns */
 					if (GMT->common.b.ncol[GMT_IN] < GMT_MAX_COLUMNS) {	/* Hail Mary pass to input columns */
@@ -10467,7 +10576,7 @@ int GMT_Begin_IO (void *V_API, unsigned int family, unsigned int direction, unsi
 	GMT = API->GMT;
 	/* Must initialize record-by-record machinery for dataset */
 	GMT_Report (API, GMT_MSG_DEBUG, "GMT_Begin_IO: Initialize record-by-record access for %s\n", GMT_direction[direction]);
-	API->current_item[direction] = -1;	/* gmtapi_next_data_object (below) will wind it to the first item >= 0 */
+	API->current_item[direction] = GMT_NOTSET;	/* gmtapi_next_data_object (below) will wind it to the first item >= 0 */
 	if ((error = gmtapi_next_data_object (API, family, direction))) return_error (API, GMT_NO_RESOURCES);	/* Something went bad */
 	item = API->current_item[direction];	/* Next item */
 	S_obj = API->object[item];	/* Short-hand for next object */
