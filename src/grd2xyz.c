@@ -647,7 +647,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			}
 			if (!gmt_M_is_zero (G->y[0])) {	/* Shift y coordinates */
 				double origin = G->y[G->header->n_rows-1];
-				for (row = 0; row < G->header->n_columns; row++) G->y[row] -= origin;
+				for (row = 0; row < G->header->n_rows; row++) G->y[row] -= origin;
 			}
 			gmt_M_grd_loop (GMT, G, row, col, ij) {	/* Change data range from z_min/z_max to <base>/(z_max-<bas>) */
 				if (gmt_M_is_dnan (G->data[ij])) G->data[ij] = (gmt_grdfloat)G->header->z_min;	/* Replace NaN's with zmin */
