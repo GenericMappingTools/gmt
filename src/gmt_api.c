@@ -2287,7 +2287,7 @@ GMT_LOCAL size_t gmtapi_set_grdarray_size (struct GMT_CTRL *GMT, struct GMT_GRID
 
 	if (!full_region (wesn)) {
 		gmt_M_memcpy (h_tmp->wesn, wesn, 4, double);    /* Use wesn instead of header info */
-		gmtlib_adjust_loose_wesn (GMT, wesn, h, GMT->common.R.via_polygon ? GMT_MSG_INFORMATION : GMT_MSG_WARNING);	/* Subset requested; make sure wesn matches header spacing */
+		gmt_adjust_loose_wesn (GMT, wesn, h);	/* Subset requested; make sure wesn matches header spacing */
 		gmt_M_memcpy(h_tmp->wesn, wesn, 4, double);	    /* And update the eventually adjusted wesn */
 	}
 	gmt_M_grd_setpad (GMT, h_tmp, GMT->current.io.pad);	/* Use the system pad setting by default */
@@ -4999,7 +4999,7 @@ GMT_LOCAL struct GMT_GRID *gmtapi_import_grid (struct GMTAPI_CTRL *API, int obje
 	 * If the grid->data array is NULL it will be allocated for you.
 	 */
 
-	int item, new_item, new_ID;
+	int item, new_item, new_ID, err;
 	bool done = true, new = false, row_by_row;
  	uint64_t row, col, kol, row_out, i0, i1, j0, j1, ij, ij_orig;
 	size_t size;
@@ -5049,6 +5049,12 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
                     if (API->got_remote_wesn) { /* Use the tile information */
 						unsigned g_reg = (API->tile_reg == 'g') ? GMT_GRID_NODE_REG : GMT_GRID_PIXEL_REG;
 						double g_inc[2] = {API->tile_inc, API->tile_inc}; /* Must duplicate due to syntax below */
+						if (!full_region (API->tile_wesn)) {	/* Ensure any -R via DCW is rounded by these known increments */
+							API->tile_wesn[XLO] = floor ((API->tile_wesn[XLO] / g_inc[GMT_X]) + GMT_CONV8_LIMIT) * g_inc[GMT_X];
+							API->tile_wesn[XHI] = ceil  ((API->tile_wesn[XHI] / g_inc[GMT_X]) - GMT_CONV8_LIMIT) * g_inc[GMT_X];
+							API->tile_wesn[YLO] = floor ((API->tile_wesn[YLO] / g_inc[GMT_Y]) + GMT_CONV8_LIMIT) * g_inc[GMT_Y];
+							API->tile_wesn[YHI] = ceil  ((API->tile_wesn[YHI] / g_inc[GMT_Y]) - GMT_CONV8_LIMIT) * g_inc[GMT_Y];
+						}
 	 					if ((G_obj = gmt_create_grid (API->GMT)) == NULL)
 	 						return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 						if (gmtapi_init_grid (API, NULL, NULL, API->tile_wesn, g_inc, g_reg, GMT_CONTAINER_ONLY, GMT_IN, G_obj))
@@ -5116,6 +5122,9 @@ start_over_import_grid:		/* We may get here if we cannot honor a GMT_IS_REFERENC
 			/* To get a subset we use wesn that is not NULL or contain 0/0/0/0.
 			 * Otherwise we extract the entire file domain */
 			HH = gmt_get_H_hidden (G_obj->header);
+			/* Ensure a region set via DCW is properly rounded */
+			if (!full_region (S_obj->wesn) && (err = gmt_M_err_fail (GMT, gmt_adjust_loose_wesn (GMT, S_obj->wesn, G_obj->header), "")))
+				return_null (API, GMT_RUNTIME_ERROR);
 			size = gmtapi_set_grdarray_size (GMT, G_obj->header, mode, S_obj->wesn);	/* Get array dimension only, which includes padding */
 			if (!G_obj->data) {	/* Array is not allocated yet, do so now. We only expect header (and possibly w/e/s/n subset) to have been set correctly */
 				G_obj->header->size = size;
