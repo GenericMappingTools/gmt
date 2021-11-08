@@ -7645,9 +7645,9 @@ int gmt_alloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t
 	uint64_t col;
 	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
 	if (first && n_columns) {	/* First time we allocate the number of columns needed */
-		S->data = gmt_M_memory (GMT, NULL, n_columns, double *);
-		S->min = gmt_M_memory (GMT, NULL, n_columns, double);
-		S->max = gmt_M_memory (GMT, NULL, n_columns, double);
+		S->data = gmt_M_memory (GMT, S->data, n_columns, double *);
+		S->min = gmt_M_memory (GMT, S->min, n_columns, double);
+		S->max = gmt_M_memory (GMT, S->max, n_columns, double);
 		for (col = 0; col < n_columns; col++) {	/* Initialize the min/max array */
 			S->min[col] = +DBL_MAX;
 			S->max[col] = -DBL_MAX;
