@@ -2331,7 +2331,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	return (2);
 }
 
-int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header, unsigned int verbose_level) {
+GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header, unsigned int verbose_level) {
 	/* Used to ensure that sloppy w,e,s,n values are rounded to the gridlines or pixels in the referenced grid.
 	 * Upon entry, the boundaries w,e,s,n are given as a rough approximation of the actual subset needed.
 	 * The routine will limit the boundaries to the grids region and round w,e,s,n to the nearest gridline or
