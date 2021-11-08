@@ -79,7 +79,7 @@ struct GMT_DATASEGMENT_HIDDEN {    /* Supporting information hidden from the API
 	double lat_limit;		/* For polar caps: the latitude of the point closest to the pole */
 	struct GMT_OGR_SEG *ogr;	/* NULL unless OGR/GMT metadata exist for this segment */
 	struct GMT_DATASEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
-	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc *alloc_mode;	/* Allocation mode per column [GMT_ALLOC_INTERNALLY] */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 };
 

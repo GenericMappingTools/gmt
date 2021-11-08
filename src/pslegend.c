@@ -386,7 +386,7 @@ GMT_LOCAL void pslegend_maybe_realloc_table (struct GMT_CTRL *GMT, struct GMT_DA
 	if (k < TH->n_alloc) return;	/* Not yet */
 	T->segment = gmt_M_memory (GMT, T->segment, TH->n_alloc + GMT_SMALL_CHUNK, struct GMT_DATASEGMENT *);
 	for (unsigned int seg = TH->n_alloc; seg < TH->n_alloc + GMT_SMALL_CHUNK; seg++) {
-		T->segment[seg] = gmt_get_segment (GMT);
+		T->segment[seg] = gmt_get_segment (GMT, T->n_columns);
 		gmt_alloc_segment (GMT, T->segment[seg], n_rows, T->n_columns, mode, true);
 	}
 	TH->n_alloc += GMT_SMALL_CHUNK;

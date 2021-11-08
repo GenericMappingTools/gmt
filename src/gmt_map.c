@@ -5183,7 +5183,7 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double *east, double *south, double *north, bool add_pad) {
 	double w, e, s = 90.0, n = -90.0, *work_x = NULL, *work_y = NULL;
 	uint64_t np, k;
-	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT);
+	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
 	/* Because the genper clip path may be a mix of straight borders and a curved horizon, we must determine this
 	 * clip path and search along it, getting lon,lat along the way, and find the extreme values to use. Before this
 	 * function was added, we ended up in the gmt_wesn_search function which would fail along the horizon in many
