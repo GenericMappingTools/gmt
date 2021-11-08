@@ -8660,6 +8660,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	 * -Rg|d as global shorthand for 0/360/-90/90 or -180/180/-90/90
 	 * -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows>
 	 * -R[g|d]w/e/s/n[/z0/z1][+r]
+	 * -R<countrycodes>
 	 */
 
 	length = strlen (item) - 1;
