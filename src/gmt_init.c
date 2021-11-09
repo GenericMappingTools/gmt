@@ -7645,6 +7645,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'k':	/* -di option to tell GMT the relationship between NaN and a nan-proxy for input */
 
 			GMT_Usage (API, 1, "\n%s Replace any <nodata> values in input data with NaN.", GMT_di_OPT);
+			GMT_Usage (API, 3, "+c Append first column to be affected [2].");
 			break;
 
 		case 'l':	/* -l option to set up auto-legend items*/
@@ -7671,6 +7672,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "\n%s", GMT_do_OPT);
 			GMT_Usage (API, -2, "Replace any NaNs in output data with <nodata>.");
+			GMT_Usage (API, 3, "+c Append first column to be affected [0].");
 			break;
 
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
@@ -9064,21 +9066,28 @@ GMT_LOCAL int gmtinit_parse_data_range (struct GMT_CTRL *GMT, char *arg, unsigne
 
 /*! . */
 unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
-	unsigned int dir, first, last;
-	char *c = NULL;
+	unsigned int dir, first, last, col, def_col[2] = {GMT_Z, GMT_X};
+	char *c = NULL, *q = NULL;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -d requires an argument */
+	if ((q = strstr (arg, "+c"))) {	/* Want to override start columns */
+		col = atoi (&q[2]);
+		q[0] = '\0';	/* Chop off for now */
+	}
 	if (arg[0] == 'i') {
 		first = last = GMT_IN;
 		c = &arg[1];
+		if (q) def_col[GMT_IN] = col;
 	}
 	else if (arg[0] == 'o') {
 		first = last = GMT_OUT;
 		c = &arg[1];
+		if (q) def_col[GMT_OUT] = col;
 	}
 	else {
 		first = GMT_IN;	last = GMT_OUT;
 		c = arg;
+		if (q) def_col[GMT_IN] = def_col[GMT_OUT] = col;
 	}
 
 	for (dir = first; dir <= last; dir++) {
@@ -9086,7 +9095,9 @@ unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.d.nan_proxy[dir] = atof (c);
 		/* Need to know if 0 is used as NaN proxy since we must use a different comparison macro later */
 		GMT->common.d.is_zero[dir] = doubleAlmostEqualZero (0.0, GMT->common.d.nan_proxy[dir]);
+		GMT->common.d.first_col[dir] = def_col[dir];
 	}
+	if (q) q[0] = '+';	/* Restore modifier */
 	if (first == GMT_IN) strncpy (GMT->common.d.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	return (GMT_NOERROR);
 }
