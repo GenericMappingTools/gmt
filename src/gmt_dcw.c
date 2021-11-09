@@ -631,7 +631,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				gmt_M_malloc2 (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, NULL, double);
 				gmt_M_memcpy (S->data[GMT_X], P->data[GMT_X], S->n_rows, double);
 				gmt_M_memcpy (S->data[GMT_Y], P->data[GMT_Y], S->n_rows, double);
-				SH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* Allocated in GMT */
+				SH->alloc_mode[GMT_X] = SH->alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;	/* Allocated in GMT */
 				seg++;
 			}
 		}

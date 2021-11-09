@@ -1300,7 +1300,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 	if (Ctrl->T.active) {	/* Plot image as polygonal pieces. Here, -JZ is not set */
 		double *xx = NULL, *yy = NULL;
 		struct GMT_FILL fill;
-		struct GMT_DATASEGMENT *S = gmt_get_segment (GMT);
+		struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
 		gmt_init_fill (GMT, &fill, -1.0, -1.0, -1.0);	/* Initialize fill structure */
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Tiling without interpolation\n");
@@ -1323,6 +1323,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, xx);
 			gmt_M_free (GMT, yy);
 		}
+		S->data[GMT_X] = S->data[GMT_Y] = NULL;	/* Since xx and yy was set to NULL but not data... */
 		gmt_free_segment (GMT, &S);
 	}
 

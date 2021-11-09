@@ -386,10 +386,35 @@ GMT_LOCAL void pslegend_maybe_realloc_table (struct GMT_CTRL *GMT, struct GMT_DA
 	if (k < TH->n_alloc) return;	/* Not yet */
 	T->segment = gmt_M_memory (GMT, T->segment, TH->n_alloc + GMT_SMALL_CHUNK, struct GMT_DATASEGMENT *);
 	for (unsigned int seg = TH->n_alloc; seg < TH->n_alloc + GMT_SMALL_CHUNK; seg++) {
-		T->segment[seg] = gmt_get_segment (GMT);
+		T->segment[seg] = gmt_get_segment (GMT, T->n_columns);
 		gmt_alloc_segment (GMT, T->segment[seg], n_rows, T->n_columns, mode, true);
 	}
 	TH->n_alloc += GMT_SMALL_CHUNK;
+}
+
+GMT_LOCAL void pslegend_free_unused_segments (struct GMT_CTRL *GMT, struct GMT_DATATABLE *T, uint64_t k) {
+	/* Must finalize the number of allocated segments */
+	struct GMT_DATATABLE_HIDDEN *TH = gmt_get_DT_hidden (T);
+	if (k == TH->n_alloc) return;	/* Exact match */
+	T->n_segments = k;
+	for (unsigned int seg = T->n_segments; seg < TH->n_alloc; seg++) {
+		gmt_free_segment (GMT, &(T->segment[seg]));
+	}
+	T->segment = gmt_M_memory (GMT, T->segment, T->n_segments, struct GMT_DATASEGMENT *);
+	TH->n_alloc = T->n_segments;
+}
+
+GMT_LOCAL void pslegend_free_unused_rows (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S, uint64_t k) {
+	/* Must finalize the number of allocated rows */
+	struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S);
+	if (k == SH->n_alloc) return;	/* Not yet */
+	S->n_rows = k;
+	if (S->n_columns) {	/* Numerical data */
+		uint64_t col;
+		for (col = 0; col < S->n_columns; col++)
+			S->data[col] = gmt_M_memory (GMT, S->data[col], S->n_rows, double);
+	}
+	if (S->text) S->text = gmt_M_memory (GMT, S->text, S->n_rows, char *);
 }
 
 GMT_LOCAL void pslegend_maybe_realloc_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT *S) {
@@ -1824,9 +1849,14 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* Time to plot any symbols, text, fronts, quoted lines, and paragraphs we collected in the loop */
 
 	if (D[FRONT]) {
-		TH = gmt_get_DT_hidden (D[FRONT]->table[0]);
-		/* Create option list, register D[FRONT] as input source */
-		D[FRONT]->table[0]->n_segments = n_fronts;	/* Set correct number of fronts */
+		pslegend_free_unused_segments (GMT, D[FRONT]->table[0], n_fronts);
+#ifdef DEBUG
+		if (Ctrl->DBG.active) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_front.txt", D[FRONT]) != GMT_NOERROR) {
+				Return (API->error);
+			}
+		}
+#endif
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D[FRONT], string) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -1838,19 +1868,17 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+	}
+	if (D[QLINE]) {
+		pslegend_free_unused_segments (GMT, D[QLINE]->table[0], n_quoted_lines);
 #ifdef DEBUG
 		if (Ctrl->DBG.active) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_front.txt", D[FRONT]) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_qline.txt", D[QLINE]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 #endif
-		D[FRONT]->table[0]->n_segments = TH->n_alloc;	/* Reset to allocation limit */
-	}
-	if (D[QLINE]) {
-		TH = gmt_get_DT_hidden (D[QLINE]->table[0]);
 		/* Create option list, register D[QLINE] as input source */
-		D[QLINE]->table[0]->n_segments = n_quoted_lines;	/* Set correct number of lines */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D[QLINE], string) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -1862,19 +1890,17 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+	}
+	if (D[DLINE]) {
+		pslegend_free_unused_segments (GMT, D[DLINE]->table[0], n_decorated_lines);
 #ifdef DEBUG
 		if (Ctrl->DBG.active) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_qline.txt", D[QLINE]) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_dline.txt", D[DLINE]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 #endif
-		D[QLINE]->table[0]->n_segments = TH->n_alloc;	/* Reset to allocation limit */
-	}
-	if (D[DLINE]) {
-		TH = gmt_get_DT_hidden (D[DLINE]->table[0]);
 		/* Create option list, register D[DLINE] as input source */
-		D[DLINE]->table[0]->n_segments = n_decorated_lines;	/* Set correct number of lines */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, D[DLINE], string) != GMT_NOERROR) {
 			Return (API->error);
 		}
@@ -1886,18 +1912,16 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+	}
+	if (D[SYM]) {
+		pslegend_free_unused_segments (GMT, D[SYM]->table[0], n_symbols);
 #ifdef DEBUG
 		if (Ctrl->DBG.active) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_LINE, GMT_IO_RESET, NULL, "dump_dline.txt", D[DLINE]) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, "dump_sym.txt", D[SYM]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 #endif
-		D[DLINE]->table[0]->n_segments = TH->n_alloc;	/* Reset to allocation limit */
-	}
-	if (D[SYM]) {
-		TH = gmt_get_DT_hidden (D[SYM]->table[0]);
-		D[SYM]->table[0]->n_segments = n_symbols;	/* Set correct number of segments */
 		/* Create option list, register D[SYM] as input source */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_POINT, GMT_IN|GMT_IS_REFERENCE, D[SYM], string) != GMT_NOERROR) {
 			Return (API->error);
@@ -1911,18 +1935,17 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
+	}
+	if (D[TXT]) {
+		pslegend_free_unused_rows (GMT, D[TXT]->table[0]->segment[0], krow[TXT]);
+		D[TXT]->n_records = krow[TXT];
 #ifdef DEBUG
 		if (Ctrl->DBG.active) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_RESET, NULL, "dump_sym.txt", D[SYM]) != GMT_NOERROR) {
+			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "dump_txt.txt", D[TXT]) != GMT_NOERROR) {
 				Return (API->error);
 			}
 		}
 #endif
-		D[SYM]->table[0]->n_segments = TH->n_alloc;	/* Reset to allocation limit */
-	}
-	if (D[TXT]) {
-		TH = gmt_get_DT_hidden (D[TXT]->table[0]);
-		D[TXT]->table[0]->segment[0]->n_rows = D[TXT]->n_records = krow[TXT];
 		/* Create option list, register D[TXT] as input source */
 		if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_IN|GMT_IS_REFERENCE, D[TXT], string) != GMT_NOERROR) {
 			Return (API->error);
@@ -1935,14 +1958,6 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 		if (GMT_Close_VirtualFile (API, string) != GMT_NOERROR) {
 			Return (API->error);
 		}
-#ifdef DEBUG
-		if (Ctrl->DBG.active) {
-			if (GMT_Write_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_IO_RESET, NULL, "dump_txt.txt", D[TXT]) != GMT_NOERROR) {
-				Return (API->error);
-			}
-		}
-#endif
-		D[TXT]->table[0]->segment[0]->n_rows = D[TXT]->n_records = TH->n_alloc;	/* To free what we allocated */
 	}
 	if (D[PAR]) {
 		if (n_para >= 0) {	/* End of last paragraph for sure */

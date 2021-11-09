@@ -397,7 +397,6 @@ GMT_LOCAL struct GMT_DATASET * grdrotater_get_grid_path (struct GMT_CTRL *GMT, s
 	S->min[GMT_Y] = h->wesn[YLO];	S->max[GMT_Y] = h->wesn[YHI];
 	SH = gmt_get_DS_hidden (S);
 	SH->pole = 0;
-	SH->alloc_mode = GMT_ALLOC_INTERNALLY;
 
 	return (D);
 }
