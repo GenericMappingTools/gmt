@@ -16,7 +16,7 @@ gmt begin ex49
 	gmt grdimage depth_pixel.nc -JM15c -Cz.cpt -B -BWSne --FORMAT_GEO_MAP=dddF --FONT_ANNOT_PRIMARY=12p
 	gmt plot -W1p @ridge_49.txt
 	gmt grdcontour age_pixel.nc -A+f14p -Ct.cpt -Wa0.1p+c -GL30W/22S/5E/13S
-	gmt colorbar -Cz.cpt -DjTR+w5c/0.4c+h+o0.75c/0.4c -Baf+u" km" -W0.001 -F+p1p+gbeige
+	gmt colorbar -Cz.cpt -DjTR+w4c/0.4c+h+o0.75c/0.4c -Baf+u" km" -W0.001 -F+p1p+gbeige+s
 	# Obtain depth, age pairs by dumping grids and pasting results
 	gmt grd2xyz age_pixel.nc -bof > age.bin
 	gmt grd2xyz depth_pixel.nc -bof > depth.bin
@@ -26,7 +26,7 @@ gmt begin ex49
 	# WHy do we need the -R below? otherwise it fails to work
 	gmt grdimage density.nc -R0/100/-6500/0 -JX15c/10c -Q -Y12c -Ct.cpt
 	# Obtain modal depths every ~5 Myr
-	gmt blockmode -R0/100/-10000/0 -I5/10000 -r -E depth-age.bin -bi3f -o0,2,3 > modal.txt
+	gmt blockmode -R0/100/-10000/0 -I5/10000 -r -Q -E depth-age.bin -bi3f -o0,2,3 > modal.txt
 	# Compute Parsons & Sclater [1977] depth-age curve
 	# depth(t) =   350 * sqrt(t) + 2500, t < 70 Myr
 	#	   =  6400 - 3200 exp (-t/62.8), t > 70 Myr
@@ -43,12 +43,12 @@ gmt begin ex49
 	gmt plot -Ss0.4c -Gblue modal.txt -Ey+p1p,blue
 	gmt plot -Ss0.1c -Gwhite modal.txt
 	gmt basemap -R0/100/0/6.5 -JX15c/-10c -Bxaf+u" Myr" -Byaf+u" km" -BWsNe --FONT_ANNOT_PRIMARY=12p
-	gmt legend -DjRT+w6.5c+o0.25c -F+p1p+gbeige+s <<- EOF
-	S 0.5c - 0.9c - 4p,green 1c Parsons & Sclater (1977)
-	S 0.5c - 0.9c - 4p,white 1c Stein & Stein (1992)
-	S 0.5c s 0.4c blue - 1c Modal depth estimates
+	gmt legend -DjRT+w5c+o0.25c -F+p1p+gbeige+s <<- EOF
+	S 0.5c - 0.9c - 4p,green 1.1c Parsons & Sclater (1977)
+	S 0.5c - 0.9c - 4p,white 1.1c Stein & Stein (1992)
+	S 0.5c s 0.4c blue - 1.1c Modal depth estimates
 	EOF
-	gmt legend -DjRT+w6.5c+o0.25c <<- EOF
+	gmt legend -DjRT+w5c+o0.25c <<- EOF
 	S 0.5c - 0.9c - 1p 0.75c
 	S 0.5c - 0.9c - 1p 0.75c
 	S 0.5c s 0.1c white - 0.75c
