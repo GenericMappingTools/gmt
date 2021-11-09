@@ -50,7 +50,8 @@ Description
 orientation. Various map projections are provided, with the option to
 draw and annotate the map boundaries. Greek characters, subscript, superscript, and small
 caps are supported as follows: The sequence @~ toggles between the
-selected font and Greek (Symbol). @%\ *no*\ % sets the font to *no*; @%%
+selected font and Greek (Symbol). @%\ *font*\ % switches to *font* where
+*font* can either be a font *number* or *name* (see **-L**); @%%
 resets the font to the starting font, @- toggles subscripts on/off, @+
 toggles superscript on/off, @# toggles small caps on/off, @;\ *color*;
 changes the font color (@;; resets it), @:\ *size*: changes the font

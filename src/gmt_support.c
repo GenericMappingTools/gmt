@@ -308,16 +308,16 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	}
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
 	len = (int)MIN(strlen (fill->pattern),PATH_MAX) - 1;
-	for (i = 0, pos = -1; i < len && fill->pattern[i] && pos == -1; i++)
+	for (i = 0, pos = GMT_NOTSET; i < len && fill->pattern[i] && pos == GMT_NOTSET; i++)
 		if (i < len && fill->pattern[i] == ':' && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;	/* THe extra i < len is needed to defeat cppcheck confusion */
-	if (pos > -1) fill->pattern[pos] = '\0';
+	if (pos != GMT_NOTSET) fill->pattern[pos] = '\0';
 	fill->pattern_no = atoi (fill->pattern);
-	if (fill->pattern_no == 0) fill->pattern_no = -1;
+	if (fill->pattern_no == 0) fill->pattern_no = GMT_NOTSET;
 
 	/* See if fore- and background colors are given */
 
 	len = (int)strlen (line);
-	for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
+	for (i = 0, pos = GMT_NOTSET; line[i] && pos == GMT_NOTSET; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
 	pos++;
 
 	if (pos > 0 && line[pos]) {	/* Gave colors */
@@ -3001,10 +3001,11 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	if (S->n_rows == SH->n_alloc) {	/* Need more memory for the segment */
 		uint64_t col;
 		SH->n_alloc += GMT_SMALL_CHUNK;
-		for (col = 0; col < S->n_columns; col++)
+		for (col = 0; col < S->n_columns; col++) {
 			S->data[col] = gmt_M_memory (GMT, S->data[col], SH->n_alloc, double);
+			SH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
+		}
 		S->text = gmt_M_memory (GMT, S->text, SH->n_alloc, char *);
-		SH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
@@ -16098,7 +16099,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	uint64_t k, col, seg, row, start, length, *pos = gmt_M_memory (GMT, NULL, S->n_rows, uint64_t);
 	char label[GMT_BUFSIZ] = {""}, *txt = NULL, *feature = "Line";
 	double r;
-	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_get_segment (GMT);
+	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_get_segment (GMT, S->n_columns);
 	struct GMT_DATASEGMENT_HIDDEN *LH = NULL, *SH = gmt_get_DS_hidden (S);
 
 	for (k = 0; k < S->n_rows; k++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we don't have to check again */

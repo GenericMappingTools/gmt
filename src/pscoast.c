@@ -1027,7 +1027,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 	}
 	if (clip_to_extend_lines) gmt_map_clip_on (GMT, GMT->session.no_rgb, 3);
 
-	last_pen_level = -1;
+	last_pen_level = GMT_NOTSET;
 
 	if (clipping) PSL_beginclipping (PSL, xtmp, ytmp, 0, GMT->session.no_rgb, 1);	/* Start clippath */
 
@@ -1193,7 +1193,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 		GMT_Report (API, GMT_MSG_INFORMATION, "Adding Rivers...");
 		if (!Ctrl->M.active) PSL_comment (PSL, "Start of River segments\n");
-		last_k = -1;
+		last_k = GMT_NOTSET;
 
 		for (ind = 0; ind < r.nb; ind++) {	/* Loop over necessary bins only */
 
@@ -1264,7 +1264,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 		step = MAX (fabs(GMT->common.R.wesn[XLO] - GMT->common.R.wesn[XHI]), fabs (GMT->common.R.wesn[YHI] - GMT->common.R.wesn[YLO])) / 4.0;
 
-		last_k = -1;
+		last_k = GMT_NOTSET;
 
 		for (ind = 0; ind < b.nb; ind++) {	/* Loop over necessary bins only */
 
