@@ -1323,7 +1323,7 @@ EXTERN_MSC int GMT_grdview (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, xx);
 			gmt_M_free (GMT, yy);
 		}
-		S->data[GMT_X] = S->data[GMT_Y] = NULL;
+		S->data[GMT_X] = S->data[GMT_Y] = NULL;	/* Since xx and yy was set to NULL but not data... */
 		gmt_free_segment (GMT, &S);
 	}
 
