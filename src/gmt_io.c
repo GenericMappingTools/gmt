@@ -8536,7 +8536,7 @@ void gmt_free_segment (struct GMT_CTRL *GMT, struct GMT_DATASEGMENT **S) {
 	if (SH->ogr) gmtio_free_ogr_seg (GMT, segment);	/* OGR metadata */
 	gmtio_free_segment_text (GMT, segment);
 	gmt_M_free (GMT, SH->alloc_mode);
-	gmt_M_free (GMT, SH);
+	gmt_M_free (GMT, segment->hidden);
 	gmt_M_free (GMT, segment);
 	*S = NULL;
 }
@@ -8559,7 +8559,7 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 		for (seg = 0; seg < table->n_segments; seg++) gmt_free_segment (GMT, &(table->segment[seg]));
 		gmt_M_free (GMT, table->segment);
 	}
-	gmt_M_free (GMT, TH);
+	gmt_M_free (GMT, table->hidden);
 	gmt_M_free (GMT, table);
 }
 
