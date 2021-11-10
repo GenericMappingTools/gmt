@@ -54,7 +54,6 @@ EXTERN_MSC char *dlerror (void);
 #endif
 
 EXTERN_MSC void gmtlib_terminate_session ();
-EXTERN_MSC int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header, unsigned int verbose_level);
 EXTERN_MSC unsigned int gmtlib_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col, unsigned int *col_pos_in);
 EXTERN_MSC bool gmtlib_set_do_seconds (struct GMT_CTRL *GMT, double inc);
 EXTERN_MSC int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P);

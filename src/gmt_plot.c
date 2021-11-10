@@ -1255,7 +1255,7 @@ GMT_LOCAL void gmtplot_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 	/* Draw 0-4 boundary sides.  If more than 1 then ensure we draw a continuous line to
 	 * avoid notches at sharp corners. */
 	uint64_t i, n_sides = 0, np = 0, n_set = 0;
-	int this, next = -1, flag;
+	int this, next = GMT_NOTSET, flag;
 	double lonstart[4] = {w, e, e, w}, lonstop[4] = {e, e, w, w};
 	double latstart[4] = {s, s, n, n}, latstop[4] = {s, n, n, s};
 	double *xx = NULL, *yy = NULL;
@@ -1266,12 +1266,12 @@ GMT_LOCAL void gmtplot_wesn_map_boundary (struct GMT_CTRL *GMT, struct PSL_CTRL 
 
 	for (this = S_SIDE; this <= W_SIDE; this++) {
 		if (GMT->current.map.frame.side[this]) n_sides++;
-		else if (next == -1) next = this;
+		else if (next == GMT_NOTSET) next = this;
 	}
 	if (n_sides == 0) return;	/* Nuthin' to do */
 
 	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "gmtplot_wesn_map_boundary n_sides = %" PRIu64 "\n", n_sides);
-	this = next;		/* First side to be skipped (== -1 if none to be skipped) */
+	this = next;		/* First side to be skipped (== GMT_NOTSET if none to be skipped) */
 	flag = PSL_MOVE;	/* Need to move to the start of the line the first time */
 	while (n_set < n_sides) {	/* While more sides need to be plotted we loop counter-clockwise */
 		this++;		/* Go to next side (this will be S_SIDE if all 4 sides should be plotted) */
@@ -3191,7 +3191,7 @@ GMT_LOCAL void gmtplot_timestamp (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, do
 
 	/* Reset fill style to empty and no outline and reset linewidth */
 	PSL_setfill (PSL, unset_rgb, 0);
-	PSL->current.linewidth = -1.0;
+	PSL->current.linewidth = GMT_NOTSET;
 }
 
 GMT_LOCAL void gmtplot_echo_command (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GMT_OPTION *options) {
@@ -6361,8 +6361,8 @@ void gmt_map_basemap (struct GMT_CTRL *GMT) {
 
 	/* These three commands resets the memory of PSL regarding pen width, color, and outline */
 	gmt_M_memcpy (PSL->current.rgb[PSL_IS_STROKE], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 so it can be reset below */
-	PSL->current.linewidth = -1.0;	/* For a reset of internal setting in PSL */
-	PSL->current.outline = -1;		/* Will now be changed by first PSL_setfill */
+	PSL->current.linewidth = GMT_NOTSET;	/* For a reset of internal setting in PSL */
+	PSL->current.outline = GMT_NOTSET;		/* Will now be changed by first PSL_setfill */
 
 	if (GMT->current.proj.three_D && GMT->current.map.frame.drawz) GMT->current.map.frame.plotted_header = true;	/* Just so it is not plotted by gmtplot_map_boundary first */
 
@@ -8616,9 +8616,9 @@ GMT_LOCAL void gmtplot_reset_PSL (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL) {
 	/* Because PSL_*_completion procedures are called at the end of the module but crafted at the start, we must forget we used any fonts, fills, pens in creating them,
 	 * otherwise the next PSL call requesting a fill or pen will not be properly set since PSL may think it is already the current choice. */
 	PSL->internal.font[PSL->current.font_no].encoded = 0;	/* Forget about font encoding */
-	PSL->current.font_no = -1;					/* Forget what the current font is */
-	PSL->current.linewidth = -1.0;              /* Forget we ever set a line width */
-	PSL->current.outline = -1;					/* Forget we requested polygon outline */
+	PSL->current.font_no = GMT_NOTSET;					/* Forget what the current font is */
+	PSL->current.linewidth = GMT_NOTSET;              /* Forget we ever set a line width */
+	PSL->current.outline = GMT_NOTSET;					/* Forget we requested polygon outline */
 	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FONT], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since text setting must set the color desired */
 	gmt_M_memcpy (PSL->current.rgb[PSL_IS_FILL], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since fill setting must set the color desired */
 	gmt_M_memcpy (PSL->current.rgb[PSL_IS_STROKE], GMT->session.no_rgb, 3, double);	/* Reset to -1,-1,-1 since stroke setting must set the color desired */
@@ -8797,11 +8797,11 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	gmt_sort_array (GMT, fno, id, GMT_INT);
 
-	last = -1;
+	last = GMT_NOTSET;
 	for (k = n_fonts = 0; k < id; k++) {
 		if (fno[k] != last) last = fno[n_fonts++] = fno[k]; /* To avoid duplicates */
 	}
-	for (k = n_fonts; k < PSL_MAX_EPS_FONTS; k++) fno[k] = -1;	/* Terminate */
+	for (k = n_fonts; k < PSL_MAX_EPS_FONTS; k++) fno[k] = GMT_NOTSET;	/* Terminate */
 
 	P = &(GMT->current.plot.panel);
 
@@ -8854,7 +8854,7 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 	/* Create %%PROJ tag that psconvert can use to prepare a ESRI world file */
 
 	this_proj = GMT->current.proj.projection_GMT;
-	for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
+	for (k = 0, id = GMT_NOTSET; id == GMT_NOTSET && k < GMT_N_PROJ4; k++)
 		if (GMT->current.proj.proj4[k].id == this_proj) id = k;
 	if (id >= 0) {			/* Valid projection for creating world file info */
 		double Cartesian_m[4];	/* WESN equivalents in projected meters */
@@ -8919,9 +8919,9 @@ struct PSL_CTRL *gmt_plotinit (struct GMT_CTRL *GMT, struct GMT_OPTION *options)
 
 	PSL_settransparencymode (PSL, GMT->current.setting.ps_transpmode);	/* Set PDF transparency mode, if used */
 	/* Enforce chosen line parameters */
-	k = GMT->PSL->internal.line_cap;	GMT->PSL->internal.line_cap = -1; PSL_setlinecap (PSL, k);
-	k = GMT->PSL->internal.line_join;	GMT->PSL->internal.line_join = -1; PSL_setlinejoin (PSL, k);
-	k = GMT->PSL->internal.miter_limit;	GMT->PSL->internal.miter_limit = -1; PSL_setmiterlimit (PSL, k);
+	k = GMT->PSL->internal.line_cap;	GMT->PSL->internal.line_cap = GMT_NOTSET; PSL_setlinecap (PSL, k);
+	k = GMT->PSL->internal.line_join;	GMT->PSL->internal.line_join = GMT_NOTSET; PSL_setlinejoin (PSL, k);
+	k = GMT->PSL->internal.miter_limit;	GMT->PSL->internal.miter_limit = GMT_NOTSET; PSL_setmiterlimit (PSL, k);
 
 	if (P->active && P->first) {
 		/* Place the panel tag, once per panel (if requested), then update the gmt.panel file to say we have been there */
@@ -9147,7 +9147,7 @@ int gmt_strip_layer (struct GMTAPI_CTRL *API, int nlayers) {
 	fig = gmt_get_current_figure (API);
 	/* Get the name of the corresponding gmt.layers.<fig> file */
 	snprintf (file, PATH_MAX, "%s/gmt.layers.%d", API->gwf_dir, fig);
-	if (nlayers == -1) {	/* Reset to nothing, but still remain at current figure */
+	if (nlayers == GMT_NOTSET) {	/* Reset to nothing, but still remain at current figure */
 		if (gmt_remove_file (API->GMT, file))	/* Remove the layers file */
 			GMT_Report (API, GMT_MSG_WARNING, "Failed to delete file: %s\n", file);
 		snprintf (file, PATH_MAX, "%s/gmt_%d.ps-", API->gwf_dir, fig);

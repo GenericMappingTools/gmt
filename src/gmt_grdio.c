@@ -2087,7 +2087,7 @@ void gmt_grd_init (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, struct 
 		/* Set the variables that are not initialized to 0/false/NULL */
 		header->z_scale_factor = 1.0;
 		HH->row_order   	   = k_nc_start_south; /* S->N */
-		HH->z_id         	  = -1;
+		HH->z_id         	   = GMT_NOTSET;
 		header->n_bands        = 1; /* Grids have at least one band but images may have 3 (RGB) or 4 (RGBA) */
 		header->z_min          = GMT->session.d_NaN;
 		header->z_max          = GMT->session.d_NaN;
@@ -2331,7 +2331,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	return (2);
 }
 
-int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header, unsigned int verbose_level) {
+GMT_LOCAL int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header, unsigned int verbose_level) {
 	/* Used to ensure that sloppy w,e,s,n values are rounded to the gridlines or pixels in the referenced grid.
 	 * Upon entry, the boundaries w,e,s,n are given as a rough approximation of the actual subset needed.
 	 * The routine will limit the boundaries to the grids region and round w,e,s,n to the nearest gridline or
@@ -2450,8 +2450,8 @@ int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GR
 }
 
 int gmt_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header) {
-	/* Most places we wish to warn if w/e/s/n is sloppy */
-	return gmtlib_adjust_loose_wesn (GMT, wesn, header, GMT_MSG_WARNING);
+	/* Most places we wish to warn if w/e/s/n is sloppy except when via DCW that must be rounded */
+	return gmtlib_adjust_loose_wesn (GMT, wesn, header, GMT->common.R.via_polygon ? GMT_MSG_INFORMATION : GMT_MSG_WARNING);
 }
 
 void gmt_scale_and_offset_f (struct GMT_CTRL *GMT, gmt_grdfloat *data, size_t length, double scale, double offset) {

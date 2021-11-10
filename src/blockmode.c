@@ -223,7 +223,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 					n_errors++;
 				break;
 			case 'G':	/* Write output grid(s) */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				if (!API->external) n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
 					GMT_Report (API, GMT_MSG_ERROR, "-G can only be set once!\n");

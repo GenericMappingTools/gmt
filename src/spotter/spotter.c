@@ -1416,9 +1416,9 @@ bool spotter_conf_ellipse (struct GMT_CTRL *GMT, double lon, double lat, double 
 
 	/* Find the unique rotation in question */
 
-	for (i = 0, k = -1; k < 0 && i < np; ++i) if (doubleAlmostEqualZero (p[i].t_start, t))
+	for (i = 0, k = GMT_NOTSET; k < 0 && i < np; ++i) if (doubleAlmostEqualZero (p[i].t_start, t))
 		k = i;
-	if (k == -1) return (true);	/* Did not match finite rotation time */
+	if (k == GMT_NOTSET) return (true);	/* Did not match finite rotation time */
 
 	/* Make M(x), the skew-symmetric matrix needed to compute cov of rotated point */
 

@@ -76,7 +76,7 @@ GMT_LOCAL int gdal_decode_columns (struct GMT_CTRL *GMT, char *txt, int *whichBa
  * Returns -1 in case no world file is found.
  */
 GMT_LOCAL int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, double *adfGeoTransform) {
-	int status = -1;
+	int status = GMT_NOTSET;
 	char generic_buffer[5000];
 
 	if (GDALGetGeoTransform(hDataset, adfGeoTransform) == CE_None)
@@ -93,7 +93,7 @@ GMT_LOCAL int record_geotransform (char *gdal_filename, GDALDatasetH hDataset, d
 	if (status == 1)
 		return (0);
 
-	return (-1);
+	return (GMT_NOTSET);
 }
 
 /************************************************************************/
@@ -335,7 +335,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open %s.\n", gdal_filename);
 		gmtlib_GDALDestroyDriverManager(GMT->parent);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	gmt_M_tic (GMT);
@@ -418,7 +418,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			GDALClose(hDataset);
 			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
-			return(-1);
+			return(GMT_NOTSET);
 		}
 
 		anSrcWin[0] = irint ((dfULX - adfGeoTransform[0]) / adfGeoTransform[1]);
@@ -432,7 +432,7 @@ GMT_LOCAL int populate_metadata (struct GMT_CTRL *GMT, struct GMT_GDALREAD_OUT_C
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Computed -srcwin falls outside raster size of %dx%d.\n",
 			            GDALGetRasterXSize(hDataset), GDALGetRasterYSize(hDataset));
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Quitting with error\n");
-			return(-1);
+			return(GMT_NOTSET);
 		}
 		Ctrl->RasterXsize = nXSize = anSrcWin[2];
 		Ctrl->RasterYsize = nYSize = anSrcWin[3];
@@ -857,7 +857,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (error) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: Failed to decode the specified Sub-region\n");
 		gmt_M_free (GMT, whichBands);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	if (prhs->P.active)
@@ -904,7 +904,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 
 	if (metadata_only) {	/* Just get the header info and return with it */
 		if (populate_metadata (GMT, Ctrl, gdal_filename, got_R, nXSize[0], nYSize, dfULX, dfULY, dfLRX, dfLRY, z_min, z_max, first_layer))
-			return(-1);
+			return(GMT_NOTSET);
 
 		/* Return registration based on data type of first band. Byte is pixel reg otherwise set grid registration */
 		if (!Ctrl->hdr[6]) {		/* Grid registration */
@@ -922,7 +922,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 	if (hDataset == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_gdalread: gdal_open failed %s\n", CPLGetLastErrorMsg());
 		gmt_M_free (GMT, whichBands);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	/* Some formats (typically DEMs) have their origin at Bottom Left corner.
@@ -962,7 +962,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 			GDALClose(hDataset);
 			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 
 		if (got_R) {	/* Region in map coordinates */
@@ -988,7 +988,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				XDim, YDim);
 			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			gmt_M_free (GMT, whichBands);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		yOrigin = anSrcWin[1];	/* These can now be set */
 		nYSize  = anSrcWin[3];
@@ -1013,7 +1013,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 					XDim, YDim);
 				gmtlib_GDALDestroyDriverManager(GMT->parent);
 				gmt_M_free (GMT, whichBands);
-				return (-1);
+				return (GMT_NOTSET);
 			}
 		}
 	}
@@ -1137,7 +1137,7 @@ int gmt_gdalread (struct GMT_CTRL *GMT, char *gdal_filename, struct GMT_GDALREAD
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "gdalread: failure to allocate enough memory\n");
 				gmtlib_GDALDestroyDriverManager(GMT->parent);
 				gmt_M_free (GMT, whichBands);
-				return(-1);
+				return(GMT_NOTSET);
 			}
 		}
 		else {

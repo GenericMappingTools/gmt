@@ -410,7 +410,7 @@ struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const ch
 	return (R);	
 }
 
-int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
+int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *ifile) {
 	/* Return the entry in the remote file table of file is found, else -1.
 	 * Complications to consider before finding a match:
 	 * Input file may or may not have leading @
@@ -419,16 +419,22 @@ int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	 * Key file may be a tiled data set and thus ends with '/'
 	 */
 	int pos = 0;
+	char file[PATH_MAX] = {""};
 	struct GMT_DATA_INFO *key = NULL;
-	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
-	if (file[0] == '@') pos = 1;	/* Skip any leading remote flag */
+	if (ifile == NULL || ifile[0] == '\0') return GMT_NOTSET;	/* No file name given */
+	if (ifile[0] == '@') pos = 1;	/* Skip any leading remote flag */
 	/* Exclude leading directory for local saved versions of the file */
-	if (pos == 0) pos = gmtremote_wind_to_file (file);	/* Skip any leading directories */
-	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
+	if (pos == 0) pos = gmtremote_wind_to_file (ifile);	/* Skip any leading directories */
+	/* Must handle the use of srtm_relief vs earth_relief for the 01s and 03s data */
+	if (strncmp (&ifile[pos], "srtm_relief_0", 13U) == 0)	/* Gave strm special name */
+		sprintf (file, "earth_%s", &ifile[pos+5]);	/* Replace srtm with earth */
+	else	/* Just copy as is from pos */
+		strcpy (file, &ifile[pos]);
+	key = bsearch (file, API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	if (key) {	/* Make sure we actually got a real hit since file = "earth" will find a key starting with "earth****" */
 		char *ckey = strrchr (key->file, '.');		/* Find location of the start of the key file extension (or NULL if no extension) */
-		char *cfile = strrchr (&file[pos], '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
-		size_t Lfile = (cfile) ? (size_t)(cfile - &file[pos]) : strlen (&file[pos]);	/* Length of key file name without extension */
+		char *cfile = strrchr (file, '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
+		size_t Lfile = (cfile) ? (size_t)(cfile - file) : strlen (file);	/* Length of key file name without extension */
 		size_t Lkey  = (ckey)  ? (size_t)(ckey  - key->file)  : strlen (key->file);		/* Length of key file name without extension */
 		if (ckey == NULL && Lkey > 1 && key->file[Lkey-1] == '/') Lkey--;	/* Skip trailing dir flag */
 		if (Lkey > Lfile && Lkey > 2 && key->file[Lkey-2] == '_' && strchr ("gp", key->file[Lkey-1])) Lkey -= 2;	/* Remove the length of _g or _p from Lkey */

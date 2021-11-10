@@ -1791,7 +1791,7 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 		else if (header_work->ProjRefEPSG)
 			Out->header->ProjRefEPSG = header_work->ProjRefEPSG;
 		else {
-			for (k = 0, id = -1; id == -1 && k < GMT_N_PROJ4; k++)
+			for (k = 0, id = GMT_NOTSET; id == GMT_NOTSET && k < GMT_N_PROJ4; k++)
 				if (GMT->current.proj.proj4[k].id == this_proj) id = k;
 			if (id >= 0) 			/* Valid projection for creating world file info */
 				img_ProjectionRefPROJ4 = gmt_export2proj4(GMT);	/* Get the proj4 string */
@@ -1882,9 +1882,9 @@ EXTERN_MSC int GMT_grdimage (void *V_API, int mode, void *args) {
 			/* Check that we found an unused r/g/b value so that colormasking will work as advertised */
 			index = (gmt_M_u255(P->bfn[GMT_NAN].rgb[0])*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[1]))*256 + gmt_M_u255(P->bfn[GMT_NAN].rgb[2]);	/* The index into the cube for the selected NaN color */
 			if (rgb_used[index]) {	/* This r/g/b already appears in the image as a non-NaN color; we must find a replacement NaN color */
-				for (index = 0, ks = -1; ks == -1 && index < 256*256*256; index++)	/* Examine the entire cube */
+				for (index = 0, ks = GMT_NOTSET; ks == GMT_NOTSET && index < 256*256*256; index++)	/* Examine the entire cube */
 					if (!rgb_used[index]) ks = index;	/* Use this unused entry instead */
-				if (ks == -1) {	/* This is really really unlikely, meaning image uses all 256^3 colors */
+				if (ks == GMT_NOTSET) {	/* This is really really unlikely, meaning image uses all 256^3 colors */
 					GMT_Report (API, GMT_MSG_WARNING, "Colormasking will fail as there is no unused color that can represent transparency\n");
 					done = true;
 				}

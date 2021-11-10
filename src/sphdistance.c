@@ -523,7 +523,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 		}
 		else {	/* Obtain current polygon from Voronoi listings */
 			if (P == NULL) {	/* Need a single polygon structure that we reuse for each polygon */
-				P = gmt_get_segment (GMT);	/* Needed as pointer below */
+				P = gmt_get_segment (GMT, 2);	/* Needed as pointer below */
 				P->data = gmt_M_memory (GMT, NULL, 2, double *);	/* Needed as pointers below */
 				P->min = gmt_M_memory (GMT, NULL, 2, double);	/* Needed to hold min lon/lat */
 				P->max = gmt_M_memory (GMT, NULL, 2, double);	/* Needed to hold max lon/lat */

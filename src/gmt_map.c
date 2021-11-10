@@ -5183,7 +5183,7 @@ void gmt_wesn_search (struct GMT_CTRL *GMT, double xmin, double xmax, double ymi
 GMT_LOCAL void gmtmap_genper_search (struct GMT_CTRL *GMT, double *west, double *east, double *south, double *north, bool add_pad) {
 	double w, e, s = 90.0, n = -90.0, *work_x = NULL, *work_y = NULL;
 	uint64_t np, k;
-	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT);
+	struct GMT_DATASEGMENT *S = gmt_get_segment (GMT, 2);
 	/* Because the genper clip path may be a mix of straight borders and a curved horizon, we must determine this
 	 * clip path and search along it, getting lon,lat along the way, and find the extreme values to use. Before this
 	 * function was added, we ended up in the gmt_wesn_search function which would fail along the horizon in many
@@ -6690,16 +6690,16 @@ double gmt_az_backaz (struct GMT_CTRL *GMT, double lonE, double latE, double lon
 GMT_LOCAL double gmtmap_auto_time_increment (double inc, char *unit) {
 	/* Given the first guess interval inc, determine closest time unit and return
 	 * the number of seconds in that unit and its code */
-	int k, kk = -1;
+	int k, kk = GMT_NOTSET;
 	double f;
 	static char units[6]  = {'S', 'M', 'H', 'D', 'O', 'Y'};
 	static double incs[6] = {1.0, GMT_MIN2SEC_F, GMT_HR2SEC_F, GMT_DAY2SEC_F, GMT_MON2SEC_F, GMT_YR2SEC_F};
-	for (k = 5; kk == -1 && k >= 0; k--) {	/* Find the largest time unit that is smaller than guess interval */
+	for (k = 5; kk == GMT_NOTSET && k >= 0; k--) {	/* Find the largest time unit that is smaller than guess interval */
 		f = inc / incs[k];
 		if (irint (f) >= 1)
 			kk = k;
 	}
-	if (kk == -1) kk = 0;	/* Safety valve */
+	if (kk == GMT_NOTSET) kk = 0;	/* Safety valve */
 	*unit = units[kk];
 	return (incs[kk]);
 }
@@ -7224,7 +7224,7 @@ bool gmt_map_outside (struct GMT_CTRL *GMT, double lon, double lat) {
 	GMT->current.map.prev_y_status = GMT->current.map.this_y_status;
 	if (GMT->current.map.outside == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "gmt_map_outside: FATAL ERROR - the pointer to the projection function is NULL.\n");
-		return -1;
+		return GMT_NOTSET;
 	}
 	return ((*GMT->current.map.outside) (GMT, lon, lat));
 }
@@ -9002,11 +9002,11 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 		char ellipsoid[GMT_LEN256] = {""}, dr[GMT_LEN256] = {""};
 		if (sscanf (text, "%[^:]:%s", ellipsoid, dr) != 2) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Malformed <ellipsoid>:<dr> argument!\n");
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		if (sscanf (dr, "%lf,%lf,%lf", &D->xyz[GMT_X], &D->xyz[GMT_Y], &D->xyz[GMT_Z]) != 3) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Malformed <x>,<y>,<z> argument!\n");
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		if ((i = gmt_get_ellipsoid (GMT, ellipsoid)) >= 0) {	/* This includes looking for format <a>,<1/f> */
 			D->a = GMT->current.setting.ref_ellipsoid[i].eq_radius;
@@ -9015,22 +9015,22 @@ int gmt_set_datum (struct GMT_CTRL *GMT, char *text, struct GMT_DATUM *D) {
 		}
 		else {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Ellipsoid %s not recognized!\n", ellipsoid);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 	}
 	else {		/* Gave a Datum ID tag [ 0-(GMT_N_DATUMS-1)] */
 		int k;
 		if (sscanf (text, "%d", &i) != 1) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Malformed or unrecognized <datum> argument (%s)!\n", text);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		if (i < 0 || i >= GMT_N_DATUMS) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Datum ID (%d) outside valid range (0-%d)!\n", i, GMT_N_DATUMS-1);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		if ((k = gmt_get_ellipsoid (GMT, GMT->current.setting.proj_datum[i].ellipsoid)) < 0) {	/* This should not happen... */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Ellipsoid %s not recognized!\n", GMT->current.setting.proj_datum[i].ellipsoid);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		D->a = GMT->current.setting.ref_ellipsoid[k].eq_radius;
 		D->f = GMT->current.setting.ref_ellipsoid[k].flattening;
