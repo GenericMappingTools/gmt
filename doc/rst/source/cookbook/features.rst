@@ -441,7 +441,7 @@ do not need to repeat the region and projection information, as shown here::
 
 Thus, the chosen options remain in effect until you provide new option
 arguments on the command line.  **Note**: We keep track of two types of regions,
-One is the domain used for a map and one is the domain used for a grid.
+One is the domain used for a map and one is the domain used for a grid,
 which often are the same.  When a plot is specified without providing
 a region then we look for a previous plot region in the history first, and
 if it is not found then we look for a grid domain to use instead.  However,
