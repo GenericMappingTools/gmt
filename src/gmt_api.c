@@ -12963,15 +12963,16 @@ struct GMT_RESOURCE * GMT_Encode_Options (void *V_API, const char *module_name, 
 		if (opt->arg[0]) {	/* Gave -A: Determine how many output grids are requested */
 			for (k = 1, len = 0; len < strlen (opt->arg); len++) if (opt->arg[len] == ',') k++;
 		}
+		/* Here, k is still 0 or it is the number of fields selected via -A */
 		if ((opt = GMT_Find_Option (API, 'G', *head))) {	/* This is a problem unless -G actually sent in a file name */
 			if (opt->arg[0] == '\0') {	/* Cannot just give -G here */
 				GMT_Report (API, GMT_MSG_ERROR, "GMT_Encode_Options: %s cannot set -G when called externally\n", module);
 				return_null (NULL, GMT_NOT_A_VALID_OPTION);
 			}
-			else	/* Gave a (presumably) file argument, no need to add -G? */
+			else	/* Gave a (presumably) file argument, no need to add -G? separately since the user did it */
 				k = 0;
 		}
-		else	/* No -A or -G; default is to just add the z grid via -G?  */
+		else if (k == 0)	/* No -A or -G; default is to just add the z grid via -G?  */
 			k = 1;
 		while (k) {	/* Add -G? option k times */
 			new_ptr = GMT_Make_Option (API, 'G', "?");	/* Create new output grid option(s) with filename "?" */

@@ -33,6 +33,7 @@ Optionally install these for more capabilities within GMT:
 
 - [Ghostscript](https://www.ghostscript.com/) (Ability to convert PostScript plots to PDF and rasters)
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
+- [GEOS](https://trac.osgeo.org/geos/) (Ability to buffer lines and polygons)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
 - [GLib](https://wiki.gnome.org/Projects/GLib) GTHREAD support (>=2.32)
