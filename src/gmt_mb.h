@@ -32,4 +32,6 @@
 #define gmt_M_grd_is_global gmt_grd_is_global
 #define GMT_c_OPT	"-c<ncopies>"	/* OBSOLETE */
 
+#define gmt_input_is_nan_proxy(GMT,value) gmt_input_col_is_nan_proxy(GMT,value,0)    /* Deprecated in GMT 6.3.0 */
+
 #endif /* GMT_MB_H */

@@ -332,7 +332,7 @@ EXTERN_MSC int gmt_remove_file (struct GMT_CTRL *GMT, const char *file);
 EXTERN_MSC int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile, unsigned int mode);
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
 EXTERN_MSC int gmt_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, uint64_t col);
-EXTERN_MSC bool gmt_input_is_nan_proxy (struct GMT_CTRL *GMT, double value, unsigned int col);
+EXTERN_MSC bool gmt_input_col_is_nan_proxy (struct GMT_CTRL *GMT, double value, unsigned int col);
 EXTERN_MSC bool gmt_is_a_blank_line (char *line);
 EXTERN_MSC void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir);
 EXTERN_MSC void gmt_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir);
