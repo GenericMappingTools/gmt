@@ -191,7 +191,8 @@ Setting up your local environment for dvc
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 #. `Install dvc <https://dvc.org/doc/install>`_
-#. If you will need to push baseline images to the remote, ask a GMT maintainer to add you as a collaborator on DAGsHub.
+#. If you will need to push baseline images to the remote, ask a GMT maintainer to add you as a collaborator on
+   `DAGsHub <https://dagshub.com/GenericMappingTools/gmt>`_.
 #. If you will need to push baseline imaged to the remote, set up
    `authentication for the DVC remote <https://dagshub.com/docs/reference/dagshub_storage/#pushing-files-or-using-a-private-repo>`_.
 
@@ -216,7 +217,7 @@ Migrating existing test images to dvc
 #. Sync with git and dvc remotes (``git checkout master; git pull; dvc pull``).
 #. Create a branch for the module that you are working on (``git switch -c migrate-<module>-tests``).
 #. Navigate to the test directory (``cd test``).
-#. Remove the test image from git tracking (``git rm --chached <module>/<test-image>.ps``).
+#. Remove the test image from git tracking (``git rm --cached <module>/<test-image>.ps``).
 #. Create a new directory for the image in ``baseline``, if one does not already exist (``mkdir baseline/<module>``).
 #. Move the test image to the new directory (``mv <module>/<test-image>.ps baseline/<module>/``).
 #. Add a comment ``# DVC_TEST`` to the test script that references the image. This is used to specify that the testing

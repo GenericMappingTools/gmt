@@ -120,8 +120,7 @@ jobs:
 
       # Pull baseline image data from dvc remote (DAGsHub)
       - name: Pull baseline image data from dvc remote
-        run: |
-          dvc pull
+        run: dvc pull
 
       # Move downloaded files to ~/.gmt directory and list them
       - name: Move and list downloaded remote files
