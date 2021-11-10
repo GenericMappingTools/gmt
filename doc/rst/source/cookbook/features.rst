@@ -446,7 +446,7 @@ which often are the same.  When a plot is specified without providing
 a region then we look for a previous plot region in the history first, and
 if it is not found then we look for the processing domain to use instead.  However,
 if a data-processing module is not given a region then we only look
-for a previous data domain; we never substitute a plot domain in that case.
+for a previous processing domain; we never substitute a plot domain in that case.
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------
