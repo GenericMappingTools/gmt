@@ -550,7 +550,7 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				if ((io.x_missing && io.gmt_i == io.x_period) || (io.y_missing && io.gmt_j == 0)) continue;
 				if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (d_value))	/* Grid node is NaN and -d was set, so change to nan-proxy */
 					d_value = GMT->common.d.nan_proxy[GMT_OUT];
-				else if (gmt_input_is_nan_proxy (GMT, d_value, GMT_X))	/* The inverse: Grid node is nan-proxy and -di was set, so change to NaN */
+				else if (gmt_input_col_is_nan_proxy (GMT, d_value, GMT_X))	/* The inverse: Grid node is nan-proxy and -di was set, so change to NaN */
 					d_value = GMT->session.d_NaN;
 				write_error = GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 				if (write_error == GMT_NOTSET) n_suppressed++;	/* Bad value caught by -s[r] */
@@ -774,14 +774,14 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 					out[GMT_Y] = G->data[ij];
 					if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (out[GMT_Y]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Y] = GMT->common.d.nan_proxy[GMT_OUT];
-					else if (gmt_input_is_nan_proxy (GMT, out[GMT_Y], GMT_Y))
+					else if (gmt_input_col_is_nan_proxy (GMT, out[GMT_Y], GMT_Y))
 						out[GMT_Y] = GMT->session.d_NaN;
 				}
 				else {
 					out[GMT_X] = x[col];	out[GMT_Y] = y[row];	out[GMT_Z] = G->data[ij];
 					if (GMT->common.d.active[GMT_OUT] && gmt_M_is_dnan (out[GMT_Z]))	/* Input matched no-data setting, so change to NaN */
 						out[GMT_Z] = GMT->common.d.nan_proxy[GMT_OUT];
-					else if (gmt_input_is_nan_proxy (GMT, out[GMT_Z], GMT_Z))
+					else if (gmt_input_col_is_nan_proxy (GMT, out[GMT_Z], GMT_Z))
 						out[GMT_Z] = GMT->session.d_NaN;
 				}
 				if (Ctrl->W.area) out[w_col] = W->data[ij] * A_scale;	/* Converts area from km^2 to user-selected unit (if active) */

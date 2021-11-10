@@ -48,7 +48,7 @@
  *  gmt_check_z_io:     Fill in implied missing row/column
  * gmt_set_geographic
  * gmt_set_cartesian
- * gmt_input_is_nan_proxy
+ * gmt_input_col_is_nan_proxy
  * gmtlib_write_tableheader
  * gmt_fgets
  * gmt_skip_xy_duplicates
@@ -3661,7 +3661,7 @@ GMT_LOCAL void *gmtio_ascii_input (struct GMT_CTRL *GMT, FILE *fp, uint64_t *n, 
 			else				/* Default column order */
 				col_pos = col_no;
 			n_convert = gmt_scanf (GMT, token, gmt_M_type (GMT, GMT_IN, col_pos), &val);
-			if (n_convert != GMT_IS_NAN && gmt_input_is_nan_proxy (GMT, val, col_pos))	/* Input matched no-data setting, so change to NaN */
+			if (n_convert != GMT_IS_NAN && gmt_input_col_is_nan_proxy (GMT, val, col_pos))	/* Input matched no-data setting, so change to NaN */
 				n_convert = GMT_IS_NAN;
 			if (n_convert == GMT_IS_NAN) {	/* Got a NaN or it failed to decode the string */
 				if (GMT->current.setting.io_nan_records || !GMT->current.io.skip_if_NaN[col_pos]) {	/* This field (or all fields) can be NaN so we pass it on */
@@ -4321,7 +4321,7 @@ void gmt_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir) {
 /*! Handles non-proxy checking for input z values.  If the input value equals
  * the non_proxy then we return true so the value can be replaced by a NaN.
  */
-bool gmt_input_is_nan_proxy (struct GMT_CTRL *GMT, double value, unsigned int col) {
+bool gmt_input_col_is_nan_proxy (struct GMT_CTRL *GMT, double value, unsigned int col) {
 	if (!GMT->common.d.active[GMT_IN]) return false;	/* Not active */
 	if (col < GMT->common.d.first_col[GMT_IN]) return false;	/* Not in column range */
 
@@ -4613,7 +4613,7 @@ int gmtlib_process_binary_input (struct GMT_CTRL *GMT, uint64_t n_read) {
 	/* Determine if this was a segment header, and if so return */
 	for (col_no = n_NaN = 0; col_no < n_read; col_no++) {
 		if (!gmt_M_is_dnan (GMT->current.io.curr_rec[col_no])) {	/* Clean data */
-			if (gmt_input_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no], col_no))	/* Input matched no-data setting, so change to NaN */
+			if (gmt_input_col_is_nan_proxy (GMT, GMT->current.io.curr_rec[col_no], col_no))	/* Input matched no-data setting, so change to NaN */
 				GMT->current.io.curr_rec[col_no] = GMT->session.d_NaN;
 			else if (GMT->common.i.select)	/* Cannot check here, done in gmtio_bin_colselect instead when order is set */
 				continue;
