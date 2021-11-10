@@ -16,7 +16,7 @@ gmt begin ex49
 	gmt grd2xyz depth_pixel.nc -bof > depth.bin
 	gmt convert -A age.bin depth.bin -bi3f -o2,5,5 -bo3f > depth-age.bin
 	REM Obtain modal depths every ~5 Myr
-	gmt blockmode -R0/100/0/10 -I5/10 -r -E depth-age.bin -bi3f -o0,2,3 > modal.txt
+	gmt blockmode -R0/100/0/10 -I5/10 -r -E -Q depth-age.bin -bi3f -o0,2,3 > modal.txt
 	REM Create density grid of (age,depth) distribution
 	gmt xyz2grd -R0/100/0/6.5 -I0.25/0.025 -r depth-age.bin -bi3f -An -Gdensity.nc
 	REM Make CPTs for ages and depths
