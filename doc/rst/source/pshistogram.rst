@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt pshistogram** [ *table* ] |-J|\ **x**\|\ **X**\ *parameters*
+**gmt pshistogram** [ *table* ]
+|-J|\ **x**\|\ **X**\ *parameters*
 |-T|\ [*min/max*\ /]\ *inc*\ [**+i**\|\ **n**] \|\ |-T|\ *file*\|\ *list*
 [ |-A| ]
 [ |SYN_OPT-B| ]
