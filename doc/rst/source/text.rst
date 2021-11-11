@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt text** [ *textfiles* ] |-J|\ *parameters*
+**gmt text** [ *textfiles* ]
+|-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 [ |SYN_OPT-B| ]
@@ -75,8 +76,8 @@ Required Arguments
 ------------------
 
 *textfiles*
-    This is one or more files containing 1 or more records with (*x*,
-    *y*\ [, *font*, *angle*, *justify*], *text*). The attributes in
+    This is one or more files containing 1 or more records with (*x*
+    *y*\ [ *font* *angle* *justify*] *text*). The attributes in
     brackets can alternatively be set directly via **-F**. If no files
     are given, **text** will read standard input. *font* is a font
     specification with format [*size*,][*font*,][*color*] where
