@@ -41,6 +41,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-l| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-s| ]
@@ -242,6 +243,8 @@ Optional Arguments
 
 .. |Add_-l| replace:: Symbol is a rectangle with width-to-height ratio of 3:2.  Use **+S**\ *width*\ [/*height*] to overwrite with custom width and optionally height.
 .. include:: explain_-l.rst_
+
+.. include:: explain_-ocols.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
