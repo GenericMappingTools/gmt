@@ -15511,7 +15511,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, this_n_per_degree, opt->arg, file);
 					gmt_M_str_free (opt->arg);
 					opt->arg = strdup (file);
-					d_inc = API->remote_info[k_data2].d_inc;
+					API->tile_inc = d_inc = API->remote_info[k_data2].d_inc;
+					API->tile_reg = API->remote_info[k_data2].reg;
 					strncpy (s_inc, API->remote_info[k_data2].inc, GMT_LEN8);
 					inc_set = true;
 					gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
