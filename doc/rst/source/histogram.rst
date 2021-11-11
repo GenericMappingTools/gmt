@@ -139,7 +139,8 @@ Optional Arguments
     Inquire about min/max x and y after binning. The *xmin xmax ymin
     ymax* is output; no plotting is done. Append **o** to output an
     ASCII table of the resulting x,y data instead. Upper case **O** will
-    output all x,y bin data even when y == 0.
+    output all x,y bin data even when y == 0. **Note**: You may use **-i**
+    to select a subset from this record.
 
 .. _-Jz:
 

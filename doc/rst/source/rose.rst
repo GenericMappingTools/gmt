@@ -128,7 +128,8 @@ Optional Arguments
     Inquire. Computes statistics needed to specify a useful **-R**. No
     plot is generated.  The following statistics are written to stdout:
     *n*, *mean az*, *mean r*, *mean resultant length*, *max bin sum*,
-    *scaled mean*, and *linear length sum*.
+    *scaled mean*, and *linear length sum*. **Note**: You may use **-i**
+    to select a subset from this record.
 
 .. _-J:
 
