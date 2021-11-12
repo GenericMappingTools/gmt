@@ -226,12 +226,9 @@ Optional Arguments
     by the Ghostscript. In that case you really must use **-B** or use a
     slightly off-white color.
 
-    Together with **-V** it prints on screen the gdal_translate
-    (gdal_translate is a command line tool from the GDAL package)
+    Together with **-V** it prints on screen the :doc:`grdgdal`
     command that reads the raster + world file and creates a true
-    geotiff file. Append **+g** to do a system call to gdal_translate
-    and create a geoTIFF image right away. The output file will have a
-    .tiff extension.
+    geotiff file. The output file will have a .tiff extension.
 
     The world file naming follows the convention of jamming a 'w' in the
     file extension. So, if output is tif **-Tt** the world file is a

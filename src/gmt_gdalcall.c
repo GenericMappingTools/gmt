@@ -139,7 +139,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 				p[k] = ' ';						/* Replace spaces and tabs masked above */
 		}
 		for (i = o = 0; p[i]; i++)
-			if (p[i] != '\"') p[o++] = p[i];	/* Ignore any double quotes */
+			if (p[i] != '\'') p[o++] = p[i];	/* Ignore any single quotes */
 		p[o] = '\0';
 		args[n_args++] = strdup(p);
 
