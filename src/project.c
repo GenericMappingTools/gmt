@@ -416,7 +416,14 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	for (opt = options; opt; opt = opt->next) if (opt->option == 'N') Ctrl->N.active = true;	/* Must find -N first, if given */
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'N')	/* Must find -N first, if given */
+			Ctrl->N.active = true;
+		else if (opt->option == 'Q') {	/* Geographic coordinates */
+			gmt_set_geographic (GMT, GMT_IN);
+			gmt_set_geographic (GMT, GMT_OUT);
+		}
+	}
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -507,15 +514,21 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 				}
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {	/* Got dist/colat */
 					Ctrl->G.mode = 1;
-					Ctrl->G.inc = atof (txt_a);
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->G.colat), txt_b);
 				}
 				else
 					strcpy (txt_a, opt->arg);
-				Ctrl->G.d_mode = gmt_get_distance (GMT, txt_a, &(Ctrl->G.inc), &(Ctrl->G.unit));
+				if (Ctrl->G.number) {
+					Ctrl->Z.number = true;	/* Since -Z +n needs backwards compatibility support */
+					Ctrl->G.inc = atof (txt_a);
+				}
+				else {
+					if (gmt_M_is_geographic (GMT, GMT_IN) && strchr (GMT_LEN_UNITS, txt_a[strlen(txt_a)-1]) == NULL)	/* No unit given, append k for default km */
+						strcat (txt_a, "k");
+					Ctrl->G.d_mode = gmt_get_distance (GMT, txt_a, &(Ctrl->G.inc), &(Ctrl->G.unit));
+				}
 				if (ch) ch[0] = '+';	/* Restore the obsolete plus-sign */
 				if (c) c[0] = '+';	/* Restore modifier */
-				if (Ctrl->G.number) Ctrl->Z.number = true;	/* Since -Z +n needs backwards compatibility support */
 				break;
 			case 'L':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
@@ -823,7 +836,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		P.find_new_point = true;
 	}
 	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
-		if (Ctrl->G.d_mode && Ctrl->G.unit != 'k') {	/* Degenerate ellipse with diameter given in units */
+		if (gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->G.d_mode) {
 			if (gmt_init_distaz (GMT, Ctrl->G.unit, Ctrl->G.d_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
 				Return (GMT_NOT_A_VALID_TYPE);
 		}
@@ -834,13 +847,13 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		if (Ctrl->G.number) {	/* Must compute great circle separation and divide to get increment */
 			double L;
 			if (gmt_M_is_geographic (GMT, GMT_IN))
-				L = 0.001 * gmt_great_circle_dist_meter (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->E.x, trl->E.y)
+				L = 0.001 * gmt_great_circle_dist_meter (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->E.x, Ctrl->E.y);
 			else
-				L = hypot (Ctrl->C.x, Ctrl->C.y, Ctrl->E.x, trl->E.y)
-			Ctrl->G.inc = L / (Ctrl->G.number - 1);
+				L = hypot (Ctrl->C.x - Ctrl->E.x, Ctrl->C.y - Ctrl->E.y);
+			Ctrl->G.inc = L / (Ctrl->G.inc - 1.0);
 		}
 		else if (gmt_M_is_geographic (GMT, GMT_IN))
-			Ctrl->G.inc *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
+			Ctrl->G.inc *= 0.001 / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in km */
 	}
 	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
 		for (col = 0; col < P.n_outputs; col++) {
