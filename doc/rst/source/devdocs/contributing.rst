@@ -329,7 +329,7 @@ You can also run ``ctest`` commands in the build directory. Below are some commo
 
 -  Run all tests in 4 parallel jobs::
 
-    test -j 4
+    ctest -j 4
 
 -  Re-run all failing tests in previous run in 4 parallel jobs::
 
