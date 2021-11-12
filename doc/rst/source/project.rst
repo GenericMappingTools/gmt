@@ -17,7 +17,7 @@ Synopsis
 [ |-A|\ *azimuth* ]
 [ |-E|\ *bx*/*by* ]
 [ |-F|\ *flags* ]
-[ |-G|\ *dist*\ [*unit*] [/*colat*][**+c**][**+h**][**+n**] ]
+[ |-G|\ *dist*\ [*unit*][/*colat*][**+c**][**+h**][**+n**] ]
 [ |-L|\ [**w**\|\ *lmin*/*lmax*] ]
 [ |-N| ]
 [ |-Q| ]
@@ -155,7 +155,7 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *dist*\ [*unit*] [/*colat*][**+c**][**+h**][**+n**]
+**-G**\ *dist*\ [*unit*][/*colat*][**+c**][**+h**][**+n**]
     Create (*r*, *s*, *p*) output points every *dist* units of *p*, assuming all units are the same unless
     :math:`x, y, r, s` are set to degrees using |-Q|. No input is read when |-G| is used. See `Units`_ for
     selecting geographic distance units [km]. The following directives and modifiers are supported:
@@ -167,7 +167,8 @@ Optional Arguments
       going through the center *cx*/*cy*.
     - Optionally, append **+h** to report the position of the pole as part of the segment header when using |-T|
       [Default is no header].
-    - Optionally, append **+n** to indicate a desired number of points rather than an increment. Requires |-C| and |-E|, or |-Z|.
+    - Optionally, append **+n** to indicate a desired number of points rather than an increment. Requires |-C| and |-E| or |-Z|
+      so that a length can be computed.
 
 .. _-L:
 
