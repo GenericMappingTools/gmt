@@ -41,6 +41,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-l| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-s| ]
@@ -138,7 +139,8 @@ Optional Arguments
     Inquire about min/max x and y after binning. The *xmin xmax ymin
     ymax* is output; no plotting is done. Append **o** to output an
     ASCII table of the resulting x,y data instead. Upper case **O** will
-    output all x,y bin data even when y == 0.
+    output all x,y bin data even when y == 0. **Note**: You may use **-o**
+    to select a subset from this record.
 
 .. _-Jz:
 
@@ -242,6 +244,8 @@ Optional Arguments
 
 .. |Add_-l| replace:: Symbol is a rectangle with width-to-height ratio of 3:2.  Use **+S**\ *width*\ [/*height*] to overwrite with custom width and optionally height.
 .. include:: explain_-l.rst_
+
+.. include:: explain_-ocols.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_

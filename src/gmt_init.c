@@ -5761,7 +5761,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 
 	/* text[0] is the leading 'f' for front */
-	if (text[1] == '+' && !strchr ("bcfilrsStop", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading + to be skipped when looking for modifiers */
+	if (text[1] == '+' && !strchr ("bcfilrsStopv", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading + to be skipped when looking for modifiers */
 	for (k = k0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 	mods = (text[k] == '+');
@@ -5794,6 +5794,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 					S->f.f_angle = (p[1]) ? atof (&p[1]) : 40.0;	/* Set curved slip arrow angle [40] */
 					break;
 			case 't':	S->f.f_symbol = GMT_FRONT_TRIANGLE;	break;	/* Triangle front */
+			case 'v':	S->f.f_symbol = GMT_FRONT_ITRIANGLE;	break;	/* Inverted triangle front */
 			case 'o':	S->f.f_off = gmt_M_to_inch (GMT, &p[1]);	break;	/* Symbol offset along line */
 			case 'p':	if (p[1]) {	/* Get alternate pen for front-symbol outline [-W] */
 						if (gmt_getpen (GMT, &p[1], &S->f.pen)) {
@@ -15511,7 +15512,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, this_n_per_degree, opt->arg, file);
 					gmt_M_str_free (opt->arg);
 					opt->arg = strdup (file);
-					d_inc = API->remote_info[k_data2].d_inc;
+					API->tile_inc = d_inc = API->remote_info[k_data2].d_inc;
+					API->tile_reg = API->remote_info[k_data2].reg;
 					strncpy (s_inc, API->remote_info[k_data2].inc, GMT_LEN8);
 					inc_set = true;
 					gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
