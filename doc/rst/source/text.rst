@@ -142,7 +142,8 @@ Optional Arguments
     **-DJ** will shorten diagonal offsets at corners by
     sqrt(2). Optionally, append **+v** which will draw
     a line from the original point to the shifted point; append a *pen*
-    to change the attributes for this line.
+    to change the attributes for this line.  **Note**: The **-Dj**\|\ **J**
+    selection cannot be used with paragraph mode (|-M|).
 
 .. _-F:
 
