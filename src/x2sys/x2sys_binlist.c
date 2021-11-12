@@ -371,7 +371,7 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 		last_bin_index = UINT_MAX;
 		last_not_set = true;
-		last_bin_col = last_bin_row = -1;
+		last_bin_col = last_bin_row = GMT_NOTSET;
 		for (row = 0; row < p.n_rows; row++) {
 			if (x2sysbinlist_outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
 			if (x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col,

@@ -17,6 +17,7 @@ Synopsis
 [ |-L|\ [**c**\|\ **r**\|\ **x**\|\ **y**]\ *value* ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
+[ |-T|\ [**a**\|\ **b**][*base*] ]
 [ |-W|\ [**a**\ [**+u**\ *unit*]\|\ *weight*] ] [ |-Z|\ [*flags*] ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-d| ]
@@ -38,7 +39,8 @@ precision of the ASCII output format by editing the
 :term:`FORMAT_FLOAT_OUT` parameter in your :doc:`gmt.conf` file or use
 **--FORMAT_FLOAT_OUT**\ =\ *format* on the command line, or choose binary
 output using single or double precision storage. As an option you may
-output z-values without the (x,y) coordinates; see **-Z** below.
+output z-values without the (x,y) coordinates (see **-Z** below) or you can
+save the grid in the STL format for 3-D printers.
 
 Required Arguments
 ------------------
@@ -74,6 +76,25 @@ Optional Arguments
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
     :end-before: **Description**
+
+.. _-T:
+
+**-T**\ [**a**\|\ **b**][*base*]
+    Write STL triangulation for 3-D printing to standard output.  By default (or via **-Ta**) we write an STL ASCII file.
+    Append **b** to instead write the STL binary (little-endian) format. For more information on STL, see the
+    `STL overview on Wikipedia <https://en.wikipedia.org/wiki/STL_(file_format)>`_.  **Note**: All coordinates are
+    adjusted so that *xmin = ymin = zmin = 0*.  For other adjustments, see :doc:`grdedit`, :doc:`grdproject` and :doc:`grdmath`.
+    Optionally, append a lower *base* other than the grid's minimum value [Default]. **Note**: The grid must be free
+    of NaN values.  If your grid contains NaNs then we automatically replace these with the minimum value in the grid;
+    use :doc:`grdmath` to pre-process the grid if you wish to select another value.
+
+.. figure:: /_images/GMT_STL.jpg
+   :width: 600 px
+   :align: center
+
+   3-D print of Vailulu’u crater multibeam data (2006, R/V Kilo Moana off Samoa) via a GMT STL file.  Original
+   multibeam data processed with `MB-System <https://www.mbari.org/products/research-software/mb-system>`_ seen
+   on the right. Photos courtesy of Jasper Konter, U of Hawaii at Manoa.
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

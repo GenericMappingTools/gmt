@@ -608,7 +608,7 @@ static void mgd77_place_text (struct GMT_CTRL *GMT, int dir, char *struct_member
 
 static int mgd77_find_cruise_id (struct GMT_CTRL *GMT, char *name, char **cruises, unsigned int n_cruises, bool sorted) {
 	gmt_M_unused(GMT);
-	if (!cruises) return (-1);	/* Null pointer passed */
+	if (!cruises) return (GMT_NOTSET);	/* Null pointer passed */
 
 	if (sorted) {	/* cruises array is lexically sorted; use binary search */
 		int low = 0, high, mid, last = MGD77_NOT_SET, way;
@@ -957,7 +957,7 @@ int MGD77_Order_Columns (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 
 	for (i = 0; i < F->n_constraints; i++) {	/* Determine column and info numbers from column name */
 		F->Constraint[i].col = MGD77_Get_Column (GMT, F->Constraint[i].name, F);
-		if (F->Constraint[i].col == -1) {
+		if (F->Constraint[i].col == GMT_NOTSET) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Requested column %s is not a data column [for auxiliary data tests use -D, -Q, -S]!\n", F->Constraint[i].name);
 			return (MGD77_ERROR_NOSUCHCOLUMN);
 		}
@@ -1752,7 +1752,7 @@ static int mgd77_write_header_record_cdf (struct GMT_CTRL *GMT, char *file, stru
 	time_t now;
 	char string[128] = {""};
 
-	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_WRITE_MODE)) return (-1);	/* Basically creates the full path */
+	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_WRITE_MODE)) return (GMT_NOTSET);	/* Basically creates the full path */
 
 	MGD77_nc_status (GMT, gmt_nc_create (GMT, F->path, NC_NOCLOBBER, &F->nc_id));	/* Create the file */
 
@@ -1960,7 +1960,7 @@ static int mgd77_read_data_cdf (struct GMT_CTRL *GMT, char *file, struct MGD77_C
 	double scale, offset, *values = NULL;
 	struct MGD77_E77_APPLY E;
 
-	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_READ_MODE)) return (-1);	/* Basically sets the path */
+	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_READ_MODE)) return (GMT_NOTSET);	/* Basically sets the path */
 
 	gmt_M_memset (apply_bits, MGD77_N_SETS, bool);
 	gmt_M_memset (&E, 1, struct MGD77_E77_APPLY);
@@ -2306,7 +2306,7 @@ static int mgd77_read_header_record_cdf (struct GMT_CTRL *GMT, char *file, struc
 	size_t count[2] = {0, 0}, length;
 	char name[32] = {""}, text[GMT_BUFSIZ] = {""};
 
-	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_READ_MODE)) return (-1);			/* Basically sets the path */
+	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_READ_MODE)) return (GMT_NOTSET);			/* Basically sets the path */
 
 	MGD77_nc_status (GMT, gmt_nc_open (GMT, F->path, NC_NOWRITE, &F->nc_id));	/* Open the file */
 
@@ -2338,7 +2338,7 @@ static int mgd77_read_header_record_cdf (struct GMT_CTRL *GMT, char *file, struc
 	/* DETERMINE DIMENSION OF GMT_TIME-SERIES */
 
 	MGD77_nc_status (GMT, nc_inq_unlimdim (F->nc_id, &F->nc_recid));		/* Get id of unlimited dimension */
-	if (F->nc_recid == -1) {	/* We are in deep trouble */
+	if (F->nc_recid == GMT_NOTSET) {	/* We are in deep trouble */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No record dimension in file %s - cannot read contents\n", file);
 		return (MGD77_ERROR_NOT_MGD77PLUS);
 	}
@@ -2534,7 +2534,7 @@ static int mgd77_write_file_asc (struct GMT_CTRL *GMT, char *file, struct MGD77_
 	/* Will write all MGD77 records in current file */
 	int err = 0;
 
-	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_WRITE_MODE)) return (-1);
+	if (!F->path[0] && MGD77_Open_File (GMT, file, F, MGD77_WRITE_MODE)) return (GMT_NOTSET);
 	switch (F->format) {
 		case MGD77_FORMAT_TBL:
 			err = MGD77_Write_Header_Record_m77 (GMT, file, F, &S->H);  /* Will write the entire 24-section header structure */
@@ -3481,7 +3481,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 		}
 		H->errors[kind]++;
 	}
-	i = -1;
+	i = GMT_NOTSET;
 	if (P->Magnetics_Ref_Field_Code[0] OR_TRUE) {
 		i = mgd77_atoi (P->Magnetics_Ref_Field_Code);
 		if ((!((i >= 0 && i <= MGD77_IGRF_LAST_ID) || i == 88)) OR_TRUE) {	/* MGD77_IGRF_LAST_ID is some future IGRF id, e.g., IGRF 2035! or whatever */
@@ -3511,7 +3511,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 	yr1 = (H->meta.Departure[0]) ? H->meta.Departure[0] : atoi (P->Survey_Departure_Year);
 	yr2 = (H->meta.Arrival[0]) ? H->meta.Arrival[0] : atoi (P->Survey_Arrival_Year);
 
-	if (yr1 && yr2 && ref_field_code != -1 && ref_field_code != 99) {
+	if (yr1 && yr2 && ref_field_code != GMT_NOTSET && ref_field_code != 99) {
 		char m_model[16] = {""};
 		if (ref_field_code == 88) {
 			if (!strncmp(P->Magnetics_Ref_Field,"IGRF",4U)) {
@@ -3667,7 +3667,7 @@ int MGD77_Verify_Header (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct M
 			if (H->meta.ten_box[iy][ix] == 1) {
 				if (F->verbose_level & 2) fprintf (fp_err, "Y-W-%s-H16-06: Ten Degree Identifier %d not marked in header but block was crossed\n", F->NGDC_id, i);
 			}
-			else if (H->meta.ten_box[iy][ix] == -1) {
+			else if (H->meta.ten_box[iy][ix] == GMT_NOTSET) {
 				if (F->verbose_level & 2) fprintf (fp_err, "Y-W-%s-H16-06: Ten Degree Identifier %d marked in header but was not crossed\n", F->NGDC_id, i);
 			}
 		}
@@ -3881,7 +3881,7 @@ int MGD77_Select_Header_Item (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, cha
 
 	if (match == 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No header item matched your string %s\n", item);
-		return -1;
+		return -GMT_NOTSET;
 	}
 	if (match > 1) {	/* More than one.  See if any of the multiple matches is a full name */
 		int n_exact;
@@ -4311,7 +4311,7 @@ GMT_LOCAL int mgd77_compare_L (const void *p1, const void *p2) {
 
 int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT_OPTION *options, char ***list) {
 	/* Traverse the MGD77 directories in search of files matching the given arguments (or get all if none).
-	 * Returns -1 if unable to open a list file,
+	 * Returns GMT_NOTSET if unable to open a list file,
 	 * otherwise returns number of paths found */
 
 	int i;
@@ -4343,7 +4343,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 		FILE *fp = NULL;
 		if ((fp = gmt_fopen (GMT, flist, "r")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file list %s\n", flist);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		while (gmt_fgets (GMT, line, GMT_BUFSIZ, fp)) {
 			gmt_chop (line);	/* Get rid of CR/LF issues */
@@ -4365,7 +4365,7 @@ int MGD77_Path_Expand (struct GMT_CTRL *GMT, struct MGD77_CONTROL *F, struct GMT
 			if (opt->arg[0] == '=') continue;	/* Already dealt with file list */
 			/* Strip off any extension in case a user gave 12345678.mgd77 */
 			for (i = (int)strlen (opt->arg)-1; i >= 0 && opt->arg[i] != '.'; --i); /* Wind back to last period (or get i == -1) */
-			if (i == -1) {	/* No extension present */
+			if (i == GMT_NOTSET) {	/* No extension present */
 				strncpy (this_arg, opt->arg, GMT_BUFSIZ-1);
 				length = strlen (this_arg);
 				/* Test to determine if we are given NGDC IDs (2-,4-,8-char integer tags) or an arbitrary survey name */
@@ -4662,7 +4662,7 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 	/* This routine must be called once before using carter table stuff.
 	It reads the carter.d file and loads the appropriate arrays.
 	It sets carter_not_initialized = false upon successful completion
-	and returns 0.  If failure occurs, it returns -1.  */
+	and returns 0.  If failure occurs, it returns GMT_NOTSET.  */
 
 	FILE *fp = NULL;
 	char buffer [GMT_BUFSIZ] = {""};
@@ -4675,28 +4675,28 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 	gmt_getsharepath (GMT, "mgg", "carter", ".d", buffer, R_OK);
 	if ( (fp = fopen (buffer, "r")) == NULL) {
  		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Cannot open r %s\n", buffer);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	for (i = 0; i < 5; i++) {	/* Skip 4 headers, read 1 line */
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading Carter records\n");
         	fclose (fp);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_CORRECTIONS) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Incorrect correction key (%d), should be %d\n", i, N_CARTER_CORRECTIONS);
        	fclose (fp);
-		return(-1);
+		return(GMT_NOTSET);
 	}
 
 	for (i = 0; i < N_CARTER_CORRECTIONS; i++) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Could not read correction # %d\n", i);
        		fclose (fp);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		C->carter_correction[i] = (short)atoi (buffer);
 	}
@@ -4707,21 +4707,21 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading Carter offset records\n");
        		fclose (fp);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_OFFSETS) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Incorrect offset key (%d), should be %d\n", i, N_CARTER_OFFSETS);
        	fclose (fp);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	for (i = 0; i < N_CARTER_OFFSETS; i++) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Could not read offset # %d\n", i);
        		fclose (fp);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		C->carter_offset[i] = (short)atoi (buffer);
 	}
@@ -4732,21 +4732,21 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure while reading Carter zone records\n");
        		fclose (fp);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 	}
 
 	if ((i = atoi (buffer)) != N_CARTER_BINS) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Incorrect zone key (%d), should be %d\n", i, N_CARTER_BINS);
        	fclose (fp);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	for (i = 0; i < N_CARTER_BINS; i++) {
 		if (!fgets (buffer, GMT_BUFSIZ, fp)) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "MGD77_carter_init: Could not read offset # %d\n", i);
        		fclose (fp);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 		C->carter_zone[i] = (short)atoi (buffer);
 	}
@@ -4760,13 +4760,13 @@ int MGD77_carter_init (struct GMT_CTRL *GMT, struct MGD77_CARTER *C) {
 }
 
 int MGD77_carter_get_bin (struct GMT_CTRL *GMT, double lon, double lat, int *bin) {
-	/* Calculate Carter bin #.  Returns 0 if OK, -1 if error.  */
+	/* Calculate Carter bin #.  Returns 0 if OK, GMT_NOTSET if error.  */
 
 	int latdeg, londeg;
 
 	if (lat < -90.0 || lat > 90.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in MGD77_carter_get_bin: Latitude domain error (%g)\n", lat);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	while (lon >= 360.0) lon -= 360.0;
 	while (lon < 0.0) lon += 360.0;
@@ -4781,17 +4781,17 @@ int MGD77_carter_get_bin (struct GMT_CTRL *GMT, double lon, double lat, int *bin
 
 int MGD77_carter_get_zone (struct GMT_CTRL *GMT, int bin, struct MGD77_CARTER *C, int *zone) {
 	/* Sets value pointed to by zone to the Carter zone corresponding to
-		the bin "bin".  Returns 0 if successful, -1 if bin out of
+		the bin "bin".  Returns 0 if successful, GMT_NOTSET if bin out of
 		range.  */
 
 	if (!C->initialized && MGD77_carter_init(GMT, C) ) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Failure in MGD77_carter_get_zone: Initialization failure.\n");
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	if (bin < 0 || bin >= N_CARTER_BINS) {
 		fprintf (GMT->session.std[GMT_ERR], "In MGD77_carter_get_zone: Input bin out of range [0-%d]: %d.\n", N_CARTER_BINS, bin);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	*zone = C->carter_zone[bin];
 	return (MGD77_NO_ERROR);
@@ -4818,7 +4818,7 @@ int MGD77_carter_twt_from_xydepth (struct GMT_CTRL *GMT, double lon, double lat,
 int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_msec, struct MGD77_CARTER *C, double *depth_in_corr_m) {
 	/* Given two-way travel time of echosounder in milliseconds, and
 		Carter Zone number, finds depth in Carter corrected meters.
-		Returns (0) if OK, -1 if error condition.  */
+		Returns (0) if OK, GMT_NOTSET if error condition.  */
 
 	int	i, nominal_z1500, low_hundred, part_in_100;
 
@@ -4828,15 +4828,15 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 	}
 	if (!C->initialized && MGD77_carter_init(GMT, C) ) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: Initialization failure.\n");
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	if (twt_in_msec < 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: Negative twt: %g msec\n", twt_in_msec);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	nominal_z1500 = irint (0.75 * twt_in_msec);
@@ -4851,7 +4851,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 
 	if (i >= (C->carter_offset[zone] - 1) ) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	part_in_100 = irint (fmod ((double)nominal_z1500, 100.0));
@@ -4860,7 +4860,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 
 		if ( i == (C->carter_offset[zone] - 2) ) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_depth_from_twt: twt too big: %g msec\n", twt_in_msec);
-			return (-1);
+			return (GMT_NOTSET);
 		}
 
 		*depth_in_corr_m = (double)C->carter_correction[i] + 0.01 * part_in_100 * (C->carter_correction[i+1] - C->carter_correction[i]);
@@ -4876,7 +4876,7 @@ int MGD77_carter_depth_from_twt (struct GMT_CTRL *GMT, int zone, double twt_in_m
 int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in_corr_m, struct MGD77_CARTER *C, double *twt_in_msec) {
 	/*  Given Carter zone and depth in Carter corrected meters,
 	finds the two-way travel time of the echosounder in milliseconds.
-	Returns -1 upon error, 0 upon success.  */
+	Returns GMT_NOTSET upon error, 0 upon success.  */
 
 	int	min, max, guess;
 	double	fraction;
@@ -4887,15 +4887,15 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in
 	}
 	if (!C->initialized && MGD77_carter_init (GMT, C) ) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_twt_from_depth: Initialization failure.\n");
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	if (zone < 1 || zone > N_CARTER_ZONES) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_twt_from_depth: Zone out of range [1-%d]: %d\n", N_CARTER_ZONES, zone);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 	if (depth_in_corr_m < 0.0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_twt_from_depth: Negative depth: %g m\n", depth_in_corr_m);
-		return(-1);
+		return(GMT_NOTSET);
 	}
 
 	if (depth_in_corr_m <= 100.0) {	/* No correction applies.  */
@@ -4908,7 +4908,7 @@ int MGD77_carter_twt_from_depth (struct GMT_CTRL *GMT, int zone, double depth_in
 
 	if (depth_in_corr_m > C->carter_correction[max]) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "In MGD77_carter_twt_from_depth: Depth too big: %g m.\n", depth_in_corr_m);
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	if (depth_in_corr_m == C->carter_correction[max]) {	/* Hit last entry in table exactly  */

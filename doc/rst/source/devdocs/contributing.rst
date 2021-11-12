@@ -152,7 +152,6 @@ To enable testing, you need to *uncomment* the following lines in your ``ConfigU
   enable_testing()
   set (DO_EXAMPLES TRUE)
   set (DO_TESTS TRUE)
-  set (DO_ANIMATIONS TRUE)
 
   set (SUPPORT_EXEC_IN_BINARY_DIR TRUE)
 
@@ -242,7 +241,6 @@ the following commands within the build directory::
 
   cmake --build . --target docs_depends     # Generate images included in the documentation
   cmake --build . --target optimize_images  # Optimize PNG images for documentation [optional]
-  cmake --build . --target animation        # Generate animations included in the documentation [optional]
   cmake --build . --target docs_man         # UNIX manual pages
   cmake --build . --target docs_html        # HTML manual, tutorial, cookbook, and API reference
 
