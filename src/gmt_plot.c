@@ -9845,12 +9845,15 @@ void gmt_geo_rectangle (struct GMT_CTRL *GMT, double lon, double lat, double wid
 	PSL_plotsymbol (PSL, xp, yp, dim, PSL_ROTRECT);
 }
 
+#define M_PI_3          1.047197551196598	/* 60 degrees in radians */
+
 void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, struct GMT_FRONTLINE *f) {
 	int ngap, tmp_join = 0, tmp_limit = 0;
 	bool skip;
 	uint64_t i;
-	double *s = NULL, xx[4], yy[4], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
+	double *s = NULL, xx[6], yy[6], dist = 0.0, w, frac, dx, dy, angle, dir1, dir2;
 	double gap, x0, y0, xp, yp, len2, len3, len4, cosa, sina, sa, ca, offx, offy, dim[PSL_MAX_DIMS];
+	double a1, a2, sina1, sina2, cosa1, cosa2;
 	struct PSL_CTRL *PSL= GMT->PSL;
 
 	if (n < 2) return;
@@ -9955,6 +9958,38 @@ void gmt_draw_front (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, s
 							yy[1] = y0 + len3 * cosa;
 							xx[2] = x0 - len2 * cosa;
 							yy[2] = y0 - len2 * sina;
+							PSL_plotpolygon (PSL, xx, yy, 3);
+							break;
+					}
+					break;
+
+				case GMT_FRONT_ITRIANGLE:    /* Inverted triangle */
+					a1 = angle + M_PI_3;	a2 = a1 + M_PI_3;
+					sincos (a1, &sina1, &cosa1);
+					sincos (a2, &sina2, &cosa2);
+					switch (f->f_sense) {
+						case GMT_FRONT_CENTERED:
+							xx[0] = x0 + f->f_len * cosa1;   /* UR */
+							yy[0] = y0 + f->f_len * sina1;
+							xx[1] = x0 + f->f_len * cosa2;   /* UL */
+							yy[1] = y0 + f->f_len * sina2;
+							xx[2] = x0;   yy[2] = y0; 		 /* MC */
+							xx[3] = x0 - f->f_len * cosa1;   /* LR */
+							yy[3] = y0 - f->f_len * sina1;
+							xx[4] = x0 - f->f_len * cosa2;   /* LL */
+							yy[4] = y0 - f->f_len * sina2;
+							xx[5] = x0;   yy[5] = y0; 		 /* MC */
+							PSL_plotpolygon (PSL, xx, yy, 6);
+							break;
+						case GMT_FRONT_RIGHT:
+							sina1 = -sina1;	cosa1 = -cosa1;	sina2 = -sina2;	cosa2 = -cosa2;
+							/* Intentionally fall through - after changing the angle */
+						case GMT_FRONT_LEFT:
+							xx[0] = x0 + f->f_len * cosa1;   /* UR */
+							yy[0] = y0 + f->f_len * sina1;
+							xx[1] = x0 + f->f_len * cosa2;   /* UL */
+							yy[1] = y0 + f->f_len * sina2;
+							xx[2] = x0;   yy[2] = y0; 		 /* MC */
 							PSL_plotpolygon (PSL, xx, yy, 3);
 							break;
 					}

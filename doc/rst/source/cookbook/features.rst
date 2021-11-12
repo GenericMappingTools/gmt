@@ -440,7 +440,13 @@ do not need to repeat the region and projection information, as shown here::
      gmt end show
 
 Thus, the chosen options remain in effect until you provide new option
-arguments on the command line.
+arguments on the command line.  **Note**: We keep track of two types of regions,
+One is the domain used for a map and one is the domain used for processing,
+which often are the same.  When a plot is specified without providing
+a region then we look for a previous plot region in the history first, and
+if it is not found then we look for the processing domain to use instead.  However,
+if a data-processing module is not given a region then we only look
+for a previous processing domain; we never substitute a plot domain in that case.
 
 Usage messages, syntax- and general error messages
 --------------------------------------------------

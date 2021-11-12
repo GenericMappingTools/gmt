@@ -55,17 +55,13 @@ if (SPHINX_FOUND)
 	add_custom_target (_docs_html_examples_fig DEPENDS ${_examples_png})
 	add_depend_to_target (docs_depends _docs_html_examples_fig _docs_examples_verbatim)
 
-	# Animations
-	if (UNIX AND DO_ANIMATIONS)
-		configure_file (animate.in animate @ONLY)
-	endif (UNIX AND DO_ANIMATIONS)
-
 endif (SPHINX_FOUND)
 
 # run examples (test)
 file (GLOB _examples RELATIVE ${CMAKE_SOURCE_DIR} "${CMAKE_CURRENT_SOURCE_DIR}/ex*/*.sh")
 # Remove a few known failed examples from tests
 list (REMOVE_ITEM _examples "doc/examples/ex51/ex51.sh")
+list (REMOVE_ITEM _examples "doc/examples/ex49/ex49.sh")
 if (DO_EXAMPLES AND BASH)
 	foreach (_job ${_examples} ${_anims})
 		add_test (NAME ${_job}

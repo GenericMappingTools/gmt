@@ -5761,7 +5761,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 	char p[GMT_BUFSIZ] = {""}, txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""};
 
 	/* text[0] is the leading 'f' for front */
-	if (text[1] == '+' && !strchr ("bcfilrsStop", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading + to be skipped when looking for modifiers */
+	if (text[1] == '+' && !strchr ("bcfilrsStopv", text[2])) S->f.f_exact = true, k0 = 2;	/* Special leading + to be skipped when looking for modifiers */
 	for (k = k0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
 	strncpy (p, text, k); p[k] = 0;
 	mods = (text[k] == '+');
@@ -5794,6 +5794,7 @@ GMT_LOCAL int gmtinit_parse_front (struct GMT_CTRL *GMT, char *text, struct GMT_
 					S->f.f_angle = (p[1]) ? atof (&p[1]) : 40.0;	/* Set curved slip arrow angle [40] */
 					break;
 			case 't':	S->f.f_symbol = GMT_FRONT_TRIANGLE;	break;	/* Triangle front */
+			case 'v':	S->f.f_symbol = GMT_FRONT_ITRIANGLE;	break;	/* Inverted triangle front */
 			case 'o':	S->f.f_off = gmt_M_to_inch (GMT, &p[1]);	break;	/* Symbol offset along line */
 			case 'p':	if (p[1]) {	/* Get alternate pen for front-symbol outline [-W] */
 						if (gmt_getpen (GMT, &p[1], &S->f.pen)) {
@@ -7645,6 +7646,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 		case 'k':	/* -di option to tell GMT the relationship between NaN and a nan-proxy for input */
 
 			GMT_Usage (API, 1, "\n%s Replace any <nodata> values in input data with NaN.", GMT_di_OPT);
+			GMT_Usage (API, 3, "+c Append first column to be affected [2].");
 			break;
 
 		case 'l':	/* -l option to set up auto-legend items*/
@@ -7671,6 +7673,7 @@ void gmtlib_explain_options (struct GMT_CTRL *GMT, char *options) {
 
 			GMT_Usage (API, 1, "\n%s", GMT_do_OPT);
 			GMT_Usage (API, -2, "Replace any NaNs in output data with <nodata>.");
+			GMT_Usage (API, 3, "+c Append first column to be affected [0].");
 			break;
 
 		case 'f':	/* -f option to tell GMT which columns are time (and optionally geographical) */
@@ -8660,6 +8663,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 	 * -Rg|d as global shorthand for 0/360/-90/90 or -180/180/-90/90
 	 * -R[L|C|R][B|M|T]<x0>/<y0>/<n_columns>/<n_rows>
 	 * -R[g|d]w/e/s/n[/z0/z1][+r]
+	 * -R<countrycodes>
 	 */
 
 	length = strlen (item) - 1;
@@ -9063,21 +9067,28 @@ GMT_LOCAL int gmtinit_parse_data_range (struct GMT_CTRL *GMT, char *arg, unsigne
 
 /*! . */
 unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
-	unsigned int dir, first, last;
-	char *c = NULL;
+	unsigned int dir, first, last, col, def_col[2] = {GMT_Z, GMT_X};
+	char *c = NULL, *q = NULL;
 
 	if (!arg || !arg[0]) return (GMT_PARSE_ERROR);	/* -d requires an argument */
+	if ((q = strstr (arg, "+c"))) {	/* Want to override start columns */
+		col = atoi (&q[2]);
+		q[0] = '\0';	/* Chop off for now */
+	}
 	if (arg[0] == 'i') {
 		first = last = GMT_IN;
 		c = &arg[1];
+		if (q) def_col[GMT_IN] = col;
 	}
 	else if (arg[0] == 'o') {
 		first = last = GMT_OUT;
 		c = &arg[1];
+		if (q) def_col[GMT_OUT] = col;
 	}
 	else {
 		first = GMT_IN;	last = GMT_OUT;
 		c = arg;
+		if (q) def_col[GMT_IN] = def_col[GMT_OUT] = col;
 	}
 
 	for (dir = first; dir <= last; dir++) {
@@ -9085,7 +9096,9 @@ unsigned int gmt_parse_d_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.d.nan_proxy[dir] = atof (c);
 		/* Need to know if 0 is used as NaN proxy since we must use a different comparison macro later */
 		GMT->common.d.is_zero[dir] = doubleAlmostEqualZero (0.0, GMT->common.d.nan_proxy[dir]);
+		GMT->common.d.first_col[dir] = def_col[dir];
 	}
+	if (q) q[0] = '+';	/* Restore modifier */
 	if (first == GMT_IN) strncpy (GMT->common.d.string, arg, GMT_LEN64-1);	/* Verbatim copy */
 	return (GMT_NOERROR);
 }
@@ -15499,7 +15512,8 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 						GMT->session.unit_name[GMT->current.setting.proj_length_unit], GMT->current.setting.graphics_dpu, GMT->current.setting.graphics_dpu_unit, this_n_per_degree, opt->arg, file);
 					gmt_M_str_free (opt->arg);
 					opt->arg = strdup (file);
-					d_inc = API->remote_info[k_data2].d_inc;
+					API->tile_inc = d_inc = API->remote_info[k_data2].d_inc;
+					API->tile_reg = API->remote_info[k_data2].reg;
 					strncpy (s_inc, API->remote_info[k_data2].inc, GMT_LEN8);
 					inc_set = true;
 					gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double);
