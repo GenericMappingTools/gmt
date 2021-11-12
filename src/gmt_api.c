@@ -3930,13 +3930,17 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 				D_obj->table[D_obj->n_tables]->segment = gmt_M_memory (GMT, NULL, 1, struct GMT_DATASEGMENT *);
 				D_obj->table[D_obj->n_tables]->segment[0] = GMT_Alloc_Segment (API, smode, 0, n_columns, NULL, NULL);
 				for (col = 0; col < V_obj->n_columns; col++) {
-					if (GMT->common.i.select)	/* -i has selected some columns */
+					if (GMT->common.i.select) {	/* -i has selected some columns */
 						col_pos = GMT->current.io.col[GMT_IN][col].col;	/* Which data column to pick */
-					else if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col < GMT_Z)	/* Worry about -: for lon,lat */
+						col_pos_out = GMT->current.io.col[GMT_IN][col].order; /* Which data column to place it on output */
+					}
+					else if (GMT->current.setting.io_lonlat_toggle[GMT_IN] && col < GMT_Z) {	/* Worry about -: for lon,lat */
 						col_pos = 1 - col;	/* Read lat/lon instead of lon/lat */
+						col_pos_out = col;
+					}
 					else
-						col_pos = col;	/* Just goto that column */
-					D_obj->table[D_obj->n_tables]->segment[0]->data[col] = V_obj->data[col_pos].f8;
+						col_pos = col_pos_out = col;	/* Just goto that column */
+					D_obj->table[D_obj->n_tables]->segment[0]->data[col_pos_out] = V_obj->data[col_pos].f8;
 				}
 				DH = gmt_get_DD_hidden (D_obj);
 				if (smode) D_obj->table[D_obj->n_tables]->segment[0]->text = V_obj->text;
