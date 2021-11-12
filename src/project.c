@@ -589,6 +589,8 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 							Ctrl->Z.minor = atof (txt_b);
 						}
 						else {	/* Watch out for units and convert to km */
+							if (gmt_M_is_geographic (GMT, GMT_IN) && strchr (GMT_LEN_UNITS, txt_a[strlen(txt_a)-1]) == NULL)	/* No unit given, append k for default km */
+								strcat (txt_a, "k");
 							Ctrl->Z.mode = gmt_get_distance (GMT, txt_a, &(Ctrl->Z.major), &(Ctrl->Z.unit));
 							(void) gmt_get_distance (GMT, txt_b, &(Ctrl->Z.minor), &dummy);
 						}
@@ -609,6 +611,9 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					if (Ctrl->N.active)
 						Ctrl->Z.minor = Ctrl->Z.major = atof (opt->arg);
 					else {
+						strcpy (txt_a, opt->arg);
+						if (gmt_M_is_geographic (GMT, GMT_IN) && strchr (GMT_LEN_UNITS, txt_a[strlen(txt_a)-1]) == NULL)	/* No unit given, append k for default km */
+							strcat (txt_a, "k");
 						Ctrl->Z.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Z.minor), &(Ctrl->Z.unit));
 						Ctrl->Z.major = Ctrl->Z.minor;
 					}
@@ -658,6 +663,8 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 	                                 "Option -N: Cannot be used with -G<dist>/<colat>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.through_C && !Ctrl->C.active,
 	                                 "Option -G: Modifier +c requires both -C and -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->G.active,
+	                                 "Option -Z: Requires option -G as well\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.through_C && !Ctrl->T.active,
 	                                 "Option -G: Modifier +c requires both -C and -T\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
@@ -784,12 +791,10 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			if (GMT->current.map.dist[GMT_MAP_DIST].arc) {	/* Got angular measures, convert to km */
 				Ctrl->Z.minor *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
 				Ctrl->Z.major *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
-				if (!Ctrl->Z.number) Ctrl->G.inc *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
 			}
 			else {
 				Ctrl->Z.minor /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
 				Ctrl->Z.major /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
-				if (!Ctrl->Z.number) Ctrl->G.inc /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
 			}
 		}
 	}
@@ -852,7 +857,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				L = hypot (Ctrl->C.x - Ctrl->E.x, Ctrl->C.y - Ctrl->E.y);
 			Ctrl->G.inc = L / (Ctrl->G.inc - 1.0);
 		}
-		else if (gmt_M_is_geographic (GMT, GMT_IN))
+		else if (gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->G.unit != 'k')
 			Ctrl->G.inc *= 0.001 / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in km */
 	}
 	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
@@ -974,6 +979,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			double h = pow (Ctrl->Z.major - Ctrl->Z.minor, 2.0) / pow (Ctrl->Z.major + Ctrl->Z.minor, 2.0);
 			Ctrl->L.min = 0.0;
 			Ctrl->L.max = M_PI * (Ctrl->Z.major + Ctrl->Z.minor) * (1.0 + (3.0 * h)/(10.0 + sqrt (4.0 - 3.0 * h)));	/* Ramanujan approximation of ellipse circumference */
+			if (gmt_M_is_geographic (GMT, GMT_IN)) Ctrl->L.max /= GMT->current.proj.DIST_KM_PR_DEG;
 			if (Ctrl->Z.number)	/* Want a specific number of points */
 				Ctrl->G.inc = Ctrl->L.max / rint (Ctrl->G.inc);
 			else if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellipse perimeter exactly */
