@@ -1546,7 +1546,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
 					save_pen = current_pen; save_fill = current_fill; save_W = Ctrl->W.active; save_G = Ctrl->G.active;	/* Save status before change */
 					can_update_headpen = true;
-					if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head ouline pen specified separately */
+					if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
 						if (!gmt_M_same_pen (S.v.pen, last_headpen)) {
 							PSL_defpen (PSL, "PSL_vecheadpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
 							headpen_width = S.v.pen.width;
