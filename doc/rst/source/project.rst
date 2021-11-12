@@ -12,11 +12,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
-[ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
+**gmt project** [ *table* ]
+|-C|\ *cx*/*cy*
+[ |-A|\ *azimuth* ]
+[ |-E|\ *bx*/*by* ]
+[ |-F|\ *flags* ]
 [ |-G|\ *dist*\ [*unit*] [/*colat*][**+c**][**+h**][**+n**] ]
 [ |-L|\ [**w**\|\ *lmin*/*lmax*] ]
-[ |-N| ] [ |-Q| ] [ |-S| ]
+[ |-N| ]
+[ |-Q| ]
+[ |-S| ]
 [ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
 [ |-W|\ *wmin*/*wmax* ]
@@ -153,7 +158,7 @@ Optional Arguments
 **-G**\ *dist*\ [*unit*] [/*colat*][**+c**][**+h**][**+n**]
     Create (*r*, *s*, *p*) output points every *dist* units of *p*, assuming all units are the same unless
     :math:`x, y, r, s` are set to degrees using |-Q|. No input is read when |-G| is used. See `Units`_ for
-    geographic distance units [km]. The following directives and modifiers are supported:
+    selecting geographic distance units [km]. The following directives and modifiers are supported:
 
     - Optionally, append /*colat* for a small circle instead [Default is a colatitude of 90, i.e., a great circle]. Note,
       when using |-C| and |-E| to generate a circle that goes through the center and end point, the center and end point
@@ -162,7 +167,7 @@ Optional Arguments
       going through the center *cx*/*cy*.
     - Optionally, append **+h** to report the position of the pole as part of the segment header when using |-T|
       [Default is no header].
-    - Optionally, append **+n** to indicate a desired number of points rather than increment. Requires |-C| and |-E|.
+    - Optionally, append **+n** to indicate a desired number of points rather than an increment. Requires |-C| and |-E|, or |-Z|.
 
 .. _-L:
 

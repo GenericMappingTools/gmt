@@ -857,7 +857,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 				L = hypot (Ctrl->C.x - Ctrl->E.x, Ctrl->C.y - Ctrl->E.y);
 			Ctrl->G.inc = L / (Ctrl->G.inc - 1.0);
 		}
-		else if (gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->G.unit != 'k')
+		else if (Ctrl->Q.active && Ctrl->G.unit != 'k')
 			Ctrl->G.inc *= 0.001 / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in km */
 	}
 	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
