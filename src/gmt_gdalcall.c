@@ -126,7 +126,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 	 * these items by temporarily replacing spaces inside single quoted strings with ASCII 31 US (Unit Separator), do the strtok on
 	 * space, and then replace all ASCII 31 with space at the end (we do the same for tab using ASCII 29 GS (group separator) */
 	for (k = 0, quoted = false; txt_in[k]; k++) {
-		if (txt_in[k] == '\'') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
+		if (txt_in[k] == '\'' || txt_in[k] == '\"') quoted = !quoted;	/* Initially false, becomes true at start of quote, then false when exit quote */
 		else if (quoted && txt_in[k] == '\t') txt_in[k] = GMT_ASCII_GS;
 		else if (quoted && txt_in[k] == ' ')  txt_in[k] = GMT_ASCII_US;
 	}
@@ -139,7 +139,7 @@ GMT_LOCAL char ** breakMe(struct GMT_CTRL *GMT, char *in) {
 				p[k] = ' ';						/* Replace spaces and tabs masked above */
 		}
 		for (i = o = 0; p[i]; i++)
-			if (p[i] != '\'') p[o++] = p[i];	/* Ignore any single quotes */
+			if (!(p[i] == '\'' || p[i] == '\"')) p[o++] = p[i];	/* Ignore any single or double quotes */
 		p[o] = '\0';
 		args[n_args++] = strdup(p);
 
