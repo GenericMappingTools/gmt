@@ -318,7 +318,7 @@
         plotted centered or as a half-symbols on one side.  Special options exist for indicating
         motion (e.g., faults) along a line.
 
-    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b**\|\ **+c**\|\ **+f**\|\ **+s**\ [*angle*]\ \|\ **+t**][**+o**\ *offset*][**+p**\ [*pen*]].
+    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b**\|\ **c**\|\ **f**\|\ **s**\ [*angle*]\ \|\ **t**\ \|\ **v**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront. Supply distance *gap* between symbols and symbol *size*.
         If *gap* is negative, it is interpreted to mean the *number* of symbols along the
         front instead. If *gap* has a leading + then we use the value exactly as given
@@ -327,7 +327,7 @@
         and *size* is thus required.  Append **+l** or **+r** to plot symbols on the left or
         right side of the front [Default is centered]. Append **+**\ *type* to
         specify which symbol to plot: **b**\ ox, **c**\ ircle, **f**\ ault,
-        **s**\ lip, or **t**\ riangle. [Default is **f**\ ault]. Slip means
+        **s**\ lip, **t**\ riangle or in\ **v**\ erted triangle. [Default is **f**\ ault]. Slip means
         left-lateral or right-lateral strike-slip arrows (centered is not an
         option). The **+s** modifier optionally accepts the angle used to draw
         the vector [20]. Alternatively, use **+S** which draws arcuate arrow
