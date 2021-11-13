@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ [**b**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G| ]
-[ |-I|\ [**DNRWZr**] ]
+[ |-I|\ [**CDFLNRWZr**] ]
 [ |-L|\ *linefile* ]
 [ |-M|\ *margins* ]
 [ |-N|\ **l**\|\ **h**\ [*n*] ]
@@ -66,8 +66,7 @@ Optional Arguments
     to the final region: Specify **l** for the lowest increment of all passed data
     sources, **h** for the highest increment, or *inc* to set a specific increment.
     If **-A** is not used then we just list the names of the sources that passed
-    any tests selected from **-D -I -N -W -Z -r**.
-
+    (or not; **-I**) any tests selected from **-C -D -F -L -N -R -W -Z -r**.
 
 .. _-C:
 
@@ -107,17 +106,20 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ [**DNRWZr**]
+**-I**\ [**CDFLNRWZr**]
     Reverses the sense of the test for each of the items specified by a code:
 
+    - **C** - select data sources *not* containing any of the points specified in **-C**.
     - **D** - select data sources *not* having the specified increment in **-D**.
+    - **F** - select data sources *not* overlapping with any of the polygons specified in **-F**.
+    - **L** - select data sources *not* traversed any of the lines specified in **-L**.
     - **N** - select data sources *failing* the NaN criterion in **-N**.
     - **R** - select data sources *not* having any overlap with region set in **-R**.
     - **W** - select data sources whose data range is *not* overlapping the range specified by **-W**.
     - **Z** - select cubes whose z-dimension range is *not* overlapping the range specified by **-Z** (requires **-Q**).
     - **r** - select data sources *not* having the specified registration in **-r**.
 
-   If no argument is given then we reverse all the tests, i.e, the same as **-IDNRWZr**.
+   If no argument is given then we reverse all the tests, i.e, the same as **-CDFLNRWZr**.
 
 .. _-L:
 

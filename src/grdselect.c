@@ -62,7 +62,7 @@ enum GRDSELECT {	/* Indices for the various tests */
 	GRD_SELECT_N_TESTS	/* Number of specific tests available */
 };
 
-#define GRDSELECT_STRING "DFLNPRWZr"	/* These are all the possible items to invert */
+#define GRDSELECT_STRING "CDFLNRWZr"	/* These are all the possible items to invert */
 
 #define WLO	6
 #define WHI	7
@@ -174,11 +174,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-I%s", GRDSELECT_STRING);
 	GMT_Usage (API, -2, "Reverse the tests, i.e., pass data sources when the test fails. "
 		"Supply any combination of %s where each flag means:", GRDSELECT_STRING);
+	GMT_Usage (API, 3, "C: Pass data sources that do not contain any of the points set in -C.");
 	GMT_Usage (API, 3, "D: Pass data sources that do not match the increment set in -D.");
 	GMT_Usage (API, 3, "F: Pass data sources that do not overlap with polygons set in -F.");
 	GMT_Usage (API, 3, "L: Pass data sources that are not traversed by lines set in -L.");
 	GMT_Usage (API, 3, "N: Pass data sources that fail the NaN-test in -N.");
-	GMT_Usage (API, 3, "P: Pass data sources that do not contain any of the points set in -P.");
 	GMT_Usage (API, 3, "R: Pass data sources that do not overlap with region in -R.");
 	GMT_Usage (API, 3, "W: Pass data sources outside the data range given in -W.");
 	GMT_Usage (API, 3, "Z: Pass cubes outside the z-coordinate range given in -Z (requires -Q).");
