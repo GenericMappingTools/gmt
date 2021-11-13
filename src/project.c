@@ -849,15 +849,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		gmt_set_column_type (GMT, GMT_OUT, GMT_X, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LON);
 		gmt_set_column_type (GMT, GMT_OUT, GMT_Y, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT);
 		gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
-		if (Ctrl->G.number) {	/* Must compute great circle separation and divide to get increment */
-			double L;
-			if (gmt_M_is_geographic (GMT, GMT_IN))
-				L = 0.001 * gmt_great_circle_dist_meter (GMT, Ctrl->C.x, Ctrl->C.y, Ctrl->E.x, Ctrl->E.y);
-			else
-				L = hypot (Ctrl->C.x - Ctrl->E.x, Ctrl->C.y - Ctrl->E.y);
-			Ctrl->G.inc = L / (Ctrl->G.inc - 1.0);
-		}
-		else if (Ctrl->Q.active && Ctrl->G.unit != 'k')
+		if (Ctrl->Q.active && Ctrl->G.unit != 'k' && !Ctrl->G.number)
 			Ctrl->G.inc *= 0.001 / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in km */
 	}
 	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
@@ -953,6 +945,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			if (Ctrl->Q.active) Ctrl->L.max *= GMT->current.proj.DIST_KM_PR_DEG;
 		}
 	}
+	if (Ctrl->G.number) Ctrl->G.inc = (Ctrl->L.max - Ctrl->L.min) / (Ctrl->G.inc - 1.0);
 
 	/* Now things are initialized.  We will work in degrees for awhile, so we convert things */
 
