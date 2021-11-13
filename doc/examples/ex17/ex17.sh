@@ -25,7 +25,7 @@ gmt begin ex17
 	gmt colorbar -DjTR+o0.8c/0.2c+w10c/0.5c+h -Cgeoid.cpt -Bx5f1 -By+lm -I
 
 	# Add a text paragraph
-	gmt text -M -Gwhite -Wthinner -C+tO -Dj-8p/8p -F+f12,Times-Roman+jRB <<- END
+	gmt text -M -Gwhite -Wthinner -C+tO -Dj8p -F+f12,Times-Roman+jRB <<- END
 	> 90 -10 12p 8c j
 	@_@%5%Example 17.@%%@_  We first plot the color geoid image
 	for the entire region, followed by a gray-shaded @#etopo5@#
