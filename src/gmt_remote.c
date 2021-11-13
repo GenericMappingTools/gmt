@@ -1706,11 +1706,6 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to receive blended grid from grdblend\n");
 		return NULL;
 	}
-	if (gmtlib_delete_virtualfile (API, grid)) {	/* Remove trace since passed upwards anyway */
-		API->verbose = v_level;
-		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to destroy temporary object for assembled grid\n");
-		return NULL;
-	}
 
 	API->verbose = v_level;
 	HH = gmt_get_H_hidden (G->header);
