@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 # Ensure that -Dj works for pstext -M
 # See https://github.com/GenericMappingTools/gmt/issues/5981
 gmt begin para_offset
