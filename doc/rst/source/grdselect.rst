@@ -16,6 +16,7 @@ Synopsis
 [ |-A|\ **i**\|\ **u**\ [**+il**\|\ **h**\|\ *inc*] ]
 [ |-C|\ [**b**] ]
 [ |-D|\ *inc* ]
+[ |-F|\ *polygonfile* ]
 [ |-G| ]
 [ |-I|\ [**DNRWZr**] ]
 [ |-M|\ *margins* ]
@@ -82,6 +83,12 @@ Optional Arguments
 **-D**\ *inc*
     Only pass data sources whose increments match the given increment [do not
     consider the increments when passing or skipping data sources].
+
+.. _-F:
+
+**-F**\ *polygonfile*
+    Specify a multisegment closed polygon file that a data source must partially or
+    fully overlap to pass [No polygonal areas considered].
 
 .. _-G:
 

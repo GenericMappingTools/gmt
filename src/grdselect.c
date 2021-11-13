@@ -158,7 +158,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-D<inc>");
 	GMT_Usage (API, -2, "Only consider data sources that match the given increments [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-F<polygontable>");
-	GMT_Usage (API, -2, "Only consider data sources that at least partial overlap with this polygon [Consider all input data sources].");
+	GMT_Usage (API, -2, "Only consider data sources that partially or fully overlap with this polygon [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
 	GMT_Usage (API, 1, "\n-I%s", GRDSELECT_STRING);
 	GMT_Usage (API, -2, "Reverse the tests, i.e., pass data sources when the test fails. "
@@ -542,7 +542,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			bool overlap_x, overlap_y, overlap, crossed;
 			double x0 = 0.5 * (header->wesn[XLO] + header->wesn[XHI]);	/* Mod point of grid */
 			double y0 = 0.5 * (header->wesn[YLO] + header->wesn[YHI]);	/* Mod point of grid */
-			double w = header->wesn[XLO], e = header->wesn[XHI];
+			double w = header->wesn[XLO], e = header->wesn[XHI];	/* This is set once if Cartesian; otherwise per segment */
 			uint64_t seg, k1;
 			pass = true;
 			for (seg = 0; pass && seg < D->table[0]->n_segments; seg++) {
@@ -559,14 +559,14 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 					}
 					overlap = overlap_x && overlap_y;	/* Only true if we have both x and y overlap */
 					if (!overlap) continue;	/* No overlap possible with this segment so move to next */
-					/* Here we have potential overlap and must not do the harder work */
+					/* Here we have potential overlap and must not do the harder work of checking if there are crossings between polygon and BB */
 					for (k1 = 1, crossed = false; !crossed && k1 < S->n_rows; k1++) {
 						if (grdselect_line_overlaps (S, k1, header, w, e))
 							crossed = true;
 					}
 					if (crossed)	/* Cannot pass since we have overlap */
 						pass = false;
-					else 	/* Either polygon swallowed grid or grid swallowed polygon - which is it */
+					else 	/* Either polygon swallowed grid or grid swallowed polygon - which is it? */
 						pass = (gmt_inonout (GMT, x0, y0, S) == GMT_OUTSIDE);
 				}
 			}
