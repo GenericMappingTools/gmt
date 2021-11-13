@@ -23,10 +23,6 @@
  * union or intersection of the regions, modulated by other options. Alternatively
  * it just writes the names of the data sources that pass the specified tests.
  *
- * Notes: Ideas for other features:
- * -L<line> Only consider grids that are crossed by this line
- * -P<point> Only consider grids that contain this point
- * 
  */
 
 #include "gmt_dev.h"
@@ -58,13 +54,15 @@ enum GRDSELECT {	/* Indices for the various tests */
 	GRD_SELECT_R,
 	GRD_SELECT_D,
 	GRD_SELECT_F,
+	GRD_SELECT_L,
 	GRD_SELECT_N,
+	GRD_SELECT_P,
 	GRD_SELECT_W,
 	GRD_SELECT_Z,
 	GRD_SELECT_N_TESTS	/* Number of specific tests available */
 };
 
-#define GRDSELECT_STRING "DFNRWZr"	/* These are all the possible items to invert */
+#define GRDSELECT_STRING "DFLNPRWZr"	/* These are all the possible items to invert */
 
 #define WLO	6
 #define WHI	7
@@ -78,14 +76,18 @@ struct GRDSELECT_CTRL {
 		unsigned int mode;		/* 0 = intersection [i], 1 = union [r] */
 		double inc[2];	/* Optional increments */
 	} A;
-	struct GRDSELECT_C {	/* -C[b] */
+	struct GRDSELECT_C {	/* -C<pointfile> */
 		bool active;
-		bool box;
+		char *file;
 	} C;
 	struct GRDSELECT_D {	/* -D<dx[/dy[/dz]] */
 		bool active;
 		double inc[3];
 	} D;
+	struct GRDSELECT_E {	/* -E[b] */
+		bool active;
+		bool box;
+	} E;
 	struct GRDSELECT_F {	/* -F<polfile> */
 		bool active;
 		char *file;
@@ -97,6 +99,10 @@ struct GRDSELECT_CTRL {
 		bool active;
 		bool pass[GRD_SELECT_N_TESTS];	/* One flag for each setting */
 	} I;
+	struct GRDSELECT_L {	/* -F<linefile> */
+		bool active;
+		char *file;
+	} L;
 	struct GRDSELECT_M {	/* -M */
 		bool active;
 		double margin[4];	/* Optional margins [none] */
@@ -131,15 +137,18 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
+	gmt_M_str_free (C->C.file);
 	gmt_M_str_free (C->F.file);
+	gmt_M_str_free (C->L.file);
 	gmt_M_free (GMT, C);
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s grid1 grid2 ... [-Ai|u[+il|h|<inc>]] [-C] [-D<inc>] [-F<polygontable>] [-G] [-I%s] [-M<margins>] [-Nl|h[<n>]] "
-		"[-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n", name, GRDSELECT_STRING, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s grid1 grid2 ... [-Ai|u[+il|h|<inc>]] [-C<pointtable>] [-D<inc>] [-E[b]] [-F<polygontable>] [-G] [-I%s] "
+		" [-L<linetable>] [-M<margins>] [-Nl|h[<n>]] [-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GRDSELECT_STRING, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -152,25 +161,31 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "u: Determine the union of all passed data source regions.");
 	GMT_Usage (API, -2, "Optionally, append +i to round region using the (l)owest, (h)ighest, or specified increments [no rounding]." 
 		"Note: Without -A we simply report the list of data sources passing any imposed tests.");
-	GMT_Usage (API, 1, "\n-C Report information in form of a single data record using the format "
-		"<w e s n {b t} w0 w1> [Default reports a -R<w/e/s/n>[/b/t] string]. If -Ai is in effect then we recompute <w0 w1> for that common region. "
-		"Alternatively, append b to output the determined regions bounding box polygon instead.");
+	GMT_Usage (API, 1, "\n-C<pointtable>");
+	GMT_Usage (API, -2, "Only consider data sources that contain at least one of these points [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-D<inc>");
 	GMT_Usage (API, -2, "Only consider data sources that match the given increments [Consider all input data sources].");
+	GMT_Usage (API, 1, "\n-E Report information in form of a single data record using the format "
+		"<w e s n {b t} w0 w1> [Default reports a -R<w/e/s/n>[/b/t] string]. If -Ai is in effect then we recompute <w0 w1> for that common region. "
+		"Alternatively, append b to output the determined regions bounding box polygon instead.");
 	GMT_Usage (API, 1, "\n-F<polygontable>");
-	GMT_Usage (API, -2, "Only consider data sources that partially or fully overlap with this polygon [Consider all input data sources].");
+	GMT_Usage (API, -2, "Only consider data sources that partially or fully overlap with these polygons [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-G Force possible download of all tiles for a remote <grid> if given as input [no report for tiled grids].");
 	GMT_Usage (API, 1, "\n-I%s", GRDSELECT_STRING);
 	GMT_Usage (API, -2, "Reverse the tests, i.e., pass data sources when the test fails. "
 		"Supply any combination of %s where each flag means:", GRDSELECT_STRING);
 	GMT_Usage (API, 3, "D: Pass data sources that do not match the increment set in -D.");
-	GMT_Usage (API, 3, "F: Pass data sources that do not overlap with polygon set in -F.");
+	GMT_Usage (API, 3, "F: Pass data sources that do not overlap with polygons set in -F.");
+	GMT_Usage (API, 3, "L: Pass data sources that are not traversed by lines set in -L.");
 	GMT_Usage (API, 3, "N: Pass data sources that fail the NaN-test in -N.");
+	GMT_Usage (API, 3, "P: Pass data sources that do not contain any of the points set in -P.");
 	GMT_Usage (API, 3, "R: Pass data sources that do not overlap with region in -R.");
 	GMT_Usage (API, 3, "W: Pass data sources outside the data range given in -W.");
 	GMT_Usage (API, 3, "Z: Pass cubes outside the z-coordinate range given in -Z (requires -Q).");
 	GMT_Usage (API, 3, "r: Pass data sources with the opposite registration than given in -r.");
 	GMT_Usage (API, -2, "Note: If no argument is given then we default to -I%s.", GRDSELECT_STRING);
+	GMT_Usage (API, 1, "\n-L<linetable>");
+	GMT_Usage (API, -2, "Only consider data sources that are traversed by these lines [Consider all input data sources].");
 	GMT_Usage (API, 1, "\n-M<margins>");
 	GMT_Usage (API, -2, "Add padding around the final (rounded) region. Append a uniform <margin>, separate <xmargin>/<ymargin>, "
 		"or individual <wmargin>/<emargin>/<smargin>/<nmargin> for each side [no padding].");
@@ -240,11 +255,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 					}
 				}
 				break;
-
-			case 'C':	/* Column format */
+			case 'C':	/* Point file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
-				if (opt->arg[0] == 'b') Ctrl->C.box = true;
+				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->C.file))) n_errors++;
 				break;
 			case 'D':	/* Specified grid increments */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -254,7 +269,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 					n_errors++;
 				}
 				break;
-			case 'F':
+			case 'E':	/* Column format */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				Ctrl->E.active = true;
+				if (opt->arg[0] == 'b') Ctrl->E.box = true;
+				break;
+			case 'F':	/* Polygon file */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
@@ -284,6 +304,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 					}
 				}
 				break;
+			case 'L':	/* Line file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
+				Ctrl->L.active = true;
+				if (opt->arg[0]) Ctrl->L.file = strdup (opt->arg);
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+				break;
 			case 'M':	/* Extend the region */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
@@ -311,7 +337,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 				}
 				if (opt->arg[1]) Ctrl->N.n_nans = atoi (&opt->arg[1]);
 				break;
-
 			case 'Q':	/* Expect cubes */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
@@ -340,7 +365,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *Ctrl, struct GMT_
 									   "Option -A: Must specify a positive increment(s) via +i<inc>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && (Ctrl->D.inc[GMT_X] <= 0.0 || Ctrl->D.inc[GMT_Y] <= 0.0),
 									   "Option -D: Must specify a positive increment(s)\n");
-	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && Ctrl->C.active,
+	n_errors += gmt_M_check_condition (GMT, GMT->common.o.active && Ctrl->E.active,
 	                                   "The -o option requires -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->N.active && Ctrl->N.n_nans < 0,
 	                                   "The -N option argument cannot be negative\n");
@@ -382,9 +407,10 @@ GMT_LOCAL bool grdselect_line_overlaps (struct GMT_DATASEGMENT *S, uint64_t k1, 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_set_pad (GMT, GMT_PAD_DEFAULT); gmt_M_free (GMT, use); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
+	bool first_r = true, first = true, is_cube, pass, *use = NULL;
 	int f = -1, error = 0, k_data, k_tile_id;
 	unsigned int n_cols = 0, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
-	bool first_r = true, first = true, is_cube, pass, *use = NULL;
+	uint64_t seg, tbl, row;
 
 	double wesn[8], out[8], last_inc[2], *subset = NULL;
 
@@ -395,7 +421,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	struct GMT_GRID *G = NULL;
 	struct GMT_GRID_HEADER *header = NULL;
 	struct GMT_CUBE *U = NULL;
-	struct GMT_DATASET *D = NULL;
+	struct GMT_DATASET *Df = NULL, *Dl = NULL, *Dp = NULL;
 	struct GMT_DATASEGMENT *S = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_OPTION *opt = NULL;
@@ -426,8 +452,8 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	gmt_M_memset (out, 8, double);	/* Initialize */
 	use = gmt_M_memory (GMT, NULL, Ctrl->n_files, bool);
 
-	if (Ctrl->C.active) {
-		if (Ctrl->C.box) {	/* Write polygon */
+	if (Ctrl->E.active) {
+		if (Ctrl->E.box) {	/* Write polygon */
 			n_cols = 2;
 			cmode = GMT_COL_FIX_NO_TEXT;
 			geometry = GMT_IS_POLYGON;
@@ -440,7 +466,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 	}
 
 	if (Ctrl->F.active) {	/* Read the user's polygon file */
-		if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
+		if ((Df = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POLY, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 			Return (API->error);
 		}
 	}
@@ -532,7 +558,60 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			}
 			if (pass != Ctrl->I.pass[GRD_SELECT_R]) continue;	/* Skip if wrong (or right via -IR) registration */
 		}
-		if (Ctrl->F.active) {	/* Specified -F to only keep those data sources that overlap fully or partially with this polygon */
+		if (Ctrl->C.active) {	/* Specified -P to only keep those data sources that contain one or more of these points */
+			bool overlap, crossed;
+			double w = header->wesn[XLO], e = header->wesn[XHI];	/* This is set once if Cartesian; otherwise per segment */
+			uint64_t row;
+			pass = true;
+			for (tbl = 0; pass && tbl < Dp->n_tables; tbl++) {
+				for (seg = 0; pass && seg < Dp->table[tbl]->n_segments; seg++) {
+					S = Dp->table[tbl]->segment[seg];	/* Shorthand to current segment */
+					for (row = 0; pass && row < S->n_rows; row++) {
+						if (S->data[GMT_Y][row] < header->wesn[YLO] || S->data[GMT_Y][row] > header->wesn[YHI]) continue;	/* Point outside grid */
+						if (gmt_M_is_cartesian (GMT, GMT_IN))	/* Easy, peasy */
+							pass = (S->data[GMT_X][row] < w || S->data[GMT_X][row] > e);	/* true if there is no x-overlap */
+						else {	/* Must worry about wrapping */
+							w = header->wesn[XLO] - 720.0; e = header->wesn[XHI] - 720.0;	/* Ensure we are far west */
+							while (e < S->data[GMT_X][row]) w += 360.0, e += 360.0;	/* Wind to the west */
+							pass = (w > S->data[GMT_X][row]);
+						}
+					}
+				}
+			}
+			if (pass != Ctrl->I.pass[GRD_SELECT_P]) continue;	/* Skip if not overlap (or overlap via -IP) */
+		}
+		if (Ctrl->L.active) {	/* Specified -L to only keep those data sources that are traversed by these lines */
+			bool overlap_x, overlap_y, overlap, crossed;
+			double w = header->wesn[XLO], e = header->wesn[XHI];	/* This is set once if Cartesian; otherwise per segment */
+			pass = true;
+			for (tbl = 0; pass && tbl < Dl->n_tables; tbl++) {
+				for (seg = 0; pass && seg < Dl->table[tbl]->n_segments; seg++) {
+					S = Dl->table[tbl]->segment[seg];	/* Shorthand to current segment */
+					overlap_y = !(header->wesn[YLO] > S->max[GMT_Y] || header->wesn[YHI] < S->min[GMT_Y]);	/* true if there is potential y-overlap */
+					if (overlap_y) {	/* Still alive, now check for x-overlap */
+						if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Easy, peasy */
+							overlap_x = !(w > S->max[GMT_X] || e < S->min[GMT_X]);	/* true if there is x-overlap */
+						}
+						else {	/* Must worry about wrapping */
+							w = header->wesn[XLO] - 720.0; e = header->wesn[XHI] - 720.0;	/* Ensure we are far west */
+							while (e < S->min[GMT_X]) w += 360.0, e += 360.0;	/* Wind to the west */
+							overlap_x = (w < S->max[GMT_X]);
+						}
+						overlap = overlap_x && overlap_y;	/* Only true if we have both x and y overlap */
+						if (!overlap) continue;	/* No overlap possible with this segment so move to next */
+						/* Here we have potential overlap and must not do the harder work of checking if there are crossings between polygon and BB */
+						for (row = 1, crossed = false; !crossed && row < S->n_rows; row++) {
+							if (grdselect_line_overlaps (S, row, header, w, e))
+								crossed = true;
+						}
+						if (crossed)	/* Cannot pass since we have overlap */
+							pass = false;
+					}
+				}
+			}
+			if (pass != Ctrl->I.pass[GRD_SELECT_L]) continue;	/* Skip if not overlap (or overlap via -IL) */
+		}
+		if (Ctrl->F.active) {	/* Specified -F to only keep those data sources that overlap fully or partially with these polygons */
 			/* There are two checks to make here:
 			 * 1. If center point of grid is inside polygon then we know we have overlap.
 			 * 2. If not, then try all points in polygon and if any is inside grid boundary then we have overlap
@@ -543,31 +622,32 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			double x0 = 0.5 * (header->wesn[XLO] + header->wesn[XHI]);	/* Mod point of grid */
 			double y0 = 0.5 * (header->wesn[YLO] + header->wesn[YHI]);	/* Mod point of grid */
 			double w = header->wesn[XLO], e = header->wesn[XHI];	/* This is set once if Cartesian; otherwise per segment */
-			uint64_t seg, k1;
 			pass = true;
-			for (seg = 0; pass && seg < D->table[0]->n_segments; seg++) {
-				S = D->table[0]->segment[seg];	/* Shorthand to current segment */
-				overlap_y = !(header->wesn[YLO] > S->max[GMT_Y] || header->wesn[YHI] < S->min[GMT_Y]);	/* true if there is potential y-overlap */
-				if (overlap_y) {	/* Still alive, now check for x-overlap */
-					if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Easy, peasy */
-						overlap_x = !(w > S->max[GMT_X] || e < D->min[GMT_X]);	/* true if there is x-overlap */
+			for (tbl = 0; pass && tbl < Df->n_tables; tbl++) {
+				for (seg = 0; pass && seg < Df->table[tbl]->n_segments; seg++) {
+					S = Df->table[tbl]->segment[seg];	/* Shorthand to current segment */
+					overlap_y = !(header->wesn[YLO] > S->max[GMT_Y] || header->wesn[YHI] < S->min[GMT_Y]);	/* true if there is potential y-overlap */
+					if (overlap_y) {	/* Still alive, now check for x-overlap */
+						if (gmt_M_is_cartesian (GMT, GMT_IN)) {	/* Easy, peasy */
+							overlap_x = !(w > S->max[GMT_X] || e < S->min[GMT_X]);	/* true if there is x-overlap */
+						}
+						else {	/* Must worry about wrapping */
+							w = header->wesn[XLO] - 720.0; e = header->wesn[XHI] - 720.0;	/* Ensure we are far west */
+							while (e < S->min[GMT_X]) w += 360.0, e += 360.0;	/* Wind to the west */
+							overlap_x = (w < S->max[GMT_X]);
+						}
+						overlap = overlap_x && overlap_y;	/* Only true if we have both x and y overlap */
+						if (!overlap) continue;	/* No overlap possible with this segment so move to next */
+						/* Here we have potential overlap and must not do the harder work of checking if there are crossings between polygon and BB */
+						for (row = 1, crossed = false; !crossed && row < S->n_rows; row++) {
+							if (grdselect_line_overlaps (S, row, header, w, e))
+								crossed = true;
+						}
+						if (crossed)	/* Cannot pass since we have overlap */
+							pass = false;
+						else 	/* Either polygon swallowed grid or grid swallowed polygon - which is it? */
+							pass = (gmt_inonout (GMT, x0, y0, S) == GMT_OUTSIDE);
 					}
-					else {	/* Must worry about wrapping */
-						w = header->wesn[XLO] - 720.0; e = header->wesn[XHI] - 720.0;	/* Ensure we are far west */
-						while (e < D->min[GMT_X]) w += 360.0, e += 360.0;	/* Wind to the west */
-						overlap_x = (w < D->max[GMT_X]);
-					}
-					overlap = overlap_x && overlap_y;	/* Only true if we have both x and y overlap */
-					if (!overlap) continue;	/* No overlap possible with this segment so move to next */
-					/* Here we have potential overlap and must not do the harder work of checking if there are crossings between polygon and BB */
-					for (k1 = 1, crossed = false; !crossed && k1 < S->n_rows; k1++) {
-						if (grdselect_line_overlaps (S, k1, header, w, e))
-							crossed = true;
-					}
-					if (crossed)	/* Cannot pass since we have overlap */
-						pass = false;
-					else 	/* Either polygon swallowed grid or grid swallowed polygon - which is it? */
-						pass = (gmt_inonout (GMT, x0, y0, S) == GMT_OUTSIDE);
 				}
 			}
 			if (pass != Ctrl->I.pass[GRD_SELECT_F]) continue;	/* Skip if not overlap (or overlap via -IF) */
@@ -625,7 +705,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 		}
 		if (!(doubleAlmostEqual (header->inc[GMT_X], last_inc[GMT_X]) && doubleAlmostEqual (header->inc[GMT_Y], last_inc[GMT_Y]))) {
 			/* The grids have different increments */
-			if (Ctrl->C.active && !Ctrl->A.round && !Ctrl->C.box) {
+			if (Ctrl->E.active && !Ctrl->A.round && !Ctrl->E.box) {
 				GMT_Report (API, GMT_MSG_ERROR, "Using -C with mixed-increment grids requires a suitable -A+i rounding selection\n");
 				Return (GMT_RUNTIME_ERROR);
 			}
@@ -721,14 +801,14 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			if (wesn[YLO] < -90.0) wesn[YLO] = -90.0;
 			if (wesn[YHI] > +90.0) wesn[YHI] = +90.0;
 		}
-		if (Ctrl->C.box) {	/* Output closed polygon */
+		if (Ctrl->E.box) {	/* Output closed polygon */
 			out[GMT_X] = wesn[XLO];	out[GMT_Y] = wesn[YLO]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			out[GMT_X] = wesn[XHI];	GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			out[GMT_Y] = wesn[YHI]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			out[GMT_X] = wesn[XLO]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 			out[GMT_Y] = wesn[YLO]; GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
-		else if (Ctrl->C.active) {	/* Want numerical output */
+		else if (Ctrl->E.active) {	/* Want numerical output */
 			if (Ctrl->A.mode == GRDSELECT_INTERSECTION) {	/* Must revisit the grid subsets to learn about actual w-range */
 				wesn[WLO] = DBL_MAX;	wesn[WHI] = -DBL_MAX;	/* Need to redo these within the intersection region only */
 				f = -1;	/* Start index over again */

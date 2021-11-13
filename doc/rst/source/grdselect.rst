@@ -14,11 +14,13 @@ Synopsis
 
 **gmt grdselect** *grid1 grid2 ...*
 [ |-A|\ **i**\|\ **u**\ [**+il**\|\ **h**\|\ *inc*] ]
-[ |-C|\ [**b**] ]
+[ |-C|\ *pointfile* ]
 [ |-D|\ *inc* ]
+[ |-E|\ [**b**] ]
 [ |-F|\ *polygonfile* ]
 [ |-G| ]
 [ |-I|\ [**DNRWZr**] ]
+[ |-L|\ *linefile* ]
 [ |-M|\ *margins* ]
 [ |-N|\ **l**\|\ **h**\ [*n*] ]
 [ |-Q| ]
@@ -66,9 +68,22 @@ Optional Arguments
     If **-A** is not used then we just list the names of the sources that passed
     any tests selected from **-D -I -N -W -Z -r**.
 
+
 .. _-C:
 
-**-C**\ [**b**]
+**-C**\ *pointfile*
+    Specify a multisegment point file that a data source must contain at least one point
+    to pass [No point inclusions considered].
+
+.. _-D:
+
+**-D**\ *inc*
+    Only pass data sources whose increments match the given increment [do not
+    consider the increments when passing or skipping data sources].
+
+.. _-E:
+
+**-E**\ [**b**]
     Formats an output data record using tab-separated fields on a single line. The
     columns are *w e s n {b t} v0 v1*. The data in braces only apply if **-Q** is
     used with 3-D data cubes [Default outputs a single -Rw/e/s/n{/b/t} string].
@@ -76,13 +91,7 @@ Optional Arguments
     **Note**: The *v0 v1* range reflects the full range of all data nodes that lie
     inside the final region after any rounding or padding have taken place.  Also,
     if the grids have different increments then a rounding increment is required
-    to be set via **-A+i** unless **-Cb** is used.
-
-.. _-D:
-
-**-D**\ *inc*
-    Only pass data sources whose increments match the given increment [do not
-    consider the increments when passing or skipping data sources].
+    to be set via **-A+i** unless **-Eb** is used.
 
 .. _-F:
 
@@ -109,6 +118,12 @@ Optional Arguments
     - **r** - select data sources *not* having the specified registration in **-r**.
 
    If no argument is given then we reverse all the tests, i.e, the same as **-IDNRWZr**.
+
+.. _-L:
+
+**-L**\ *linefile*
+    Specify a multisegment line file that a data source must be traversed by
+    to pass [No line traversing considered].
 
 .. _-M:
 
@@ -180,7 +195,7 @@ To find the common region (intersection) that all the grids share, try::
 
 To find the common region (intersection) that all the grids share but extend it by 2 degrees and the write the polygon, try::
 
-    gmt grdselect *.grd -Ai -M2 -Cb > wesn_polygon.txt
+    gmt grdselect *.grd -Ai -M2 -Eb > wesn_polygon.txt
 
 To list all the files that have more than 10 NaN nodes and are pixel registered, try::
 
