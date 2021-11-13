@@ -82,6 +82,7 @@ Optional Arguments
 
 **-G**\ *fill*
     Sets color or shade for vector interiors [Default is no fill].
+    Alternatively, the fill may be set via **-Q**.
 
 .. _-I:
 
@@ -148,7 +149,7 @@ Optional Arguments
 .. _-W:
 
 **-W**\ *pen*
-    Set pen attributes used for vector outlines [Default: width =
+    Change the pen attributes used for vector outlines [Default: width =
     default, color = black, style = solid].
 
 .. |Add_-XY| replace:: |Add_-XY_links|
