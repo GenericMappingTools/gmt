@@ -30,6 +30,9 @@ jobs:
           --exclude "^http://aa.usno.navy.mil/faq/docs/lawyers.php$"
           --exclude "^uhttp://my.server.com/images$"
           --exclude "^-W@weight.png$"
+          --exclude "^http://topex.ucsd.edu/marine_grav/mar_grav.html"
+          --exclude "^https://topex.ucsd.edu/sandwell/"
+          --exclude "^http://topex.ucsd.edu"
           --verbose
           "**/*.rst"
           "**/*.rst_"

@@ -30,7 +30,7 @@
 #define THIS_MODULE_PURPOSE	"Calculate and plot histograms"
 #define THIS_MODULE_KEYS	"<D{,CC(,>X},>D),>DI"
 #define THIS_MODULE_NEEDS	"JR"
-#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilpqstwxy" GMT_OPT("c")
+#define THIS_MODULE_OPTIONS "->BJKOPRUVXYbdefhilopqstwxy" GMT_OPT("c")
 
 /* Note: The NEEDS must be JR.  Although pshistogram can create a region from data, it
  * does so indirectly by building the histogram and setting the ymin/ymax that way, NOT by
@@ -564,9 +564,9 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
 	GMT_Usage (API, 0, "usage: %s [<table>] %s -T[<min>/<max>/]<inc>[+i|n] [-A] [%s] [-C<cpt>[+b]] [-D[+b][+f<font>][+o<off>][+r]] "
 		"[-E<width>[+o<offset>]] [-F] [-G<fill>] [-I[o|O]] %s[-Ll|h|b] [-N[<mode>][+p<pen>]] %s%s[-Q[r]] [%s] [-S] [%s] [%s] "
-		"[-W<pen>] [%s] [%s] [-Z[<mode>][+w]] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		"[-W<pen>] [%s] [%s] [-Z[<mode>][+w]] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_Jx_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_Rx_OPT, GMT_U_OPT, GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT,
-		API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT,
+		API->c_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_p_OPT, GMT_qi_OPT, GMT_s_OPT,
 		GMT_t_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -631,7 +631,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "4: Log10 (1+counts).");
 	GMT_Usage (API, 3, "5: Log10 (1+frequency percent).");
 	GMT_Usage (API, -2, "Append +w to sum bin weights in 2nd column rather than counts.");
-	GMT_Option (API, "bi2,c,di,e,f,h,i,l,p,qi,s,t,w,.");
+	GMT_Option (API, "bi2,c,di,e,f,h,i,l,o,p,qi,s,t,w,.");
 
 	return (GMT_MODULE_USAGE);
 }

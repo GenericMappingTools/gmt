@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt text** [ *textfiles* ] |-J|\ *parameters*
+**gmt text** [ *textfiles* ]
+|-J|\ *parameters*
 |SYN_OPT-Rz|
 [ |-A| ]
 [ |SYN_OPT-B| ]
@@ -75,9 +76,9 @@ Required Arguments
 ------------------
 
 *textfiles*
-    This is one or more files containing 1 or more records with (*x*,
-    *y*\ [, *font*, *angle*, *justify*], *text*). The attributes in
-    brackets can alternatively be set directly via **-F**. If no files
+    This is one or more files containing 1 or more records with (*x*
+    *y* [*font* *angle* *justify*] *text*). The presence or absence of
+    items in the brackets are determined by **-F**. If no files
     are given, **text** will read standard input. *font* is a font
     specification with format [*size*,][*font*,][*color*] where
     *size* is text size in points, *font* is the font to use, and
@@ -141,28 +142,29 @@ Optional Arguments
     **-DJ** will shorten diagonal offsets at corners by
     sqrt(2). Optionally, append **+v** which will draw
     a line from the original point to the shifted point; append a *pen*
-    to change the attributes for this line.
+    to change the attributes for this line.  **Note**: The **-Dj**\|\ **J**
+    selection cannot be used with paragraph mode (|-M|).
 
 .. _-F:
 
 **-F**\ [**+a**\ [*angle*]][**+c**\ [*justify*]][**+f**\ [*font*]][**+j**\ [*justify*]][**+h**\|\ **l**\|\ **r**\ [*first*] \|\ **t**\ *text*\|\ **z**\ [*format*]]
     By default, text will be placed horizontally, using the primary
     annotation font attributes (:term:`FONT_ANNOT_PRIMARY`), and centered
-    on the data point. Use this option to override these defaults by
+    on the data point. Use **-F** to override these defaults by
     specifying up to three text attributes (font, angle, and
-    justification) directly on the command line. Use **+f** to set the
-    font (size,fontname,color); if no font info is given then the input
+    justification) directly on the command line. Use modifier **+f** to set the
+    font ([*size*][,\ *fontname*][,\ *color*]); if no font info is given then the input
     file must have this information in one of its columns. Use **+a** to
-    set the angle; if no angle is given then the input file must have
+    set the *angle*; if no angle is given then the input file must have
     this as a column. Alternatively, use **+A** to force text-baselines
     to convert into the -90/+90 range.  Use **+j** to set the justification; if no
-    justification is given then the input file must have this as a
+    justification is given then the input file must have this item as a
     column. Items read from the data file should be in the same order as
-    specified with the **-F** option. Example:
+    the modifiers are specified with the **-F** option. Example:
     **-F**\ **+f**\ 12p,Helvetica-Bold,red\ **+j+a** selects a 12p red
     Helvetica-Bold font and expects to read the justification and angle
-    from the file, in that order, after *x*, *y* and before *text*.
-    In addition, the **+c** justification lets us use x,y coordinates extracted from the
+    from the file, in that order, after *x* *y* and before *text*.
+    In addition, the **+c** justification lets us use *x,y* coordinates extracted from the
     **-R** string instead of providing them in the input file. For example **-F+c**\ TL
     gets the *x_min*, *y_max* from the **-R** string and plots the text
     at the Upper Left corner of the map.  Normally, the text to be plotted
@@ -200,8 +202,8 @@ Optional Arguments
     information pertaining to the typesetting of a text paragraph (the
     remaining lines until next segment header). The information expected
     is (*x y* [*font angle justify*] *linespace parwidth parjust*),
-    where *x y font angle justify* are defined above (*font*, *angle*,
-    and *justify* can be set via **-F**), while *linespace* and
+    where *x y font angle justify* are defined above (the presence or
+    absence of *font*, *angle*, and *justify* are determined by **-F**), while *linespace* and
     *parwidth* are the linespacing and paragraph width, respectively.
     The justification of the text paragraph is governed by *parjust*
     which may be **l**\ (eft), **c**\ (enter), **r**\ (ight), or

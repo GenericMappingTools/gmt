@@ -619,7 +619,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Append any of the units in %s to the dimensions [Default is k]. "
 		"For linear projection and -SJ we scale dimensions by the map scale.", GMT_LINE_BULLET, mod_name, GMT_LEN_UNITS_DISPLAY);
 
-	GMT_Usage (API, 2, "\n%s Front: -Sf<spacing>[/<ticklen>][+r+l][+f+t+s+c+b][+o<offset>][+p<pen>]", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "\n%s Front: -Sf<spacing>[/<ticklen>][+r|l][+f|t|s|c|b|v][+o<offset>][+p<pen>]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "If <spacing> is negative it means the number of gaps instead. "
 		"If <spacing> has a leading + then <spacing> is used exactly [adjusted to fit line length]. "
 		"If not given, <ticklen> defaults to 15%% of <spacing>.  Append various modifiers:");
@@ -631,10 +631,11 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+f Plot centered cross-tick or tick only in specified direction [Default].");
 	GMT_Usage (API, 3, "+s Plot left-or right-lateral strike-slip arrows. Optionally append the arrow angle [20].");
 	GMT_Usage (API, 3, "+S Same as +s but with curved arrow-heads.");
-	GMT_Usage (API, 3, "+t diagonal square when centered, directed triangle otherwise.");
+	GMT_Usage (API, 3, "+t Plot diagonal square when centered, directed triangle otherwise.");
 	GMT_Usage (API, 3, "+o Plot first symbol when along-front distance is <offset> [0].");
 	GMT_Usage (API, 3, "+p Append <pen> for front symbol outline; if no <pen> then no outline [Outline with -W pen].");
-	GMT_Usage (API, -3, "Only one of +b|c|f|i|s|S|t may be selected.");
+	GMT_Usage (API, 3, "+v Plot two inverted triangles, directed inverted triangle otherwise.");
+	GMT_Usage (API, -3, "Only one of +b|c|f|i|s|S|t|v may be selected.");
 
 	GMT_Usage (API, 2, "\n%s Kustom: -Sk|K<symbolname>[/<size>]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Append <symbolname> immediately after 'k|K'; this will look for "
@@ -1545,7 +1546,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 				if (S.symbol == PSL_VECTOR || S.symbol == GMT_SYMBOL_GEOVECTOR || S.symbol == PSL_MARC) {	/* One of the vector symbols */
 					save_pen = current_pen; save_fill = current_fill; save_W = Ctrl->W.active; save_G = Ctrl->G.active;	/* Save status before change */
 					can_update_headpen = true;
-					if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head ouline pen specified separately */
+					if (S.v.status & PSL_VEC_OUTLINE2) {	/* Vector head outline pen specified separately */
 						if (!gmt_M_same_pen (S.v.pen, last_headpen)) {
 							PSL_defpen (PSL, "PSL_vecheadpen", S.v.pen.width, S.v.pen.style, S.v.pen.offset, S.v.pen.rgb);
 							headpen_width = S.v.pen.width;
