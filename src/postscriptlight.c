@@ -1989,7 +1989,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 	n_alloc = PSL_CHUNK;
 	old_font = font = PSL->current.font_no;
 	old_size = fontsize;
-	PSL_rgb_copy (rgb, PSL->current.rgb[PSL_IS_STROKE]);	/* Initial font color is current color */
+	PSL_rgb_copy (rgb, PSL->current.rgb[PSL_IS_FONT]);	/* Initial font color is current font color */
 
 	word = PSL_memory (PSL, NULL, n_alloc, struct PSL_WORD *);
 
