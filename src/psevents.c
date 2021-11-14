@@ -700,6 +700,7 @@ GMT_LOCAL unsigned int psevents_determine_columns (struct GMT_CTRL *GMT, char *m
 
 GMT_LOCAL void psevents_set_outarray (struct GMT_CTRL *GMT, struct PSEVENTS_CTRL *Ctrl, double t_now, double *t, bool finite_duration, bool coda, unsigned int x_col, unsigned int i_col, unsigned int t_col, unsigned int z_col, double *out) {
 	double x;
+	gmt_M_unused (GMT);
 	if (t_now < t[PSEVENTS_T_RISE]) {	/* Before the rise phase there is nothing */
 		out[x_col] = out[i_col] = 0.0;
 		out[t_col] = Ctrl->M.value[PSEVENTS_TRANSP][PSEVENTS_VAL1];

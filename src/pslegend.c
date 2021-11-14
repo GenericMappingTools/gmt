@@ -521,7 +521,6 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	struct GMT_FONT ifont;
 	struct GMT_PEN current_pen;
 	struct PSLEGEND_TXT *legend_item = NULL;
-	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASET *In = NULL, *INFO[2] = {NULL, NULL};
 	struct GMT_DATASET *D[N_DAT];
 	struct GMT_DATASEGMENT *S[N_DAT];

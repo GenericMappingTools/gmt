@@ -1636,7 +1636,7 @@ char *gmtlib_get_tile_list (struct GMTAPI_CTRL *API, double wesn[], int k_data, 
 	/* Create temporary filename for list of tiles */
 
 	snprintf (stem, GMT_LEN32, "=tiled_%d_%c%c", k_data, regtype[plot_region], datatype[ocean]);
-	if ((fp = gmt_create_tempfile (API, stem, NULL, tile_list)) == NULL) {	/* Not good... */
+	if ((fp = gmt_create_tempfile (API, stem, tile_list)) == NULL) {	/* Not good... */
 		GMT_Report (API, GMT_MSG_ERROR, "gmtlib_get_tile_list: Unable to create list of tiles from template: %s.\n", tile_list);
 		return NULL;
 	}

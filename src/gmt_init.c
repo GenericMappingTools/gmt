@@ -14175,7 +14175,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 
 				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Must save stdin to a temporary file.\n");
 
-				if ((fp = gmt_create_tempfile (API, "gmt_saved_stdin", NULL, tmpfile)) == NULL) {	/* Not good... */
+				if ((fp = gmt_create_tempfile (API, "gmt_saved_stdin", tmpfile)) == NULL) {	/* Not good... */
 					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not create and open temporary file name %s.\n", tmpfile);
 					return GMT_RUNTIME_ERROR;
 				}
