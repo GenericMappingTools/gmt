@@ -18434,18 +18434,24 @@ unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, un
 }
 
 void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
-	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible */
+	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible, and being aware of 360-range */
+	bool wrap = false;
 	enum gmt_col_enum type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 	char text[GMT_LEN64] = {""}, save[GMT_LEN64];
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Try formal reporting */
+		wrap = gmt_M_360_range (wesn[XLO], wesn[XHI]);
 		strcpy (save, GMT->current.setting.format_geo_out);
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 		gmtlib_geo_C_format (GMT);
 	}
-	gmt_ascii_format_one (GMT, text, wesn[XLO], type);
-	sprintf (record, "-R%s/", text);	/* west or xmin */
-	gmt_ascii_format_one (GMT, text, wesn[XHI], type);
-	strcat (record, text);	strcat (record, "/");/* east or xmax */
+	if (wrap)	/* Do it directly */
+		sprintf (record, "-R180:00:00W/180:00:00E/");
+	else {
+		gmt_ascii_format_one (GMT, text, wesn[XLO], type);
+		sprintf (record, "-R%s/", text);	/* west or xmin */
+		gmt_ascii_format_one (GMT, text, wesn[XHI], type);
+		strcat (record, text);	strcat (record, "/");/* east or xmax */
+	}
 	type = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
 	gmt_ascii_format_one (GMT, text, wesn[YLO], type);
 	strcat (record, text);	strcat (record, "/");/* south or ymin */
