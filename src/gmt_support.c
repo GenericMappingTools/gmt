@@ -4925,12 +4925,13 @@ int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char
 	return (GMT_NOERROR);
 }
 
-FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char path[]) {
+FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
 	/* Returns file pointer to the desired temp file open for writing */
 	FILE *fp = NULL;
 #ifndef _WIN32
 	/* Here we can use the race-safe mkstemp function which returns a file descriptor */
 	int fd = 0;
+	gmt_M_unused (extension);
 	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 	if ((fd = mkstemp (path)) == -1) {	/* Create filename AND open in one go to avoid race condition */
 		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name and open it %s.\n", path);

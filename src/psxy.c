@@ -330,7 +330,7 @@ GMT_LOCAL int psxy_convert_eps_to_def (struct GMT_CTRL *GMT, char *in_name, char
 
 	FILE *fp = NULL;
 
-	if ((fp = gmt_create_tempfile (GMT->parent, "gmt_epssymbol", path)) == NULL)	/* Not good... */
+	if ((fp = gmt_create_tempfile (GMT->parent, "gmt_epssymbol", ".def", path)) == NULL)	/* Not good... */
 		return GMT_RUNTIME_ERROR;
 
 	fprintf (fp, "# Custom symbol for placing a single EPS file\n0 0 1 %s %c\n", in_name, GMT_SYMBOL_EPS);	/* The EPS placement item */
