@@ -414,7 +414,7 @@ static int parse (struct GMT_CTRL *GMT, struct BATCH_CTRL *Ctrl, struct GMT_OPTI
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
-	int error = 0, precision;
+	int error = GMT_NOERROR, current_error, precision;
 	int (*run_script)(const char *);	/* pointer to system function or a dummy */
 
 	unsigned int n_values = 0, n_jobs = 0, job, i_job, col, k, n_cores_unused, n_to_run;
@@ -537,6 +537,41 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	/* Prepare the cleanup script */
+	sprintf (cleanup_file, "batch_cleanup.%s", extension[Ctrl->In.mode]);
+	GMT_Report (API, GMT_MSG_INFORMATION, "Create cleanup script %s\n", cleanup_file);
+	if ((fp = fopen (cleanup_file, "w")) == NULL) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
+		Return (GMT_ERROR_ON_FOPEN);
+	}
+	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
+	if (Ctrl->W.active) {	/* Want to delete the entire work directory */
+		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
+		/* Delete the entire working directory with batch jobs and tmp files */
+		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], tmpwpath);
+	}
+	else {	/* Just delete the remaining script files */
+		/* On Windows to do remove a file in a subdir one need to use back slashes */
+		char dir_sep_ = (Ctrl->In.mode == GMT_DOS_MODE) ? '\\' : '/';
+		GMT_Report (API, GMT_MSG_INFORMATION, "%u job product sets saved in directory: %s\n", n_jobs, workdir);
+		if (Ctrl->S[BATCH_PREFLIGHT].active)	/* Remove the preflight script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, pre_file);
+		if (Ctrl->S[BATCH_POSTFLIGHT].active)	/* Remove the postflight script */
+			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, post_file);
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, init_file);	/* Delete the init script */
+		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, main_file);	/* Delete the main script */
+	}
+	fclose (fp);
+#ifndef WIN32	/* Set executable bit if not Windows cmd */
+	if (chmod (cleanup_file, S_IRWXU)) {
+		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
+		Return (GMT_RUNTIME_ERROR);
+	}
+#endif
+
+	/* Here the cleanup_script has been completed and from now on we do not Return but set error code and jump to
+	 * the end of the program at tag clean_then_die: */
+
 	/* We use DATADIR to include the top and working directory so any files we supply or create can be found while inside job directory */
 
 	if (GMT->session.DATADIR)	/* Prepend initial and subdir as new datadirs to the existing search list */
@@ -560,7 +595,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if ((fp = fopen (init_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s - exiting\n", init_file);
 		batch_close_files (Ctrl);
-		Return (GMT_ERROR_ON_FOPEN);
+		error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 	}
 
 	sprintf (string, "Static parameters set for processing sequence %s", Ctrl->N.prefix);
@@ -589,12 +624,13 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Your preflight file %s is not in GMT modern node - exiting\n", pre_file);
 			fclose (Ctrl->In.fp);
 			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 		GMT_Report (API, GMT_MSG_INFORMATION, "Create preflight script %s and execute it\n", pre_file);
 		if ((fp = fopen (pre_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create preflight script %s - exiting\n", pre_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 		}
 		gmt_set_script (fp, Ctrl->In.mode);			/* Write 1st line of a script */
 		gmt_set_comment (fp, Ctrl->In.mode, "Preflight script");
@@ -622,7 +658,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if (chmod (pre_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make preflight script %s executable - exiting.\n", pre_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 #endif
 		/* Run the pre-flight now which may or may not create a <timefile> needed later via -T, as well as needed data files */
@@ -630,7 +666,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if ((error = system (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running preflight script %s returned error %d - exiting.\n", pre_file, error);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 	}
 
@@ -641,12 +677,12 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			if ((D = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->T.file, NULL)) == NULL) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to read time file: %s - exiting\n", Ctrl->T.file);
 				fclose (Ctrl->In.fp);
-				Return (API->error);
+				error = API->error;	goto clean_then_die;
 			}
 			if (D->n_segments > 1) {	/* We insist on a simple file structure with a single segment */
 				GMT_Report (API, GMT_MSG_ERROR, "Your time file %s has more than one segment - reformat first\n", Ctrl->T.file);
 				fclose (Ctrl->In.fp);
-				Return (API->error);
+				error = API->error;	goto clean_then_die;
 			}
 			n_jobs = (unsigned int)D->n_records;	/* Number of records means number of jobs */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-job parameters we need to place into the per-job parameter files */
@@ -656,7 +692,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			char output[GMT_VF_LEN] = {""}, cmd[GMT_LEN128] = {""};
 			unsigned int V = GMT->current.setting.verbose;
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_NONE, GMT_OUT|GMT_IS_REFERENCE, NULL, output) == GMT_NOTSET) {
-				Return (API->error);
+				error = API->error;	goto clean_then_die;
 			}
 			if (GMT->common.f.active[GMT_IN])
 				sprintf (cmd, "-T%s -o1 -f%s --GMT_HISTORY=readonly T = %s", Ctrl->T.file, GMT->common.f.string, output);
@@ -665,11 +701,11 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Calling gmtmath with args %s\n", cmd);
 			GMT->current.setting.verbose = GMT_MSG_ERROR;	/* So we don't get unwanted verbosity from gmtmath */
   			if (GMT_Call_Module (API, "gmtmath", GMT_MODULE_CMD, cmd)) {
-				Return (API->error);	/* Some sort of failure */
+				error = API->error;	goto clean_then_die;
 			}
 			GMT->current.setting.verbose = V;	/* Restore */
 			if ((D = GMT_Read_VirtualFile (API, output)) == NULL) {	/* Load in the data array */
-				Return (API->error);	/* Some sort of failure */
+				error = API->error;	goto clean_then_die;
 			}
 			n_jobs = (unsigned int)D->n_records;	/* Number of records means number of jobs */
 			n_values = (unsigned int)D->n_columns;	/* The number of per-job parameters we need to place into the per-job parameter files */
@@ -685,7 +721,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if (n_jobs == 0) {	/* So not good... */
 		GMT_Report (API, GMT_MSG_ERROR, "No jobs specified! - exiting.\n");
 		fclose (Ctrl->In.fp);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 	}
 
 	if (!n_written) {	/* Rewrite the init file to place the BATCH_NJOBS there */
@@ -694,7 +730,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if ((fp = fopen (init_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s - exiting\n", init_file);
 			batch_close_files (Ctrl);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 		}
 
 		sprintf (string, "Static parameters set for processing sequence %s", Ctrl->N.prefix);
@@ -729,7 +765,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if ((fp = fopen (post_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create postflight file %s - exiting\n", post_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 		}
 		gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 		gmt_set_comment (fp, Ctrl->In.mode, "Postflight script");
@@ -758,7 +794,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if (chmod (post_file, S_IRWXU)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to make postflight script %s executable - exiting\n", post_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 #endif
 	}
@@ -775,7 +811,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if ((fp = fopen (param_file, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to create job parameter file %s - exiting\n", param_file);
 			fclose (Ctrl->In.fp);
-			Return (GMT_ERROR_ON_FOPEN);
+			error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 		}
 		sprintf (state_prefix, "Parameter file for job %s", state_tag);
 		gmt_set_comment (fp, Ctrl->In.mode, state_prefix);
@@ -813,7 +849,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if ((fp = fopen (main_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create loop job script file %s - exiting\n", main_file);
 		fclose (Ctrl->In.fp);
-		Return (GMT_ERROR_ON_FOPEN);
+		error = GMT_ERROR_ON_FOPEN;	goto clean_then_die;
 	}
 	gmt_set_script (fp, Ctrl->In.mode);	/* Write 1st line of a script */
 	gmt_set_comment (fp, Ctrl->In.mode, "Main job loop script");
@@ -858,39 +894,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
 	if (chmod (main_file, S_IRWXU)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to make script %s executable - exiting\n", main_file);
-		Return (GMT_RUNTIME_ERROR);
-	}
-#endif
-
-	/* Prepare the cleanup script */
-	sprintf (cleanup_file, "batch_cleanup.%s", extension[Ctrl->In.mode]);
-	GMT_Report (API, GMT_MSG_INFORMATION, "Create cleanup script %s\n", cleanup_file);
-	if ((fp = fopen (cleanup_file, "w")) == NULL) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
-		Return (GMT_ERROR_ON_FOPEN);
-	}
-	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
-	if (Ctrl->W.active) {	/* Want to delete the entire work directory */
-		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
-		/* Delete the entire working directory with batch jobs and tmp files */
-		fprintf (fp, "%s %s\n", rmdir[Ctrl->In.mode], tmpwpath);
-	}
-	else {	/* Just delete the remaining script files */
-		/* On Windows to do remove a file in a subdir one need to use back slashes */
-		char dir_sep_ = (Ctrl->In.mode == GMT_DOS_MODE) ? '\\' : '/';
-		GMT_Report (API, GMT_MSG_INFORMATION, "%u job product sets saved in directory: %s\n", n_jobs, workdir);
-		if (Ctrl->S[BATCH_PREFLIGHT].active)	/* Remove the preflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, pre_file);
-		if (Ctrl->S[BATCH_POSTFLIGHT].active)	/* Remove the postflight script */
-			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, post_file);
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, init_file);	/* Delete the init script */
-		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep_, main_file);	/* Delete the main script */
-	}
-	fclose (fp);
-#ifndef WIN32	/* Set executable bit if not Windows cmd */
-	if (chmod (cleanup_file, S_IRWXU)) {
-		GMT_Report (API, GMT_MSG_ERROR, "Unable to make cleanup script %s executable - exiting\n", cleanup_file);
-		Return (GMT_RUNTIME_ERROR);
+		error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 	}
 #endif
 
@@ -906,7 +910,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running master script %s for argument %s returned error %d - exiting.\n", main_file, state_tag, error);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 		Return (GMT_NOERROR);	/* We are done */
 	}
@@ -934,7 +938,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_DEBUG, "Launch script for job %*.*d\n", precision, precision, job);
 			if ((error = system (cmd))) {
 				GMT_Report (API, GMT_MSG_ERROR, "Running script %s returned error %d - aborting.\n", cmd, error);
-				Return (GMT_RUNTIME_ERROR);
+				error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 			}
 			status[job].started = true;	/* We have now launched this job job */
 			job++;			/* Advance to next job for next launch */
@@ -971,9 +975,13 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		if ((error = run_script (cmd))) {
 			GMT_Report (API, GMT_MSG_ERROR, "Running postflight script %s returned error %d - exiting.\n", post_file, error);
 			fclose (Ctrl->In.fp);
-			Return (GMT_RUNTIME_ERROR);
+			error = GMT_RUNTIME_ERROR;	goto clean_then_die;
 		}
 	}
+
+clean_then_die:
+
+	current_error = error;	/* Since we may jump here because of an issue earlier */
 
 	if (!Ctrl->Q.active) {
 		/* Run cleanup script at the end */
@@ -1007,5 +1015,5 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			Return (error);
 	}
 
-	Return (GMT_NOERROR);
+	Return (current_error);
 }
