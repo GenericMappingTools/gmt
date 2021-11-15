@@ -303,13 +303,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2XYZ_CTRL *Ctrl, struct GMT_Z_
 GMT_LOCAL void grd2xyz_dump_triangle (FILE *fp, float N[], float P[3][3], bool binary) {
 	/* Write the 3 facets of a single triangle and its normal vector to STL file */
 	short unsigned int dummy = 0;
-	unsigned int k, p;
+	unsigned int k;
 	if (binary) {	/* Use the binary STL format */
 #ifdef WORDS_BIGENDIAN	/* Need to ensure little-endian output */
 		/* Must swab all things except dummy which is all 0000 anyway */
 		for (k = 0; k < 3; k++) {
 			N[k] = bswap32 (N[k]);
-			for (p = 0; p < 3; p++)
+			for (unsigned int p = 0; p < 3; p++)
 				P[p][k] = bswap32 (P[p][k]);
 		}
 #endif
@@ -352,11 +352,12 @@ void grd2xyz_out_triangle (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, u
 	grd2xyz_dump_triangle (fp,  N, P, binary);
 }
 
-void place_SN_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, unsigned int kase, bool binary) {
+void place_SN_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, bool binary) {
 	/* Prepare two triangles along the S or N row from the base (0) up */
 	int64_t ij, d_ij;
 	unsigned int col_L, col_R;
 	float P[3][3], N[3];
+	gmt_M_unused (GMT);
 	/* The two triangles shares the same normal vector in +/- y-direction */
 	N[GMT_X] = N[GMT_Z] = 0.0;	N[GMT_Z] = (row == 0) ? 1.0 : -1.0;	/* Points either north or south */
 	if (row == 0) col_L = col + 1, col_R = col, d_ij = -1; else col_L = col, col_R = col + 1, d_ij = 1;	/* Set left and right column of triangles */
@@ -373,13 +374,15 @@ void place_SN_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, uns
 	grd2xyz_dump_triangle (fp,  N, P, binary);
 }
 
-void place_WE_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, unsigned int kase, bool binary) {
+void place_WE_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, unsigned int row, unsigned int col, bool binary) {
 	/* Prepare two triangles along the W or E column from the base up */
 	int64_t ij, d_ij;
 	unsigned int row_L, row_R;
 	float P[3][3], N[3];
+	gmt_M_unused (GMT);
 	/* The two triangles shares the same normal vector in +/- x-direction */
 	N[GMT_Y] = N[GMT_Z] = 0.0;	N[GMT_X] = (col == 0) ? -1.0 : 1.0;	/* Points either west or east */
+	gmt_M_unused (GMT);
 	if (col == 0) row_L = row, row_R = row + 1, d_ij = G->header->mx; else row_L = row + 1, row_R = row, d_ij = -(int64_t)G->header->mx;	/* Set left and right row of triangles */
 	ij = gmt_M_ijp (G->header, row_L, col);	/* The "left" z index */
 	/* BL-BR-TL triangle */
@@ -398,6 +401,7 @@ void place_base_triangles (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GRID *G, b
 	/* The two base triangles shares the same -z_hat normal vector */
 	float P[3][3], N[3] = {0.0, 0.0, -1.0};	/* Normal points down in negative z-direction */
 	struct GMT_GRID_HEADER *h = G->header;
+	gmt_M_unused (GMT);
 	/* NE-SW-NW triangle */
 	P[0][GMT_X] = G->x[h->n_columns-1];	P[1][GMT_X] = P[2][GMT_X] = G->x[0];
 	P[0][GMT_Y] = P[2][GMT_Y] = G->y[0];	P[1][GMT_Y] = G->y[h->n_rows-1];
@@ -628,7 +632,6 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 		else if (Ctrl->T.active) {	/* STL format */
 			char header[80] = {""};
 			unsigned int n_tri = 0, n_tri_write;
-			int64_t se = 1, nw = -(int64_t)G->header->mx, ne = nw + 1;	/* Relative node indices */
 			FILE *fp = GMT->session.std[GMT_OUT];
 
 			if (gmt_M_is_dnan (Ctrl->T.base))	/* Set default base to grid minimum */
@@ -685,12 +688,12 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 			}
 			/* Time to write the four sides and base */
 			for (col = 0; col < (G->header->n_columns-1); col++) {	/* Deal with triangles for S and N facade */
-				place_SN_triangles (GMT, fp, G, 0, col, GMT_X, Ctrl->T.binary);
-				place_SN_triangles (GMT, fp, G, G->header->n_rows-1, col, GMT_X, Ctrl->T.binary);
+				place_SN_triangles (GMT, fp, G, 0, col, Ctrl->T.binary);
+				place_SN_triangles (GMT, fp, G, G->header->n_rows-1, col, Ctrl->T.binary);
 			}
 			for (row = 0; row < (G->header->n_rows-1); row++) {	/* Deal with triangles for E and W facade */
-				place_WE_triangles (GMT, fp, G, row, 0, GMT_Y, Ctrl->T.binary);
-				place_WE_triangles (GMT, fp, G, row, G->header->n_columns-1, GMT_Y, Ctrl->T.binary);
+				place_WE_triangles (GMT, fp, G, row, 0, Ctrl->T.binary);
+				place_WE_triangles (GMT, fp, G, row, G->header->n_columns-1, Ctrl->T.binary);
 			}
 			place_base_triangles (GMT, fp, G, Ctrl->T.binary);	/* Two large base triangles */
 

@@ -2867,6 +2867,7 @@ GMT_LOCAL void gmtapi_update_grid_minmax (struct GMT_CTRL *GMT, struct GMT_GRID 
 	unsigned int row, col;
 	struct GMT_GRID_HEADER *h = G->header;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+	gmt_M_unused (GMT);
 
 	h->z_min = +DBL_MAX;    h->z_max = -DBL_MAX;    /* Reset the min/max before we search */
 	HH->has_NaNs = GMT_GRID_NO_NANS;    /* We are about to check for NaNs and if none are found we retain 1, else 2 */
@@ -2887,6 +2888,7 @@ GMT_LOCAL void gmtapi_update_cube_minmax (struct GMT_CTRL *GMT, struct GMT_CUBE 
 	unsigned int k, row, col;
 	struct GMT_GRID_HEADER *h = U->header;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+	gmt_M_unused (GMT);
 
 	h->z_min = +DBL_MAX;    h->z_max = -DBL_MAX;    /* Reset the min/max before we search */
 	HH->has_NaNs = GMT_GRID_NO_NANS;    /* We are about to check for NaNs and if none are found we retain 1, else 2 */
@@ -3635,7 +3637,6 @@ GMT_LOCAL struct GMT_DATASET * gmtapi_import_dataset (struct GMTAPI_CTRL *API, i
 	struct GMT_DATASET_HIDDEN *DH = NULL, *DHi = NULL;
 	struct GMT_DATATABLE_HIDDEN *TH = NULL;
 	struct GMT_DATASEGMENT_HIDDEN *SH = NULL;
-	struct GMT_MATRIX_HIDDEN *MH = NULL;
 	struct GMT_VECTOR_HIDDEN *VH = NULL;
 	struct GMTAPI_DATA_OBJECT *S_obj = NULL;
 	struct GMT_CTRL *GMT = API->GMT;

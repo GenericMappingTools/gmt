@@ -1049,7 +1049,7 @@ EXTERN_MSC int GMT_mapproject (void *V_API, int mode, void *args) {
 				n_output = 2;	break;
 			case GMT_MP_M_RSTRING:
 				tmode = GMT_COL_FIX;	/* Fall through on purpose here */
-			case GMT_MP_M_REGION: GMT_MP_M_RSTRING:
+			case GMT_MP_M_REGION:
 				if (GMT->current.proj.search && (error = gmt_map_perimeter_search (GMT, GMT->common.R.wesn, false)))
 					Return (GMT_RUNTIME_ERROR);
 				gmt_M_memcpy (w_out, GMT->common.R.wesn, 4, double);

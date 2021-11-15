@@ -251,7 +251,7 @@ GMT_LOCAL void psconvert_pclose2 (struct popen2 **Faddr, int dir) {
 
 GMT_LOCAL int psconvert_parse_new_A_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
 	/* Syntax: -A[+r][+u] */
-
+	gmt_M_unused (GMT);
 	Ctrl->A.active = Ctrl->A.crop = true;
 
 	if (strstr (arg, "r"))
