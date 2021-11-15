@@ -4,7 +4,7 @@
 name: Docs
 
 on:
-  # pull_request:
+  pull_request:
   push:
     branches:
       - master
@@ -43,12 +43,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Linux
-            os: ubuntu-latest
           - name: macOS
             os: macos-latest
-          - name: Windows
-            os: windows-latest
 
     steps:
       - name: Cancel Previous Runs
@@ -140,20 +136,6 @@ jobs:
           cmake --build . --target install
           # Add GMT PATH to bin
           echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
-
-      - name: Checkout the gh-pages branch in a separate folder
-        uses: actions/checkout@28c7f3d2b5162b5ddd3dfd9a45aa55eaf396478b
-        with:
-          ref: gh-pages
-          # Checkout to this folder instead of the current one
-          path: deploy
-          # Download the entire history
-          fetch-depth: 0
-        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
-
-      - name: Deploy documentation to GitHub
-        run: bash ci/deploy-gh-pages.sh
-        if: github.event_name != 'pull_request' && matrix.os == 'ubuntu-latest'
 
       - name: Package GMT
         run: |
