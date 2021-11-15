@@ -97,7 +97,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (!API->external) {
 		GMT_Usage (API, 1, "\n-G<grdfile>");
 		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to standard output. "
-			"If more than one field is set via -A then <grdfile> must contain %%s to format field code.");
+			"If more than one field is set via -A then <grdfile> must contain %%s to format field code. Option -C is not allowed.");
 	}
 	GMT_Usage (API, 1, "\n-S[m|n|s|w]");
 	GMT_Usage (API, -2, "Select the quantity to be reported per block as z:");
@@ -266,6 +266,9 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 			Ctrl->A.selected[0] = true;
 			Ctrl->A.n_selected = 1;
 		}
+		n_errors += gmt_M_check_condition (GMT, Ctrl->C.active,
+			"Option -C: Cannot be combined with -G\n");
+		Ctrl->C.active = true;	/* But we set it under the hood to avoid computing mean of x and y */
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->parent->external && Ctrl->A.active && !Ctrl->G.active, "Option -A requires -G\n");

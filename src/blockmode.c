@@ -105,7 +105,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (!API->external) {
 		GMT_Usage (API, 1, "\n-G<grdfile>");
 		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to standard output. "
-			"If more than one field is set via -A then <grdfile> must contain %%s to format field code.");
+			"If more than one field is set via -A then <grdfile> must contain %%s to format field code. Options -C and -Q are not allowed.");
 	}
 	GMT_Usage (API, 1, "\n-Q Quicker; get mode z and mean x,y [Default gets mode x, mode y, mode z].");
 	GMT_Option (API, "V");
@@ -308,6 +308,11 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMODE_CTRL *Ctrl, struct GMT_
 				n_errors++;
 			}
 		}
+		n_errors += gmt_M_check_condition (GMT, Ctrl->C.active,
+			"Option -C: Cannot be combined with -G\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active,
+			"Option -Q: Cannot be combined with -G\n");
+		Ctrl->C.active = true;	/* But we set it under the hood to avoid computing modes of x and y */
 	}
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, GMT->common.R.inc[GMT_X] <= 0.0 || GMT->common.R.inc[GMT_Y] <= 0.0,
@@ -559,7 +564,7 @@ EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 
-	if (Ctrl->C.active && Ctrl->Q.active) {
+	if (!Ctrl->G.active && Ctrl->C.active && Ctrl->Q.active) {
 		GMT_Report (API, GMT_MSG_WARNING, "-C overrides -Q\n");
 		Ctrl->Q.active = false;
 	}
@@ -902,7 +907,7 @@ EXTERN_MSC int GMT_blockmode (void *V_API, int mode, void *args) {
 				GridOut[k]->data[node] = (gmt_grdfloat)out[field[k]];
 		}
 		else
-		GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
+			GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write this to output */
 
 		n_cells_filled++;
 		first_in_cell = first_in_new_cell;
