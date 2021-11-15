@@ -39,11 +39,8 @@ end point (**e**) of a line segment:
 
     **+h**\ *shape* sets the shape of the vector head (range -2/2). Default
     is controlled by :term:`MAP_VECTOR_SHAPE` [default is :doc:`theme dependent </theme-settings>`].
-    A zero value produces no notch (e.g., the dashed line in the figure). Positive values
-    moves the notch toward the head apex while a negative value moves away. The example above
-    uses **+h**\ 0.5.
-
-    **+l** draws half-arrows, using only the left side of specified heads [both sides].
+    A zero value produces no notch. Positive values moves the notch toward the head apex while a
+    negative value moves it away. The example above uses **+h**\ 0.5.
 
     **+m** places a vector head at the mid-point the vector path [none].
     Append **f** or **r** for forward or reverse direction of the vector [forward].
@@ -70,8 +67,6 @@ end point (**e**) of a line segment:
     **+q** means the input *direction*, *length* data instead represent the *start* and *stop*
     opening angles of the arc segment relative to the given point. See **+o** to specify
     a specific pole for the arc [north pole].
-
-    **+r** draws half-arrows, using only the right side of specified heads [both sides].
 
     **+t**\ [**b**\|\ **e**]\ *trim* will shift the beginning or end point (or both)
     along the vector segment by the given *trim*; append suitable unit (**c**, **i**, or **p**). If the modifiers

@@ -101,7 +101,7 @@ Optional Arguments
 
 **-Q**\ *parameters*
     Modify vector parameters. For vector heads, append vector head
-    *size* [Default is 0, i.e., stick-plot]. See VECTOR ATTRIBUTES for
+    *size* [Default is 0, i.e., stick-plot]. See `Vector Attributes`_ for
     specifying additional attributes.
 
 .. |Add_-R| replace:: Specify a subset of the grid. |Add_-R_links|

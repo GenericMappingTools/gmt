@@ -106,7 +106,7 @@ installation parameters. For more advanced parameters, you may copy `ConfigUserA
 
 > Note for developers: It is necessary to create both `ConfigUser.cmake` and `ConfigUserAdvanced.cmake` in the `cmake`
 > directory using the templates provided in order to enable testing. Refer to the section
-> [setting up your environment](contributing.html#setting-up-your-environment) in the
+> [setting up your environment](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html#setting-up-your-environment) in the
 > [contributing guide](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html)
 > for instructions on setting up `cmake/ConfigUserAdvanced.cmake`.
 

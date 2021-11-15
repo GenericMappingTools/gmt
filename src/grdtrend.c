@@ -287,7 +287,8 @@ GMT_LOCAL void grdtrend_load_pstuff_xonly (double *pstuff, unsigned int n_model,
 	/* Compute Legendre polynomials of x[i] as needed  */
 	/* If x has changed, compute new Legendre polynomials as needed.
 	 * Remember: pstuff[0] == 1 throughout.   Here, n_models is in 1-4 range*/
-
+	gmt_M_unused (y);
+	gmt_M_unused (newy);
 	if (newx) {
 		if (n_model > 1) pstuff[1] = x;
 		if (n_model > 2) pstuff[2] = 0.5 * (3.0 * x * x - 1.0);
@@ -301,6 +302,8 @@ GMT_LOCAL void grdtrend_load_pstuff_yonly (double *pstuff, unsigned int n_model,
 	/* Compute Legendre polynomials of y[j] as needed  */
 	/* If y has changed, compute new Legendre polynomials as needed.
 	 * Remember: pstuff[0] == 1 throughout.  Here, n_models is in 0-3 range */
+	gmt_M_unused (x);
+	gmt_M_unused (newx);
 
 	if (newy) {
 		if (n_model > 1) pstuff[1] = y;

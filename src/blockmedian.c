@@ -88,7 +88,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (!API->external) {
 		GMT_Usage (API, 1, "\n-G<grdfile>");
 		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to standard output. "
-			"If more than one field is set via -A then <grdfile> must contain %%s to format field code.");
+			"If more than one field is set via -A then <grdfile> must contain %%s to format field code. Options -C and -Q are not allowed.");
 	}
 	GMT_Usage (API, 1, "\n-Q Quicker; get median z and x,y at that z [Default gets median x, median y, median z].");
 	GMT_Usage (API, 1, "\n-T<q>");
@@ -305,6 +305,11 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEDIAN_CTRL *Ctrl, struct GM
 				n_errors++;
 			}
 		}
+		n_errors += gmt_M_check_condition (GMT, Ctrl->C.active,
+			"Option -C: Cannot be combined with -G\n");
+		n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active,
+			"Option -Q: Cannot be combined with -G\n");
+		Ctrl->C.active = true;	/* But we set it under the hood to avoid computing modes of x and y */
 	}
 	n_errors += gmt_M_check_condition (GMT, !GMT->common.R.active[RSET], "Must specify -R option\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->T.quantile <= 0.0 || Ctrl->T.quantile >= 1.0,
@@ -442,7 +447,7 @@ EXTERN_MSC int GMT_blockmedian (void *V_API, int mode, void *args) {
 	duplicate_col = (gmt_M_360_range (Grid->header->wesn[XLO], Grid->header->wesn[XHI]) && Grid->header->registration == GMT_GRID_NODE_REG);	/* E.g., lon = 0 column should match lon = 360 column */
 	half_dx = 0.5 * Grid->header->inc[GMT_X];
 	go_quickly = (Ctrl->Q.active) ? 1 : 0;
-	if (Ctrl->C.active && go_quickly == 1) {
+	if (!Ctrl->G.active && Ctrl->C.active && go_quickly == 1) {
 		GMT_Report (API, GMT_MSG_WARNING, "-C overrides -Q\n");
 		go_quickly = 0;
 	}

@@ -317,7 +317,7 @@ GMT_LOCAL int x2syscross_combo_ok (char *name_1, char *name_2, struct X2SYS_CROS
 	return (false);
 }
 
-GMT_LOCAL void x2syscross_free_pairs (struct GMT_CTRL *GMT, struct X2SYS_CROSS_PAIR *pair, uint64_t n_pairs) {
+GMT_LOCAL void x2syscross_free_pairs (struct X2SYS_CROSS_PAIR *pair, uint64_t n_pairs) {
 	/* Free the strings in the array of pairs */
 	uint64_t k;
 	for (k = 0; k < n_pairs; k++) {
@@ -357,7 +357,7 @@ GMT_LOCAL void x2syscross_local_xy_to_geo (double *x, double *y, int plat) {
 
 #define bailout(code) {gmt_M_free_options (mode); return (code);}
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
-#define Crashout(code) {gmt_M_free (GMT, duplicate); x2syscross_free_pairs (GMT, pair, n_pairs); gmt_M_free (GMT, pair); x2sys_free_list (GMT, trk_name, n_tracks); if (fpC) fclose (fpC); x2sys_end (GMT, s); Return (error);}
+#define Crashout(code) {gmt_M_free (GMT, duplicate); x2syscross_free_pairs (pair, n_pairs); gmt_M_free (GMT, pair); x2sys_free_list (GMT, trk_name, n_tracks); if (fpC) fclose (fpC); x2sys_end (GMT, s); Return (error);}
 
 EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	char **trk_name = NULL;			/* Name of tracks */
@@ -1035,7 +1035,7 @@ EXTERN_MSC int GMT_x2sys_cross (void *V_API, int mode, void *args) {
 	/* Free up other arrays */
 
 	if (Ctrl->A.active) {	/* Free strings in pairs, then pairs itself */
-		x2syscross_free_pairs (GMT, pair, n_pairs);
+		x2syscross_free_pairs (pair, n_pairs);
 		gmt_M_free (GMT, pair);
 	}
 
