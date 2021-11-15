@@ -17,7 +17,7 @@ PACKAGE="${PACKAGE:-false}"
 
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
-packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript"
+packages="ninja curl pcre2 netcdf gdal fftw ghostscript"
 
 # packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
@@ -35,6 +35,8 @@ fi
 
 # Install GMT dependencies
 #brew update
+brew uninstall geos gdal
+brew install geos
 brew install ${packages}
 
 if [ "$BUILD_DOCS" = "true" ]; then
