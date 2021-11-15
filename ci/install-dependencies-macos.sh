@@ -35,7 +35,6 @@ fi
 
 # Install GMT dependencies
 #brew update
-brew uninstall geos gdal
 brew install geos
 brew install ${packages}
 
