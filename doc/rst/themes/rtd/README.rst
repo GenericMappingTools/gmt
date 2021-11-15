@@ -1,3 +1,6 @@
+Copy of the original Sphinx Read The Docs theme from
+https://github.com/readthedocs/sphinx_rtd_theme version 1.0.0.
+
 **************************
 Read the Docs Sphinx Theme
 **************************
