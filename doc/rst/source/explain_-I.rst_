@@ -2,7 +2,7 @@
     Set the grid spacing as *x_inc* [and optionally *y_inc*].
     
     **Geographical (degrees) coordinates**: Optionally, append an increment unit.
-    Chose among:
+    Choose among:
 
         - **m** to indicate arc minutes
         - **s** to indicate arc seconds
