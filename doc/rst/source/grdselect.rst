@@ -195,7 +195,9 @@ Examples
 
 To find the extended region (union) of all the grids given, plus a padding of 2 degrees, try::
 
-    gmt grdselect *.grd -Au -M2
+    gmt grdcut @earth_relief_01d -R1/3/1/3 -Gsubset1.nc
+    gmt grdcut @earth_relief_01d -R2/5/2/5 -Gsubset2.nc
+    gmt grdselect *.nc -Au -M2
 
 To find the common region (intersection) that all the grids share, try::
 
