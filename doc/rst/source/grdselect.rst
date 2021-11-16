@@ -72,7 +72,7 @@ Optional Arguments
 
 **-C**\ *pointfile*
     Specify a multisegment point file. A data source must contain at least one point
-    from *pointfile* to pass [No point inclusions considered].  **Note**: If data source
+    from *pointfile* to pass [Default is to not consider point inclusions].  **Note**: If data source
     is a 3-D cube then we also check if *pointfile* has *z*-coordinates and if the 3-D
     point is inside the cube [only check in map view].
 
