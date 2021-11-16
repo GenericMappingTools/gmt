@@ -2,7 +2,6 @@ Modules (Classic Mode)
 ======================
 
 .. note::
-
    Looking for the *modern mode* modules like ``begin`` and ``figure``? See the
    :doc:`equivalent page for modern mode <modules>`.
 
