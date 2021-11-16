@@ -561,7 +561,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	sprintf (main_file, "batch_job.%s", extension[Ctrl->In.mode]);
 
 	/* Prepare the cleanup script */
-	sprintf (cleanup_file, "batch_cleanup.%s", extension[Ctrl->In.mode]);
+	sprintf (cleanup_file, "%s/batch_cleanup_%d.%s", API->tmp_dir, (int)getpid(), extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Create cleanup script %s\n", cleanup_file);
 	if ((fp = fopen (cleanup_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
@@ -1005,7 +1005,7 @@ clean_then_die:
 	}
 
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
-	if (!Ctrl->Q.active && gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
+	if (gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the cleanup script %s.\n", cleanup_file);
 		Return (GMT_RUNTIME_ERROR);
 	}

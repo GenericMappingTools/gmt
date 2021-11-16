@@ -1584,7 +1584,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	sprintf (main_file, "movie_frame.%s", extension[Ctrl->In.mode]);
 
 	/* Prepare the cleanup script */
-	sprintf (cleanup_file, "movie_cleanup.%s", extension[Ctrl->In.mode]);
+	sprintf (cleanup_file, "%s/movie_cleanup_%d.%s", API->tmp_dir, (int)getpid(), extension[Ctrl->In.mode]);
 	if ((fp = fopen (cleanup_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create cleanup file %s - exiting\n", cleanup_file);
 		Return (GMT_ERROR_ON_FOPEN);
@@ -2449,6 +2449,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		sprintf (htxt, ",H%d", Ctrl->H.factor);
 		strcat (extra, htxt);
 	}
+
 	gmt_set_script (fp, Ctrl->In.mode);					/* Write 1st line of a script */
 	gmt_set_comment (fp, Ctrl->In.mode, "Main frame loop script");
 	fprintf (fp, "%s", export[Ctrl->In.mode]);			/* Hardwire a GMT_SESSION_NAME since sub-shells may mess things up */
@@ -2665,12 +2666,12 @@ clean_then_die:
 	}
 
 	/* Finally, delete the clean-up script separately since under DOS we got complaints when we had it delete itself (which works under *nix) */
-	if (!Ctrl->Q.active && gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
+	if (gmt_remove_file (GMT, cleanup_file)) {	/* Delete the cleanup script itself */
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the cleanup script %s.\n", cleanup_file);
 		Return (GMT_RUNTIME_ERROR);
 	}
 
-	if (current_error)	/* Force removal of work dir since job failed */
+	if (Ctrl->Q.active && current_error)	/* Force removal of work dir since job failed */
 		system (zap_workdir);
 
 	Return (current_error);
