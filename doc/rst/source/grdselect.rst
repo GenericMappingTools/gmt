@@ -66,20 +66,20 @@ Optional Arguments
     to the final region: Specify **l** for the lowest increment of all passed data
     sources, **h** for the highest increment, or *inc* to set a specific increment.
     If **-A** is not used then we just list the names of the sources that passed
-    (or not; **-I**) any tests selected from **-C -D -F -L -N -R -W -Z -r**.
+    (or not; see **-I**) any tests selected from **-C -D -F -L -N -R -W -Z -r**.
 
 .. _-C:
 
 **-C**\ *pointfile*
-    Specify a multisegment point file that a data source must contain at least one point
-    to pass [No point inclusions considered].  **Note**: If data sources is a 3-D cube
-    then we also check if *pointfile* has *z*-coordinates and if the 3-D point is inside
-    the cube [only check in map view].
+    Specify a multisegment point file. A data source must contain at least one point
+    from *pointfile* to pass [No point inclusions considered].  **Note**: If data source
+    is a 3-D cube then we also check if *pointfile* has *z*-coordinates and if the 3-D
+    point is inside the cube [only check in map view].
 
 .. _-D:
 
 **-D**\ *inc*
-    Only pass data sources whose increments match the given increment [do not
+    Only pass data sources whose increments match the given increments [do not
     consider the increments when passing or skipping data sources].
 
 .. _-E:
@@ -97,12 +97,11 @@ Optional Arguments
 .. _-F:
 
 **-F**\ *polygonfile*\ [**+i**\|\ **o**]
-    Specify a multisegment closed polygon file that a data source must partially or
-    fully overlap to pass [No polygonal areas considered]. **Note**: If data source
-    is a cube we ignore the *z*-dimension (i.e., we only check for overlap in map view).
-    To only find data sources that are fully inside or outside the polygon, append **+i**
-    or **+o**, respectively.
-
+    Specify a multisegment closed polygon file. A data source must partially or
+    fully overlap with at least one polygon in *polygonfile* to pass [No polygonal areas
+    considered]. To only find data sources that are fully inside or outside the polygon
+    append **+i** or **+o**, respectively. **Note**: If data source is a cube then we ignore
+    the *z*-dimension (i.e., we only check for overlap in map view). 
 .. _-G:
 
 **-G**
@@ -112,31 +111,31 @@ Optional Arguments
 .. _-I:
 
 **-I**\ [**CDFLNRWZr**]
-    Reverses the sense of the test for each of the items specified by a code:
+    Reverses the sense of the test for each of the options that match the specified code(s):
 
     - **C** - select data sources *not* containing any of the points specified in **-C**.
     - **D** - select data sources *not* having the specified increment in **-D**.
     - **F** - select data sources *not* overlapping with any of the polygons specified in **-F**.
-    - **L** - select data sources *not* traversed any of the lines specified in **-L**.
+    - **L** - select data sources *not* traversed by any of the lines specified in **-L**.
     - **N** - select data sources *failing* the NaN criterion in **-N**.
-    - **R** - select data sources *not* having any overlap with region set in **-R**.
-    - **W** - select data sources whose data range is *not* overlapping the range specified by **-W**.
-    - **Z** - select cubes whose z-dimension range is *not* overlapping the range specified by **-Z** (requires **-Q**).
-    - **r** - select data sources *not* having the specified registration in **-r**.
+    - **R** - select data sources *not* having any overlap with the region set in **-R**.
+    - **W** - select data sources whose data range do *not* overlap the range specified by **-W**.
+    - **Z** - select cubes whose z-dimension range do *not* overlap the range specified by **-Z** (requires **-Q**).
+    - **r** - select data sources *not* having the specified registration specified by **-r**.
 
    If no argument is given then we reverse all the tests, i.e, the same as **-CDFLNRWZr**.
 
 .. _-L:
 
 **-L**\ *linefile*
-    Specify a multisegment line file that a data source must be traversed by
-    to pass [No line traversing considered]. **Note**: If data source
-    is a cube we ignore the *z*-dimension (i.e., we only check for crossings in map view).
+    Specify a multisegment line file. A data source must be traversed by at least one line
+    in *linefile* to pass [No line traversing considered]. **Note**: If data source is a
+    cube then we ignore the *z*-dimension (i.e., we only check for crossings in map view).
 
 .. _-M:
 
 **-M**\ *margins*
-    Extend the region determined via **-A** by the given *margins*.  The *margins* can be specified as
+    Extend the region determined via **-A** by the given *margins*.  These can be specified as
     a single value (use the same margin on all sides), a pair of values separated by slashes
     (set separate *x* and *y* margins), or the full set of four slash-separated margins
     (set separate west, east, south, and north margins) [no region padding].
@@ -166,7 +165,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ [*zmin*]\ /[*zmax*]
-    Requires **-Q**. Only pass cubes whose z-dimension range overlaps with the specified range.  If *zmin* is not
+    Requires **-Q**. Only pass cubes whose *z*-dimension range overlaps with the specified range.  If *zmin* is not
     given it defaults to -infinity, while if *zmax* is not given it defaults to +infinity.
 
 .. |Add_-V| replace:: |Add_-V_links|
@@ -201,23 +200,23 @@ To find the common region (intersection) that all the grids share, try::
 
     gmt grdselect *.grd -Ai
 
-To find the common region (intersection) that all the grids share but extend it by 2 degrees and the write the polygon, try::
+To find the common region (intersection) that all the grids share but extend it by 2 degrees and then write the bounding polygon, try::
 
     gmt grdselect *.grd -Ai -M2 -Eb > wesn_polygon.txt
 
-To list all the files that have more than 10 NaN nodes and are pixel registered, try::
+To list all the data sources that have more than 10 NaN nodes and are pixel registered, try::
 
     gmt grdselect *.grd -Nh10 -rp
 
-To list all the grids that overlap fully or partially with the polygon in my_data_area.txt, try::
+To list all the grids that are entirely included by the polygon in my_data_area.txt, try::
 
-    gmt grdselect *.grd -Fmy_data_area.txt
+    gmt grdselect *.grd -Fmy_data_area.txt+i
 
 See Also
 --------
 
 :doc:`gmt`,
-:doc:`grd2cpt`,
+:doc:`gmtselect`,
 :doc:`grd2xyz`,
 :doc:`grdedit`,
 :doc:`grdinfo`
