@@ -244,7 +244,6 @@ the following commands within the build directory::
   cmake --build . --target docs_html        # HTML manual, tutorial, cookbook, and API reference
 
 .. note::
-
   - Refer to the file ``admin/bashrc_for_gmt`` for useful aliases for building the documentation.
   - `pngquant <https://pngquant.org/>`_ is needed for optimizing images.
 
@@ -340,7 +339,6 @@ You can also run ``ctest`` commands in the build directory. Below are some commo
     ctest --output-on-failure -R ex2[3-6]
 
 .. note::
-
   Refer to the file ``admin/bashrc_for_gmt`` for useful aliases for running the tests.
 
 Reviewing test failures
