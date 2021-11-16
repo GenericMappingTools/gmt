@@ -205,7 +205,7 @@ To find the common region (intersection) that all the grids share, try::
 
 To find the common region (intersection) that all the grids share but extend it by 2 degrees and then write the bounding polygon, try::
 
-    gmt grdselect *.grd -Ai -M2 -Eb > wesn_polygon.txt
+    gmt grdselect *.nc -Ai -M2 -Eb > wesn_polygon.txt
 
 To list all the data sources that have more than 10 NaN nodes and are pixel registered, try::
 
