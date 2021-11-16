@@ -34,7 +34,7 @@ if [ "$PACKAGE" = "true" ]; then
 fi
 
 # Install GMT dependencies
-#brew update
+brew update
 brew install geos
 brew install ${packages}
 
