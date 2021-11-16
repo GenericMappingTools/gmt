@@ -101,7 +101,8 @@ Optional Arguments
     fully overlap with at least one polygon in *polygonfile* to pass [No polygonal areas
     considered]. To only find data sources that are fully inside or outside the polygon
     append **+i** or **+o**, respectively. **Note**: If data source is a cube then we ignore
-    the *z*-dimension (i.e., we only check for overlap in map view). 
+    the *z*-dimension (i.e., we only check for overlap in map view).
+
 .. _-G:
 
 **-G**
