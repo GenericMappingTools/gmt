@@ -30,7 +30,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdselect"
 #define THIS_MODULE_MODERN_NAME	"grdselect"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Determine common regions from 2-D grids or 3-D cubes"
+#define THIS_MODULE_PURPOSE	"Determine common regions from 2-D grids, images or 3-D cubes"
 #define THIS_MODULE_KEYS	"<?{+,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVfhor"
@@ -148,14 +148,15 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSELECT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s grid1 grid2 ... [-Ai|u[+il|h|<inc>]] [-C<pointtable>] [-D<inc>] [-E[b]] [-F<polygontable>[+i|o]] [-G] [-I%s] "
+	GMT_Usage (API, 0, "usage: %s source1 source2 ... [-Ai|u[+il|h|<inc>]] [-C<pointtable>] [-D<inc>] [-E[b]] [-F<polygontable>[+i|o]] [-G] [-I%s] "
 		" [-L<linetable>] [-M<margins>] [-Nl|h[<n>]] [-Q] [%s] [-W[<min>]/[<max>]] [-Z[<min>]/[<max>]] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GRDSELECT_STRING, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
 	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
-	gmt_ingrid_syntax (API, 0, "Name of one or more grid or cube files");
+	gmt_ingrid_syntax (API, 0, "Name of one or more grid, image or cube files");
+	GMT_Usage (API, -2, "Note: Options -N and -W are ignored for images.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-Ai|u[+il|h|<inc>]");
 	GMT_Usage (API, -2, "Report a unifying data region for all the data sources. Append:");
@@ -419,7 +420,7 @@ GMT_LOCAL bool grdselect_line_overlaps (struct GMT_DATASEGMENT *S, uint64_t k1, 
 #define Return(code) {Free_Ctrl (GMT, Ctrl); gmt_set_pad (GMT, GMT_PAD_DEFAULT); gmt_M_free (GMT, use); gmt_M_free (GMT, Out); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
-	bool first_r = true, first = true, is_cube, pass, *use = NULL;
+	bool first_r = true, first = true, is_cube, pass, *use = NULL, one_layer;
 	int f = -1, error = 0, k_data, k_tile_id;
 	unsigned int n_cols = 0, cmode = GMT_COL_FIX, geometry = GMT_IS_TEXT;
 	uint64_t seg, tbl, row;
@@ -519,6 +520,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 
 		f++;	/* Here we are at data source number f */
 		gmt_set_cartesian (GMT, GMT_IN);	/* Reset since we may get a bunch of files, some geo, some not */
+		one_layer = true;	/* Assume we are reading grids */
 		k_tile_id = k_data = GMT_NOTSET;
 		if ((k_data = gmt_remote_dataset_id (API, opt->arg)) != GMT_NOTSET || (k_tile_id = gmt_get_tile_id (API, opt->arg)) != GMT_NOTSET) {
 			if (k_tile_id != GMT_NOTSET && !Ctrl->G.active) {
@@ -547,6 +549,7 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				Return (API->error);
 			}
 			header = G->header;
+			one_layer = (header->n_bands == 1);
 		}
 
 		if (Ctrl->D.active) {	/* Only pass data sources with the same increments */
@@ -555,9 +558,14 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 				continue;
 		}
 		if (Ctrl->W.active) {	/* Skip data sources outside the imposed w-range */
-			pass = !(header->z_max < Ctrl->W.w_min || header->z_min > Ctrl->W.w_max);
-			if (pass != Ctrl->I.pass[GRD_SELECT_W])	/* Skip if outside (or inside via -IW) the range */
-				continue;
+			if (!one_layer) {
+				GMT_Report (API, GMT_MSG_WARNING, "Cannot use -W with images - skipping that test\n", opt->arg);
+			}
+			else {
+				pass = !(header->z_max < Ctrl->W.w_min || header->z_min > Ctrl->W.w_max);
+				if (pass != Ctrl->I.pass[GRD_SELECT_W])	/* Skip if outside (or inside via -IW) the range */
+					continue;
+			}
 		}
 		if (Ctrl->Z.active) {	/* Skip cubes outside the imposed z-range */
 			pass = !(U->z_range[1] < Ctrl->Z.z_min || U->z_range[0] > Ctrl->Z.z_max);
@@ -690,7 +698,9 @@ EXTERN_MSC int GMT_grdselect (void *V_API, int mode, void *args) {
 			if (pass == Ctrl->I.pass[GRD_SELECT_F])	/* Skip if not overlap (or overlap via -IF) */
 				continue;
 		}
-		if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip data sources that fail the test (or pass if -In) */
+		if (Ctrl->N.active && !one_layer)
+			GMT_Report (API, GMT_MSG_WARNING, "Cannot use -N with images - skipping that test\n", opt->arg);
+		else if (Ctrl->N.active) {	/* Must read the data to know how many NaNs, then skip data sources that fail the test (or pass if -In) */
 			uint64_t level, here = 0, ij, n_nan = 0;
 			gmt_grdfloat *data = NULL;
 			if (is_cube) {

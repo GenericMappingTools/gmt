@@ -12,7 +12,7 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdselect** *grid1 grid2 ...*
+**gmt grdselect** *source1 source2 ...*
 [ |-A|\ **i**\|\ **u**\ [**+il**\|\ **h**\|\ *inc*] ]
 [ |-C|\ *pointfile* ]
 [ |-D|\ *inc* ]
@@ -39,16 +39,17 @@ Synopsis
 Description
 -----------
 
-**grdselect** reads several grids (or cubes) and skips those that fail any tests that may
+**grdselect** reads several images or grids (or cubes) and skips those that fail any tests that may
 have been specified.  It then either reports the names of the sources that passed the tests
 or determines the intersection or union of the regions of those sources and the range of
 data values inside that region. The region may be rounded and padded outwards, then reported
-either by its coordinates, a bounding polygon, or a -Rw/e/s/n string.
+either by its coordinates, a bounding polygon, or a -Rw/e/s/n string.  **Note**: This module
+is new in GMT 6.3.0 and is considered *experimental*.
 
 Required Arguments
 ------------------
 
-.. |Add_ingrid| replace:: The name of one or several 2-D grid or 3-D cube files. 
+.. |Add_ingrid| replace:: The name of one or several 2-D grid, image or 3-D cube files. 
 .. include:: explain_grd_inout.rst_
     :start-after: ingrid-syntax-begins
     :end-before: ingrid-syntax-ends
@@ -145,6 +146,7 @@ Optional Arguments
 
 **-N**\ **l**\|\ **h**\ [*n*]
     Only pass data sources that have a total number of NaNs that is either **l**\ ower or **h**\ igher than *n* [0].
+    **Note**: Cannot be used with images.
 
 .. _-Q:
 
@@ -162,6 +164,7 @@ Optional Arguments
 **-W**\ [*wmin*]\ /[*wmax*]
     Only pass data sources whose data range overlaps with the specified range.  If *wmin* is not
     given it defaults to -infinity, while if *wmax* is not given it defaults to +infinity.
+    **Note**: Cannot be used with images.
 
 .. _-Z:
 
