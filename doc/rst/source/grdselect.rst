@@ -124,7 +124,7 @@ Optional Arguments
     - **Z** - select cubes whose z-dimension range do *not* overlap the range specified by **-Z** (requires **-Q**).
     - **r** - select data sources *not* having the specified registration specified by **-r**.
 
-   If no argument is given then we reverse all the tests, i.e, the same as **-CDFLNRWZr**.
+   If no argument is given then we reverse all the tests, i.e, the same as **-ICDFLNRWZr**.
 
 .. _-L:
 
