@@ -86,7 +86,7 @@ Optional Arguments
 
 **-E**\ [**b**]
     Formats an output data record using tab-separated fields on a single line. The
-    columns are *w e s n {b t} v0 v1*. The data in braces only apply if **-Q** is
+    columns are *w e s n {b t} v0 v1*. The data in braces only apply if |-Q| is
     used with 3-D data cubes [Default outputs a single -Rw/e/s/n{/b/t} string].
     Alternatively, append directive **b** to output the region's closed polygon.
     **Note**: The *v0 v1* range reflects the full range of all data nodes that lie
