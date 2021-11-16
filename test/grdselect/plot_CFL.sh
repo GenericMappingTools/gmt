@@ -28,11 +28,11 @@ gmt grdmath -R-0.1/0.25/0.15/0.35   -I0.01 3 = G3.grd
 gmt grdmath -R-0.3/-0.15/0/0.15     -I0.01 4 = G4.grd
 gmt grdinfo G[1234].grd -Ib > all.txt
 
-gmt begin plot_CLF ps
-	gmt set FONT_TAG 14p,Helvetica,black PS_MEDIA letter
+gmt begin plot_CFL
+	gmt set FONT_TAG 14p,Helvetica,black
 	gmt subplot begin 4x3 -R-0.5/0.5/-0.5/0.5 -Fs6c -A -Sct -Srl+p -X1.2c -Y0.8c
 	gmt subplot set -A"All grids"
-	gmt grdinfo $(cat tmp.lis) -Ib | gmt plot -W2p -Glightblue all.txt
+	gmt plot -W2p -Glightblue all.txt
 	gmt plot data.txt -W2p
 	gmt plot data.txt -Sc6p -Gred -W0.25p
 	gmt subplot set -A"Point overlap"
