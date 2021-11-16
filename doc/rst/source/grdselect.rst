@@ -201,7 +201,7 @@ To find the extended region (union) of all the grids given, plus a padding of 2 
 
 To find the common region (intersection) that all the grids share, try::
 
-    gmt grdselect *.grd -Ai
+    gmt grdselect *.nc -Ai
 
 To find the common region (intersection) that all the grids share but extend it by 2 degrees and then write the bounding polygon, try::
 
