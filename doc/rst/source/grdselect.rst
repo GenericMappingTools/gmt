@@ -209,7 +209,7 @@ To find the common region (intersection) that all the grids share but extend it 
 
 To list all the data sources that have more than 10 NaN nodes and are pixel registered, try::
 
-    gmt grdselect *.grd -Nh10 -rp
+    gmt grdselect *.nc -Nh10 -rp
 
 To list all the grids that are entirely included by the polygon in my_data_area.txt, try::
 
