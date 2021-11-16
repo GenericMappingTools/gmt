@@ -1559,6 +1559,21 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 
+	/* We use DATADIR to include the top and working directory so any files we supply or create can be found while inside frame directory */
+
+	if (GMT->session.DATADIR)	/* Prepend initial and subdir as new datadirs to the existing search list */
+		sprintf (datadir, "%s,%s,%s", topdir, cwd, GMT->session.DATADIR);	/* Start with topdir */
+	else	/* Set the initial and prefix subdirectory as data dirs */
+		sprintf (datadir, "%s,%s", topdir, cwd);
+
+	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
+	gmt_replace_backslash_in_path (workdir);
+
+	/* Make a path to workdir that works on current architecture (for command line calls) */
+	strncpy (tmpwpath, workdir, PATH_MAX);
+	if (Ctrl->In.mode == GMT_DOS_MODE)		/* On Windows to do remove a file in a subdir one need to use back slashes */
+		gmt_strrepc (tmpwpath, '/', '\\');
+
 	/* Prepare the cleanup script */
 	sprintf (cleanup_file, "movie_cleanup.%s", extension[Ctrl->In.mode]);
 	if ((fp = fopen (cleanup_file, "w")) == NULL) {
@@ -1592,21 +1607,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Here the cleanup_script has been completed and from now on we do not Return but set error code and jump to
 	 * the end of the program at tag clean_then_die: */
-
-	/* We use DATADIR to include the top and working directory so any files we supply or create can be found while inside frame directory */
-
-	if (GMT->session.DATADIR)	/* Prepend initial and subdir as new datadirs to the existing search list */
-		sprintf (datadir, "%s,%s,%s", topdir, cwd, GMT->session.DATADIR);	/* Start with topdir */
-	else	/* Set the initial and prefix subdirectory as data dirs */
-		sprintf (datadir, "%s,%s", topdir, cwd);
-
-	gmt_replace_backslash_in_path (datadir);	/* Since we will be fprintf the path we must use // for a slash */
-	gmt_replace_backslash_in_path (workdir);
-
-	/* Make a path to workdir that works on current architecture (for command line calls) */
-	strncpy (tmpwpath, workdir, PATH_MAX);
-	if (Ctrl->In.mode == GMT_DOS_MODE)		/* On Windows to do remove a file in a subdir one need to use back slashes */
-		gmt_strrepc (tmpwpath, '/', '\\');
 
 	/* Create the initialization file with settings common to all frames */
 
