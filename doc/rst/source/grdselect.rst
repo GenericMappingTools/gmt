@@ -79,7 +79,7 @@ Optional Arguments
 .. _-D:
 
 **-D**\ *inc*
-    Only pass data sources whose increments match the given increments [do not
+    Only pass data sources whose increments match the given increments [Default does not
     consider the increments when passing or skipping data sources].
 
 .. _-E:
