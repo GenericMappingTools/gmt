@@ -140,7 +140,8 @@ Optional Arguments
     Extend the region determined via **-A** by the given *margins*.  These can be specified as
     a single value (use the same margin on all sides), a pair of values separated by slashes
     (set separate *x* and *y* margins), or the full set of four slash-separated margins
-    (set separate west, east, south, and north margins) [no region padding].
+    (set separate west, east, south, and north margins) [no region padding]. For geographic
+    (lon/lat) grids you may use units **d**, **m**, or **s** as needed.
 
 .. _-N:
 
