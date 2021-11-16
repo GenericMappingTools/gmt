@@ -66,7 +66,7 @@ Optional Arguments
     to the final region: Specify **l** for the lowest increment of all passed data
     sources, **h** for the highest increment, or *inc* to set a specific increment.
     If **-A** is not used then we just list the names of the sources that passed
-    (or not; see **-I**) any tests selected from **-C -D -F -L -N -R -W -Z -r**.
+    (or not; see |-I|) any tests selected from |-C| |-D| |-F| |-L| |-N| |-R| |-W| |-Z| |-r|.
 
 .. _-C:
 
