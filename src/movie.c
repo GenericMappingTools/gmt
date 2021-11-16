@@ -1334,7 +1334,8 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, version[GMT_LEN32] = {""};
 	char string[GMT_LEN128] = {""}, extra[GMT_LEN256] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, L_txt[GMT_LEN128] = {""};
 	char png_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, frame_products[GMT_LEN32] = {""};
-	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"}, spacer, dir_sep;
+	char intro_file[PATH_MAX] = {""}, conf_file[PATH_MAX], tmpwpath[PATH_MAX] = {""}, zap_workdir[PATH_MAX] = {""}, *script_file =  NULL, which[2] = {"LP"};
+	char spacer, dir_sep;
 
 	double percent = 0.0, L_col = 0, sx, sy, fade_level = 0.0;
 
@@ -1571,8 +1572,16 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Make a path to workdir that works on current architecture (for command line calls) */
 	strncpy (tmpwpath, workdir, PATH_MAX);
-	if (Ctrl->In.mode == GMT_DOS_MODE)		/* On Windows to do remove a file in a subdir one need to use back slashes */
+	if (Ctrl->In.mode == GMT_DOS_MODE)		/* On Windows to remove a file in a subdir one need to use back slashes */
 		gmt_strrepc (tmpwpath, '/', '\\');
+
+	/* Build file names */
+	if (Ctrl->S[MOVIE_PREFLIGHT].active && !Ctrl->S[MOVIE_PREFLIGHT].PS)
+		sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
+	if (Ctrl->S[MOVIE_POSTFLIGHT].active && !Ctrl->S[MOVIE_POSTFLIGHT].PS)
+		sprintf (post_file, "movie_postflight.%s", extension[Ctrl->In.mode]);
+	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
+	sprintf (main_file, "movie_frame.%s", extension[Ctrl->In.mode]);
 
 	/* Prepare the cleanup script */
 	sprintf (cleanup_file, "movie_cleanup.%s", extension[Ctrl->In.mode]);
@@ -1581,6 +1590,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
+	sprintf (zap_workdir, "%s %s", rmdir[Ctrl->In.mode], tmpwpath);
 	if (Ctrl->Z.active) {	/* Want to delete the entire frame directory */
 		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with frame files");
 		/* Delete the entire working directory with frame jobs and tmp files */
@@ -1594,8 +1604,7 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 			fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, post_file);
 		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, init_file);	/* Delete the init script */
 		fprintf (fp, "%s %s%c%s\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep, main_file);	/* Delete the main script */
-		if (layers)
-			fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep);	/* Delete any PostScript layers */
+		fprintf (fp, "%s %s%c*.ps\n", rmfile[Ctrl->In.mode], tmpwpath, dir_sep);	/* Delete any PostScript layers */
 	}
 	fclose (fp);
 #ifndef WIN32	/* Set executable bit if not Windows cmd */
@@ -1611,7 +1620,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 	/* Create the initialization file with settings common to all frames */
 
 	n_written = (n_frames > 0);
-	sprintf (init_file, "movie_init.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Create parameter initiation script %s\n", init_file);
 	if ((fp = fopen (init_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s - exiting\n", init_file);
@@ -1645,7 +1653,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 		if (Ctrl->S[MOVIE_PREFLIGHT].PS)	/* Just got a PS file, nothing to do */
 			fclose (Ctrl->S[MOVIE_PREFLIGHT].fp);
 		else {	/* Run the preflight script */
-			sprintf (pre_file, "movie_preflight.%s", extension[Ctrl->In.mode]);
 			is_classic = gmt_script_is_classic (GMT, Ctrl->S[MOVIE_PREFLIGHT].fp);
 			if (is_classic) {
 				GMT_Report (API, GMT_MSG_ERROR, "Your preflight file %s is not in GMT modern node - exiting\n", pre_file);
@@ -2405,7 +2412,6 @@ EXTERN_MSC int GMT_movie (void *V_API, int mode, void *args) {
 
 	/* Now build the main loop script from the mainscript */
 
-	sprintf (main_file, "movie_frame.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Create main movie frame script %s\n", main_file);
 	if ((fp = fopen (main_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create loop frame script file %s - exiting\n", main_file);
@@ -2663,6 +2669,9 @@ clean_then_die:
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to delete the cleanup script %s.\n", cleanup_file);
 		Return (GMT_RUNTIME_ERROR);
 	}
+
+	if (current_error)	/* Force removal of work dir since job failed */
+		system (zap_workdir);
 
 	Return (current_error);
 }

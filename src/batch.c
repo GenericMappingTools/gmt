@@ -432,7 +432,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	char init_file[PATH_MAX] = {""}, state_tag[GMT_LEN16] = {""}, state_prefix[GMT_LEN64] = {""}, param_file[PATH_MAX] = {""};
 	char pre_file[PATH_MAX] = {""}, post_file[PATH_MAX] = {""}, main_file[PATH_MAX] = {""}, line[PATH_MAX] = {""}, tmpwpath[PATH_MAX] = {""};
 	char string[GMT_LEN128] = {""}, cmd[GMT_LEN256] = {""}, cleanup_file[PATH_MAX] = {""}, cwd[PATH_MAX] = {""}, conf_file[PATH_MAX];
-	char completion_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""};
+	char completion_file[PATH_MAX] = {""}, topdir[PATH_MAX] = {""}, workdir[PATH_MAX] = {""}, datadir[PATH_MAX] = {""}, zap_workdir[PATH_MAX] = {""};
 
 	double percent = 0.0;
 
@@ -552,6 +552,14 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	if (Ctrl->In.mode == GMT_DOS_MODE)	/* On Windows to do remove a file in a subdir one need to use back slashes */
 		gmt_strrepc (tmpwpath, '/', '\\');
 
+	/* Build file names */
+	if (Ctrl->S[BATCH_PREFLIGHT].active)
+		sprintf (pre_file, "batch_preflight.%s", extension[Ctrl->In.mode]);
+	if (Ctrl->S[BATCH_POSTFLIGHT].active)
+		sprintf (post_file, "batch_postflight.%s", extension[Ctrl->In.mode]);
+	sprintf (init_file, "batch_init.%s", extension[Ctrl->In.mode]);
+	sprintf (main_file, "batch_job.%s", extension[Ctrl->In.mode]);
+
 	/* Prepare the cleanup script */
 	sprintf (cleanup_file, "batch_cleanup.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Create cleanup script %s\n", cleanup_file);
@@ -560,6 +568,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		Return (GMT_ERROR_ON_FOPEN);
 	}
 	gmt_set_script (fp, Ctrl->In.mode);		/* Write 1st line of a script */
+	sprintf (zap_workdir, "%s %s", rmdir[Ctrl->In.mode], tmpwpath);
 	if (Ctrl->W.active) {	/* Want to delete the entire work directory */
 		gmt_set_comment (fp, Ctrl->In.mode, "Cleanup script removes working directory with job files");
 		/* Delete the entire working directory with batch jobs and tmp files */
@@ -590,7 +599,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 	/* Create the initialization file with settings common to all jobs */
 
 	n_written = (n_jobs > 0);	/* Know the number of jobs already */
-	sprintf (init_file, "batch_init.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Create parameter initiation script %s\n", init_file);
 	if ((fp = fopen (init_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create file %s - exiting\n", init_file);
@@ -844,7 +852,6 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 
 	/* Now build the main loop script from the mainscript */
 
-	sprintf (main_file, "batch_job.%s", extension[Ctrl->In.mode]);
 	GMT_Report (API, GMT_MSG_INFORMATION, "Create main batch job script %s\n", main_file);
 	if ((fp = fopen (main_file, "w")) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Unable to create loop job script file %s - exiting\n", main_file);
@@ -1014,6 +1021,9 @@ clean_then_die:
 		if ((error = batch_delete_scripts (GMT, Ctrl)))
 			Return (error);
 	}
+
+	if (current_error)	/* Force removal of work dir since job failed */
+		system (zap_workdir);
 
 	Return (current_error);
 }
