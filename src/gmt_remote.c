@@ -1596,6 +1596,8 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: Unable to destroy coverage grid.\n");
 	}
 
+	if (need_filler) *need_filler = (partial_tile || n_missing > 0);	/* Incomplete coverage of this data set within wesn */
+
 	*n_tiles = n;
 	if (n == 0) {	/* Nutin' */
 		gmt_M_free (API->GMT, list);
@@ -1608,7 +1610,6 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 		API->error = GMT_RUNTIME_ERROR;
 		return NULL;
 	}
-	if (need_filler) *need_filler = (partial_tile || n_missing > 0);	/* Incomplete coverage of this data set within wesn */
 
 	return (list);
 }
