@@ -17,7 +17,7 @@ Synopsis
 [ |-C|\ *pointfile* ]
 [ |-D|\ *inc* ]
 [ |-E|\ [**b**] ]
-[ |-F|\ *polygonfile* ]
+[ |-F|\ *polygonfile*\ [**+i**\|\ **o**] ]
 [ |-G| ]
 [ |-I|\ [**CDFLNRWZr**] ]
 [ |-L|\ *linefile* ]
@@ -72,7 +72,9 @@ Optional Arguments
 
 **-C**\ *pointfile*
     Specify a multisegment point file that a data source must contain at least one point
-    to pass [No point inclusions considered].
+    to pass [No point inclusions considered].  **Note**: If data sources is a 3-D cube
+    then we also check if *pointfile* has *z*-coordinates and if the 3-D point is inside
+    the cube [only check in map view].
 
 .. _-D:
 
@@ -94,9 +96,12 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *polygonfile*
+**-F**\ *polygonfile*\ [**+i**\|\ **o**]
     Specify a multisegment closed polygon file that a data source must partially or
-    fully overlap to pass [No polygonal areas considered].
+    fully overlap to pass [No polygonal areas considered]. **Note**: If data source
+    is a cube we ignore the *z*-dimension (i.e., we only check for overlap in map view).
+    To only find data sources that are fully inside or outside the polygon, append **+i**
+    or **+o**, respectively.
 
 .. _-G:
 
@@ -125,7 +130,8 @@ Optional Arguments
 
 **-L**\ *linefile*
     Specify a multisegment line file that a data source must be traversed by
-    to pass [No line traversing considered].
+    to pass [No line traversing considered]. **Note**: If data source
+    is a cube we ignore the *z*-dimension (i.e., we only check for crossings in map view).
 
 .. _-M:
 
@@ -202,6 +208,10 @@ To find the common region (intersection) that all the grids share but extend it 
 To list all the files that have more than 10 NaN nodes and are pixel registered, try::
 
     gmt grdselect *.grd -Nh10 -rp
+
+To list all the grids that overlap fully or partially with the polygon in my_data_area.txt, try::
+
+    gmt grdselect *.grd -Fmy_data_area.txt
 
 See Also
 --------
