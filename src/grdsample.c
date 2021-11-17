@@ -282,7 +282,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between these two wesn_? arrays */
 				if ((wesn_o[XLO] - wesn_i[XLO]) >= 360.0)
 					wesn_i[XLO] += 360.0, wesn_i[XHI] += 360.0;
-				if ((wesn_o[XLO] - wesn_i[XLO]) <= -360.0)
+				else if ((wesn_o[XLO] - wesn_i[XLO]) <= -360.0)
 					wesn_i[XLO] -= 360.0, wesn_i[XHI] -= 360.0;
 			}
 			k = 0;
