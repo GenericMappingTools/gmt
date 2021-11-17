@@ -99,8 +99,8 @@ Optional Arguments
 
 **-F**\ *polygonfile*\ [**+i**\|\ **o**]
     Specify a multisegment closed polygon file. A data source must partially or
-    fully overlap with at least one polygon in *polygonfile* to pass [No polygonal areas
-    considered]. To only find data sources that are fully inside or outside the polygon
+    fully overlap with at least one polygon in *polygonfile* to pass [Default is to not consider
+    polygonal areas]. To only find data sources that are fully inside or outside the polygon
     append **+i** or **+o**, respectively. **Note**: If data source is a cube then we ignore
     the *z*-dimension (i.e., we only check for overlap in map view).
 
@@ -108,22 +108,22 @@ Optional Arguments
 
 **-G**
     Force (possible) download of all tiles of any tiled global remote grids given in order
-    to report the requested information [refuse to give the information for tiled grids].
+    to report the requested information [Default is to refuse to give the information for tiled grids].
 
 .. _-I:
 
-**-I**\ [**CDFLNRWZr**]
+**-I**\ [**C**][**D**][**F**][**L**][**N**][**R**][**W**][**Z**][**r**]
     Reverses the sense of the test for each of the options that match the specified code(s):
 
-    - **C** - select data sources *not* containing any of the points specified in **-C**.
-    - **D** - select data sources *not* having the specified increment in **-D**.
-    - **F** - select data sources *not* overlapping with any of the polygons specified in **-F**.
-    - **L** - select data sources *not* traversed by any of the lines specified in **-L**.
-    - **N** - select data sources *failing* the NaN criterion in **-N**.
-    - **R** - select data sources *not* having any overlap with the region set in **-R**.
-    - **W** - select data sources whose data range do *not* overlap the range specified by **-W**.
-    - **Z** - select cubes whose z-dimension range do *not* overlap the range specified by **-Z** (requires **-Q**).
-    - **r** - select data sources *not* having the specified registration specified by **-r**.
+    - **C** - select data sources *not* containing any of the points specified in |-C|.
+    - **D** - select data sources *not* having the specified increment in |-D|.
+    - **F** - select data sources *not* overlapping with any of the polygons specified in |-F|.
+    - **L** - select data sources *not* traversed by any of the lines specified in |-L|.
+    - **N** - select data sources *failing* the NaN criterion in |-N|.
+    - **R** - select data sources *not* having any overlap with the region set in |-R|.
+    - **W** - select data sources whose data range do *not* overlap the range specified by |-W|.
+    - **Z** - select cubes whose z-dimension range do *not* overlap the range specified by |-Z| (requires |-Q|).
+    - **r** - select data sources *not* having the specified registration specified by |-r|.
 
    If no argument is given then we reverse all the tests, i.e, the same as **-ICDFLNRWZr**.
 
@@ -131,13 +131,13 @@ Optional Arguments
 
 **-L**\ *linefile*
     Specify a multisegment line file. A data source must be traversed by at least one line
-    in *linefile* to pass [No line traversing considered]. **Note**: If data source is a
+    in *linefile* to pass [Default is no line traversing considered]. **Note**: If data source is a
     cube then we ignore the *z*-dimension (i.e., we only check for crossings in map view).
 
 .. _-M:
 
 **-M**\ *margins*
-    Extend the region determined via **-A** by the given *margins*.  These can be specified as
+    Extend the region determined via |-A| by the given *margins*.  These can be specified as
     a single value (use the same margin on all sides), a pair of values separated by slashes
     (set separate *x* and *y* margins), or the full set of four slash-separated margins
     (set separate west, east, south, and north margins) [no region padding]. For geographic
@@ -146,13 +146,13 @@ Optional Arguments
 .. _-N:
 
 **-N**\ **l**\|\ **h**\ [*n*]
-    Only pass data sources that have a total number of NaNs that is either **l**\ ower or **h**\ igher than *n* [0].
+    Only pass data sources that have a total number of NaNs that is either **l**\ ower or **h**\ igher than *n* [Default is 0].
     **Note**: Cannot be used with images.
 
 .. _-Q:
 
 **-Q**
-    All input files must be data 3-D netCDF data cube files [all files are 2-D grids].
+    All input files must be data 3-D netCDF data cube files [Default is all files are 2-D grids].
 
 .. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via **-A**, as well as limit the reading to that subset. If **-Q** is used you must also
     append limits in the *z* dimension. |Add_-R_links|
