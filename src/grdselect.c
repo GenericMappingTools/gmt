@@ -30,7 +30,7 @@
 #define THIS_MODULE_CLASSIC_NAME	"grdselect"
 #define THIS_MODULE_MODERN_NAME	"grdselect"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Determine common regions from 2-D grids, images or 3-D cubes"
+#define THIS_MODULE_PURPOSE	"Make selections or determine common regions from 2-D grids, images or 3-D cubes"
 #define THIS_MODULE_KEYS	"<?{+,>D}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "->RVfhor"
