@@ -3,6 +3,7 @@
 # Makes a plot of the six movie progress indicators available
 #
 # Make dummy map script for static "movie"
+# GMT_KNOWN_FAILURE_WINDOWS
 cat << EOF > map.sh
 gmt begin
 	gmt set GMT_THEME cookbook
