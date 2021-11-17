@@ -19,7 +19,7 @@ Synopsis
 [ |-E|\ [**b**] ]
 [ |-F|\ *polygonfile*\ [**+i**\|\ **o**] ]
 [ |-G| ]
-[ |-I|\ [**CDFLNRWZr**] ]
+[ |-I|\ [**C**][**D**][**F**][**L**][**N**][**R**][**W**][**Z**][**r**] ]
 [ |-L|\ *linefile* ]
 [ |-M|\ *margins* ]
 [ |-N|\ **l**\|\ **h**\ [*n*] ]
@@ -154,7 +154,7 @@ Optional Arguments
 **-Q**
     All input files must be data 3-D netCDF data cube files [Default is all files are 2-D grids or images].
 
-.. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via **-A**, as well as limit the reading to that subset. If **-Q** is used you must also
+.. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via |-A|, as well as limit the reading to that subset. If |-Q| is used you must also
     append limits in the *z* dimension. |Add_-R_links|
 .. include:: explain_-R.rst_
     :start-after: **Syntax**
@@ -170,7 +170,7 @@ Optional Arguments
 .. _-Z:
 
 **-Z**\ [*zmin*]\ /[*zmax*]
-    Requires **-Q**. Only pass cubes whose *z*-dimension range overlaps with the specified range.  If *zmin* is not
+    Requires |-Q|. Only pass cubes whose *z*-dimension range overlaps with the specified range.  If *zmin* is not
     given it defaults to -infinity, while if *zmax* is not given it defaults to +infinity.
 
 .. |Add_-V| replace:: |Add_-V_links|
