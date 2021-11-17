@@ -112,7 +112,7 @@
 
 .. |grdsample_purpose| replace:: Resample a grid onto a new lattice
 
-.. |grdselect_purpose| replace:: Select from a list of 2-D grids or 3-D cubes
+.. |grdselect_purpose| replace:: Determine common regions from 2-D grids, images or 3-D cubes
 
 .. |grdtrack_purpose| replace:: Sample grids at specified (x,y) locations
 
