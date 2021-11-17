@@ -136,8 +136,8 @@ Before you make your own masks, be aware that the GMT data server offers
 global landmask files in multiple grid resolutions.  These can be accessed
 using the remote file names @earth_mask_\ *rr*\ *u*\ [_\ *reg*\ ], where
 *rr*\ *u* and the optional *reg* indicate the resolution and registration
-that you desire.  See :ref:`Global Earth Mask Grids <earth_mask>` for more
-information on the availability of resolutions.
+that you desire.  See `Global Earth Mask Grids <https://www.generic-mapping-tools.org/remote-datasets/earth-masks.html>`_
+for more information on the availability of resolutions.
 
 Examples
 --------
