@@ -279,6 +279,12 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			}
 		}
 		if (!wrap_360_o && !wrap_360_i) {	/* Can only shrink wesn_i if there is no 360-wrapping going on */
+			if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between these two wesn_? arrays */
+				if ((wesn_o[XLO] - wesn_i[XLO]) >= 360.0)
+					wesn_i[XLO] += 360.0, wesn_i[XHI] += 360.0;
+				else if ((wesn_o[XLO] - wesn_i[XLO]) <= -360.0)
+					wesn_i[XLO] -= 360.0, wesn_i[XHI] -= 360.0;
+			}
 			k = 0;
 			while (wesn_i[XLO] < wesn_o[XLO]) wesn_i[XLO] += Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
 			if (wesn_i[XLO] > Gin->header->wesn[XLO] && k) wesn_i[XLO] -= Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
