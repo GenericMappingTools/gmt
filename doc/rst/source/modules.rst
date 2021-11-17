@@ -2,7 +2,6 @@ Modules
 =======
 
 .. note::
-
    Looking for the *classic mode* modules like ``psxy`` and ``pscoast``? See the
    :doc:`equivalent page for classic mode <modules-classic>`.
 
