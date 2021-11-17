@@ -152,7 +152,7 @@ Optional Arguments
 .. _-Q:
 
 **-Q**
-    All input files must be data 3-D netCDF data cube files [Default is all files are 2-D grids].
+    All input files must be data 3-D netCDF data cube files [Default is all files are 2-D grids or images].
 
 .. |Add_-R| replace:: Using the **-R** option will in essence supply another region that will be included in the computation via **-A**, as well as limit the reading to that subset. If **-Q** is used you must also
     append limits in the *z* dimension. |Add_-R_links|
