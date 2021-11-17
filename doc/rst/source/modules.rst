@@ -85,6 +85,7 @@ All modules are requested via a call to the :doc:`gmt` program.
    grdpaste
    grdproject
    grdsample
+   grdselect
    grdtrack
    grdtrend
    grdvector
@@ -248,6 +249,7 @@ Core Modules
     - :doc:`grdpaste`
     - :doc:`grdproject`
     - :doc:`grdsample`
+    - :doc:`grdselect`
     - :doc:`grdtrack`
     - :doc:`grdtrend`
     - :doc:`grdvector`
@@ -498,6 +500,8 @@ Information retrieval
 | :doc:`gmtset`         | |gmtset_purpose|      |
 +-----------------------+-----------------------+
 | :doc:`grdinfo`        | |grdinfo_purpose|     |
++-----------------------+-----------------------+
+| :doc:`grdselect`      | |grdselect_purpose|   |
 +-----------------------+-----------------------+
 
 Mathematical operations on tables or grids

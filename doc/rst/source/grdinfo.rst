@@ -206,5 +206,8 @@ To learn about the extreme values and coordinates in the 3-D data cube S362ANI_k
 See Also
 --------
 
-:doc:`gmt`, :doc:`grd2cpt`,
-:doc:`grd2xyz`, :doc:`grdedit`
+:doc:`gmt`,
+:doc:`grd2cpt`,
+:doc:`grd2xyz`,
+:doc:`grdedit`,
+:doc:`grdselect`
