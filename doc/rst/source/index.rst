@@ -62,9 +62,9 @@ Quick links
         :maxdepth: 1
         :caption: Resources
 
+        changes
         users-contrib-scripts
         users-contrib-symbols
-        changes
         deprecated-defaults
         switching
         migrating
