@@ -6,11 +6,14 @@
 # List of executables whose shared libraries must also be included
 #
 # Exceptions:
-# For now (6.2.0), need to do a few things manually first, like
+# For now (6.3.0), need to do a few things manually first, like
 #   1. Separate install command to avoid version number in GraphicsMagick directory name
+#   2. Separate install command to avoid version number in GhostScript directory name
 #
 # Notes:
 #   1. This is tested on macports where gs is a symbolic link to gsc.
+
+GSVERSION=$1	# Get the version of gs from build-release.sh
 
 if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
 	distro=MacPorts
@@ -35,9 +38,9 @@ EXELINKS=/opt/local/bin/gs
 # 1c. List of executables whose shared libraries have already been included via other shared libraries
 #     Use full path if you need something not in your path
 EXEONLY=
-# 1d. Shared directories to be added
+# 1d. Shared directories to be added (except ghostscript which we do separately)
 #     Use full path if you need something not in your path
-EXESHARED="gdal /opt/local/share/ghostscript /opt/local/lib/proj8/share/proj"
+EXESHARED="gdal /opt/local/lib/proj8/share/proj"
 #-----------------------------------------
 # 2a. Add the executables to the list given their paths
 rm -f ${TMPDIR}/raw.lis
@@ -98,6 +101,16 @@ if [ ! "X$EXESHARED" = "X" ]; then
 fi
 cat << EOF
 
+# Place the ghostscript support files while skipping the version directory
+install (DIRECTORY
+	/opt/local/share/ghostscript/${GSVERSION}/Resource
+	/opt/local/share/ghostscript/${GSVERSION}/lib
+	/opt/local/share/ghostscript/${GSVERSION}/iccprofiles
+	/opt/local/share/ghostscript/fonts
+	DESTINATION share/ghostscript
+	COMPONENT Runtime)
+
+#
 # Place the licenses for runtime dependencies
 install (DIRECTORY
 	../../admin/Licenses
