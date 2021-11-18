@@ -410,7 +410,7 @@ struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const ch
 	return (R);	
 }
 
-int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
+int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *ifile) {
 	/* Return the entry in the remote file table of file is found, else -1.
 	 * Complications to consider before finding a match:
 	 * Input file may or may not have leading @
@@ -419,16 +419,22 @@ int gmt_remote_dataset_id (struct GMTAPI_CTRL *API, const char *file) {
 	 * Key file may be a tiled data set and thus ends with '/'
 	 */
 	int pos = 0;
+	char file[PATH_MAX] = {""};
 	struct GMT_DATA_INFO *key = NULL;
-	if (file == NULL || file[0] == '\0') return GMT_NOTSET;	/* No file name given */
-	if (file[0] == '@') pos = 1;	/* Skip any leading remote flag */
+	if (ifile == NULL || ifile[0] == '\0') return GMT_NOTSET;	/* No file name given */
+	if (ifile[0] == '@') pos = 1;	/* Skip any leading remote flag */
 	/* Exclude leading directory for local saved versions of the file */
-	if (pos == 0) pos = gmtremote_wind_to_file (file);	/* Skip any leading directories */
-	key = bsearch (&file[pos], API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
+	if (pos == 0) pos = gmtremote_wind_to_file (ifile);	/* Skip any leading directories */
+	/* Must handle the use of srtm_relief vs earth_relief for the 01s and 03s data */
+	if (strncmp (&ifile[pos], "srtm_relief_0", 13U) == 0)	/* Gave strm special name */
+		sprintf (file, "earth_%s", &ifile[pos+5]);	/* Replace srtm with earth */
+	else	/* Just copy as is from pos */
+		strcpy (file, &ifile[pos]);
+	key = bsearch (file, API->remote_info, API->n_remote_info, sizeof (struct GMT_DATA_INFO), gmtremote_compare_key);
 	if (key) {	/* Make sure we actually got a real hit since file = "earth" will find a key starting with "earth****" */
 		char *ckey = strrchr (key->file, '.');		/* Find location of the start of the key file extension (or NULL if no extension) */
-		char *cfile = strrchr (&file[pos], '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
-		size_t Lfile = (cfile) ? (size_t)(cfile - &file[pos]) : strlen (&file[pos]);	/* Length of key file name without extension */
+		char *cfile = strrchr (file, '.');	/* Find location of the start of the input file extension (or NULL if no extension) */
+		size_t Lfile = (cfile) ? (size_t)(cfile - file) : strlen (file);	/* Length of key file name without extension */
 		size_t Lkey  = (ckey)  ? (size_t)(ckey  - key->file)  : strlen (key->file);		/* Length of key file name without extension */
 		if (ckey == NULL && Lkey > 1 && key->file[Lkey-1] == '/') Lkey--;	/* Skip trailing dir flag */
 		if (Lkey > Lfile && Lkey > 2 && key->file[Lkey-2] == '_' && strchr ("gp", key->file[Lkey-1])) Lkey -= 2;	/* Remove the length of _g or _p from Lkey */
@@ -681,7 +687,7 @@ void gmtremote_lock_off (struct GMT_CTRL *GMT, struct LOCFILE_FP **P) {
 
 /* Deal with hash values of cache/data files */
 
-GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index) {
+GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, char *orig, unsigned int index, bool do_lock) {
 	bool turn_ctrl_C_off = false;
 	int curl_err = 0, error = GMT_NOERROR;
 	long time_spent;
@@ -698,13 +704,13 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 	if (GMT->current.io.internet_error) return 1;   			/* Not able to use remote copying in this session */
 
 	/* Make a lock */
-	if ((LF = gmtremote_lock_on (GMT, file)) == NULL)
+	if (do_lock && (LF = gmtremote_lock_on (GMT, file)) == NULL)
 		return 1;
 
 	/* If file locking held us up as another process was downloading the same file,
 	 * then that file should now be available.  So we check again if it is before proceeding */
 
-	if (!access (file, F_OK))
+	if (do_lock && !access (file, F_OK))
 		goto unlocking1;	/* Yes it was, unlock and return no error */
 
 	/* Initialize the curl session */
@@ -744,7 +750,7 @@ GMT_LOCAL int gmtremote_get_url (struct GMT_CTRL *GMT, char *url, char *file, ch
 unlocking1:
 
 	/* Remove lock file after successful download */
-	gmtremote_lock_off (GMT, &LF);
+	if (do_lock) gmtremote_lock_off (GMT, &LF);
 
 	if (turn_ctrl_C_off) gmtremote_turn_off_ctrl_C_check ();
 
@@ -806,6 +812,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 	time_t mod_time, right_now = time (NULL);	/* Unix time right now */
 	char indexpath[PATH_MAX] = {""}, old_indexpath[PATH_MAX] = {""}, new_indexpath[PATH_MAX] = {""}, url[PATH_MAX] = {""};
 	const char *index_file = (index == GMT_HASH_INDEX) ? GMT_HASH_SERVER_FILE : GMT_INFO_SERVER_FILE;
+	struct LOCFILE_FP *LF = NULL;
 	struct GMT_CTRL *GMT = API->GMT;	/* Short hand */
 
 	if (GMT->current.io.refreshed[index]) return GMT_NOERROR;	/* Already been here */
@@ -821,7 +828,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		}
 		snprintf (url, PATH_MAX, "%s/%s", gmt_dataserver_url (API), index_file);
 		GMT_Report (API, GMT_MSG_DEBUG, "Download remote file %s for the first time\n", url);
-		if (gmtremote_get_url (GMT, url, indexpath, NULL, index)) {
+		if (gmtremote_get_url (GMT, url, indexpath, NULL, index, true)) {
 			GMT_Report (API, GMT_MSG_INFORMATION, "Failed to get remote file %s\n", url);
 			if (!access (indexpath, F_OK)) gmt_remove_file (GMT, indexpath);	/* Remove index file just in case it got corrupted or zero size */
 			GMT->current.setting.auto_download = GMT_NO_DOWNLOAD;	/* Temporarily turn off auto download in this session only */
@@ -856,9 +863,25 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		strcpy (old_indexpath, indexpath);	/* Duplicate path name */
 		strcat (old_indexpath, ".old");		/* Append .old to the copied path */
 		snprintf (url, PATH_MAX, "%s/%s", gmt_dataserver_url (API), index_file);	/* Set remote path to new index file */
-		if (gmtremote_get_url (GMT, url, new_indexpath, indexpath, index)) {	/* Get the new index file from server */
+
+		/* Here we will try to download a file */
+
+		/* Make a lock on the file */
+		if ((LF = gmtremote_lock_on (GMT, (char *)new_indexpath)) == NULL)
+			return 1;
+
+		/* If file locking held us up as another process was downloading the same file,
+		 * then that file should now be available.  So we check again if it is before proceeding */
+
+		if (!access (new_indexpath, F_OK)) {	/* Yes it was! Undo lock and return no error */
+			gmtremote_lock_off (GMT, &LF);	/* Remove lock file after successful download (unless query) */
+			return GMT_NOERROR;
+		}
+
+		if (gmtremote_get_url (GMT, url, new_indexpath, indexpath, index, false)) {	/* Get the new index file from server */
 			GMT_Report (API, GMT_MSG_DEBUG, "Failed to download %s - Internet troubles?\n", url);
 			if (!access (new_indexpath, F_OK)) gmt_remove_file (GMT, new_indexpath);	/* Remove index file just in case it got corrupted or zero size */
+			gmtremote_lock_off (GMT, &LF);
 			return 1;	/* Unable to update the file (no Internet?) - skip the tests */
 		}
 		if (!access (old_indexpath, F_OK))
@@ -866,11 +889,13 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		GMT_Report (API, GMT_MSG_DEBUG, "Rename %s to %s\n", indexpath, old_indexpath);
 		if (gmt_rename_file (GMT, indexpath, old_indexpath, GMT_RENAME_FILE)) {	/* Rename existing file to .old */
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", indexpath, old_indexpath);
+			gmtremote_lock_off (GMT, &LF);
 			return 1;
 		}
 		GMT_Report (API, GMT_MSG_DEBUG, "Rename %s to %s\n", new_indexpath, indexpath);
 		if (gmt_rename_file (GMT, new_indexpath, indexpath, GMT_RENAME_FILE)) {	/* Rename newly copied file to existing file */
 			GMT_Report (API, GMT_MSG_ERROR, "Failed to rename %s to %s.\n", new_indexpath, indexpath);
+			gmtremote_lock_off (GMT, &LF);
 			return 1;
 		}
 
@@ -881,6 +906,7 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 
 			if ((N = gmtremote_hash_load (GMT, indexpath, &nN)) == 0) {	/* Read in the new array of hash structs, will return 0 if mismatch of entries */
 				gmt_remove_file (GMT, indexpath);	/* Remove corrupted index file */
+				gmtremote_lock_off (GMT, &LF);
 				return 1;
 			}
 
@@ -924,6 +950,8 @@ GMT_LOCAL int gmtremote_refresh (struct GMTAPI_CTRL *API, unsigned int index) {
 		}
 		else 
 			GMT->current.io.new_data_list = true;	/* Flag that we wish to delete datasets older than entries in this file */
+		/* Remove lock file after successful download */
+		gmtremote_lock_off (GMT, &LF);
 	}
 	else
 		GMT_Report (API, GMT_MSG_DEBUG, "File %s less than 24 hours old, refresh is premature.\n", indexpath);
@@ -1568,6 +1596,8 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 		GMT_Report (API, GMT_MSG_WARNING, "gmtlib_get_tile_list: Unable to destroy coverage grid.\n");
 	}
 
+	if (need_filler) *need_filler = (partial_tile || n_missing > 0);	/* Incomplete coverage of this data set within wesn */
+
 	*n_tiles = n;
 	if (n == 0) {	/* Nutin' */
 		gmt_M_free (API->GMT, list);
@@ -1580,7 +1610,6 @@ char ** gmt_get_dataset_tiles (struct GMTAPI_CTRL *API, double wesn_in[], int k_
 		API->error = GMT_RUNTIME_ERROR;
 		return NULL;
 	}
-	if (need_filler) *need_filler = (partial_tile || n_missing > 0);	/* Incomplete coverage of this data set within wesn */
 
 	return (list);
 }
@@ -1676,11 +1705,6 @@ struct GMT_GRID *gmtlib_assemble_tiles (struct GMTAPI_CTRL *API, double *region,
 	if ((G = GMT_Read_VirtualFile (API, grid)) == NULL) {	/* Load in the resampled grid */
 		API->verbose = v_level;
 		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to receive blended grid from grdblend\n");
-		return NULL;
-	}
-	if (gmtlib_delete_virtualfile (API, grid)) {	/* Remove trace since passed upwards anyway */
-		API->verbose = v_level;
-		GMT_Report (API, GMT_MSG_ERROR, "ERROR - Unable to destroy temporary object for assembled grid\n");
 		return NULL;
 	}
 

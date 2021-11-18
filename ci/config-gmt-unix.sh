@@ -38,12 +38,6 @@ add_definitions(-DUSE_MODULE_LONG_OPTIONS)
 EOF
 fi
 
-if [[ "$BUILD_DOCS" == "true" ]]; then
-    cat >> cmake/ConfigUser.cmake << 'EOF'
-set (DO_ANIMATIONS TRUE)
-EOF
-fi
-
 echo ""
 echo "Using the following cmake configuration:"
 cat cmake/ConfigUser.cmake

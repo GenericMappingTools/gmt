@@ -4,6 +4,91 @@
 Changelog
 =========
 
+New Features in GMT 6.3
+=======================
+
+GMT 6.3 includes a new module, many new features, general code and documentation improvements, and numerous
+bug fixes! Here are the general updates included in 6.3:
+
+* Add new -B axis modifier +e to skip annotation(s) at end of an axis (`#5873 <https://github.com/GenericMappingTools/gmt/pull/5873>`_)
+* Allow for a fixed label offset (`#5320 <https://github.com/GenericMappingTools/gmt/pull/5320>`_)
+* Implement auto resolution for remote grids for plotting modules (`#5753 <https://github.com/GenericMappingTools/gmt/pull/5753>`_)
+* Simplify conversions between km and degrees (`#5824 <https://github.com/GenericMappingTools/gmt/pull/5824>`_)
+
+New Modules in GMT 6.3
+----------------------
+
+* :doc:`grdselect`: Make selections or determine common regions from 2-D grids, images or 3-D cubes (`#5929 <https://github.com/GenericMappingTools/gmt/pull/5929>`_)
+
+New Core Module Features in GMT 6.3
+-----------------------------------
+
+* :doc:`begin`, :doc:`figure`, and :doc:`psconvert`: JPEG quality and recognition of modifiers (`#5574 <https://github.com/GenericMappingTools/gmt/pull/5574>`_)
+* :doc:`coast`: Enable country-based clipping in -E (`#5334 <https://github.com/GenericMappingTools/gmt/pull/5334>`_)
+* :doc:`coast`: Allow -Ecode+L to list for specific country (`#5744 <https://github.com/GenericMappingTools/gmt/pull/5744>`_)
+* :doc:`colorbar`: Add modifier +r to reverse direction of scalebar (`#5230 <https://github.com/GenericMappingTools/gmt/pull/5230>`_)
+* :doc:`colorbar`: Allow colorbar length and/or width to be given in percentages (`#5775 <https://github.com/GenericMappingTools/gmt/pull/5775>`_)
+* :doc:`colorbar`: Handle CPTs with transparency (`#5328 <https://github.com/GenericMappingTools/gmt/pull/5328>`_)
+* :doc:`events`: Support temporal color changes (`#5695 <https://github.com/GenericMappingTools/gmt/pull/5695>`_)
+* :doc:`gmtmath`: Improve -Q behavior (`#5362 <https://github.com/GenericMappingTools/gmt/pull/5362>`_)
+* :doc:`grd2cpt` and :doc:`makecpt`: Add suitable shorthands for creating month and day labels (`#5201 <https://github.com/GenericMappingTools/gmt/pull/5201>`_)
+* :doc:`grd2cpt`: Let -L have ability to only set one limit (`#5317 <https://github.com/GenericMappingTools/gmt/pull/5317>`_)
+* :doc:`grd2xyz`: Add option -L to limit output to a single vector (`#5705 <https://github.com/GenericMappingTools/gmt/pull/5705>`_)
+* :doc:`grd2xyz`: Let option -T write STL output file (`#5955 <https://github.com/GenericMappingTools/gmt/pull/5955>`_)
+* :doc:`grdclip`: Handle polar resampling via -Ar|t (`#5264 <https://github.com/GenericMappingTools/gmt/pull/5264>`_)
+* :doc:`grdgradient`: Add +f modifier to -Q to specify file (`#5866 <https://github.com/GenericMappingTools/gmt/pull/5866>`_)
+* :doc:`grdimage`: Resample 2nd grid used for intensities (`#5363 <https://github.com/GenericMappingTools/gmt/pull/5363>`_)
+* :doc:`grdinfo`: Add ability to specify the two tails separately in -T+a (`#5924 <https://github.com/GenericMappingTools/gmt/pull/5924>`_)
+* :doc:`grdmath`: Add CUMSUM operator (`#5239 <https://github.com/GenericMappingTools/gmt/pull/5239>`_)
+* :doc:`grdtrack`: Let -C also accept a fixed azimuth for all profiles (`#5849 <https://github.com/GenericMappingTools/gmt/pull/5849>`_)
+* :doc:`grdtrend`: Fit model along xx or yy only. (`#5496 <https://github.com/GenericMappingTools/gmt/pull/5496>`_)
+* :doc:`inset`: Let begin optionally take -R -J to determine inset size instead of via -D (`#5903 <https://github.com/GenericMappingTools/gmt/pull/5903>`_)
+* :doc:`plot`:Add inverted triangle to front symbol choices (`#5983 <https://github.com/GenericMappingTools/gmt/pull/5983>`_)
+* :doc:`plot`: For error bars, allow asymmetrical bounds as well (`#5844 <https://github.com/GenericMappingTools/gmt/pull/5844>`_)
+* :doc:`plot`, :doc:`plot3d`, and :doc:`clip`: Add polar resampling via -Ar|t (`#5263 <https://github.com/GenericMappingTools/gmt/pull/5263>`_)
+* :doc:`project`: Let -G accept increment unit and +n modifier (`#5984 <https://github.com/GenericMappingTools/gmt/pull/5984>`_)
+* :doc:`mapproject`: Report rectangular region that covers an obliquely defined region (`#5782 <https://github.com/GenericMappingTools/gmt/pull/5782>`_)
+* :doc:`movie`: Let master frame accept a different dpu than the movie frames (`#5198 <https://github.com/GenericMappingTools/gmt/pull/5198>`_)
+* :doc:`subplot`: Allow drop-down shade modifier in tag option (`#5333 <https://github.com/GenericMappingTools/gmt/pull/5333>`_)
+* :doc:`text`: Implement smart justify -Dj for -M (`#5995 <https://github.com/GenericMappingTools/gmt/pull/5995>`_)
+
+Supplement updates in GMT 6.3
+-----------------------------
+
+* :doc:`/supplements/seis/coupe` and :doc:`/supplements/seis/meca`: Add linear moment scaling (`#5649 <https://github.com/GenericMappingTools/gmt/pull/5649>`_)
+* :doc:`/supplements/potential/grdflexure`: Let input list of grids and load times optionally also have load density (`#5249 <https://github.com/GenericMappingTools/gmt/pull/5249>`_)
+* :doc:`greenspline` and :doc:`/supplements/geodesy/gpsgridder`: Improve histories, update and add animations (`#5734 <https://github.com/GenericMappingTools/gmt/pull/5734>`_)
+
+Enhancements in GMT 6.3
+-----------------------
+
+* Add v (vector) to custom symbol kit, plus handle azimuth vs angle (`#5606 <https://github.com/GenericMappingTools/gmt/pull/5606>`_)
+* Allow trailing comments in custom symbol files (`#5610 <https://github.com/GenericMappingTools/gmt/pull/5610>`_)
+* Let -d set starting column via modifier (`#5966 <https://github.com/GenericMappingTools/gmt/pull/5966>`_)
+* Let -f\ *col* explicity set start of input trailing text (`#5370 <https://github.com/GenericMappingTools/gmt/pull/5370>`_)
+* Let multi-layer geotiff files be cut via gdal_translate (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
+
+Documentation updates in GMT 6.3
+--------------------------------
+
+* Add a GMT team page and update contributor recognition model (`#5589 <https://github.com/GenericMappingTools/gmt/pull/5589>`_)
+* Add deprecations section to ReST documentation (`#5847 <https://github.com/GenericMappingTools/gmt/pull/5847>`_)
+* Migrate remote dataset documentation to external site (`#6021 <https://github.com/GenericMappingTools/gmt/pull/6021>`_)
+* New gallery example 53 showing subplots and shading (`#5336 <https://github.com/GenericMappingTools/gmt/pull/5336>`_)
+* Improved animations in the gallery
+* Update formatting of usage messages across all modules
+
+Deprecations in GMT 6.3
+-----------------------
+
+* Clean up aspects of SVD function usage in GMT (`#5725 <https://github.com/GenericMappingTools/gmt/pull/5725>`_)
+* Complete -D parsing update (`#5827 <https://github.com/GenericMappingTools/gmt/pull/5827>`_)
+* Consolidate -A into -F for a more unified option (`#5613 <https://github.com/GenericMappingTools/gmt/pull/5613>`_)
+* Deprecate the ugly perspective -JG syntax and introduce a modern form (`#5780 <https://github.com/GenericMappingTools/gmt/pull/5780>`_)
+* :doc:`greenspline`: Update -C for writing intermediate grids (`#5714 <https://github.com/GenericMappingTools/gmt/pull/5714>`_)
+* Let gmt end better handle -A args (`#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_)
+* Update -g synopsis, syntax, usage and docs (`#5617 <https://github.com/GenericMappingTools/gmt/pull/5617>`_)
+
 New Features in GMT 6.2
 =======================
 

@@ -308,16 +308,16 @@ GMT_LOCAL int gmtsupport_parse_pattern_old (struct GMT_CTRL *GMT, char *line, st
 	}
 	/* Determine if there are colorizing options applied, i.e. [:F<rgb>B<rgb>] */
 	len = (int)MIN(strlen (fill->pattern),PATH_MAX) - 1;
-	for (i = 0, pos = -1; i < len && fill->pattern[i] && pos == -1; i++)
+	for (i = 0, pos = GMT_NOTSET; i < len && fill->pattern[i] && pos == GMT_NOTSET; i++)
 		if (i < len && fill->pattern[i] == ':' && (fill->pattern[i+1] == 'B' || fill->pattern[i+1] == 'F')) pos = i;	/* THe extra i < len is needed to defeat cppcheck confusion */
-	if (pos > -1) fill->pattern[pos] = '\0';
+	if (pos != GMT_NOTSET) fill->pattern[pos] = '\0';
 	fill->pattern_no = atoi (fill->pattern);
-	if (fill->pattern_no == 0) fill->pattern_no = -1;
+	if (fill->pattern_no == 0) fill->pattern_no = GMT_NOTSET;
 
 	/* See if fore- and background colors are given */
 
 	len = (int)strlen (line);
-	for (i = 0, pos = -1; line[i] && pos == -1; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
+	for (i = 0, pos = GMT_NOTSET; line[i] && pos == GMT_NOTSET; i++) if (line[i] == ':' && i < len && (line[i+1] == 'B' || line[i+1] == 'F')) pos = i;
 	pos++;
 
 	if (pos > 0 && line[pos]) {	/* Gave colors */
@@ -3001,10 +3001,11 @@ GMT_LOCAL void gmtsupport_add_decoration (struct GMT_CTRL *GMT, struct GMT_DATAS
 	if (S->n_rows == SH->n_alloc) {	/* Need more memory for the segment */
 		uint64_t col;
 		SH->n_alloc += GMT_SMALL_CHUNK;
-		for (col = 0; col < S->n_columns; col++)
+		for (col = 0; col < S->n_columns; col++) {
 			S->data[col] = gmt_M_memory (GMT, S->data[col], SH->n_alloc, double);
+			SH->alloc_mode[col] = GMT_ALLOC_INTERNALLY;
+		}
 		S->text = gmt_M_memory (GMT, S->text, SH->n_alloc, char *);
-		SH->alloc_mode = GMT_ALLOC_INTERNALLY;
 	}
 	/* Deal with any justifications or nudging */
 	if (G->nudge_flag) {	/* Must adjust point a bit */
@@ -4895,7 +4896,7 @@ GMT_LOCAL struct GMT_CUSTOM_SYMBOL_EPS * gmtsupport_load_eps_symbol (struct GMT_
 	return (E);
 }
 
-GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]) {
+GMT_LOCAL void gmtsupport_make_template (struct GMTAPI_CTRL *API, char *stem, char path[]) {
 	/* Create a template for making a unique temporary file or directory name on the system.
 	 * The 6 XXXXXX will be replaced by mktemp or mkstemp with a unique 6-char token (62^6 unique tokens).
 	 * If a temp dir is designated then we use that in the path else we assume current directory.
@@ -4914,7 +4915,7 @@ int gmt_get_tempname (struct GMTAPI_CTRL *API, char *stem, char *extension, char
 	 * Note: path is expected to have a length of PATH_MAX.
 	 */
 
-	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 
 	if (mktemp (path) == NULL) {
 		GMT_Report (API, GMT_MSG_ERROR, "Could not create a temporary name from template %s.\n", path);
@@ -4930,7 +4931,8 @@ FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension,
 #ifndef _WIN32
 	/* Here we can use the race-safe mkstemp function which returns a file descriptor */
 	int fd = 0;
-	gmtsupport_make_template (API, stem, extension, path);	/* Readying the name template */
+	gmt_M_unused (extension);
+	gmtsupport_make_template (API, stem, path);	/* Readying the name template */
 	if ((fd = mkstemp (path)) == -1) {	/* Create filename AND open in one go to avoid race condition */
 		GMT_Report (API, GMT_MSG_ERROR, "gmt_create_tempfile: Could not create temporary file name and open it %s.\n", path);
 		API->error = GMT_RUNTIME_ERROR;
@@ -16098,7 +16100,7 @@ unsigned int gmtlib_split_line_at_dateline (struct GMT_CTRL *GMT, struct GMT_DAT
 	uint64_t k, col, seg, row, start, length, *pos = gmt_M_memory (GMT, NULL, S->n_rows, uint64_t);
 	char label[GMT_BUFSIZ] = {""}, *txt = NULL, *feature = "Line";
 	double r;
-	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_get_segment (GMT);
+	struct GMT_DATASEGMENT **L = NULL, *Sx = gmt_get_segment (GMT, S->n_columns);
 	struct GMT_DATASEGMENT_HIDDEN *LH = NULL, *SH = gmt_get_DS_hidden (S);
 
 	for (k = 0; k < S->n_rows; k++) gmt_lon_range_adjust (GMT_IS_0_TO_P360_RANGE, &S->data[GMT_X][k]);	/* First enforce 0 <= lon < 360 so we don't have to check again */
@@ -18412,6 +18414,7 @@ bool gmt_is_gmt_end_show (char *line) {
 bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
 	/* Return true if any of the modifiers listed are found in the string */
 	char this_modifier[3] = {'+', ' ', '\0'};
+	gmt_M_unused (GMT);
 	for (unsigned int k = 0; k < strlen (mods); k++) {
 		this_modifier[1] = mods[k];
 		if (strstr (string, this_modifier)) return (true);	/* Found it */
@@ -18422,6 +18425,7 @@ bool gmt_found_modifier (struct GMT_CTRL *GMT, char *string, char *mods) {
 unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned char rgbmap[]) {
 	unsigned int n, k = 0;
 	int red;
+	gmt_M_unused (GMT);
 	/* Repack column-stored RGBA integer values into a row-stored RGBA byte array */
 	for (n = 0; n < (unsigned int)I->n_indexed_colors && (red = gmt_M_get_rgba (I->colormap, n, 0, I->n_indexed_colors)) >= 0; n++) {
 		rgbmap[k++] = red;	/* Got this already */
@@ -18433,18 +18437,24 @@ unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, un
 }
 
 void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
-	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible */
+	/* Fancy ddd:mm:ssF typeset of -Rw/e/s/n if possible, and being aware of 360-range */
+	bool wrap = false;
 	enum gmt_col_enum type = gmt_get_column_type (GMT, GMT_IN, GMT_X);
 	char text[GMT_LEN64] = {""}, save[GMT_LEN64];
 	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Try formal reporting */
+		wrap = gmt_M_360_range (wesn[XLO], wesn[XHI]);
 		strcpy (save, GMT->current.setting.format_geo_out);
 		strcpy (GMT->current.setting.format_geo_out, "ddd:mm:ssF");
 		gmtlib_geo_C_format (GMT);
 	}
-	gmt_ascii_format_one (GMT, text, wesn[XLO], type);
-	sprintf (record, "-R%s/", text);	/* west or xmin */
-	gmt_ascii_format_one (GMT, text, wesn[XHI], type);
-	strcat (record, text);	strcat (record, "/");/* east or xmax */
+	if (wrap)	/* Do it directly */
+		sprintf (record, "-R180:00:00W/180:00:00E/");
+	else {
+		gmt_ascii_format_one (GMT, text, wesn[XLO], type);
+		sprintf (record, "-R%s/", text);	/* west or xmin */
+		gmt_ascii_format_one (GMT, text, wesn[XHI], type);
+		strcat (record, text);	strcat (record, "/");/* east or xmax */
+	}
 	type = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
 	gmt_ascii_format_one (GMT, text, wesn[YLO], type);
 	strcat (record, text);	strcat (record, "/");/* south or ymin */
@@ -18456,9 +18466,10 @@ void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn) {
 	}
 }
 
-unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, double *min, double *max) {
+unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, unsigned int mode, double *min, double *max) {
 	/* Parse strings like low/high, NaN/high, low/NaN, /high, low/ and return min/max
-	 * with either set to NaN if not given */
+	 * with either set to NaN if not given.  However, if mode - 1 then unset min/max becomes
+	 * -DBL_MAX or +DBL_MAX instead of NaNs */
 	size_t L;
 	int n;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""};
@@ -18500,7 +18511,13 @@ unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, doub
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Unable to parse %s\n", option, txt_b);
 		return GMT_PARSE_ERROR;
 	}
-	if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
+	if (mode) {	/* Replace any NaNs with min and max doubles */
+		if (gmt_M_is_dnan (*min))
+			*min = -DBL_MAX;
+		if (gmt_M_is_dnan (*max))
+			*max = +DBL_MAX;
+	}
+	else if (gmt_M_is_dnan (*min) && gmt_M_is_dnan (*max)) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Both limits cannot be NaN\n", option);
 		return GMT_PARSE_ERROR;
 	}

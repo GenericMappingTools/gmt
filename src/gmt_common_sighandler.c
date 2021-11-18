@@ -142,6 +142,7 @@ void backtrace_symbols_fd(void *const *buffer, int size, int fd) {
 #	define sys_siglist __sys_siglist
 #endif
 
+#if 0	/* Currently not used so commented out. PW 14.NOV.2021 */
 static void process_cpu() {
 	/* print current process accumulated cpu time */
 	struct rusage ru;
@@ -187,6 +188,7 @@ static void process_info() {
 	process_cpu();
 	process_mem();
 }
+#endif
 
 void sig_handler_unix (int sig_num, siginfo_t *info, void *ucontext) {
 	if (sig_num == SIGINT) {

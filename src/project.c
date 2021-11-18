@@ -55,13 +55,16 @@ struct PROJECT_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		char col[PROJECT_N_FARGS];	/* Character codes for desired output in the right order */
 	} F;
-	struct PROJECT_G {	/* -G<inc>[/<colat>][+h] */
+	struct PROJECT_G {	/* -G<inc>[<unit>[/<colat>][+c|h][+n] */
 		bool active;
 		bool header;
+		bool number;
 		bool through_C;
 		unsigned int mode;
 		double inc;
 		double colat;
+		char unit;
+		int d_mode;	/* Could be negative */
 	} G;
 	struct PROJECT_L {	/* -L[w][<l_min>/<l_max>] */
 		bool active;
@@ -323,8 +326,8 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PROJECT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[/<colat>][+c|h]] "
-		"[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>[unit][/<minor>/<azimuth>][+e|n]] "
+	GMT_Usage (API, 0, "usage: %s [<table>] -C<ox>/<oy> [-A<azimuth>] [-E<bx>/<by>] [-F<flags>] [-G<dist>[unit][/<colat>][+c][+h][+n]] "
+		"[-L[w|<l_min>/<l_max>]] [-N] [-Q] [-S] [-T<px>/<py>] [%s] [-W<w_min>/<w_max>] [-Z<major>[unit][/<minor>/<azimuth>][+e]] "
 		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT,
 		GMT_q_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -361,12 +364,15 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Note 2: z refers to all input data columns beyond the required x,y. "
 		"Note 3: If -G is set, -F is not available and output defaults to rsp "
 		"[Default is all fields, i.e., -Fxyzpqrs].");
-	GMT_Usage (API, 1, "\n-G<dist>[/<colat>][+c|h]");
+	GMT_Usage (API, 1, "\n-G<dist>[<unit>][/<colat>][+c|h]");
 	GMT_Usage (API, -2, "Generate (r,s,p) points along profile every <dist> units. (No input data used.) "
 		"If E given, will generate from C to E; else must give -L<l_min>/<l_max> for length. "
 		"Optionally, append /<colat> for a small circle path through C and E (requires -C -E). Some modifiers:");
 	GMT_Usage (API, 3, "+c If given -T and -C, compute and use <colat> of C [90].");
 	GMT_Usage (API, 3, "+h Place information about the pole in a segment header [no header].");
+	GMT_Usage (API, 3, "+n Increment specifies the number of points instead (requires -C -E or -Z).");
+	GMT_Usage (API, -2, "For geographic profile, append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), d (arc degree), "
+		"m (arc minute), or s (arc second) to <inc> [k]. ");
 	GMT_Usage (API, 1, "\n-L[w|<l_min>/<l_max>]");
 	GMT_Usage (API, -2, "Check the Length along the projected track and use only certain points:n");
 	GMT_Usage (API, 3, "%s Append w to only use those points Within the span from C to E (Must have set -E).", GMT_LINE_BULLET);
@@ -387,7 +393,6 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 1, "\n-Z<major>[unit][/<minor>/<azimuth>][+e|n]");
 	GMT_Usage (API, -2, "With -G and -C, generate an ellipse of given major and minor axes and the azimuth of the major axis.");
 	GMT_Usage (API, 3, "+e Adjust increment to fix perimeter exactly [use increment as given in -G].");
-	GMT_Usage (API, 3, "+n Indicate that increment in -G specifies the number of unique perimeter points instead.");
 	GMT_Usage (API, -2, "For a degenerate ellipse, i.e., circle, you may just give <major> only as the <diameter>. "
 		"Append e (meter), f (foot), k (km), M (mile), n (nautical mile), u (survey foot), d (arc degree), "
 		"m (arc minute), or s (arc second) to <major> [k]; we assume -G is in the same units (unless +n is used). "
@@ -411,7 +416,14 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 	struct GMT_OPTION *opt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
-	for (opt = options; opt; opt = opt->next) if (opt->option == 'N') Ctrl->N.active = true;	/* Must find -N first, if given */
+	for (opt = options; opt; opt = opt->next) {
+		if (opt->option == 'N')	/* Must find -N first, if given */
+			Ctrl->N.active = true;
+		else if (opt->option == 'Q') {	/* Geographic coordinates */
+			gmt_set_geographic (GMT, GMT_IN);
+			gmt_set_geographic (GMT, GMT_OUT);
+		}
+	}
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -488,12 +500,13 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					opt->arg[len] = 0;	/* Temporarily remove the trailing + sign */
 					ch = &opt->arg[len];
 				}
-				if ((c = gmt_first_modifier (GMT, opt->arg, "ch"))) {	/* Process any modifiers */
+				if ((c = gmt_first_modifier (GMT, opt->arg, "chn"))) {	/* Process any modifiers */
 					pos = 0;	/* Reset to start of new word */
-					while (gmt_getmodopt (GMT, 'G', c, "ch", &pos, p, &n_errors) && n_errors == 0) {
+					while (gmt_getmodopt (GMT, 'G', c, "chn", &pos, p, &n_errors) && n_errors == 0) {
 						switch (p[0]) {
-							case 'c': Ctrl->G.through_C = true; break;	/* Compute required colatitude for small ircle to go through C */
+							case 'c': Ctrl->G.through_C = true; break;	/* Compute required colatitude for small circle to go through C */
 							case 'h': Ctrl->G.header = true; break;	/* Output segment header */
+							case 'n': Ctrl->G.number = true; break;	/* Gave number of points rather than increment */
 							default: break;	/* These are caught in gmt_getmodopt so break is just for Coverity */
 						}
 					}
@@ -501,11 +514,19 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 				}
 				if (sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b) == 2) {	/* Got dist/colat */
 					Ctrl->G.mode = 1;
-					Ctrl->G.inc = atof (txt_a);
 					n_errors += gmt_verify_expectations (GMT, gmt_M_type (GMT, GMT_IN, GMT_Y), gmt_scanf_arg (GMT, txt_b, gmt_M_type (GMT, GMT_IN, GMT_Y), false, &Ctrl->G.colat), txt_b);
 				}
 				else
-					Ctrl->G.inc = atof (opt->arg);
+					strcpy (txt_a, opt->arg);
+				if (Ctrl->G.number) {
+					Ctrl->Z.number = true;	/* Since -Z +n needs backwards compatibility support */
+					Ctrl->G.inc = atof (txt_a);
+				}
+				else {
+					if (gmt_M_is_geographic (GMT, GMT_IN) && strchr (GMT_LEN_UNITS, txt_a[strlen(txt_a)-1]) == NULL)	/* No unit given, append k for default km */
+						strcat (txt_a, "k");
+					Ctrl->G.d_mode = gmt_get_distance (GMT, txt_a, &(Ctrl->G.inc), &(Ctrl->G.unit));
+				}
 				if (ch) ch[0] = '+';	/* Restore the obsolete plus-sign */
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
@@ -568,6 +589,8 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 							Ctrl->Z.minor = atof (txt_b);
 						}
 						else {	/* Watch out for units and convert to km */
+							if (gmt_M_is_geographic (GMT, GMT_IN) && strchr (GMT_LEN_UNITS, txt_a[strlen(txt_a)-1]) == NULL)	/* No unit given, append k for default km */
+								strcat (txt_a, "k");
 							Ctrl->Z.mode = gmt_get_distance (GMT, txt_a, &(Ctrl->Z.major), &(Ctrl->Z.unit));
 							(void) gmt_get_distance (GMT, txt_b, &(Ctrl->Z.minor), &dummy);
 						}
@@ -588,6 +611,9 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					if (Ctrl->N.active)
 						Ctrl->Z.minor = Ctrl->Z.major = atof (opt->arg);
 					else {
+						strcpy (txt_a, opt->arg);
+						if (gmt_M_is_geographic (GMT, GMT_IN) && strchr (GMT_LEN_UNITS, txt_a[strlen(txt_a)-1]) == NULL)	/* No unit given, append k for default km */
+							strcat (txt_a, "k");
 						Ctrl->Z.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->Z.minor), &(Ctrl->Z.unit));
 						Ctrl->Z.major = Ctrl->Z.minor;
 					}
@@ -611,6 +637,8 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 		n_errors++;
 	}
 
+	n_errors += gmt_M_check_condition (GMT, Ctrl->G.number && !(Ctrl->C.active && Ctrl->E.active),
+	                                 "Option -G: Can only use +n if both -C and -E are specified\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->L.active && !Ctrl->L.constrain && Ctrl->L.min >= Ctrl->L.max,
 	                                 "Option -L: w_min must be < w_max\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->W.active && Ctrl->W.min >= Ctrl->W.max,
@@ -635,6 +663,8 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 	                                 "Option -N: Cannot be used with -G<dist>/<colat>\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.through_C && !Ctrl->C.active,
 	                                 "Option -G: Modifier +c requires both -C and -T\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->Z.active && !Ctrl->G.active,
+	                                 "Option -Z: Requires option -G as well\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->G.through_C && !Ctrl->T.active,
 	                                 "Option -G: Modifier +c requires both -C and -T\n");
 	n_errors += gmt_check_binary_io (GMT, 2);
@@ -761,12 +791,10 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			if (GMT->current.map.dist[GMT_MAP_DIST].arc) {	/* Got angular measures, convert to km */
 				Ctrl->Z.minor *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
 				Ctrl->Z.major *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
-				if (!Ctrl->Z.number) Ctrl->G.inc *= (GMT->current.proj.KM_PR_DEG / GMT->current.map.dist[GMT_MAP_DIST].scale);	/* Now in km */
 			}
 			else {
 				Ctrl->Z.minor /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
 				Ctrl->Z.major /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
-				if (!Ctrl->Z.number) Ctrl->G.inc /= (GMT->current.map.dist[GMT_MAP_DIST].scale * METERS_IN_A_KM);	/* Now in km */
 			}
 		}
 	}
@@ -813,10 +841,16 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 		P.find_new_point = true;
 	}
 	if (Ctrl->G.active) {	/* Hardwire 3 output columns and set their types */
+		if (gmt_M_is_geographic (GMT, GMT_IN) && Ctrl->G.d_mode) {
+			if (gmt_init_distaz (GMT, Ctrl->G.unit, Ctrl->G.d_mode, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+				Return (GMT_NOT_A_VALID_TYPE);
+		}
 		P.n_outputs = 3;
 		gmt_set_column_type (GMT, GMT_OUT, GMT_X, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LON);
 		gmt_set_column_type (GMT, GMT_OUT, GMT_Y, (Ctrl->N.active) ? GMT_IS_FLOAT : GMT_IS_LAT);
 		gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
+		if (Ctrl->Q.active && Ctrl->G.unit != 'k' && !Ctrl->G.number)
+			Ctrl->G.inc *= 0.001 / GMT->current.map.dist[GMT_MAP_DIST].scale;	/* Now in km */
 	}
 	else if (!Ctrl->N.active) {	/* Decode and set the various output column types in the geographic case */
 		for (col = 0; col < P.n_outputs; col++) {
@@ -911,6 +945,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			if (Ctrl->Q.active) Ctrl->L.max *= GMT->current.proj.DIST_KM_PR_DEG;
 		}
 	}
+	if (Ctrl->G.number) Ctrl->G.inc = (Ctrl->L.max - Ctrl->L.min) / (Ctrl->G.inc - 1.0);
 
 	/* Now things are initialized.  We will work in degrees for awhile, so we convert things */
 
@@ -937,6 +972,7 @@ EXTERN_MSC int GMT_project (void *V_API, int mode, void *args) {
 			double h = pow (Ctrl->Z.major - Ctrl->Z.minor, 2.0) / pow (Ctrl->Z.major + Ctrl->Z.minor, 2.0);
 			Ctrl->L.min = 0.0;
 			Ctrl->L.max = M_PI * (Ctrl->Z.major + Ctrl->Z.minor) * (1.0 + (3.0 * h)/(10.0 + sqrt (4.0 - 3.0 * h)));	/* Ramanujan approximation of ellipse circumference */
+			if (gmt_M_is_geographic (GMT, GMT_IN)) Ctrl->L.max /= GMT->current.proj.DIST_KM_PR_DEG;
 			if (Ctrl->Z.number)	/* Want a specific number of points */
 				Ctrl->G.inc = Ctrl->L.max / rint (Ctrl->G.inc);
 			else if (Ctrl->Z.exact) {	/* Adjust inc to fit the ellipse perimeter exactly */

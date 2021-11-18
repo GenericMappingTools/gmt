@@ -129,9 +129,6 @@ jobs:
           cd build
           cmake --build . --target docs_depends
           cmake --build . --target optimize_images
-          if [ "$RUNNER_OS" != "Windows" ]; then
-            cmake --build . --target animation
-          fi
           cmake --build . --target docs_html
           # if html.log isn't empty (i.e., sphinx raise warnings), return 1
           ! [ -s doc/rst/html.log ]

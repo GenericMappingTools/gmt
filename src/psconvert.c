@@ -251,7 +251,7 @@ GMT_LOCAL void psconvert_pclose2 (struct popen2 **Faddr, int dir) {
 
 GMT_LOCAL int psconvert_parse_new_A_settings (struct GMT_CTRL *GMT, char *arg, struct PSCONVERT_CTRL *Ctrl) {
 	/* Syntax: -A[+r][+u] */
-
+	gmt_M_unused (GMT);
 	Ctrl->A.active = Ctrl->A.crop = true;
 
 	if (strstr (arg, "r"))
@@ -985,8 +985,9 @@ static int parse (struct GMT_CTRL *GMT, struct PSCONVERT_CTRL *Ctrl, struct GMT_
 			Ctrl->H.active = false;
 	}
 
-	if (!Ctrl->T.active) Ctrl->T.device = GS_DEV_JPG;	/* Default output device if none is specified */
-
+	if (!Ctrl->T.active) {	/* Set default output device if none is specified */
+		Ctrl->T.device = (Ctrl->W.warp) ? GS_DEV_PNG : GS_DEV_JPG;	/* Lossless PNG if we are making a geotiff in the end */
+	}
 	if (Ctrl->T.device > GS_DEV_SVG) {	/* Raster output, apply default -Q for rasters unless already specified */
 		/* For rasters, we should always add -Qt4 unless -Q was set manually.  This will improve the rasterization of text */
 		if (!Ctrl->Q.on[PSC_TEXT]) {	/* Only override if not set */
@@ -1948,14 +1949,14 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 
 		len = strlen (ps_file);
 		j = (unsigned int)len - 1;
-		pos_file = -1;
-		pos_ext = -1;	/* In case file has no extension */
+		pos_file = GMT_NOTSET;
+		pos_ext  = GMT_NOTSET;	/* In case file has no extension */
 		for (i = 0; i < len; i++, j--) {
-			if (pos_ext < 0 && ps_file[j] == '.') pos_ext = j;	/* Beginning of file extension */
-			if (pos_file < 0 && (ps_file[j] == '/' || ps_file[j] == '\\')) pos_file = j + 1;	/* Beginning of file name */
+			if (pos_ext == GMT_NOTSET && ps_file[j] == '.') pos_ext = j;	/* Beginning of file extension */
+			if (pos_file == GMT_NOTSET && (ps_file[j] == '/' || ps_file[j] == '\\')) pos_file = j + 1;	/* Beginning of file name */
 		}
-		if (pos_ext == -1) pos_ext = (unsigned int)len;	/* File has no extension */
-		if (!Ctrl->D.active || pos_file == -1) pos_file = 0;	/* File either has no leading directory or we want to use it */
+		if (pos_ext == GMT_NOTSET) pos_ext = (unsigned int)len;	/* File has no extension */
+		if (!Ctrl->D.active || pos_file == GMT_NOTSET) pos_file = 0;	/* File either has no leading directory or we want to use it */
 
 		/* Adjust to a tight BoundingBox if user requested so */
 
@@ -2781,6 +2782,8 @@ EXTERN_MSC int GMT_psconvert (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "System call [%s] returned error %d.\n", cmd, sys_retval);
 					Return (GMT_RUNTIME_ERROR);
 				}
+				if (!Ctrl->T.active)	/* Get rid of the intermediate JPG file if -T was not set */
+					gmt_remove_file (GMT, out_file);
 			}
 			else if (Ctrl->W.warp && !proj4_cmd)
 				GMT_Report (API, GMT_MSG_ERROR, "Could not find the Proj4 command in the PS file. No conversion performed.\n");

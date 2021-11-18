@@ -98,11 +98,11 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct NEARNEIGHBOR_CTRL *C) {	/* D
 }
 
 GMT_LOCAL struct NEARNEIGHBOR_NODE *nearneighbor_add_new_node (struct GMT_CTRL *GMT, unsigned int n) {
-	/* Allocate and initialize a new node to have -1 in all the n datum sectors */
+	/* Allocate and initialize a new node to have GMT_NOTSET in all the n datum sectors */
 	struct NEARNEIGHBOR_NODE *new_node = gmt_M_memory (GMT, NULL, 1U, struct NEARNEIGHBOR_NODE);
 	new_node->distance = gmt_M_memory (GMT, NULL, n, gmt_grdfloat);
 	new_node->datum = gmt_M_memory (GMT, NULL, n, int64_t);
-	while (n > 0) new_node->datum[--n] = -1;
+	while (n > 0) new_node->datum[--n] = GMT_NOTSET;
 
 	return (new_node);
 }
@@ -111,7 +111,7 @@ GMT_LOCAL void nearneighbor_assign_node (struct GMT_CTRL *GMT, struct NEARNEIGHB
 	/* Allocates node space if not already used and updates the value if closer to node than the current value */
 
 	if (!(*node)) *node = nearneighbor_add_new_node (GMT, n_sector);
-	if ((*node)->datum[sector] == -1 || (*node)->distance[sector] > distance) {
+	if ((*node)->datum[sector] == GMT_NOTSET || (*node)->distance[sector] > distance) {
 		(*node)->distance[sector] = (gmt_grdfloat)distance;
 		(*node)->datum[sector] = id;
 	}

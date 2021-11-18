@@ -322,7 +322,7 @@ EXTERN_MSC struct GMT_GRID_HEADER * gmt_get_header (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_POSTSCRIPT * gmt_get_postscript (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_DATASET * gmt_get_dataset (struct GMT_CTRL *GMT);
 EXTERN_MSC struct GMT_DATATABLE * gmt_get_table (struct GMT_CTRL *GMT);
-EXTERN_MSC struct GMT_DATASEGMENT * gmt_get_segment (struct GMT_CTRL *GMT);
+EXTERN_MSC struct GMT_DATASEGMENT * gmt_get_segment (struct GMT_CTRL *GMT, uint64_t n_columns);
 EXTERN_MSC int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double *ptr, char *txt);
 EXTERN_MSC void gmt_set_column_type (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col, enum gmt_col_enum type);
 EXTERN_MSC enum gmt_col_enum gmt_get_column_type (struct GMT_CTRL *GMT, unsigned int direction, unsigned int col);
@@ -332,7 +332,7 @@ EXTERN_MSC int gmt_remove_file (struct GMT_CTRL *GMT, const char *file);
 EXTERN_MSC int gmt_rename_file (struct GMT_CTRL *GMT, const char *oldfile, const char *newfile, unsigned int mode);
 EXTERN_MSC void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
 EXTERN_MSC int gmt_ascii_output_col (struct GMT_CTRL *GMT, FILE *fp, double x, uint64_t col);
-EXTERN_MSC bool gmt_input_is_nan_proxy (struct GMT_CTRL *GMT, double value);
+EXTERN_MSC bool gmt_input_col_is_nan_proxy (struct GMT_CTRL *GMT, double value, unsigned int col);
 EXTERN_MSC bool gmt_is_a_blank_line (char *line);
 EXTERN_MSC void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir);
 EXTERN_MSC void gmt_set_cartesian (struct GMT_CTRL *GMT, unsigned int dir);
@@ -404,7 +404,7 @@ EXTERN_MSC bool gmt_this_alloc_level (struct GMT_CTRL *GMT, unsigned int alloc_l
 
 /* gmt_support.c: */
 
-EXTERN_MSC unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, double *min, double *max);
+EXTERN_MSC unsigned int gmt_get_limits (struct GMT_CTRL *GMT, char option, char *text, unsigned int mode, double *min, double *max);
 EXTERN_MSC unsigned int gmt_unpack_rgbcolors (struct GMT_CTRL *GMT, struct GMT_IMAGE *I, unsigned char rgbmap[]);
 EXTERN_MSC void gmt_format_region (struct GMT_CTRL *GMT, char *record, double *wesn);
 EXTERN_MSC FILE *gmt_create_tempfile (struct GMTAPI_CTRL *API, char *stem, char *extension, char path[]);
