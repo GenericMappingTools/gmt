@@ -21,5 +21,5 @@ cat << EOF > two.txt
 EOF
 gmt psxy -R-180/180/-60/60 -JM6i -P -Bafg -B+t"Plot polygons with psxy" -K two.txt -Gred > $ps
 
-gmt grdmask -R two.txt -Gout.nc -N0/1/1 -V -I20k
+gmt grdmask -R two.txt -Gout.nc -N0/1/1 -I20k
 gmt grdimage -R -J -Ct.cpt out.nc -Bafg -B+t"Plot polygons via grdmask/image" -O -Y5i >> $ps

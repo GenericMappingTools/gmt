@@ -19,4 +19,5 @@ gmt begin subplot_2.3
         gmt basemap -c
     	gmt basemap -c -Bwsne
       	gmt basemap -c
+    gmt subplot end
 gmt end show
