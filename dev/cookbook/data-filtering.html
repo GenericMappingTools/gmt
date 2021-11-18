@@ -1,55 +1,34 @@
 
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>15. Filtering of Data in GMT &mdash; GMT 6.3.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
-
-  
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-  
-
-  
-  
-
-  
-
-  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="16. GMT on non-UNIX Platforms" href="non-unix-platforms.html" />
@@ -62,33 +41,16 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> GMT
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 6.3
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -96,26 +58,15 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Getting started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">Cookbook</a><ul class="current">
@@ -147,33 +98,33 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../devdocs.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
-            
-          
 
     
         <p class="caption">
@@ -193,73 +144,31 @@
     
 
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">GMT</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../cookbook.html">Cookbook</a> &raquo;</li>
-        
       <li><span class="section-number">15. </span>Filtering of Data in GMT</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/cookbook/data-filtering.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="filtering-of-data-in-gmt">
+             
+  <section id="filtering-of-data-in-gmt">
 <h1><span class="section-number">15. </span>Filtering of Data in GMT<a class="headerlink" href="#filtering-of-data-in-gmt" title="Permalink to this headline">¶</a></h1>
 <p>The GMT programs <a class="reference internal" href="../filter1d.html"><span class="doc">filter1d</span></a> (for
 tables of data indexed to one independent variable) and
@@ -288,10 +197,12 @@ of plotting. In this way the same graph can serve to illustrate both the
 1-D and 2-D impulse responses; in the 2-D case this plot is a
 diametrical cross-section through the filter weights
 (Figure <a class="reference internal" href="#impulse-responses"><span class="std std-ref">Impulse responses</span></a>).</p>
-<div class="figure align-center" id="id3">
+<figure class="align-center" id="id3">
 <span id="impulse-responses"></span><a class="reference internal image-reference" href="../_images/GMT_App_J_1.png"><img alt="../_images/GMT_App_J_1.png" src="../_images/GMT_App_J_1.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Impulse responses for GMT filters.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Impulse responses for GMT filters.</span><a class="headerlink" href="#id3" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_J_1
@@ -333,10 +244,12 @@ filters are “better” in the sense that they do not have the “side lobes”
 (large-amplitude oscillations in the transfer function) that the boxcar
 filter has. However, they are correspondingly “worse” in the sense that
 they require more work (doubling the width to achieve the same cut-off wavelength).</p>
-<div class="figure align-center" id="id4">
+<figure class="align-center" id="id4">
 <span id="gmt-1d-filters"></span><a class="reference internal image-reference" href="../_images/GMT_App_J_2.png"><img alt="../_images/GMT_App_J_2.png" src="../_images/GMT_App_J_2.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Transfer functions for 1-D GMT filters.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Transfer functions for 1-D GMT filters.</span><a class="headerlink" href="#id4" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_App_J_2
@@ -366,10 +279,12 @@ response proportional to <span class="math notranslate nohighlight">\(\exp[-0.5(
 definition, the transfer function is <span class="math notranslate nohighlight">\(\exp[-2(\pi\sigma f)^2]\)</span> and
 the wavelength at which the transfer function equals 0.5 is about 5.34
 <span class="math notranslate nohighlight">\(\sigma\)</span>, or about 0.89 of the filter width.</p>
-<div class="figure align-center" id="id5">
+<figure class="align-center" id="id5">
 <span id="gmt-2d-filters"></span><a class="reference internal image-reference" href="../_images/GMT_App_J_3.png"><img alt="../_images/GMT_App_J_3.png" src="../_images/GMT_App_J_3.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Transfer functions for 2-D (radial) GMT filters.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Transfer functions for 2-D (radial) GMT filters.</span><a class="headerlink" href="#id5" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>cat <span class="s">&lt;&lt; EOF &gt; tt.r_tr_fns</span>
@@ -893,7 +808,7 @@ gmt end show
 </pre></div>
 </div>
 </div>
-<div class="section" id="footnote">
+<section id="footnote">
 <h2><span class="section-number">15.1. </span>Footnote<a class="headerlink" href="#footnote" title="Permalink to this headline">¶</a></h2>
 <dl class="footnote brackets">
 <dt class="label" id="id2"><span class="brackets"><a class="fn-backref" href="#id1">30</a></span></dt>
@@ -901,58 +816,40 @@ gmt end show
 McGraw-Hill, London, 444 p., 1965.</p>
 </dd>
 </dl>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="non-unix-platforms.html" class="btn btn-neutral float-right" title="16. GMT on non-UNIX Platforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="colorspace.html" class="btn btn-neutral float-left" title="14. Color Systems and Artificial Illumination" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="non-unix-platforms.html" class="btn btn-neutral float-right" title="16. GMT on non-UNIX Platforms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">
-        Last updated on Jun 06, 2021.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2021, The GMT Team..
+      <span class="lastupdated">Last updated on Nov 18, 2021.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(false);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

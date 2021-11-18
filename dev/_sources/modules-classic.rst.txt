@@ -2,7 +2,6 @@ Modules (Classic Mode)
 ======================
 
 .. note::
-
    Looking for the *modern mode* modules like ``begin`` and ``figure``? See the
    :doc:`equivalent page for modern mode <modules>`.
 
@@ -41,7 +40,6 @@ All modules are requested via a call to the :doc:`gmt` program.
     gmtconnect
     gmtconvert
     gmtdefaults
-    grdgdal
     gmtget
     gmtinfo
     gmtlogo-classic
@@ -66,6 +64,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     grdfft
     grdfill
     grdfilter
+    grdgdal
     grdgradient
     grdhisteq
     grdimage-classic
@@ -78,6 +77,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     grdpaste
     grdproject
     grdsample
+    grdselect
     grdtrack
     grdtrend
     grdvector-classic
@@ -234,6 +234,7 @@ Core Modules
     - :doc:`grdpaste`
     - :doc:`grdproject`
     - :doc:`grdsample`
+    - :doc:`grdselect`
     - :doc:`grdtrack`
     - :doc:`grdtrend`
     - :doc:`grdvector-classic`
@@ -468,6 +469,8 @@ Information retrieval
 | :doc:`gmtset`         | |gmtset_purpose|      |
 +-----------------------+-----------------------+
 | :doc:`grdinfo`        | |grdinfo_purpose|     |
++-----------------------+-----------------------+
+| :doc:`grdselect`      | |grdselect_purpose|   |
 +-----------------------+-----------------------+
 
 Mathematical operations on tables or grids

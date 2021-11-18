@@ -15,7 +15,7 @@ Synopsis
 **gmt psmeca** [ *table* ]
 |-J|\ *parameters*
 |SYN_OPT-R|
-|-S|\ *format*\ [*scale*]\ [**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+o**\ *dx*\ [/*dy*]]
+|-S|\ *format*\ [*scale*][**+a**\ *angle*][**+f**\ *font*][**+j**\ *justify*][**+l**][**+m**][**+o**\ *dx*\ [/*dy*]][**+s**\ *reference*]
 [ |-A|\ [**+p**\ *pen*][**+s**\ *size*] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
@@ -27,7 +27,6 @@ Synopsis
 [ |-I|\ [*intens*] ]
 [ |-K| ]
 [ |-L|\ [*pen*] ]
-[ |-M| ]
 [ |-N| ]
 [ |-O| ]
 [ |-P| ]
@@ -47,7 +46,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: meca_common.rst_
+.. include:: meca.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: ../../common_classic.rst_
 

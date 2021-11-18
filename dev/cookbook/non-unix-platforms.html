@@ -1,54 +1,33 @@
 
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>16. GMT on non-UNIX Platforms &mdash; GMT 6.3.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
-
-  
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-  
-
-  
-  
-
-  
-
-  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="17. Of Colors and Color Legends" href="cpts.html" />
@@ -61,33 +40,16 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> GMT
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 6.3
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -95,26 +57,15 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Getting started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">Cookbook</a><ul class="current">
@@ -135,8 +86,9 @@
 <li class="toctree-l2"><a class="reference internal" href="data-filtering.html">15. Filtering of Data in GMT</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">16. GMT on non-UNIX Platforms</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#introduction">16.1. Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#mingw-msys2-and-gmt">16.2. MINGW|MSYS2 and GMT</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cygwin-and-gmt">16.3. Cygwin and GMT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#windows-subsystem-for-linux">16.2. Windows Subsystem for Linux</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mingw-msys2-and-gmt">16.3. MINGW|MSYS2 and GMT</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cygwin-and-gmt">16.4. Cygwin and GMT</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="cpts.html">17. Of Colors and Color Legends</a></li>
@@ -148,33 +100,33 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../devdocs.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
-            
-          
 
     
         <p class="caption">
@@ -194,75 +146,33 @@
     
 
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">GMT</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../cookbook.html">Cookbook</a> &raquo;</li>
-        
       <li><span class="section-number">16. </span>GMT on non-UNIX Platforms</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/cookbook/non-unix-platforms.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="gmt-on-non-unix-platforms">
+             
+  <section id="gmt-on-non-unix-platforms">
 <h1><span class="section-number">16. </span>GMT on non-UNIX Platforms<a class="headerlink" href="#gmt-on-non-unix-platforms" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
+<section id="introduction">
 <h2><span class="section-number">16.1. </span>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>While GMT was ported to non-UNIX systems such as Windows, it is
 also true that one of the strengths of GMT lies its symbiotic
@@ -274,6 +184,7 @@ solutions:</p>
 <dl class="simple">
 <dt>WINDOWS:</dt><dd><p>Choose among these three possibilities:</p>
 <ol class="arabic simple">
+<li><p>Windows Subsystem for Linux</p></li>
 <li><p>Install GMT under MinGW/MSYS2 (A collection of GNU utilities).</p></li>
 <li><p>Install GMT under Cygwin (A GNU port to Windows).</p></li>
 <li><p>Install GMT in Windows using Microsoft C/C++ or other
@@ -283,18 +194,32 @@ with DOS batch files.</p></li>
 </ol>
 </dd>
 </dl>
-</div>
-<div class="section" id="mingw-msys2-and-gmt">
-<h2><span class="section-number">16.2. </span>MINGW|MSYS2 and GMT<a class="headerlink" href="#mingw-msys2-and-gmt" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="windows-subsystem-for-linux">
+<h2><span class="section-number">16.2. </span>Windows Subsystem for Linux<a class="headerlink" href="#windows-subsystem-for-linux" title="Permalink to this headline">¶</a></h2>
+<p>If you’re running Windows 10 you may take advantage of the Windows Subsystem for Linux.
+This provides an easy way of setting up a functional Linux environment and required tools to build and use GMT.</p>
+<p>From the Windows Subsystem for Linux Documentation:</p>
+<blockquote>
+<div><p>The Windows Subsystem for Linux lets developers run a GNU/Linux environment
+-- including most command-line tools, utilities, and applications
+-- directly on Windows, unmodified, without the overhead of a traditional virtual machine or dual-boot setup.</p>
+</div></blockquote>
+<p>See <a class="reference external" href="https://docs.microsoft.com/en-us/windows/wsl/">Windows Subsystem for Linux Documentation</a> to get started.</p>
+<p>Once WSL is installed, choose a distribution (e.g. Debian) and follow the <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/INSTALL.md#ubuntudebian">install</a>
+instructions or <a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md">build from source</a>.</p>
+</section>
+<section id="mingw-msys2-and-gmt">
+<h2><span class="section-number">16.3. </span>MINGW|MSYS2 and GMT<a class="headerlink" href="#mingw-msys2-and-gmt" title="Permalink to this headline">¶</a></h2>
 <p>Though one can install GMT natively using CMake, the simplest way of installing
 under MINGW|MSYS2 is to just install the Windows binaries and use them from
 the msys2 bash shell. As simple as that. Furthermore, GMT programs launch
 faster here than on Cygwin so this is the recommended way of running
 GMT on Windows. As one option, <a class="reference external" href="https://gitforwindows.org/">Git for Windows</a>
 can be easily installed and includes a bash emulator with MINGW|MSYS2.</p>
-</div>
-<div class="section" id="cygwin-and-gmt">
-<h2><span class="section-number">16.3. </span>Cygwin and GMT<a class="headerlink" href="#cygwin-and-gmt" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="cygwin-and-gmt">
+<h2><span class="section-number">16.4. </span>Cygwin and GMT<a class="headerlink" href="#cygwin-and-gmt" title="Permalink to this headline">¶</a></h2>
 <p>Because GMT works best in conjugation with UNIX tools we suggest you
 install GMT using the Cygwin product from Cygnus (now assimilated by
 Redhat, Inc.). This free version works on any Windows version and it
@@ -330,58 +255,40 @@ regtool -v list /HKLM/Software/Cygnus<span class="se">\ </span>Solutions/Cygwin
 </div>
 </div></blockquote>
 <p>For more installation details see the general README file.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="cpts.html" class="btn btn-neutral float-right" title="17. Of Colors and Color Legends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="data-filtering.html" class="btn btn-neutral float-left" title="15. Filtering of Data in GMT" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cpts.html" class="btn btn-neutral float-right" title="17. Of Colors and Color Legends" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">
-        Last updated on Jun 06, 2021.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2021, The GMT Team..
+      <span class="lastupdated">Last updated on Nov 18, 2021.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(false);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

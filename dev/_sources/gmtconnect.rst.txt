@@ -16,6 +16,7 @@ Synopsis
 [ |-D|\ [*template*] ] [ |-L|\ [*linkfile*] ]
 [ |-Q|\ [*template*] ] [ |-T|\ [*cutoff*\ [**+s**\ *sdist*]] ]
 [ |SYN_OPT-V| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -25,6 +26,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -116,6 +118,8 @@ Optional Arguments
     :start-after: **Syntax**
     :end-before: **Description**
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
@@ -142,6 +146,8 @@ Optional Arguments
 .. include:: explain_-ocols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
 

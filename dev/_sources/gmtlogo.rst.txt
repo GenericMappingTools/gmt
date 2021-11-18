@@ -24,7 +24,99 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: gmtlogo_common.rst_
+.. module_common_begins
+
+Description
+-----------
+
+This module plots the GMT logo on a map. By default, the GMT logo is 144 points (2 inches wide) and 72 points (1 inch) high and will be
+positioned relative to the current plot origin. Use various options to change this and to place a
+transparent or opaque rectangular map panel behind the GMT logo.
+
+.. figure:: /_images/GMT_coverlogo.*
+   :width: 200 px
+   :align: center
+
+   Standard presentation of the GMT logo.
+
+
+Required Arguments
+------------------
+
+None.
+
+Optional Arguments
+------------------
+
+.. _-D:
+
+**-D**\ [**g**\|\ **j**\|\ **J**\|\ **n**\|\ **x**]\ *refpoint*\ **+w**\ *width*\ [**+j**\ *justify*]\ [**+o**\ *dx*\ [/*dy*]]
+    Sets reference point on the map for the image using one of four coordinate systems:
+    (1) Use **-Dg** for map (user) coordinates, (2) use **-Dj** or **-DJ** for setting *refpoint* via
+    a 2-char justification code that refers to the (invisible) map domain rectangle,
+    (3) use **-Dn** for normalized (0-1) coordinates, or (4) use **-Dx** for plot coordinates
+    (inches, cm, etc.).  All but **-Dx** requires both **-R** and **-J** to be specified.
+    Use **+w**\ *width* to set the width of the GMT logo in plot coordinates
+    (inches, cm, etc.).
+    By default, the anchor point on the GMT logo is assumed to be the bottom left corner (BL), but this
+    can be changed by appending **+j** followed by a 2-char justification code *justify* (see :doc:`text`).
+    **Note**: If **-Dj** is used then *justify* defaults to the same as *refpoint*,
+    if **-DJ** is used then *justify* defaults to the mirror opposite of *refpoint*.
+    Add **+o** to offset the GMT logo by *dx*/*dy* away from the *refpoint* point in
+    the direction implied by *justify* (or the direction implied by **-Dj** or **-DJ**).
+
+.. _-F:
+
+**-F**\ [**+c**\ *clearances*][**+g**\ *fill*][**+i**\ [[*gap*/]\ *pen*]][**+p**\ [*pen*]][**+r**\ [*radius*]]\
+[**+s**\ [[*dx*/*dy*/][*shade*]]]
+
+    Without further options, draws a rectangular border around the GMT logo using :term:`MAP_FRAME_PEN`. The following
+    modifiers can be appended to |-F|, with additional explanation and examples provided in the :ref:`Background-panel`
+    cookbook section:
+
+    .. include:: explain_-F_box.rst_
+
+.. |Add_-J| replace:: |Add_-J_links|
+.. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-R| replace:: |Add_-R_links|
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-Rz| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rz.rst_
+
+.. _-S:
+
+**-S**\ [**l**\|\ **n**\|\ **u**]
+    Control what is written beneath the map portion of the logo.
+    Append **l** (or skip **-S** entirely) to plot the text label "The Generic Mapping Tools"
+    beneath the logo.  Append **n** to skip the label placement, and append
+    **u** to place the URL to the GMT site instead [plot the label].
+
+.. |Add_-U| replace:: |Add_-U_links|
+.. include:: explain_-U.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-XY| replace:: |Add_-XY_links|
+.. include:: explain_-XY.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. include:: explain_-t.rst_
+
+.. include:: explain_help.rst_
+
+.. module_common_ends
 
 Examples
 --------

@@ -19,7 +19,7 @@ Synopsis
 [ |-E| ]
 [ |-G|\ **a**\ *startrec* ]
 [ |-G|\ **b**\ *stoprec* ]
-[ |-I|\ *ignore* ]
+[ |-I|\ **a\|c\|m\|t** ]
 [ |-L|\ [*corrtable*] ]
 [ |-N|\ **d**\|\ **s**\ *unit* ]
 [ |-Q|\ **a**\|\ **c**\|\ **v**\ *min*/*max* ]
@@ -345,6 +345,9 @@ Optional Arguments
     for feet, **k** for km, **M** for miles, **n** for nautical miles,
     or **u** for survey feet [Default is **e** (meters)].
 
+**-At**
+    Compute fake times for cruises with known duration but lacking individual record times.
+
 .. _-D:
 
 **-Da**\ *startdate*
@@ -375,7 +378,7 @@ Optional Arguments
 
 .. _-I:
 
-**-I**\ *ignore*
+**-I**\ **a\|c\|m\|t**
     Ignore certain data file formats from consideration. Append
     **a\|c\|m\|t** to ignore MGD77 ASCII, MGD77+ netCDF, MGD77T ASCII, or plain
     tab-separated ASCII table files, respectively. The option may be

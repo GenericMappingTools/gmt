@@ -1,55 +1,34 @@
 
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>6. GMT Map Projections &mdash; GMT 6.3.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
-
-  
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-  
-
-  
-  
-
-  
-
-  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="7. GMT Supplemental Packages" href="supplemental-packages.html" />
@@ -62,33 +41,16 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> GMT
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 6.3
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -96,26 +58,15 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Getting started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">Cookbook</a><ul class="current">
@@ -185,33 +136,33 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../devdocs.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
-            
-          
 
     
         <p class="caption">
@@ -231,73 +182,31 @@
     
 
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">GMT</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../cookbook.html">Cookbook</a> &raquo;</li>
-        
       <li><span class="section-number">6. </span>GMT Map Projections</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/cookbook/map-projections.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="gmt-map-projections">
+             
+  <section id="gmt-map-projections">
 <h1><span class="section-number">6. </span>GMT Map Projections<a class="headerlink" href="#gmt-map-projections" title="Permalink to this headline">¶</a></h1>
 <p>GMT implements more than 30 different projections. They all project the input coordinates longitude and latitude to
 positions on a map. In general, <span class="math notranslate nohighlight">\(x' = f(x,y,z)\)</span> and <span class="math notranslate nohighlight">\(y' = g(x,y,z)\)</span>, where <span class="math notranslate nohighlight">\(z\)</span> is implicitly given as
@@ -515,9 +424,9 @@ meaning.</p>
 </tr>
 </tbody>
 </table>
-<div class="section" id="conic-projections">
+<section id="conic-projections">
 <h2><span class="section-number">6.1. </span>Conic projections<a class="headerlink" href="#conic-projections" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="albers-conic-equal-area-projection-jb-jb">
+<section id="albers-conic-equal-area-projection-jb-jb">
 <span id="jb"></span><h3><span class="section-number">6.1.1. </span>Albers conic equal-area projection (<strong>-Jb</strong> <strong>-JB</strong>)<a class="headerlink" href="#albers-conic-equal-area-projection-jb-jb" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -551,12 +460,14 @@ generate the map below is therefore given by:</p>
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id7">
+<figure class="align-center" id="id7">
 <a class="reference internal image-reference" href="../_images/GMT_albers.png"><img alt="../_images/GMT_albers.png" src="../_images/GMT_albers.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Albers equal-area conic map projection.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="equidistant-conic-projection-jd-jd">
+<figcaption>
+<p><span class="caption-text">Albers equal-area conic map projection.</span><a class="headerlink" href="#id7" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="equidistant-conic-projection-jd-jd">
 <span id="jd"></span><h3><span class="section-number">6.1.2. </span>Equidistant conic projection (<strong>-Jd</strong> <strong>-JD</strong>)<a class="headerlink" href="#equidistant-conic-projection-jd-jd" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -583,12 +494,14 @@ map of Cuba:</p>
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id8">
+<figure class="align-center" id="id8">
 <a class="reference internal image-reference" href="../_images/GMT_equidistant_conic.png"><img alt="../_images/GMT_equidistant_conic.png" src="../_images/GMT_equidistant_conic.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Equidistant conic map projection.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="lambert-conic-conformal-projection-jl-jl">
+<figcaption>
+<p><span class="caption-text">Equidistant conic map projection.</span><a class="headerlink" href="#id8" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="lambert-conic-conformal-projection-jl-jl">
 <span id="jl"></span><h3><span class="section-number">6.1.3. </span>Lambert conic conformal projection (<strong>-Jl</strong> <strong>-JL</strong>)<a class="headerlink" href="#lambert-conic-conformal-projection-jl-jl" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -620,15 +533,17 @@ commands used were:</p>
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id9">
+<figure class="align-center" id="id9">
 <a class="reference internal image-reference" href="../_images/GMT_lambert_conic.png"><img alt="../_images/GMT_lambert_conic.png" src="../_images/GMT_lambert_conic.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Lambert conformal conic map projection.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Lambert conformal conic map projection.</span><a class="headerlink" href="#id9" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>The choice for projection center does not affect the projection but it indicates which meridian (here 100°W) will be
 vertical on the map. The standard parallels were originally selected by Adams to provide a maximum scale error between
 latitudes 30.5°N and 47.5°N of 0.5–1%. Some areas, like Florida, experience scale errors of up to 2.5%.</p>
-</div>
-<div class="section" id="american-polyconic-projection-jpoly-jpoly">
+</section>
+<section id="american-polyconic-projection-jpoly-jpoly">
 <span id="jpoly"></span><h3><span class="section-number">6.1.4. </span>(American) polyconic projection (<strong>-Jpoly</strong> <strong>-JPoly</strong>)<a class="headerlink" href="#american-polyconic-projection-jpoly-jpoly" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -657,15 +572,17 @@ longitude:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-180/-20/0/90 -JPoly/10c -Bx30g10 -By10g10 -Dc -A1000 -Glightgray -Wthinnest --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_polyconic
 </pre></div>
 </div>
-<div class="figure align-center" id="id10">
+<figure class="align-center" id="id10">
 <a class="reference internal image-reference" href="../_images/GMT_polyconic.png"><img alt="../_images/GMT_polyconic.png" src="../_images/GMT_polyconic.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">(American) polyconic projection.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-</div>
-<div class="section" id="azimuthal-projections">
+<figcaption>
+<p><span class="caption-text">(American) polyconic projection.</span><a class="headerlink" href="#id10" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="azimuthal-projections">
 <h2><span class="section-number">6.2. </span>Azimuthal projections<a class="headerlink" href="#azimuthal-projections" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="lambert-azimuthal-equal-area-ja-ja">
+<section id="lambert-azimuthal-equal-area-ja-ja">
 <span id="ja"></span><h3><span class="section-number">6.2.1. </span>Lambert Azimuthal Equal-Area (<strong>-Ja</strong> <strong>-JA</strong>)<a class="headerlink" href="#lambert-azimuthal-equal-area-ja-ja" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -686,7 +603,7 @@ center of the projection, and increases radially away from this point.</p>
 <p><strong>Examples</strong></p>
 <p>Two different types of maps can be made with this projection depending on how the region is specified. We will give
 examples of both types in the next two subsections.</p>
-<div class="section" id="rectangular-map">
+<section id="rectangular-map">
 <h4><span class="section-number">6.2.1.1. </span>Rectangular map<a class="headerlink" href="#rectangular-map" title="Permalink to this headline">¶</a></h4>
 <p>In this mode we define our region by specifying the longitude/latitude
 of the lower left and upper right corners instead of the usual <em>west,
@@ -703,35 +620,41 @@ rectangular by defining the corners of a rectangular map boundary. Using
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id11">
+<figure class="align-center" id="id11">
 <a class="reference internal image-reference" href="../_images/GMT_lambert_az_rect.png"><img alt="../_images/GMT_lambert_az_rect.png" src="../_images/GMT_lambert_az_rect.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Rectangular map using the Lambert azimuthal equal-area projection.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Rectangular map using the Lambert azimuthal equal-area projection.</span><a class="headerlink" href="#id11" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>Note that an <strong>+r</strong> is appended to the <strong>-R</strong> option to inform GMT that
 the region has been selected using the rectangle technique, otherwise it
 would try to decode the values as <em>west, east, south, north</em> and report
 an error since <em>‘east’</em> &lt; <em>‘west’</em>.</p>
-</div>
-<div class="section" id="hemisphere-map">
+</section>
+<section id="hemisphere-map">
 <h4><span class="section-number">6.2.1.2. </span>Hemisphere map<a class="headerlink" href="#hemisphere-map" title="Permalink to this headline">¶</a></h4>
 <p>Here, you must specify the world as your region (<strong>-Rg</strong> or <strong>-Rd</strong>). E.g., to obtain a hemisphere view that shows the
 Americas, try</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JA280/30/12c -Bg -Dc -A1000 -Gnavy --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_lambert_az_hemi
 </pre></div>
 </div>
-<div class="figure align-center" id="id12">
+<figure class="align-center" id="id12">
 <a class="reference internal image-reference" href="../_images/GMT_lambert_az_hemi.png"><img alt="../_images/GMT_lambert_az_hemi.png" src="../_images/GMT_lambert_az_hemi.png" style="width: 400px;" /></a>
-<p class="caption"><span class="caption-text">Hemisphere map using the Lambert azimuthal equal-area projection.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Hemisphere map using the Lambert azimuthal equal-area projection.</span><a class="headerlink" href="#id12" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>To geologists, the Lambert azimuthal equal-area projection (with origin
 at 0/0) is known as the <em>equal-area</em> (Schmidt) stereonet and used for
 plotting fold axes, fault planes, and the like. An <em>equal-angle</em> (Wulff)
 stereonet can be obtained by using the stereographic projection
 (discussed later). The stereonets produced by these two projections appear below.</p>
-<div class="figure align-center" id="id13">
+<figure class="align-center" id="id13">
 <span id="gmt-stereonets"></span><a class="reference internal image-reference" href="../_images/GMT_stereonets.png"><img alt="../_images/GMT_stereonets.png" src="../_images/GMT_stereonets.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Equal-Area (Schmidt) and Equal-Angle (Wulff) stereo nets.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Equal-Area (Schmidt) and Equal-Angle (Wulff) stereo nets.</span><a class="headerlink" href="#id13" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_stereonets
@@ -744,9 +667,9 @@ gmt end show
 </pre></div>
 </div>
 </div>
-</div>
-</div>
-<div class="section" id="stereographic-equal-angle-js-js">
+</section>
+</section>
+<section id="stereographic-equal-angle-js-js">
 <span id="js"></span><h3><span class="section-number">6.2.2. </span>Stereographic Equal-Angle (<strong>-Js</strong> <strong>-JS</strong>)<a class="headerlink" href="#stereographic-equal-angle-js-js" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -770,7 +693,7 @@ We will look at two different types of maps.</p>
 <p><strong>Examples</strong></p>
 <p>Multiple types of maps can be made with this projection depending on how the region is specified. We will give
 examples in the next three subsections.</p>
-<div class="section" id="polar-stereographic-map">
+<section id="polar-stereographic-map">
 <h4><span class="section-number">6.2.2.1. </span>Polar Stereographic Map<a class="headerlink" href="#polar-stereographic-map" title="Permalink to this headline">¶</a></h4>
 <p>In our first example we will let the projection center be at the north
 pole. This means we have a polar stereographic projection and the map
@@ -779,12 +702,14 @@ An example is given by:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-30/30/60/72 -Js0/90/12c/60 -B10g -Dl -A250 -Groyalblue -Sseashell --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_stereographic_polar
 </pre></div>
 </div>
-<div class="figure align-center" id="id14">
+<figure class="align-center" id="id14">
 <a class="reference internal image-reference" href="../_images/GMT_stereographic_polar.png"><img alt="../_images/GMT_stereographic_polar.png" src="../_images/GMT_stereographic_polar.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Polar stereographic conformal projection.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="rectangular-stereographic-map">
+<figcaption>
+<p><span class="caption-text">Polar stereographic conformal projection.</span><a class="headerlink" href="#id14" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="rectangular-stereographic-map">
 <h4><span class="section-number">6.2.2.2. </span>Rectangular stereographic map<a class="headerlink" href="#rectangular-stereographic-map" title="Permalink to this headline">¶</a></h4>
 <p>As with Lambert’s azimuthal equal-area projection we have the option to
 use rectangular boundaries rather than the wedge-shape typically
@@ -799,12 +724,14 @@ Figure <a class="reference internal" href="#gmt-stereographic-rect"><span class=
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id15">
+<figure class="align-center" id="id15">
 <span id="gmt-stereographic-rect"></span><a class="reference internal image-reference" href="../_images/GMT_stereographic_rect.png"><img alt="../_images/GMT_stereographic_rect.png" src="../_images/GMT_stereographic_rect.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Polar stereographic conformal projection with rectangular borders.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="general-stereographic-map">
+<figcaption>
+<p><span class="caption-text">Polar stereographic conformal projection with rectangular borders.</span><a class="headerlink" href="#id15" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="general-stereographic-map">
 <h4><span class="section-number">6.2.2.3. </span>General stereographic map<a class="headerlink" href="#general-stereographic-map" title="Permalink to this headline">¶</a></h4>
 <p>In terms of usage this projection is identical to the Lambert azimuthal
 equal-area projection. Thus, one can make both rectangular and
@@ -817,35 +744,41 @@ hemispheric maps. Our example shows Australia using a projection pole at
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id16">
+<figure class="align-center" id="id16">
 <a class="reference internal image-reference" href="../_images/GMT_stereographic_general.png"><img alt="../_images/GMT_stereographic_general.png" src="../_images/GMT_stereographic_general.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">General stereographic conformal projection with rectangular borders.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">General stereographic conformal projection with rectangular borders.</span><a class="headerlink" href="#id16" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>By choosing 0/0 as the pole, we obtain the conformal stereonet presented
 next to its equal-area cousin in the Section <a class="reference internal" href="#lambert-azimuthal-equal-area-ja-ja">Lambert Azimuthal Equal-Area (-Ja -JA)</a> on the Lambert azimuthal equal-area projection (Figure <a class="reference internal" href="#gmt-stereonets"><span class="std std-ref">Stereonets</span></a>).</p>
-</div>
-</div>
-<div class="section" id="perspective-projection-jg-jg">
+</section>
+</section>
+<section id="perspective-projection-jg-jg">
 <span id="jg-pers"></span><h3><span class="section-number">6.2.3. </span>Perspective projection (<strong>-Jg</strong> <strong>-JG</strong>)<a class="headerlink" href="#perspective-projection-jg-jg" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
-<div><p><strong>-Jg</strong>|<strong>G</strong><em>lon0/lat0/altitude/azimuth/tilt/twist/Width/Height/</em><em>scale</em>|<em>width</em></p>
+<div><p><strong>-Jg</strong>|<strong>G</strong><em>lon0/lat0</em><em>/</em><em>scale</em>|<em>width</em>[<strong>+a</strong><em>azimuth</em>][<strong>+t</strong><em>tilt</em>][<strong>+v</strong><em>vwidth/vheight</em>][<strong>+w</strong><em>twist</em>][<strong>+z</strong><em>altitude</em>[<strong>r</strong>|<strong>R</strong>]|<strong>g</strong>]</p>
 </div></blockquote>
-<p><strong>Parameters</strong></p>
+<p><strong>Required Parameters</strong></p>
 <ul class="simple">
 <li><p>The longitude (<em>lon0</em>) and latitude (<em>lat0</em>) of the projection center.</p></li>
-<li><p>The <em>altitude</em> of the viewer above sea level in kilometers. If this value is less than 10, it is assumed to instead be
-the distance of the viewer from the center of the earth in earth radii. If <strong>r</strong> is appended, it is assumed to instead
-be the distance from the center of the earth in kilometers.</p></li>
-<li><p>The <em>azimuth</em> in degrees. This is the direction in which you are looking, measured clockwise from north.</p></li>
-<li><p>The <em>tilt</em> in degrees. This is the viewing angle relative to zenith. For example, a tilt of 0° is looking straight
-down, and 60° is looking from 30° above the horizon.</p></li>
-<li><p>The <em>twist</em> in degrees. This is the boresight rotation (clockwise) of the image.</p></li>
-<li><p>The <em>Width</em> and <em>Height</em> of the viewpoint in degrees. This number depends on whether you are looking with the naked
-eye (in which case the view is about 60° wide), or with binoculars, for example.</p></li>
 <li><p>The <em>scale</em> as 1:xxxxx or as radius/latitude where radius is distance on map in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a> from
 projection center to a particular oblique latitude (with <strong>-Jg</strong>), or map width in <a class="reference internal" href="features.html#plt-units"><span class="std std-ref">plot-units</span></a>
 (with <strong>-JG</strong>).</p></li>
+</ul>
+<p><strong>Optional Parameters</strong></p>
+<ul class="simple">
+<li><p>The <em>azimuth</em> in degrees. This is the direction in which you are looking, measured clockwise from north [0].</p></li>
+<li><p>The <em>tilt</em> in degrees. This is the viewing angle relative to zenith. For example, a tilt of 0° is looking straight
+down, and 60° is looking from 30° above the horizon [0].</p></li>
+<li><p>The <em>vwidth</em> and <em>vheight</em> of the viewpoint in degrees. This number depends on whether you are looking with the naked
+eye (in which case the view is about 60° wide), or with binoculars, for example [unrestricted].</p></li>
+<li><p>The <em>twist</em> in degrees. This is the boresight rotation (clockwise) of the image [0].</p></li>
+<li><p>The <em>altitude</em> of the viewer above sea level in kilometers [infinity]. Alternatively, append <strong>R</strong> if giving
+the distance of the viewer from the center of the Earth in Earth radii, or <strong>r</strong> if giving the distance from the
+center of the Earth in kilometers.  Finally, give <em>altitude</em> as <strong>g</strong> to compute and use the altitude for a
+geosynchronous orbit.</p></li>
 </ul>
 <p><strong>Description</strong></p>
 <p>The perspective projection imitates in 2 dimensions the 3-dimensional view of the earth from space. The implementation
@@ -853,16 +786,18 @@ in GMT is very flexible, and thus requires many input variables.</p>
 <p><strong>Example</strong></p>
 <p>The imagined view of northwest Europe from a Space Shuttle at 230 km looking due east is thus accomplished by the
 following <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> command (<em>lon0</em>=4; <em>lat0</em>=52; <em>altitude</em>=230 km; <em>azimuth</em>= 90°; <em>tilt</em>= 60°;
-<em>twist</em>= 180°; <em>Width</em>= 60°; <em>Height</em>= 60°; and <em>width</em> = 12 cm):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JG4/52/230/90/60/180/60/60/12c -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -Slightblue --GMT_THEME<span class="o">=</span>cookbook --MAP_ANNOT_MIN_SPACING<span class="o">=</span><span class="m">0</span>.6c -pdf GMT_perspective
+<em>twist</em>= 180°; <em>vwidth</em>= <em>vheight</em>= 60°; and <em>width</em> = 12 cm):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JG4/52/12c+z230+a90+t60+w180+v60 -Bx2g2 -By1g1 -Ia -Di -Glightbrown -Wthinnest -Slightblue --GMT_THEME<span class="o">=</span>cookbook --MAP_ANNOT_MIN_SPACING<span class="o">=</span><span class="m">0</span>.6c -pdf GMT_perspective
 </pre></div>
 </div>
-<div class="figure align-center" id="id17">
+<figure class="align-center" id="id17">
 <span id="gmt-perspective"></span><a class="reference internal image-reference" href="../_images/GMT_perspective.png"><img alt="../_images/GMT_perspective.png" src="../_images/GMT_perspective.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">View from the Space Shuttle in Perspective projection.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="orthographic-projection-jg-jg">
+<figcaption>
+<p><span class="caption-text">View from the Space Shuttle in Perspective projection.</span><a class="headerlink" href="#id17" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="orthographic-projection-jg-jg">
 <span id="jg"></span><h3><span class="section-number">6.2.4. </span>Orthographic projection (<strong>-Jg</strong> <strong>-JG</strong>)<a class="headerlink" href="#orthographic-projection-jg-jg" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -889,12 +824,14 @@ command:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JG-75/41/12c -Bg -Dc -A5000 -Gpink -Sthistle --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_orthographic
 </pre></div>
 </div>
-<div class="figure align-center" id="id18">
+<figure class="align-center" id="id18">
 <a class="reference internal image-reference" href="../_images/GMT_orthographic.png"><img alt="../_images/GMT_orthographic.png" src="../_images/GMT_orthographic.png" style="width: 400px;" /></a>
-<p class="caption"><span class="caption-text">Hemisphere map using the Orthographic projection.</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="azimuthal-equidistant-projection-je-je">
+<figcaption>
+<p><span class="caption-text">Hemisphere map using the Orthographic projection.</span><a class="headerlink" href="#id18" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="azimuthal-equidistant-projection-je-je">
 <span id="je"></span><h3><span class="section-number">6.2.5. </span>Azimuthal Equidistant projection (<strong>-Je</strong> <strong>-JE</strong>)<a class="headerlink" href="#azimuthal-equidistant-projection-je-je" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -921,12 +858,14 @@ perimeter:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JE-100/40/12c -Bg -Dc -A10000 -Glightgray -Wthinnest --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_az_equidistant
 </pre></div>
 </div>
-<div class="figure align-center" id="id19">
+<figure class="align-center" id="id19">
 <a class="reference internal image-reference" href="../_images/GMT_az_equidistant.png"><img alt="../_images/GMT_az_equidistant.png" src="../_images/GMT_az_equidistant.png" style="width: 400px;" /></a>
-<p class="caption"><span class="caption-text">World map using the equidistant azimuthal projection.</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="gnomonic-projection-jf-jf">
+<figcaption>
+<p><span class="caption-text">World map using the equidistant azimuthal projection.</span><a class="headerlink" href="#id19" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="gnomonic-projection-jf-jf">
 <span id="jf"></span><h3><span class="section-number">6.2.6. </span>Gnomonic projection (<strong>-Jf</strong> <strong>-JF</strong>)<a class="headerlink" href="#gnomonic-projection-jf-jf" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -952,13 +891,15 @@ following <a class="reference internal" href="../coast.html"><span class="doc">c
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JF-120/35/60/12c -B30g15 -Dc -A10000 -Gtan -Scyan -Wthinnest --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_gnomonic
 </pre></div>
 </div>
-<div class="figure align-center" id="id20">
+<figure class="align-center" id="id20">
 <a class="reference internal image-reference" href="../_images/GMT_gnomonic.png"><img alt="../_images/GMT_gnomonic.png" src="../_images/GMT_gnomonic.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Gnomonic azimuthal projection.</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-</div>
-<div class="section" id="cylindrical-projections">
+<figcaption>
+<p><span class="caption-text">Gnomonic azimuthal projection.</span><a class="headerlink" href="#id20" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="cylindrical-projections">
 <h2><span class="section-number">6.3. </span>Cylindrical projections<a class="headerlink" href="#cylindrical-projections" title="Permalink to this headline">¶</a></h2>
 <p>Cylindrical projections are easily recognized for their shape: maps are rectangular and meridians and parallels are
 straight lines crossing at right angles. But that is where similarities between the cylindrical projections supported
@@ -966,7 +907,7 @@ by GMT (<a class="reference internal" href="#jm"><span class="std std-ref">Merca
 <a class="reference internal" href="#jo"><span class="std std-ref">oblique Mercator</span></a>, <a class="reference internal" href="#jc"><span class="std std-ref">Cassini</span></a>, <a class="reference internal" href="#jq"><span class="std std-ref">cylindrical equidistant</span></a>,
 <a class="reference internal" href="#jy"><span class="std std-ref">cylindrical equal-area</span></a>, <a class="reference internal" href="#jj"><span class="std std-ref">Miller</span></a>, and <a class="reference internal" href="#jcyl-stere"><span class="std std-ref">cylindrical stereographic</span></a>) stops.
 Each have a different way of spacing the meridians and parallels to obtain certain desirable cartographic properties.</p>
-<div class="section" id="mercator-projection-jm-jm">
+<section id="mercator-projection-jm-jm">
 <span id="jm"></span><h3><span class="section-number">6.3.1. </span>Mercator projection (<strong>-Jm</strong> <strong>-JM</strong>)<a class="headerlink" href="#mercator-projection-jm-jm" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1003,14 +944,16 @@ respectively. We will discuss these generalizations following the regular Mercat
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id21">
+<figure class="align-center" id="id21">
 <a class="reference internal image-reference" href="../_images/GMT_mercator.png"><img alt="../_images/GMT_mercator.png" src="../_images/GMT_mercator.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Simple Mercator map.</span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Simple Mercator map.</span><a class="headerlink" href="#id21" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>While this example is centered on the Dateline, one can easily choose another configuration with the <strong>-R</strong> option. For
 example, specify the region with <strong>-R</strong>-180/180/-70/70 to obtain a map centered on Greenwich.</p>
-</div>
-<div class="section" id="transverse-mercator-projection-jt-jt">
+</section>
+<section id="transverse-mercator-projection-jt-jt">
 <span id="jt"></span><h3><span class="section-number">6.3.2. </span>Transverse Mercator projection (<strong>-Jt</strong> <strong>-JT</strong>)<a class="headerlink" href="#transverse-mercator-projection-jt-jt" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1035,24 +978,28 @@ follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R20/30/50/45+r -Jt35/0.5c -Bag -Dl -A250 -Glightbrown -Wthinnest -Sseashell --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_transverse_merc
 </pre></div>
 </div>
-<div class="figure align-center" id="id22">
+<figure class="align-center" id="id22">
 <a class="reference internal image-reference" href="../_images/GMT_transverse_merc.png"><img alt="../_images/GMT_transverse_merc.png" src="../_images/GMT_transverse_merc.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Rectangular Transverse Mercator map.</span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Rectangular Transverse Mercator map.</span><a class="headerlink" href="#id22" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>A global transverse Mercator map - the equivalent of the 360° Mercator map - can also be obtained as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R0/360/-80/80 -JT330/-45/10c -Ba30g -BWSne -Dc -A2000 -Slightblue -G0 --MAP_ANNOT_OBLIQUE<span class="o">=</span>lon_horizontal --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_TM
 </pre></div>
 </div>
-<div class="figure align-center" id="id23">
+<figure class="align-center" id="id23">
 <span id="gmt-tm"></span><a class="reference internal image-reference" href="../_images/GMT_TM.png"><img alt="../_images/GMT_TM.png" src="../_images/GMT_TM.png" style="width: 450px;" /></a>
-<p class="caption"><span class="caption-text">A global transverse Mercator map.</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">A global transverse Mercator map.</span><a class="headerlink" href="#id23" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>Note that when a world map is given (indicated by <strong>-R</strong><em>0/360/s/n</em>), the arguments are interpreted to mean oblique
 degrees, i.e., the 360° range is understood to mean the extent of the plot along the central meridian, while the “south”
 and “north” values represent how far from the central longitude we want the plot to extend. These values correspond to
 latitudes in the regular Mercator projection and must therefore be less than 90.</p>
-</div>
-<div class="section" id="universal-transverse-mercator-utm-projection-ju-ju">
+</section>
+<section id="universal-transverse-mercator-utm-projection-ju-ju">
 <span id="ju"></span><h3><span class="section-number">6.3.3. </span>Universal Transverse Mercator (UTM) projection (<strong>-Ju</strong> <strong>-JU</strong>)<a class="headerlink" href="#universal-transverse-mercator-utm-projection-ju-ju" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1071,10 +1018,12 @@ by the US Army for large-scale military maps. Here, the globe is divided into 60
 which are 6° wide. Each of these UTM zones have a unique central meridian. Furthermore, each zone is divided into
 latitude bands but these are not needed to specify the projection for most cases. See Figure
 <a class="reference internal" href="#gmt-utm-zones"><span class="std std-ref">Universal Transverse Mercator</span></a> for all zone designations.</p>
-<div class="figure align-center" id="id24">
+<figure class="align-center" id="id24">
 <span id="gmt-utm-zones"></span><a class="reference internal image-reference" href="../_images/GMT_utm_zones.png"><img alt="../_images/GMT_utm_zones.png" src="../_images/GMT_utm_zones.png" style="width: 700px;" /></a>
-<p class="caption"><span class="caption-text">Universal Transverse Mercator zone layout.</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Universal Transverse Mercator zone layout.</span><a class="headerlink" href="#id24" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_utm_zones
@@ -1187,8 +1136,8 @@ projection and not a <em>tangent</em> projection like the <a class="reference in
 part in 1,000 from true scale at equator. The ellipsoidal projection expressions are accurate for map areas that extend
 less than 10 away from the central meridian. For larger regions we use the conformal latitude in the general spherical
 formulae instead.</p>
-</div>
-<div class="section" id="oblique-mercator-projection-jo-jo">
+</section>
+<section id="oblique-mercator-projection-jo-jo">
 <span id="jo"></span><h3><span class="section-number">6.3.4. </span>Oblique Mercator projection (<strong>-Jo</strong> <strong>-JO</strong>)<a class="headerlink" href="#oblique-mercator-projection-jo-jo" title="Permalink to this headline">¶</a></h3>
 <p><strong>Option 1 Syntax</strong></p>
 <blockquote>
@@ -1249,11 +1198,13 @@ projection was developed in the early 1900s by several workers.</p>
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id25">
+<figure class="align-center" id="id25">
 <a class="reference internal image-reference" href="../_images/GMT_obl_merc.png"><img alt="../_images/GMT_obl_merc.png" src="../_images/GMT_obl_merc.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">Oblique Mercator map using <strong>-JOc</strong>. We make it clear which direction is North by adding a star rose with the <strong>-Td</strong>
+<figcaption>
+<p><span class="caption-text">Oblique Mercator map using <strong>-JOc</strong>. We make it clear which direction is North by adding a star rose with the <strong>-Td</strong>
 option.</span><a class="headerlink" href="#id25" title="Permalink to this image">¶</a></p>
-</div>
+</figcaption>
+</figure>
 <p>Note that we define our region using the rectangular system described earlier. If we do not append <strong>+r</strong> to the <strong>-R</strong>
 string then the information provided with the <strong>-R</strong> option is assumed to be oblique degrees about the projection center
 rather than the usual geographic coordinates. This interpretation is chosen since in general the parallels and meridians
@@ -1263,9 +1214,10 @@ projected coordinates relative to the map center. The figure below shows two vie
 Mercator projection that in both cases specifies the region using <strong>-R</strong>-1000/1000/-500/500<strong>+uk</strong>.  The unit <strong>k</strong>
 means the following bounds are in projected km and we let GMT determine the geographic coordinates of the two diagonal
 corners internally.</p>
-<div class="figure align-center" id="id26">
+<figure class="align-center" id="id26">
 <a class="reference internal image-reference" href="../_images/GMT_obl_nz.png"><img alt="../_images/GMT_obl_nz.png" src="../_images/GMT_obl_nz.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">(left) Oblique view of New Zealand centered on its geographical center (Nelson) indicated by the white circle for an
+<figcaption>
+<p><span class="caption-text">(left) Oblique view of New Zealand centered on its geographical center (Nelson) indicated by the white circle for an
 oblique Equator with azimuth 35.  This resulted in the argument <strong>-JOa</strong>173:17:02E/41:16:15S/35/3i. The map is
 2000 km by 1000 km and the Cartesian coordinate system in the projected units are indicated by the bold axes.  The
 blue circle is the point (40S,180E) and it has projected coordinates (<em>x</em> = 426.2, <em>y</em> = -399.7).
@@ -1273,7 +1225,8 @@ blue circle is the point (40S,180E) and it has projected coordinates (<em>x</em>
 (hence we used <strong>-JOA</strong> to override the restriction, i.e., <strong>-JOA</strong>173:17:02E/41:16:15S/215/3i.)
 The projected coordinate system is still aligned as before but the Earth has been rotated 180 degrees.  The blue
 point now has projected coordinates (<em>x</em> = -426.2, <em>y</em> = 399.7).</span><a class="headerlink" href="#id26" title="Permalink to this image">¶</a></p>
-</div>
+</figcaption>
+</figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_obl_nz
@@ -1335,11 +1288,13 @@ gmt end show
 horizontal, positive <em>x</em>-axis.  For features with an orientation more north-south than east-west, it may be preferable
 to align the oblique Equator with the vertical, positive <em>y</em>-axis instead.  This configuration is selected by appending
 <strong>+v</strong> to the <strong>-J</strong> projection option.  The example below shows this behaviour.</p>
-<div class="figure align-center" id="id27">
+<figure class="align-center" id="id27">
 <a class="reference internal image-reference" href="../_images/GMT_obl_baja.png"><img alt="../_images/GMT_obl_baja.png" src="../_images/GMT_obl_baja.png" style="width: 300px;" /></a>
-<p class="caption"><span class="caption-text">Oblique view of Baja California using the vertical oblique Equator modifier.  This plot
+<figcaption>
+<p><span class="caption-text">Oblique view of Baja California using the vertical oblique Equator modifier.  This plot
 resulted from the argument <strong>-JOa</strong>120W/25N/-30/6c<strong>+v</strong>.</span><a class="headerlink" href="#id27" title="Permalink to this image">¶</a></p>
-</div>
+</figcaption>
+</figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_obl_baja
@@ -1350,8 +1305,8 @@ gmt end show
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="cassini-cylindrical-projection-jc-jc">
+</section>
+<section id="cassini-cylindrical-projection-jc-jc">
 <span id="jc"></span><h3><span class="section-number">6.3.5. </span>Cassini cylindrical projection (<strong>-Jc</strong> <strong>-JC</strong>)<a class="headerlink" href="#cassini-cylindrical-projection-jc-jc" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1378,14 +1333,16 @@ as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R7:30/38:30/10:30/41:30+r -JC8.75/40/6c -Bafg -LjBR+c40+w100+f+o0.4c/0.5c -Dh -Gspringgreen -Sazure -Wthinnest -Ia/thinner --GMT_THEME<span class="o">=</span>cookbook --FONT_LABEL<span class="o">=</span>10p -pdf GMT_cassini
 </pre></div>
 </div>
-<div class="figure align-center" id="id28">
+<figure class="align-center" id="id28">
 <a class="reference internal image-reference" href="../_images/GMT_cassini.png"><img alt="../_images/GMT_cassini.png" src="../_images/GMT_cassini.png" style="width: 400px;" /></a>
-<p class="caption"><span class="caption-text">Cassini map over Sardinia.</span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Cassini map over Sardinia.</span><a class="headerlink" href="#id28" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>As with the previous projections, the user can choose between a rectangular boundary (used here) or a geographical
 (WESN) boundary.</p>
-</div>
-<div class="section" id="cylindrical-equidistant-projection-jq-jq">
+</section>
+<section id="cylindrical-equidistant-projection-jq-jq">
 <span id="jq"></span><h3><span class="section-number">6.3.6. </span>Cylindrical equidistant projection (<strong>-Jq</strong> <strong>-JQ</strong>)<a class="headerlink" href="#cylindrical-equidistant-projection-jq-jq" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1441,12 +1398,14 @@ the equator. Some selections for standard parallels have practical properties as
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JQ12c -B60f30g30 -Dc -A5000 -Gtan4 -Slightcyan --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_equi_cyl
 </pre></div>
 </div>
-<div class="figure align-center" id="id29">
+<figure class="align-center" id="id29">
 <a class="reference internal image-reference" href="../_images/GMT_equi_cyl.png"><img alt="../_images/GMT_equi_cyl.png" src="../_images/GMT_equi_cyl.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Plate Carrée projection.</span><a class="headerlink" href="#id29" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="cylindrical-equal-area-projections-jy-jy">
+<figcaption>
+<p><span class="caption-text">World map using the Plate Carrée projection.</span><a class="headerlink" href="#id29" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="cylindrical-equal-area-projections-jy-jy">
 <span id="jy"></span><h3><span class="section-number">6.3.7. </span>Cylindrical equal-area projections (<strong>-Jy</strong> <strong>-JY</strong>)<a class="headerlink" href="#cylindrical-equal-area-projections-jy-jy" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1505,13 +1464,15 @@ choices of standard parallels that result in known (or named) projections. These
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-145/215/-90/90 -JY35/30/12c -B45g45 -Dc -A10000 -Sdodgerblue -Wthinnest --GMT_THEME<span class="o">=</span>cookbook --MAP_FRAME_TYPE<span class="o">=</span>fancy-rounded -pdf GMT_general_cyl
 </pre></div>
 </div>
-<div class="figure align-center" id="id30">
+<figure class="align-center" id="id30">
 <span id="gmt-general-cyl"></span><a class="reference internal image-reference" href="../_images/GMT_general_cyl.png"><img alt="../_images/GMT_general_cyl.png" src="../_images/GMT_general_cyl.png" style="width: 600px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Behrman cylindrical equal-area projection.</span><a class="headerlink" href="#id30" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">World map using the Behrman cylindrical equal-area projection.</span><a class="headerlink" href="#id30" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>As one can see there is considerable distortion at high latitudes since the poles map into lines.</p>
-</div>
-<div class="section" id="miller-cylindrical-projection-jj-jj">
+</section>
+<section id="miller-cylindrical-projection-jj-jj">
 <span id="jj"></span><h3><span class="section-number">6.3.8. </span>Miller Cylindrical projection (<strong>-Jj</strong> <strong>-JJ</strong>)<a class="headerlink" href="#miller-cylindrical-projection-jj-jj" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1535,12 +1496,14 @@ can be obtained as follows:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -R-90/270/-80/90 -Jj1:400000000 -Bx45g45 -By30g30 -Dc -A10000 -Gkhaki -Wthinnest -Sazure --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_miller
 </pre></div>
 </div>
-<div class="figure align-center" id="id31">
+<figure class="align-center" id="id31">
 <span id="gmt-miller"></span><a class="reference internal image-reference" href="../_images/GMT_miller.png"><img alt="../_images/GMT_miller.png" src="../_images/GMT_miller.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Miller cylindrical projection.</span><a class="headerlink" href="#id31" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="cylindrical-stereographic-projections-jcyl-stere-jcyl-stere">
+<figcaption>
+<p><span class="caption-text">World map using the Miller cylindrical projection.</span><a class="headerlink" href="#id31" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="cylindrical-stereographic-projections-jcyl-stere-jcyl-stere">
 <span id="jcyl-stere"></span><h3><span class="section-number">6.3.9. </span>Cylindrical stereographic projections (<strong>-Jcyl_stere</strong> <strong>-JCyl_stere</strong>)<a class="headerlink" href="#cylindrical-stereographic-projections-jcyl-stere-jcyl-stere" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1600,13 +1563,15 @@ projection (Table <a class="reference internal" href="#tbl-jcylstere"><span clas
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id32">
+<figure class="align-center" id="id32">
 <span id="gmt-gall-stereo"></span><a class="reference internal image-reference" href="../_images/GMT_gall_stereo.png"><img alt="../_images/GMT_gall_stereo.png" src="../_images/GMT_gall_stereo.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using Gall’s stereographic projection.</span><a class="headerlink" href="#id32" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-</div>
-<div class="section" id="miscellaneous-projections">
+<figcaption>
+<p><span class="caption-text">World map using Gall’s stereographic projection.</span><a class="headerlink" href="#id32" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="miscellaneous-projections">
 <h2><span class="section-number">6.4. </span>Miscellaneous projections<a class="headerlink" href="#miscellaneous-projections" title="Permalink to this headline">¶</a></h2>
 <p>GMT supports eight common projections for global presentation of data or models. These are the <a class="reference internal" href="#jh"><span class="std std-ref">Hammer</span></a>,
 <a class="reference internal" href="#jw"><span class="std std-ref">Mollweide</span></a>, <a class="reference internal" href="#jr"><span class="std std-ref">Winkel Tripel</span></a>, <a class="reference internal" href="#jn"><span class="std std-ref">Robinson</span></a>, <a class="reference internal" href="#jk"><span class="std std-ref">Eckert IV and VI</span></a>,
@@ -1614,7 +1579,7 @@ gmt end show
 projections all use the spherical approximation rather than more elaborate elliptical formulae.</p>
 <p>In all cases, the specification of the central meridian can be skipped. The default is the middle of the longitude
 range of the plot, specified by the (<strong>-R</strong>) option.</p>
-<div class="section" id="hammer-projection-jh-jh">
+<section id="hammer-projection-jh-jh">
 <span id="jh"></span><h3><span class="section-number">6.4.1. </span>Hammer projection (<strong>-Jh</strong> <strong>-JH</strong>)<a class="headerlink" href="#hammer-projection-jh-jh" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1635,12 +1600,14 @@ central meridian are straight lines, while other parallels and meridians are com
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JH12c -Bg -Dc -A10000 -Gblack -Scornsilk --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_hammer
 </pre></div>
 </div>
-<div class="figure align-center" id="id33">
+<figure class="align-center" id="id33">
 <a class="reference internal image-reference" href="../_images/GMT_hammer.png"><img alt="../_images/GMT_hammer.png" src="../_images/GMT_hammer.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Hammer projection.</span><a class="headerlink" href="#id33" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="mollweide-projection-jw-jw">
+<figcaption>
+<p><span class="caption-text">World map using the Hammer projection.</span><a class="headerlink" href="#id33" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="mollweide-projection-jw-jw">
 <span id="jw"></span><h3><span class="section-number">6.4.2. </span>Mollweide projection (<strong>-Jw</strong> <strong>-JW</strong>)<a class="headerlink" href="#mollweide-projection-jw-jw" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1662,12 +1629,14 @@ showing data distributions. It is occasionally referenced under the name <em>hom
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rd -JW12c -Bg -Dc -A10000 -Gtomato1 -Sskyblue --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_mollweide
 </pre></div>
 </div>
-<div class="figure align-center" id="id34">
+<figure class="align-center" id="id34">
 <a class="reference internal image-reference" href="../_images/GMT_mollweide.png"><img alt="../_images/GMT_mollweide.png" src="../_images/GMT_mollweide.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Mollweide projection.</span><a class="headerlink" href="#id34" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="winkel-tripel-projection-jr-jr">
+<figcaption>
+<p><span class="caption-text">World map using the Mollweide projection.</span><a class="headerlink" href="#id34" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="winkel-tripel-projection-jr-jr">
 <span id="jr"></span><h3><span class="section-number">6.4.3. </span>Winkel Tripel projection (<strong>-Jr</strong> <strong>-JR</strong>)<a class="headerlink" href="#winkel-tripel-projection-jr-jr" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1694,12 +1663,14 @@ equator.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rd -JR12c -Bg -Dc -A10000 -Gburlywood4 -Swheat1 --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_winkel
 </pre></div>
 </div>
-<div class="figure align-center" id="id35">
+<figure class="align-center" id="id35">
 <span id="gmt-winkel"></span><a class="reference internal image-reference" href="../_images/GMT_winkel.png"><img alt="../_images/GMT_winkel.png" src="../_images/GMT_winkel.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Winkel Tripel projection.</span><a class="headerlink" href="#id35" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="robinson-projection-jn-jn">
+<figcaption>
+<p><span class="caption-text">World map using the Winkel Tripel projection.</span><a class="headerlink" href="#id35" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="robinson-projection-jn-jn">
 <span id="jn"></span><h3><span class="section-number">6.4.4. </span>Robinson projection (<strong>-Jn</strong> <strong>-JN</strong>)<a class="headerlink" href="#robinson-projection-jn-jn" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1722,12 +1693,14 @@ is currently used by the National Geographic Society.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rd -JN12c -Bg -Dc -A10000 -Ggoldenrod -Ssnow2 --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_robinson
 </pre></div>
 </div>
-<div class="figure align-center" id="id36">
+<figure class="align-center" id="id36">
 <a class="reference internal image-reference" href="../_images/GMT_robinson.png"><img alt="../_images/GMT_robinson.png" src="../_images/GMT_robinson.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Robinson projection.</span><a class="headerlink" href="#id36" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-<div class="section" id="eckert-iv-and-vi-projection-jk-jk">
+<figcaption>
+<p><span class="caption-text">World map using the Robinson projection.</span><a class="headerlink" href="#id36" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+<section id="eckert-iv-and-vi-projection-jk-jk">
 <span id="jk"></span><h3><span class="section-number">6.4.5. </span>Eckert IV and VI projection (<strong>-Jk</strong> <strong>-JK</strong>)<a class="headerlink" href="#eckert-iv-and-vi-projection-jk-jk" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1751,15 +1724,19 @@ is selected with <strong>-JKs</strong> (<strong>s</strong> for “six”). If no
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JKf12c -Bg -Dc -A10000 -Wthinnest -Givory -Sbisque3 --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_eckert4
 </pre></div>
 </div>
-<div class="figure align-center" id="id37">
+<figure class="align-center" id="id37">
 <a class="reference internal image-reference" href="../_images/GMT_eckert4.png"><img alt="../_images/GMT_eckert4.png" src="../_images/GMT_eckert4.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Eckert IV projection.</span><a class="headerlink" href="#id37" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">World map using the Eckert IV projection.</span><a class="headerlink" href="#id37" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>The same script, with <strong>s</strong> instead of <strong>f</strong>, yields the Eckert VI map:</p>
-<div class="figure align-center" id="id38">
+<figure class="align-center" id="id38">
 <a class="reference internal image-reference" href="../_images/GMT_eckert6.png"><img alt="../_images/GMT_eckert6.png" src="../_images/GMT_eckert6.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Eckert VI projection.</span><a class="headerlink" href="#id38" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">World map using the Eckert VI projection.</span><a class="headerlink" href="#id38" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <div class="toggle docutils container">
 <p>Here is the source script for the figure above:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt begin GMT_eckert6
@@ -1769,8 +1746,8 @@ gmt end show
 </pre></div>
 </div>
 </div>
-</div>
-<div class="section" id="sinusoidal-projection-ji-ji">
+</section>
+<section id="sinusoidal-projection-ji-ji">
 <span id="ji"></span><h3><span class="section-number">6.4.6. </span>Sinusoidal projection (<strong>-Ji</strong> <strong>-JI</strong>)<a class="headerlink" href="#sinusoidal-projection-ji-ji" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1792,10 +1769,12 @@ parallels (and central meridian).</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rd -JI12c -Bg -Dc -A10000 -Gcoral4 -Sazure3 --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_sinusoidal
 </pre></div>
 </div>
-<div class="figure align-center" id="id39">
+<figure class="align-center" id="id39">
 <a class="reference internal image-reference" href="../_images/GMT_sinusoidal.png"><img alt="../_images/GMT_sinusoidal.png" src="../_images/GMT_sinusoidal.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Sinusoidal projection.</span><a class="headerlink" href="#id39" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">World map using the Sinusoidal projection.</span><a class="headerlink" href="#id39" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>To reduce distortion of shape the interrupted sinusoidal projection was introduced in 1927. Here, three symmetrical
 segments are used to cover the entire world. Traditionally, the interruptions are at 160°W, 20°W, and 60°E. To make the
 interrupted map we must call <a class="reference internal" href="../coast.html"><span class="doc">coast</span></a> for each segment and superpose the results. To produce an interrupted world
@@ -1809,14 +1788,16 @@ the subsequent plots horizontally by their widths (140<span class="math notransl
 gmt end show
 </pre></div>
 </div>
-<div class="figure align-center" id="id40">
+<figure class="align-center" id="id40">
 <a class="reference internal image-reference" href="../_images/GMT_sinus_int.png"><img alt="../_images/GMT_sinus_int.png" src="../_images/GMT_sinus_int.png" style="width: 500px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Interrupted Sinusoidal projection.</span><a class="headerlink" href="#id40" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">World map using the Interrupted Sinusoidal projection.</span><a class="headerlink" href="#id40" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>The usefulness of the interrupted sinusoidal projection is basically limited to display of global, discontinuous data
 distributions like hydrocarbon and mineral resources, etc.</p>
-</div>
-<div class="section" id="van-der-grinten-projection-jv-jv">
+</section>
+<section id="van-der-grinten-projection-jv-jv">
 <span id="jv"></span><h3><span class="section-number">6.4.7. </span>Van der Grinten projection (<strong>-Jv</strong> <strong>-JV</strong>)<a class="headerlink" href="#van-der-grinten-projection-jv-jv" title="Permalink to this headline">¶</a></h3>
 <p><strong>Syntax</strong></p>
 <blockquote>
@@ -1837,13 +1818,15 @@ Equator only. Its main use is to show the entire world enclosed in a circle.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt coast -Rg -JV10c -Bg -Dc -Glightgray -Scornsilk -A10000 -Wthinnest --GMT_THEME<span class="o">=</span>cookbook -pdf GMT_grinten
 </pre></div>
 </div>
-<div class="figure align-center" id="id41">
+<figure class="align-center" id="id41">
 <a class="reference internal image-reference" href="../_images/GMT_grinten.png"><img alt="../_images/GMT_grinten.png" src="../_images/GMT_grinten.png" style="width: 400px;" /></a>
-<p class="caption"><span class="caption-text">World map using the Van der Grinten projection.</span><a class="headerlink" href="#id41" title="Permalink to this image">¶</a></p>
-</div>
-</div>
-</div>
-<div class="section" id="footnotes">
+<figcaption>
+<p><span class="caption-text">World map using the Van der Grinten projection.</span><a class="headerlink" href="#id41" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</section>
+</section>
+<section id="footnotes">
 <h2><span class="section-number">6.5. </span>Footnotes<a class="headerlink" href="#footnotes" title="Permalink to this headline">¶</a></h2>
 <dl class="footnote brackets">
 <dt class="label" id="id4"><span class="brackets"><a class="fn-backref" href="#id1">20</a></span></dt>
@@ -1863,58 +1846,40 @@ interpolant selected by the parameter <a class="reference internal" href="../gmt
 file.</p>
 </dd>
 </dl>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="supplemental-packages.html" class="btn btn-neutral float-right" title="7. GMT Supplemental Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="coordinate-transformations.html" class="btn btn-neutral float-left" title="5. GMT Coordinate Transformations" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="supplemental-packages.html" class="btn btn-neutral float-right" title="7. GMT Supplemental Packages" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">
-        Last updated on Jun 06, 2021.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2021, The GMT Team..
+      <span class="lastupdated">Last updated on Nov 18, 2021.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(false);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

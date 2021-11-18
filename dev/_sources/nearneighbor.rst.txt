@@ -20,11 +20,11 @@ Synopsis
 [|-N|\ *sectors*\ [**+m**\ *min_sectors*]\ \|\ **n**]
 [ |SYN_OPT-V| ]
 [ |-W| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
-[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-n| ]
@@ -76,8 +76,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Give the name of the output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -128,6 +130,8 @@ Optional Arguments
    These are multiplied with the geometrical weight factor to determine
    the actual weights used in the calculations.
 
+.. include:: explain_-aspatial.rst_
+
 .. |Add_-bi| replace:: [Default is 3 (or 4 if **-W** is set) columns].
 .. include:: explain_-bi.rst_
 
@@ -140,7 +144,7 @@ Optional Arguments
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
 
-.. |Add_-g| replace:: 0x20 .. just an invisible code
+.. |Add_-g| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-g.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code

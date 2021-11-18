@@ -19,6 +19,7 @@ Synopsis
 [ |-Z| ]
 [ |SYN_OPT-bo| ]
 [ |SYN_OPT-do| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -75,6 +76,9 @@ Optional Arguments
 
 .. |Add_-do| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-do.rst_
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
 
 .. include:: explain_colon.rst_
 

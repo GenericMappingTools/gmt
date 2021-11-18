@@ -1,55 +1,34 @@
 
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>8. GMT File Formats &mdash; GMT 6.3.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/style.css" type="text/css" />
-
-  
-  
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="../_static/favicon.png"/>
-  
-
-  
-  
-
-  
-
-  
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
         <script src="../_static/togglebutton.js"></script>
         <script src="../_static/clipboard.min.js"></script>
         <script src="../_static/copybutton.js"></script>
-        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="9. Including GMT Graphics into your Documents" href="include-figures.html" />
@@ -62,33 +41,16 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="../index.html" class="icon icon-home"> GMT
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 6.3
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -96,26 +58,15 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Getting started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../gallery.html">Example Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../animations.html">Animations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../modules.html">Modules</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../cookbook.html">Cookbook</a><ul class="current">
@@ -162,33 +113,33 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../datasets.html">Datasets</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../users-contrib-symbols.html">Users Symbol Contributions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../std-opts-classic.html">Common Options (Classic Mode)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../debug.html">Debugging GMT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api.html">GMT C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../postscriptlight.html">PostScriptLight C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../devdocs.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
-            
-          
 
     
         <p class="caption">
@@ -208,83 +159,41 @@
     
 
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="../index.html">GMT</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="../cookbook.html">Cookbook</a> &raquo;</li>
-        
       <li><span class="section-number">8. </span>GMT File Formats</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/cookbook/file-formats.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="gmt-file-formats">
+             
+  <section id="gmt-file-formats">
 <span id="id1"></span><h1><span class="section-number">8. </span>GMT File Formats<a class="headerlink" href="#gmt-file-formats" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="table-data">
+<section id="table-data">
 <h2><span class="section-number">8.1. </span>Table data<a class="headerlink" href="#table-data" title="Permalink to this headline">¶</a></h2>
 <p>These files have <em>N</em> records which have <em>M</em> fields each. All programs
 that handle tables can read multicolumn files. GMT can read both
 ASCII, native binary, netCDF table data, and ESRI shapefiles (which
 we convert to GMT/OGR format via GDAL’s ogr2ogr tool under the hood).</p>
-<div class="section" id="ascii-tables">
+<section id="ascii-tables">
 <h3><span class="section-number">8.1.1. </span>ASCII tables<a class="headerlink" href="#ascii-tables" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="optional-file-header-records">
+<section id="optional-file-header-records">
 <h4><span class="section-number">8.1.1.1. </span>Optional file header records<a class="headerlink" href="#optional-file-header-records" title="Permalink to this headline">¶</a></h4>
 <p>The first data record may be preceded by one or more header records. Any
 records that has ‘#’ as the <em>first</em> character is considered a header or comment line and
@@ -302,8 +211,8 @@ format. Thus, 12:30:44.5W, 17.5S, 1:00:05, and 200:45E are all valid
 input strings. GMT is expected to handle most CVS (Comma-Separated Values)
 files, including numbers given in double quotes.  On output, fields will be separated by the character
 given by the parameter <a class="reference internal" href="../gmt.conf.html#term-IO_COL_SEPARATOR"><span class="xref std std-term">IO_COL_SEPARATOR</span></a>, which by default is a TAB.</p>
-</div>
-<div class="section" id="optional-segment-header-records">
+</section>
+<section id="optional-segment-header-records">
 <h4><span class="section-number">8.1.1.2. </span>Optional segment header records<a class="headerlink" href="#optional-segment-header-records" title="Permalink to this headline">¶</a></h4>
 <p>When dealing with time- or (<em>x,y</em>)-series it is usually convenient to
 have each profile in separate files. However, this may sometimes prove
@@ -334,15 +243,15 @@ be set differently for input and output.  Finally, if a segment represents
 a closed polygon that is a hole inside another polygon you indicate this
 by including <strong>-Ph</strong> in the segment header.  This setting will be read
 and processed if converting a file to the OGR format.</p>
-</div>
-</div>
-<div class="section" id="binary-tables">
+</section>
+</section>
+<section id="binary-tables">
 <h3><span class="section-number">8.1.2. </span>Binary tables<a class="headerlink" href="#binary-tables" title="Permalink to this headline">¶</a></h3>
 <p>GMT programs also support native binary tables to speed up
 input-output for i/o-intensive tasks like gridding and preprocessing.
 This is discussed in more detail in section <a class="reference internal" href="options.html#option-b"><span class="std std-ref">Map frame and axes annotations: The -B option</span></a>.</p>
-</div>
-<div class="section" id="netcdf-tables">
+</section>
+<section id="netcdf-tables">
 <h3><span class="section-number">8.1.3. </span>NetCDF tables<a class="headerlink" href="#netcdf-tables" title="Permalink to this headline">¶</a></h3>
 <p>More and more programs are now producing binary data in the netCDF
 format, and so GMT programs started to support tabular netCDF data
@@ -359,15 +268,15 @@ add the option <strong>-bic</strong><em>var1</em><strong>/</strong><em>var2</em>
 latter option is particularly practical when more than one file is read:
 the <strong>-bic</strong> option will apply to all files. Currently, GMT only
 reads, but does not write, netCDF tabular data.</p>
-</div>
-<div class="section" id="shapefiles">
+</section>
+<section id="shapefiles">
 <h3><span class="section-number">8.1.4. </span>Shapefiles<a class="headerlink" href="#shapefiles" title="Permalink to this headline">¶</a></h3>
 <p>GMT programs that read tables also support ESRI shapefiles, provided GMT was compiled
 with GDAL support.  By default, only the geographic coordinates are read.  To select
 some or all aspatial fields, see the <a class="reference internal" href="../gmt.html#aspatial-full"><span class="std std-ref">-a option</span></a>.</p>
-</div>
-</div>
-<div class="section" id="grid-files">
+</section>
+</section>
+<section id="grid-files">
 <h2><span class="section-number">8.2. </span>Grid files<a class="headerlink" href="#grid-files" title="Permalink to this headline">¶</a></h2>
 <p>GMT allows numerous grid formats to be read. In addition to the default
 netCDF format it can use binary floating points, short integers, bytes, and
@@ -376,7 +285,7 @@ formats may be used by supplying read/write functions and linking these with
 the GMT libraries. The source file <code class="docutils literal notranslate"><span class="pre">gmt_customio.c</span></code> has the information
 that programmers will need to augment GMT to read custom grid files. See
 Section <a class="reference internal" href="features.html#grid-file-format"><span class="std std-ref">Grid file format specifications</span></a> for more information.</p>
-<div class="section" id="netcdf-files">
+<section id="netcdf-files">
 <h3><span class="section-number">8.2.1. </span>NetCDF files<a class="headerlink" href="#netcdf-files" title="Permalink to this headline">¶</a></h3>
 <p>By default, GMT stores 2-D grids as COARDS-compliant netCDF files.
 COARDS (which stands for Cooperative Ocean/Atmosphere Research Data
@@ -466,8 +375,8 @@ the dimensions of the <em>z</em> variable. GMT will recognize whether the <em>y<
 handled appropriately.</p>
 <p>For more information on the use of COARDS-compliant netCDF files, and on how
 to load multi-dimensional grids, read Section <a class="reference internal" href="features.html#modifiers-for-cf"><span class="std std-ref">Modifiers for COARDS-compliant netCDF files</span></a>.</p>
-</div>
-<div class="section" id="chunking-and-compression-with-netcdf">
+</section>
+<section id="chunking-and-compression-with-netcdf">
 <h3><span class="section-number">8.2.2. </span>Chunking and compression with netCDF<a class="headerlink" href="#chunking-and-compression-with-netcdf" title="Permalink to this headline">¶</a></h3>
 <p>GMT supports reading and writing of netCDF-4 files since release 5.0.  For
 performance reasons with ever-increasing grid sizes, the default output format
@@ -477,10 +386,12 @@ but rather split up into tiles.  Figure <a class="reference internal" href="#net
 the layout in a chunked netCDF file.  To access a subset of the data (e.g.,
 the four blue tiles in the lower left), netCDF only reads those tiles
 (“chunks”) instead of extracting data from long rows.</p>
-<div class="figure align-center" id="id2">
+<figure class="align-center" id="id2">
 <span id="netcdf-chunking"></span><img alt="../_images/GMT_chunking.png" src="../_images/GMT_chunking.png" />
-<p class="caption"><span class="caption-text">Grid split into 3 by 3 chunks</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
-</div>
+<figcaption>
+<p><span class="caption-text">Grid split into 3 by 3 chunks</span><a class="headerlink" href="#id2" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
 <p>Gridded datasets in the earth sciences usually exhibit a strong spatial
 dependence (e.g. topography, potential fields, illustrated by blue and white
 cells in Figure <a class="reference internal" href="#netcdf-chunking"><span class="std std-ref">Grid split into 3 by 3 chunks</span></a>) and deflation can greatly reduce the
@@ -504,8 +415,8 @@ export your grids in the old classic format.  This can be achieved by setting
 <li><p><a class="reference external" href="http://www.unidata.ucar.edu/software/netcdf/workshops/most-recent/nc4chunking/WhatIsChunking.html">Unidata NetCDF Workshop: What is Chunking?</a></p></li>
 <li><p><a class="reference external" href="http://www.hdfgroup.org/pubs/papers/2008-06_netcdf4_perf_report.pdf">HDF NetCDF-4 Performance Report</a></p></li>
 </ul>
-</div>
-<div class="section" id="gridline-and-pixel-node-registration">
+</section>
+<section id="gridline-and-pixel-node-registration">
 <h3><span class="section-number">8.2.3. </span>Gridline and Pixel node registration<a class="headerlink" href="#gridline-and-pixel-node-registration" title="Permalink to this headline">¶</a></h3>
 <p>Scanline format means that the data are stored in rows (<em>y</em> = constant)
 going from the “top” (<span class="math notranslate nohighlight">\(y = y_{max}\)</span> (north)) to the “bottom”
@@ -526,9 +437,11 @@ convert from one format to the other;
 <a class="reference internal" href="../grdedit.html"><span class="doc">grdedit</span></a> can make changes to the grid
 header and convert a pixel- to a gridline-registered grid, or <em>vice
 versa</em>. The grid registration is determined by the common GMT <strong>-r</strong>
-option (see Section <a class="reference internal" href="options.html#option-nodereg"><span class="std std-ref">Grid registration: The -r option</span></a>).</p>
-</div>
-<div class="section" id="boundary-conditions-for-operations-on-grids">
+option (see Section <a class="reference internal" href="options.html#option-nodereg"><span class="std std-ref">Grid registration: The -r option</span></a>). <strong>Note</strong>: The smallest
+pixel-registered grid can be 1x1 (storing a single value), while a
+gridline-registered grid cannot be smaller than 2x2.</p>
+</section>
+<section id="boundary-conditions-for-operations-on-grids">
 <h3><span class="section-number">8.2.4. </span>Boundary Conditions for operations on grids<a class="headerlink" href="#boundary-conditions-for-operations-on-grids" title="Permalink to this headline">¶</a></h3>
 <p>GMT has the option to specify boundary conditions in some programs
 that operate on grids (e.g.,
@@ -587,8 +500,8 @@ in the direction normal to a boundary, and</p>
 <p>is the two-dimensional Laplacian operator.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="native-binary-grid-files">
+</section>
+<section id="native-binary-grid-files">
 <h3><span class="section-number">8.2.5. </span>Native binary grid files<a class="headerlink" href="#native-binary-grid-files" title="Permalink to this headline">¶</a></h3>
 <p>The old-style native grid file format that was common in earlier version
 of GMT is still supported, although the use of netCDF files is
@@ -677,9 +590,9 @@ to read this header correctly (see our code for details).</p>
 </tr>
 </tbody>
 </table>
-</div>
-</div>
-<div class="section" id="sun-raster-files">
+</section>
+</section>
+<section id="sun-raster-files">
 <h2><span class="section-number">8.3. </span>Sun raster files<a class="headerlink" href="#sun-raster-files" title="Permalink to this headline">¶</a></h2>
 <p>The Sun raster file format consists of a header followed by a series of
 unsigned 1-byte integers that represents the bit-pattern. Bits are
@@ -765,58 +678,40 @@ various raster file formats such as tiff, gif, jpeg, and Sun raster.
 Raster patterns may be created with GMT plotting tools by generating
 PostScript plots that can be rasterized by ghostscript and
 translated into the right raster format.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="include-figures.html" class="btn btn-neutral float-right" title="9. Including GMT Graphics into your Documents" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="supplemental-packages.html" class="btn btn-neutral float-left" title="7. GMT Supplemental Packages" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="include-figures.html" class="btn btn-neutral float-right" title="9. Including GMT Graphics into your Documents" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">
-        Last updated on Jun 06, 2021.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2021, The GMT Team..
+      <span class="lastupdated">Last updated on Nov 18, 2021.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(false);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

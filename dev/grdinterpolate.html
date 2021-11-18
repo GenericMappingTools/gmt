@@ -1,54 +1,33 @@
 
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" />
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17: http://docutils.sourceforge.net/" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
   <title>grdinterpolate &mdash; GMT 6.3.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-  <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
-  <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
-  <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
-  <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
-  <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
-  <link rel="stylesheet" href="_static/style.css" type="text/css" />
-
-  
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/togglebutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-main.c949a650a448cc0ae9fd3441c0e17fb0.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-bootstrap.5fd3999ee7762ccc51105388f4a9d115.css" type="text/css" />
+      <link rel="stylesheet" href="_static/panels-variables.06eb56fa6e07937060861dad626602ad.css" type="text/css" />
+      <link rel="stylesheet" href="_static/style.css" type="text/css" />
     <link rel="shortcut icon" href="_static/favicon.png"/>
-  
-
-  
-  
-
-  
-
-  
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/togglebutton.js"></script>
         <script src="_static/clipboard.min.js"></script>
         <script src="_static/copybutton.js"></script>
-        <script >var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="grdlandmask" href="grdlandmask.html" />
@@ -61,33 +40,16 @@
 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
             <a href="index.html" class="icon icon-home"> GMT
-          
-
-          
           </a>
-
-          
-            
-            
               <div class="version">
                 6.3
               </div>
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -95,58 +57,47 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
     
-            
-            
-              
-            
-            
-              <p class="caption"><span class="caption-text">Getting started</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="gallery.html">Example Gallery</a></li>
 <li class="toctree-l1"><a class="reference internal" href="animations.html">Animations</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Reference documentation</span></p>
+<p class="caption" role="heading"><span class="caption-text">Reference documentation</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Modules</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cookbook.html">Cookbook</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Datasets</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Resources</span></p>
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-scripts.html">Users Script Contributions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="users-contrib-symbols.html">Users Symbol Contributions</a></li>
-<li class="toctree-l1"><a class="reference internal" href="changes.html">Changelog</a></li>
 <li class="toctree-l1"><a class="reference internal" href="deprecated-defaults.html">Deprecated GMT Defaults Names</a></li>
 <li class="toctree-l1"><a class="reference internal" href="switching.html">Switching between Different Versions</a></li>
 <li class="toctree-l1"><a class="reference internal" href="migrating.html">Migrating from an Earlier Version</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Classic Mode</span></p>
+<p class="caption" role="heading"><span class="caption-text">Classic Mode</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="std-opts-classic.html">Common Options (Classic Mode)</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules-classic.html">Modules (Classic Mode)</a></li>
 </ul>
-<p class="caption"><span class="caption-text">Developer Resources</span></p>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md">Contributing Guide</a></li>
 <li class="toctree-l1"><a class="reference external" href="https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a></li>
-<li class="toctree-l1"><a class="reference internal" href="rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
-<li class="toctree-l1"><a class="reference internal" href="debug.html">Debugging GMT</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api.html">GMT C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="postscriptlight.html">PostScriptLight C API</a></li>
-<li class="toctree-l1"><a class="reference internal" href="devdocs.html">Developer Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/contributing.html">Contributors Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/maintenance.html">Maintainers Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/team.html">Team Gallery</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/rst-cheatsheet.html">reStructuredText Cheatsheet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/debug.html">Debugging GMT</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/api.html">GMT C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/postscriptlight.html">PostScriptLight C API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="devdocs/devdocs.html">GMT Enhancement Proposals</a></li>
 </ul>
 
-            
-          
 
     
         <p class="caption">
@@ -166,76 +117,34 @@
     
 
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">GMT</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
           <li><a href="modules.html">Modules</a> &raquo;</li>
-        
       <li>grdinterpolate</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-          
-            
               <a href="https://github.com/GenericMappingTools/gmt/edit/master/doc/rst/source/grdinterpolate.rst" class="fa fa-github"> Edit on GitHub</a>
-            
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <span class="target" id="index-0"></span><div class="section" id="grdinterpolate">
+             
+  <span class="target" id="index-0"></span><section id="grdinterpolate">
 <h1>grdinterpolate<a class="headerlink" href="#grdinterpolate" title="Permalink to this headline">¶</a></h1>
 <p>Interpolate a 3-D cube, 2-D grids or 1-D series from a 3-D data cube or stack of 2-D grids</p>
-<div class="section" id="synopsis">
+<section id="synopsis">
 <h2>Synopsis<a class="headerlink" href="#synopsis" title="Permalink to this headline">¶</a></h2>
 <p><strong>gmt grdinterpolate</strong> <em>cube</em> | <em>grd1 grd2 …</em>
 <a class="reference internal" href="#g"><span><strong>-G</strong></span></a></strong><em>outfile</em>
@@ -248,7 +157,7 @@
 [ <a class="reference internal" href="#v"><span><strong>-V</strong></span></a></strong>[<em>level</em>] ]
 [ <a class="reference internal" href="#z"><span><strong>-Z</strong></span></a></strong>[<em>levels</em>] ]
 [ <strong>-b</strong><a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">binary</span></a> ]
-[ <strong>-d</strong><a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
+[ <strong>-d</strong>[<strong>+c</strong><em>col</em>]<a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">nodata</span></a> ]
 [ <strong>-e</strong><a class="reference internal" href="gmt.html#e-full"><span class="std std-ref">regexp</span></a> ]
 [ <strong>-f</strong><a class="reference internal" href="gmt.html#f-full"><span class="std std-ref">flags</span></a> ]
 [ <strong>-g</strong><a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">gaps</span></a> ]
@@ -261,8 +170,8 @@
 [ <strong>-:</strong>[<strong>i</strong>|<strong>o</strong>] ]
 [ <strong>--PAR</strong>=<em>value</em> ]</p>
 <p><strong>Note:</strong> No space is allowed between the option flag and the associated arguments.</p>
-</div>
-<div class="section" id="description">
+</section>
+<section id="description">
 <h2>Description<a class="headerlink" href="#description" title="Permalink to this headline">¶</a></h2>
 <p><strong>grdinterpolate</strong> reads a single 3-D netCDF data cube (or a set of 2-D layers)
 and interpolates along the 3rd dimension for one or more output levels.  The data cube must
@@ -273,8 +182,8 @@ or as a set of 2-D layers.  Alternatively, we interpolate the cube along the lev
 at one or more arbitrary (<em>x/y</em>) coordinates (<strong>-S</strong>), resulting in a data table with one or
 more level-series, or we slice the 3-D cube along an arbitrary vertical slice and write that
 2-D slice to a grid file (<strong>-E</strong>).</p>
-</div>
-<div class="section" id="required-arguments">
+</section>
+<section id="required-arguments">
 <h2>Required Arguments<a class="headerlink" href="#required-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple">
 <dt><em>cube</em></dt><dd><p>Name of a 3-D netCDF data cube to be interpolated. Alternatively, with <strong>-Z</strong>,
@@ -291,8 +200,8 @@ a 3-D data cube, unless only a single layer is implied by <strong>-T</strong>].
 Also see <strong>-S</strong> for a similar use to write individual level-series tables.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="optional-arguments">
+</section>
+<section id="optional-arguments">
 <h2>Optional Arguments<a class="headerlink" href="#optional-arguments" title="Permalink to this headline">¶</a></h2>
 <dl class="simple" id="d">
 <dt><strong>-D</strong>[<strong>+x</strong><em>xname</em>][<strong>+y</strong><em>yname</em>][<strong>+z</strong><em>zname</em>][<strong>+d</strong><em>vname</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][<strong>+n</strong><em>invalid</em>][<strong>+t</strong><em>title</em>][<strong>+r</strong><em>remark</em>][<strong>+v</strong><em>varname</em>]</dt><dd><p>Give one or more combinations for values <em>xname</em>, <em>yname</em>, <em>zname</em> (3rd dimension in cube),
@@ -358,7 +267,8 @@ grids at the given point (<em>x/y</em>) or the list of points in <em>pointfile</
 a series of points defined by an origin and an end point or similar, you can make
 such a file first with <a class="reference internal" href="project.html"><span class="doc">project</span></a>.  By default we simply sample the cube at
 each level.  Use <strong>-T</strong> to interpolate the series.  The grid level (e.g., depth or time)
-will be appended as the last numerical value in the series records.  Use the optional
+will be inserted as the third numerical value in the series records, with optional input
+columns appended, ending with the sampled cube value.  Use the optional
 <strong>+h</strong> modifier to append <em>header</em> to the trailing text of these input points.
 On output the trailing text will become the segment header for the series that originate
 from each point.  By default, the table output is written to standard output.  Use <strong>-G</strong>
@@ -390,15 +300,15 @@ input/output in <strong>-S</strong><em>table</em>. [Default is (longitude,latitu
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-bi</strong>[<em>ncols</em>][<strong>t</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary input. [Default is 2 input columns].</p>
+<dt><strong>-bi</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bi-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for primary table input. [Default is 2 input columns].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-bo</strong>[<em>ncols</em>][<em>type</em>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary output. [Default is one more than input].</p>
+<dt><strong>-bo</strong><em>record</em>[<strong>+b</strong>|<strong>l</strong>] <a class="reference internal" href="gmt.html#bo-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select native binary format for table output. [Default is one more than input].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </p>
+<dt><strong>-d</strong>[<strong>i</strong>|<strong>o</strong>][<strong>+c</strong><em>col</em>]<em>nodata</em> <a class="reference internal" href="gmt.html#d-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Replace input columns that equal <em>nodata</em> with NaN and do the reverse on output.  </p>
 </dd>
 </dl>
 <dl class="simple">
@@ -410,7 +320,7 @@ input/output in <strong>-S</strong><em>table</em>. [Default is (longitude,latitu
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-g</strong>[<strong>a</strong>]<strong>x</strong>|<strong>y</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong>|[<em>col</em>]<strong>z</strong><em>gap</em>[<strong>+n</strong>|<strong>p</strong>]  <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Determine data gaps and line breaks.  </p>
+<dt><strong>-g</strong><strong>x</strong>|<strong>y</strong>|<strong>z</strong>|<strong>d</strong>|<strong>X</strong>|<strong>Y</strong>|<strong>D</strong><em>gap</em>[<strong>u</strong>][<strong>+a</strong>][<strong>+c</strong><em>col</em>][<strong>+n</strong>|<strong>p</strong>]  <a class="reference internal" href="gmt.html#g-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Determine data gaps and line breaks.  </p>
 </dd>
 </dl>
 <dl class="simple">
@@ -418,7 +328,7 @@ input/output in <strong>-S</strong><em>table</em>. [Default is (longitude,latitu
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divide</em>][<strong>+s</strong><em>scale</em>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
+<dt><strong>-i</strong><em>cols</em>[<strong>+l</strong>][<strong>+d</strong><em>divisor</em>][<strong>+s</strong><em>scale</em>|<strong>d</strong>|<strong>k</strong>][<strong>+o</strong><em>offset</em>][,<em>…</em>][,<strong>t</strong>[<em>word</em>]] <a class="reference internal" href="gmt.html#icols-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input columns and transformations (0 is first column, <strong>t</strong> is trailing text, append <em>word</em> to read one word only).</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -430,11 +340,11 @@ input/output in <strong>-S</strong><em>table</em>. [Default is (longitude,latitu
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data range(s) [all].</p>
+<dt><strong>-q</strong>[<strong>i</strong>|<strong>o</strong>][~]<em>rows</em>|<em>limits</em>[<strong>+c</strong><em>col</em>][<strong>+a</strong>|<strong>f</strong>|<strong>s</strong>] <a class="reference internal" href="gmt.html#q-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Select input or output rows or data limit(s) [all].</p>
 </dd>
 </dl>
 <dl class="simple">
-<dt><strong>-s</strong>[<em>cols</em>][<strong>+a</strong>][<strong>+r</strong>] <a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set handling of NaN records.</p>
+<dt><strong>-s</strong>[<em>cols</em>][<strong>+a</strong>][<strong>+r</strong>] <a class="reference internal" href="gmt.html#s-full"><span class="std std-ref">(more …)</span></a></dt><dd><p>Set handling of NaN records for output.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -448,8 +358,8 @@ any module-specific option (but not the GMT common options), then exit.</p>
 <dt><strong>--PAR</strong>=<em>value</em></dt><dd><p>Temporarily override a GMT default setting; repeatable. See <a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a> for parameters.</p>
 </dd>
 </dl>
-</div>
-<div class="section" id="generate-1d-array">
+</section>
+<section id="generate-1d-array">
 <h2>Generate 1D Array<a class="headerlink" href="#generate-1d-array" title="Permalink to this headline">¶</a></h2>
 <p>We will demonstrate the use of options for creating 1-D arrays via <a class="reference internal" href="gmtmath.html"><span class="doc">gmtmath</span></a>.
 Make an evenly spaced coordinate array from <em>min</em> to <em>max</em> in steps of <em>inc</em>, e.g.,:</p>
@@ -512,7 +422,7 @@ instead.  To have exactly 5 equidistant values from 3.44 and 7.82, run:</p>
 <span class="m">7</span>.82
 </pre></div>
 </div>
-<p>Alternatively, give a <em>file</em> with output coordinates in the first column,
+<p>Alternatively, let <em>inc</em> be a <em>file</em> with output coordinates in the first column,
 or provide a comma-separated <em>list</em> of specific coordinates, such as the first 6
 Fibonacci numbers:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt math -o0 -T0,1,1,2,3,5 <span class="nv">T</span> <span class="o">=</span>
@@ -524,8 +434,10 @@ Fibonacci numbers:</p>
 <span class="m">5</span>
 </pre></div>
 </div>
+<p><strong>Note</strong>: Should you need to ensure that the coordinates are unique and sorted (in case the
+<em>file</em> or <em>list</em> are not sorted or have duplicates) then supply the <strong>+u</strong> modifier.</p>
 <p>If you only want a <em>single</em> value
-then you must append a comma to distinguish the list from the setting of <em>inc</em>.</p>
+then you must append a comma to distinguish the list from the setting of an increment.</p>
 <p>If the module allows you to set up an absolute time series, append a valid time unit from the list
 <strong>y</strong>ear, m<strong>o</strong>nth, <strong>d</strong>ay, <strong>h</strong>our, <strong>m</strong>inute, and <strong>s</strong>econd
 to the given increment; add <strong>+t</strong> to ensure time column (or use <strong>-f</strong>). <strong>Note</strong>: The internal time
@@ -549,16 +461,16 @@ To interpolate Cartesian distances instead, you must use the special unit <stron
 <p>Finally, if you are only providing an increment and will obtain <em>min</em> and <em>max</em> from the data, then it is
 possible (<em>max</em> - <em>min</em>)/<em>inc</em> is not an integer, as required.  If so, then <em>inc</em> will be adjusted to fit the range.
 Alternatively, append <strong>+e</strong> to keep <em>inc</em> exact and adjust <em>max</em> instead (keeping <em>min</em> fixed).</p>
-</div>
-<div class="section" id="file-order">
+</section>
+<section id="file-order">
 <h2>File Order<a class="headerlink" href="#file-order" title="Permalink to this headline">¶</a></h2>
 <p>If you provide a series of 2-D files and thus separately assigning the
 level via <strong>-Z</strong>, then you must make sure that the order the grids are given
 on the command line matches the levels you provide via <strong>-Z</strong>.  Unless your
 files are named in lexical order you must be careful with using wildcards
 to list all the grids (e.g., *.nc).</p>
-</div>
-<div class="section" id="time-coordinates">
+</section>
+<section id="time-coordinates">
 <h2>Time Coordinates<a class="headerlink" href="#time-coordinates" title="Permalink to this headline">¶</a></h2>
 <p>Time coordinates in netCDF grids, be it the x, y, or z coordinate, will
 be recognized as such. The variable’s <strong>unit</strong> attribute is parsed to
@@ -569,8 +481,8 @@ are then converted to the internal time system specified by
 command line. The default output is relative time in that time system,
 or absolute time when using the option <strong>-f0T</strong>, <strong>-f1T</strong>, or <strong>-f2T</strong>
 for x, y, or z coordinate, respectively.</p>
-</div>
-<div class="section" id="series-creation">
+</section>
+<section id="series-creation">
 <h2>Series creation<a class="headerlink" href="#series-creation" title="Permalink to this headline">¶</a></h2>
 <p>The (optional) table-reading and table-producing <strong>-S</strong> option may require some
 of the standard common options associated with table i/o, such as <strong>-b</strong>, <strong>-i</strong>,
@@ -578,8 +490,8 @@ of the standard common options associated with table i/o, such as <strong>-b</st
 Because the coordinates given via <strong>-S</strong> are <em>not</em> required to equal the coordinates
 of the grid nodes, we are resampling each 2-D layer at the given points via
 <a class="reference internal" href="grdtrack.html"><span class="doc">grdtrack</span></a>, hence the availability of the <strong>-n</strong> option.</p>
-</div>
-<div class="section" id="examples">
+</section>
+<section id="examples">
 <h2>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h2>
 <p>To extract a single, new 2-D layer from the temperature.nc 3-D cube for level 3400
 using a cubic spline, try:</p>
@@ -592,7 +504,7 @@ using a linear spline, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate layers_*.nc -Zz.txt -T3400 -Fl -Gtemp_3400.nc
 </pre></div>
 </div>
-<p>To resample the the temperature.nc 3-D cube for all levels from
+<p>To resample the temperature.nc 3-D cube for all levels from
 1500 to 2500 in steps of 50, using an Akima spline, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate temperature.nc -T1500/2500/50 -Gtemperature_1500_2500.nc -Fa
 </pre></div>
@@ -613,66 +525,48 @@ distances be longitude degrees along the parallel, try:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>gmt grdinterpolate S362ANI_kmps.nc?vs -E180/20/220/20+i1d+g+p -T25/500/25 -Gslice.nc
 </pre></div>
 </div>
-</div>
-<div class="section" id="see-also">
+</section>
+<section id="see-also">
 <h2>See Also<a class="headerlink" href="#see-also" title="Permalink to this headline">¶</a></h2>
 <p><a class="reference internal" href="gmt.conf.html"><span class="doc">gmt.conf</span></a>,
 <a class="reference internal" href="gmt.html"><span class="doc">gmt</span></a>,
 <a class="reference internal" href="grdedit.html"><span class="doc">grdedit</span></a>,
 <a class="reference internal" href="grdcut.html"><span class="doc">grdcut</span></a>,
 <a class="reference internal" href="project.html"><span class="doc">project</span></a></p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="grdlandmask.html" class="btn btn-neutral float-right" title="grdlandmask" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="grdinfo.html" class="btn btn-neutral float-left" title="grdinfo" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="grdlandmask.html" class="btn btn-neutral float-right" title="grdlandmask" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        &#169; Copyright 2021, The GMT Team..
-      <span class="lastupdated">
-        Last updated on Jun 06, 2021.
-      </span>
-
-    </p>
+    <p>&#169; Copyright 2021, The GMT Team..
+      <span class="lastupdated">Last updated on Nov 18, 2021.
+      </span></p>
   </div>
-    
-    
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(false);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>

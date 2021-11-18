@@ -30,21 +30,21 @@ Common Options (Classic Mode)
      - :ref:`Shift plot origin in y-direction <-XY_full>`
    * - **-a**\ [*col*\ =]\ *name*\ [,\ *...*]
      - :ref:`Associates aspatial data with columns <-aspatial_full>`
-   * - **-bi**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
+   * - **-bi**\ *record*\ [**+b**\|\ **l**]
      - :ref:`Select binary input <-bi_full>`
-   * - **-bo**\ [*ncols*][*type*][**w**][**+l**\|\ **b**]
+   * - **-bo**\ *record*\ [**+b**\|\ **l**]
      - :ref:`Select binary output <-bo_full>`
-   * - **-d**\ [**i**\|\ **o**]\ *nodata*
+   * - **-d**\ [**i**\|\ **o**]\ *nodata*\ [**+c**\ *col*]
      - :ref:`Replace columns with nodata with NaN <-d_full>`
    * - **-e**\ [**~**]\ *"pattern"* \| **-e**\ [**~**]/\ *regexp*/[**i**]
      - :ref:`Filter data records that match the given pattern <-e_full>`
    * - **-f**\ [**i**\|\ **o**]\ *colinfo*
-     - :ref:`Set formatting of ASCII input or output <-f_full>`
-   * - **-g**\ [**a**]\ **x**\|\ **y**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\|[*col*]\ **z**\ *gap*\ [**+n**\|\ **p**]
+     - :ref:`Set column content of input or output <-f_full>`
+   * - **-g**\ **x**\|\ **y**\|\ **z**\|\ **d**\|\ **X**\|\ **Y**\|\ **D**\ *gap*\ [**u**][**+a**][**+c**\ *col*][**+n**\|\ **p**]
      - :ref:`Segment data by detecting gaps <-g_full>`
    * - **-h**\ [**i**\|\ **o**][*n*][**+c**][**+d**][**+m**\ *segheader*][**+r**\ *remark*][**+t**\ *title*]
      - :ref:`ASCII tables have header record[s] <-h_full>`
-   * - **-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
+   * - **-i**\ *cols*\ [**+l**][**+d**\ *divide*][**+s**\ *scale*\|\ **d**\|\ **k**][**+o**\ *offset*][,\ *...*][,\ **t**\ [*word*]]
      - :ref:`Selection of input columns <-icols_full>`
    * - **-je**\|\ **f**\|\ **g**
      - :ref:`Mode of spherical distance calculation <-distcalc_full>`

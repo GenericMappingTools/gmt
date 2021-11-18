@@ -12,12 +12,15 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt psvelo** [ *table* ] |-J|\ *parameters*
+**gmt psvelo**
+[ *table* ]
+|-J|\ *parameters*
 |SYN_OPT-R|
 |-S|\ *format*\ [*scale*][/*args*][**+f**\ *font*]
 [ |-A|\ *parameters* ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt*]
+[ |-D|\ *scale* ]
 [ |-E|\ *fill* ]
 [ |-G|\ *fill* ]
 [ |-H|\ [*scale*] ]
@@ -41,7 +44,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: velo_common.rst_
+.. include:: velo.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: ../../common_classic.rst_
 
