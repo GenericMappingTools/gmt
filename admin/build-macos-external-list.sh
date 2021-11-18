@@ -6,11 +6,13 @@
 # List of executables whose shared libraries must also be included
 #
 # Exceptions:
-# For now (6.2.0), need to do a few things manually first, like
+# For now (6.3.0), need to do a few things manually first, like
 #   1. Separate install command to avoid version number in GraphicsMagick directory name
+#   2. Separate install command to avoid version number in GhostScript directory name
 #
 # Notes:
 #   1. This is tested on macports where gs is a symbolic link to gsc.
+
 GSVERSION=$1	# Get the version of gs from build-release.sh
 
 if [ $(which cmake) = "/opt/local/bin/cmake" ]; then
@@ -99,7 +101,7 @@ if [ ! "X$EXESHARED" = "X" ]; then
 fi
 cat << EOF
 
-# Place the ghostscript support file while skipping the version directory
+# Place the ghostscript support files while skipping the version directory
 install (DIRECTORY
 	/opt/local/share/ghostscript/${GSVERSION}/Resource
 	/opt/local/share/ghostscript/${GSVERSION}/lib
