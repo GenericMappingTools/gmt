@@ -173,7 +173,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDLANDMASK_CTRL *Ctrl, struct GM
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0]) {	/* Trace lines through grid */
-					GMT_Report (API, GMT_MSG_WARNING, "-E<values> is presently being tested and is considered experimental\n");
 					Ctrl->E.linetrace = true;
 					j = pos = 0;
 					strncpy (line, opt->arg,  GMT_LEN256-1);
