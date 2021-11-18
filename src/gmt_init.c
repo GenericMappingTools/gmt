@@ -6046,7 +6046,7 @@ GMT_LOCAL void gmtinit_def_us_locale (struct GMT_CTRL *GMT) {
 
 /*! . */
 int gmt_get_V (char arg) {
-	/* Parse the verbosity selection.  Using -Vqewticd, but backwards compatible with -Vqntcvld */
+	/* Parse the verbosity selection.  Using -Vqewticd [GMT_VERBOSE_CODES], but backwards compatible with -Vqntcvld */
 	int mode = GMT_MSG_QUIET;
 	switch (arg) {
 		case 'q': case '0': mode = GMT_MSG_QUIET;	break;	/* -Vq */
