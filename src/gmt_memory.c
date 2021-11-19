@@ -100,11 +100,13 @@ GMT_LOCAL void gmtmemory_die_if_memfail (struct GMT_CTRL *GMT, size_t nelem, siz
  * not freed and where they were first allocated.  This is only used by the developers
  * and if -DMEMDEBUG is not set then all of this is left out.
  * The environmental variable GMT_TRACK_MEMORY controls the memory tracking:
- * a. Unset GMT_TRACK_MEMORY or set to '0' to deactivate the memory tracking.
- * b. Set GMT_TRACK_MEMORY to 1 (or any but 0) to activate the memory tracking.
- * c. Set GMT_TRACK_MEMORY to 2 to activate the memory tracking and to write a
+ * a. Unset GMT_TRACK_MEMORY or set to "OFF" to deactivate the memory tracking.
+ * b. Set GMT_TRACK_MEMORY to ON (or anything but OFF) to activate the memory tracking.
+ * c. Set GMT_TRACK_MEMORY to LOG to activate the memory tracking and to write a
  *    detailed log of all transactions taking place during a session to the file
  *    gmt_memtrack_<pid>.log
+ * d. Set GMT_TRACK_MEMORY to an integer >= 0 to track the allocation reported by this ID
+ *    You will need to set a break point in gmtmemory_memtrack_add so the debugger stops.
  *
  * Paul Wessel, Latest revision June 2012.
  * Florian Wobbe, Latest revision August 2013.
@@ -127,20 +129,17 @@ int gmt_memtrack_init (struct GMT_CTRL *GMT) {
 	char *env = getenv ("GMT_TRACK_MEMORY"); /* 0: off; any: track; 2: log to file */
 	struct MEMORY_TRACKER *M = calloc (1, sizeof (struct MEMORY_TRACKER));
 	GMT->hidden.mem_keeper = M;
-	M->active = ( env && strncmp (env, "0", 1) != 0 ); /* track if GMT_TRACK_MEMORY != 0 */
-	M->do_log = ( env && strncmp (env, "2", 1) == 0 ); /* log if GMT_TRACK_MEMORY == 2 */
-	if (M->active) {
-		size_t ID;
-		ID = atoi (env);
-		if (ID > 2) M->find = ID;
-	}
+	M->active = ( env && strcasecmp (env, "off") != 0 ); /* Track if GMT_TRACK_MEMORY is set and is not OFF */
+	M->do_log = ( env && strcasecmp (env, "log") == 0 ); /* Write a log if GMT_TRACK_MEMORY is LOG */
+	if (M->active && isdigit (env[0]))	/* Got a specific ID to track; see gmtmemory_memtrack_add */
+		 M->find = atoi (env);
 	M->search = true;
 	if (!M->do_log) /* Logging not requested */ {
 		if (M->active) M->fp = stderr;
 		return GMT_OK;
 	}
 	else
-	{
+	{	/* Set up memory tracking log file */
 		int pid = getpid();
 		char logfile[GMT_LEN32];
 		snprintf (logfile, GMT_LEN32, "gmt_memtrack_%d.log", pid);
