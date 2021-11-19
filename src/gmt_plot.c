@@ -10282,8 +10282,10 @@ void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P) {
 	P->data = NULL;		/* Whatever we pointed to is now longer known to P */
 	PH->n_alloc = P->n_bytes = 0;
 	/* Use free() to free the headers since they were allocated with strdup */
-	for (k = 0; k < P->n_headers; k++) gmt_M_str_free (P->header[k]);
-	gmt_M_free (GMT, P->header);
+	if (P->n_headers) {
+		for (k = 0; k < P->n_headers; k++) gmt_M_str_free (P->header[k]);
+		gmt_M_free (GMT, P->header);
+	}
 	gmt_M_free (GMT, P->hidden);
 	P->mode = GMT_PS_EMPTY;
 }
