@@ -6448,7 +6448,7 @@ void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned 
 	if (annot == GMT_BASEMAP_ANNOT_AFTER && frame == GMT_BASEMAP_FRAME_BEFORE)
 		annot = GMT_BASEMAP_ANNOT_BEFORE;
 	GMT->current.map.frame.basemap_flag = frame + grid + annot;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Basemap order: Frame = %s  Grid = %s  Tick/ANot = %s\n", place[frame], place[grid/2], place[annot/4]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Basemap order: Frame = %s  Grid = %s  Tick/Annot = %s\n", place[frame], place[grid/2], place[annot/4]);
 }
 
 GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, unsigned int quadrant) {
