@@ -7597,10 +7597,12 @@ void gmtlib_free_cpt_ptr (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 			gmt_M_free (GMT, P->bfn[i].fill);
 	gmt_M_free (GMT, P->data);
 	/* Use free() to free the headers since they were allocated with strdup */
-	for (i = 0; i < P->n_headers; i++) gmt_M_str_free (P->header[i]);
+	if (P->n_headers) {
+		for (i = 0; i < P->n_headers; i++) gmt_M_str_free (P->header[i]);
+		gmt_M_free (GMT, P->header);
+	}
 	P->n_headers = P->n_colors = 0;
 	gmt_M_free (GMT, P->hidden);
-	gmt_M_free (GMT, P->header);
 }
 
 /*! . */

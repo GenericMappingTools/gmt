@@ -2801,7 +2801,7 @@ GMT_LOCAL void gmtio_build_segheader_from_ogr (struct GMT_CTRL *GMT, unsigned in
 	if (gmt_polygon_is_hole (GMT, S))		/* Indicate this is a polygon hole [Default is perimeter] */
 		strcat (buffer, " -Ph");
 	if (S->header && buffer[0] && strcmp (S->header, buffer)) {strcat (buffer, " "); strncat (buffer, S->header, GMT_BUFSIZ-1);}	/* Append rest of previous header */
-	gmt_M_str_free (S->header);
+	if (S->header) gmt_M_str_free (S->header);
 	S->header = strdup (buffer);
 }
 
@@ -8548,8 +8548,10 @@ void gmt_free_table (struct GMT_CTRL *GMT, struct GMT_DATATABLE *table) {
 	if (!table) return;		/* Do not try to free NULL pointer */
 	TH = gmt_get_DT_hidden (table);
 	if (TH->alloc_mode == GMT_ALLOC_EXTERNALLY) return;	/* Not ours to free */
-	for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
-	gmt_M_free (GMT, table->header);
+	if (table->n_headers) {
+		for (k = 0; k < table->n_headers; k++) gmt_M_str_free (table->header[k]);
+		gmt_M_free (GMT, table->header);
+	}
 	gmt_M_free (GMT, table->min);
 	gmt_M_free (GMT, table->max);
 	for (k = 0; k < 2; k++) gmt_M_str_free (TH->file[k]);

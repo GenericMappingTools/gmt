@@ -6448,7 +6448,7 @@ void gmt_set_basemap_orders (struct GMT_CTRL *GMT, unsigned int frame, unsigned 
 	if (annot == GMT_BASEMAP_ANNOT_AFTER && frame == GMT_BASEMAP_FRAME_BEFORE)
 		annot = GMT_BASEMAP_ANNOT_BEFORE;
 	GMT->current.map.frame.basemap_flag = frame + grid + annot;
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Basemap order: Frame = %s  Grid = %s  Tick/ANot = %s\n", place[frame], place[grid/2], place[annot/4]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Basemap order: Frame = %s  Grid = %s  Tick/Annot = %s\n", place[frame], place[grid/2], place[annot/4]);
 }
 
 GMT_LOCAL bool gmtplot_z_axis_side (struct GMT_CTRL *GMT, unsigned int axis, unsigned int quadrant) {
@@ -10282,8 +10282,10 @@ void gmtlib_free_ps_ptr (struct GMT_CTRL *GMT, struct GMT_POSTSCRIPT *P) {
 	P->data = NULL;		/* Whatever we pointed to is now longer known to P */
 	PH->n_alloc = P->n_bytes = 0;
 	/* Use free() to free the headers since they were allocated with strdup */
-	for (k = 0; k < P->n_headers; k++) gmt_M_str_free (P->header[k]);
-	gmt_M_free (GMT, P->header);
+	if (P->n_headers) {
+		for (k = 0; k < P->n_headers; k++) gmt_M_str_free (P->header[k]);
+		gmt_M_free (GMT, P->header);
+	}
 	gmt_M_free (GMT, P->hidden);
 	P->mode = GMT_PS_EMPTY;
 }
