@@ -285,6 +285,7 @@ int gmt_DCW_version (struct GMTAPI_CTRL *API, char *version) {
 	gmt_M_err_trap (gmt_nc_open (GMT, path, NC_NOWRITE, &cdfid));
 
 	/* Get global attributes */
+	gmt_M_memset (version, strlen (version), char);
 	gmt_M_err_trap (nc_get_att_text (cdfid, NC_GLOBAL, "version", version));
 	gmt_nc_close (GMT, cdfid);
 

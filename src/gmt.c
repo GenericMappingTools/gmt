@@ -192,7 +192,7 @@ int main (int argc, char *argv[]) {
 
 			/* Show DCW version of the current release */
 			else if (!strncmp (argv[arg_n], "--show-dcw", 10U)) {
-				char version[16] = {""};
+				char version[16] = {"unknown"};
 				gmt_DCW_version (api_ctrl, version);
 				fprintf(stdout, "%s\n", version);
 				status = GMT_NOERROR;
@@ -212,7 +212,7 @@ int main (int argc, char *argv[]) {
 
 			/* Show GSHHG version of the current release */
 			else if (!strncmp (argv[arg_n], "--show-gshhg", 10U)) {
-				char version[16] = {""};
+				char version[16] = {"unknown"};
 				gmt_shore_version (api_ctrl, version);
 				fprintf(stdout, "%s\n", version);
 				status = GMT_NOERROR;
