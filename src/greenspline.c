@@ -2542,7 +2542,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			 * gmt_solve_svd sets to zero those we don't want but we must still loop over its full length to ensure we
 			 * include the eigenvalues we want. */
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
-			int64_t e, col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
+			int64_t row; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
+			uint64_t e, col, p;
 			gmt_grdfloat *current = NULL, *previous = NULL;
 			double l2_sum_n = 0.0, l2_sum_e = 0.0, predicted;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};

@@ -467,7 +467,8 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct G
 /* -------------------------------------------------------------------------*/
 GMT_LOCAL int read_xyz(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl, struct GMT_OPTION *options, double *lon_0, double *lat_0) {
 	/* read xyz[m] file with point data coordinates */
-	int n_cols = 0, k, error, n = 0;
+	int n_cols = 0, error;
+	unsigned int k, n = 0;
 	size_t n_alloc = 10 * GMT_CHUNK;
 	char line[GMT_LEN256] = {""};
 	double x1, x2, x3, x4, x5, x6, x7, x8;
@@ -654,8 +655,8 @@ GMT_LOCAL int read_vertices(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl
 
 /* -----------------------------------------------------------------*/
 GMT_LOCAL int read_raw(struct GMT_CTRL *GMT, struct GMTGRAVMAG3D_CTRL *Ctrl) {
-	/* read a file with triagles in the raw format and returns nb of triangles */
-	int row, seg, nt;
+	/* read a file with triangles in the raw format and returns nb of triangles */
+	unsigned int row, seg, nt;
 	struct  GMT_DATASET *In = NULL;
 
 	if ((In = GMT_Read_Data (GMT->parent, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_POINT, GMT_IO_ASCII, NULL, Ctrl->T.raw_file, NULL)) == NULL)

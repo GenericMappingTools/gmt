@@ -519,9 +519,9 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 				Ctrl->L.item = gmt_M_grd_x_to_col (GMT, Ctrl->L.value, G->header);
 				Ctrl->L.mode = GRD2XYZ_COL;
 			}
-			if (Ctrl->L.mode == GRD2XYZ_COL && (Ctrl->L.item < 0 || Ctrl->L.item >= G->header->n_columns))
+			if (Ctrl->L.mode == GRD2XYZ_COL && (Ctrl->L.item < 0 || Ctrl->L.item >= (int)G->header->n_columns))
 				GMT_Report (API, GMT_MSG_WARNING, "Option -L: Your column selection is outside the range of this grid's columns - no output will result\n");
-			else if (Ctrl->L.mode == GRD2XYZ_ROW && (Ctrl->L.item < 0 || Ctrl->L.item >= G->header->n_rows))
+			else if (Ctrl->L.mode == GRD2XYZ_ROW && (Ctrl->L.item < 0 || Ctrl->L.item >= (int)G->header->n_rows))
 				GMT_Report (API, GMT_MSG_WARNING, "Option -L: Your column x-value selection is outside the range of this grid's rows - no output will result\n");
 			else if (Ctrl->L.mode == GRD2XYZ_ROW)
 				n_total += G->header->n_columns;
@@ -767,8 +767,8 @@ EXTERN_MSC int GMT_grd2xyz (void *V_API, int mode, void *args) {
 
 			gmt_M_grd_loop (GMT, G, row, col, ij) {
 				if (Ctrl->L.active) {	/* Limit output to one row or column */
-					if (Ctrl->L.mode == GRD2XYZ_ROW && row != Ctrl->L.item) continue;	/* Skip these rows */
-					if (Ctrl->L.mode == GRD2XYZ_COL && col != Ctrl->L.item) continue;	/* Skip these columns */
+					if (Ctrl->L.mode == GRD2XYZ_ROW && (int)row != Ctrl->L.item) continue;	/* Skip these rows */
+					if (Ctrl->L.mode == GRD2XYZ_COL && (int)col != Ctrl->L.item) continue;	/* Skip these columns */
 					if (Ctrl->L.mode == GRD2XYZ_Y && !doubleAlmostEqualZero (y[row], Ctrl->L.value)) continue;	/* Skip these rows */
 					if (Ctrl->L.mode == GRD2XYZ_X && !doubleAlmostEqualZero (x[col], Ctrl->L.value)) continue;	/* Skip these columns */
 				}

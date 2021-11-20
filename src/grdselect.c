@@ -111,7 +111,7 @@ struct GRDSELECT_CTRL {
 	struct GRDSELECT_N {	/* -Nl|h<nans> */
 		bool active;
 		unsigned int mode;
-		int64_t n_nans;	/* Limit on nans [0] */
+		uint64_t n_nans;	/* Limit on nans [0] */
 	} N;
 	struct GRDSELECT_Q {	/* -Q */
 		bool active;

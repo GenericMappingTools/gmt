@@ -361,7 +361,8 @@ struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const ch
 	 * with the resolution and registration from 01d (g&p) to 91s (g) .*/
 	char *c = NULL, *p = NULL, dir[GMT_LEN64] = {""}, file[GMT_LEN128] = {""};
 	static char *registration = "gp";	/* The two types of registrations */
-	int id = 0, reg = GMT_NOTSET;
+	int reg = GMT_NOTSET;
+	unsigned int id = 0;
 	size_t L, n_alloc = GMT_SMALL_CHUNK;
 	struct GMT_RESOLUTION *R = NULL;
 
