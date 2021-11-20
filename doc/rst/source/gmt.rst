@@ -107,8 +107,14 @@ If no module is given then several other options are available:
 **--show-dataserver**
     Show URL of the remote GMT data server.
 
+**--show-dcw**
+    Show the DCW data version used.
+
 **--show-doi**
     Show the DOI of the current release.
+
+**--show-gshhg**
+    Show the GSHHG data version used.
 
 **--show-modules**
     List modern module names on stdout and exit.

@@ -629,6 +629,7 @@ EXTERN_MSC struct GMT_DATASEGMENT * gmt_get_smallcircle (struct GMT_CTRL *GMT, d
 
 /* gmt_shore.c: */
 
+EXTERN_MSC int gmt_shore_version (struct GMTAPI_CTRL *API, char *version);
 EXTERN_MSC int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I);
 EXTERN_MSC int gmt_get_shore_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_SHORE *c);
 EXTERN_MSC int gmt_get_br_bin (struct GMT_CTRL *GMT, unsigned int b, struct GMT_BR *c, unsigned int *level, unsigned int n_levels);
