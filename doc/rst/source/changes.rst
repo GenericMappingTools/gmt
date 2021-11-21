@@ -43,7 +43,7 @@ New Core Module Features in GMT 6.3
 * :doc:`grdtrack`: Let -C also accept a fixed azimuth for all profiles (`#5849 <https://github.com/GenericMappingTools/gmt/pull/5849>`_)
 * :doc:`grdtrend`: Fit model along xx or yy only. (`#5496 <https://github.com/GenericMappingTools/gmt/pull/5496>`_)
 * :doc:`inset`: Let begin optionally take -R -J to determine inset size instead of via -D (`#5903 <https://github.com/GenericMappingTools/gmt/pull/5903>`_)
-* :doc:`plot`:Add inverted triangle to front symbol choices (`#5983 <https://github.com/GenericMappingTools/gmt/pull/5983>`_)
+* :doc:`plot`: Add inverted triangle to front symbol choices (`#5983 <https://github.com/GenericMappingTools/gmt/pull/5983>`_)
 * :doc:`plot`: For error bars, allow asymmetrical bounds as well (`#5844 <https://github.com/GenericMappingTools/gmt/pull/5844>`_)
 * :doc:`plot`, :doc:`plot3d`, and :doc:`clip`: Add polar resampling via -Ar|t (`#5263 <https://github.com/GenericMappingTools/gmt/pull/5263>`_)
 * :doc:`project`: Let -G accept increment unit and +n modifier (`#5984 <https://github.com/GenericMappingTools/gmt/pull/5984>`_)
