@@ -5550,11 +5550,11 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			break;
 
 		case GMT_STEREO:	/* Stereographic */
-			strcpy (txt_c, "90");	/* Initialize default horizon */
-			if (k >= 0) {	/* Scale entered as 1:mmmmm */
-				if (n_slashes == 2)
+			strcpy (txt_c, "90");	/* Initialize default horizon to 90 */
+			if (k >= 0) {	/* Scale was entered as 1:xxxxxx */
+				if (n_slashes == 2)	/* Got -Js<lon>/<lat>/1:xxxxxx */
 					n = sscanf (args, "%[^/]/%[^/]/1:%lf", txt_a, txt_b, &GMT->current.proj.pars[3]);
-				else if (n_slashes == 3) {	/* with true scale at specified latitude */
+				else if (n_slashes == 3) {	/* Got -Js<lon>/<lat>/<slat>/1:xxxxxx with true scale at specified latitude slat */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_e, &GMT->current.proj.pars[3]);
 					if (gmtinit_get_uservalue (GMT, txt_e, gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return true;
 					if (c < -90.0 || c > 90.0) {
@@ -5565,7 +5565,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 						error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_e, GMT_IS_LAT, &GMT->current.proj.pars[4]), txt_e);
 					GMT->current.proj.pars[5] = 1.0;	/* flag for true scale case */
 				}
-				else if (n_slashes == 4) {
+				else if (n_slashes == 4) {	/* Got Js<lon>/<lat>/<horizon>/<slat>/1:xxxxxx */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/1:%lf", txt_a, txt_b, txt_c, txt_e, &GMT->current.proj.pars[3]);
 					if (gmtinit_get_uservalue (GMT, txt_e, gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return true;
 					if (c < -90.0 || c > 90.0) {
@@ -5578,18 +5578,29 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 				}
 				if (GMT->current.proj.pars[3] != 0.0) GMT->current.proj.pars[3] = 1.0 / (GMT->current.proj.pars[3] * GMT->current.proj.unit);
 			}
-			else if (width_given) {
+			else if (width_given) {	/* Got -JS<lon>/<lat>/<width> */
 				if (n_slashes == 2)
 					n = sscanf (args, "%[^/]/%[^/]/%s", txt_a, txt_b, txt_d);
-				else if (n_slashes == 3)
+				else if (n_slashes == 3)	/* Got -JS<lon>/<lat>/<horizon>/<width> */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d);
-				GMT->current.proj.pars[3] = gmt_M_to_inch (GMT, txt_d);
+				if (strchr (GMT_DIM_UNITS, txt_c[strlen(txt_c)-1])) {	/* Got a confused <radius>/<slat>  suitable for -Js instead ? */
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot give <radius>/<lat> since you are specifying width via -JS!\n");
+						error++;
+				}
+				else
+					GMT->current.proj.pars[3] = gmt_M_to_inch (GMT, txt_d);
 			}
 			else {	/* Scale entered as radius/lat */
-				if (n_slashes == 3)
+				if (n_slashes == 3)	/* Got -Js|S<lon>/<lat>/<radius>/<slat> */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_d, txt_e);
-				else if (n_slashes == 4)
+				else if (n_slashes == 4)	/* Got -Js|S<lon>/<lat>/<horizon>/<radius>/<slat> */
 					n = sscanf (args, "%[^/]/%[^/]/%[^/]/%[^/]/%s", txt_a, txt_b, txt_c, txt_d, txt_e);
+				if (strchr (GMT_DIM_UNITS, txt_e[strlen(txt_e)-1])) {	/* Got <slat>/<radius><unit> instead, quietly switch */
+					char tmp[GMT_LEN256] = {""};
+					strcpy (tmp, txt_e);
+					strcpy (txt_e, txt_d);
+					strcpy (txt_d, tmp);
+				}
 				if (n == n_slashes + 1) {
 					GMT->current.proj.pars[3] = gmt_M_to_inch (GMT, txt_d);
 					if (gmtinit_get_uservalue (GMT, txt_e, gmt_M_type (GMT, GMT_IN, GMT_Y), &c, "oblique latitude")) return true;
@@ -5604,7 +5615,7 @@ GMT_LOCAL bool gmtinit_parse_J_option (struct GMT_CTRL *GMT, char *args_in) {
 			error += (n != n_slashes + 1);
 			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_a, GMT_IS_LON, &GMT->current.proj.pars[0]), txt_a);
 			error += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf (GMT, txt_b, GMT_IS_LAT, &GMT->current.proj.pars[1]), txt_b);
-			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);
+			error += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf (GMT, txt_c, GMT_IS_LON, &GMT->current.proj.pars[2]), txt_c);	/* [90] Using GMT_IS_LON since we may get args like 180 */
 			error += (GMT->current.proj.pars[2] <= 0.0 || GMT->current.proj.pars[2] >= 180.0 || GMT->current.proj.pars[3] <= 0.0 || (k >= 0 && width_given));
 			GMT->current.proj.lon0 = GMT->current.proj.pars[0];	GMT->current.proj.lat0 = GMT->current.proj.pars[1];
 			break;
