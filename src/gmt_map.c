@@ -3052,15 +3052,21 @@ GMT_LOCAL int gmtmap_init_cylstereo (struct GMT_CTRL *GMT, bool *search) {
 
 GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
 	unsigned int i;
+	bool std_parallel = (lrint (GMT->current.proj.pars[5]) == 1);
 	double xmin = 0.0, xmax = 0.0, ymin = 0.0, ymax = 0.0, dummy = 0.0, radius = 0.0, latg, D = 1.0;
 
 	GMT->current.proj.GMT_convert_latitudes = !gmt_M_is_spherical (GMT);
 	latg = GMT->current.proj.pars[1];
 
+	if (std_parallel && !doubleAlmostEqual (fabs (latg), 90.0)) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Cannot set true scale at given parallel when stereographic projection is not polar!\n");
+		return (GMT_RUNTIME_ERROR);
+	}
+
 	gmtmap_set_polar (GMT);
 
 	if (GMT->current.setting.proj_scale_factor == -1.0) GMT->current.setting.proj_scale_factor = 0.9996;	/* Select default map scale for Stereographic */
-	if (GMT->current.proj.polar && (lrint (GMT->current.proj.pars[5]) == 1)) GMT->current.setting.proj_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
+	if (GMT->current.proj.polar  && std_parallel) GMT->current.setting.proj_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
 	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
 
@@ -3075,9 +3081,8 @@ GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
 		if (GMT->current.proj.polar) {
 			e1p = 1.0 + GMT->current.proj.ECC;	e1m = 1.0 - GMT->current.proj.ECC;
 			D /= d_sqrt (pow (e1p, e1p) * pow (e1m, e1m));
-			if (lrint (GMT->current.proj.pars[5]) == 1) {	/* Gave true scale at given parallel */
+			if (std_parallel) {	/* Gave true scale at given parallel */
 				double k_p, m_c, t_c, es;
-
 				sincosd (fabs (GMT->current.proj.pars[4]), &s, &c);
 				es = GMT->current.proj.ECC * s;
 				m_c = c / d_sqrt (1.0 - GMT->current.proj.ECC2 * s * s);
