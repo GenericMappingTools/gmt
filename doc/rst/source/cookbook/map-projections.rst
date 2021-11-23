@@ -319,7 +319,7 @@ Stereographic Equal-Angle (**-Js** **-JS**)
 
 - The longitude (*lon0*) and latitude (*lat0*) of the projection center.
 - Optionally, the *horizon*, i.e., the number of degrees from the center to the edge (< 180) [default is 90].
-- Scale (via **-Js**) maybe provided in one of three flavors: Append 1:xxxxx (true scale at pole), *slat*\ /1:xxxxx
+- Scale (via **-Js**) may be provided in one of three flavors: Append 1:xxxxx (true scale at pole), *slat*\ /1:xxxxx
   (true scale at standard parallel *slat* for the polar aspect only), or *radius/latitude* (where *radius* is
   distance on map in :ref:`plot-units <plt-units>` from projection center to a particular oblique latitude).
 - Alternatively, simply append map *width* in :ref:`plot-units <plt-units>` (with **-JS**).

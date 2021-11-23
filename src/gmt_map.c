@@ -3066,7 +3066,7 @@ GMT_LOCAL int gmtmap_init_stereo (struct GMT_CTRL *GMT, bool *search) {
 	gmtmap_set_polar (GMT);
 
 	if (GMT->current.setting.proj_scale_factor == -1.0) GMT->current.setting.proj_scale_factor = 0.9996;	/* Select default map scale for Stereographic */
-	if (GMT->current.proj.polar  && std_parallel) GMT->current.setting.proj_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
+	if (GMT->current.proj.polar && std_parallel) GMT->current.setting.proj_scale_factor = 1.0;	/* Gave true scale at given parallel set below */
 	/* Equatorial view has a problem with infinite loops.  Until I find a cure
 	  we set projection center latitude to 0.001 so equatorial works for now */
 
