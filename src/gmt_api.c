@@ -11212,12 +11212,12 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 	 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
 				if (def_direction == GMT_IN) {  /* Need to supply header information */
 					if (range == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Need at least the z-range for cubes */
-                    if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad); /* Change the default pad; give -1 to leave as is */
-                    if ((G = gmt_create_grid (API->GMT)) == NULL)   /* Create a temporary helper grid */
-                        return_null (API, GMT_MEMORY_ERROR);    /* Allocation error */
-                    if ((error = gmtapi_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, G)))
-                        return_null (API, error);
-                    if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);    /* Reset to the default pad */
+					if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad); /* Change the default pad; give -1 to leave as is */
+					if ((G = gmt_create_grid (API->GMT)) == NULL)   /* Create a temporary helper grid */
+						return_null (API, GMT_MEMORY_ERROR);    /* Allocation error */
+					if ((error = gmtapi_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, G)))
+						return_null (API, error);
+					if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);    /* Reset to the default pad */
 					gmt_copy_gridheader (API->GMT, C->header, G->header);
 					C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
 					if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we leave it as NULL to be set by calling module */
