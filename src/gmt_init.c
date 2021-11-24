@@ -10033,6 +10033,9 @@ void gmt_set_undefined_axes (struct GMT_CTRL *GMT, bool conf_update) {
 	}
 	else if (GMT->current.proj.projection == GMT_GNOMONIC || GMT->current.proj.projection == GMT_GENPER)	/* Need to relax to all since hard to guess what works */
 		strcpy (axes, "WESNZ");
+	else if (gmt_M_is_azimuthal (GMT) && doubleAlmostEqual (GMT->current.proj.pars[1], -90.0)) {	/* South polar aspect */
+		strcpy (axes, "WrbNZ");
+	}
 	else if (!doubleAlmostEqual (az, 180.0)) {	/* Rotated, so must adjust */
 		unsigned int quadrant = urint (floor (az / 90.0)) + 1;
 		switch (quadrant) {
