@@ -11210,17 +11210,17 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				if (data) return_null (API, GMT_PTR_NOT_NULL);	/* Error if data pointer is not NULL */
 	 			if ((C = gmtlib_create_cube (API->GMT)) == NULL)
 	 				return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
-				if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad);	/* Change the default pad; give -1 to leave as is */
-				if ((G = gmt_create_grid (API->GMT)) == NULL)
-		 			return_null (API, GMT_MEMORY_ERROR);	/* Allocation error */
-				if ((error = gmtapi_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, G)))
-					return_null (API, error);
-				if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);	/* Reset to the default pad */
-				if (def_direction == GMT_IN) {
+				if (def_direction == GMT_IN) {  /* Need to supply header information */
 					if (range == NULL) return_null (API, GMT_PTR_IS_NULL);	/* Need at least the z-range for cubes */
+					if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, pad); /* Change the default pad; give -1 to leave as is */
+					if ((G = gmt_create_grid (API->GMT)) == NULL)   /* Create a temporary helper grid */
+						return_null (API, GMT_MEMORY_ERROR);    /* Allocation error */
+					if ((error = gmtapi_init_grid (API, NULL, this_dim, range, inc, registration, mode, def_direction, G)))
+						return_null (API, error);
+					if (pad != GMT_NOTSET) gmt_set_pad (API->GMT, API->pad);    /* Reset to the default pad */
 					gmt_copy_gridheader (API->GMT, C->header, G->header);
 					C->z_range[0] = range[ZLO];	C->z_range[1] = range[ZHI];
-					if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we lave it as NULL to be set by calling module */
+					if (inc && inc[GMT_Z] > 0.0) {	/* Must make equidistant array, else we leave it as NULL to be set by calling module */
 						HU = gmt_get_U_hidden (C);
 						C->header->n_bands = gmt_make_equidistant_array (API->GMT, range[ZLO], range[ZHI], inc[GMT_Z], &(C->z));
 						C->z_inc = inc[GMT_Z];
@@ -11240,7 +11240,7 @@ void * GMT_Create_Data (void *V_API, unsigned int family, unsigned int geometry,
 				/* Also allocate and populate the x,y vectors */
 				if ((error = gmtapi_alloc_grid_xy (API, G)) != GMT_NOERROR)
 					return_null (API, error);	/* Allocation error */
-				C->x = G->x;	C->y = G->y;	/* Let these be the cube's from now on */
+				C->x = G->x;	C->y = G->y;	/* Let these be the cube's arrays from now on */
 				G->x = G->y = NULL;	/* No longer anything to do with G */
 				HU = gmt_get_U_hidden (C);
 				HU->xyz_alloc_mode[GMT_X] = HU->xyz_alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;
