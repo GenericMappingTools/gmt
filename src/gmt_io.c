@@ -753,12 +753,6 @@ GMT_LOCAL void gmtio_ogr_check_if_geographic (struct GMT_CTRL *GMT) {
 			return;
 		}
 	}
-	if (S->proj[GMTIO_WKT]) {	/* See if we have degree units */
-		if (strstr (S->proj[GMTIO_WKT], "UNIT[\"Degree\",0.0174532925199433]")) {
-			gmt_set_geographic (GMT, GMT_IN);
-			return;
-		}
-	}
 	/* If we get here we most likely have read projected data, so stick with Cartesian i/o */
 }
 
@@ -780,7 +774,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 
 	unsigned int n_aspatial, k, geometry = 0;
 	bool quote;
-	char *p = NULL, *Jstring = NULL;
+	char *p = NULL;
 	struct GMT_OGR *S = NULL;
 
 	if (GMT->current.io.ogr == GMT_OGR_FALSE) return (false);	/* No point parsing further if we KNOW it is not OGR */
@@ -872,25 +866,15 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 					GMT->current.io.ogr = GMT_OGR_FALSE;
 					return (false);					
 				}
-				Jstring = strdup (&p[2]);
 				switch (p[1]) {
-					case 'e': k = GMTIO_EPGS;	/* EPSG code */
-						if (strstr (Jstring, "4326"))	/* 4326 means we have lon/lat degree coordinates and thus should set -fig */
-							gmt_set_geographic (GMT, GMT_IN);
-						break;
+					case 'e': k = GMTIO_EPGS;	break;	/* EPSG code */
 					case 'g': k = GMTIO_GMT;	break;	/* GMT proj code. If given then data are projected */
-					case 'p': k = GMTIO_PROJ4;	/* Proj.4 code */
-						if (strstr (Jstring, "+proj=longlat"))	/* +proj=longlat means we have lon/lat degree coordinates and thus should set -fig */
-							gmt_set_geographic (GMT, GMT_IN);
-						break;
-					case 'w': k = GMTIO_WKT;	/* OGR WKT representation */
-						if (strstr (Jstring, "Degree"))	/* UNIT as Degree means we have lon/lat degree coordinates and thus should set -fig */
-							gmt_set_geographic (GMT, GMT_IN);
-						break;
-					default:	/* We already checked for this above */
+					case 'p': k = GMTIO_PROJ4;	break;	/* Proj.4 code */
+					case 'w': k = GMTIO_WKT;	break;	/* OGR WKT representation */
+					default:	/* We already checked for this above so cannot get here */
 						break;
 				}
-				S->proj[k] = Jstring;
+				S->proj[k] = strdup (&p[2]);;
 				break;
 
 			case 'R':	/* Dataset region */
