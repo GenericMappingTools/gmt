@@ -185,6 +185,15 @@ typedef enum {
 	Int64len = 8
 } SwapWidth;
 
+/* Indicies into the 4 proj strings possible in GMT/OGR files */
+
+enum GMTIO_PROJS {
+	GMTIO_EPGS = 0,
+	GMTIO_GMT,
+	GMTIO_PROJ4,
+	GMTIO_GCS
+};
+
 /* These functions are defined and used below but not in any *.h file so we repeat them here */
 int gmt_get_ogr_id (struct GMT_OGR *G, char *name);
 void gmt_format_abstime_output (struct GMT_CTRL *GMT, double dt, char *text);
@@ -720,6 +729,39 @@ GMT_LOCAL void gmtio_align_ogr_values (struct GMT_CTRL *GMT) {
 	}
 }
 
+GMT_LOCAL void gmtio_ogr_check_if_geographic (struct GMT_CTRL *GMT) {
+	/* Determine if this OGR/GMT file contains plain geographic lon/lat or if there are projected data.
+	 * If lon/lat then we use that information to call gmt_set_geographic (i.e., -fg) */
+	struct GMT_OGR *S = GMT->current.io.OGR;
+	if (S == NULL) return;	/* Well, that was a non-starter*/
+
+	if (S->proj[GMTIO_PROJ4]) {	/* Start with checking proj4 codes */
+		if (strstr (S->proj[GMTIO_PROJ4], "+proj=longlat") || strstr (S->proj[GMTIO_PROJ4], "+pronj=latlong")) {	/* Means we have degree coordinates */
+			gmt_set_geographic (GMT, GMT_IN);
+			return;
+		}
+	}
+	if (S->proj[GMTIO_EPGS]) {	/* See if we have EPGS codes */
+		if (strstr (S->proj[GMTIO_EPGS], "4326")) {	/* 4326 means we have lon/lat degree coordinates*/
+			gmt_set_geographic (GMT, GMT_IN);
+			return;
+		}
+	}
+	if (S->proj[GMTIO_GMT]) {	/* See if we have a GMT code for lonlat */
+		if (strstr (S->proj[GMTIO_GMT], "-Jx1d")) {
+			gmt_set_geographic (GMT, GMT_IN);
+			return;
+		}
+	}
+	if (S->proj[GMTIO_GCS]) {	/* See if we have degree units */
+		if (strstr (S->proj[GMTIO_GCS], "UNIT[\"Degree\",0.0174532925199433]")) {
+			gmt_set_geographic (GMT, GMT_IN);
+			return;
+		}
+	}
+	/* If we get here we most likely have read projected data, so stick with Cartesian i/o */
+}
+
 /*! . */
 GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 	/* Parsing of the GMT/OGR vector specification (v 1.0).
@@ -746,6 +788,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 	if (GMT->current.io.ogr == GMT_OGR_TRUE && !strncmp (record, "# FEATURE_DATA", 14)) {	/* It IS an OGR file and we found end of OGR header section and start of feature data */
 		GMT->current.io.ogr_parser = &gmtio_ogr_data_parser;	/* From now on only parse for feature tags */
 		gmtio_align_ogr_values (GMT);	/* Simplify copy from aspatial values to input columns as per -a option */
+		gmtio_ogr_check_if_geographic (GMT);	/* Check if we should set -fg */
 		return (true);
 	}
 	if (!(p = strchr (record, '@'))) return (false);	/* Not an OGR/GMT record since @ was not found */
@@ -831,16 +874,16 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 				}
 				Jstring = strdup (&p[2]);
 				switch (p[1]) {
-					case 'e': k = 0;	/* EPSG code */
+					case 'e': k = GMTIO_EPGS;	/* EPSG code */
 						if (strstr (Jstring, "4326"))	/* 4326 means we have lon/lat degree coordinates and thus should set -fig */
 							gmt_set_geographic (GMT, GMT_IN);
 						break;
-					case 'g': k = 1;	break;	/* GMT proj code. If given then data are projected */
-					case 'p': k = 2;	/* Proj.4 code */
+					case 'g': k = GMTIO_GMT;	break;	/* GMT proj code. If given then data are projected */
+					case 'p': k = GMTIO_PROJ4;	/* Proj.4 code */
 						if (strstr (Jstring, "+proj=longlat"))	/* +proj=longlat means we have lon/lat degree coordinates and thus should set -fig */
 							gmt_set_geographic (GMT, GMT_IN);
 						break;
-					case 'w': k = 3;	/* OGR WKT representation */
+					case 'w': k = GMTIO_GCS;	/* OGR WKT representation */
 						if (strstr (Jstring, "Degree"))	/* UNIT as Degree means we have lon/lat degree coordinates and thus should set -fig */
 							gmt_set_geographic (GMT, GMT_IN);
 						break;
@@ -2915,9 +2958,11 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 		return (GMT->parent->error);
 	}
 	TH->ogr->region = strdup (buffer);
-	TH->ogr->proj[1] = strdup ("\"-Jx1d --PROJ_ELLIPSOID=WGS84\"");
-	TH->ogr->proj[2] = strdup ("\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"");
-	TH->ogr->proj[3] = strdup ("\"GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]\"");
+	/* Initialize the proj strings to geographic lon/lat no-projection status */
+	TH->ogr->proj[GMTIO_EPGS] = strdup ("\"4326\"");
+	TH->ogr->proj[GMTIO_GMT] = strdup ("\"-Jx1d --PROJ_ELLIPSOID=WGS84\"");
+	TH->ogr->proj[GMTIO_PROJ4] = strdup ("\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"");
+	TH->ogr->proj[GMTIO_GCS] = strdup ("\"GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]\"");
 	TH->ogr->geometry = GMT->common.a.geometry;
 	TH->ogr->n_aspatial = GMT->common.a.n_aspatial;
 	if (TH->ogr->n_aspatial) {	/* Copy over the command-line settings */
