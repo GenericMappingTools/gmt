@@ -191,7 +191,7 @@ enum GMTIO_PROJS {
 	GMTIO_EPGS = 0,
 	GMTIO_GMT,
 	GMTIO_PROJ4,
-	GMTIO_GCS
+	GMTIO_WKT
 };
 
 /* These functions are defined and used below but not in any *.h file so we repeat them here */
@@ -753,8 +753,8 @@ GMT_LOCAL void gmtio_ogr_check_if_geographic (struct GMT_CTRL *GMT) {
 			return;
 		}
 	}
-	if (S->proj[GMTIO_GCS]) {	/* See if we have degree units */
-		if (strstr (S->proj[GMTIO_GCS], "UNIT[\"Degree\",0.0174532925199433]")) {
+	if (S->proj[GMTIO_WKT]) {	/* See if we have degree units */
+		if (strstr (S->proj[GMTIO_WKT], "UNIT[\"Degree\",0.0174532925199433]")) {
 			gmt_set_geographic (GMT, GMT_IN);
 			return;
 		}
@@ -883,7 +883,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 						if (strstr (Jstring, "+proj=longlat"))	/* +proj=longlat means we have lon/lat degree coordinates and thus should set -fig */
 							gmt_set_geographic (GMT, GMT_IN);
 						break;
-					case 'w': k = GMTIO_GCS;	/* OGR WKT representation */
+					case 'w': k = GMTIO_WKT;	/* OGR WKT representation */
 						if (strstr (Jstring, "Degree"))	/* UNIT as Degree means we have lon/lat degree coordinates and thus should set -fig */
 							gmt_set_geographic (GMT, GMT_IN);
 						break;
@@ -2962,7 +2962,7 @@ GMT_LOCAL int gmtio_prep_ogr_output (struct GMT_CTRL *GMT, struct GMT_DATASET *D
 	TH->ogr->proj[GMTIO_EPGS] = strdup ("\"4326\"");
 	TH->ogr->proj[GMTIO_GMT] = strdup ("\"-Jx1d --PROJ_ELLIPSOID=WGS84\"");
 	TH->ogr->proj[GMTIO_PROJ4] = strdup ("\"+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs\"");
-	TH->ogr->proj[GMTIO_GCS] = strdup ("\"GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]\"");
+	TH->ogr->proj[GMTIO_WKT] = strdup ("\"GEOGCS[\"GCS_WGS_1984\",DATUM[\"WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]]\"");
 	TH->ogr->geometry = GMT->common.a.geometry;
 	TH->ogr->n_aspatial = GMT->common.a.n_aspatial;
 	if (TH->ogr->n_aspatial) {	/* Copy over the command-line settings */
