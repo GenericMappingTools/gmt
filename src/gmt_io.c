@@ -4319,7 +4319,7 @@ void gmt_set_geographic (struct GMT_CTRL *GMT, unsigned int dir) {
 	/* Eliminate lots of repeated statements to do this: */
 	gmt_set_column_type (GMT, dir, GMT_X, GMT_IS_LON);
 	gmt_set_column_type (GMT, dir, GMT_Y, GMT_IS_LAT);
-	if (dir == GMT_IN) {	/* Default spherical distance calculations are in meters (cannot fail) */
+	if (dir == GMT_IN && GMT->current.io.ogr != GMT_OGR_TRUE) {	/* Default spherical distance calculations are in meters (cannot fail), except if we are still parsing OGR @J strings */
 		int mode = (GMT->common.j.active) ? GMT->common.j.mode : GMT_GREATCIRCLE;
 		(void) gmt_init_distaz (GMT, GMT_MAP_DIST_UNIT, mode, GMT_MAP_DIST);
 	}
