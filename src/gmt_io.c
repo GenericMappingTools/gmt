@@ -738,7 +738,7 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 
 	unsigned int n_aspatial, k, geometry = 0;
 	bool quote;
-	char *p = NULL;
+	char *p = NULL, *Jstring = NULL;
 	struct GMT_OGR *S = NULL;
 
 	if (GMT->current.io.ogr == GMT_OGR_FALSE) return (false);	/* No point parsing further if we KNOW it is not OGR */
@@ -824,26 +824,30 @@ GMT_LOCAL bool gmtio_ogr_header_parser (struct GMT_CTRL *GMT, char *record) {
 				break;
 
 			case 'J':	/* Dataset projection strings (one of 4 kinds) */
+				if (p[1] == '\0' || p[1] == ' ' || strchr ("egpw", p[1]) == NULL) {
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad OGR/GMT: @J given unknown format (%c)\n", (int)p[1]);
+					GMT->current.io.ogr = GMT_OGR_FALSE;
+					return (false);					
+				}
+				Jstring = strdup (&p[2]);
 				switch (p[1]) {
 					case 'e': k = 0;	/* EPSG code */
-						if (strstr (&p[2], "4326"))	/* 4326 means we have lon/lat degree coordinates and thus should set -fig */
+						if (strstr (Jstring, "4326"))	/* 4326 means we have lon/lat degree coordinates and thus should set -fig */
 							gmt_set_geographic (GMT, GMT_IN);
 						break;
 					case 'g': k = 1;	break;	/* GMT proj code. If given then data are projected */
 					case 'p': k = 2;	/* Proj.4 code */
-						if (strstr (&p[2], "+proj=longlat"))	/* +proj=longlat means we have lon/lat degree coordinates and thus should set -fig */
+						if (strstr (Jstring, "+proj=longlat"))	/* +proj=longlat means we have lon/lat degree coordinates and thus should set -fig */
 							gmt_set_geographic (GMT, GMT_IN);
 						break;
 					case 'w': k = 3;	/* OGR WKT representation */
-						if (strstr (&p[2], "Degree"))	/* UNIT as Degree means we have lon/lat degree coordinates and thus should set -fig */
+						if (strstr (Jstring, "Degree"))	/* UNIT as Degree means we have lon/lat degree coordinates and thus should set -fig */
 							gmt_set_geographic (GMT, GMT_IN);
 						break;
-					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Bad OGR/GMT: @J given unknown format (%c)\n", (int)p[1]);
-						GMT->current.io.ogr = GMT_OGR_FALSE;
-						return (false);
+					default:	/* We already checked for this above */
+						break;
 				}
-				S->proj[k] = strdup (&p[2]);
+				S->proj[k] = Jstring;
 				break;
 
 			case 'R':	/* Dataset region */
