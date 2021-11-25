@@ -18344,8 +18344,8 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a deprecated sub-shell call `...`, please use $(...) instead: %s", start);
 				else if (strchr (line, ')') && (p = strchr (line, '('))) {	/* sub-shell call without leading $ */
 					prev = p - 1;	/* Get previous character */
-					if (prev < start || prev[0] != '$')
-						GMT_Report (GMT->parent, GMT_MSG_WARNING, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
+					if (strchr (line, '\"') == NULL && (prev < start || prev[0] != '$'))	/* No double-quotes yet we have ( ...) and no leading $.Give this message: */
+						GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Main script appears to have a sub-shell call $(...) without the leading $: %s", start);
 				}
 			}
 		}
@@ -18365,7 +18365,7 @@ int gmt_token_check (struct GMT_CTRL *GMT, FILE *fp, char *prefix, unsigned int 
 			}
 			else if (mode != GMT_DOS_MODE) {
 				if (strchr (start, '{') && !strchr (start, '}'))
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing  in variable name: %s", record), n_errors++;
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing } in variable name: %s", record), n_errors++;
 				else if (!strchr (start, '{') && strchr (start, '}'))
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Main script missing { in variable name: %s", record), n_errors++;
 			}
