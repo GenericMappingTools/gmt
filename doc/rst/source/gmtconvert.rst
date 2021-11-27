@@ -90,7 +90,7 @@ Optional Arguments
 
 **-D**\ [*template*\ [**+o**\ *orig*]]
     For multiple segment data, dump each segment to a separate output
-    file [Default writes a multiple segment file to stdout]. Append a
+    file [Default writes a multiple segment file to standard output]. Append a
     format template for the individual file names; this template
     **must** contain a C format specifier that can format an integer
     argument (the running segment number across all tables); this is

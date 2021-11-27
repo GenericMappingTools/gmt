@@ -64,12 +64,12 @@ Required Arguments
     If *operand* can be opened as a file it will be read as an ASCII (or
     binary, see **-bi**) table data file. If not
     a file, it is interpreted as a numerical constant or a special
-    symbol (see below). The special argument STDIN means that *stdin*
+    symbol (see below). The special argument STDIN means that standard input
     will be read and placed on the stack; STDIN can appear more than
     once if necessary.
 *outfile*
     The name of a table data file that will hold the final result. If
-    not given then the output is sent to *stdout*.
+    not given then the output is sent to standard output.
 
 Optional Arguments
 ------------------

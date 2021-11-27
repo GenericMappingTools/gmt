@@ -127,7 +127,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *filestem*
-    When **-L** is set, the tracks are normally written to *stdout* as a
+    When **-L** is set, the tracks are normally written to standard output as a
     multisegment file. Specify a *filestem* to have each track written
     to *filestem.#*, where *#* is the track number. The track number is
     also copied to the 4th output column.

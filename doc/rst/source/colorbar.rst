@@ -90,7 +90,7 @@ Optional Arguments
 **-C**\ [*cpt*]
     *cpt* is the CPT to be used. If no *cpt* is appended or no **-C** is given
     then we use the current CPT (modern mode only).  In classic mode, if no **-C**
-    is given then we read stdin.  By default all
+    is given then we read standard input.  By default all
     color changes are annotated. To use a subset, add an extra column to
     the CPT with a L, U, or B to annotate Lower, Upper, or Both
     color segment boundaries (but see **-B**). Like :doc:`grdview`, we can understand
