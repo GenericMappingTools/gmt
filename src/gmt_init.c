@@ -14190,7 +14190,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 				void *content = NULL;
 				size_t n_read = 0;
 
-				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Must save stdin to a temporary file.\n");
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Must save standard input to a temporary file.\n");
 
 				if ((fp = gmt_create_tempfile (API, "gmt_saved_stdin", NULL, tmpfile)) == NULL) {	/* Not good... */
 					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Could not create and open temporary file name %s.\n", tmpfile);
@@ -14199,7 +14199,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 				file = tmpfile;
 
 				/* Dump stdin to that temp file */
-				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Send stdin to %s.\n", file);
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Send standard input to %s.\n", file);
 				if ((content = malloc (GMT_BUFSIZ)) == NULL) {
 					GMT_Report (API, GMT_MSG_ERROR, "gmtinit_get_region_from_data: Unable to allocate %d bytes for buffer.\n", GMT_BUFSIZ);
 				    fclose (fp);
@@ -14219,7 +14219,7 @@ GMT_LOCAL int gmtinit_get_region_from_data (struct GMTAPI_CTRL *API, int family,
 					return API->error;	/* Failure to make new option or append to list */
 				if ((tmp = GMT_Make_Option (API, GMT_OPT_INFILE, file)) == NULL || (*options = GMT_Append_Option (API, tmp, *options)) == NULL)
 					return API->error;	/* Failure to append option to calling module option list */
-				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Replace stdin input with -<%s.\n", file);
+				GMT_Report (API, GMT_MSG_DEBUG, "gmtinit_get_region_from_data: Replace standard input with -<%s.\n", file);
 			}
 
 			/* Here we have all the input options OR a single tempfile input option.  Now look for special modifiers and add those too */

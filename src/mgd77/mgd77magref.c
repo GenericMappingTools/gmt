@@ -97,7 +97,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 		"Here, (<lon>, <lat>) is the geocentric position on the ellipsoid [but see -G], "
 		"<alt> is the altitude in km positive above the ellipsoid, and "
 		"<time> is the time of data acquisition, in <date>T<clock> format (but see -A+y). "
-		"We read <stdin> if no input file is given.");
+		"We read standard input if no input file is given.");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A+a<alt>+t<date>+y");
 	GMT_Usage (API, -2, "Adjust how the input records are interpreted. Append modifiers:");

@@ -651,7 +651,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				if (opt->arg[0]) {
 					if (opt->arg[0] == '+') {	/* Obsolete syntax */
 						if (gmt_M_compat_check (GMT, 5)) {
-							GMT_Report (API, GMT_MSG_COMPAT, "Modifier -N+<file> is deprecated; use -N in the future to save to stdout.\n");
+							GMT_Report (API, GMT_MSG_COMPAT, "Modifier -N+<file> is deprecated; use -N in the future to save to standard output.\n");
 							if (n_files++ == 0) Ctrl->Out.file = strdup (&opt->arg[1]);
 						}
 						else {
