@@ -34,6 +34,8 @@
  *
  * We expect to find the file dcw-gmt.nc, dcw-countries.txt, and dcw-states.txt
  * in one of the dirs accessible to GMT or pointed to by the default DIR_DCW.
+ * We also look for dcw-collections.txt for named groups of items (2.0.2 or later)
+ * both in the DCW directory and the users .gmt directory.
  * See separate subversion project DCW for the maintenance of the raw files that
  * are used to build the netCDF file [svn://gmtserver.soest.hawai.edu/DCW].
  */
@@ -60,6 +62,12 @@ struct GMT_DCW_STATE {		/* Information per state */
 
 struct GMT_DCW_COUNTRY_STATE {		/* Information per country with state */
 	char country[4];		/* 2/3-char country code ISO 3166-1 (e.g., BR, US) for countries with states */
+};
+
+struct GMT_DCW_COLLECTION {		/* Information of collections representing multiple selections */
+	char region[GMT_LEN16];		/* Up to 16-character collections, e.g., SCAND for Scandinavia */
+	char name[GMT_LEN64];		/* Up to 64-character optional full name, e.g., Scandinavia */
+	char *list;					/* Comma-separated list of entities making up the collection */
 };
 
 /* For version 2.0.0 we follow https://en.wikipedia.org/wiki/ISO_3166-2:CN and use 2-char instead of int codes */
@@ -133,15 +141,17 @@ GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, 
 	return (false);
 }
 
-GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, unsigned int dim[]) {
+GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, struct GMT_DCW_COLLECTION **U, unsigned int dim[]) {
 	/* Open and read list of countries and states and return via two struct and one char arrays plus dimensions in dim */
 	size_t n_alloc = 300;
-	unsigned int k, n;
+	unsigned int k, kc, n, collection;
+	int ns;
 	char path[PATH_MAX] = {""}, line[BUFSIZ] = {""};
 	FILE *fp = NULL;
 	struct GMT_DCW_COUNTRY *Country = NULL;
 	struct GMT_DCW_STATE *State = NULL;
 	struct GMT_DCW_COUNTRY_STATE *Country_State = NULL;
+	struct GMT_DCW_COLLECTION *Collection = NULL;
 
 	if (!gmtdcw_get_path (GMT, "dcw-countries", ".txt", path)) return GMT_NOTSET;
 
@@ -203,10 +213,65 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 		*CS = Country_State;
 	}
 
+	/* Get collections (which may not be present, so allow for missing files */
+
+	n_alloc = 100;	/* Reset to a smaller size */
+	Collection = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DCW_COLLECTION);
+	k = 0;
+	for (collection = 0; collection < 2; collection++) {	/* Read both system and user collections */
+		if (collection == 0) {	/* Look for DCW system file (which requires 2.0.2 or higher) */
+			if (!gmtdcw_get_path (GMT, "dcw-collections", ".txt", path))
+				continue;
+		}
+		else {	/* Look for user groups in the user dir, if present */
+			if (!gmtlib_getuserpath (GMT, "dcw-collections.txt", path))
+				continue;
+		}
+		/* Here we got the requested path */
+		kc = 0;	/* Number of collections in this set */
+		if ((fp = fopen (path, "r")) == NULL) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file %s [permission trouble?]\n", path);
+			gmt_M_free (GMT, Country);
+			return GMT_NOTSET;
+		}
+		/* File format is sequences like this:
+			# Scandinavia
+			tag: SCA Scandinavia
+			NO,SE,DK
+		*/
+		while (gmt_fgets (GMT, line, BUFSIZ, fp)) {
+			if (line[0] == '#') continue;	/* Skip comments */
+			if (strncmp (line, "tag: ", 5U)) {
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Collection file %s is not in correct format - exit\n", path);
+				gmt_M_free (GMT, Country);
+				gmt_M_free (GMT, Collection);
+				return GMT_NOTSET;
+			}
+			ns = sscanf (&line[5], "%s %[^\n]", Collection[k].region, Collection[k].name);
+			gmt_fgets (GMT, line, BUFSIZ, fp);	/* Get record with the list */
+			gmt_chop (line);
+			Collection[k].list = strdup (line);
+			k++;	kc++;
+			if (k == n_alloc) {
+				n_alloc += 100;
+				Collection = gmt_M_memory (GMT, Collection, n_alloc, struct GMT_DCW_COLLECTION);
+			}
+		}
+		fclose (fp);
+		dim[3+collection] = kc;
+	}
+	if (k == 0)	/* No such files at all */
+		gmt_M_free (GMT, Collection);
+	else
+		Collection = gmt_M_memory (GMT, Collection, k, struct GMT_DCW_COLLECTION);
+
+all_done:
+
 	*C = Country;
 	*S = State;
+	*U = Collection;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "DCW: Found %u countries, %u countries with states, and %u states\n", dim[0], dim[2], dim[1]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "DCW: Found %u countries, %u countries with states, and %u states, %d DCW collections and %d user collections\n", dim[0], dim[2], dim[1], dim[3], dim[4]);
 	return 0;
 }
 
@@ -262,6 +327,17 @@ GMT_LOCAL bool gmtdcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STA
 	return (false);
 }
 
+GMT_LOCAL int gmtdcw_found_collection (char *code, struct GMT_DCW_COLLECTION *GMT_DCW_collection, unsigned int *dim) {
+	int k, nc = dim[3] + dim[4];	/* Total number of collections */
+	if (nc == 0) return GMT_NOTSET;	/* No collections available */
+
+	for (k = 0; k < nc; k++) {
+		if (strcmp (code, GMT_DCW_collection[k].region) == 0 || (GMT_DCW_collection[k].name[0] && strcmp (code, GMT_DCW_collection[k].name) == 0))
+			return (k);	/* Found a matching collection */
+	}
+	return (GMT_NOTSET);	/* Not found */
+}
+
 /*----------------------------------------------------------|
  * Public functions that are part of the GMT Devel library  |
  *----------------------------------------------------------|
@@ -301,11 +377,11 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	 */
 	int item, ks, retval, ncid, xvarid, yvarid, id;
 	int64_t first, last;
-	size_t np, max_np = 0U, n_alloc;
+	size_t np, max_np = 0U, n_alloc = 300;
 	uint64_t k, seg, n_segments;
 	unsigned int n_items = 0, r_item = 0, pos = 0, kk, tbl = 0, j = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
-	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[3] = {0, 0, 0}, special = 0;
+	unsigned int GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, n_bodies[5] = {0, 0, 0, 0, 0}, special = 0;
 	bool done, want_state, outline, fill = false, is_Antarctica = false, hole, new_CN_codes = false;
 	char TAG[GMT_LEN16] = {""}, dim[GMT_LEN16] = {""}, xname[GMT_LEN16] = {""};
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
@@ -320,6 +396,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	struct GMT_RECORD *Out = NULL;
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
+	struct GMT_DCW_COLLECTION *GMT_DCW_collection = NULL;
 	struct GMT_FILL *sfill = NULL;
 	struct GMT_PEN *spen = NULL;
 
@@ -339,7 +416,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		wesn[YLO] = +9999.0;	wesn[YHI] = -9999.0;	/* Initialize so we can shrink it below */
 	}
 
-	if (gmtdcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, n_bodies))	/* Something went wrong */
+	if (gmtdcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, NULL, &GMT_DCW_collection, n_bodies))	/* Something went wrong */
 		return NULL;
 
 	GMT_DCW_COUNTRIES = n_bodies[0];
@@ -347,7 +424,6 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 	qsort ((void *)GMT_DCW_country, (size_t)GMT_DCW_COUNTRIES, sizeof (struct GMT_DCW_COUNTRY), gmtdcw_comp_countries);	/* Sort on country code */
 
-	n_alloc = n_bodies[0] + n_bodies[1];	/* Presumably max items considered */
 	order = gmt_M_memory (GMT, NULL, n_alloc, unsigned int);
 	for (j = 0; j < F->n_items; j++) {
 		pos = 0;
@@ -359,28 +435,55 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					strcat (list, GMT_DCW_country[k].code);
 					order[n_items] = j;	/* So we know which color/pen to apply for this item */
 					n_items++;
+					if (n_items == n_alloc) {
+						n_alloc += 100;
+						order = gmt_M_memory (GMT, order, n_alloc, unsigned int);
+					}
 				}
 				if (n_items)
 					GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Continent code expanded from %s to %s [%d countries]\n", F->item[j]->codes, list, n_items);
 				else
 					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Continent code %s unrecognized\n", code);
 			}
+			else if ((ks = gmtdcw_found_collection (code, GMT_DCW_collection, n_bodies)) != GMT_NOTSET) {
+				/* Got a collection we wish to add */
+				unsigned n_list = gmt_count_char (GMT, GMT_DCW_collection[ks].list, ',') + 1;	/* Number of items in collection */
+				if (n_items) strcat (list, ",");
+				strcat (list, GMT_DCW_collection[ks].list);
+				for (k = 0; k < n_list; k++) {
+					order[n_items++] = j;	/* So we know which color/pen to apply for all items in this collection */
+					if (n_items == n_alloc) {
+						n_alloc += 100;
+						order = gmt_M_memory (GMT, order, n_alloc, unsigned int);
+					}
+				}
+				GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "Collection code expanded from %s to %s [%d countries]\n", F->item[j]->codes, GMT_DCW_collection[ks].list, n_list);
+			}
 			else {	/* Just append this single one */
 				if (n_items) strcat (list, ",");
 				strcat (list, code);
 				order[n_items] = j;	/* So we know which color/pen to apply for this item */
 				n_items++;
+				if (n_items == n_alloc) {
+					n_alloc += 100;
+					order = gmt_M_memory (GMT, order, n_alloc, unsigned int);
+				}
 			}
 		}
 	}
 
-	if (n_items)
+	if (n_items) {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Requested %d DCW items: %s\n", n_items, list);
+		order = gmt_M_memory (GMT, order, n_items, unsigned int);
+	}
 	else {
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "No countries selected\n");
 		gmt_M_free (GMT, order);
 		gmt_M_free (GMT, GMT_DCW_country);
 		gmt_M_free (GMT, GMT_DCW_state);
+		for (k = 0; k < dim[3]+dim[4]; k++)
+			gmt_M_str_free (GMT_DCW_collection[k].list);
+		gmt_M_free (GMT, GMT_DCW_collection);
 		return NULL;
 	}
 
@@ -663,6 +766,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	gmt_nc_close (GMT, ncid);
 	gmt_M_free (GMT, GMT_DCW_country);
 	gmt_M_free (GMT, GMT_DCW_state);
+	for (k = 0; k < n_bodies[3]+n_bodies[4]; k++)
+		gmt_M_str_free (GMT_DCW_collection[k].list);
+	gmt_M_free (GMT, GMT_DCW_collection);
 	gmt_M_free (GMT, Out);
 
 	if (mode & GMT_DCW_REGION) {
@@ -722,18 +828,19 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 
 unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 	/* Write to stdout the available countries [and optionally states], then make calling program exit */
-	unsigned int list_mode, i, j, k, kk, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[3] = {0, 0, 0};
+	unsigned int list_mode, i, j, k, kk, GMT_DCW_COUNTRIES = 0, GMT_DCW_STATES = 0, GMT_DCW_N_COUNTRIES_WITH_STATES = 0, n_bodies[5] = {0, 0, 0, 0, 0};
 	bool search = false;
 	char string[GMT_LEN128] = {""};
 	struct GMT_DCW_COUNTRY *GMT_DCW_country = NULL;
 	struct GMT_DCW_STATE *GMT_DCW_state = NULL;
 	struct GMT_DCW_COUNTRY_STATE *GMT_DCW_country_with_state = NULL;
+	struct GMT_DCW_COLLECTION *GMT_DCW_collection = NULL;
 	struct GMT_RECORD *Out = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
 	list_mode = F->mode;
 	if ((list_mode & GMT_DCW_LIST) == 0) return 0;
-	if (gmtdcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, &GMT_DCW_country_with_state, n_bodies)) return 0;	/* Something went wrong */
+	if (gmtdcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, &GMT_DCW_country_with_state, &GMT_DCW_collection, n_bodies)) return 0;	/* Something went wrong */
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 	GMT_DCW_N_COUNTRIES_WITH_STATES = n_bodies[2];
@@ -796,6 +903,9 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 	gmt_M_free (GMT, GMT_DCW_country);
 	gmt_M_free (GMT, GMT_DCW_state);
 	gmt_M_free (GMT, GMT_DCW_country_with_state);
+	for (k = 0; k < n_bodies[3]+n_bodies[4]; k++)
+		gmt_M_str_free (GMT_DCW_collection[k].list);
+	gmt_M_free (GMT, GMT_DCW_collection);
 	return ((list_mode & GMT_DCW_LIST));
 }
 
