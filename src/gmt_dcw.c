@@ -35,7 +35,7 @@
  * We expect to find the file dcw-gmt.nc, dcw-countries.txt, and dcw-states.txt
  * in one of the dirs accessible to GMT or pointed to by the default DIR_DCW.
  * We also look for dcw-collections.txt for named groups of items (2.0.2 or later)
- * both in the DCW directory and the users .gmt directory.
+ * in the DCW directory and dcw-groups.txt in users .gmt directory.
  * See separate subversion project DCW for the maintenance of the raw files that
  * are used to build the netCDF file [svn://gmtserver.soest.hawai.edu/DCW].
  */
@@ -224,7 +224,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 				continue;
 		}
 		else {	/* Look for user groups in the user dir, if present */
-			if (!gmtlib_getuserpath (GMT, "dcw-collections.txt", path))
+			if (!gmtlib_getuserpath (GMT, "dcw-groups.txt", path))
 				continue;
 		}
 		/* Here we got the requested path */
@@ -271,7 +271,7 @@ all_done:
 	*S = State;
 	*U = Collection;
 
-	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "DCW: Found %u countries, %u countries with states, and %u states, %d DCW collections and %d user collections\n", dim[0], dim[2], dim[1], dim[3], dim[4]);
+	GMT_Report (GMT->parent, GMT_MSG_DEBUG, "DCW: Found %u countries, %u countries with states, %u states, %d DCW collections and %d user groups\n", dim[0], dim[2], dim[1], dim[3], dim[4]);
 	return 0;
 }
 

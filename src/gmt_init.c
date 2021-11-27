@@ -8816,7 +8816,7 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		strncpy (string, &item[1], GMT_BUFSIZ-1);
 		GMT->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
-	else if ((isupper ((int)item[0]) && isupper ((int)item[1])) || item[0] == '=' || strchr (item, ',')) {
+	else if (isupper ((int)item[0]) || item[0] == '=' || strchr (item, ',')) {
 		/* Region specified via country codes with optional round off/extension, e.g., -RNO+r1 or -R=EU */
 		struct GMT_DCW_SELECT info;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got country code for region (%s)\n", item);
