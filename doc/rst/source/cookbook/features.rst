@@ -2579,7 +2579,7 @@ indicate the second layer of the 3-D variable "slp" use as file name: ``file.nc?
 
 When you supply the numerical value for the third variable using
 "(*level*)", GMT will pick the layer closest to that value. No
-interpolation is performed.
+interpolation is performed (for such interpolations, see :doc:`/grdinterpolate`).
 
 Note that the question mark, brackets and parentheses have special
 meanings on Unix-based platforms. Therefore, you will need to either
