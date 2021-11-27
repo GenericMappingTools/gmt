@@ -128,7 +128,7 @@ Optional Arguments
 
 **-I**\ **w**\|\ **b**\|\ **c**\|\ **t**\|\ **k**
     Use *ingrid2* and *ingrid1* (a grid with topography/bathymetry) to estimate admittance\|coherence and
-    write it to stdout (**-G** ignored if set). This grid should contain
+    write it to standard output (**-G** ignored if set). This grid should contain
     gravity or geoid for the same region of *ingrid1*. Default
     computes admittance. Output contains 3 or 4 columns. Frequency
     (wavelength), admittance (coherence) one sigma error bar and,

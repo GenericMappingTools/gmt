@@ -471,7 +471,7 @@ Standard input or file, header records
 
 Most of the programs which expect table data input can read either
 standard input or input in one or several files. These programs will try
-to read *stdin* unless you type the filename(s) on the command line
+to read standard input unless you type the filename(s) on the command line
 without the above hyphens. (If the program sees a hyphen, it reads the
 next character as an instruction; if an argument begins without a
 hyphen, it tries to open this argument as a filename).  This feature
