@@ -14389,9 +14389,9 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 	/* Separate out any region-specific parts from one or more -E arguments and
 	 * pass those separately to a new -R instead (if -R not given).
 	 * Return code is bitflags:
-	 *	0 : No _r|R or +l|L given, most likely just setting countries and implicitly -R
+	 *	0 : No _r|R or +l|L|n given, most likely just setting countries and implicitly -R
 	 * 	1 : Found a region-modifying modifier +r or +R
-	 * 	2 : Found a list-request +l or +L.  Not plotting or region desired.
+	 * 	2 : Found a list-request +l, +L, or +n.  Not plotting or region desired.
 	 */
 	char p[GMT_LEN256] = {""}, *c = NULL;
 	char e_code[GMT_LEN256] = {""}, r_opt[GMT_LEN128] = {""};
@@ -14408,7 +14408,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 		if (c) {	/* Now process the modifiers */
 			c[0] = '+';	/* Unhide the modifiers */
 			pos = 0;	/* Initialize position counter for this string */
-			while (gmt_getmodopt (GMT, 'E', c, "lLcCgprRwz", &pos, p, &n_errors) && n_errors == 0) {
+			while (gmt_getmodopt (GMT, 'E', c, "lLncCgprRwz", &pos, p, &n_errors) && n_errors == 0) {
 				switch (p[0]) {
 					case 'r': case 'R':
 						if (r_opt[0] == 0) {	/* Only set this once */
@@ -14416,7 +14416,7 @@ GMT_LOCAL unsigned int gmtinit_strip_R_from_E_in_pscoast (struct GMT_CTRL *GMT, 
 						}
 						break;
 					case 'w': break;	/* Do nothing with defunct +w that was never documented anyway */
-					case 'l': case 'L':
+					case 'l': case 'L': case 'n':
 						answer |= 2;
 						/* Intentionally fall through - set this flag then fall through on purpose to default */
 					default: strcat (e_code, "+"); strcat (e_code, p); break;	/* Append as is */

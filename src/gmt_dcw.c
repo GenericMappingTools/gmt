@@ -45,6 +45,7 @@
 
 #define DCW_GET_COUNTRY			1	/* Extract countries only */
 #define DCW_GET_COUNTRY_AND_STATE	2	/* Extract countries and states */
+#define DCW_GET_COLLECTIONS	4	/* Extract Collections */
 #define DCW_DO_OUTLINE			1	/* Draw outline of polygons */
 #define DCW_DO_FILL				2	/* Fill the polygons */
 
@@ -866,32 +867,49 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 
 	Out = gmt_new_record (GMT, NULL, string);	/* Since we only need to worry about text in this module */
 
-	for (i = k = 0; i < GMT_DCW_COUNTRIES; i++) {
-		if (search) {	/* Listed continent(s) */
-			bool found = false;
-			for (kk = 0; kk < F->n_items; kk++) {
-				if (F->item[kk]->codes[0] == '=') {
-					if (strstr (F->item[kk]->codes, GMT_DCW_country[i].continent))
-						found = true;
+	if (list_mode & DCW_GET_COLLECTIONS) {
+		int k, nc = n_bodies[3] + n_bodies[4];	/* Total number of collections */
+		for (i = 0; i < nc; i++) {
+			if (search) {	/* Listed collection(s) */
+				bool found = false;
+				for (kk = 0; !found && kk < F->n_items; kk++) {
+					if (strstr (GMT_DCW_collection[i].list, F->item[kk]->codes))
+						found = true;	/* This item is part of this collection */
 				}
-				else if (strncmp (F->item[kk]->codes, GMT_DCW_country[i].code, 2U) == 0)
-						found = true;
+				if (!found) continue;
 			}
-			if (!found) continue;
-		}
-		if (F->n_items == 0 && (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent)) ) {
-			sprintf (string, "%s [%s]", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
+			sprintf (string, "%s\t%s\t%s", GMT_DCW_collection[i].name, GMT_DCW_collection[j].region, GMT_DCW_collection[i].list);
 			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
 		}
-		if ((list_mode & 2) == 0) {
-			sprintf (string, "%s\t%s", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
-			GMT_Put_Record (API, GMT_WRITE_DATA, Out);
-		}
-		if ((list_mode & 2) && gmtdcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
-			for (j = 0; j < GMT_DCW_STATES; j++) {
-				if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) {
-					sprintf (string, "%s.%s\t%s", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
-					GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+	}
+	else {
+		for (i = k = 0; i < GMT_DCW_COUNTRIES; i++) {
+			if (search) {	/* Listed continent(s) */
+				bool found = false;
+				for (kk = 0; kk < F->n_items; kk++) {
+					if (F->item[kk]->codes[0] == '=') {
+						if (strstr (F->item[kk]->codes, GMT_DCW_country[i].continent))
+							found = true;
+					}
+					else if (strncmp (F->item[kk]->codes, GMT_DCW_country[i].code, 2U) == 0)
+							found = true;
+				}
+				if (!found) continue;
+			}
+			if (F->n_items == 0 && (i == 0 || strcmp (GMT_DCW_country[i].continent, GMT_DCW_country[i-1].continent)) ) {
+				sprintf (string, "%s [%s]", GMT_DCW_continents[k++], GMT_DCW_country[i].continent);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			}
+			if ((list_mode & DCW_GET_COUNTRY_AND_STATE) == 0) {
+				sprintf (string, "%s\t%s", GMT_DCW_country[i].code, GMT_DCW_country[i].name);
+				GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+			}
+			if ((list_mode & DCW_GET_COUNTRY_AND_STATE) && gmtdcw_country_has_states (GMT_DCW_country[i].code, GMT_DCW_country_with_state, GMT_DCW_N_COUNTRIES_WITH_STATES)) {
+				for (j = 0; j < GMT_DCW_STATES; j++) {
+					if (!strcmp (GMT_DCW_country[i].code, GMT_DCW_state[j].country)) {
+						sprintf (string, "%s.%s\t%s", GMT_DCW_country[i].code, GMT_DCW_state[j].code, GMT_DCW_state[j].name);
+						GMT_Put_Record (API, GMT_WRITE_DATA, Out);
+					}
 				}
 			}
 		}
@@ -929,6 +947,7 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	GMT_Usage (API, 3, "+l Just list the countries and their codes [no %s takes place].", action2[plot]);
 	GMT_Usage (API, 3, "+L List states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US. "
 		"Select =<continent>+l|L to only list countries from that continent or <code>+L for that country(repeatable).");
+	GMT_Usage (API, 3, "+n List collections/groups, their codes and list of items [no %s takes place].", action2[plot]);
 	if (plot == 1)
 		GMT_Usage (API, 3, "+p Draw outline using given <pen> [none].");
 	GMT_Usage (API, 3, "+z Add -Z<countrycode> to multisegment headers if extracting polygons.");
@@ -983,6 +1002,10 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 					F->mode = DCW_GET_COUNTRY_AND_STATE;
 					F->mode |= GMT_DCW_LIST;
 					break;
+				case 'n': 	/* Collections list */
+					F->mode = DCW_GET_COLLECTIONS;
+					F->mode |= GMT_DCW_LIST;
+					break;
 				case 'c':		/* Set up a clip path around the selections instead */
 					F->mode |= GMT_DCW_CLIP_IN;
 					break;
@@ -1024,7 +1047,7 @@ unsigned int gmt_DCW_parse (struct GMT_CTRL *GMT, char option, char *args, struc
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: Cannot mix clipping and setting header codes!\n", option);
 		n_errors++;
 	}
-	if (this_item->codes[0] == '\0' && !(F->mode & (DCW_GET_COUNTRY+DCW_GET_COUNTRY_AND_STATE))) {	/* Did not give +l or +L, and no codes */
+	if (this_item->codes[0] == '\0' && !(F->mode & (DCW_GET_COUNTRY+DCW_GET_COUNTRY_AND_STATE+DCW_GET_COLLECTIONS))) {	/* Did not give +l, +L, or +n and no codes */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -%c: No country codes given\n", option);
 		n_errors++;
 	}

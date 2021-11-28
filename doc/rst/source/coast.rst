@@ -111,7 +111,7 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ *code1,code2,...*\ [**+l**\|\ **L**][**+c**\|\ **C**][**+g**\ *fill*][**+p**\ *pen*][**+z**]
+**-E**\ *code1,code2,...*\ [**+l**\|\ **L**\|\ **n**][**+c**\|\ **C**][**+g**\ *fill*][**+p**\ *pen*][**+z**]
     Select painting, clipping or dumping country polygons from the Digital Chart of the World.
     This is another dataset independent of GSHHG and hence the **-A** and **-D** options do not apply.
     Append one or more comma-separated countries using the
@@ -119,11 +119,13 @@ Optional Arguments
     To select a state of a country (if available), append .state, e.g, US.TX for Texas.  To specify a
     whole continent, prepend = to any of the continent codes AF (Africa),
     AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
-    NA (North America), or SA (South America).  Append **+l** to
+    NA (North America), or SA (South America).  To specify a collection give collection code or full name. Append **+l** to
     just list the countries and their codes [no data extraction or plotting takes place].
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
-    Finally, you can append **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list
+    You can append **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list
     countries in that continent or country; repeat if more than one continent or country is requested.
+    Finally, use **+n** to list the named collections of items available, and use **-E**\ *code* to only list
+    collections that contains the listed codes.
     To set up clip paths based on your selection, append **+c** or **+C** for inside or outside (area between selection
     and the map boundary) clipping, respectively.  To plot instead,
     append **+p**\ *pen* to draw polygon outlines [no outline] and

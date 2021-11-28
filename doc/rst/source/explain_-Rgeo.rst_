@@ -25,7 +25,8 @@
        `ISO 3166-1 alpha-2 convention <https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)>`_. To select a state within a
        country (if available), append .state, e.g, US.TX for Texas. To specify a whole continent, prepend **=** to any
        of the continent codes **AF** (Africa), **AN** (Antarctica), **AS** (Asia), **EU** (Europe), **OC** (Oceania),
-       **NA** (North America), or **SA** (South America). The following modifiers can be appended:
+       **NA** (North America), or **SA** (South America). Finally, append any collection abbreviations or full names
+       for the region of the collection. The following modifiers can be appended:
 
         - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
           *winc*/*einc*/*sinc*/*ninc* [default is no adjustment]. For example, **-R**\ *FR*\ **+r**\ 1 will select the
