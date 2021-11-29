@@ -1081,6 +1081,7 @@ GMT_LOCAL int gmtmap_jump_x (struct GMT_CTRL *GMT, double x0, double y0, double 
 
 GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double x1, double y1) {
 	/* true if x- or y-distance between points exceeds 1/2 map width at this y value or map height */
+	bool periodic;
 	double dx, dy, map_half_width, map_half_height;
 
 	if (!(gmt_M_is_cylindrical (GMT) || gmt_M_is_perspective (GMT) || gmt_M_is_misc (GMT))) return (0);	/* Only projections with periodic boundaries may apply */
@@ -1090,7 +1091,7 @@ GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double
 	map_half_width = MAX (gmt_half_map_width (GMT, y0), gmt_half_map_width (GMT, y1));
 	if (fabs (map_half_width) < GMT_CONV4_LIMIT) return (0);	/* Very close to a pole for some projections */
 	map_half_height = 0.5 * GMT->current.map.height;	/* We assume this is constant */
-
+	periodic = gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]);
 	dx = x1 - x0;
 	if (fabs (dx) > map_half_width) {	/* Possible jump; let's see how far apart those longitudes really are */
 		/* This test on longitudes was added to deal with issue #672, also see test/psxy/nojump.sh */
@@ -1098,7 +1099,10 @@ GMT_LOCAL int gmtmap_jump_xy (struct GMT_CTRL *GMT, double x0, double y0, double
 		double half_lon_range = (GMT->common.R.oblique) ? 180.0 : 0.5 * (GMT->common.R.wesn[XHI] - GMT->common.R.wesn[XLO]);
 		gmt_xy_to_geo (GMT, &last_lon, &dummy, x0, y0);
 		gmt_xy_to_geo (GMT, &this_lon, &dummy, x1, y1);
-		gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
+		if (periodic)
+			dlon = last_lon - this_lon;
+		else
+			gmt_M_set_delta_lon (last_lon, this_lon, dlon);	/* Beware of jumps due to sign differences */
 		if (fabs (dlon) < half_lon_range) /* Not going the long way so we judge this to be no jump */
 			return (0);
 		/* Jump it is */
@@ -7464,6 +7468,15 @@ int gmtlib_great_circle_intersection (struct GMT_CTRL *GMT, double A[], double B
 	return (0);				/* Return zero if intersection is between A and B */
 }
 
+GMT_LOCAL void gmtmap_swap_if_needed (int way, double previous, double *xc, double *yc) {
+	/* Check if we need to swap the order of (xc,yc).  Note: xc may be yc and vice versa; see the calls */
+	if (way == 0) return;	/* Nothing to consider */
+	if ((way > 0 && xc[0] > previous) || (way < 0 && xc[1] > previous)) {	/* Flip the order of xc,yc to fit the need */
+		gmt_M_double_swap (xc[0], xc[1]);
+		gmt_M_double_swap (yc[0], yc[1]);
+	}
+}
+
 /*! . */
 uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uint64_t *nn, bool add_crossings) {
 	/* Accepts x/y array for a line in projected inches and looks for
@@ -7517,17 +7530,11 @@ uint64_t *gmtlib_split_line (struct GMT_CTRL *GMT, double **xx, double **yy, uin
 			if (add_crossings) {	/* Find and insert the crossings */
 				if (way[k] == -2 || way[k] == +2) {	/* Jump in y for TM */
 					gmtmap_get_crossings_y (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
-					if (way[k] == -2) {	/* Add top border point first */
-						gmt_M_double_swap (xc[0], xc[1]);
-						gmt_M_double_swap (yc[0], yc[1]);
-					}
+					gmtmap_swap_if_needed (way[k], y[j-1], yc, xc);	/* Passing previous y and yc, xc for y-crossing */
 				}
-				else {	/* Jump in x */
+				else {	/* Jump in x for any projection with periodic w/e boundaries */
 					gmtmap_get_crossings_x (GMT, xc, yc, xin[i], yin[i], xin[i-1], yin[i-1]);
-					if (way[k] == 1) {	/* Add right border point first */
-						gmt_M_double_swap (xc[0], xc[1]);
-						gmt_M_double_swap (yc[0], yc[1]);
-					}
+					gmtmap_swap_if_needed (way[k], x[j-1], xc, yc);	/* Passing previous x and xc, yc for x-crossing */
 				}
 				x[j] = xc[0];	y[j++] = yc[0];	/* End of one segment */
 				jc = j;		/* Node of first point in next segment */
