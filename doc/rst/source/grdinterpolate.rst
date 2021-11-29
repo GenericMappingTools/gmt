@@ -122,7 +122,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *x/y*\|\ *pointfile*\ [**+h**\ *header*]
-    Rather that compute gridded output, create tile/spatial series through the stacked
+    Rather that compute gridded output, create time or spatial series through the stacked
     grids at the given point (*x/y*) or the list of points in *pointfile*.  If you need
     a series of points defined by an origin and an end point or similar, you can make
     such a file first with :doc:`project`.  By default we simply sample the cube at
