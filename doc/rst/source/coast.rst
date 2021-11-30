@@ -119,12 +119,12 @@ Optional Arguments
     To select a state of a country (if available), append .state, e.g, US.TX for Texas.  To specify a
     whole continent, prepend = to any of the continent codes AF (Africa),
     AN (Antarctica), AS (Asia), EU (Europe), OC (Oceania),
-    NA (North America), or SA (South America).  To specify a collection give collection code or full name. Append **+l** to
+    NA (North America), or SA (South America).  To specify a collection or named region, give either the code or full name. Append **+l** to
     just list the countries and their codes [no data extraction or plotting takes place].
     Use **+L** to see states/territories for Argentina, Australia, Brazil, Canada, China, India, Russia and the US.
     You can append **+l**\|\ **+L** to **-E**\ =\ *continent* or **-E**\ *code* to only list
     countries in that continent or country; repeat if more than one continent or country is requested.
-    Finally, use **+n** to list the named collections of items available, and use **-E**\ *code* to only list
+    Finally, use **+n** to list the named collections or regions, and use **-E**\ *code* to only list
     collections that contains the listed codes.
     To set up clip paths based on your selection, append **+c** or **+C** for inside or outside (area between selection
     and the map boundary) clipping, respectively.  To plot instead,
@@ -272,6 +272,23 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. module_common_ends
+
+Notes
+-----
+
+The **-E** option can be expanded to take the user's own custom collections
+and named regions.  Users can create their own dcw-collections.txt file and
+place it in their GMT user directory (typically ~/.gmt).  The format of the
+file is the same as the file distributed with DCW::
+
+    # Arbitrary comments and blank lines anywhere
+    # My France-Italy union
+    tag: FRIT FrancoItalic Union
+    list: FR,IT
+    # Stay away from those eels!
+    tag: SARG Sargasso Sea
+    region:  70W/40W/20N/35N
+
 
 Examples
 --------
