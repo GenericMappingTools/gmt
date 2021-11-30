@@ -107,7 +107,7 @@ Optional Arguments
 **-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You
     must also supply the **-Z** option. The output is written to *zfile*
-    (or stdout if not supplied).
+    (or standard output if not supplied).
 
 .. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_

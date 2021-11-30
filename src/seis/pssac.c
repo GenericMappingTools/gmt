@@ -653,7 +653,7 @@ EXTERN_MSC int GMT_pssac (void *V_API, int mode, void *args) {	/* High-level fun
 
 	read_from_ascii = (Ctrl->In.n == 0) || (Ctrl->In.n == 1 && !issac(Ctrl->In.file[0]));
 	if (read_from_ascii) {      /* Got a ASCII file or read from stdin */
-		GMT_Report (API, GMT_MSG_INFORMATION, "Reading from saclist file or stdin\n");
+		GMT_Report (API, GMT_MSG_INFORMATION, "Reading from saclist file or standard input\n");
 		if (GMT_Init_IO (API, GMT_IS_DATASET, GMT_IS_TEXT, GMT_IN, GMT_ADD_DEFAULT, 0, options) != GMT_OK) {    /* Register data input */
 			Return (API->error);
 		}

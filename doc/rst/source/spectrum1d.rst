@@ -68,7 +68,7 @@ ASCII unless **-bo** is set) are as follows:
     Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5.
 
 In addition, a single file with all of the above as individual columns will
-be written to *stdout* (unless disabled via **-T**).
+be written to standard output (unless disabled via **-T**).
 
 Required Arguments
 ------------------
@@ -132,7 +132,7 @@ Optional Arguments
 .. _-T:
 
 **-T**
-    Disable the writing of a single composite results table to stdout.  Only individual output
+    Disable the writing of a single composite results table to standard output.  Only individual output
     files for each selected component (see **-C**) will be written.
 
 .. _-W:

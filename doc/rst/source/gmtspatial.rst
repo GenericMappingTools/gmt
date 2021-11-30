@@ -149,7 +149,7 @@ Optional Arguments
     (first **-Z**, then **-L** are scanned), or it is assigned the
     running number that is initialized to *start* [0]. By default the
     input segment that are found to be inside a polygon are written to
-    stdout with the polygon ID encoded in the segment header as
+    standard output with the polygon ID encoded in the segment header as
     **-Z**\ *ID*. Alternatively, append **+r** to just report which
     polygon contains a feature or **+z** to have the IDs added as an
     extra data column on output. Segments that fail to be inside a
@@ -161,11 +161,11 @@ Optional Arguments
 **-Q**\ [*unit*][**+c**\ *min*\ [/*max*]][**+h**][**+l**][**+p**][**+s**\ [**a**\|\ **d**]]
     Measure the area of all polygons or length of line segments. Use
     **-Q+h** to append the area to each polygons segment header [Default
-    simply writes the area to stdout]. For polygons we also compute the
+    simply writes the area to standard output]. For polygons we also compute the
     centroid location while for line data we compute the mid-point
-    (half-length) position. Append a distance unit to select the unit
-    used (see `Units`_). Note that the area will depend on the current
-    setting of :term:`PROJ_ELLIPSOID`; this should be a
+    (half-length) position. For geographical data, optionally append a
+    distance unit to select the unit used (see `Units`_) [k]. Note that
+    the area will depend on the current setting of :term:`PROJ_ELLIPSOID`; this should be a
     recent ellipsoid to get accurate results. The centroid is computed
     using the mean of the 3-D Cartesian vectors making up the polygon
     vertices, while the area is obtained via an equal-area projection.
