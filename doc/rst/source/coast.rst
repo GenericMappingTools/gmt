@@ -277,18 +277,23 @@ Notes
 -----
 
 The **-E** option can be expanded to take the user's own custom collections
-and named regions.  Users can create their own dcw-collections.txt file and
-place it in their GMT user directory (typically ~/.gmt).  The format of the
-file is the same as the file distributed with DCW::
+and named regions.  Users can create a dcw.conf file and place it in their
+GMT user directory (typically ~/.gmt).  The format of the file is the same
+as the dcw-collections.txt file distributed with DCW::
 
     # Arbitrary comments and blank lines anywhere
-    # My France-Italy union
-    tag: FRIT FrancoItalic Union
-    list: FR,IT
-    # Stay away from those eels!
-    tag: SARG Sargasso Sea
-    region:  70W/40W/20N/35N
 
+    # The France-Italian union (2042-45) of gallery example 34.
+    tag: FRIT Franco-Italian Union
+    list: FR,IT
+    # Stay away from those dangerous eels!
+    tag: SARG Sargasso Sea
+    region: 70W/40W/20N/35N
+
+Each *tag:* record must be immediately followed by either a *list:* or *region:* record.
+All tags must be in upper case and be at least 3 characters long. The optional name
+must be capitalized.  Either the *tag* or the *name* (if available) can be used to make
+selections in **-R** or **-E**.
 
 Examples
 --------
