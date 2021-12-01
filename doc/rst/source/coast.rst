@@ -291,9 +291,8 @@ as the dcw-collections.txt file distributed with DCW::
     region: 70W/40W/20N/35N
 
 Each *tag:* record must be immediately followed by either a *list:* or *region:* record.
-All tags must be in upper case and be at least 3 characters long. The optional name
-must be capitalized.  Either the *tag* or the *name* (if available) can be used to make
-selections in **-R** or **-E**.
+All tags should be at least 3 characters long. Either the *tag* or the *name* (if available)
+can be used to make selections in **-R** or **-E**.
 
 Examples
 --------

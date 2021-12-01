@@ -147,15 +147,6 @@ GMT_LOCAL bool gmtdcw_get_path (struct GMT_CTRL *GMT, char *name, char *suffix, 
 	return (false);
 }
 
-GMT_LOCAL bool gmtdcw_not_upper_case (char *text) {
-	unsigned int k = 0;
-	while (text[k]) {
-		if (islower (text[k])) return true;
-		k++;
-	}
-	return false;
-}
-
 GMT_LOCAL void gmtdcw_freestrings (struct GMT_DCW_COLLECTION *Collection, unsigned int n) {
 	unsigned int k;
 	for (k = 0; k < n; k++) {
@@ -260,7 +251,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 		/* File format is sequences like this:
 			# Scandinavia
 			tag: SCA Scandinavia
-			NO,SE,DK
+			list: NO,SE,DK or region: w/e/s/n
 		*/
 		while (gmt_fgets (GMT, line, BUFSIZ, fp)) {
 			if (line[0] == '#') continue;	/* Skip comments */
@@ -270,43 +261,37 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 				goto bail;
 			}
 			nf = sscanf (&line[5], "%s %[^\n]", Collection[k].region, Collection[k].name);
-			if (gmtdcw_not_upper_case (Collection[k].region)) {
-				gmt_str_toupper (Collection[k].region);
-				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Collection tag not in upper case format - converted to %s\n", (Collection[k].region));
+			if (nf == 2 && !isalpha (Collection[k].name[0])) {	/* Gave a name that do not start with a letter */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Collection name must start with a letter (%s)\n", (Collection[k].name));
+				goto bail;
 			}
-			if (nf == 2) {	/* Gave a name */
-				if (isdigit (Collection[k].name[0])) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Collection name must start with (capital) letter (%s)\n", (Collection[k].name));
-					goto bail;
-				}
-				else if (!isupper (Collection[k].name[0])) {
-					Collection[k].name[0] = toupper (Collection[k].name[0]);
-					GMT_Report (GMT->parent, GMT_MSG_WARNING, "Collection name not capitalized - converted to %s\n", (Collection[k].name));
-				}
+			/* Get record with the list or region */
+			if (gmt_fgets (GMT, line, BUFSIZ, fp) == NULL) {	/* Read error */
+				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to read list or region for collection %s\n", (Collection[k].region));
+				goto bail;
 			}
-			gmt_fgets (GMT, line, BUFSIZ, fp);	/* Get record with the list or region */
-			gmt_chop (line);
+			gmt_chop (line);	/* Eliminate trailing \r \n stuff */
 			if (strncmp (line, "list:", 5U) == 0) {	/* Got a list of DCW entities */
-				for (j = 5; line[j] == '\t' || line[j] == ' '; j++);	/* Wind past leading whitespace */
+				for (j = 5; line[j] == '\t' || line[j] == ' '; j++);	/* Wind past optional leading whitespace */
 				Collection[k].list = strdup (&line[j]);
 			}
 			else if (strncmp (line, "region:", 7U) == 0) {	/* Got w/e/s/n for a named region */
-				for (j = 7; line[j] == '\t' || line[j] == ' '; j++);	/* Wind past leading whitespace */
+				for (j = 7; line[j] == '\t' || line[j] == ' '; j++);	/* Wind past optional leading whitespace */
 				Collection[k].wesn_string = strdup (&line[j]);	/* Copy of original w/e/s/n string */
-				gmt_strrepc (line, '/', ' ');	/* Replace slashes with spaces */
+				gmt_strrepc (line, '/', ' ');	/* Replace slashes with spaces to ease parsing */
 				n_errors = 0;
 				if (sscanf (&line[j], "%s %s %s %s", w, e, s, n) != 4) n_errors++;
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, w, GMT_IS_LON, false, &Collection[k].wesn[XLO]), w);
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LON, gmt_scanf_arg (GMT, e, GMT_IS_LON, false, &Collection[k].wesn[XHI]), e);
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, s, GMT_IS_LAT, false, &Collection[k].wesn[YLO]), s);
 				n_errors += gmt_verify_expectations (GMT, GMT_IS_LAT, gmt_scanf_arg (GMT, n, GMT_IS_LAT, false, &Collection[k].wesn[YHI]), n);
-				if (Collection[k].wesn[YHI] <= Collection[k].wesn[YLO]) n_errors++;
+				if (Collection[k].wesn[YHI] <= Collection[k].wesn[YLO]) n_errors++;	/* Basic sanity checks of the region values */
 				if (Collection[k].wesn[XHI] <= Collection[k].wesn[XLO]) n_errors++;
 				if (n_errors) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Collection file %s has incomplete or malformed w/e/s/n region: %s\n", Collection[k].wesn_string);
+					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Collection file %s has incomplete, malformed or incorrect w/e/s/n region: %s\n", Collection[k].wesn_string);
 					goto bail;
 				}
-				else
+				else	/* Set the collection type */
 					Collection[k].type = DCW_NAMED_WESN;
 			}
 			else {
@@ -322,7 +307,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 		}
 		fclose (fp);
 	}
-	if (k == 0)	/* No such files at all */
+	if (k == 0)	/* No collection files at all */
 		gmt_M_free (GMT, Collection);
 	else
 		Collection = gmt_M_memory (GMT, Collection, k, struct GMT_DCW_COLLECTION);
@@ -928,7 +913,7 @@ unsigned int gmt_DCW_list (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F) {
 
 	list_mode = F->mode;
 	if ((list_mode & GMT_DCW_LIST) == 0) return 0;
-	if (gmtdcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, &GMT_DCW_country_with_state, &GMT_DCW_collection, n_bodies)) return 0;	/* Something went wrong */
+	if (gmtdcw_load_lists (GMT, &GMT_DCW_country, &GMT_DCW_state, &GMT_DCW_country_with_state, &GMT_DCW_collection, n_bodies)) return GMT_NOTSET;	/* Something went wrong */
 	GMT_DCW_COUNTRIES = n_bodies[0];
 	GMT_DCW_STATES = n_bodies[1];
 	GMT_DCW_N_COUNTRIES_WITH_STATES = n_bodies[2];
