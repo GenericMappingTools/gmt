@@ -8816,8 +8816,8 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		strncpy (string, &item[1], GMT_BUFSIZ-1);
 		GMT->current.io.geo.range = (item[0] == 'g') ? GMT_IS_0_TO_P360_RANGE : GMT_IS_M180_TO_P180_RANGE;
 	}
-	else if (isupper ((int)item[0]) || item[0] == '=' || strchr (item, ',')) {
-		/* Region specified via country codes with optional round off/extension, e.g., -RNO+r1 or -R=EU */
+	else if (isalpha ((int)item[0]) || item[0] == '=' || strchr (item, ',')) {
+		/* Region specified via country codes or named regions with optional round off/extension, e.g., -RNO+r1 or -R=EU or -R"Middle East" */
 		struct GMT_DCW_SELECT info;
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Got country code for region (%s)\n", item);
 		gmt_M_memset (&info, 1, struct GMT_DCW_SELECT);	/* To ensure it is all NULL, 0 */
@@ -8825,11 +8825,6 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		(void) gmt_DCW_operation (GMT, &info, GMT->common.R.wesn, GMT_DCW_REGION);	/* Get region */
 		gmt_DCW_free (GMT, &info);
 		if (fabs (GMT->common.R.wesn[XLO]) > 1000.0) return (GMT_MAP_NO_REGION);
-		if (strstr (item, "=AN")) {	/* Antarctica is the only polar cap polygon so w,e,s must be reset */
-			GMT->common.R.wesn[XLO] = -180.0;
-			GMT->common.R.wesn[XHI] = +180.0;
-			GMT->common.R.wesn[YLO] = -90.0;
-		}
 		if (GMT->common.R.wesn[XLO] < 0.0 && GMT->common.R.wesn[XHI] > 0.0)
 			GMT->current.io.geo.range = GMT_IS_M180_TO_P180_RANGE;
 		else

@@ -403,7 +403,7 @@ GMT_LOCAL int gmtdcw_found_collection (char *code, struct GMT_DCW_COLLECTION *GM
 	if (nc == 0) return GMT_NOTSET;	/* No collections available */
 
 	for (k = 0; k < nc; k++) {
-		if (strcmp (code, GMT_DCW_collection[k].region) == 0 || (GMT_DCW_collection[k].name[0] && strcmp (code, GMT_DCW_collection[k].name) == 0))
+		if (strcasecmp (code, GMT_DCW_collection[k].region) == 0 || (GMT_DCW_collection[k].name[0] && strcasecmp (code, GMT_DCW_collection[k].name) == 0))
 			return (k);	/* Found a matching collection */
 	}
 	return (GMT_NOTSET);	/* Not found */
@@ -864,7 +864,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		gmt_M_free (GMT, Z);
 		GMT->current.io.geo.range = GMT_IGNORE_RANGE;		/* Override this setting explicitly */
 		gmt_extend_region (GMT, wesn, F->adjust, F->inc);
-		if (is_Antarctica) {	/* Must override to include pole and full longitude range */
+		if (is_Antarctica) {	/* Must override to include south pole and full longitude range */
 			wesn[YLO] = -90.0;	/* Since it is a South polar cap */
 			wesn[XLO] = 0.0;
 			wesn[XHI] = 360.0;
