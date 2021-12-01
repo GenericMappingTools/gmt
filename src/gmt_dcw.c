@@ -86,6 +86,7 @@ struct GMT_DCW_CHINA_CODES {
 /* Compile in read-only structures and arrays with the information */
 
 static char *GMT_DCW_continents[GMT_DCW_N_CONTINENTS] = {"Africa", "Antarctica", "Asia", "Europe", "Oceania", "North America", "South America", "Miscellaneous"};
+static char *GMT_DCW_contcodes[GMT_DCW_N_CONTINENTS] = {"AF", "AN", "AS", "EU", "OC", "NA", "SA", ""};
 
 /* Local functions only visible inside this file */
 
@@ -354,6 +355,38 @@ GMT_LOCAL int gmtdcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int
 	return (low);
 }
 
+GMT_LOCAL bool gmtdcw_got_name (char *name, struct GMT_DCW_COUNTRY *clist, int nc, struct GMT_DCW_STATE *slist, int ns, char *ISO) {
+	/* Slow linear search to find ISO that matches the given country name */
+	unsigned int k;
+	for (k = 0; k < nc; k++) {
+		if (strcasecmp (name, clist[k].name) == 0) {
+			strncpy (ISO, clist[k].code, 2); ISO[2] = '\0';	/* Terminate string */
+			return (true);
+		}
+	}
+	/* Got here because no such country.  Try states */
+	for (k = 0; k < ns; k++) {
+		if (strcasecmp (name, slist[k].name) == 0) {
+			sprintf (ISO, "%s.%s%c", slist[k].country, slist[k].code, '\0');
+			return (true);
+		}
+	}
+	return (false);	/* Not found */
+}
+
+GMT_LOCAL bool gmtdcw_got_continent (char *name, char *continents[], char *contcodes[], int nc, char *ISO) {
+	/* Slow linear search to find ISO that matches the given country name */
+	unsigned int k;
+	if (strlen (name) < 4) return (false);	/* Cannot be a continent name since Asia is the shortest */
+	for (k = 0; k < nc; k++) {
+		if (strcasecmp (name, continents[k]) == 0) {
+			sprintf (ISO, "=%s", contcodes[k]); ISO[3] = '\0';	/* Terminate string */
+			return (true);
+		}
+	}
+	return (false);
+}
+
 GMT_LOCAL int gmtdcw_find_state (struct GMT_CTRL *GMT, char *scode, char *ccode, struct GMT_DCW_STATE *slist, int ns, bool check) {
 	/* Return state id given country and state codes using a linear search */
 	int i;
@@ -392,6 +425,15 @@ GMT_LOCAL int gmtdcw_found_collection (char *code, struct GMT_DCW_COLLECTION *GM
 			return (k);	/* Found a matching collection */
 	}
 	return (GMT_NOTSET);	/* Not found */
+}
+
+GMT_LOCAL bool gmtdcw_not_ISO (char *code) {
+	/* Return true if not XX or XX.YY */
+	unsigned int L = strlen (code);
+	if (L > 5) return true;		/* Cannot be ISO code */
+	if (L == 2) return false;	/* Must be ISO code */
+	if (L != 5) return true;	/* Unless it is XX.YY it is not ISO */
+	return (code[2] != '.');	/* True if not XX.YY */
 }
 
 /*----------------------------------------------------------|
@@ -443,7 +485,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	char yname[GMT_LEN16] = {""}, code[GMT_LEN16] = {""}, state[GMT_LEN16] = {""};
 	char msg[GMT_BUFSIZ] = {""}, path[PATH_MAX] = {""}, list[GMT_BUFSIZ] = {""};
 	char version[GMT_LEN32] = {""}, gmtversion[GMT_LEN32] = {""}, source[GMT_LEN256] = {""}, title[GMT_LEN256] = {""};
-	char label[GMT_LEN256] = {""}, header[GMT_LEN256] = {""};
+	char label[GMT_LEN256] = {""}, header[GMT_LEN256] = {""}, ISO[GMT_LEN8] = {""};
 	double west, east, south, north, xscl, yscl, out[2], *lon = NULL, *lat = NULL;
 	struct GMT_RANGE *Z = NULL;
 	struct GMT_DATASET *D = NULL;
@@ -484,6 +526,9 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	for (j = 0; j < F->n_items; j++) {
 		pos = 0;
 		while (gmt_strtok (F->item[j]->codes, ",", &pos, code)) {	/* Loop over items */
+			if (gmtdcw_got_continent (code, GMT_DCW_continents, GMT_DCW_contcodes, GMT_DCW_N_CONTINENTS, ISO))	/* Got continent name, replace with =?? code to be parsed below */
+				strcpy (code, ISO);
+
 			if (code[0] == '=') {	/* Must expand a continent into all member countries */
 				for (k = 0; k < GMT_DCW_COUNTRIES; k++) {
 					if (strncmp (GMT_DCW_country[k].continent, &code[1], 2)) continue;	/* Not this one */
@@ -520,6 +565,8 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					named_wesn++;
 			}
 			else {	/* Just append this single one */
+				if (gmtdcw_got_name (code, GMT_DCW_country, GMT_DCW_COUNTRIES, GMT_DCW_state, GMT_DCW_STATES, ISO))	/* Check if we got the name of a country or state, then replace with ISO code */
+					strcpy (code, ISO);
 				if (n_items) strcat (list, ",");
 				strcat (list, code);
 				order[n_items] = j;	/* So we know which color/pen to apply for this item */
@@ -1013,11 +1060,11 @@ void gmt_DCW_option (struct GMTAPI_CTRL *API, char option, unsigned int plot) {
 	GMT_Usage (API, 1, "\n-%c%s", option, DCW_OPT);
 	GMT_Usage (API, -2, "%s for specified list of countries. "
 		"Based on closed polygons from the Digital Chart of the World (DCW). "
-		"Append comma-separated list of ISO 3166 codes for countries to %s, i.e., "
+		"Append comma-separated list of ISO 3166 codes (or full names) for countries to %s, i.e., "
 		"<code1>,<code2>,... etc., using the 2-character country codes. "
-		"To select a state of a country (if available), append .state, e.g, US.TX for Texas. "
-		"To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code>. For collections and named regions, "
-		"append their codes or full name. Some modifiers:", usage[plot], action[plot]);
+		"To select a state of a country (if available), append .state, e.g, US.TX for Texas, or just the state name. "
+		"To select a whole continent, use =AF|AN|AS|EU|OC|NA|SA as <code> or give full name. For collections and named regions, "
+		"append their codes or full name. All names are case-insensitive. Available modifiers:", usage[plot], action[plot]);
 	if (plot == 1) {
 		GMT_Usage (API, 3, "+c Set clip paths for the inside  area [none].");
 		GMT_Usage (API, 3, "+C Set clip paths for the outside area [none].");
