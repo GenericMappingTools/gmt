@@ -16884,7 +16884,7 @@ GMT_LOCAL double gmtsupport_cart_centroid_area (struct GMT_CTRL *GMT, const doub
 double gmt_centroid_area (struct GMT_CTRL *GMT, double x[], double y[], uint64_t n, int geo, double *pos) {
 	/* Estimate centroid and area of a polygon.  geo is 1 if geographic data. Input data remains unchanged.
 	 * area will be +ve if polygon is CW, negative if CCW */
-	double area;
+	double area;	/* In selected units squared if geographic */
 	if (geo)	/* Spherical centroid and area */
 		area = gmtlib_geo_centroid_area (GMT, x, y, n, pos);
 	else	/* Cartesian centroid and area */
@@ -17245,7 +17245,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 	 *	<file>
 	 *
 	 * Parsing:
-	 *      0) If <argument> is a single value and flags & GMT_ARRAY_SCALAR is set
+	 *	0) If <argument> is a single value and flags & GMT_ARRAY_SCALAR is set
 	 *	   then we create an array of one item. Otherwise <argument> may be
 	 *	   interpreted as <inc>.
 	 *	1) If <argument> is a file found in our search path then
@@ -17399,7 +17399,7 @@ unsigned int gmt_parse_array (struct GMT_CTRL *GMT, char option, char *argument,
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid min/max/inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}
-	if (!(ns == 1 || ns == 3) && (flags & GMT_ARRAY_NOINC) == 0) {	/* Need to give 1 or 3 items unless inc is optional */
+	if ((flags & GMT_ARRAY_RANGE) == 0 && !(ns == 1 || ns == 3) && (flags & GMT_ARRAY_NOINC) == 0) {	/* Need to give 1 or 3 items unless inc is optional */
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Must specify valid [min/max/]inc[<unit>|+n] option\n", option);
 		return GMT_PARSE_ERROR;
 	}

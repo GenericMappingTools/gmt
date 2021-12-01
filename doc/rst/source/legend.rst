@@ -37,7 +37,7 @@ Description
 -----------
 
 Makes legends that can be overlaid on maps. It reads
-specific legend-related information from an input file [or stdin].
+specific legend-related information from an input file [or standard input].
 Unless otherwise noted, annotations will be made using the primary
 annotation font and size in effect (i.e., :term:`FONT_ANNOT_PRIMARY`)
 
@@ -102,8 +102,8 @@ Optional Arguments
 **-M**
     Modern mode only: Read both (1) the hidden auto-generated legend information file created by
     plotting-modules' **-l** option and (2) additional information from input file(s) given on the
-    command line (or via *stdin*) [hidden file only].  For classic mode an input file must be
-    given or else we will read from *stdin*.
+    command line (or via standard input) [hidden file only].  For classic mode an input file must be
+    given or else we will read from standard input.
 
 .. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_

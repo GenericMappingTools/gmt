@@ -74,9 +74,9 @@ Required Arguments
     elastic thickness file is given via **-E** then you must also append arguments
     to create the locations used for the calculations; for details on array creation,
     see `Generate 1D Array`_.
-    **-Qq**\ [*loadfile*] is a file (or stdin if not given) with (x,load in Pa)
+    **-Qq**\ [*loadfile*] is a file (or standard input if not given) with (x,load in Pa)
     for all equidistant data locations.  Finally, **-Qt**\ [*topofile*] is a file
-    (or stdin if not given) with (x,load in m or km, positive up); see **-M** for
+    (or standard input if not given) with (x,load in m or km, positive up); see **-M** for
     topography unit used [m].
 
 Optional Arguments

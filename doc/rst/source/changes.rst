@@ -1204,7 +1204,7 @@ changes to existing syntax will be backwards compatible:
    modifiers **+1** or **+2** which will compute
    the first or second derivatives of the spline, respectively.
 
-*  :doc:`spectrum1d` can now turn off single-output data to stdout via **-T**
+*  :doc:`spectrum1d` can now turn off single-output data to standard output via **-T**
    or turn off multi-file output via **-N**.
 
 *  :doc:`sphdistance` can now also perform a nearest-neighbor gridding where
@@ -1228,7 +1228,7 @@ A few supplement modules have new features as well:
 *  :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>` adds **-H** to compute magnetic anomaly.
 
 *  :doc:`grdpmodeler <supplements/spotter/grdpmodeler>` can now output more than one model
-   prediction into several grids or as a record written to stdout.  Also gains the **-N** option
+   prediction into several grids or as a record written to standard output.  Also gains the **-N** option
    used by other spotter tools to extend the model duration.
 
 

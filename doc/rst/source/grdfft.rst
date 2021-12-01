@@ -87,7 +87,7 @@ Optional Arguments
     the x or y direction instead. No grid file is created. If one grid
     is given then f (i.e., frequency or wave number), power[f],
     and 1 standard deviation in power[f] are written to the file set by
-    **-G** [stdout]. If two grids are given we write f and 8 quantities:
+    **-G** [standard output]. If two grids are given we write f and 8 quantities:
     Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
     admittance[f], gain[f], coherency[f].  Each quantity is followed by
     its own 1-std dev error estimate, hence the output is 17 columns wide.
@@ -143,7 +143,7 @@ Optional Arguments
 
 **-G**\ *outfile*\|\ *table*
     Filename for output netCDF grid file OR 1-D data table (see **-E**).
-    This is optional for -E (spectrum written to stdout) but mandatory for
+    This is optional for -E (spectrum written to standard output) but mandatory for
     all other options that require a grid output.
 
 .. _-I:
