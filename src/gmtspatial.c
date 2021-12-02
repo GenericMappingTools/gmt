@@ -1728,7 +1728,7 @@ EXTERN_MSC int GMT_gmtspatial (void *V_API, int mode, void *args) {
 							gmt_x_free (GMT, &XC);
 						}
 						else if (Ctrl->S.mode == POL_CLIP) {	/* No crossings; see if it is inside or outside C */
-							if ((in = gmt_non_zero_winding (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1->data[GMT_X], S1->data[GMT_Y], S1->n_rows)) != 0) {
+							if ((in = gmt_non_zero_winding (GMT, S2->data[GMT_X][0], S2->data[GMT_Y][0], S1->data[GMT_X], S1->data[GMT_Y], S1->n_rows)) != GMT_OUTSIDE) {
 								/* Inside, copy out the entire polygon */
 								if (GMT->current.io.multi_segments[GMT_OUT]) {	/* Must find unique edges to output only once */
 									if (S2->header)
