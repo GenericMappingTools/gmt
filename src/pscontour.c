@@ -296,7 +296,7 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 		np = save[pol].n;
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
 			inside = gmt_non_zero_winding (GMT, save[pol2].x[0], save[pol2].y[0], save[pol].x, save[pol].y, np);
-			if (inside == 2 && !I->all) save[pol].do_it = false;
+			if (inside == GMT_INSIDE && !I->all) save[pol].do_it = false;
 		}
 	}
 
@@ -328,7 +328,7 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 			if (gmt_M_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use gmt_M_y_is_outside since projected x-coordinates)*/
 
 			inside = gmt_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
-			if (inside == 2) k = j;	/* OK, this point is inside */
+			if (inside == GMT_INSIDE) k = j;	/* OK, this point is inside */
 		}
 		if (k == GMT_NOTSET) continue;	/* Unable to determine */
 		save[pol].high = (z[k] > save[pol].cval);
