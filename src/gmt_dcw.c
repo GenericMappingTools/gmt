@@ -162,7 +162,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 	unsigned int j, k, ns, collection, n_errors;
 	int nf;
 	char path[PATH_MAX] = {""}, line[BUFSIZ] = {""};
-	char w[GMT_LEN16] = {""}, e[GMT_LEN16] = {""}, s[GMT_LEN16] = {""}, n[GMT_LEN16] = {""};
+	char w[GMT_LEN32] = {""}, e[GMT_LEN32] = {""}, s[GMT_LEN32] = {""}, n[GMT_LEN32] = {""};
 	FILE *fp = NULL;
 	struct GMT_DCW_COUNTRY *Country = NULL;
 	struct GMT_DCW_STATE *State = NULL;
