@@ -215,7 +215,7 @@ To list all the data sources that have more than 10 NaN nodes and are pixel regi
 
     gmt grdselect *.nc -Nh10 -rp
 
-To list all the grids that are entirely included by the polygon in my_data_area.txt, try::
+To list all the grids that are entirely included by the polygon in wesn_polygon.txt, try::
 
     gmt grdselect *.nc -Fwesn_polygon.txt+i
 
