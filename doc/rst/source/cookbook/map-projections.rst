@@ -329,7 +329,7 @@ Stereographic Equal-Angle (**-Js** **-JS**)
 
 This is a conformal, azimuthal projection that dates back to the Greeks. Its main use is for mapping the polar regions.
 In the polar aspect all meridians are straight lines and parallels are arcs of circles. While this is the most common
-use it is possible to select any point as the center of projection. The requirements are
+use it is possible to select any point as the center of projection.
 
 A map scale factor of 0.9996 will be applied by default (although you may change this with :term:`PROJ_SCALE_FACTOR`).
 However, the setting is ignored when a standard parallel has been specified since the scale is then implicitly given.
