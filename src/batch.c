@@ -711,10 +711,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);				/* Just copy the line as is */
 			}
-			fclose (Ctrl->I.fp);	/* Done reading the include script */
 		}
 		fclose (fp);	/* Done writing the init script */
 	}
+	if (Ctrl->I.active) fclose (Ctrl->I.fp);	/* Done reading the include script */
 	if (Ctrl->In.mode == GMT_DOS_MODE)
 		gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
 	n_to_run = (Ctrl->M.active) ? 1 : n_jobs;
