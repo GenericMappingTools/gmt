@@ -1904,7 +1904,7 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 	if (old)	/* Old grid syntax: -D<xname>/<yname>/<zname>/<scale>/<offset>/<invalid>/<title>/<remark> */
 		gmtgrdio_decode_grd_h_info_old (GMT, input, h);
 	else {	/* New syntax: -D[+x<xname>][+yyname>][+z<zname>][+d<dname>][+s<scale>][+o<offset>][+n<invalid>][+t<title>][+r<remark>] plus [+v<name>] for 3D */
-		char word[GMT_LEN512] = {""};
+		char word[GMT_BUFSIZ] = {""};
 		unsigned int pos = 0;
 		double d;
 		while (gmt_getmodopt (GMT, 'D', input, modifiers, &pos, word, &uerr) && uerr == 0) {
@@ -1968,7 +1968,7 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 					gmt_M_memset (h->remark, GMT_GRID_REMARK_LEN160, char);
 					if (strlen(word) > GMT_GRID_REMARK_LEN160) {
 						GMT_Report (GMT->parent, GMT_MSG_WARNING,
-							"Remark string exceeds upper length of %d characters (truncated)\n",
+							"Remark string exceeds upper length of %d characters (will truncated in non-netCDF grid files)\n",
 							GMT_GRID_REMARK_LEN160);
 						if (HH->remark) gmt_M_str_free (HH->remark);	/* Free previous string */
 						HH->remark = strdup (&word[1]);
@@ -1979,7 +1979,7 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 					gmt_M_memset (HH->varname, GMT_GRID_VARNAME_LEN80, char);
 					if (strlen(word) > GMT_GRID_VARNAME_LEN80)
 						GMT_Report (GMT->parent, GMT_MSG_WARNING,
-							"data variable name exceeds upper length of %d characters (will truncated in non-netCDF grid files)\n",
+							"data variable name exceeds upper length of %d characters (truncated)\n",
 							GMT_GRID_VARNAME_LEN80);
 					if (word[1]) strncpy (HH->varname, &word[1], GMT_GRID_VARNAME_LEN80-1);
 					break;

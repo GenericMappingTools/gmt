@@ -62,6 +62,7 @@
  * gmtlib_process_binary_input
  * gmtlib_nc_get_att_text
  * gmtlib_nc_get_att_vtext
+ * gmtlib_nc_put_att_vtext
  * gmtlib_io_banner
  * gmt_get_cols
  * gmt_set_cols
