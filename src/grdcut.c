@@ -346,7 +346,7 @@ GMT_LOCAL unsigned int grdcut_count_NaNs (struct GMT_CTRL *GMT, struct GMT_GRID 
 }
 
 GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *h) {
-	/* Se;ect a subset either via -R or combination or -R -J typically for non-rectangular projections */
+	/* Select a subset either via -R or combination or -R -J typically for non-rectangular projections */
 	double *inc = h->inc;
 	gmt_M_memcpy (wesn, GMT->common.R.wesn, 4, double); /* Default is to take the -R if given */
 	if (GMT->current.proj.projection == GMT_NO_PROJ) return GMT_NOERROR;	/* Nothing else to do */
@@ -357,14 +357,19 @@ GMT_LOCAL int grdcut_set_rectangular_subregion (struct GMT_CTRL *GMT, double wes
 
 	if (gmt_M_err_pass (GMT, gmt_proj_setup (GMT, wesn), "")) return (GMT_PROJECTION_ERROR);
 
-	gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO],
-	                 GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI],
-					 &GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI], false);
-
-	wesn[XLO] = floor (GMT->common.R.wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
-	wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
-	wesn[YLO] = floor (GMT->common.R.wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y];
-	wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
+	/* If geographic and we got an oblique -R -J setup or a global region then we search for a subset.  Else, -R was
+	 * set to a specific subset and we keep that as what the user specified. */
+	if (gmt_M_is_geographic (GMT, GMT_IN) && (GMT->common.R.oblique ||
+		(gmt_M_180_range (wesn[YHI], wesn[YLO]) && gmt_M_360_range (wesn[XHI], wesn[XLO])))) {
+		gmt_wesn_search (GMT, GMT->current.proj.rect[XLO], GMT->current.proj.rect[XHI], GMT->current.proj.rect[YLO],
+			GMT->current.proj.rect[YHI], &GMT->common.R.wesn[XLO], &GMT->common.R.wesn[XHI],
+			&GMT->common.R.wesn[YLO], &GMT->common.R.wesn[YHI], false);
+		/* Round to nearest multiple of grid increment */
+		wesn[XLO] = floor (GMT->common.R.wesn[XLO] / inc[GMT_X]) * inc[GMT_X];
+		wesn[XHI] = ceil  (GMT->common.R.wesn[XHI] / inc[GMT_X]) * inc[GMT_X];
+		wesn[YLO] = floor (GMT->common.R.wesn[YLO] / inc[GMT_Y]) * inc[GMT_Y];
+		wesn[YHI] = ceil  (GMT->common.R.wesn[YHI] / inc[GMT_Y]) * inc[GMT_Y];
+	}
 
 	if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION) && rint (inc[GMT_X] * 60.0) == (inc[GMT_X] * 60.0)) {	/* Spacing in whole arc minutes */
 		int w, e, s, n, wm, em, sm, nm;
