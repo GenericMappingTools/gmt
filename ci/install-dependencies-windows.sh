@@ -18,6 +18,7 @@ PACKAGE="${PACKAGE:-false}"
 
 WIN_PLATFORM=x64-windows
 
+vcpkg update
 # install libraries
 vcpkg install netcdf-c gdal[core,tools] pcre2 fftw3[core,threads] clapack openblas --triplet ${WIN_PLATFORM}
 # Executable files search for DLL files in the directories listed in the PATH environment variable.
