@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 #
-
+# GRAPHICSMAGICK_RMS = 0.02
+# See https://github.com/GenericMappingTools/gmt/issues/6080 for why we up the RMS here (to avoid updating PS with minor changes)
 ps=closed.ps
 
 # Make a grid with closed contours at N pole, one crossing the periodic boundary, and one safely in middle
