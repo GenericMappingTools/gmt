@@ -521,19 +521,6 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONTOUR_CTRL *Ctrl, struct GMT
 
 /* Three sub functions used by GMT_grdcontour */
 
-#ifdef DEBUG
-/* If we need to dump out a polygon then */
-GMT_LOCAL void dumppol (uint64_t n, double *x, double *y, int id) {
-	uint64_t i;
-	FILE *fp = NULL;
-	char line[GMT_LEN64];
-	snprintf (line, GMT_LEN64, "dump_%d.txt", id);
-	fp = fopen (line, "w");
-	for (i = 0; i < n; i++) fprintf (fp, "%g\t%g\n", x[i], y[i]);
-	fclose (fp);
-}
-#endif
-
 GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, struct GRDCONTOUR_SAVE *save, size_t n, struct GMT_GRID *G, struct CONTOUR_CLOSED *I, unsigned int mode, struct GMT_DATASET *T) {
 	/* Labeling and ticking of inner-most contours cannot happen until all contours are found and we can determine
 	   which are the innermost ones. Here, all the n candidate contours are passed via the save array.
@@ -545,7 +532,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 	   Note on mode bitflags: mode = 1 (plot only), 2 (save labels only), 3 (both)
 	*/
 
-	int np, j, k, inside, col, row, stop, n_ticks, way, form, dump = 1;
+	int np, j, k, inside, col, row, stop, n_ticks, way, form;
 	uint64_t ij;
 	size_t pol, pol2;
 	bool done, match, found;
@@ -560,7 +547,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 
 	lbl[0] = (I->txt[0]) ? I->txt[0] : def[0];
 	lbl[1] = (I->txt[1]) ? I->txt[1] : def[1];
-	/* The x/y coordinates in SAVE in original cooordinates and hence are closed polygons in lon/lat (if geographic) */
+	/* The x/y coordinates in SAVE in original coordinates and hence are closed polygons in lon/lat (if geographic) */
 
 	for (pol = 0; pol < n; pol++) {	/* Set y min/max for polar caps */
 		if (abs (save[pol].kind) < 3) continue;	/* Skip all but polar caps */
@@ -679,11 +666,6 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 
 		np = (int)gmt_clip_to_map (GMT, save[pol].x, save[pol].y, np, &xp, &yp);	/* Convert to inches */
 		if (np == 0) continue;
-		if (gmt_polygon_is_open (GMT, xp, yp, np)) {	/* Closed polygon got projected to an open one */
-			save[pol].do_it = false;
-			gmt_M_free (GMT, s);	gmt_M_free (GMT, xp);	gmt_M_free (GMT, yp);
-			continue;
-		}
 
 		s = gmt_M_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
 		for (j = 1, s[0] = 0.0; j < np; j++)
@@ -695,9 +677,12 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 			continue;
 		}
 
-		if (dump) dumppol (np, xp, yp, pol);
-		way = gmt_polygon_centroid (GMT, xp, yp, np, &save[pol].xlabel, &save[pol].ylabel);	/* -1 is CCW, +1 is CW */
 		/* Compute mean location of closed contour ~hopefully a good point inside to place label. */
+		way = gmt_polygon_centroid (GMT, xp, yp, np, &save[pol].xlabel, &save[pol].ylabel);	/* -1 is CCW, +1 is CW */
+		if (way == GMT_POL_IS_CW) {	/* So far this has been found to be the wrong way so we switch */
+			GMT_Report (GMT->parent, GMT_MSG_WARNING, "gmt_polygon_centroid found CW polygon (by mistake?), switch to CCW\n");
+			way = GMT_POL_IS_CCW;
+		}
 
 		if (mode & 1) {	/* Tick the innermost contour */
 			x_back = xp[np-1];	/* Last point along contour */
