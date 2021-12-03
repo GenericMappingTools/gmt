@@ -61,6 +61,7 @@
  * gmt_z_input
  * gmtlib_process_binary_input
  * gmtlib_nc_get_att_text
+ * gmtlib_nc_get_att_vtext
  * gmtlib_io_banner
  * gmt_get_cols
  * gmt_set_cols
@@ -4732,27 +4733,84 @@ int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *nam
 	/* This function is a replacement for nc_get_att_text that avoids overflow of text
 	 * ncid, varid, name, text	: as in nc_get_att_text
 	 * textlen			: maximum number of characters to copy to string text
+	 * PW: 12/2/2021: Deprecated as we use gmtlib_nc_get_att_vtext instead, but keep for backwards compatibility */
+
+	return (gmtlib_nc_get_att_vtext (GMT, ncid, varid, name, NULL, text, textlen));
+}
+
+/*! . */
+int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *name, struct GMT_GRID_HEADER *h, char *text, size_t textlen) {
+	/* Similar to gmtlib_nc_get_att_text and used for title, history, and remark which, if longer than what can fit in header
+	 * are stored as allocated strings in the struct GMT_GRID_HEADER_HIDDEN structure.
+	 * ncid, varid, name, text	: as in nc_get_att_text
+	 * h  				: the pointer to the grid header structure
+	 * textlen			: maximum number of characters to copy to string text
 	 */
 	int status;
-	size_t attlen;
+	bool wipe = true;
+	size_t attlen, trunclen;
 	char *att = NULL;
 
 	status = nc_inq_attlen (ncid, varid, name, &attlen);
-	if (status != NC_NOERR) {
+	if (status != NC_NOERR) {	/* No such attribute */
 		*text = '\0';
 		return status;
 	}
-	att = gmt_M_memory (GMT, NULL, attlen, char);
+	att = calloc (attlen, sizeof (char));	/* Allocate the memory for the full string */
 	status = nc_get_att_text (ncid, varid, name, att);
-	if (status == NC_NOERR) {
-		attlen = MIN (attlen, textlen-1); /* attlen does not include terminating '\0') */
-		strncpy (text, att, attlen); /* Copy att to text */
-		text[attlen] = '\0'; /* Terminate string */
+	if (status == NC_NOERR) {	/* This was successful */
+		if (h && attlen > textlen) {
+			struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+			if (strcmp (name, "title") == 0 || strcmp (name, "long_name") == 0) {
+				if (HH->title) gmt_M_str_free (HH->title);	/* Free previous string */
+				HH->title = att;
+				wipe = false;
+			}
+			else if (strcmp (name, "history") == 0 || strcmp (name, "source") == 0) {
+				if (HH->command) gmt_M_str_free (HH->command);	/* Free previous string */
+				HH->command = att;
+				wipe = false;
+			}
+			else if (strcmp (name, "description") == 0) {
+				if (HH->remark) gmt_M_str_free (HH->remark);	/* Free previous string */
+				HH->remark = att;
+				wipe = false;
+			}
+		}
+		trunclen = MIN (attlen, textlen-1); /* attlen does not include terminating '\0') */
+		strncpy (text, att, trunclen); /* Copy att to text */
+		text[trunclen] = '\0'; /* Terminate string */
 	}
-	else
+	else	/* Not successful, set ouput string to empty */
 		*text = '\0';
-	gmt_M_free (GMT, att);
+	if (wipe) gmt_M_str_free (att);	/* Free since not placed in hidden structure */
 	return status;
+}
+
+int gmtlib_nc_put_att_vtext (struct GMT_CTRL *GMT, int ncid, char *name, struct GMT_GRID_HEADER *h) {
+	/* Place one of the three global netCDF attributes in a GMT netCDF file */
+	int ret = NC_NOERR;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+
+	if (!strcmp (name, "title")) {
+		if (HH->title)
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(HH->title), HH->title);
+		else if (h->title[0])
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(h->title), h->title);
+	}
+	else if (!strcmp (name, "history")) {
+		if (HH->command)
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(HH->command), HH->command);
+		else if (h->command[0])
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(h->command), h->command);
+	}
+	else if (!strcmp (name, "description")) {
+		if (HH->remark)
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(HH->remark), HH->remark);
+		else if (h->remark[0])
+			ret = nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(h->remark), h->remark);
+	}
+	return (ret);
 }
 
 int gmt_get_precision_width (struct GMT_CTRL *GMT, double x) {
