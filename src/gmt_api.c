@@ -2396,37 +2396,51 @@ GMT_LOCAL int gmtapi_open_grd (struct GMT_CTRL *GMT, char *file, struct GMT_GRID
 /*! . */
 GMT_LOCAL void gmtapi_update_grd_item (struct GMTAPI_CTRL *API, unsigned int mode, void *arg, size_t length, struct GMT_GRID_HEADER *H) {
 	/* Place desired text in string (fixed size array) which can hold up to length bytes in header but unlimited in the hidden structure */
+	size_t lim = GMT_BUFSIZ - 1;
 	static char buffer[GMT_BUFSIZ];
+	char *txt = (mode & GMT_COMMENT_IS_OPTION) ? GMT_Create_Cmd (API, arg) : (char *)arg;
 
 	gmt_M_memset (buffer, GMT_BUFSIZ, char);    /* Start with a clean slate */
-	strncat (buffer, arg, GMT_BUFSIZ-1);     /* Append new text */
-	if (strlen (buffer) >= length) {    /* Must place in hidden structure */
+	if (mode & GMT_COMMENT_IS_OPTION) { /* Must start with module name since it is not part of the option args */
+		strncat (buffer, API->GMT->init.module_name, GMT_BUFSIZ);
+		lim -= strlen (buffer) + 1; /* Remaining characters that we can use */
+		strncat (buffer, " ", lim);
+	}
+	strncat (buffer, txt, lim);     /* Append new text */
+    if (mode & GMT_COMMENT_IS_OPTION) gmt_M_free (API->GMT, txt);
+	if (strlen (buffer) >= length) {    /* Must place full string versions in hidden structure */
 		struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (H);
-		if (mode & GMT_COMMENT_IS_TITLE) {
+		if (mode & GMT_COMMENT_IS_TITLE) {    /* Place title */
 			if (HH->title) gmt_M_str_free (HH->title);  /* Free previous string */
 			HH->title = strdup (buffer);
+			GMT_Report (API, GMT_MSG_WARNING,
+				"Title string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
-		if (mode & GMT_COMMENT_IS_COMMAND) {
+		if (mode & GMT_COMMENT_IS_COMMAND) {   /* Place command string */
 			if (HH->command) gmt_M_str_free (HH->command);  /* Free previous string */
 			HH->command = strdup (buffer);
+			GMT_Report (API, GMT_MSG_WARNING,
+				"Command string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
-		if (mode & GMT_COMMENT_IS_REMARK) {
+		if (mode & GMT_COMMENT_IS_REMARK) {   /* Place remark */
 			if (HH->remark) gmt_M_str_free (HH->remark);  /* Free previous string */
 			HH->remark = strdup (buffer);
+			GMT_Report (API, GMT_MSG_WARNING,
+				"Remark string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n", length);
 		}
 	}
-	/* Place possibly truncated item in the grid/image header */
-	if (mode & GMT_COMMENT_IS_TITLE) {
+	/* Place possibly truncated item in the traditional grid/image header */
+	if (mode & GMT_COMMENT_IS_TITLE) {    /* Place title */
 		gmt_M_memset (H->title, length, char);    /* Wipe string completely */
-		strncpy (H->title, buffer, length);   /* Only copy over max length bytes */
+		strncpy (H->title, buffer, length-1);   /* Only copy over max length-1 bytes so last byte is 0 */
 	}
-	if (mode & GMT_COMMENT_IS_COMMAND) {
+	if (mode & GMT_COMMENT_IS_COMMAND) {  /* Place command string */
 		gmt_M_memset (H->command, length, char);    /* Wipe string completely */
-		strncpy (H->command, buffer, length);   /* Only copy over max length bytes */
+		strncpy (H->command, buffer, length-1);   /* Only copy over max length-1 bytes so last byte is 0 */
 	}
-	if (mode & GMT_COMMENT_IS_REMARK) {
+	if (mode & GMT_COMMENT_IS_REMARK) {  /* Place remark */
 		gmt_M_memset (H->remark, length, char);    /* Wipe string completely */
-		strncpy (H->remark, buffer, length);   /* Only copy over max length bytes */
+		strncpy (H->remark, buffer, length-1);   /* Only copy over max length-1 bytes so last byte is 0 */
 	}
 }
 
