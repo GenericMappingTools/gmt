@@ -37,9 +37,9 @@ struct GRDCONVERT_CTRL {
 		bool active;
 		char *file;
 	} In;
-	struct GRDCONVERT_C {	/* -C[n|o|b] */
+	struct GRDCONVERT_C {	/* -C[b|c|n|p] */
 		bool active;
-		unsigned int mode;	/* 0 = only keep old history, 1 = only keep new history, 2 = append new history to old history */
+		unsigned int mode;	/* see gmt_constants.h */
 	} C;
 	struct GRDCONVERT_G {	/* -G<outgrid> */
 		bool active;

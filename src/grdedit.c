@@ -49,9 +49,9 @@ struct GRDEDIT_CTRL {
 	struct GRDEDIT_A {	/* -A */
 		bool active;
 	} A;
-	struct GRDEDIT_C {	/* -C[n|o|b] */
+	struct GRDEDIT_C {	/* -C[b|c|n|p] */
 		bool active;
-		unsigned int mode;	/* 0 = only keep old history, 1 = only keep new history, 2 = append new history to old history */
+		unsigned int mode;	/* see gmt_constants.h */
 	} C;
 	struct GRDEDIT_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
