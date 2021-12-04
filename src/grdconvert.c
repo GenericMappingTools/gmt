@@ -32,12 +32,6 @@
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS "-RVf"
 
-enum Grdconvert_hist {
-	GRDCONVERT_OLD_HIST		= 0,	/* Only save the incoming command history in the output [Default] */
-	GRDCONVERT_NEW_HIST		= 1,	/* Only save this module command history in the output  */
-	GRDCONVERT_BOTH_HIST	= 2	/* Append this module history to prior history  */
-};
-
 struct GRDCONVERT_CTRL {
 	struct GRDCONVERT_In {
 		bool active;
@@ -187,13 +181,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 
 			/* Processes program-specific parameters */
 
-			case 'C':
+			case 'C':	/* Control history output */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
-					case 'b': Ctrl->C.mode = GRDCONVERT_BOTH_HIST;	break;
-					case 'n': Ctrl->C.mode = GRDCONVERT_NEW_HIST;	break;
-					case 'o': case '\0': Ctrl->C.mode = GRDCONVERT_OLD_HIST;	break;	/* Default */
+					case 'b': Ctrl->C.mode = GMT_GRDHISTORY_BOTH;	break;
+					case 'n': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
+					case 'o': case '\0': Ctrl->C.mode = GMT_GRDHISTORY_OLD;	break;	/* Default */
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized directive %s\n", opt->arg);
 						n_errors++;
@@ -243,9 +237,8 @@ EXTERN_MSC void gmtlib_grd_set_units (struct GMT_CTRL *GMT, struct GMT_GRID_HEAD
 EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int hmode, type[2] = {0, 0};
-	size_t L;
 	char fname[2][GMT_BUFSIZ];
-	char command[GMT_BUFSIZ] = {""}, *cmd = NULL;
+	char command[GMT_BUFSIZ] = {""};
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDCONVERT_CTRL *Ctrl = NULL;
@@ -336,35 +329,7 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	}
 	Grid->header->type = type[GMT_OUT];
 
-	switch (Ctrl->C.mode) {	/* Create the command history per -C directive */
-		case GRDCONVERT_OLD_HIST:	/* Only keep old command history */
-			if (HH->command)	/* Extra long previous command history */
-				strncpy (command, HH->command, GMT_BUFSIZ);
-			else
-				strncpy (command, Grid->header->command, GMT_BUFSIZ);
-			break;
-		case GRDCONVERT_NEW_HIST:	/* Only keep new command history */
-			cmd = GMT_Create_Cmd (API, options);
-			snprintf (command, GMT_BUFSIZ, "%s %s", GMT->init.module_name, cmd);
-			break;
-		case GRDCONVERT_BOTH_HIST:	/* Only keep old command history */
-			if (HH->command)	/* Extra long previous command history */
-				strncpy (command, HH->command, GMT_BUFSIZ);
-			else
-				strncpy (command, Grid->header->command, GMT_BUFSIZ);
-			L = GMT_BUFSIZ - strlen (command) - 2;
-			cmd = GMT_Create_Cmd (API, options);
-			/* Append this module command string to the existing history */
-			strncat (command, "; ", L);
-			strncat (command, GMT->init.module_name, L);	L -= strlen (GMT->init.module_name) + 1;
-			strncat (command, " ", L);
-			strncat (command, cmd, L);
-			break;
-		default:	/* Just to please Coverity */
-			break;
-	}
-
-	if (cmd) gmt_M_free (API->GMT, cmd);
+	gmt_change_grid_history (API, Ctrl->C.mode, Grid->header, command);	/* Set grid history per -C mode */
 
 	gmt_grd_init (GMT, Grid->header, options, true);
 

@@ -51,7 +51,7 @@ Optional Arguments
 .. _-C:
 
 **-Cb**\|\ **n**\|\ **o**
-    Specify what the output grid's command line history should be.  Append
+    Specify what the output grid's command line history should be: Append
     directive **b** to append the previous and this module's command history,
     **n** to only write this module's command history, or **o** to instead save
     only the previous command history [Default].

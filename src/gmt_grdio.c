@@ -2236,6 +2236,42 @@ void gmt_grd_shift (struct GMT_CTRL *GMT, struct GMT_GRID *G, double shift) {
 			G->header->wesn[XLO], G->header->wesn[XHI], n_warn);
 }
 
+void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct GMT_GRID_HEADER *h, char *command) {
+	char *cmd = NULL;
+	size_t L;
+	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
+
+	switch (mode) {	/* Create the command history per -C directive */
+		case GMT_GRDHISTORY_OLD:	/* Only keep old command history */
+			if (HH->command)	/* Extra long previous command history */
+				strncpy (command, HH->command, GMT_BUFSIZ);
+			else
+				strncpy (command, h->command, GMT_BUFSIZ);
+			break;
+		case GMT_GRDHISTORY_NEW:	/* Only keep new command history */
+			cmd = GMT_Create_Cmd (API, API->GMT->current.options);
+			snprintf (command, GMT_BUFSIZ, "%s %s", API->GMT->init.module_name, cmd);
+			break;
+		case GMT_GRDHISTORY_BOTH:	/* Only keep old command history */
+			if (HH->command)	/* Extra long previous command history */
+				strncpy (command, HH->command, GMT_BUFSIZ);
+			else
+				strncpy (command, h->command, GMT_BUFSIZ);
+			L = GMT_BUFSIZ - strlen (command) - 2;
+			cmd = GMT_Create_Cmd (API, API->GMT->current.options);
+			/* Append this module command string to the existing history */
+			strncat (command, "; ", L);
+			strncat (command, API->GMT->init.module_name, L);	L -= strlen (API->GMT->init.module_name) + 1;
+			strncat (command, " ", L);
+			strncat (command, cmd, L);
+			break;
+		default:	/* Just to please Coverity */
+			break;
+	}
+
+	if (cmd) gmt_M_free (API->GMT, cmd);
+}
+
 int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *wesn, unsigned int interpolant) {
 	/* gmt_grd_setregion determines what w,e,s,n should be passed to gmtlib_read_grd.
 	 * It does so by using GMT->common.R.wesn which have been set correctly by map_setup.

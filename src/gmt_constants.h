@@ -671,4 +671,11 @@ enum GMT_enum_curl {GMT_REGULAR_FILE = 0,	/* Regular file the may or may not exi
 	GMT_LOCAL_DIR  = 3,	/* Use the local (current) directory */
 	GMT_REMOTE_DIR = 4}; /* File is on the remote server */
 
+/* COnstants for controlling the written grid history */
+enum GMT_grid_history {
+	GMT_GRDHISTORY_OLD		= 0,	/* Only save the incoming command history in the output [Default] */
+	GMT_GRDHISTORY_NEW		= 1,	/* Only save this module command history in the output  */
+	GMT_GRDHISTORY_BOTH	= 2		/* Append this module history to prior history  */
+};
+
 #endif  /* GMT_CONSTANTS_H */
