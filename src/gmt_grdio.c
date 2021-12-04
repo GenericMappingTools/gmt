@@ -1957,7 +1957,7 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 					gmt_M_memset (h->title, GMT_GRID_TITLE_LEN80, char);
 					if (strlen(word) > GMT_GRID_TITLE_LEN80) {
 						GMT_Report (GMT->parent, GMT_MSG_WARNING,
-							"Title string exceeds upper length of %d characters (will truncated in non-netCDF grid files)\n",
+							"Title string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n",
 							GMT_GRID_TITLE_LEN80);
 						if (HH->title) gmt_M_str_free (HH->title);	/* Free previous string */
 						HH->title = strdup (&word[1]);
@@ -1968,7 +1968,7 @@ GMT_LOCAL int gmtgrdio_decode_grdcube_info (struct GMT_CTRL *GMT, char *input, u
 					gmt_M_memset (h->remark, GMT_GRID_REMARK_LEN160, char);
 					if (strlen(word) > GMT_GRID_REMARK_LEN160) {
 						GMT_Report (GMT->parent, GMT_MSG_WARNING,
-							"Remark string exceeds upper length of %d characters (will truncated in non-netCDF grid files)\n",
+							"Remark string exceeds upper length of %d characters (will be truncated in non-netCDF grid files)\n",
 							GMT_GRID_REMARK_LEN160);
 						if (HH->remark) gmt_M_str_free (HH->remark);	/* Free previous string */
 						HH->remark = strdup (&word[1]);
