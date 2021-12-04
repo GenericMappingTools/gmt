@@ -365,6 +365,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	if (Ctrl->C.active) {	/* Wipe history */
 		gmt_M_memset (G->header->command, GMT_GRID_COMMAND_LEN320, char);
+		if (HH->command) gmt_M_str_free (HH->command);	/* Free previous string */
 	}
 
 	if (Ctrl->S.active) {
