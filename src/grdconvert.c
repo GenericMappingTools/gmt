@@ -193,7 +193,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				switch (opt->arg[0]) {
 					case 'b': Ctrl->C.mode = GRDCONVERT_BOTH_HIST;	break;
 					case 'n': Ctrl->C.mode = GRDCONVERT_NEW_HIST;	break;
-					case 'o': case ' ': Ctrl->C.mode = GRDCONVERT_OLD_HIST;	break;	/* Default */
+					case 'o': case '\0': Ctrl->C.mode = GRDCONVERT_OLD_HIST;	break;	/* Default */
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized directive %s\n", opt->arg);
 						n_errors++;
