@@ -315,7 +315,8 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	gmt_grd_init (GMT, Grid->header, options, true);
 
-	if (type[GMT_OUT] >= GMT_GRID_IS_NB && type[GMT_OUT] <= GMT_GRID_IS_ND) {	/* Writing default GMT netCDF format */
+	if ((type[GMT_OUT] >= GMT_GRID_IS_NB && type[GMT_OUT] <= GMT_GRID_IS_ND) ||
+		(type[GMT_OUT] >= GMT_GRID_IS_CB && type[GMT_OUT] <= GMT_GRID_IS_CD)) {	/* Writing netCDF grid */
 		char *cmd = GMT_Create_Cmd (API, options);
 		size_t L = GMT_BUFSIZ - strlen (command) - 2;
 		/* Append this module command string to the existing history */
