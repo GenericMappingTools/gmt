@@ -216,7 +216,7 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int hmode, type[2] = {0, 0};
 	char fname[2][GMT_BUFSIZ];
-	char command[GMT_GRID_COMMAND_LEN320] = {""};
+	char command[GMT_BUFSIZ] = {""};
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDCONVERT_CTRL *Ctrl = NULL;
@@ -309,8 +309,8 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 
 	/* When converting from netcdf to netcdf, we will keep the old command, so we need to make a copy of it now */
 	command[0] = '\n';	command[1] = '\t';
-	strcat(command, "(old cmd) ");
-	strncat(command, Grid->header->command, GMT_GRID_COMMAND_LEN320-13);
+	strcat (command, "(old cmd) ");
+	strncat (command, Grid->header->command, GMT_BUFSIZ-13);
 
 	gmt_grd_init (GMT, Grid->header, options, true);
 
