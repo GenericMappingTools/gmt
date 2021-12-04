@@ -4796,19 +4796,19 @@ int gmtlib_nc_put_att_vtext (struct GMT_CTRL *GMT, int ncid, char *name, struct 
 	if (!strcmp (name, "title")) {
 		if (HH->title)
 			ret = nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(HH->title), HH->title);
-		else if (h->title[0])
+		else
 			ret = nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(h->title), h->title);
 	}
 	else if (!strcmp (name, "history")) {
 		if (HH->command)
 			ret = nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(HH->command), HH->command);
-		else if (h->command[0])
+		else
 			ret = nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(h->command), h->command);
 	}
 	else if (!strcmp (name, "description")) {
 		if (HH->remark)
 			ret = nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(HH->remark), HH->remark);
-		else if (h->remark[0])
+		else
 			ret = nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(h->remark), h->remark);
 	}
 	return (ret);

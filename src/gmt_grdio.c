@@ -2242,6 +2242,12 @@ void gmt_change_grid_history (struct GMTAPI_CTRL *API, unsigned int mode, struct
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
 	switch (mode) {	/* Create the command history per -C directive */
+		case GMT_GRDHISTORY_NONE:	/* No output history at all */
+			if (HH->command)	/* Extra long previous command history */
+				gmt_M_str_free (HH->command);
+			gmt_M_memset (command, GMT_BUFSIZ, char);
+			gmt_M_memset (h->command, GMT_GRID_COMMAND_LEN320, char);
+			break;
 		case GMT_GRDHISTORY_OLD:	/* Only keep old command history */
 			if (HH->command)	/* Extra long previous command history */
 				strncpy (command, HH->command, GMT_BUFSIZ);

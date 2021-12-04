@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdconvert** *ingrid* |-G|\ *outgrid*
-[ |-C|\ **b**\|\ **n**\|\ **o** ]
+[ |-C|\ **b**\|\ **c**\|\ **n**\|\ **p** ]
 [ |-N| ]
 [ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
@@ -50,11 +50,13 @@ Optional Arguments
 
 .. _-C:
 
-**-Cb**\|\ **n**\|\ **o**
-    Specify what the output grid's command line history should be: Append
-    directive **b** to append the previous and this module's command history,
-    **n** to only write this module's command history, or **o** to instead save
-    only the previous command history [Default].
+**-Cb**\|\ **c**\|\ **n**\|\ **p**
+    Normally, output grids store the current module's command-line history.
+    Use **-C** to specify what the output grid's command history should be:
+    Append directive **b** to write both the previous and the current module's 
+    command histories, **c** to only write the current module's command
+    history, **n** to save no history whatsoever [Default], or select **p**
+    to instead save only the previous command history.
 
 .. _-N:
 

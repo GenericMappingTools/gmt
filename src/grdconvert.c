@@ -79,7 +79,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s -G%s [-Cb|n|o] [-N] [%s] [%s] "
+	GMT_Usage (API, 0, "usage: %s %s -G%s [-Cb|c|n|p] [-N] [%s] [%s] "
 		"[-Z[+s<fact>][+o<shift>]] [%s] [%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -88,11 +88,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_ingrid_syntax (API, 0, "Name of grid to convert from");
 	gmt_outgrid_syntax (API, 'G', "Set name of the new converted grid file");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
-	GMT_Usage (API, 1, "\n-Cb|n|o");
-	GMT_Usage (API, -2, "Control how the existing and new command history should be handled, via directives:");
-	GMT_Usage (API, 3, "b: Append this command history to the existing history.");
-	GMT_Usage (API, 3, "n: Only save this command history.");
-	GMT_Usage (API, 3, "o: Only save the existing history [Default].");
+	GMT_Usage (API, 1, "\n-Cb|c|n|p");
+	GMT_Usage (API, -2, "Control how the current and previous command histories should be handled, via directives:");
+	GMT_Usage (API, 3, "b: Append the current command's history to the previous history.");
+	GMT_Usage (API, 3, "c: Only save the current command's history.");
+	GMT_Usage (API, 3, "n: Save no history at all [Default].");
+	GMT_Usage (API, 3, "p: Only preserve the previous history.");
 	GMT_Usage (API, 1, "\n-N Do NOT write the header (for native grids only - ignored otherwise). Useful when creating "
 		"files to be used by external programs.");
 	GMT_Option (API, "R,V");
@@ -186,8 +187,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'b': Ctrl->C.mode = GMT_GRDHISTORY_BOTH;	break;
-					case 'n': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
-					case 'o': case '\0': Ctrl->C.mode = GMT_GRDHISTORY_OLD;	break;	/* Default */
+					case 'c': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
+					case 'p': Ctrl->C.mode = GMT_GRDHISTORY_OLD;	break;
+					case 'n': case '\0': Ctrl->C.mode = GMT_GRDHISTORY_NONE;	break;	/* Default */
 					default:
 						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized directive %s\n", opt->arg);
 						n_errors++;
