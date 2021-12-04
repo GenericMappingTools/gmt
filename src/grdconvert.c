@@ -307,20 +307,25 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	}
 	Grid->header->type = type[GMT_OUT];
 
-	/* When converting from netcdf to netcdf, we will keep the old command, so we need to make a copy of it now */
-	command[0] = '\n';	command[1] = '\t';
-	strcat (command, "(old cmd) ");
-	strncat (command, Grid->header->command, GMT_BUFSIZ-13);
+	/* When converting to netcdf, we will keep the old command, so we need to make a copy of it now before gmt_grd_init wipes it */
+	if (HH->command)	/* Extra long previous command history */
+		strncpy (command, HH->command, GMT_BUFSIZ);
+	else
+		strncpy (command, Grid->header->command, GMT_BUFSIZ);
 
 	gmt_grd_init (GMT, Grid->header, options, true);
 
-	if (!GMT->common.R.active[RSET] && ((type[GMT_IN]  >= GMT_GRID_IS_CB && type[GMT_IN]  <= GMT_GRID_IS_CD)  ||	/* That is, from netCDF to netCDF */
-	                              (type[GMT_IN]  >= GMT_GRID_IS_NB && type[GMT_IN]  <= GMT_GRID_IS_ND)) &&
-	                             ((type[GMT_OUT] >= GMT_GRID_IS_CB && type[GMT_OUT] <= GMT_GRID_IS_CD)  ||
-	                              (type[GMT_OUT] >= GMT_GRID_IS_NB && type[GMT_OUT] <= GMT_GRID_IS_ND)) ) {
-		/* Do nothing, which means the new grid will keep the command string of the old grid */
+	if (type[GMT_OUT] >= GMT_GRID_IS_NB && type[GMT_OUT] <= GMT_GRID_IS_ND) {	/* Writing default GMT netCDF format */
+		char *cmd = GMT_Create_Cmd (API, options);
+		size_t L = GMT_BUFSIZ - strlen (command) - 2;
+		/* Append this module command string to the existing history */
+		strncat (command, "; ", L);
+		strncat (command, GMT->init.module_name, L);	L -= strlen (GMT->init.module_name) + 1;
+		strncat (command, " ", L);
+		strncat (command, cmd, L);
 		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_COMMAND, command, Grid))
 			Return (API->error);
+		gmt_M_free (API->GMT, cmd);
 	}
 	else if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
 		Return (API->error);
