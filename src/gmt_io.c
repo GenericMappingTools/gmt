@@ -156,7 +156,6 @@
 
 #include "gmt_dev.h"
 #include "gmt_internals.h"
-#include "gmt_common_byteswap.h"
 
 #ifdef HAVE_DIRENT_H_
 #	include <dirent.h>
