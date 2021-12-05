@@ -12,7 +12,9 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdedit** *ingrid* [ |-A| ] [ |-C| ]
+**gmt grdedit** *ingrid*
+[ |-A| ]
+[ |-C|\ **b**\|\ **c**\|\ **n**\|\ **p** ]
 [ |SYN_OPT-D2| ]
 [ |-E|\ [**a**\|\ **e**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**] ]
 [ |-G|\ *outgrid* ]
@@ -68,8 +70,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**
-    Clear the command history from the grid header.
+**-Cb**\|\ **c**\|\ **n**\|\ **p**
+    Normally, output grids store the current module's command-line history.
+    Use **-C** to specify what the output grid's command history should be:
+    Append directive **b** to write both the previous and the current module's 
+    command histories, **c** to only write the current module's command
+    history, **n** to save no history whatsoever [Default], or select **p**
+    to instead save only the previous command history.
 
 .. _-D:
 
