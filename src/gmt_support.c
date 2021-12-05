@@ -17636,10 +17636,20 @@ unsigned int gmt_create_array (struct GMT_CTRL *GMT, char option, struct GMT_ARR
 		return GMT_NOERROR;
 	}
 
-	if (min != NULL)	/* Update min now */
+	if (min != NULL) {	/* Update min now */
+		if (gmt_M_is_dnan (*min)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Min value is NaN - cannot create array\n", option);
+			return GMT_PARSE_ERROR;
+		}
 		T->min = *min;
-	if (max != NULL)	/* Update max now */
+	}
+	if (max != NULL) {	/* Update max now */
+		if (gmt_M_is_dnan (*max)) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option %c: Max value is NaN - cannot create array\n", option);
+			return GMT_PARSE_ERROR;
+		}
 		T->max = *max;
+	}
 	if (T->count)	/* This means we gave a count instead of increment  */
 		inc = (T->max - T->min) / (T->inc - 1.0);
 	else if (T->reciprocal)	/* This means we gave the reciprocal increment  */
