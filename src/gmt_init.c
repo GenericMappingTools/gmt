@@ -7104,7 +7104,8 @@ GMT_LOCAL void gmtinit_explain_R_geo (struct GMT_CTRL *GMT) {
 	GMT_Usage (API, -2, "Specify the min/max coordinates of your data region in user units. "
 		"Use dd:mm[:ss] for regions given in arc degrees, minutes [and seconds]. "
 		"Use -R<xmin>/<xmax>/<ymin>/<ymax>[+u<unit>] for regions given in projected coordinates, "
-		"with <unit> selected from %s. [e] "
+		"with <unit> selected from %s [e]. If +u is set, projected regions centered on (0,0) may be"
+		"set via -R<halfwidth>[/<halfheight>]+u<unit>, where <halfheight> defaults to <halfwidth> if not given. "
 		"Use [yyyy[-mm[-dd]]]T[hh[:mm[:ss[.xxx]]]] format for time axes. "
 		"Append +r if -R specifies the coordinates of the lower left and "
 		"upper right corners of a rectangular area.", GMT_LEN_UNITS2_DISPLAY);
@@ -8879,23 +8880,43 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 		GMT->common.R.oblique = false;
 	i = pos = 0;
 	gmt_M_memset (p, 6, double);
-	while ((gmt_strtok (string, "/", &pos, text))) {
-		if (i > 5) {
-			error++;
-			return (error);		/* Have to break out here to avoid segv on p[6]  */
+	if (inv_project || scale_coord) {	/* Plain floating points in selected distance units */
+		int nc;
+		gmt_strrepc (string, '/', ' ');	/* Replace the slashes with spaces to easy parsing */
+		nc = sscanf (string, "%lf %lf %lf %lf", &p[XLO], &p[XHI], &p[YLO], &p[YHI]);
+		i = 4;	/* So test below shows we found 4 coordinates (unless we fail) */
+		if (nc == 1) {	/* Got -R<radius>+u<unit> for a square area in projected or scaled units centered on (0,0) */
+			double r = p[XLO];
+			p[XLO] = p[YLO] = -r;	/* Start at negative radius value */
+			p[XHI] = p[YHI] = +r;	/* Stop at positive radius value */
 		}
-		/* Figure out what column corresponds to a token to get col_type[GMT_IN] flag  */
-		if (i > 3)
-			icol = 2;
-		else if (GMT->common.R.oblique)
-			icol = i%2;
-		else
-			icol = i/2;
-		if (icol < 2 && GMT->current.setting.io_lonlat_toggle[GMT_IN]) icol = 1 - icol;	/* col_types were swapped */
-		if (inv_project)	/* input is distance units */
-			p[i] = atof (text);
-		else {
-			bool maybe_time = gmtlib_maybe_abstime (GMT, text, &no_T);	/* Will flag things like 1999-12-03 or 2000/09/4 as abstime with missing T */
+		else if (nc == 2) {	/* Got -R<halfwidth/<halfhight>>+u<unit> for a rectangular area in projected or scaled units centered on (0,0) */
+			double x2 = p[XLO], y2 = p[XHI];
+			p[XLO] = -x2;	p[XHI] = +x2;	/* Half width centered on 0 */
+			p[YLO] = -y2;	p[YHI] = +y2;	/* Half width centered on 0 */
+		}
+		else if (nc != 4) {	/* Error */
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Could not parse %s into projected or scaled Cartesian coordinates!\n", text);
+			error++;
+			i = nc;
+		}
+	}
+	else {	/* Other types of coordinates */
+		bool maybe_time;
+		while ((gmt_strtok (string, "/", &pos, text))) {
+			if (i > 5) {
+				error++;
+				return (error);		/* Have to break out here to avoid segv on p[6]  */
+			}
+			/* Figure out what column corresponds to a token to get col_type[GMT_IN] flag  */
+			if (i > 3)
+				icol = 2;
+			else if (GMT->common.R.oblique)
+				icol = i%2;
+			else
+				icol = i/2;
+			if (icol < 2 && GMT->current.setting.io_lonlat_toggle[GMT_IN]) icol = 1 - icol;	/* col_types were swapped */
+			maybe_time = gmtlib_maybe_abstime (GMT, text, &no_T);	/* Will flag things like 1999-12-03 or 2000/09/4 as abstime with missing T */
 			if (maybe_time || gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_UNKNOWN || gmt_M_type (GMT, GMT_IN, icol) == GMT_IS_FLOAT) {	/* Because abstime specs must be parsed carefully we must do more checking */
 				/* Here, -J or -f may have ben set, proceed with caution */
 				if (no_T) strcat (text, "T");	/* Add the missing trailing 'T' in an ISO date */
@@ -8923,10 +8944,10 @@ int gmt_parse_R_option (struct GMT_CTRL *GMT, char *arg) {
 				expect_to_read = (gmt_M_type (GMT, GMT_IN, icol) & GMT_IS_RATIME) ? GMT_IS_ARGTIME : gmt_M_type (GMT, GMT_IN, icol);
 				error += gmt_verify_expectations (GMT, expect_to_read, gmt_scanf (GMT, text, expect_to_read, &p[i]), text);
 			}
-		}
-		if (error) return (error);
+			if (error) return (error);
 
-		i++;
+			i++;
+		}
 	}
 	if (GMT->common.R.oblique) {
 		gmt_M_double_swap (p[2], p[1]);	/* So w/e/s/n makes sense */
