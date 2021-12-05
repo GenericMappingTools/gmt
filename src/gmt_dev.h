@@ -124,6 +124,8 @@ extern "C" {
 #	define GMT_LOCAL static
 #endif
 
+#include "gmt_common_byteswap.h"    /* Byte-swap inline functions */
+
 #include "gmt_common_math.h" /* Shared math functions */
 #include "gmt.h"             /* All GMT high-level API */
 #include "gmt_private.h"     /* API declaration needed by libraries */
