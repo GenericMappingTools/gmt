@@ -36,9 +36,9 @@
     #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+u**\ *unit*] specifies a region in projected units (e.g., UTM meters)
        where *xmin*/*xmax*/*ymin*/*ymax* are Cartesian projected coordinates compatible with the chosen projection
        (**-J**) and *unit* is an allowable :ref:`distance unit <dist-units>` [e]; we inversely project to determine the
-       actual rectangular geographic region. For square projected regions centered on (0,0) you may use the short-hand
-       **-R**\ *radius*\ **+u**\ *unit* while for rectangular regions you may use **-R**\ *xhalf*/*yhalf*\ **+u**\ *unit*.
-       These short-hands require the **+u** modifier.
+       actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+       **-R**\ *halfwidth*\ [/*halfheight*]\ **+u**\ *unit*, where *halfheight* defaults to *halfwidth if not given.
+       This short-hand requires the **+u** modifier.
 
     #. **-R**\ *justify*\ *lon0*/*lat0*/*nx*/*ny*, where *justify* is a 2-character combination of
        **L**\|\ **C**\|\ **R** (for left, center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom)
