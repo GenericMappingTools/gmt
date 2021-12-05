@@ -158,7 +158,7 @@ GMT_LOCAL void gmtdcw_freestrings (struct GMT_DCW_COLLECTION *Collection, unsign
 
 GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **C, struct GMT_DCW_STATE **S, struct GMT_DCW_COUNTRY_STATE **CS, struct GMT_DCW_COLLECTION **U, unsigned int dim[]) {
 	/* Open and read list of countries and states and return via two struct and one char arrays plus dimensions in dim */
-	size_t n_alloc = 300;
+	size_t n_alloc = GMT_LEN256;
 	unsigned int j, k, ns, collection, n_errors;
 	int nf;
 	char path[PATH_MAX] = {""}, line[BUFSIZ] = {""};
@@ -183,7 +183,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 		sscanf (line, "%s %s %[^\n]", Country[k].continent, Country[k].code,  Country[k].name);
 		k++;
 		if (k == n_alloc) {
-			n_alloc += 100;
+			n_alloc += GMT_LEN128;
 			Country = gmt_M_memory (GMT, Country, n_alloc, struct GMT_DCW_COUNTRY);
 		}
 	}
@@ -209,7 +209,7 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 		if (k && strcmp (State[k].country, State[k-1].country)) ns++;	/* New country with states */
 		k++;
 		if (k == n_alloc) {
-			n_alloc += 100;
+			n_alloc += GMT_LEN128;
 			State = gmt_M_memory (GMT, State, n_alloc, struct GMT_DCW_STATE);
 		}
 	}
@@ -231,7 +231,6 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 
 	/* Get collections (which may not be present, so allow for missing files */
 
-	n_alloc = 100;	/* Reset to a smaller size */
 	Collection = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DCW_COLLECTION);
 	k = 0;
 	for (collection = 0; collection < 2; collection++) {	/* Read both system and user collections */
@@ -302,8 +301,11 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 			k++;
 			dim[3+collection]++;
 			if (k == n_alloc) {
-				n_alloc += 100;
+				size_t old_n_alloc = n_alloc;
+				n_alloc += GMT_LEN128;
 				Collection = gmt_M_memory (GMT, Collection, n_alloc, struct GMT_DCW_COLLECTION);
+				/* Reallocation does not initialize new memory to NULL so we must do so here manually */
+				gmt_M_memset (&(Collection[old_n_alloc]), n_alloc - old_n_alloc, struct GMT_DCW_COLLECTION);	/* Set to NULL/0 */
 			}
 		}
 		fclose (fp);
@@ -475,7 +477,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 	 */
 	int item, ks, retval, ncid, xvarid, yvarid, id;
 	int64_t first, last;
-	size_t np, max_np = 0U, n_alloc = 300;
+	size_t np, max_np = 0U, n_alloc = GMT_LEN128;
 	uint64_t k, seg, n_segments;
 	unsigned int n_items = 0, r_item = 0, pos = 0, kk, tbl = 0, j = 0, named_wesn = 0, *order = NULL;
 	unsigned short int *dx = NULL, *dy = NULL;
@@ -537,7 +539,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					order[n_items] = j;	/* So we know which color/pen to apply for this item */
 					n_items++;
 					if (n_items == n_alloc) {
-						n_alloc += 100;
+						n_alloc += GMT_LEN128;
 						order = gmt_M_memory (GMT, order, n_alloc, unsigned int);
 					}
 				}
@@ -555,7 +557,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 					for (k = 0; k < n_list; k++) {
 						order[n_items++] = j;	/* So we know which color/pen to apply for all items in this collection */
 						if (n_items == n_alloc) {
-							n_alloc += 100;
+							n_alloc += GMT_LEN128;
 							order = gmt_M_memory (GMT, order, n_alloc, unsigned int);
 						}
 					}
@@ -572,7 +574,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				order[n_items] = j;	/* So we know which color/pen to apply for this item */
 				n_items++;
 				if (n_items == n_alloc) {
-					n_alloc += 100;
+					n_alloc += GMT_LEN128;
 					order = gmt_M_memory (GMT, order, n_alloc, unsigned int);
 				}
 			}
