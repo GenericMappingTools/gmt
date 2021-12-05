@@ -20,7 +20,7 @@ Tutorial
 #. Universidade do Algarve, Faro, Portugal
 #. University of Liverpool, UK
 #. Sea and Sun Technology, Germany
-#. Michigan State University
+#. China University of Geosciences, Wuhan, China
 
 The purpose of this tutorial is to introduce new users to GMT,
 outline the GMT environment, and enable you to make several

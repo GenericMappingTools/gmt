@@ -54,7 +54,6 @@
  */
 
 #include "gmt_dev.h"
-#include "gmt_common_byteswap.h"
 
 #define THIS_MODULE_CLASSIC_NAME	"img2grd"
 #define THIS_MODULE_MODERN_NAME	"img2grd"

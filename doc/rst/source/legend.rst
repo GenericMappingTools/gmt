@@ -296,7 +296,7 @@ When attributes are not provided, or extended symbol information (for symbols ta
 not given as comma-separated quantities, we will provide the following defaults:
 
 Front: The *size* argument is *length*\ [/*gap*\ [*ticklength*]]. Front symbol is left-side (here, that means upper side) box,
-with *ticklength* set 30% of the given symbol *length (if not specified separately), and *gap* defaulting to -1 (one
+with *ticklength* set 30% of the given symbol *length* (if not specified separately), and *gap* defaulting to -1 (one
 entered front symbol) if not specified.  Modifiers to the symbol argument can be provided.
 
 Vector: Head size is 30% of given symbol size.

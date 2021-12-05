@@ -576,7 +576,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 			if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 			fprintf (fp, "%s", line);				/* Just copy the line as is */
 		}
-		fclose (Ctrl->I.fp);	/* Done reading the include script */
+		/* Not closing the include script as we may need to recreate init_file after njobs has been determined */
 	}
 	fclose (fp);	/* Done writing the init script */
 
@@ -702,6 +702,7 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 		gmt_set_tvalue (fp, Ctrl->In.mode, true, "BATCH_PREFIX", Ctrl->N.prefix);
 		gmt_set_ivalue (fp, Ctrl->In.mode, false, "BATCH_NJOBS", n_jobs);	/* Total jobs (write to init since known) */
 		if (Ctrl->I.active) {	/* Append contents of an include file */
+			rewind (Ctrl->I.fp);	/* Reposition to start of this open file */
 			gmt_set_comment (fp, Ctrl->In.mode, "Static parameters set via user include file");
 			while (gmt_fgets (GMT, line, PATH_MAX, Ctrl->I.fp)) {	/* Read the include file and copy to init script with some exceptions */
 				if (gmt_is_gmtmodule (line, "begin")) continue;		/* Skip gmt begin */
@@ -710,10 +711,10 @@ EXTERN_MSC int GMT_batch (void *V_API, int mode, void *args) {
 				if (strchr (line, '\n') == NULL) strcat (line, "\n");	/* In case the last line misses a newline */
 				fprintf (fp, "%s", line);				/* Just copy the line as is */
 			}
-			fclose (Ctrl->I.fp);	/* Done reading the include script */
 		}
 		fclose (fp);	/* Done writing the init script */
 	}
+	if (Ctrl->I.active) fclose (Ctrl->I.fp);	/* Done reading the include script */
 	if (Ctrl->In.mode == GMT_DOS_MODE)
 		gmt_strrepc (topdir, '/', '\\');	/* Temporarily make DOS compatible */
 	n_to_run = (Ctrl->M.active) ? 1 : n_jobs;

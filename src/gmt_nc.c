@@ -630,11 +630,11 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		/* Create enough memory to store the x- and y-coordinate values */
 		double *xy = gmt_M_memory (GMT, NULL, MAX (header->n_columns,header->n_rows), double);
 		/* Get global information */
-		if (gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "title", header->title, GMT_GRID_TITLE_LEN80))
-			gmtlib_nc_get_att_text (GMT, ncid, z_id, "long_name", header->title, GMT_GRID_TITLE_LEN80);
-		if (gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "history", header->command, GMT_GRID_COMMAND_LEN320))
-			gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "source", header->command, GMT_GRID_COMMAND_LEN320);
-		gmtlib_nc_get_att_text (GMT, ncid, NC_GLOBAL, "description", header->remark, GMT_GRID_REMARK_LEN160);
+		if (gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "title", header, header->title, GMT_GRID_TITLE_LEN80))
+			gmtlib_nc_get_att_vtext (GMT, ncid, z_id, "long_name", header, header->title, GMT_GRID_TITLE_LEN80);
+		if (gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "history", header, header->command, GMT_GRID_COMMAND_LEN320))
+			gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "source", header, header->command, GMT_GRID_COMMAND_LEN320);
+		gmtlib_nc_get_att_vtext (GMT, ncid, NC_GLOBAL, "description", header, header->remark, GMT_GRID_REMARK_LEN160);
 		header->registration = GMT_GRID_NODE_REG;
 		if (!nc_get_att_int (ncid, NC_GLOBAL, "node_offset", &i)) {	/* GMT wrote the registration in the grid */
 			header->registration = i;
@@ -955,9 +955,9 @@ GMT_LOCAL int gmtnc_grd_info (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *head
 		const int *nc_vers = gmtnc_netcdf_libvers();
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "netCDF Library version: %d\n", *nc_vers);
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "Conventions", strlen(GMT_NC_CONVENTION), GMT_NC_CONVENTION));
-		if (header->title[0]) gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "title", strlen(header->title), header->title));
-		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "history", strlen(header->command), header->command));
-		if (header->remark[0]) gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "description", strlen(header->remark), header->remark));
+		gmt_M_err_trap (gmtlib_nc_put_att_vtext (GMT, ncid, "title", header));
+		gmt_M_err_trap (gmtlib_nc_put_att_vtext (GMT, ncid, "history", header));
+		gmt_M_err_trap (gmtlib_nc_put_att_vtext (GMT, ncid, "description", header));
 		gmt_M_err_trap (nc_put_att_text (ncid, NC_GLOBAL, "GMT_version", strlen(GMT_VERSION), (const char *) GMT_VERSION));
 		if (header->registration == GMT_GRID_PIXEL_REG) {
 			int reg = header->registration;
