@@ -19,8 +19,10 @@ The **-R** option defines the map region or data domain of interest. It may be s
 
 #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ **+u**\ *unit*. Append **+u**\ *unit* to the option 1 to specify a region in
    projected units (e.g., UTM meters) where *xmin*/*xmax*/*ymin*/*ymax* are Cartesian projected coordinates compatible
-   with the chosen projection and *unit* is an allowable :ref:`distance unit <dist-units>`. The coordinates are relative
-   to the standard longitude and latitude indicated in the projection (**-J**).
+   with the chosen projection and *unit* is an allowable :ref:`distance unit <dist-units>` [e]. The coordinates are relative
+   to the standard longitude and latitude indicated in the projection (**-J**).  For square projected regions centered
+   on (0,0) you may use the short-hand **-R**\ *radius*\ [**+u**\ *unit*] while for rectangular regions you may use
+   **-R**\ *xhalf*/*yhalf*\ [**+u**\ *unit*].
 
 #. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is useful for map projections that are oblique,
    making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
