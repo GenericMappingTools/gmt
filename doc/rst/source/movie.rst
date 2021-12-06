@@ -81,6 +81,26 @@ Required Arguments
     request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
 
+    =================================== ================ ============
+    Preset format                       Pixel dimensions Alias
+    =================================== ================ ============
+    *16:9 (24x13.5 cm or 9.6x5.4 inch)*
+    4320p                               7680 x 4320      8k and uhd-2
+    2160p                               3840 x 2160      4k and uhd
+    1080p                               1920 x 1080      hd
+    720p                                1280 x 720
+    540p                                960 x 540
+    480p                                854 x 480
+    360p                                640 x 360
+    240p                                426 x 240
+    *4:3 (24x18 cm or 9.6x7.2 inch)*
+    uxga                                1600 x 1200
+    sxga+                               1400 x 1050
+    xga                                 1024 x 768
+    svga                                800 x 600
+    dvd                                 640 x 480
+    =================================== ================ ============
+
 .. _-N:
 
 **-N**\ *prefix*
