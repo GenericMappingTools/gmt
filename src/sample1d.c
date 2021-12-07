@@ -556,6 +556,20 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failure in gmt_intpol near row %d!\n", result+1);
 					return (result);
 				}
+				if (S->text) {	/* Copy over any trailing text if input times are matched exactly in output */
+					for (k = row = 0; k < m; k++) {	/* For all output times */
+						while (row < S->n_rows && S->data[Ctrl->N.col][row] < Sout->data[Ctrl->N.col][k]) row++;	/* Wind to next potential matching input time */
+						if (row < S->n_rows && doubleAlmostEqualZero (S->data[Ctrl->N.col][row], Sout->data[Ctrl->N.col][k]) && S->text[row]) {	/* Matching time and we have text */
+							if (Sout->text == NULL) {	/* Must allocate text array the first time */
+								if ((Sout->text = gmt_M_memory (GMT, NULL, m, char *)) == NULL) {
+									GMT_Report(API, GMT_MSG_ERROR, "Unable to allocate trailing text for egment %" PRIu64 " in table %" PRIu64 ".\n", seg, tbl);
+									Return (GMT_MEMORY_ERROR);
+								}
+							}
+							Sout->text[k] = strdup (S->text[row++]);	/* Duplicate trailing text on output */
+						}
+					}
+				}
 			}
 			if (Ctrl->T.T.spatial) {	/* Free up memory used */
 				gmt_M_free (GMT, dist_in);	gmt_M_free (GMT, t_out);

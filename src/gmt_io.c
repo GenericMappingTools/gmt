@@ -1092,6 +1092,7 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 }
 
 GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
+	/* Output the trailing text, if it is not NULL */
 	if (GMT->common.o.word) {	/* Must output a specific word from the trailing text only */
 		char *word = NULL, *orig = strdup (txt), *trail = orig;
 		uint64_t col = 0;
@@ -1106,8 +1107,8 @@ GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char 
 		fprintf (fp, "\n");
 		gmt_M_str_free (orig);
 	}
-	else	/* Output the whole enchilada */
-		fprintf (fp, "%s\n", txt);
+	else	/* Output the whole enchilada (unless NULL) */
+		(txt) ? fprintf (fp, "%s\n", txt) : fprintf (fp, "\n");
 }
 
 /*! . */
