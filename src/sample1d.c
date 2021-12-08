@@ -426,12 +426,12 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Din->n_columns < 2) {
-		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
+	if (Din->n_columns < 1) {
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have no data column(s) but at least 1 is needed\n");
 		Return (GMT_DIM_TOO_SMALL);
 	}
-	if (Din->n_columns < 3 && Ctrl->W.active) {
-		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 3 are needed since -W is used\n", (int)Din->n_columns);
+	if (Din->n_columns < 2 && Ctrl->W.active) {
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed since -W is used\n", (int)Din->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 	if (Ctrl->N.active && Ctrl->N.col >= Din->n_columns) {	/*  */
@@ -565,21 +565,22 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 					GMT_Report (API, GMT_MSG_ERROR, "Failure in gmt_intpol near row %d!\n", result+1);
 					return (result);
 				}
-				if (Ctrl->E.active && S->text) {	/* Copy over any trailing text if input times are matched exactly in output */
-					for (k = row = 0; k < m; k++) {	/* For all output times */
-						while (row < S->n_rows && S->data[Ctrl->N.col][row] < Sout->data[Ctrl->N.col][k]) row++;	/* Wind to next potential matching input time */
-						if (row < S->n_rows && doubleAlmostEqualZero (S->data[Ctrl->N.col][row], Sout->data[Ctrl->N.col][k]) && S->text[row]) {	/* Matching time and we have text */
-							if (Sout->text == NULL) {	/* Must allocate text array the first time */
-								if ((Sout->text = gmt_M_memory (GMT, NULL, m, char *)) == NULL) {
-									GMT_Report(API, GMT_MSG_ERROR, "Unable to allocate trailing text for egment %" PRIu64 " in table %" PRIu64 ".\n", seg, tbl);
-									Return (GMT_MEMORY_ERROR);
-								}
+			}
+			if (Ctrl->E.active && S->text) {	/* Copy over any trailing text if input times are matched exactly in output */
+				for (k = row = 0; k < m; k++) {	/* For all output times */
+					while (row < S->n_rows && S->data[Ctrl->N.col][row] < Sout->data[Ctrl->N.col][k]) row++;	/* Wind to next potential matching input time */
+					if (row < S->n_rows && doubleAlmostEqualZero (S->data[Ctrl->N.col][row], Sout->data[Ctrl->N.col][k]) && S->text[row]) {	/* Matching time and we have text */
+						if (Sout->text == NULL) {	/* Must allocate text array the first time */
+							if ((Sout->text = gmt_M_memory (GMT, NULL, m, char *)) == NULL) {
+								GMT_Report(API, GMT_MSG_ERROR, "Unable to allocate trailing text for egment %" PRIu64 " in table %" PRIu64 ".\n", seg, tbl);
+								Return (GMT_MEMORY_ERROR);
 							}
-							Sout->text[k] = strdup (S->text[row++]);	/* Duplicate trailing text on output */
 						}
+						Sout->text[k] = strdup (S->text[row++]);	/* Duplicate trailing text on output */
 					}
 				}
 			}
+
 			if (Ctrl->T.T.spatial) {	/* Free up memory used */
 				gmt_M_free (GMT, dist_in);	gmt_M_free (GMT, t_out);
 				gmt_M_free (GMT, lon);		gmt_M_free (GMT, lat);
