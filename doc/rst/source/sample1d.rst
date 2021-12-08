@@ -14,6 +14,7 @@ Synopsis
 
 **gmt sample1d** [ *table* ]
 [ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+d**][**+l**] ]
+[ |-E| ]
 [ |-F|\ **l**\|\ **a**\|\ **c**\|\ **n**\|\ **s**\ *p*\ [**+d1**\|\ **2**] ]
 [ |-N|\ *col* ]
 [ |-T|\ [*min/max*\ /]\ *inc*\ [**+a**][**+i**\|\ **n**][**+u**] ]
@@ -80,6 +81,14 @@ Optional Arguments
     **+l** if distances should be measured along rhumb lines (loxodromes).
     **Note**: Calculation mode for loxodromes is spherical, hence **-je**
     cannot be used in combination with **+l**.
+
+.. _-E:
+
+**-E**
+    If the input dataset contains records with trailing text then we will attempt
+    to add these to output records that exactly match the input times.  Output records
+    that have no matching input record times will have no trailing text appended [Default
+    ignores trailing text].
 
 .. _-F:
 
@@ -156,15 +165,8 @@ Optional Arguments
 
 .. include:: explain_array.rst_
 
-Trailing Text Notes
--------------------
-
-If the input dataset contains records with trailing text then we will attempt
-to add these to output records that exactly match the input times.  Output records
-that have no matching input record times will have no trailing text appended.
-
-Smoothing Spline Notes
-----------------------
+Notes
+-----
 
 The smoothing spline *s(t)* requires a fit parameter *p* that allows for the trade-off between an
 exact interpolation (fitting the data exactly; large *p*) to minimizing curvature (*p* approaching 0).
