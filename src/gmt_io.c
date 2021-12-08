@@ -4756,7 +4756,7 @@ int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *na
 		*text = '\0';
 		return status;
 	}
-	att = calloc (attlen, sizeof (char));	/* Allocate the memory for the full string */
+	att = calloc (attlen+1, sizeof (char));	/* Allocate the memory for the full string plus text terminator */
 	status = nc_get_att_text (ncid, varid, name, att);
 	if (status == NC_NOERR) {	/* This was successful */
 		if (h && attlen > textlen) {
