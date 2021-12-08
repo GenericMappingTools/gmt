@@ -66,7 +66,7 @@ Required Arguments
 
 **-C**\ *canvassize*
     Specify the canvas size used when composing the movie frames. You can choose from a
-    set of preset formats (see Table :ref:`Presets <tbl-presets>) or specify a custom layout.
+    set of preset formats (see Table :ref:`Presets <tbl-presets>`) or specify a custom layout.
     **Note**: Your :term:`PROJ_LENGTH_UNIT` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*,
