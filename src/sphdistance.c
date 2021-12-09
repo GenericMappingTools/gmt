@@ -548,13 +548,15 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 				if (P->data[GMT_X][vertex] < 0.0) P->data[GMT_X][vertex] += 360.0;
 				if (P->data[GMT_X][vertex] == 360.0) P->data[GMT_X][vertex] = 0.0;
 				vertex++;
-				if (vertex == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
+				if (vertex == p_alloc)
+					gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 
 				/* When we reach the vertex where we started, we are done with this polygon */
 			} while (node_new != node_stop);
 			P->data[GMT_X][vertex] = P->data[GMT_X][0];	/* Close polygon explicitly */
 			P->data[GMT_Y][vertex] = P->data[GMT_Y][0];
-			if ((++vertex) == p_alloc) gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
+			if ((++vertex) == p_alloc)
+				gmt_M_malloc2 (GMT, P->data[GMT_X], P->data[GMT_Y], vertex, &p_alloc, double);
 			P->n_rows = vertex;
 			switch (Ctrl->E.mode) {
 				case SPHD_NODES:	f_val = (gmt_grdfloat)node;	break;
@@ -569,7 +571,7 @@ EXTERN_MSC int GMT_sphdistance (void *V_API, int mode, void *args) {
 			gmt_M_free (GMT, P);
 			Return (GMT_RUNTIME_ERROR);
 		}
-		P->n_rows = n_new;
+		P->n_rows = p_alloc = n_new;	/* Must reset p_alloc since gmt_fix_up_path reallocated to fit n_new */
 		sphdistance_prepare_polygon (GMT, P);	/* Determine the enclosing sector */
 
 		south_row = (int)gmt_M_grd_y_to_row (GMT, P->min[GMT_Y], Grid->header);

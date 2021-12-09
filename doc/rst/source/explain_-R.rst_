@@ -22,7 +22,7 @@ The **-R** option defines the map region or data domain of interest. It may be s
    with the chosen projection and *unit* is an allowable :ref:`distance unit <dist-units>` [e]. The coordinates are relative
    to the standard longitude and latitude indicated in the projection (**-J**).  For projected regions centered on
    (0,0) you may use the short-hand **-R**\ *halfwidth*\ [/*halfheight*]\ **+u**\ *unit*, where *halfheight* defaults
-   to *halfwidth if not given. This short-hand requires the **+u** modifier.
+   to *halfwidth* if not given. This short-hand requires the **+u** modifier.
 
 #. **-R**\ *xlleft*/*ylleft*/*xuright*/*yuright*\ **+r**. This form is useful for map projections that are oblique,
    making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner and
