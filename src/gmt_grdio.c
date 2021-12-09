@@ -753,13 +753,19 @@ void gmt_copy_gridheader (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *to, stru
 	if (to->ProjRefWKT) gmt_M_str_free (to->ProjRefWKT);		/* Since we will duplicate via from */
 	if (to->ProjRefPROJ4) gmt_M_str_free (to->ProjRefPROJ4);	/* Since we will duplicate via from */
 	if (Hto->pocket) gmt_M_str_free (Hto->pocket);			/* Since we will duplicate via from */
+	if (Hto->title) gmt_M_str_free (Hto->title);			/* Since we will duplicate via from */
+	if (Hto->command) gmt_M_str_free (Hto->command);			/* Since we will duplicate via from */
+	if (Hto->remark) gmt_M_str_free (Hto->remark);			/* Since we will duplicate via from */
 	gmt_M_memcpy (to, from, 1, struct GMT_GRID_HEADER);		/* Copies full contents but also duplicates the hidden address */
 	to->hidden = Hto;	/* Restore the original hidden address in to */
 	gmt_M_memcpy (to->hidden, from->hidden, 1, struct GMT_GRID_HEADER_HIDDEN);	/* Copies full contents of hidden area */
-	/* Must deal with three pointers individually */
+	/* Must deal with six pointers individually */
 	if (from->ProjRefWKT) to->ProjRefWKT = strdup (from->ProjRefWKT);
 	if (from->ProjRefPROJ4) to->ProjRefPROJ4 = strdup (from->ProjRefPROJ4);
 	if (Hfrom->pocket) Hto->pocket = strdup (Hfrom->pocket);
+	if (Hfrom->title) Hto->title = strdup (Hfrom->title);
+	if (Hfrom->command) Hto->command = strdup (Hfrom->command);
+	if (Hfrom->remark) Hto->remark = strdup (Hfrom->remark);
 }
 
 /*! gmt_grd_is_global returns true for a geographic grid with exactly 360-degree range (with or without repeating column) */
