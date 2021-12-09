@@ -1091,7 +1091,8 @@ int gmt_ascii_output_no_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t n, double
 	return ((e < 0) ? GMT_NOTSET : 0);
 }
 
-GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char *txt) {
+GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, bool separator, char *txt) {
+	/* Output the trailing text, if it is not NULL */
 	if (GMT->common.o.word) {	/* Must output a specific word from the trailing text only */
 		char *word = NULL, *orig = strdup (txt), *trail = orig;
 		uint64_t col = 0;
@@ -1100,14 +1101,14 @@ GMT_LOCAL void gmtio_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, char 
 				col++;
 		}
 		if (word)	/* Only write word if not NULL */
-			fprintf (fp, "%s", word);
+			(separator && GMT->current.setting.io_col_separator[0]) ? fprintf (fp, "%s%s", GMT->current.setting.io_col_separator, word) :  fprintf (fp, "%s", word);
 		else
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Trailing text did not have %" PRIu64 " words - no trailing word written\n", GMT->common.o.w_col);
-		fprintf (fp, "\n");
 		gmt_M_str_free (orig);
 	}
-	else	/* Output the whole enchilada */
-		fprintf (fp, "%s\n", txt);
+	else if	(txt) /* Output the whole enchilada (unless NULL) */
+		(separator && GMT->current.setting.io_col_separator[0]) ? fprintf (fp, "%s%s", GMT->current.setting.io_col_separator, txt) : fprintf (fp, "%s", txt);
+	fprintf (fp, "\n");
 }
 
 /*! . */
@@ -1115,7 +1116,7 @@ int gmtlib_ascii_output_trailing_text (struct GMT_CTRL *GMT, FILE *fp, uint64_t 
 
 	if (gmt_skip_output (GMT, ptr, n)) return (GMT_NOTSET);	/* Record was skipped via -s[a|r] */
 
-	gmtio_output_trailing_text (GMT, fp, txt);
+	gmtio_output_trailing_text (GMT, fp, false, txt);
 
 	return (0);
 }
@@ -1142,12 +1143,12 @@ GMT_LOCAL int gmtio_ascii_output_with_text (struct GMT_CTRL *GMT, FILE *fp, uint
 
 		e = gmt_ascii_output_col (GMT, fp, val, col);	/* Write one item without any separator at the end */
 
-		if (GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
+		if (i < (n_out-1) && GMT->current.setting.io_col_separator[0])		/* Not last field, and a separator is required */
 			fprintf (fp, "%s", GMT->current.setting.io_col_separator);
 
 		wn += e;
 	}
-	gmtio_output_trailing_text (GMT, fp, txt);
+	gmtio_output_trailing_text (GMT, fp, true, txt);
 
 	return ((e < 0) ? GMT_NOTSET : 0);
 }
