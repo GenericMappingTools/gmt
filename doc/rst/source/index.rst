@@ -45,6 +45,7 @@ Quick links
         gallery
         animations
         tutorial
+        tutorial_jl
 
     ---
 
