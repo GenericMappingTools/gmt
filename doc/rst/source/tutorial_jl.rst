@@ -6,21 +6,11 @@ Tutorial in Julia
 
 .. highlight:: bash
 
-**Pål (Paul) Wessel**:sup:`1`,
-**Walter H. F. Smith**:sup:`2`,
-**Remko Scharroo**:sup:`3`,
-**Joaquim F. Luis**:sup:`4`, \
-**Leonardo Uieda**:sup:`5`,
-**Florian Wobbe**:sup:`6`,
-**Dongdong Tian**:sup:`7`
+**Joaquim F. Luis**:sup:`1`,
+**Pål (Paul) Wessel**:sup:`2`
 
-#. SOEST, University of Hawai'i at Manoa
-#. Laboratory for Satellite Altimetry, NOAA/NESDIS/STAR
-#. EUMETSAT, Darmstadt, Germany
 #. Universidade do Algarve, Faro, Portugal
-#. University of Liverpool, UK
-#. Sea and Sun Technology, Germany
-#. China University of Geosciences, Wuhan, China
+#. SOEST, University of Hawai'i at Manoa
 
 The purpose of this tutorial is to introduce users to the GMT Julia wrapper, outline the
 GMT environment, and enable you to make several forms of graphics. We will not be able to
