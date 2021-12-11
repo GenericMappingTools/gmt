@@ -15256,7 +15256,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 				for (opt = *options; opt; opt = opt->next) {	/* Loop over all options */
 					if (opt->option != 'B') continue;	/* Just interested in -B here */
 					/* Deal with the frame option check first */
-					if (strchr ("WESNwesnlrbt", opt->arg[0]))	/* User is overriding the frame settings - that is their choice */
+					if (opt->arg[0] && strchr ("WESNwesnlrbt", opt->arg[0]))	/* User is overriding the frame settings - that is their choice */
 						frame_set = true;
 					else if (gmt_found_modifier (API->GMT, opt->arg, "gt")) {	/* No axis specs means we have to add default */
 						/* Frame but no sides specified.  Insert the required sides */
