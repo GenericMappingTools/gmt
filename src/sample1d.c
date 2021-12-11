@@ -50,6 +50,9 @@ struct SAMPLE1D_CTRL {
 		bool active, loxo, delete;
 		enum GMT_enum_track mode;
 	} A;
+	struct SAMPLE1D_E {	/* -E */
+		bool active;
+	} E;
 	struct SAMPLE1D_F {	/* -Fl|a|c|n|s<p>[+d1|2] */
 		bool active;
 		unsigned int mode;
@@ -98,7 +101,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-Fl|a|c|n|s<p>[+d1|2]] [-N<time_col>] "
+	GMT_Usage (API, 0, "usage: %s [<table>] [-A[f|m|p|r|R][+d][+l]] [-E] [-Fl|a|c|n|s<p>[+d1|2]] [-N<time_col>] "
 		"[-T[<min>/<max>/]<inc>[+i|n][+a][+t][+u]] [%s] [-W<w_col>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
 		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT,
 		GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_PAR_OPT);
@@ -120,6 +123,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+d Skip records that has no increase in <time_col> value [no skipping].");
 	GMT_Usage (API, 3, "+l Compute distances along rhumblines (loxodromes) [no].");
 	GMT_Usage (API, -2, "Note: +l uses spherical calculations - cannot be combined with -je.");
+	GMT_Usage (API, 1, "\n-E Add input data trailing text to output records when possible [Ignore trailing text].");
 	GMT_Usage (API, 1, "\n-Fl|a|c|n|s<p>[+d1|2]");
 	GMT_Usage (API, -2, "Set the interpolation mode.  Choose from:");
 	GMT_Usage (API, 3, "l: Linear interpolation.");
@@ -217,6 +221,11 @@ static int parse (struct GMT_CTRL *GMT, struct SAMPLE1D_CTRL *Ctrl, struct GMT_O
 				if (strstr (opt->arg, "+d")) Ctrl->A.delete = true;
 				if (strstr (opt->arg, "+l")) Ctrl->A.loxo = true;		/* Note: spherical only */
 				break;
+			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
+				Ctrl->E.active = true;
+				break;
+
 			case 'F':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
@@ -417,12 +426,12 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 	if ((Din = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, 0, GMT_READ_NORMAL, NULL, NULL, NULL)) == NULL) {
 		Return (API->error);
 	}
-	if (Din->n_columns < 2) {
-		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed\n", (int)Din->n_columns);
+	if (Din->n_columns < 1) {
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have no data column(s) but at least 1 is needed\n");
 		Return (GMT_DIM_TOO_SMALL);
 	}
-	if (Din->n_columns < 3 && Ctrl->W.active) {
-		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 3 are needed since -W is used\n", (int)Din->n_columns);
+	if (Din->n_columns < 2 && Ctrl->W.active) {
+		GMT_Report (API, GMT_MSG_ERROR, "Input data have %d column(s) but at least 2 are needed since -W is used\n", (int)Din->n_columns);
 		Return (GMT_DIM_TOO_SMALL);
 	}
 	if (Ctrl->N.active && Ctrl->N.col >= Din->n_columns) {	/*  */
@@ -557,6 +566,21 @@ EXTERN_MSC int GMT_sample1d (void *V_API, int mode, void *args) {
 					return (result);
 				}
 			}
+			if (Ctrl->E.active && S->text) {	/* Copy over any trailing text if input times are matched exactly in output */
+				for (k = row = 0; k < m; k++) {	/* For all output times */
+					while (row < S->n_rows && S->data[Ctrl->N.col][row] < Sout->data[Ctrl->N.col][k]) row++;	/* Wind to next potential matching input time */
+					if (row < S->n_rows && doubleAlmostEqualZero (S->data[Ctrl->N.col][row], Sout->data[Ctrl->N.col][k]) && S->text[row]) {	/* Matching time and we have text */
+						if (Sout->text == NULL) {	/* Must allocate text array the first time */
+							if ((Sout->text = gmt_M_memory (GMT, NULL, m, char *)) == NULL) {
+								GMT_Report(API, GMT_MSG_ERROR, "Unable to allocate trailing text for egment %" PRIu64 " in table %" PRIu64 ".\n", seg, tbl);
+								Return (GMT_MEMORY_ERROR);
+							}
+						}
+						Sout->text[k] = strdup (S->text[row++]);	/* Duplicate trailing text on output */
+					}
+				}
+			}
+
 			if (Ctrl->T.T.spatial) {	/* Free up memory used */
 				gmt_M_free (GMT, dist_in);	gmt_M_free (GMT, t_out);
 				gmt_M_free (GMT, lon);		gmt_M_free (GMT, lat);
