@@ -8,7 +8,7 @@ gmt begin shrink_lim
         gmt subplot set -Aoriginal
         gmt plot t.txt -Sv12p+e+h0 -Gblack -W1p
         gmt subplot set -A"norm = +n1"
-        gmt plot t.txt -Sv12p+e+n1+h0 -Gblack -W1p
+        gmt plot t.txt -Sv12p+e+n1/0+h0 -Gblack -W1p
         gmt subplot set -A"norm = +n1/0.5"
         gmt plot t.txt -Sv12p+e+n1/0.5+h0 -Gblack -W1p
         gmt subplot set -A"norm = +n1/0.3"
