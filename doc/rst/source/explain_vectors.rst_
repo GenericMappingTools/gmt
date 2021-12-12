@@ -22,14 +22,14 @@ end point (**e**) of a line segment:
     **+b** places a vector head at the **b**\ eginning of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
-    and **I** for plain open tail.
+    and **I** for plain open tail. **Note**: For geovectors only **a** and **A** are available.
     Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
     **+e** places a vector head at the **e**\ nd of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
-    and **I** for plain open tail.
+    and **I** for plain open tail. **Note**: For geovectors only **a** and **A** are available.
     Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
