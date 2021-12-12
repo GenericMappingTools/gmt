@@ -8474,7 +8474,7 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 		"Append f or r for forward|reverse direction [forward]. "
 		"Append t for terminal, c for circle, s for square, or a for arrow [Default]. "
 		"Append l|r to only draw left or right side of this head [both sides].");
-	GMT_Usage (API, level, "+n Shrink attributes if vector length < <norm> [none]; optionally, append /<terminal> shrink fraction [0]");
+	GMT_Usage (API, level, "+n Shrink attributes if vector length < <norm> [none]; optionally, append /<min> to change the minimum shrink factor [0.25]");
 	GMT_Usage (API, level, "+o Set pole <plon/plat> [Default is north pole] for great or small circles; only give length via input.");
 	if (mode & 4) GMT_Usage (API, level, "+p Set pen attributes; exclude <pen> to turn off head outlines [Default pen and outline].");
 	GMT_Usage (API, level, "+q Start and stop opening angles are given instead of (azimuth,length) on input.");
