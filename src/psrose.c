@@ -896,6 +896,7 @@ EXTERN_MSC int GMT_psrose (void *V_API, int mode, void *args) {
 				dim[PSL_VEC_XTIP] = radius * c;
 				dim[PSL_VEC_YTIP] = radius * s;
 				f = (radius < Ctrl->M.S.v.v_norm) ? radius / Ctrl->M.S.v.v_norm : 1.0;
+				if (f < Ctrl->M.S.v.v_norm_limit) f = Ctrl->M.S.v.v_norm_limit;
 				dim[PSL_VEC_TAIL_WIDTH]  = f * Ctrl->M.S.v.v_width;
 				dim[PSL_VEC_HEAD_LENGTH] = f * Ctrl->M.S.v.h_length;
 				dim[PSL_VEC_HEAD_WIDTH]  = f * Ctrl->M.S.v.h_width;

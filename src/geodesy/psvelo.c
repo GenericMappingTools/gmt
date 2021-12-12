@@ -1280,6 +1280,7 @@ EXTERN_MSC int GMT_psvelo (void *V_API, int mode, void *args) {
 						n_warn++;
 					}
 					s = (length < Ctrl->A.S.v.v_norm) ? length / Ctrl->A.S.v.v_norm : 1.0;
+					if (s < Ctrl->A.S.v.v_norm_limit) s = Ctrl->A.S.v.v_norm_limit;
 					hw = s * Ctrl->A.S.v.h_width;
 					hl = s * Ctrl->A.S.v.h_length;
 					vw = s * Ctrl->A.S.v.v_width;
