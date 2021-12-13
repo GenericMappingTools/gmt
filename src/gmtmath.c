@@ -6755,7 +6755,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		for (j = 0, i = nstack - eaten; j < created; j++, i++) {
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-				if (!Ctrl->T.notime) gmtmath_load_column (stack[i]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
+				if (!Ctrl->T.notime) gmtmath_load_column (stack[i]->D, Ctrl->N.tcol, info.T, COL_T);	/* Make sure t-column is copied if needed */
 			}
 		}
 
