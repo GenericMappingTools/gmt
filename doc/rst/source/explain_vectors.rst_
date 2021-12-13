@@ -49,11 +49,12 @@ end point (**e**) of a line segment:
     and **I** for plain open tail. Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].  Cannot be combined with **+b** or **+e**.
 
-    **+n**\ *norm* scales down vector attributes (pen thickness, head size)
+    **+n**\ *norm*\ [/*min*] scales down vector attributes (pen thickness, head size)
     with decreasing length, where vector plot lengths shorter than *norm* will have
-    their attributes scaled by length/\ *norm* [arrow attributes remains
+    their attributes scaled by length/\ *norm* [other arrow attributes remain
     invariant to length]. For Cartesian vectors specify a length in plot units, while
-    for geovectors specify a length in km.
+    for geovectors specify a length in km. Optionally, append /*min* for the minimum
+    shrink factor (in the 0-1 range) that we will shrink to [0.25].
 
     **+o**\ [*plon*\ /\ *plat*] specifies the oblique pole for the great or
     small circles.  Only needed for great circles if **+q** is given. If no

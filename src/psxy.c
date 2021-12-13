@@ -2060,6 +2060,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							n_warn[1]++;
 						}
 						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
+						if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
 						dim[PSL_VEC_XTIP]        = x_2;
 						dim[PSL_VEC_YTIP]        = y_2;
 						dim[PSL_VEC_TAIL_WIDTH]  = s * S.v.v_width;
@@ -2120,6 +2121,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							continue;
 						}
 						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
+						if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
 						dim[PSL_MATHARC_HEAD_LENGTH]     = s * S.v.h_length;
 						dim[PSL_MATHARC_HEAD_WIDTH]      = s * S.v.h_width;
 						dim[PSL_MATHARC_ARC_PENWIDTH]    = s * S.v.v_width;

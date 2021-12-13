@@ -4957,6 +4957,8 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, dou
 	}
 	else
 		s = s2;
+	if (s < S->v.v_norm_limit) s = S->v.v_norm_limit;
+	if (s1 < S->v.v_norm_limit) s1 = S->v.v_norm_limit;
 	head_length = s * S->size_x;
 	arc_width   = s1 * S->v.v_width;	/* Use scale s1 for pen shrinking */
 
@@ -5196,6 +5198,8 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_greatcircle (struct GMT_CTRL *GMT, dou
 	}
 	else
 		s = s2;
+	if (s < S->v.v_norm_limit) s = S->v.v_norm_limit;
+	if (s1 < S->v.v_norm_limit) s1 = S->v.v_norm_limit;
 	head_length = s * S->size_x;
 	arc_width   = s1 * S->v.v_width;	/* Use scale s1 for pen shrinking */
 	gmt_M_memcpy (olon, C.lon, 2, double);	gmt_M_memcpy (olat, C.lat, 2, double);	/* Keep copy of original coordinates */
