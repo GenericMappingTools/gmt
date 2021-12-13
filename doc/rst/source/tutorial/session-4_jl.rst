@@ -22,7 +22,7 @@ CPTs can be created in any number of ways. GMT provides two mechanisms:
    (`makecpt <https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/>`_)
 
 #. Create color tables based on a master CPT color table and the histogram-equalized distribution of *z*-values
-   in a gridded data file (`grd2cpt <https://www.generic-mapping-tools.org/GMT.jl/dev/grd2cpt/>`_)
+   in a gridded data file (`grd2cpt <https://www.generic-mapping-tools.org/GMT.jl/dev/#GMT.grd2cpt>`_)
 
 One can also make these files manually. Here we will limit our discussion to
 `makecpt <https://www.generic-mapping-tools.org/GMT.jl/dev/makecpt/>`_.
