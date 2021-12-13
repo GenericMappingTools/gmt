@@ -8453,19 +8453,19 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 	 * 4	= Accepts +p (not mathangle)
 	 * 8	= Accepts +g (not mathangle)
 	 * 16	= Accepts +z (not mathangle, geovector)
+	 * 32	= geovector so only a|A[l|r] available
 	 */
+	unsigned int kind = (mode & 32) ? 1 : 0;
 	struct GMTAPI_CTRL *API = GMT->parent;
+	static char *string[2] = {"Append t for terminal, c for circle, s for square, a for arrow [Default], i for tail, A for plain arrow, and I for plain tail. ",
+		"Append a for arrow [Default] or A for plain arrow. "};
 	GMT_Usage (API, -level, "Append length of vector head. Note: "
 		"Left and right sides are defined by looking from start to end of vector. Optional modifiers:");
 	GMT_Usage (API, level, "+a Set <angle> of the vector head apex [30]");
-	GMT_Usage (API, level, "+b Place a vector head at the beginning of the vector [none]. "
-		"Append t for terminal, c for circle, s for square, a for arrow [Default], "
-		"i for tail, A for plain arrow, and I for plain tail. "
-		"Append l|r to only draw left or right side of this head [both sides].");
-	GMT_Usage (API, level, "+e Place a vector head at the end of the vector [none]. "
-		"Append t for terminal, c for circle, s for square, a for arrow [Default], "
-		"i for tail, A for plain arrow, and I for plain tail. "
-		"Append l|r to only draw left or right side of this head [both sides].");
+	GMT_Usage (API, level, "+b Place a vector head at the beginning of the vector [none]. %s"
+		"Append l|r to only draw left or right side of this head [both sides].", string[kind]);
+	GMT_Usage (API, level, "+e Place a vector head at the end of the vector [none]. %s"
+		"Append l|r to only draw left or right side of this head [both sides].", string[kind]);
 	if (mode & 8) GMT_Usage (API, level, "+g Set head <fill>; exclude <fill> to turn off fill [Default fill].");
 	GMT_Usage (API, level, "+h Set vector head shape in -2/2 range [%g].", GMT->current.setting.map_vector_shape);
 	if (mode & 1) GMT_Usage (API, level, "+j Justify vector at (b)eginning [Default], (e)nd, or (c)enter.");

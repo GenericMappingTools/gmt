@@ -338,7 +338,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 2, "\n%s Geovector: -S=<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Azimuth and length must be in columns 4-5. "
 		"Append any of the units in %s to length [k].", GMT_LEN_UNITS_DISPLAY);
-	gmt_vector_syntax (API->GMT, 3, 3);
+	gmt_vector_syntax (API->GMT, 3+32, 3);
 
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Usage (API, 1, "\n-T Ignore all input files.");
