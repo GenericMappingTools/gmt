@@ -6801,7 +6801,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (!stack[last]->D)
 			stack[last]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 		for (j = 0; j < n_columns; j++) {
-			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
+			if (j == Ctrl->N.tcol && !Ctrl->Q.active && Ctrl->C.cols[j])
 				gmtmath_load_column (stack[last]->D, j, info.T, COL_T);
 			else if (!Ctrl->C.cols[j])
 				gmtmath_load_const_column (stack[last]->D, j, stack[last]->factor);
