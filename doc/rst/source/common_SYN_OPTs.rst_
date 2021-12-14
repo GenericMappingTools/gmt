@@ -28,11 +28,11 @@
 
 .. |SYN_OPT-c| replace:: **-c**\ :ref:`row,col|index <-c_full>`
 
-.. |SYN_OPT-d| replace:: **-d**\ [**+c**\ *col*]\ :ref:`nodata <-d_full>`
+.. |SYN_OPT-d| replace:: **-d**\ :ref:`nodata <-d_full>`\ [**+c**\ *col*]\ 
 
-.. |SYN_OPT-di| replace:: **-di**\ [**+c**\ *col*]\ :ref:`nodata <-di_full>`
+.. |SYN_OPT-di| replace:: **-di**\ :ref:`nodata <-di_full>`\ [**+c**\ *col*]\ 
 
-.. |SYN_OPT-do| replace:: **-do**\ [**+c**\ *col*]\ :ref:`nodata <-do_full>`
+.. |SYN_OPT-do| replace:: **-do**\ :ref:`nodata <-do_full>`\ [**+c**\ *col*]\ 
 
 .. |SYN_OPT-e| replace:: **-e**\ :ref:`regexp <-e_full>`
 
