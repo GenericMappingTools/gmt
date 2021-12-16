@@ -8453,19 +8453,19 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 	 * 4	= Accepts +p (not mathangle)
 	 * 8	= Accepts +g (not mathangle)
 	 * 16	= Accepts +z (not mathangle, geovector)
+	 * 32	= geovector so only a|A[l|r] available
 	 */
+	unsigned int kind = (mode & 32) ? 1 : 0;
 	struct GMTAPI_CTRL *API = GMT->parent;
+	static char *string[2] = {"Append t for terminal, c for circle, s for square, a for arrow [Default], i for tail, A for plain arrow, and I for plain tail. ",
+		"Append a for arrow [Default] or A for plain arrow. "};
 	GMT_Usage (API, -level, "Append length of vector head. Note: "
 		"Left and right sides are defined by looking from start to end of vector. Optional modifiers:");
 	GMT_Usage (API, level, "+a Set <angle> of the vector head apex [30]");
-	GMT_Usage (API, level, "+b Place a vector head at the beginning of the vector [none]. "
-		"Append t for terminal, c for circle, s for square, a for arrow [Default], "
-		"i for tail, A for plain arrow, and I for plain tail. "
-		"Append l|r to only draw left or right side of this head [both sides].");
-	GMT_Usage (API, level, "+e Place a vector head at the end of the vector [none]. "
-		"Append t for terminal, c for circle, s for square, a for arrow [Default], "
-		"i for tail, A for plain arrow, and I for plain tail. "
-		"Append l|r to only draw left or right side of this head [both sides].");
+	GMT_Usage (API, level, "+b Place a vector head at the beginning of the vector [none]. %s"
+		"Append l|r to only draw left or right side of this head [both sides].", string[kind]);
+	GMT_Usage (API, level, "+e Place a vector head at the end of the vector [none]. %s"
+		"Append l|r to only draw left or right side of this head [both sides].", string[kind]);
 	if (mode & 8) GMT_Usage (API, level, "+g Set head <fill>; exclude <fill> to turn off fill [Default fill].");
 	GMT_Usage (API, level, "+h Set vector head shape in -2/2 range [%g].", GMT->current.setting.map_vector_shape);
 	if (mode & 1) GMT_Usage (API, level, "+j Justify vector at (b)eginning [Default], (e)nd, or (c)enter.");
@@ -8474,7 +8474,7 @@ void gmt_vector_syntax (struct GMT_CTRL *GMT, unsigned int mode, int level) {
 		"Append f or r for forward|reverse direction [forward]. "
 		"Append t for terminal, c for circle, s for square, or a for arrow [Default]. "
 		"Append l|r to only draw left or right side of this head [both sides].");
-	GMT_Usage (API, level, "+n Shrink attributes if vector length < <norm> [none].");
+	GMT_Usage (API, level, "+n Shrink attributes if vector length < <norm> [none]; optionally, append /<min> to change the minimum shrink factor [0.25]");
 	GMT_Usage (API, level, "+o Set pole <plon/plat> [Default is north pole] for great or small circles; only give length via input.");
 	if (mode & 4) GMT_Usage (API, level, "+p Set pen attributes; exclude <pen> to turn off head outlines [Default pen and outline].");
 	GMT_Usage (API, level, "+q Start and stop opening angles are given instead of (azimuth,length) on input.");
@@ -15936,7 +15936,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	size_t len;
 	bool p_opt = false, g_opt = false;
 	int j;
-	char p[GMT_BUFSIZ];
+	char p[GMT_BUFSIZ], *c = NULL;
 	double value[2];
 
 	S->v.pen = GMT->current.setting.map_default_pen;
@@ -16064,6 +16064,14 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				break;
 			case 'n':	/* Vector shrinking head */
+				if ((c = strchr (p, '/'))) {
+					S->v.v_norm_limit = atof (&c[1]);
+					c[0] = '\0';	/* Chop off after getting the value */
+					if (S->v.v_norm_limit < 0.0 || S->v.v_norm_limit > 1.0) {
+						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector shrink terminal fraction must be in 0-1 range\n");
+						error++;
+					}
+				}
 				len = strlen (p);
 				j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
 				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
@@ -16079,7 +16087,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				else	/* Convert length from default unit to inches */
 					S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
 				/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g\n", S->v.v_norm);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g going down to %g %% of head size\n", S->v.v_norm, 100.0 * S->v.v_norm_limit);
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= PSL_VEC_POLE;

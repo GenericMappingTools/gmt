@@ -684,7 +684,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 2, "\n%s Geovector: -S=<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Azimuth and length must be in columns 3-4. "
 		"Append any of the units in %s to length [k].", GMT_LEN_UNITS_DISPLAY);
-	gmt_vector_syntax (API->GMT, 3, 3);
+	gmt_vector_syntax (API->GMT, 3+32, 3);
 	if (API->GMT->current.setting.run_mode == GMT_CLASSIC)	/* -T has no purpose in modern mode */
 		GMT_Usage (API, 1, "\n-T Ignore all input files.");
 	GMT_Option (API, "U,V");
@@ -2060,6 +2060,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							n_warn[1]++;
 						}
 						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
+						if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
 						dim[PSL_VEC_XTIP]        = x_2;
 						dim[PSL_VEC_YTIP]        = y_2;
 						dim[PSL_VEC_TAIL_WIDTH]  = s * S.v.v_width;
@@ -2120,6 +2121,7 @@ EXTERN_MSC int GMT_psxy (void *V_API, int mode, void *args) {
 							continue;
 						}
 						s = (length < S.v.v_norm) ? length / S.v.v_norm : 1.0;
+						if (s < S.v.v_norm_limit) s = S.v.v_norm_limit;
 						dim[PSL_MATHARC_HEAD_LENGTH]     = s * S.v.h_length;
 						dim[PSL_MATHARC_HEAD_WIDTH]      = s * S.v.h_width;
 						dim[PSL_MATHARC_ARC_PENWIDTH]    = s * S.v.v_width;

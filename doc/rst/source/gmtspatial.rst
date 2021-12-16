@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt spatial** [ *table* ] [ |-A|\ [**a**\ *min_dist*][*unit*]]
+**gmt spatial** [ *table* ]
+[ |-A|\ [**a**\ *min_dist*][*unit*]]
 [ |-C| ]
 [ |-D|\ [**+a**\ *amax*][**+c\|C**\ *cmax*][**+d**\ *dmax*][**+f**\ *file*][**+p**][**+s**\ *fact*] ]
 [ |-E|\ **+p**\|\ **n** ]
@@ -113,7 +114,7 @@ Optional Arguments
 
 **-E**\ **+p**\|\ **n**
     Reset the handedness of all polygons to match the given **+p**
-    (counter-clockwise; positive) or **+n** (clockwise; negative). Implies **-Q+**.
+    (counter-clockwise; positive) or **+n** (clockwise; negative).
 
 .. _-F:
 
