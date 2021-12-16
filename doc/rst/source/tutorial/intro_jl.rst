@@ -31,8 +31,8 @@ for instructions and to make sure you have all required dependencies installed.
 Alternatively, you can build GMT from source by following the
 `building guide <https://github.com/GenericMappingTools/gmt/blob/master/BUILDING.md>`_.
 
-See also the general information about `Julia https://julialang.org/learning/getting-started/`_
+See also the general information about `Julia <https://julialang.org/learning/getting-started/>`_
 as well as the introduction to the Julia wrapper at
-https://www.generic-mapping-tools.org/GMT.jl/dev/usage/ and the very recomendable
-`Quick Learn https://www.generic-mapping-tools.org/GMT.jl/dev/quick_learn/`_. Complement with the instructions on how to
-install `GMT.jl https://github.com/GenericMappingTools/GMT.jl#install`_
+https://www.generic-mapping-tools.org/GMT.jl/dev/usage/ and the very recommendable
+`Quick Learn <https://www.generic-mapping-tools.org/GMT.jl/dev/quick_learn/>`_. Complement with the instructions on how to
+install `GMT.jl <https://github.com/GenericMappingTools/GMT.jl#install>`_
