@@ -21,6 +21,9 @@
  *
  * Brief synopsis: psxy will read <x,y> points and plot symbols, lines,
  * or polygons on maps.
+ *
+ * Note on KEYS: S?(=2 means if -S~|q then we may possibly take optional crossing line file, else the ? is set to ! for skipping it.
+ *               The "2" means we must skip two characters (q|~ and f|x) before finding the dataset file name
  */
 
 #include "gmt_dev.h"

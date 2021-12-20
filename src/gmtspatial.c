@@ -21,6 +21,9 @@
  * Author:	Paul Wessel
  * Date:	10-Jun-2009
  * Version:	6 API
+ *
+ * Note on KEYS: DD(=f mean -D takes an optional input Dataset as argument via the +f modifier.
+ *               ND(= means -N takes a input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"

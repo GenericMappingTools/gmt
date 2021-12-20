@@ -26,6 +26,7 @@
  * on them like add, multiply, etc.
  * Some operators only work on one operand (e.g., log, exp)
  *
+ * Note on KEYS: AD(= means -A takes an input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"

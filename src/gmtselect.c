@@ -39,6 +39,8 @@
  *
  * Any one of these conditions may be negated for the opposite result
  * Both binary and ASCII data files are accommodated
+ *
+ * Note on KEYS: CD(= and LD(= mean -C and -L take input Datasets as arguments which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
