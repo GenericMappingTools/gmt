@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from grdvector
+%%Title: GMT v6.4.0_50d9b33_2021.12.21 [64-bit] Document from grdvector
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:38 2018
+%%CreationDate: Tue Dec 21 14:18:36 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,9 +112,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +255,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +288,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +338,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -336,9 +350,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -556,6 +568,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -570,7 +585,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -594,9 +617,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +660,21 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
+    U
+} def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +685,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +697,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -672,13 +708,14 @@ O0
 -3600 PSL_xorig sub PSL_page_xsize 2 div add 1200 TM
 
 % PostScript produced by:
-%@GMT: gmt grdvector x.nc y.nc -JM6i -Si1k -Q0.1i+n1260 -W1.5p -Gred -Ba -BWSne -P -K -Xc
-%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: -216 72 432 127.685
+%@GMT: gmt grdvector x.nc y.nc -JM6i -Si1k -Q0.1i+n1260/0 -W1.5p -Gred -Ba -BWSne -P -K -Xc
+%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -216 72 432 127.685323203
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+0 A
 25 W
 {1 0 0 C} FS
 O1
@@ -689,6 +726,7 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {25 W 0 A 1 1 /Normal PSL_transp [] 0 B} def
 V
 V
 {0 A} FS
@@ -1572,8 +1610,8 @@ FO
 U
 U
 PSL_cliprestore
-25 W
 8 W
+0 A
 N 0 0 M 0 -83 D S
 N 0 2128 M 0 83 D S
 N 1200 0 M 0 -83 D S
@@ -1596,6 +1634,7 @@ N 7200 2128 M 83 0 D S
 N 0 2128 M -83 0 D S
 N 7200 2128 M 83 0 D S
 N 0 2128 M -83 0 D S
+25 W
 83 W
 1 A
 N -42 0 M 0 626 D S
@@ -1639,8 +1678,12 @@ N -83 2211 M 0 -2294 D S
 4800 -167 M (î120è) tc Z
 6000 -167 M (î60è) tc Z
 7200 -167 M (0è) tc Z
+/PSL_AH1 0
 -167 626 M (0è) mr Z
+(0è) sw mx
 -167 2128 M (60è) mr Z
+(60è) sw mx
+def
 %%EndObject
 0 A
 FQ
@@ -1649,16 +1692,26 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R0/360/-30/60 -JM6i -O -K -W0.5p,blue line
-%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 0 0 1 C
+clipsave
+0 0 M
+7200 0 D
+0 2128 D
+-7200 0 D
+P
+PSL_clip N
 3600 0 M
 0 2128 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -1666,12 +1719,13 @@ O0
 0 2760 TM
 
 % PostScript produced by:
-%@GMT: gmt grdvector x.nc y.nc -R0/360/-30/60 -JM6i -Si1k -Q0.1i+b+e+n1260+jc -W0.5p -Gred -Ba -BWSne -O -K -Y2.3i
-%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdvector x.nc y.nc -R0/360/-30/60 -JM6i -Si1k -Q0.1i+b+e+n1260/0+jc -W0.5p -Gred -Ba -BWSne -O -K -Y2.3i
+%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+0 A
 8 W
 {1 0 0 C} FS
 O1
@@ -1682,6 +1736,7 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {8 W 0 A 1 1 /Normal PSL_transp [] 0 B} def
 V
 V
 {0 A} FS
@@ -1692,6 +1747,7 @@ O0
 FO
 U
 V
+1 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -1730,6 +1786,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -1738,6 +1795,7 @@ O0
 FO
 U
 V
+2 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -1777,6 +1835,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -1785,6 +1844,7 @@ O0
 FO
 U
 V
+4 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -1827,6 +1887,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -1835,6 +1896,7 @@ O0
 FO
 U
 V
+5 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -1879,6 +1941,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -1887,6 +1950,7 @@ O0
 FO
 U
 V
+6 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -1939,6 +2003,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -1947,6 +2012,7 @@ O0
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2001,6 +2067,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2009,6 +2076,7 @@ O0
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2063,6 +2131,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2087,6 +2156,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2143,6 +2213,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2170,6 +2241,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2226,6 +2298,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2252,6 +2325,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2308,6 +2382,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2339,6 +2414,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2395,6 +2471,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2442,6 +2519,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2478,14 +2556,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--3 -2 1 -1 3 3 3 298 926 SP
+1 -1 2 3 2 299 926 SP
 /FO {fs os}!
 FO
 U
 V
+1 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2522,6 +2602,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2530,6 +2611,7 @@ O0
 FO
 U
 V
+2 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2574,14 +2656,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--13 -3 1 -3 12 2 3 1494 928 SP
+-12 -3 0 -3 12 2 3 1494 928 SP
 /FO {fs os}!
 FO
 U
 V
+3 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2624,14 +2708,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--8 -1 -9 -1 1 -5 8 1 9 2 5 2091 928 SP
+-8 -1 -9 -1 1 -4 8 1 9 1 5 2091 928 SP
 /FO {fs os}!
 FO
 U
 V
+4 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2678,14 +2764,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--10 -1 -11 -1 0 -6 11 1 11 1 5 2689 929 SP
+-10 -1 -11 -2 0 -5 11 1 11 1 5 2689 929 SP
 /FO {fs os}!
 FO
 U
 V
+6 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2736,14 +2824,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--9 -1 -9 -1 -9 0 1 -8 9 1 9 0 9 1 7 3286 930 SP
+-9 0 -9 -1 -9 -1 1 -7 9 1 9 1 8 1 7 3287 929 SP
 /FO {fs os}!
 FO
 U
 V
+7 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2796,14 +2886,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--10 -1 -11 0 -10 -1 0 -8 11 0 10 1 11 1 7 3884 930 SP
+-10 -1 -11 -1 -10 0 0 -8 11 1 10 0 11 1 7 3884 930 SP
 /FO {fs os}!
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2877,6 +2969,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2885,6 +2978,7 @@ O0
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -2958,6 +3052,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -2966,6 +3061,7 @@ O0
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3039,6 +3135,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -3063,6 +3160,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3139,6 +3237,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -3166,6 +3265,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3242,6 +3342,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -3272,6 +3373,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3348,14 +3450,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--3 -2 1 -1 3 3 3 298 323 SP
+-2 -2 0 -1 3 3 3 298 323 SP
 /FO {fs os}!
 FO
 U
 V
+1 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3392,6 +3496,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -3400,6 +3505,7 @@ O0
 FO
 U
 V
+2 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3444,14 +3550,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--12 -3 0 -3 13 2 3 1493 325 SP
+-12 -3 0 -3 12 3 3 1494 324 SP
 /FO {fs os}!
 FO
 U
 V
+3 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3492,14 +3600,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--8 -1 -9 -1 1 -5 8 1 9 2 5 2091 325 SP
+-8 -1 -9 -1 1 -4 8 1 9 1 5 2091 325 SP
 /FO {fs os}!
 FO
 U
 V
+4 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3546,14 +3656,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--11 -1 -11 -1 1 -6 10 1 11 1 5 2689 326 SP
+-11 -1 -11 -2 1 -5 10 1 11 1 5 2689 326 SP
 /FO {fs os}!
 FO
 U
 V
+6 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3604,14 +3716,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--9 -1 -9 -1 -9 0 1 -8 9 1 9 0 9 1 7 3286 327 SP
+-9 0 -9 -1 -8 -1 0 -7 9 1 9 1 9 1 7 3286 326 SP
 /FO {fs os}!
 FO
 U
 V
+7 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3664,14 +3778,16 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
--11 -1 -10 0 -11 -1 1 -8 10 0 11 1 10 1 7 3884 327 SP
+-11 -1 -10 -1 -11 0 1 -8 10 1 11 0 10 1 7 3884 327 SP
 /FO {fs os}!
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3745,6 +3861,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -3753,6 +3870,7 @@ O0
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3826,6 +3944,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -3834,6 +3953,7 @@ O0
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -3907,6 +4027,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -3930,6 +4051,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4006,6 +4128,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4033,6 +4156,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4112,6 +4236,7 @@ PSL_cliprestore
 O1
 U
 V
+8 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4142,6 +4267,7 @@ FO
 FO
 U
 V
+8 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4225,8 +4351,8 @@ O1
 U
 U
 PSL_cliprestore
-25 W
 8 W
+0 A
 N 0 0 M 0 -83 D S
 N 0 2128 M 0 83 D S
 N 1200 0 M 0 -83 D S
@@ -4249,6 +4375,7 @@ N 7200 2128 M 83 0 D S
 N 0 2128 M -83 0 D S
 N 7200 2128 M 83 0 D S
 N 0 2128 M -83 0 D S
+25 W
 83 W
 1 A
 N -42 0 M 0 626 D S
@@ -4292,8 +4419,12 @@ N -83 2211 M 0 -2294 D S
 4800 -167 M (î120è) tc Z
 6000 -167 M (î60è) tc Z
 7200 -167 M (0è) tc Z
+/PSL_AH1 0
 -167 626 M (0è) mr Z
+(0è) sw mx
 -167 2128 M (60è) mr Z
+(60è) sw mx
+def
 %%EndObject
 0 A
 FQ
@@ -4302,16 +4433,26 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R0/360/-30/60 -JM6i -O -K -W0.5p,blue line
-%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 0 0 1 C
+clipsave
+0 0 M
+7200 0 D
+0 2128 D
+-7200 0 D
+P
+PSL_clip N
 3600 0 M
 0 2128 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -4320,11 +4461,12 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt grdvector x.nc y.nc -R0/360/-30/60 -JM6i -Si1k -Q0.1i+e -W1p -Gred -Ba -BWSne -O -K -Y2.3i
-%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+0 A
 17 W
 {1 0 0 C} FS
 O1
@@ -4335,6 +4477,7 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {17 W 0 A 1 1 /Normal PSL_transp [] 0 B} def
 V
 V
 {0 A} FS
@@ -4357,6 +4500,7 @@ V
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4392,6 +4536,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4400,6 +4545,7 @@ O0
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4435,6 +4581,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4443,6 +4590,7 @@ O0
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4476,6 +4624,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4498,6 +4647,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4533,6 +4683,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4557,6 +4708,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4592,6 +4744,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4615,6 +4768,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4650,6 +4804,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4674,6 +4829,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4709,6 +4865,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4731,6 +4888,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4766,6 +4924,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4790,6 +4949,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4821,6 +4981,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4857,6 +5018,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4878,6 +5040,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4904,6 +5067,7 @@ V
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -4956,6 +5120,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -4964,6 +5129,7 @@ O0
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5016,6 +5182,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5024,6 +5191,7 @@ O0
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5079,6 +5247,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5103,6 +5272,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5155,6 +5325,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5182,6 +5353,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5234,6 +5406,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5264,6 +5437,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5316,6 +5490,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5350,6 +5525,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5405,6 +5581,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5430,6 +5607,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5482,6 +5660,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5525,6 +5704,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5580,6 +5760,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5606,6 +5787,7 @@ V
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5661,6 +5843,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5669,6 +5852,7 @@ O0
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5721,6 +5905,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5729,6 +5914,7 @@ O0
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5781,6 +5967,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5804,6 +5991,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5859,6 +6047,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5885,6 +6074,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -5937,6 +6127,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -5967,6 +6158,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6022,6 +6214,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6055,6 +6248,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6110,6 +6304,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6147,6 +6342,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6199,6 +6395,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6250,6 +6447,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6303,8 +6501,8 @@ O1
 U
 U
 PSL_cliprestore
-25 W
 8 W
+0 A
 N 0 0 M 0 -83 D S
 N 0 2128 M 0 83 D S
 N 1200 0 M 0 -83 D S
@@ -6327,6 +6525,7 @@ N 7200 2128 M 83 0 D S
 N 0 2128 M -83 0 D S
 N 7200 2128 M 83 0 D S
 N 0 2128 M -83 0 D S
+25 W
 83 W
 1 A
 N -42 0 M 0 626 D S
@@ -6370,8 +6569,12 @@ N -83 2211 M 0 -2294 D S
 4800 -167 M (î120è) tc Z
 6000 -167 M (î60è) tc Z
 7200 -167 M (0è) tc Z
+/PSL_AH1 0
 -167 626 M (0è) mr Z
+(0è) sw mx
 -167 2128 M (60è) mr Z
+(60è) sw mx
+def
 %%EndObject
 0 A
 FQ
@@ -6379,12 +6582,13 @@ O0
 0 2760 TM
 
 % PostScript produced by:
-%@GMT: gmt grdvector x.nc y.nc -R0/360/-30/60 -JM6i -Si1k -Q0.1i+e+n1260 -W1p -Gred -Ba '-BWSne+tShrink <----> Constant' -O -K -Y2.3i
-%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt grdvector x.nc y.nc -R0/360/-30/60 -JM6i -Si1k -Q0.1i+e+n1260/0 -W1p -Gred -Ba '-BWSne+tShrink <----> Constant' -O -K -Y2.3i
+%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+0 A
 17 W
 {1 0 0 C} FS
 O1
@@ -6395,6 +6599,7 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
+/PSL_vecheadpen {17 W 0 A 1 1 /Normal PSL_transp [] 0 B} def
 V
 V
 {0 A} FS
@@ -6405,6 +6610,7 @@ O0
 FO
 U
 V
+2 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6426,6 +6632,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6434,6 +6641,7 @@ O0
 FO
 U
 V
+4 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6455,6 +6663,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6463,6 +6672,7 @@ O0
 FO
 U
 V
+7 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6488,6 +6698,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6496,6 +6707,7 @@ O0
 FO
 U
 V
+10 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6523,6 +6735,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6546,6 +6759,7 @@ FO
 FO
 U
 V
+13 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6577,6 +6791,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6600,6 +6815,7 @@ FO
 FO
 U
 V
+15 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6635,6 +6851,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6659,6 +6876,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6694,6 +6912,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6717,6 +6936,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6752,6 +6972,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6776,6 +6997,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6811,6 +7033,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6833,6 +7056,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6868,6 +7092,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6892,6 +7117,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6923,6 +7149,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6959,6 +7186,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -6980,6 +7208,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -6988,6 +7217,7 @@ O0
 FO
 U
 V
+2 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7008,6 +7238,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7016,6 +7247,7 @@ O0
 FO
 U
 V
+4 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7038,6 +7270,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7046,6 +7279,7 @@ O0
 FO
 U
 V
+7 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7069,6 +7303,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7077,6 +7312,7 @@ O0
 FO
 U
 V
+10 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7108,6 +7344,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7116,6 +7353,7 @@ O0
 FO
 U
 V
+13 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7149,6 +7387,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7170,6 +7409,7 @@ FO
 FO
 U
 V
+15 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7219,6 +7459,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7243,6 +7484,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7295,6 +7537,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7322,6 +7565,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7374,6 +7618,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7404,6 +7649,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7456,6 +7702,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7490,6 +7737,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7545,6 +7793,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7570,6 +7819,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7622,6 +7872,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7665,6 +7916,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7720,6 +7972,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7728,6 +7981,7 @@ O0
 FO
 U
 V
+2 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7749,6 +8003,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7757,6 +8012,7 @@ O0
 FO
 U
 V
+4 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7778,6 +8034,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7786,6 +8043,7 @@ O0
 FO
 U
 V
+7 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7811,6 +8069,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7819,6 +8078,7 @@ O0
 FO
 U
 V
+10 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7848,6 +8108,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7856,6 +8117,7 @@ O0
 FO
 U
 V
+13 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7891,6 +8153,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7912,6 +8175,7 @@ FO
 FO
 U
 V
+15 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -7961,6 +8225,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -7984,6 +8249,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -8039,6 +8305,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -8065,6 +8332,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -8117,6 +8385,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -8147,6 +8416,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -8202,6 +8472,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -8235,6 +8506,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -8290,6 +8562,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -8327,6 +8600,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -8379,6 +8653,7 @@ PSL_cliprestore
 O1
 U
 V
+17 W
 {0 A} FS
 O0
 /FO {P}!
@@ -8430,6 +8705,7 @@ FO
 FO
 U
 V
+17 W
 {1 0 0 C} FS
 O1
 2 setlinecap
@@ -8483,8 +8759,8 @@ O1
 U
 U
 PSL_cliprestore
-25 W
 8 W
+0 A
 N 0 0 M 0 -83 D S
 N 0 2128 M 0 83 D S
 N 1200 0 M 0 -83 D S
@@ -8507,6 +8783,7 @@ N 7200 2128 M 83 0 D S
 N 0 2128 M -83 0 D S
 N 7200 2128 M 83 0 D S
 N 0 2128 M -83 0 D S
+25 W
 83 W
 1 A
 N -42 0 M 0 626 D S
@@ -8555,8 +8832,12 @@ N -83 2211 M 0 -2294 D S
 4800 -167 M (î120è) tc Z
 6000 -167 M (î60è) tc Z
 7200 -167 M (0è) tc Z
+/PSL_AH1 0
 -167 626 M (0è) mr Z
+(0è) sw mx
 -167 2128 M (60è) mr Z
+(60è) sw mx
+def
 %%EndObject
 0 A
 FQ
@@ -8565,20 +8846,31 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R0/360/-30/60 -JM6i -O -W0.5p,blue line
-%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 0.00000000 360.00000000 -30.00000000 60.00000000 -20037508.343 20037508.343 -3482189.085 8362698.549 +proj=merc +lon_0=180 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 8 W
 0 0 1 C
+clipsave
+0 0 M
+7200 0 D
+0 2128 D
+-7200 0 D
+P
+PSL_clip N
 3600 0 M
 0 2128 D
 S
+PSL_cliprestore
+U
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
