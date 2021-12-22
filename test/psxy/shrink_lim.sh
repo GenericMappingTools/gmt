@@ -3,7 +3,7 @@
 #
 gmt begin shrink_lim
     gmt set PROJ_LENGTH_UNIT inch
-    gmt math -N4/3 -T0/2/0.1 0 -C2 90 ADD = t.txt
+    gmt math -N3 -T0/2/0.1 0 -C2 90 ADD -o0:2,0 = t.txt
     gmt subplot begin 3x2 -R-0.1/2.1/-0.1/2.1 -Fs2.2i -Bafg1 -A+gwhite
         gmt subplot set -Aoriginal
         gmt plot t.txt -Sv12p+e+h0 -Gblack -W1p
