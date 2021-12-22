@@ -3032,7 +3032,7 @@ GMT_LOCAL void * gmtapi_pass_object (struct GMTAPI_CTRL *API, struct GMTAPI_DATA
 						gmt_grd_shift (API->GMT, G, shift_amount);	/* In-memory rotation */
 					}
 				}
-				else if (object->region) {	/* Possibly adjust the pad so inner region matches requested wesn */
+				if (object->region) {	/* Possibly adjust the pad so inner region matches requested wesn */
 					/* NOTE: This assumes the memory cannot be adjusted. Probably should distinguish between GMT_IS_REFERENCE and GMT_IS_DUPLICATE
 					 * and offer different behavior.  As it is we assume read-only grids */
 					if (object->reset_pad) {	/* First undo any prior sub-region used with this memory grid */
