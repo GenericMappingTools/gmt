@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Higher RMS threshold due to hairline differences in many gridlines between different OS
-# GRAPHICSMAGICK_RMS = 0.004
+# GRAPHICSMAGICK_RMS = 0.0045
 ps=oblsuite_N.ps
 gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/-180/1:60000000 -Ba0fg -P -Gred -K -X1.25i -Y9i > $ps
 gmt pscoast -R-2000/2000/-1000/1000+uk -Joa-30/60/-150/1:60000000 -Ba0fg -O -K -Gred -Y-1.7i >> $ps
