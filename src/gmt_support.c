@@ -9298,14 +9298,12 @@ void gmtlib_init_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P) {
 /*! . */
 int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 	unsigned int index, lo, hi, mid;
+	double was = value;
 	gmt_M_unused(GMT);
 
 	if (gmt_M_is_dnan (value)) return (GMT_NAN - 3);	/* Set to NaN color */
-	if (P->is_wrapping) {	/* Wrap to fit CPT range - we can never return back- or fore-ground colors */
-		double was = value;
+	if (P->is_wrapping)	/* Wrap to fit CPT range - we can never return back- or fore-ground colors */
 		value = MOD (value - P->data[0].z_low, P->wrap_length) + P->data[0].z_low;	/* Now within range */
-		fprintf (stderr, "Was %g Now %g\n", was, value);
-	}
 	else if (value > P->data[P->n_colors-1].z_high) {
 		if (P->categorical) {	/* Set to NaN for categorical */
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
@@ -9347,6 +9345,7 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
 			index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
 		}
+		fprintf (stderr, "Was %g Now %g index = %d\n", was, value, index);
 		return (index);
 	}
 
@@ -9362,6 +9361,7 @@ int gmt_get_index (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, double value) {
 		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Requested color lookup for z = %.12lg is not a categorical value - returning NaN color\n", value);
 		index = GMT_NAN - 3;	/* Since categorical data is not on an interval */
 	}
+	fprintf (stderr, "Was %g Now %g index = %d\n", was, value, index);
 	return (index);
 }
 
