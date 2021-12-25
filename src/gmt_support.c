@@ -9390,6 +9390,7 @@ void gmt_get_rgb_lookup (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, int index,
 		}
 		PH->skip = false;
 	}
+	fprintf (stderr, "%g %g %g\n", rgb[0], rgb[1], rgb[2]);
 }
 
 /*! . */
