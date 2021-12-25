@@ -43,7 +43,7 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #endif
 #ifndef MOD	/* Knuth-style modulo function (remainder after floored division) */
-#define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
+#define MOD(x, y) ((x) - (y) * floor((double)(x)/(double)(y)))
 #endif
 
 #ifdef DOUBLE_PRECISION_GRID
