@@ -322,7 +322,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Usage (API, 2, "\n%s Rounded rectangle: If not given, the x- and y-dimensions and corner radius must be in columns 4-6.", GMT_LINE_BULLET);
 
-	GMT_Usage (API, 2, "\n%s Vector: -Sv|V<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "\n%s Vector: -Sv|V<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>[/<min>]][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Direction and length must be in columns 4-5. "
 		"If -SV rather than -Sv is selected, %s will expect azimuth and "
 		"length and convert azimuths based on the chosen map projection.", mod_name);
@@ -338,7 +338,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Usage (API, 3, "+i Append nonzero <innerdiameter>; we read it from file if not appended.");
 	GMT_Usage (API, 3, "+r Just draw radial lines, optionally specify <da> increment [wedge].");
 
-	GMT_Usage (API, 2, "\n%s Geovector: -S=<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]", GMT_LINE_BULLET);
+	GMT_Usage (API, 2, "\n%s Geovector: -S=<size>[+a<angle>][+b][+e][+h<shape>][+j<just>][+l][+m][+n<norm>[/<min>]][+o<lon>/<lat>][+q][+r][+s][+t[b|e]<trim>][+z]", GMT_LINE_BULLET);
 	GMT_Usage (API, -3, "Azimuth and length must be in columns 4-5. "
 		"Append any of the units in %s to length [k].", GMT_LEN_UNITS_DISPLAY);
 	gmt_vector_syntax (API->GMT, 3+32, 3);

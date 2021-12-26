@@ -16069,7 +16069,7 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				}
 				break;
 			case 'n':	/* Vector shrinking head */
-				if ((c = strchr (p, '/'))) {
+				if ((c = strchr (p, '/'))) {	/* Specified a fraction of the normalization length as terminal shrinking point */
 					S->v.v_norm_limit = atof (&c[1]);
 					c[0] = '\0';	/* Chop off after getting the value */
 					if (S->v.v_norm_limit < 0.0 || S->v.v_norm_limit > 1.0) {
@@ -16080,12 +16080,16 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 				len = strlen (p);
 				j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
 				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
-				if (symbol == '=') {	/* Since norm distance is in km we convert to spherical degrees */
-					if (strchr (GMT_DIM_UNITS GMT_LEN_UNITS2, p[len-1]) && p[len-1] != 'k') {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector shrink length limit for geovectors must be given in km!\n");
-						error++;
+				if (symbol == '=') {	/* Since norm distance is in km for geovectors we convert to spherical degrees */
+					if (p[len-1]) {	/* Examine if a unit was given */
+						if (strchr (GMT_DIM_UNITS, p[len-1])) {	/* Confused user gave geovector length in c|i|p, this is an error */
+							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector shrink length limit for geovectors must be given in units of %s [k]!\n", GMT_LEN_UNITS);
+							error++;
+						}
+						else if (strchr (GMT_LEN_UNITS, p[len-1]))	/* Got length with valid unit, otherwise we assume it was given in km */
+							S->v.v_norm = gmtlib_conv_distance (GMT, S->v.v_norm, p[len-1], 'k');	/* Convert to km first */
 					}
-					S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;
+					S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Finally, convert km to degrees */
 				}
 				else if (j >= GMT_CM)	/* Convert length from given unit to inches */
 					S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
