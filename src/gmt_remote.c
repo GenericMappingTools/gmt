@@ -987,23 +987,24 @@ void gmt_refresh_server (struct GMTAPI_CTRL *API) {
 	}
 }
 
-GMT_LOCAL char * gmtremote_switch_to_srtm (char *file, char *res) {
+GMT_LOCAL char * gmtremote_switch_to_srtm (char *file, char *res, bool srtm) {
 	/* There may be more than one remote Earth DEM product that needs to share the
 	 * same 1x1 degree SRTM tiles.  This function handles this overlap; add more cases if needed. */
-	char *c = NULL;
-	if ((c = strstr (file, ".earth_relief_01s_g")) || (c = strstr (file, ".earth_synbath_01s_g")))
-		*res = '1';
-	else if ((c = strstr (file, ".earth_relief_03s_g")) || (c = strstr (file, ".earth_synbath_03s_g")))
-		*res = '3';
+	char *c;
+	if (!srtm) return NULL;	/* Not using SRTM tiles at all */
+	if ((c = strstr (file, "_01s_g")) || (c = strstr (file, "_03s_g"))) {
+		*res = c[2];	/* Get the '1' or '3' */
+		c = strchr (file, '.');	/* Start of "extension" */
+	}
 	return (c);	/* Returns pointer to this "extension" or NULL */
 }
 
-GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file) {
+GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file, bool srtm) {
 	/* Must do special legacy checks for SRTMGL1|3 tag names for SRTM tiles.
 	 * We also strip off the leading @ since we are building an URL for curl  */
 	char res, *c = NULL, *new_file = NULL;
 	
-	if ((c = gmtremote_switch_to_srtm (file, &res))) {
+	if ((c = gmtremote_switch_to_srtm (file, &res, srtm))) {
 		/* Found one of the SRTM tile families, now replace the tag with SRTMGL1|3 */
 		char remote_name[GMT_LEN64] = {""};
 		c[0] = '\0';	/* Temporarily chop off tag and beyond */
@@ -1066,7 +1067,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 
 	int k_data = GMT_NOTSET, t_data = GMT_NOTSET;
 	unsigned int pos;
-	bool is_url = false, is_query = false, is_tile = false;
+	bool is_url = false, is_query = false, is_tile = false, srtm_switch = false;
 	char was, *c = NULL, *jp2_file = NULL, *clean_file = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -1128,6 +1129,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 			strcat (local_path, GMT->parent->remote_info[t_data].file);	/* Append the tiledir to get full path to dir for this type of tiles */
 			strcat (local_path, &file[1]);	/* Append filename */
 			is_tile = true;
+			srtm_switch = !strcmp (GMT->parent->remote_info[t_data].coverage, "srtm_tiles.nc");	/* true if this dataset switches to SRTM tiles for this resolutions */
 			if (access (local_path, R_OK)) {	/* A local tile in netCDF format was not found.  See if it exists as compressed JP2000 */
 				char *local_jp2 = gmt_strrep (local_path, GMT_TILE_EXTENSION_LOCAL, GMT_TILE_EXTENSION_REMOTE);
  				if (access (local_jp2, R_OK))
@@ -1161,7 +1163,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 not_local:	/* Get here if we failed to find a remote file already on disk */
 		/* Set remote path */
 		if (is_tile) {	/* Tile not yet downloaded, but must switch to .jp2 format on the server (and deal with legacy SRTM tile tags) */
-			jp2_file = gmtremote_get_jp2_tilename ((char *)file);
+			jp2_file = gmtremote_get_jp2_tilename ((char *)file, srtm_switch);
 			snprintf (remote_path, PATH_MAX, "%s%s%s%s", gmt_dataserver_url (API), GMT->parent->remote_info[t_data].dir, GMT->parent->remote_info[t_data].file, jp2_file);
 		}
 		else if (k_data == GMT_NOTSET) {	/* Cache file not yet downloaded */
