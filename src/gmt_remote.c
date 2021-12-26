@@ -344,8 +344,8 @@ int gmt_remote_no_resolution_given (struct GMTAPI_CTRL *API, const char *rfile, 
 		file[L-2] = '\0';
 	}
 	for (int k = 0; ID == GMT_NOTSET && k < API->n_remote_info; k++) {
-		L = strlen (API->remote_info[k].dir);	/* Length of directory */
-		strncpy (dir, API->remote_info[k].dir, L-1);	/* Make a copy without the trailing slash */
+		L = strlen (API->remote_info[k].dir) - 1;	/* Length of directory without the trailing slash */
+		strncpy (dir, API->remote_info[k].dir, L);	/* Make a copy without the trailing slash */
 		dir[L] = '\0';	/* Terminate string */
 		p = strrchr (dir, '/');	/* Start of final subdirectory */
 		p++;	/* Skip past the slash */
@@ -385,8 +385,8 @@ struct GMT_RESOLUTION *gmt_remote_resolutions (struct GMTAPI_CTRL *API, const ch
 		return NULL;	/* No memory */
 
 	for (int k = 0; k < API->n_remote_info; k++) {
-		L = strlen (API->remote_info[k].dir);	/* Length of directory */
-		strncpy (dir, API->remote_info[k].dir, L-1);	/* Make a copy without the trailing slash */
+		L = strlen (API->remote_info[k].dir) - 1;	/* Length of directory without the trailing slash */
+		strncpy (dir, API->remote_info[k].dir, L);	/* Make a copy without the trailing slash */
 		dir[L] = '\0';	/* Terminate string */
 		p = strrchr (dir, '/');	/* Start of final subdirectory */
 		p++;	/* Skip past the slash */
