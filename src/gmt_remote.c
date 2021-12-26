@@ -1017,6 +1017,22 @@ GMT_LOCAL char * gmtremote_get_jp2_tilename (char *file, bool srtm) {
 	return (new_file);
 }
 
+bool gmt_use_srtm_coverage (struct GMTAPI_CTRL *API, char **file, int *k, unsigned int *res) {
+	char newfile[GMT_LEN128] = {""}, c_res = '\0', *c = NULL;
+
+	if (strcmp (API->remote_info[*k].coverage, "srtm_tiles.nc")) return false;	/* This tile does not use SRTM at this resolution */
+	/* Here, *file is something like @N33E044.earth_gebco_03s_g.nc, but we need to change it to @N33E044.earth_relief_03s_g.nc */
+	c = gmtremote_switch_to_srtm (*file, &c_res, true);	/* Set the resolution */
+	*res = c_res - '0';	/* Convert character digit to number */
+	c[0] = '\0';	/* Chop off the rest */
+	sprintf (newfile, "%s.earth_relief_0%cs_g.nc", *file, c_res);
+	c[0] = '.';	/* Restore the original file name */
+	gmt_M_str_free (*file);	/* Free the original name */
+	*file = strdup (newfile);	/* Replace with the new name */
+	*k = gmt_file_is_a_tile (API, newfile, GMT_LOCAL_DIR);	/* Update tile ID */
+	return (true);
+}
+
 GMT_LOCAL int gmtremote_convert_jp2_to_nc (struct GMTAPI_CTRL *API, char *localfile) {
 	static char *args = " -fg -Vq --IO_NC4_DEFLATION_LEVEL=9 --GMT_HISTORY=readonly";
 	char cmd[GMT_LEN512] = {""},  *ncfile = NULL;
