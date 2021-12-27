@@ -1083,7 +1083,7 @@ int gmt_set_remote_and_local_filenames (struct GMT_CTRL *GMT, const char * file,
 
 	int k_data = GMT_NOTSET, t_data = GMT_NOTSET;
 	unsigned int pos;
-	bool is_url = false, is_query = false, is_tile = false, srtm_switch = false;
+	bool is_url = false, is_query = false, is_tile = false, srtm_switch = false, skip_checks = false;
 	char was, *c = NULL, *jp2_file = NULL, *clean_file = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 
@@ -1264,6 +1264,11 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 		was = c[0]; c[0] = '\0';
 	}
 
+	if (c && file[0] == '\0') {	/* Some distaster, such like my typo of =W1p instead of -W1p that lead to this check to prevent SEGV */
+		if (c) c[0] = was;	c = NULL; skip_checks = true;
+		GMT_Report (API, GMT_MSG_DEBUG, "Not able to understand the file name : %s\n", file);
+	}
+
 	if (is_url) {	/* A remote file or query given via an URL never exists locally */
 		pos = gmtlib_get_pos_of_filename (file);	/* Start of file in URL (> 0) */
 		if (is_query) /* We have truncated off all the ?specifications part */
@@ -1279,7 +1284,7 @@ not_local:	/* Get here if we failed to find a remote file already on disk */
 	/* Looking for local files given a relative path - must search directories we are allowed.
 	 * Note: Any netCDF files with directives have had those chopped off earlier, so file is a valid name */
 
-	clean_file = gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
+	clean_file = (skip_checks) ? strdup (file) : gmt_get_filename (API, file, gmtlib_valid_filemodifiers (GMT));	/* Strip off any file modifier or netCDF directives */
 	if (gmt_getdatapath (GMT, clean_file, local_path, R_OK)) {	/* Found it */
 		/* Return full path */
 		if (c &&!is_query) {	/* We need to pass the ?var[]() or [id][+mods]stuff as part of the filename */
