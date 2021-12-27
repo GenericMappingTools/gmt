@@ -463,8 +463,10 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	 * There are a few different scenarios where this can happen:
 	 * 1. Users of GMT <= 6.0.0 are used to say earth_relief_01m. These will now get p.
 	 * 2. Users who do not care about registration.  If so, they get p if available. */
-	char newfile[GMT_LEN256] = {""}, reg[2] = {'p', 'g'}, *file = NULL, *infile = NULL, *ext = NULL, *c = NULL;
+	char newfile[GMT_LEN256] = {""}, dir[GMT_LEN128] = {""}, reg[2] = {'p', 'g'};
+	char *file = NULL, *infile = NULL, *ext = NULL, *c = NULL, *p = NULL, *q = NULL;
 	int k_data, k;
+	size_t L;
 	if (file_ptr == NULL || (file = *file_ptr) == NULL || file[0] == '\0') return;
 	if (gmt_M_file_is_memory (file)) return;	/* Not a remote file for sure */
 	if (file[0] != '@') return;
@@ -475,7 +477,13 @@ void gmt_set_unspecified_remote_registration (struct GMTAPI_CTRL *API, char **fi
 	ext = gmt_chop_ext (infile);
 	/* If the remote file is found then there is nothing to do */
 	if ((k_data = gmt_remote_dataset_id (API, infile)) == GMT_NOTSET) goto clean_up;
-	if (strstr (file, "_p") || strstr (file, "_g")) goto clean_up;	/* Already have the registration codes */
+	L = strlen (API->remote_info[k_data].dir) - 1;	/* Length of dir minus trailing slash */
+	strncpy (dir, API->remote_info[k_data].dir, L);	dir[L] = '\0';	/* Duplicate dir without slash */
+	p = strrchr (dir, '/') + 1;	/* Start of final subdirectory (skipping over the slash we found) */
+	q = strstr (file, p);	/* Start of the file name (most likely the same as &file[1] but we want to make sure) */
+	if (q == NULL) return;	/* Should never happen but definitively nothing more to do here - just a safety valve */
+	q += strlen (p);	/* Move to the end of family name after which any registration codes would be found */
+	if (strstr (q, "_p") || strstr (q, "_g")) goto clean_up;	/* Already have the registration codes */
 	for (k = 0; k < 2; k++) {
 		/* First see if this _<reg> version exists of this dataset */
 		sprintf (newfile, "%s_%c", infile, reg[k]);
