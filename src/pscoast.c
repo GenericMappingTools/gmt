@@ -65,6 +65,16 @@
 
 #define NOT_REALLY_AN_ERROR -999
 
+enum pscoast_fill_level {
+	PSCOAST_OCEAN = 0,
+	PSCOAST_LAND = 1,
+	PSCOAST_LAKE = 2,
+	PSCOAST_ISLAND = 3,
+	PSCOAST_POND = 4,
+	PSCOAST_RIVER = 5,
+	PSCOAST_NFILL = 6
+};
+
 /* Control structure for pscoast */
 
 struct PSCOAST_CTRL {
@@ -744,7 +754,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 
 	char *shore_resolution[5] = {"full", "high", "intermediate", "low", "crude"};
 
-	struct GMT_FILL fill[6], no_fill;	/* Colors for (0) water, (1) land, (2) lakes, (3) islands in lakes, (4) lakes in islands in lakes, (5) riverlakes */
+	struct GMT_FILL fill[PSCOAST_NFILL], no_fill;
 	struct GMT_SHORE c;
 	struct GMT_BR b, r;
 	struct GMT_GSHHS_POL *p = NULL;
@@ -783,10 +793,10 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		Ctrl->D.set = 'a';	/* Auto-select resolution under modern mode if -D not given */
 	clipping = (Ctrl->G.clip || Ctrl->S.clip);
 	if (Ctrl->D.force) Ctrl->D.set = gmt_shore_adjust_res (GMT, Ctrl->D.set, true);
-	fill[0] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;	/* Ocean fill */
-	fill[1] = fill[3] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;	/* Continent and islands in lakes fill */
-	fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* Lakes and ponds-in-islands-in-lakes fill */
-	fill[5] = (Ctrl->C.active) ? Ctrl->C.fill[RIVER] : fill[2];		/* River-lake fill */
+	fill[PSCOAST_OCEAN] = (Ctrl->S.active) ? Ctrl->S.fill : no_fill;	/* Ocean fill */
+	fill[PSCOAST_LAND] = fill[PSCOAST_ISLAND] = (Ctrl->G.active) ? Ctrl->G.fill : no_fill;	/* Continent and islands in lakes fill */
+	fill[PSCOAST_LAKE] = fill[PSCOAST_POND] = (Ctrl->C.set[LAKE]) ? Ctrl->C.fill[LAKE] : fill[PSCOAST_OCEAN];	/* Lakes and ponds-in-islands-in-lakes fill */
+	fill[PSCOAST_RIVER] = (Ctrl->C.set[RIVER]) ? Ctrl->C.fill[RIVER] : fill[PSCOAST_LAKE];		/* River-lake fill */
 	need_coast_base = (Ctrl->G.active || Ctrl->S.active || Ctrl->C.active || Ctrl->W.active);
 	if (Ctrl->Q.active) need_coast_base = false;	/* Since we just end clipping */
 	if (Ctrl->G.active && Ctrl->S.active) {	/* Must check if any of then are transparent */
@@ -928,7 +938,7 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		gmt_map_basemap (GMT);
 	}
 
-	for (i = 0; i < 5; i++) if (fill[i].use_pattern) fill_in_use = true;
+	for (i = 0; i < PSCOAST_NFILL; i++) if (fill[i].use_pattern) fill_in_use = true;
 
 	if (fill_in_use && !clobber_background) {	/* Force clobber when fill is used since our routine cannot deal with clipped fills */
 		GMT_Report (API, GMT_MSG_INFORMATION, "Pattern fill requires oceans to be painted first\n");
@@ -961,11 +971,11 @@ EXTERN_MSC int GMT_pscoast (void *V_API, int mode, void *args) {
 		recursive = false;
 		if (!Ctrl->S.active) {	/* Since we are painting wet areas we must now reset them to white */
 			if (GMT->current.map.frame.paint[GMT_Z])	/* Let ocean color match cancas fill color */
-				fill[0] = GMT->current.map.frame.fill[GMT_Z];
+				fill[PSCOAST_OCEAN] = GMT->current.map.frame.fill[GMT_Z];
 			else
-				gmt_init_fill (GMT, &fill[0], 1.0, 1.0, 1.0);	/* Default Ocean color = white */
+				gmt_init_fill (GMT, &fill[PSCOAST_OCEAN], 1.0, 1.0, 1.0);	/* Default Ocean color = white */
 		}
-		fill[2] = fill[4] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[0];	/* If lake not set then use ocean */
+		fill[PSCOAST_LAKE] = fill[PSCOAST_POND] = (Ctrl->C.active) ? Ctrl->C.fill[LAKE] : fill[PSCOAST_OCEAN];	/* If lake not set then use ocean */
 	}
 
 	if (clobber_background) {	/* Paint entire map as ocean first, then lay land on top */
