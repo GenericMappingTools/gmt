@@ -53,8 +53,8 @@ end point (**e**) of a line segment:
     with decreasing length, where vector plot lengths shorter than *norm* will have
     their attributes scaled by length/\ *norm* [other arrow attributes remain
     invariant to length]. For Cartesian vectors specify a length in plot units, while
-    for geovectors specify a length in km. Optionally, append /*min* for the minimum
-    shrink factor (in the 0-1 range) that we will shrink to [0.25].
+    for geovectors specify a length in map units (see `Units`_) [k]. Optionally, append
+    /*min* for the minimum shrink factor (in the 0-1 range) that we will shrink to [0.25].
 
     **+o**\ [*plon*\ /\ *plat*] specifies the oblique pole for the great or
     small circles.  Only needed for great circles if **+q** is given. If no
