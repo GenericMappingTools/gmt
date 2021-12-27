@@ -280,7 +280,9 @@
         vector head. Vector width is set by **-W**. See `Vector Attributes`_
         for specifying attributes. **Note**: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
-        not available. For allowable geographical units, see `Units`_.
+        not available. For allowable geographical units for the length, see `Units`_ [k].
+        If your *length* is not in distance units but in arbitrary user units (e.g., a rate in
+        mm/yr) then you can use the **-i** option to scale the corresponding column via the **+s**\ *scale* modifier.
 
     The next symbol is the programmable *custom* symbol:
 
