@@ -2666,7 +2666,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 * param[PSL_VEC_TAIL_WIDTH] = tailwidth;
     * param[PSL_VEC_HEAD_LENGTH] = headlength;
     * param[PSL_VEC_HEAD_WIDTH] = headwidth;
-	 * param[5PSL_VEC_HEAD_SHAPE] = headshape;
+	 * param[PSL_VEC_HEAD_SHAPE] = headshape;
     * param[PSL_VEC_STATUS] = status bit flags
 	 * param[PSL_VEC_HEAD_TYPE_BEGIN] = begin head type;
     * param[PSL_VEC_HEAD_TYPE_END] = end head type
@@ -2677,7 +2677,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 
 	double angle, xtip, ytip, r, s, tailwidth, headlength, headwidth, headshape, length_inch;
 	double xx[6], yy[6], xc[3], yc[3], off[2], yshift[2], trim[2], xp = 0.0, h_penwidth;
-	int length, asymmetry[2], n, heads, outline, fill, status;
+	int length, asymmetry[2], n, heads, outline, fill, status, head_check;
 	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
@@ -2714,6 +2714,13 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	if (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) off[PSL_END] = 0.5 * tailwidth *  headlength / headwidth;
 	else if (kind[PSL_END] == PSL_VEC_TAIL) off[PSL_END] = FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - tailwidth;
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
+	head_check = PSL_vec_headcheck (status);		  /* nonzero if we should always place a head regardless of length */
+	if (head_check) {	/* Must worry about head size relative to vector length */
+		double h_length_limit = length_inch; /* Max length of arrow in inches */
+		if (heads == 3) h_length_limit *= 0.5;    /* Split this length between the two heads */
+		if (heads & 1 && headlength > h_length_limit) heads -= 1;	/* No room for head */
+		if (heads & 2 && headlength > h_length_limit) heads -= 2;	/* No room for head */
+	}
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);	/* Inherits color from current pen */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);

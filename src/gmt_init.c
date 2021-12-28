@@ -15947,7 +15947,8 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 	S->v.pen = GMT->current.setting.map_default_pen;
 	gmt_init_fill (GMT, &S->v.fill, -1.0, -1.0, -1.0);	/* Default is no fill */
 	S->v.status = 0;	/* Start with no flags turned on */
-	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;	S->v.v_stem = 0.1f;
+	S->v.v_angle = 30.0f;	S->v.v_norm = -1.0f;
+	S->v.v_norm_limit = 0.25;
 	S->v.v_kind[0] = S->v.v_kind[1] = PSL_VEC_ARROW;
 	S->v.v_shape = (float)GMT->current.setting.map_vector_shape;	/* Can be overridden with +h<shape> */
 	for (k = 0; text[k] && text[k] != '+'; k++);	/* Either find the first plus or run out or chars */
@@ -16077,26 +16078,30 @@ int gmt_parse_vector (struct GMT_CTRL *GMT, char symbol, char *text, struct GMT_
 						error++;
 					}
 				}
-				len = strlen (p);
-				j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes unit */
-				S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
-				if (symbol == '=') {	/* Since norm distance is in km for geovectors we convert to spherical degrees */
-					if (p[len-1]) {	/* Examine if a unit was given */
-						if (strchr (GMT_DIM_UNITS, p[len-1])) {	/* Confused user gave geovector length in c|i|p, this is an error */
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector shrink length limit for geovectors must be given in units of %s [k]!\n", GMT_LEN_UNITS);
-							error++;
+				if (p[1] == '\0')	/* No shrink, and no skipping heads regardless of vector length */
+					S->v.status |= PSL_VEC_LINE;
+				else {	/* Parse the cutoff size */
+					len = strlen (p);
+					j = (symbol == 'v' || symbol == 'V') ? gmt_get_dim_unit (GMT, p[len-1]) : -1;	/* Only -Sv|V takes dimensional unit */
+					S->v.v_norm = (float)atof (&p[1]);	/* This is normalizing length in given units, not (yet) converted to inches or degrees (but see next lines) */
+					if (symbol == '=') {	/* Since norm distance is in map units for geovectors we convert to spherical degrees */
+						if (p[len-1]) {	/* Examine if a unit was given */
+							if (strchr (GMT_DIM_UNITS, p[len-1])) {	/* Confused user gave geovector length in c|i|p, this is an error */
+								GMT_Report (GMT->parent, GMT_MSG_ERROR, "Vector shrink length limit for geovectors must be given in units of %s [k]!\n", GMT_LEN_UNITS);
+								error++;
+							}
+							else if (strchr (GMT_LEN_UNITS, p[len-1]))	/* Got length with valid unit, otherwise we assume it was given in km */
+								S->v.v_norm = gmtlib_conv_distance (GMT, S->v.v_norm, p[len-1], 'k');	/* Convert to km first */
 						}
-						else if (strchr (GMT_LEN_UNITS, p[len-1]))	/* Got length with valid unit, otherwise we assume it was given in km */
-							S->v.v_norm = gmtlib_conv_distance (GMT, S->v.v_norm, p[len-1], 'k');	/* Convert to km first */
+						S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Finally, convert km to degrees */
 					}
-					S->v.v_norm /= (float)GMT->current.proj.DIST_KM_PR_DEG;	/* Finally, convert km to degrees */
+					else if (j >= GMT_CM)	/* Convert length from given unit to inches */
+						S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
+					else	/* Convert length from default unit to inches */
+						S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
+					/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
+					GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g going down to %g %% of head size\n", S->v.v_norm, 100.0 * S->v.v_norm_limit);
 				}
-				else if (j >= GMT_CM)	/* Convert length from given unit to inches */
-					S->v.v_norm *= GMT->session.u2u[j][GMT_INCH];
-				else	/* Convert length from default unit to inches */
-					S->v.v_norm *= GMT->session.u2u[GMT->current.setting.proj_length_unit][GMT_INCH];
-				/* Here, v_norm is either in inches (if Cartesian vector) or spherical degrees (if geovector) */
-				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Vector shrink scale v_norm = %g going down to %g %% of head size\n", S->v.v_norm, 100.0 * S->v.v_norm_limit);
 				break;
 			case 'o':	/* Sets oblique pole for small or great circles */
 				S->v.status |= PSL_VEC_POLE;
