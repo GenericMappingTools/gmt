@@ -799,7 +799,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								else
 									x = 0.0;
 							}
-							if (symbol[0] == '-') {	/* Line symbol */
+							if (strchr ("v-", symbol[0])) {	/* Line symbol or vector */
 								got_line = true;
 								if (x > 0.0) line_size = x;
 							}
@@ -852,7 +852,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	else if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
 		def_size = 0.5 / 2.54;	/* In inches */
 	if (def_dx2 == 0.0)	/* No dist to text label given; default to 2x default symbol size */
-		def_dx2 = Ctrl->S.scale * GMT_LEGEND_DX2_MUL * def_size;	/* In inches */
+		def_dx2 = Ctrl->S.scale * def_size * (got_line ? GMT_LEGEND_DXL_MUL : GMT_LEGEND_DX2_MUL);	/* In inches */
 	GMT_Report (API, GMT_MSG_DEBUG, "Default symbol size = %g and default distance to text label is %g\n", def_size, def_dx2);
 
 	if (n_char) {	/* Typesetting paragraphs, make a guesstimate of number of typeset lines */
@@ -1473,7 +1473,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								x_off = col_left_x + x_off_col[column_number];
 							}
 							if (!strcmp (txt_b, "-"))	/* Automatic label offset */
-								off_tt = GMT_LEGEND_DX2_MUL * Ctrl->S.scale * def_size;
+								off_tt = (def_dx2 > 0.0) ? def_dx2 : GMT_LEGEND_DX2_MUL * Ctrl->S.scale * def_size;
 							else	/* Gave a specific offset */
 								off_tt = gmt_M_to_inch (GMT, txt_b);
 							d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */
