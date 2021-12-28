@@ -253,8 +253,8 @@ Legend Codes
     of the column, with the optional explanatory *text* starting *dx2*
     from the margin, printed with :term:`FONT_ANNOT_PRIMARY`. If *dx1* is given
     as **-** then it is automatically computed from half the largest symbol size.
-    If *dx2* is given as **-** then it is automatically computed as 1.5
-    times the largest symbol size.  Use **-** if
+    If *dx2* is given as **-** then it is automatically computed as the largest
+    symbol size plus one character width at current annotation size.  Use **-** if
     no *fill* or outline (*pen*) is required. Alternatively, the *fill*
     may be specified indirectly via z=\ *value* and the color is assigned
     via the CPT look-up (requires a prior **A** code).  When plotting just a
@@ -270,10 +270,12 @@ Legend Codes
     ellipse, wedge, mathangle) may take more than a single argument size.
     Note that for a line segment you should use the horizontal dash symbol (**-**).
     If just a single size if given then we will provide reasonable
-    arguments to plot the symbol  (See `Defaults`_).
-    Alternatively, combine the required
-    arguments into a single, comma-separated string and use that as the
-    symbol size (again, see :doc:`plot` for details on the arguments needed).
+    arguments to plot the symbol  (See `Defaults`_). **Note**: If *size* is given
+    as **-** then we default to the character height at current annotation size
+    for geometric symbols and 2.5 times the character width for line-type symbols.
+    Alternatively, combine the required arguments into a single, comma-separated
+    string and use that as the symbol size (again, see :doc:`plot` for details on
+    the arguments needed).
 **T** *paragraph-text*
     One or more of these **T** records with *paragraph-text* printed
     with :term:`FONT_ANNOT_PRIMARY`. To specify special positioning and

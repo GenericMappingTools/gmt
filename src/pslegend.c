@@ -508,7 +508,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	char *dname[N_DAT] = {"symbol", "front", "qline", "textline", "partext"};
 #endif
 
-	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, d_line_half_width, d_line_hor_offset, off_ss, off_tt, def_dx2 = 0.0;
+	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, d_line_half_width, d_line_hor_offset, off_ss, off_tt, def_dx2 = 0.0, W, H;
 	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2], line_size = 0.0, C_rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0, shrink[4] = {0.0, 0.0, 0.0, 0.0};
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
@@ -799,7 +799,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								else
 									x = 0.0;
 							}
-							if (strchr ("v-", symbol[0])) {	/* Line symbol or vector */
+							if (strchr ("fqvV-~", symbol[0])) {	/* A line-type symbol or vector */
 								got_line = true;
 								if (x > 0.0) line_size = x;
 							}
@@ -847,12 +847,17 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	if (got_line && gmt_M_is_zero (line_size) && def_size > 0.0)	/* Got lines but no lengths specified an another symbol set the default */
-		def_size = 0.5 / 2.54;	/* In inches */
-	else if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
-		def_size = 0.5 / 2.54;	/* In inches */
-	if (def_dx2 == 0.0)	/* No dist to text label given; default to 2x default symbol size */
-		def_dx2 = Ctrl->S.scale * def_size * (got_line ? GMT_LEGEND_DXL_MUL : GMT_LEGEND_DX2_MUL);	/* In inches */
+	W = GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Average current annotation font width in inches */
+	H = GMT_LET_HEIGHT * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Average current annotation font width in inches */
+	if (got_line && gmt_M_is_zero (line_size)) {	/* Got lines but no lengths specified */
+		line_size = 2.5 * W;	/* 2.5 mean character widths in inches */
+		if (def_size == 0.0)	/* No other symbol size were specified */
+			def_size = line_size;
+	}
+	else if (def_size == 0.0)	/* No sizes specified in input file; default to H */
+		def_size = H;	/* In inches */
+	if (def_dx2 == 0.0)	/* No dist to text label given; set to default symbol size + annotation size */
+		def_dx2 = MAX (def_size, line_size) + W;	/* In inches */
 	GMT_Report (API, GMT_MSG_DEBUG, "Default symbol size = %g and default distance to text label is %g\n", def_size, def_dx2);
 
 	if (n_char) {	/* Typesetting paragraphs, make a guesstimate of number of typeset lines */
@@ -1465,7 +1470,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 							}
 							else if (!strcmp (txt_a, "-")) {	/* Automatic margin offset */
-								off_ss = GMT_LEGEND_DX1_MUL * Ctrl->S.scale * def_size;
+								off_ss = Ctrl->S.scale * 0.5 * (got_line ? line_size : def_size);
 								x_off = col_left_x + x_off_col[column_number];
 							}
 							else {	/* Gave a specific offset */
@@ -1473,12 +1478,12 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								x_off = col_left_x + x_off_col[column_number];
 							}
 							if (!strcmp (txt_b, "-"))	/* Automatic label offset */
-								off_tt = (def_dx2 > 0.0) ? def_dx2 : GMT_LEGEND_DX2_MUL * Ctrl->S.scale * def_size;
+								off_tt = (def_dx2 > 0.0) ? Ctrl->S.scale * def_dx2 : Ctrl->S.scale * (def_size + W);
 							else	/* Gave a specific offset */
 								off_tt = gmt_M_to_inch (GMT, txt_b);
 							d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */
 							row_base_y += half_line_spacing;	/* Move to center of box */
-							if (strchr ("-~q", symbol[0]) && !strcmp (size, "-")) sprintf (size, "%gi", def_size);	/* If no size given then we must pick what we learned above */
+							if (strchr ("-~q", symbol[0]) && !strcmp (size, "-")) sprintf (size, "%gi", line_size);	/* If no size given then we must pick what we learned above */
 							if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
 								double length, tlen, gap;
 								int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
@@ -1613,7 +1618,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 									}
 									else {	/* No dir given, default to horizontal */
 										az1 = 0.0;
-										x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+										if (strcmp (size, "-"))
+											x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+										else
+											x = Ctrl->S.scale * line_size;
 									}
 									if (strchr (size, '/') && gmt_M_compat_check (GMT, 4))  {	/* The necessary arguments was supplied via GMT4 size arguments */
 										i = 0;
