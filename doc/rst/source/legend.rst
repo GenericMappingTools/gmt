@@ -254,8 +254,8 @@ Legend Codes
     from the margin, printed with :term:`FONT_ANNOT_PRIMARY`. If *dx1* is given
     as **-** then it is automatically computed from half the largest symbol size.
     If *dx2* is given as **-** then it is automatically computed as the largest
-    symbol size plus one character width at current annotation size.  Use **-** if
-    no *fill* or outline (*pen*) is required. Alternatively, the *fill*
+    symbol size plus one character width at the current annotation font size.
+    Use **-** if no *fill* or outline (*pen*) is required. Alternatively, the *fill*
     may be specified indirectly via z=\ *value* and the color is assigned
     via the CPT look-up (requires a prior **A** code).  When plotting just a
     symbol, without text, *dx2* and *text* can be omitted.  The *dx1* value
@@ -270,9 +270,7 @@ Legend Codes
     ellipse, wedge, mathangle) may take more than a single argument size.
     Note that for a line segment you should use the horizontal dash symbol (**-**).
     If just a single size if given then we will provide reasonable
-    arguments to plot the symbol  (See `Defaults`_). **Note**: If *size* is given
-    as **-** then we default to the character height at current annotation size
-    for geometric symbols and 2.5 times the character width for line-type symbols.
+    arguments to plot the symbol  (See `Defaults`_).
     Alternatively, combine the required arguments into a single, comma-separated
     string and use that as the symbol size (again, see :doc:`plot` for details on
     the arguments needed).
@@ -296,6 +294,10 @@ Defaults
 
 When attributes are not provided, or extended symbol information (for symbols taking more than just an overall size) are
 not given as comma-separated quantities, we will provide the following defaults:
+
+Geographic symbols: If *size* is given as **-** then we default to the character height at the current annotation font size.
+
+Line/vector: If *size* is given as **-** then we default to a length of 2.5 times the character width at the current annotation font size.
 
 Front: The *size* argument is *length*\ [/*gap*\ [*ticklength*]]. Front symbol is left-side (here, that means upper side) box,
 with *ticklength* set 30% of the given symbol *length* (if not specified separately), and *gap* defaulting to -1 (one
