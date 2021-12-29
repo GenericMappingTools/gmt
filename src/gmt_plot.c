@@ -9789,6 +9789,9 @@ unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, dou
 		are possible. If a small-circle vector is chosen then azimuth, length may be opening angles
 		1 and 2 if PSL_VEC_ANGLES is set as well. */
 	unsigned int warn;
+
+	if (gmt_M_is_zero (length)) return (GMT_NOERROR); /* Only plot vectors with a non-zero length */
+
 	if ((S->v.status & PSL_VEC_SCALE) == 0) {	/* Must determine the best inch to degree scale for this map */
 		if (gmt_M_is_perspective (GMT)) {
 			double clon, clat;
