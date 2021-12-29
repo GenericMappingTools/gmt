@@ -101,6 +101,8 @@
  * 254		-27	SLG	Sala y Gomez
  * 192		-15	SAM	Samoa
  * 212		-18	SOC	Society
+ *
+ * Note on KEYS: FD(= means -F takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"

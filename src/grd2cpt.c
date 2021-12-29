@@ -30,6 +30,7 @@
  * Date:	1-JAN-2010
  * Version:	6 API
  *
+ * Note on KEYS: ED)=f mean -E takes an optional Dataset as argument via the +f modifier.
  */
 
 #include "gmt_dev.h"

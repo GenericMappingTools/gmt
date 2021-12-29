@@ -34,9 +34,9 @@ jobs:
           --exclude "^https://topex.ucsd.edu/sandwell/"
           --exclude "^http://topex.ucsd.edu"
           --verbose
-          "**/*.rst"
-          "**/*.rst_"
-          "**/*.md"
+          **/*.rst
+          **/*.rst_
+          **/*.md
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

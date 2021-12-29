@@ -65,7 +65,7 @@ Enhancements in GMT 6.3
 * Add v (vector) to custom symbol kit, plus handle azimuth vs angle (`#5606 <https://github.com/GenericMappingTools/gmt/pull/5606>`_)
 * Allow trailing comments in custom symbol files (`#5610 <https://github.com/GenericMappingTools/gmt/pull/5610>`_)
 * Let -d set starting column via modifier (`#5966 <https://github.com/GenericMappingTools/gmt/pull/5966>`_)
-* Let -f\ *col* explicity set start of input trailing text (`#5370 <https://github.com/GenericMappingTools/gmt/pull/5370>`_)
+* Let -f\ *col* explicitly set start of input trailing text (`#5370 <https://github.com/GenericMappingTools/gmt/pull/5370>`_)
 * Let multi-layer geotiff files be cut via gdal_translate (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
 
 Documentation updates in GMT 6.3

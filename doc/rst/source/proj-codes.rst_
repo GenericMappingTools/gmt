@@ -54,7 +54,7 @@
    * - :ref:`General perspective <-Jg_pers>`
      - **-Jg**\|\ **G**
      - **-Jnsper/**
-     - |lon0|/|lat0|/\ *alt*/*azim*/*tilt*/*twist*/*W*/*H*/\ *scale*\|\ *width*
+     - |lon0|/|lat0|\ */*\ *scale*\|\ *width*\ [**+a**\ *azimuth*][**+t**\ *tilt*][**+v**\ *vwidth/vheight*][**+w**\ *twist*][**+z**\ *altitude*\ [**r**\|\ **R**]\|\ **g**]
    * - :ref:`Hammer equal area <-Jh>`
      - **-Jh**\|\ **H**
      - **-Jhammer/**

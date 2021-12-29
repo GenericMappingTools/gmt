@@ -862,7 +862,7 @@ EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 	char text[GMT_LEN256] = {""}, record[GMT_BUFSIZ] = {""};
 	char **file = NULL, *label = NULL, *header = NULL;
 
-	double rgb[4], out[5], last_x = 0;
+	double rgb[4], out[5], last_x = 0, z_val;
 
 	struct GMT2KML_KML *kml = NULL;
 	struct GMT_OPTION *options = NULL;
@@ -1114,8 +1114,8 @@ EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 			}
 			else if (Ctrl->F.mode < WIGGLE) {	/* Line or polygon means we lay down the placemark first*/
 				if (Ctrl->C.active && gmt_parse_segment_item (GMT, header, "-Z", description)) {
-					double z_val = atof (description);
-					index = gmt_get_index (GMT, P, z_val);
+					z_val = atof (description);
+					index = gmt_get_index (GMT, P, &z_val);
 				}
 				gmt2kml_print (API, Out, N++, "<Placemark>");
 				if (Ctrl->N.mode == NO_LABEL) { /* Nothing */ }
@@ -1215,7 +1215,10 @@ EXTERN_MSC int GMT_gmt2kml (void *V_API, int mode, void *args) {
 						out[col] = S->data[col][row];
 					if (GMT->common.R.active[RSET] && gmt2kml_check_lon_lat (GMT, &out[GMT_X], &out[GMT_Y])) continue;
 					if (get_z) {	/* For point data we use z to determine color */
-						if (Ctrl->C.active) index = gmt_get_index (GMT, P, out[GMT_Z]);
+						if (Ctrl->C.active) {
+							z_val = out[GMT_Z];
+							index = gmt_get_index (GMT, P, &z_val);
+						}
 						out[GMT_Z] = Ctrl->A.get_alt ? out[GMT_Z] * Ctrl->A.scale : Ctrl->A.altitude;
 					}
 					if (Ctrl->F.mode < LINE && gmt_M_is_dnan (out[GMT_Z])) continue;	/* Symbols with NaN height are not plotted anyhow */
