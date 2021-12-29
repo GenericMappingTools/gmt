@@ -4906,13 +4906,14 @@ GMT_LOCAL void gmtplot_plot_vector_head (struct GMT_CTRL *GMT, double *xp, doubl
     }
 }
 
-GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double azimuth, double length, struct GMT_PEN *ppen, struct GMT_SYMBOL *S) {
-	/* Draws a small-circle vector with or without heads, etc. There are some complications to consider:
+GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, double lon0, double lat0, double angle_1, double angle_2, struct GMT_PEN *ppen, struct GMT_SYMBOL *S) {
+	/* Draws a small-circle vector around an oblique pole, with or without heads, etc. There are some complications to consider:
 	 * When there are no heads it is simple.  If +n is active we may shrink the line thickness.
 	 * With heads there are these cases:
 	 * Head length is longer than 90% of the vector length.  We then skip the head and return 1
 	 * +n<norm> is in effect.  We shrink vector pen and head length.  Still, the shrunk head
 	 * may be longer than 90% of the vector length.  We then shrink head (not pen) further and return 2
+     * Note: Angle_1|2 may be degrees or km, depending on modifier +q.
 	*/
 
 	uint64_t n1, n2, n, add;
@@ -4933,7 +4934,7 @@ GMT_LOCAL unsigned int gmtplot_geo_vector_smallcircle (struct GMT_CTRL *GMT, dou
 	justify = PSL_vec_justify (S->v.status);	/* Return justification as 0-3 */
 #endif
 
-	gmtplot_scircle_sub (GMT, lon0, lat0, azimuth, length, S, &C);
+	gmtplot_scircle_sub (GMT, lon0, lat0, angle_1, angle_2, S, &C);
 	perspective = gmt_M_is_perspective (GMT);
 
 	/* Here we have the endpoints A and B of the great (or small) circle arc */
@@ -9789,6 +9790,7 @@ unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, dou
 		are possible. If a small-circle vector is chosen then azimuth, length may be opening angles
 		1 and 2 if PSL_VEC_ANGLES is set as well. */
 	unsigned int warn;
+
 	if ((S->v.status & PSL_VEC_SCALE) == 0) {	/* Must determine the best inch to degree scale for this map */
 		if (gmt_M_is_perspective (GMT)) {
 			double clon, clat;
@@ -9803,10 +9805,14 @@ unsigned int gmt_geo_vector (struct GMT_CTRL *GMT, double lon0, double lat0, dou
 		}
 	}
 
-	if (S->v.status & PSL_VEC_POLE)
+	if (S->v.status & PSL_VEC_POLE) {    /* Here, azimuth, length is actually angle_1 and angle_2 (if +q) or length_1, length_2 distance around the pole */
+		if (doubleAlmostEqualZero (azimuth, length)) return (GMT_NOERROR); /* Only plot vectors with a non-zero angular or distance extension */
 		warn = gmtplot_geo_vector_smallcircle (GMT, lon0, lat0, azimuth, length, pen, S);
-	else
+	}
+	else {
+		if (gmt_M_is_zero (length)) return (GMT_NOERROR); /* Only plot vectors with a non-zero length */
 		warn = gmtplot_geo_vector_greatcircle (GMT, lon0, lat0, azimuth, length, pen, S);
+    }
 	return (warn);
 }
 
