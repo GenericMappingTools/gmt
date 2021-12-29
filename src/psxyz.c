@@ -1044,8 +1044,14 @@ EXTERN_MSC int GMT_psxyz (void *V_API, int mode, void *args) {
 		}
 		gmt_set_meminc (GMT, GMT_BIG_CHUNK);	/* Only a sizeable amount of PSXZY_DATA structures when we initially allocate */
 		GMT->current.map.is_world = !(S.symbol == PSL_ELLIPSE && S.convert_angles);
-		if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0)
-			gmt_set_column_type (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
+		if (S.symbol == GMT_SYMBOL_GEOVECTOR && (S.v.status & PSL_VEC_JUST_S) == 0) {	/* Input is either azim,length or just length for small circle vectors */
+			if (S.v.status & PSL_VEC_POLE) {	/* Small circle distance is either map length or start,stop angles */
+				if ((S.v.status & PSL_VEC_ANGLES) == 0)	/* Just map length */
+					gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
+			}
+			else	/* Great circle map length */
+				gmt_set_column_type (GMT, GMT_IN, ex2, GMT_IS_GEODIMENSION);
+		}
 		else if ((S.symbol == PSL_ELLIPSE || S.symbol == PSL_ROTRECT) && S.convert_angles && !S.par_set) {
 			if (S.n_required == 1)  {
 				gmt_set_column_type (GMT, GMT_IN, ex1, GMT_IS_GEODIMENSION);
