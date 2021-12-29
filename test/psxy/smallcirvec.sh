@@ -13,7 +13,7 @@ cat << EOF > t.txt
 EOF
 gmt psbasemap -Rg -JG0/0/4.5i -Bag -P -K -Xc > $ps
 while read lon lat length color plon plat just; do
-	echo $lon $lat $length 0 | gmt psxy -R -J -W1p,$color -S=0.4i+j${just}+o${plon}/${plat}+h1 -G$color -O -K >> $ps
+	echo $lon $lat $length | gmt psxy -R -J -W1p,$color -S=0.4i+j${just}+o${plon}/${plat}+h1 -G$color -O -K >> $ps
 	echo $lon $lat   | gmt psxy -R -J -O -K -Sc0.1i -G$color -W0.25p >> $ps
 	echo $plon $plat | gmt psxy -R -J -O -K -St0.1i -G$color -W0.25p >> $ps
 done < t.txt
