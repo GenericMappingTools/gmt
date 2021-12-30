@@ -39,7 +39,8 @@
 #define PSLEGEND_MAJOR_SCL		1.5			/* Ratio of major axis to normal isotropic symbol size */
 #define PSLEGEND_MINOR_SCL		0.55		/* Ratio of minor axis to normal isotropic symbol size */
 #define PSLEGEND_ROUND_SCL		0.1			/* Fraction of corner rounding for round rectangles */
-#define PSLEGEND_MAJOR_ANGLE	25			/* Angle of major axis for rotated symbols */
+#define PSLEGEND_MAJOR_ANGLE	0			/* Angle of major axis for rotated ellipses */
+#define PSLEGEND_RECT_ANGLE		25			/* Angle of rotated rectangles */
 #define PSLEGEND_ANGLE_START	120			/* Start angle for wedge or math angle */
 #define PSLEGEND_ANGLE_STOP		420			/* Stop angle for wedge or math angle */
 #define PSLEGEND_MATH_SCL		0.6			/* Ratio of math angle radius to isotropic symbol size */
@@ -1638,7 +1639,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 									else {	/* Rotated rectangle needs more arguments; we use height = 0.55*width, az = 25 */
 										x = Ctrl->S.scale * get_the_size (GMT, size, def_size, PSLEGEND_MAJOR_SCL);	/* The width of the rectangle */
 										y = PSLEGEND_MINOR_SCL * x;
-										az1 = PSLEGEND_MAJOR_ANGLE;
+										az1 = PSLEGEND_RECT_ANGLE;
 									}
 									S[SYM]->data[2][0] = az1;
 									S[SYM]->data[3][0] = x;
