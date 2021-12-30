@@ -805,8 +805,21 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							text[0] = '\0';
 							n_scan = sscanf (line, "%*s %*s %s %s %*s %*s %s %[^\n]", symbol, size, txt_b, text);
 							/* Find the largest symbol size specified */
-							if ((c = strrchr (size, '/')))	/* Front, use the last arg as size since closest to height */
-								x = gmt_M_to_inch (GMT, &c[1]);
+							gmt_strrepc (size, '/', ' ');	/* Replace any slashes with spaces */
+							gmt_strrepc (size, ',', ' ');	/* Replace any commas with spaces */
+							n = sscanf (size, "%s %s %s", A, B, C);
+							if (n > 1) {	/* Multi-arg symbol, use the last arg as size since closest to height */
+								if (strchr ("eEjJvV", symbol[0]))	/* These all has 2nd arg as size */
+									x = gmt_M_to_inch (GMT, B);
+								else if (strchr ("rRm", symbol[0]))	/* These all has 1st arg as size */
+									x = gmt_M_to_inch (GMT, A);
+								else {	/* Last arg */
+									if (n == 3)
+										x = gmt_M_to_inch (GMT, C);
+									else
+										x = gmt_M_to_inch (GMT, B);
+								}
+							}
 							else {
 								if (strcmp (size, "-")) {
 									char *c = NULL;
@@ -1593,6 +1606,8 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								S[SYM]->data[GMT_X][0] = x_off + off_ss;
 								S[SYM]->data[GMT_Y][0] = row_base_y;
 								S[SYM]->n_rows = 1;
+								if (strchr ("eEjJrRmw", symbol[0]) && strchr (size, '/'))	/* Got command-line symbol syntax like dir/major/minor for ellipse, rect, rotrect, wedge, or math angle; replace with commas */
+									gmt_strrepc (size, '/', ',');
 								if (symbol[0] == 'k' || symbol[0] == 'K')	/* Custom symbols need the full name after k */
 									sprintf (sub, "%s", symbol);
 								else	/* Just the symbol code is needed */
