@@ -8491,6 +8491,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
+		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 		return (P);
 	}
 
@@ -8546,7 +8547,6 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 		PH = gmt_get_C_hidden (P);
 		PH->auto_scale = 1;	/* Flag for colorbar to supply -Baf if not given */
 		gmt_stretch_cpt (GMT, P, zmin, zmax);
-		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	}
 	else if (file) {	/* Gave a CPT file */
 		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "CPT argument %s understood to be a regular CPT table\n", file);
@@ -8555,6 +8555,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	else
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No CPT file or master given?\n");
 
+	gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	return (P);
 }
 
