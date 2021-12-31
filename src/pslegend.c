@@ -34,6 +34,25 @@
 #define THIS_MODULE_NEEDS	"jr"
 #define THIS_MODULE_OPTIONS "->BJKOPRUVXYpqt" GMT_OPT("c")
 
+/* Various constants that control the multiple parameters needed for some symbols when no info is given */
+
+#define PSLEGEND_MAJOR_SCL		1.5			/* Ratio of major axis to normal isotropic symbol size */
+#define PSLEGEND_MINOR_SCL		0.55		/* Ratio of minor axis to normal isotropic symbol size */
+#define PSLEGEND_ROUND_SCL		0.1			/* Fraction of corner rounding for round rectangles */
+#define PSLEGEND_MAJOR_ANGLE	0			/* Angle of major axis for rotated ellipses */
+#define PSLEGEND_RECT_ANGLE		25			/* Angle of rotated rectangles */
+#define PSLEGEND_ANGLE_START	120			/* Start angle for wedge or math angle */
+#define PSLEGEND_ANGLE_STOP		420			/* Stop angle for wedge or math angle */
+#define PSLEGEND_MATH_SCL		0.6			/* Ratio of math angle radius to isotropic symbol size */
+#define PSLEGEND_MATH_SIZE		1.0			/* Head size is 100% of radius */
+#define PSLEGEND_FRONT_TICK		"-1"		/* One centered tick for fronts */
+#define PSLEGEND_FRONT_TICK_SCL	0.3			/* Ratio of front tick hight to normal isotropic symbol size */
+#define PSLEGEND_FRONT_SYMBOL	"+l+b"		/* Box to the left of the line is our default front symbol */
+#define PSLEGEND_VECTOR_ANGLE 	0.0			/* Angle of vector with horizontal */
+#define PSLEGEND_VECTOR_SIZE	0.4			/* Head size is 40% of length */
+#define PSLEGEND_VECTOR_ARG		"v%gi+jc+e"	/* Format for vector arg given head size */
+#define PSLEGEND_VECTOR_PEN		0.5			/* Head pen is half of vector pen width */
+
 struct PSLEGEND_CTRL {
 	struct PSLEGEND_C {	/* -C<dx>[/<dy>] */
 		bool active;
@@ -484,12 +503,16 @@ GMT_LOCAL bool pslegend_new_fontsyntax (struct GMT_CTRL *GMT, char *word1, char 
 #define INFO_GIVEN	1
 #define PSLEGEND_MAX_COLS	100
 
+GMT_LOCAL double get_the_size (struct GMT_CTRL *GMT, char *size, double def_value, double factor) {
+	return (strcmp (size, "-") ? gmt_M_to_inch (GMT, size) : def_value * factor);
+}
+
 EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	/* High-level function that implements the pslegend task */
 	unsigned int set, tbl, pos, first = 0, ID, n_item = 0;
 	int i, justify = 0, n = 0, n_columns = 1, n_col, col, error = 0, column_number = 0, id, n_scan, status = 0, max_cols = 0;
 	bool flush_paragraph = false, v_line_draw_now = false, gave_label, gave_mapscale_options, did_old = false, use[2] = {false, true};
-	bool drawn = false, b_cpt = false, C_is_active = false, do_width = false, in_PS_ok = true, got_line = false;
+	bool drawn = false, b_cpt = false, C_is_active = false, do_width = false, in_PS_ok = true, got_line = false, got_geometric = false;
 	uint64_t seg, row, n_fronts = 0, n_quoted_lines = 0, n_decorated_lines = 0, n_symbols = 0, n_par_lines = 0, n_par_total = 0, krow[N_DAT], n_records = 0;
 	int64_t n_para = -1;
 	size_t n_char = 0;
@@ -508,7 +531,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 	char *dname[N_DAT] = {"symbol", "front", "qline", "textline", "partext"};
 #endif
 
-	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, d_line_half_width, d_line_hor_offset, off_ss, off_tt, def_dx2 = 0.0;
+	double x_orig, y_orig, x_off, x, y, r, col_left_x, row_base_y, dx, d_line_half_width, d_line_hor_offset, off_ss, off_tt, def_dx2 = 0.0, W, H;
 	double v_line_ver_offset = 0.0, height, az1, az2, m_az, row_height, scl, aspect, xy_offset[2], line_size = 0.0, C_rgb[4] = {0.0, 0.0, 0.0, 0.0};
 	double half_line_spacing, quarter_line_spacing, one_line_spacing, v_line_y_start = 0.0, d_off, def_size = 0.0, shrink[4] = {0.0, 0.0, 0.0, 0.0};
 	double sum_width, h, gap, d_line_after_gap = 0.0, d_line_last_y0 = 0.0, col_width[PSLEGEND_MAX_COLS], x_off_col[PSLEGEND_MAX_COLS];
@@ -783,8 +806,21 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 							text[0] = '\0';
 							n_scan = sscanf (line, "%*s %*s %s %s %*s %*s %s %[^\n]", symbol, size, txt_b, text);
 							/* Find the largest symbol size specified */
-							if ((c = strrchr (size, '/')))	/* Front, use the last arg as size since closest to height */
-								x = gmt_M_to_inch (GMT, &c[1]);
+							gmt_strrepc (size, '/', ' ');	/* Replace any slashes with spaces */
+							gmt_strrepc (size, ',', ' ');	/* Replace any commas with spaces */
+							n = sscanf (size, "%s %s %s", A, B, C);
+							if (n > 1) {	/* Multi-arg symbol, use the last arg as size since closest to height */
+								if (strchr ("eEjJvV", symbol[0]))	/* These all has 2nd arg as size */
+									x = gmt_M_to_inch (GMT, B);
+								else if (strchr ("rRm", symbol[0]))	/* These all has 1st arg as size */
+									x = gmt_M_to_inch (GMT, A);
+								else {	/* Last arg */
+									if (n == 3)
+										x = gmt_M_to_inch (GMT, C);
+									else
+										x = gmt_M_to_inch (GMT, B);
+								}
+							}
 							else {
 								if (strcmp (size, "-")) {
 									char *c = NULL;
@@ -799,10 +835,12 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								else
 									x = 0.0;
 							}
-							if (symbol[0] == '-') {	/* Line symbol */
+							if (strchr ("fqvV-~", symbol[0])) {	/* A line-type symbol or vector */
 								got_line = true;
 								if (x > 0.0) line_size = x;
 							}
+							else	/* Got regular symbols too */
+								got_geometric = true;
 							if (x > def_size) def_size = x;
 							if (n_scan > 2 && strcmp (txt_b, "-")) {
 								x = gmt_M_to_inch (GMT, txt_b);
@@ -847,12 +885,17 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 			Return (GMT_RUNTIME_ERROR);
 		}
 	}
-	if (got_line && gmt_M_is_zero (line_size) && def_size > 0.0)	/* Got lines but no lengths specified an another symbol set the default */
-		def_size = 0.5 / 2.54;	/* In inches */
-	else if (def_size == 0.0)	/* No sizes specified in input file; default to 0.5 cm */
-		def_size = 0.5 / 2.54;	/* In inches */
-	if (def_dx2 == 0.0)	/* No dist to text label given; default to 2x default symbol size */
-		def_dx2 = Ctrl->S.scale * GMT_LEGEND_DX2_MUL * def_size;	/* In inches */
+	W = GMT_LET_WIDTH * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Average current annotation font width in inches */
+	H = FONT_HEIGHT_PRIMARY * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* Average current annotation font width in inches */
+	if (got_line && gmt_M_is_zero (line_size)) {	/* Got lines but no lengths specified */
+		line_size = 2.5 * W;	/* 2.5 mean character widths in inches */
+		if (def_size == 0.0)	/* No other symbol size were specified, so set those too */
+			def_size = (got_geometric) ? H : line_size;
+	}
+	else if (def_size == 0.0)	/* No sizes specified in input file; default to H */
+		def_size = H;	/* In inches */
+	if (def_dx2 == 0.0)	/* No dist to text label given; set to default symbol size + annotation size */
+		def_dx2 = MAX (def_size, line_size) + W;	/* In inches */
 	GMT_Report (API, GMT_MSG_DEBUG, "Default symbol size = %g and default distance to text label is %g\n", def_size, def_dx2);
 
 	if (n_char) {	/* Typesetting paragraphs, make a guesstimate of number of typeset lines */
@@ -1465,7 +1508,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								x_off = Ctrl->D.refpoint->x + x_off_col[column_number];
 							}
 							else if (!strcmp (txt_a, "-")) {	/* Automatic margin offset */
-								off_ss = GMT_LEGEND_DX1_MUL * Ctrl->S.scale * def_size;
+								off_ss = Ctrl->S.scale * 0.5 * (got_line ? line_size : def_size);
 								x_off = col_left_x + x_off_col[column_number];
 							}
 							else {	/* Gave a specific offset */
@@ -1473,12 +1516,12 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								x_off = col_left_x + x_off_col[column_number];
 							}
 							if (!strcmp (txt_b, "-"))	/* Automatic label offset */
-								off_tt = GMT_LEGEND_DX2_MUL * Ctrl->S.scale * def_size;
+								off_tt = (def_dx2 > 0.0) ? Ctrl->S.scale * def_dx2 : Ctrl->S.scale * (def_size + W);
 							else	/* Gave a specific offset */
 								off_tt = gmt_M_to_inch (GMT, txt_b);
 							d_off = 0.5 * (Ctrl->D.spacing - FONT_HEIGHT_PRIMARY) * GMT->current.setting.font_annot[GMT_PRIMARY].size / PSL_POINTS_PER_INCH;	/* To center the text */
 							row_base_y += half_line_spacing;	/* Move to center of box */
-							if (strchr ("-~q", symbol[0]) && !strcmp (size, "-")) sprintf (size, "%gi", def_size);	/* If no size given then we must pick what we learned above */
+							if (strchr ("-~q", symbol[0]) && !strcmp (size, "-")) sprintf (size, "%gi", line_size);	/* If no size given then we must pick what we learned above */
 							if (symbol[0] == 'f') {	/* Front is different, must plot as a line segment */
 								double length, tlen, gap;
 								int n = sscanf (size, "%[^/]/%[^/]/%s", A, B, C);
@@ -1490,17 +1533,17 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								else if (n == 2 && B[0] != '-') {	/* Got line length and tickgap only */
 									length = Ctrl->S.scale * gmt_M_to_inch (GMT, A);	/* The length of the line */
 									gap = Ctrl->S.scale * gmt_M_to_inch (GMT, B);	/* The tick gap */
-									tlen = 0.3 * gap;		/* The default length of the tick is 30% of gap */
+									tlen = PSLEGEND_FRONT_TICK_SCL * gap;		/* The default length of the tick is 30% of gap */
 								}
 								else {	/* Got line length, select defaults for other things */
-									length = Ctrl->S.scale * gmt_M_to_inch (GMT, A);	/* The length of the line */
-									strcpy (B, "-1");		/* One centered tick */
-									tlen = 0.3 * length;		/* The default length of the tick is 30% of length */
+									length = Ctrl->S.scale * get_the_size (GMT, A, line_size, 1.0);	/* The length of the line */
+									strcpy (B, PSLEGEND_FRONT_TICK);		/* One centered tick */
+									tlen = PSLEGEND_FRONT_TICK_SCL * length;		/* The default length of the tick is 30% of length */
 								}
 								if ((c = strchr (symbol, '+')) != NULL)	/* Pass along all the given modifiers */
 									strcpy (sub, c);
 								else	/* The necessary arguments not supplied, provide reasonable defaults */
-									sprintf (sub, "+l+b");	/* Box to the left of the line is our default front symbol */
+									sprintf (sub, PSLEGEND_FRONT_SYMBOL);	/* Box to the left of the line is our default front symbol */
 								x = 0.5 * length;
 								/* Place pen and fill colors in segment header */
 								sprintf (buffer, "-Sf%s/%gi%s", B, tlen, sub);
@@ -1521,8 +1564,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								pslegend_maybe_realloc_table (GMT, D[FRONT]->table[0], n_fronts, 2U);
 							}
 							else if (symbol[0] == 'q') {	/* Quoted line is different, must plot as a line segment */
-								double length = Ctrl->S.scale * gmt_M_to_inch (GMT, size);	/* The length of the line */;
-
+								double length = Ctrl->S.scale * get_the_size (GMT, size, line_size, 1.0);	/* The length of the line */
 								if ((D[QLINE] = pslegend_get_dataset_pointer (API, D[QLINE], GMT_IS_LINE, GMT_SMALL_CHUNK, 2U, 2U, false)) == NULL) return (API->error);
 								x = 0.5 * length;
 								/* Place pen and fill colors in segment header */
@@ -1541,8 +1583,7 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								pslegend_maybe_realloc_table (GMT, D[QLINE]->table[0], n_quoted_lines, 2U);
 							}
 							else if (symbol[0] == '~') {	/* Decorated line is different, must plot as a line segment */
-								double length = Ctrl->S.scale * gmt_M_to_inch (GMT, size);	/* The length of the line */;
-
+								double length = Ctrl->S.scale * get_the_size (GMT, size, line_size, 1.0);	/* The length of the line */
 								if ((D[DLINE] = pslegend_get_dataset_pointer (API, D[DLINE], GMT_IS_LINE, GMT_SMALL_CHUNK, 2U, 2U, false)) == NULL) return (API->error);
 								x = 0.5 * length;
 								/* Place pen and fill colors in segment header */
@@ -1566,6 +1607,8 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 								S[SYM]->data[GMT_X][0] = x_off + off_ss;
 								S[SYM]->data[GMT_Y][0] = row_base_y;
 								S[SYM]->n_rows = 1;
+								if (strchr ("eEjJrRmw", symbol[0]) && strchr (size, '/'))	/* Got command-line symbol syntax like dir/major/minor for ellipse, rect, rotrect, wedge, or math angle; replace with commas */
+									gmt_strrepc (size, '/', ',');
 								if (symbol[0] == 'k' || symbol[0] == 'K')	/* Custom symbols need the full name after k */
 									sprintf (sub, "%s", symbol);
 								else	/* Just the symbol code is needed */
@@ -1577,11 +1620,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										x = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
 										y = Ctrl->S.scale * gmt_M_to_inch (GMT, C);
 									}
-									else {	/* Ellipse needs more arguments; we use minor = 0.65*major, az = 0 */
-										x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
-										if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
-										az1 = 0.0;
-										y = 0.65 * x;
+									else {	/* Ellipse needs more arguments; we use minor = 0.55*major, az = 25 */
+										x = Ctrl->S.scale * get_the_size (GMT, size, def_size, PSLEGEND_MAJOR_SCL);	/* The major axis of the ellipse */
+										az1 = PSLEGEND_MAJOR_ANGLE;
+										y = PSLEGEND_MINOR_SCL * x;
 									}
 									S[SYM]->data[2][0] = az1;
 									S[SYM]->data[3][0] = x;
@@ -1594,11 +1636,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										x = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
 										y = Ctrl->S.scale * gmt_M_to_inch (GMT, C);
 									}
-									else {	/* Rotated rectangle needs more arguments; we use height = 0.65*width, az = 30 */
-										x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
-										if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
-										y = 0.65 * x;
-										az1 = 30.0;
+									else {	/* Rotated rectangle needs more arguments; we use height = 0.55*width, az = 25 */
+										x = Ctrl->S.scale * get_the_size (GMT, size, def_size, PSLEGEND_MAJOR_SCL);	/* The width of the rectangle */
+										y = PSLEGEND_MINOR_SCL * x;
+										az1 = PSLEGEND_RECT_ANGLE;
 									}
 									S[SYM]->data[2][0] = az1;
 									S[SYM]->data[3][0] = x;
@@ -1612,8 +1653,8 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										x = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
 									}
 									else {	/* No dir given, default to horizontal */
-										az1 = 0.0;
-										x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
+										az1 = PSLEGEND_VECTOR_ANGLE;
+										x = Ctrl->S.scale * get_the_size (GMT, size, line_size, 1.0);	/* The length of the vector */
 									}
 									if (strchr (size, '/') && gmt_M_compat_check (GMT, 4))  {	/* The necessary arguments was supplied via GMT4 size arguments */
 										i = 0;
@@ -1631,15 +1672,15 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 											strcat (sub, "+jc");
 									}
 									else	/* The necessary arguments not supplied, so we make a reasonable default */
-										sprintf (sub, "v%gi+jc+e", 0.3*x);	/* Head size is 30% of length */
+										sprintf (sub, PSLEGEND_VECTOR_ARG, PSLEGEND_VECTOR_SIZE*x);	/* Head size is 40% of length */
 									if (txt_c[0] == '-') strcat (sub, "+g-");
 									else { strcat (sub, "+g"); strcat (sub, txt_c);}
 									if (txt_d[0] == '-') strcat (sub, "+p-");
-									else {
+									else {	/* Set vector head pen to half the size of vector pen */
 										struct GMT_PEN pen;
 										gmt_M_memset (&pen, 1, struct GMT_PEN);	/* Wipe the pen */
 										gmt_getpen (GMT, txt_d, &pen);
-										pen.width *= 0.5;
+										pen.width *= PSLEGEND_VECTOR_PEN;
 										strcat (sub, "+p"); strcat (sub, gmt_putpen (API->GMT, &pen));
 									}
 									S[SYM]->data[2][0] = az1;
@@ -1652,9 +1693,8 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										y = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
 									}
 									else {	/* Rectangle also need more args, we use h = 0.65*w */
-										x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
-										if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
-										y = 0.65 * x;
+										x = Ctrl->S.scale * get_the_size (GMT, size, def_size, PSLEGEND_MAJOR_SCL);	/* The width of the rectangle */
+										y = PSLEGEND_MINOR_SCL * x;
 									}
 									S[SYM]->data[2][0] = x;
 									S[SYM]->data[3][0] = y;
@@ -1666,11 +1706,10 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										y = Ctrl->S.scale * gmt_M_to_inch (GMT, B);
 										r = Ctrl->S.scale * gmt_M_to_inch (GMT, C);
 									}
-									else {	/* Rounded rectangle also need more args, we use h = 0.65*w and r = 0.1*w */
-										x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
-										if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
-										y = 0.65 * x;
-										r = 0.1 * x;
+									else {	/* Rounded rectangle also need more args, we use h = 0.55*w and r = 0.1*w */
+										x = Ctrl->S.scale * get_the_size (GMT, size, def_size, PSLEGEND_MAJOR_SCL);	/* The width of the rectangle */
+										y = PSLEGEND_MINOR_SCL * x;
+										r = PSLEGEND_ROUND_SCL * x;
 									}
 									S[SYM]->data[2][0] = x;
 									S[SYM]->data[3][0] = y;
@@ -1684,26 +1723,32 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										az2 = atof (C);
 									}
 									else {	/* Math angle need more args, we set fixed az1,az22 as 10 45 */
-										x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
-										if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
-										az1 = 10;	az2 = 45;
+										x = Ctrl->S.scale * get_the_size (GMT, size, def_size, PSLEGEND_MATH_SCL);	/* radius xx% of default size */
+										az1 = PSLEGEND_ANGLE_START;	az2 = PSLEGEND_ANGLE_STOP;
 									}
 									/* We want to center the arc around its mid-point */
 									m_az = 0.5 * (az1 + az2);
 									dx = 0.25 * x * cosd (m_az);
 									if (!strchr (symbol, '+'))  {	/* The necessary arguments not supplied! */
-										sprintf (sub, "m%gi+b+e", 0.3*x);	/* Double heads, head size 30% of diameter */
+										sprintf (sub, "m%gi+b+e", PSLEGEND_MATH_SIZE * x);	/* Double heads, head size 100% of radius */
 									}
 									if (txt_c[0] == '-') strcat (sub, "+g-");
 									else { strcat (sub, "+g"); strcat (sub, txt_c);}
 									if (txt_d[0] == '-') strcat (sub, "+p-");
-									else { strcat (sub, "+p"); strcat (sub, txt_d);}
-									S[SYM]->data[GMT_X][0] -= dx;
+									else {	/* Set vector head pen to half the size of vector pen */
+										struct GMT_PEN pen;
+										gmt_M_memset (&pen, 1, struct GMT_PEN);	/* Wipe the pen */
+										gmt_getpen (GMT, txt_d, &pen);
+										pen.width *= PSLEGEND_VECTOR_PEN;
+										strcat (sub, "+p"); strcat (sub, gmt_putpen (API->GMT, &pen));
+									}
+									//S[SYM]->data[GMT_X][0] -= dx;
 									S[SYM]->data[2][0] = x;
 									S[SYM]->data[3][0] = az1;
 									S[SYM]->data[4][0] = az2;
 								}
 								else if (symbol[0] == 'w') {	/* Wedge also need more args; we set fixed az1,az2 as -30 30 */
+									double dy;
 									if (strchr (size, ',')) {	/* We got az1,az2,d */
 										sscanf (size, "%[^,],%[^,],%s", A, B, C);
 										az1 = atof (A);
@@ -1711,21 +1756,23 @@ EXTERN_MSC int GMT_pslegend (void *V_API, int mode, void *args) {
 										x = Ctrl->S.scale * gmt_M_to_inch (GMT, C);
 									}
 									else {
-										x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
-										if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
-										az1 = -30;	az2 = 30;
+										x = Ctrl->S.scale * get_the_size (GMT, size, def_size, 1);	/* radius is default size */
+										az1 = PSLEGEND_ANGLE_START;	az2 = PSLEGEND_ANGLE_STOP;
 									}
 									/* We want to center the wedge around its mid-point */
 									m_az = 0.5 * (az1 + az2);
 									dx = 0.25 * x * cosd (m_az);
-									S[SYM]->data[GMT_X][0] -= dx;
-									S[SYM]->data[2][0] = x_off + off_ss - dx;
+									dx = 0.5 * x * cosd (m_az);
+									dy = 0.5 * x * sind (m_az);
+									//S[SYM]->data[GMT_X][0] -= dx;
+									//S[SYM]->data[GMT_Y][0] -= dy;
+									//S[SYM]->data[2][0] = x_off + off_ss - dx;
+									S[SYM]->data[2][0] = x;
 									S[SYM]->data[3][0] = az1;
 									S[SYM]->data[4][0] = az2;
 								}
 								else {
-									x = Ctrl->S.scale * gmt_M_to_inch (GMT, size);
-									if (gmt_M_is_zero (x)) x = Ctrl->S.scale * def_size;	/* Safety valve */
+									x = Ctrl->S.scale * get_the_size (GMT, size, def_size, 1.0);	/* Regular size */
 									S[SYM]->data[2][0] = x;
 								}
 								/* Place pen and fill colors in segment header */

@@ -19064,9 +19064,49 @@ GMT_LOCAL void gmtinit_draw_legend_line (struct GMTAPI_CTRL *API, FILE *fp, stru
 	}
 }
 
+GMT_LOCAL void gmtinit_set_symbol_size (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, double size, char *string) {
+	/* Format the size argument for this symbol in a string form, or set to "-"" if size is 0 */
+	gmt_M_unused (API);
+
+	if (gmt_M_is_zero (size)) {	/* Accept default symbol size and other parameters in legend */
+		strcpy (string, "-");
+		return;
+	}
+
+	switch (S->symbol) {	/* A few symbols have special needs */
+		case 'e':	case 'E':	case 'j':	case 'J':	/* Ellipse or rotated rectangle */
+			if (gmt_M_is_zero (S->size_y))	/* Did only get a single size, accept defaults for ratio and azimuth */
+				sprintf (string, "%gi", size);
+			else
+				sprintf (string, "%g,%gi,%gi", S->factor, S->size_x, S->size_y);
+			break;
+		case 'r':	/* Rectangle */
+			if (gmt_M_is_zero (S->size_y))	/* Did only get a single size, accept defaults for ratio */
+				sprintf (string, "%gi", size);
+			else
+				sprintf (string, "%gi,%gi", S->size_x, S->size_y);
+			break;
+		case 'R':	/* Rounded rectangle */
+			if (gmt_M_is_zero (S->size_y))	/* Did only get a single size, accept defaults for ratio */
+				sprintf (string, "%gi", size);
+			else
+				sprintf (string, "%gi,%gi,%gi", S->size_x, S->size_y, S->factor);
+			break;
+		case 'w':	case 'W':	/* Wedges */
+			if (gmt_M_is_zero (S->size_y))	/* Did only get a single size, accept defaults for ratio */
+				sprintf (string, "%gi", size);
+			else
+				sprintf (string, "%gi,%g,%g", S->w_radius, S->size_x, S->size_y);
+			break;
+		default:	/* Regular isotropic symbol */
+			sprintf (string, "%gi", size);
+			break;
+	}
+}
+
 void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do_fill, struct GMT_FILL *fill, bool do_line, struct GMT_PEN *pen, struct GMT_LEGEND_ITEM *item) {
 	/* Adds a new entry to the auto-legend information file hidden in the session directory */
-	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""};
+	char file[PATH_MAX] = {""}, label[GMT_LEN128] = {""}, size_string[GMT_LEN128] = {""};
 	bool gap_done = false;
 	double size = 0.0;
 	FILE *fp = NULL;
@@ -19171,12 +19211,12 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	if (((item->draw & GMT_LEGEND_DRAW_V) && item->pen[GMT_LEGEND_PEN_V][0] == '\0'))	/* Initialize the vertical line setting */
 		gmtinit_draw_legend_line (API, fp, item, GMT_LEGEND_DRAW_V);
 	/* Get the symbol size */
-	if (item->size > 0.0)	/* Hard-wired symbol size given */
+	if (item->size > 0.0)	/* Hard-wired symbol size given via -l */
 		size = item->size;
 	else if (S)
 		size = S->size_x;	/* Use the symbol size given */
 	else
-		GMT_Report (API, GMT_MSG_INFORMATION, "No size or length given and no symbol present - default to line length of 0.5 cm.\n");
+		GMT_Report (API, GMT_MSG_DEBUG, "No size or length given and no symbol present - default to line length of 2.5 annotation character width.\n");
 
 	/* Finalize label */
 	if (item->label_type == GMT_LEGEND_LABEL_FORMAT)	/* Integer format string */
@@ -19190,20 +19230,16 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 	}
 	else	/* Got a fixed label */
 		strncpy (label, item->label, GMT_LEN128-1);
+	gmtinit_set_symbol_size (API, S, size, size_string);	/* Format the size-string based on the size */
 	/* Place the symbol command */
 	if (S == NULL || S->symbol == GMT_SYMBOL_LINE) {	/* Line for legend entry */
 		if (pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
-		if (size > 0.0)	/* Got a line length in inches */
-			fprintf (fp, "S - - %gi - %s - %s\n", size, gmt_putpen (API->GMT, pen), label);
-		else	/* Let the legend module supply a default length */
-			fprintf (fp, "S - - - - %s - %s\n", gmt_putpen (API->GMT, pen), label);
+		fprintf (fp, "S - - %s - %s - %s\n", size_string, gmt_putpen (API->GMT, pen), label);
 	}
 	else {	/* Regular symbol */
 		if (!(do_fill || do_line)) do_line = true;	/* If neither fill nor pen is selected, plot will draw line, so override do_line here */
 		if (do_line && pen == NULL) pen = &(API->GMT->current.setting.map_default_pen);	/* Must have pen to draw line */
-		if (S->size_x > 0.0 && S->size_y > 0.0 && S->symbol == PSL_RECT)
-			fprintf (fp, "S - %c %gi,%gi %s %s - %s\n", S->symbol, size, S->size_y, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
-		else if (S->symbol == 'q') {	/* Quoted line [Experimental] */
+		if (S->symbol == 'q') {	/* Quoted line [Experimental] */
 			char scode[GMT_LEN64] = {""};
 			sprintf (scode, "qn1:+ltext");
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
@@ -19215,8 +19251,8 @@ void gmt_add_legend_item (struct GMTAPI_CTRL *API, struct GMT_SYMBOL *S, bool do
 			if (S->D.fill[0]) strcat (scode, "+g"), strcat (scode, S->D.fill);
 			fprintf (fp, "S - %s - %s %s - %s\n", scode, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 		}
-		else
-			fprintf (fp, "S - %c %gi %s %s - %s\n", S->symbol, size, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
+		else 
+			fprintf (fp, "S - %c %s %s %s - %s\n", S->symbol, size_string, (do_fill) ? gmtlib_putfill (API->GMT, fill) : "-", (do_line) ? gmt_putpen (API->GMT, pen) : "-", label);
 	}
 
 	if (item->draw & GMT_LEGEND_DRAW_V && item->pen[GMT_LEGEND_PEN_V][0]) {	/* Must end with horizontal, then vertical line */
