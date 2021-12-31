@@ -8198,7 +8198,8 @@ void * GMT_Create_Session (const char *session, unsigned int pad, unsigned int m
 
 	if ((API = calloc (1, sizeof (struct GMTAPI_CTRL))) == NULL) return_null (NULL, GMT_MEMORY_ERROR);	/* Failed to allocate the structure */
 	API->verbose = (mode >> 16);	/* Pick up any -V settings from gmt.c */
-	API->pad = pad;		/* Preserve the default pad value for this session */
+    API->remote_id = GMT_NOTSET;     /* Not read a remote grid yet */
+    API->pad = pad;     /* Preserve the default pad value for this session */
 	API->print_func = (print_func == NULL) ? gmtapi_print_func : print_func;	/* Pointer to the print function to use in GMT_Message|Report */
 	API->do_not_exit = mode & GMT_SESSION_NOEXIT;	/* Deprecated, we no longer call exit anywhere in the API (gmt_api.c) */
     API->external = (mode & GMT_SESSION_EXTERNAL) ? 1 : 0;  /* if false|0 then we don't list read and write as modules */
