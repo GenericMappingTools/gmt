@@ -8348,11 +8348,12 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct G
 	char *curr_cpt = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (h);
 
-	if (cpt) return strdup (cpt);	/* CPT was already specified */
-	if (file == NULL) return NULL;	/* No file given, so there */
-	if (HH->cpt && HH->cpt[0] != '-') return (strdup (HH->cpt));	/* Found it in the grid header */
+	if (cpt) return strdup (cpt);	/* CPT was already specified, so use it */
+	if (file == NULL) return NULL;	/* No file given, so nothing to work with */
 	if (API->GMT->current.setting.run_mode == GMT_MODERN && (curr_cpt = gmt_get_current_item (API->GMT, "cpt", false))) return curr_cpt;	/* Use current CPT */
+	if (HH->cpt && HH->cpt[0] != '-') return (strdup (HH->cpt));	/* Found default CPT in the grid header */
 
+	/* Check if we are reading a remote dataset with a default CPT */
 	if ((k_data = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) {
 		size_t LOX;
 		if ((k_data = gmt_get_tile_id (API, file)) == GMT_NOTSET)
@@ -8416,7 +8417,7 @@ void gmt_save_current_cpt (struct GMT_CTRL *GMT, struct GMT_PALETTE *P, unsigned
 	char file[PATH_MAX] = {""};
 
 	if (gmtlib_set_current_item_file (GMT, "cpt", file) == GMT_FILE_NOT_FOUND) return;
-
+	
 	if (GMT_Write_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, cpt_flags, NULL, file, P) != GMT_NOERROR)
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to save current CPT file to %s !\n", file);
 	else
@@ -8491,7 +8492,8 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
-		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
+		if (GMT->parent->gwf_dir == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)	/* Avoid writing a sessions CPT to a sessions CPT */
+			gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern mode */
 		return (P);
 	}
 
@@ -8555,7 +8557,8 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	else
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No CPT file or master given?\n");
 
-	gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
+	if (GMT->parent->gwf_dir == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)	/* Avoid writing a sessions CPT to a sessions CPT */
+		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	return (P);
 }
 
