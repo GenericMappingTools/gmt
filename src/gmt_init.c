@@ -15561,6 +15561,7 @@ struct GMT_CTRL *gmt_init_module (struct GMTAPI_CTRL *API, const char *lib_name,
 					wesn[YHI] = ceil  ((wesn[YHI] / d_inc) - GMT_CONV8_LIMIT) * d_inc;
 					gmt_M_memcpy (API->tile_wesn, wesn, 4, double);	/* Retain this knowledge in case it was obtained via map_setup for an oblique area */
 					API->got_remote_wesn = true;	/* In case we need to use this subset when reading a grid or image */
+					API->remote_id = k_data2;
 				}
 				if (dry_run)
 					goto dry_run;

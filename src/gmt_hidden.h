@@ -159,7 +159,7 @@ struct GMT_GRID_HEADER_HIDDEN {
 	char name[GMT_GRID_NAME_LEN256]; /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
 	char *title;					 /* Title string not limited to GMT_GRID_TITLE_LEN80 characters */
-	char cpt[GMT_LEN64]; 			 /* Name of default CPT for a remote grid subset written via grdcut */
+	char *cpt; 						 /* Name of default CPT for a remote grid subset written via grdcut */
 	char *command;					 /* Command/history string not limited to GMT_GRID_TITLE_LEN80 characters */
 	char *remark;					 /* Remark/description string not limited to GMT_GRID_REMARK_LEN160 characters */
 	int row_order;                   /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */

@@ -8350,7 +8350,7 @@ char * gmt_cpt_default (struct GMTAPI_CTRL *API, char *cpt, char *file, struct G
 
 	if (cpt) return strdup (cpt);	/* CPT was already specified */
 	if (file == NULL) return NULL;	/* No file given, so there */
-	if (HH->cpt[0] && HH->cpt[0] != '-') return (strdup (HH->cpt));	/* Found it in the grid header */
+	if (HH->cpt && HH->cpt[0] != '-') return (strdup (HH->cpt));	/* Found it in the grid header */
 	if (API->GMT->current.setting.run_mode == GMT_MODERN && (curr_cpt = gmt_get_current_item (API->GMT, "cpt", false))) return curr_cpt;	/* Use current CPT */
 
 	if ((k_data = gmt_remote_dataset_id (API, file)) == GMT_NOTSET) {
