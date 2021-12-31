@@ -20,7 +20,7 @@ Synopsis
 [ |-I|\ [**x**]\ *dx*\ [/*dy*] ]
 [ |-N| ] [ |-Q|\ *parameters* ]
 [ |SYN_OPT-R| ]
-[ |-S|\ [**i**\|\ **l**]\ *scale* ]
+[ |-S|\ [**i**\|\ **l**]\ *scale*\ [**+s**\ *refsize*] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-Y| ]
 [ |-Z| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-l| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
@@ -111,7 +112,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ [**i**\|\ **l**]\ *scale*
+**-S**\ [**i**\|\ **l**]\ *scale*\ [**+s**\ *refsize*]
     Sets scale for vector plot lengths in data units per plot distance measurement unit.
     Append **c**, **i**, or **p** to indicate the desired plot distance measurement
     unit (cm, inch, or point); if no unit is given we use the default value that
@@ -126,7 +127,8 @@ Optional Arguments
     **-Si** if it is simpler to give the reciprocal scale in plot length or distance units
     per data unit.  To report the minimum, maximum, and mean data and plot vector lengths
     of all vectors plotted, use **-V**.  Alternatively, use **-Sl**\ *length* to set a fixed
-    plot length for all vectors.
+    plot length for all vectors. If a legend entry is desired via **-l**, please set the
+    desired reference vector magnitude in data units [*scale*].
 
 .. _-T:
 
@@ -164,6 +166,9 @@ Optional Arguments
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
+
+.. |Add_-l| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-l.rst_
 
 .. |Add_perspective| unicode:: 0x20 .. just an invisible code
 .. include:: explain_perspective.rst_
