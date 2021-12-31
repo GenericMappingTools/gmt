@@ -8492,7 +8492,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 
 	if (mode == GMT_CPT_REQUIRED) {	/* The calling function requires the CPT to be present; GMT_Read_Data will work or fail accordingly */
 		P = GMT_Read_Data (GMT->parent, GMT_IS_PALETTE, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL|continuous, NULL, file, NULL);
-		if (GMT->parent->gwf_dir == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)	/* Avoid writing a sessions CPT to a sessions CPT */
+		if (GMT->parent->gwf_dir == NULL || file == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)	/* Avoid writing a sessions CPT to a sessions CPT */
 			gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern mode */
 		return (P);
 	}
@@ -8557,7 +8557,7 @@ struct GMT_PALETTE *gmt_get_palette (struct GMT_CTRL *GMT, char *file, enum GMT_
 	else
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No CPT file or master given?\n");
 
-	if (GMT->parent->gwf_dir == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)	/* Avoid writing a sessions CPT to a sessions CPT */
+	if (GMT->parent->gwf_dir == NULL || file == NULL || strstr (file, GMT->parent->gwf_dir) == NULL)	/* Avoid writing a sessions CPT to a sessions CPT */
 		gmt_save_current_cpt (GMT, P, 0);	/* Save for use by session, if modern */
 	return (P);
 }
