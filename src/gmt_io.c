@@ -4752,9 +4752,17 @@ int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *na
 	size_t attlen, trunclen;
 	char *att = NULL;
 
+	if (name == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Attribute name passed to gmtlib_nc_get_att_vtext is NULL\n");
+		return GMT_RUNTIME_ERROR;
+	}
+	if (text == NULL) {
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Attribute pointer passed to gmtlib_nc_get_att_vtext is NULL\n");
+		return GMT_RUNTIME_ERROR;
+	}
 	status = nc_inq_attlen (ncid, varid, name, &attlen);
 	if (status != NC_NOERR) {	/* No such attribute */
-		*text = '\0';
+		text[0] = '\0';
 		return status;
 	}
 	att = calloc (attlen+1, sizeof (char));	/* Allocate the memory for the full string plus text terminator */
@@ -4782,8 +4790,8 @@ int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *na
 		strncpy (text, att, trunclen); /* Copy att to text */
 		text[trunclen] = '\0'; /* Terminate string */
 	}
-	else	/* Not successful, set ouput string to empty */
-		*text = '\0';
+	else	/* Not successful, set output string to empty */
+		text[0] = '\0';
 	if (wipe) gmt_M_str_free (att);	/* Free since not placed in hidden structure */
 	return status;
 }
