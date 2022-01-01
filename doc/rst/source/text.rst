@@ -49,27 +49,54 @@ Description
 
 **text** plots text strings of variable size, font type, and
 orientation. Various map projections are provided, with the option to
-draw and annotate the map boundaries. Greek characters, subscript, superscript, and small
-caps are supported as follows: The sequence @~ toggles between the
-selected font and Greek (Symbol). @%\ *font*\ % switches to *font* where
-*font* can either be a font *number* or *name* (see **-L**); @%%
-resets the font to the starting font, @- toggles subscripts on/off, @+
-toggles superscript on/off, @# toggles small caps on/off, @;\ *color*;
-changes the font color (@;; resets it), @:\ *size*: changes the font
-size (@:: resets it), and @\_ toggles underline on/off. @@ prints the @
-sign while @. prints the degree symbol. @a, @c, @e, @i, @n, @o, @s, @u, @A, @C, @E, @N, @O, and @U
-give various accented European characters, as indicated in Table :ref:`escape <tbl-shorthand>`.
-Composite characters (overstrike) may be indicated with the
-@!<char1><char2> sequence, which will print the two characters on top of
-each other. To learn the octal codes for symbols not available on the
+draw and annotate the map boundaries.
+
+Greek characters, subscript, superscript, and small
+caps are supported as follows: 
+
+.. list-table::
+   :widths: 20 80
+   :header-rows: 1
+
+   * - Symbol
+     - Behavior
+   * - @~
+     - Toggles between the selected font and Greek (Symbol)
+   * - @%\ *font*\ %
+     - Switches to *font* where *font* can either be a font *number* or *name* (see |-L|) (@%% resets it)
+   * - @-
+     - Toggles subscripts on/off
+   * - @+ 
+     - Toggles superscript on/off
+   * - @#
+     - Toggles small caps on/off
+   * - @;\ *color*
+     - Changes the font color (@;; resets it)
+   * - @:\ *size*
+     - Changes the font size (@:: resets it)
+   * - @\_ 
+     - Toggles underline on/off
+   * - @@
+     - Prints the @ sign
+   * - @.
+     - Prints the degree symbol
+
+@a, @c, @e, @i, @n, @o, @s, @u, @A, @C, @E, @N, @O, and @U give various accented European
+characters, as indicated in Table :ref:`escape <tbl-shorthand>`. Composite characters
+(overstrike) may be indicated with the @!<char1><char2> sequence, which will print the
+two characters on top of each other.
+  
+To learn the octal codes for symbols not available on the
 keyboard and some accented European characters, see Section :ref:`Char-esc-seq` and
 Appendix :ref:`Chart-Octal-Codes-for-Chars` in the GMT Technical Reference and Cookbook. Note that
 :term:`PS_CHAR_ENCODING` must be set to an extended character set in your
-:doc:`gmt.conf` file in order to use the accented characters. Using the
-**-G** or **-W** options, a rectangle underlying the text may be plotted
+:doc:`gmt.conf` file in order to use the accented characters.
+
+Using the **-G** or **-W** options, a rectangle underlying the text may be plotted
 (does not work for strings with sub/super scripts, symbols, or composite
-characters, except in paragraph mode (**-M**)).  Finally, you may typeset
-LaTeX expressions provided they are enclosed in @[ ... @[ or <math> ... </math>;
+characters, except in paragraph mode (**-M**)).
+
+Finally, you may typeset LaTeX expressions provided they are enclosed in @[ ... @[ or <math> ... </math>;
 see Chapter :doc:`/cookbook/gmt-latex` for more details.
 
 Required Arguments

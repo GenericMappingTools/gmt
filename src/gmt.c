@@ -274,6 +274,9 @@ int main (int argc, char *argv[]) {
 					type = 1;	/* Select csh */
 				if (type < 2) {	/* Start the shell via env and pass -e to exit script upon error */
 					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
+#ifdef __APPLE__
+					if (type == 0) printf ("set -e\n");	/* Explicitly needed for bash under macOS */
+#endif
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
 				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], name, comment[type]);

@@ -410,7 +410,7 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 	 */
 
 	bool n_active = false;
-	unsigned int n_errors = 0, j, k, pos;
+	unsigned int n_errors = 0, j, k = 0, pos;
 	size_t len;
 	char txt_a[GMT_LEN64] = {""}, txt_b[GMT_LEN64] = {""}, p[GMT_LEN256] = {""}, *ce = NULL, *ch = NULL, *c = NULL, dummy;
 	struct GMT_OPTION *opt = NULL;
@@ -581,6 +581,7 @@ static int parse (struct GMT_CTRL *GMT, struct PROJECT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->Z.number = true;
 					ce[0] = '\0';	/* Chop off +n */
 				}
+				k = 0;		/* Reset it because some other option may have ... set it */
 				if (strchr (opt->arg, '/')) {	/* Ellipse setting */
 					k = sscanf (opt->arg, "%[^/]/%[^/]/%lf", txt_a, txt_b, &Ctrl->Z.azimuth);
 					if (k == 3) {	/* Ellipse, check that major >= minor */

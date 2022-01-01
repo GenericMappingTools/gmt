@@ -46,12 +46,15 @@ The **-R** option defines the map region or data domain of interest. It may be s
 
    - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
      *winc*/*einc*/*sinc*/*ninc* [default is no adjustment]. For example, **-R**\ *FR*\ **+r**\ 1 will select the
-     national bounding box of France rounded to nearest integer degree.
-   - **+R** to extend the region outward by adding the amounts specified by *inc*, *xinc*/*yinc*, or
-     *winc*/*einc*/*sinc*/*ninc* [default is no extension].
+     national bounding box of France rounded to nearest integer degree, where *inc* can be positive to expand the
+     region or negative to shrink the region.
+   - **+R** to adjust the region by adding the amounts specified by *inc*, *xinc*/*yinc*, or
+     *winc*/*einc*/*sinc*/*ninc* [default is no extension], where *inc* can be positive to expand the
+     region or negative to shrink the region.
    - **+e** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
-     *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box extends by at least 0.25 times the increment
-     [default is no adjustment].
+     *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box is adjusted by at least 0.25 times the
+     increment [default is no adjustment], where *inc* can be positive to expand the region or negative to shrink
+     the region.
 
 #. **-R**\ *justify*\ *x0*/*y0*/*nx*/*ny*, where *justify* is a 2-character combination of **L**\|\ **C**\|\ **R** (for
    left, center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom) (e.g., **BL** for lower left). The

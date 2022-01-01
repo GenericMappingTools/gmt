@@ -114,7 +114,7 @@ struct GMT_VECT_ATTR {
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
-	float v_stem;		/* Min length in % of visible vector when head is large [10%] */
+	float v_norm_limit;	/* Only shrink down to this factor [0.25] */
 	float v_width;		/* Width of vector stem in inches */
 	float v_shape;		/* Shape of vector head [MAP_VECTOR_SHAPE] */
 	float h_length;		/* Length of vector head in inches */

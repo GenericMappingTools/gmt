@@ -22,6 +22,8 @@
  * Author:	Paul Wessel and Walter H F Smith
  * Date:	1-JAN-2010
  * Version:	6 API
+ *
+ * Note on KEYS: SD)=s means -S takes an optional output Dataset as argument via the +s modifier.
  */
 
 #include "gmt_dev.h"

@@ -434,10 +434,9 @@ enum GMT_enum_customsymb {
 	GMT_CUSTOM_DEF  = 1,
 	GMT_CUSTOM_EPS  = 2};
 
-//#define GMT_LEGEND_DX1_MUL 1.0	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
-//#define GMT_LEGEND_DX2_MUL 2.0	/* Default offset from margin to start of label if given as '-' times max symbol size */
 #define GMT_LEGEND_DX1_MUL 0.5	/* Default offset from margin to center of symbol if given as '-' times max symbol size */
 #define GMT_LEGEND_DX2_MUL 1.5	/* Default offset from margin to start of label if given as '-' times max symbol size */
+#define GMT_LEGEND_DXL_MUL 1.25	/* Same as GMT_LEGEND_DX2_MUL but for line or vector symbols that typically are longer tgat circles etc */
 
 /*! Various mode for axes */
 enum GMT_enum_oblique {

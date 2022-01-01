@@ -23,6 +23,8 @@
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	6 API
+ *
+ * Note on KEYS: =G} is special and says the = option will write an output grid (repeatable).
  */
 
 /* Notes: To add a new operator:
