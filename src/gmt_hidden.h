@@ -79,7 +79,7 @@ struct GMT_DATASEGMENT_HIDDEN {    /* Supporting information hidden from the API
 	double lat_limit;		/* For polar caps: the latitude of the point closest to the pole */
 	struct GMT_OGR_SEG *ogr;	/* NULL unless OGR/GMT metadata exist for this segment */
 	struct GMT_DATASEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
-	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc *alloc_mode;	/* Allocation mode per column [GMT_ALLOC_INTERNALLY] */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 };
 
@@ -158,6 +158,9 @@ struct GMT_GRID_HEADER_HIDDEN {
 	unsigned int reset_pad;          /* true in cases where we need a subset from a memory grid and must compute node index separately */
 	char name[GMT_GRID_NAME_LEN256]; /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
+	char *title;					 /* Title string not limited to GMT_GRID_TITLE_LEN80 characters */
+	char *command;					 /* Command/history string not limited to GMT_GRID_TITLE_LEN80 characters */
+	char *remark;					 /* Remark/description string not limited to GMT_GRID_REMARK_LEN160 characters */
 	int row_order;                   /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
 	int z_id;                        /* NetCDF: id of z field */
 	int ncid;                        /* NetCDF: file ID */

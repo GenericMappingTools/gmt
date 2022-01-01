@@ -22,6 +22,9 @@
  * Brief synopsis: grdcontour reads a 2-D grid file and contours it,
  * controlled by a variety of options.
  *
+ * Note on KEYS: AD)=t mean -A takes an optional output Dataset as argument via the +t modifier.
+ *               G?(=1 means if -Gf|x is given then we may read an input Dataset, else we set type to ! to skip it.
+ *               The "1" means we must skip the single char (f or x) before finding the file name
  */
 
 #include "gmt_dev.h"
@@ -540,7 +543,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 	double add, dx, dy, x_back, y_back, x_front, y_front, x_end, y_end, x_lbl, y_lbl;
 	double xmin, xmax, ymin, ymax, inc, dist, a, this_lon, this_lat, sa, ca;
 	double *s = NULL, *xp = NULL, *yp = NULL;
-	double da, db, dc, dd;
+	double da, db, dc, dd, L, L_cut;
 
 	double tick_gap = I->dim[GMT_X];
 	double tick_length = I->dim[GMT_Y];
@@ -563,25 +566,25 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
 			if (pol == pol2) continue;		/* Cannot be inside itself */
 			if (!save[pol2].do_it) continue;	/* No point checking contours that have already failed */
-			if (abs (save[pol].kind) == 4) {	/* These are closed "polar caps" that crosses equator (in lon/lat) */
+			if (save[pol].kind == cont_is_closed_straddles_equator_south || save[pol].kind == cont_is_closed_straddles_equator_north) {	/* These are closed "polar caps" that crosses equator (in lon/lat) */
 				save[pol].do_it = false;	/* This may be improved in the future */
 				continue;
 			}
 			if (abs (save[pol].kind) != 3) {	/* Not a polar cap so we can call gmt_non_zero_winding */
 				col = save[pol2].n / 2;	/* Pick the half-point for testing */
 				inside = gmt_non_zero_winding (GMT, save[pol2].x[col], save[pol2].y[col], save[pol].x, save[pol].y, np);
-				if (inside == 2 && !I->all) save[pol].do_it = false;	/* Not innermost so mark it for exclusion */
+				if (inside == GMT_INSIDE && !I->all) save[pol].do_it = false;	/* Not innermost so mark it for exclusion */
 			}
-			if (abs (save[pol2].kind) == 3) {	/* Polar caps needs a different test */
-				if (abs (save[pol].kind) == 3) {	/* Both are caps */
+			if (save[pol2].kind == cont_is_closed_around_south_pole || save[pol2].kind == cont_is_closed_around_north_pole) {	/* Polar caps needs a different test */
+				if (save[pol].kind == cont_is_closed_around_south_pole || save[pol].kind == cont_is_closed_around_north_pole) {	/* Both are caps */
 					if (save[pol].kind != save[pol2].kind) continue;	/* One is S and one is N cap as far as we can tell, so we skip */
 					/* Crude test to determine if one is closer to the pole than the other; if so exclude the far one */
-					if ((save[pol2].kind == 3 && save[pol2].y_min > save[pol].y_min) || (save[pol2].kind == cont_is_closed_around_south_pole && save[pol2].y_min < save[pol].y_min)) save[pol].do_it = false;
+					if ((save[pol2].kind == cont_is_closed_around_north_pole && save[pol2].y_min > save[pol].y_min) || (save[pol2].kind == cont_is_closed_around_south_pole && save[pol2].y_min < save[pol].y_min)) save[pol].do_it = false;
 				}
 			}
 		}
 	}
-	for (pol = 0; pol < n; pol++) if (abs (save[pol].kind) == 2) save[pol].n--;	/* Chop off the extra duplicate point for split periodic contours */
+	for (pol = 0; pol < n; pol++) if (save[pol].kind == cont_is_closed_straddles_west || save[pol].kind == cont_is_closed_straddles_east) save[pol].n--;	/* Chop off the extra duplicate point for split periodic contours */
 
 	/* Must make sure that for split periodic contour that if one fails to be innermost then both should fail */
 
@@ -610,7 +613,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 
 		/* Need to determine if this is a local high or low */
 
-		if (abs (save[pol].kind) == 2) {	/* Closed contour split across a periodic boundary */
+		if (save[pol].kind == cont_is_closed_straddles_west || save[pol].kind == cont_is_closed_straddles_east) {	/* Closed contour split across a periodic boundary */
 			/* Determine row, col for a point ~mid-way along the vertical periodic boundary */
 			col = (save[pol].kind == cont_is_closed_straddles_west) ? 0 : G->header->n_columns - 1;
 			row = (int)gmt_M_grd_y_to_row (GMT, save[pol].y[0], G->header);		/* Get start j-row */
@@ -646,7 +649,7 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 				/* Worry about this point being ~exactly on the border but returned inside = 2, but
 				 * the grid node will be exactly the contour value and then fail the assignment of high
 				 * below.  We therefore check if the value is not equal to the contour value as well */
-				if (inside == 2) {	/* Might be inside */
+				if (inside == GMT_INSIDE) {	/* Might be inside */
 					ij = gmt_M_ijp (G->header, row, col);
 					if (!doubleAlmostEqual (G->data[ij], save[pol].cval))	/* OK, this point is truly inside */
 						done = true;
@@ -668,8 +671,13 @@ GMT_LOCAL void grdcontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_
 		if (np == 0) continue;
 
 		s = gmt_M_memory (GMT, NULL, np, double);	/* Compute distance along the contour */
-		for (j = 1, s[0] = 0.0; j < np; j++)
-			s[j] = s[j-1] + hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
+		for (j = 1, s[0] = 0.0; j < np; j++) {
+			L = hypot (xp[j]-xp[j-1], yp[j]-yp[j-1]);
+			L_cut = gmt_half_map_width (GMT, 0.5 * (yp[j]+yp[j-1]));
+			if (L > L_cut)	/* Eliminate horizontal jumps exceeding half mapwidth at this y-value */
+				L = 0.0;
+			s[j] = s[j-1] + L;
+		}
 		n_ticks = irint (floor (s[np-1] / tick_gap));
 		if (s[np-1] < GRDCONTOUR_MIN_LENGTH || n_ticks == 0) {	/* Contour is too short to be ticked or labeled */
 			save[pol].do_it = false;

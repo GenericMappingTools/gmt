@@ -185,7 +185,6 @@
 #enable_testing()
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
-#set (DO_ANIMATIONS TRUE)
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
 
@@ -200,6 +199,11 @@
 
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
+
+# Uncomment the following line if you need to run the full tests suite using
+# the gmtserver "test" distribution instead of the default server.
+# You may wish to rename existing cache and server dirs so you can restore afterwards
+# set (GMT_DATA_SERVER "test")
 
 # List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
 # that link against the full gmt libs. (For building codes that only need the GMT API,

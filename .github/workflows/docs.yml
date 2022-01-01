@@ -58,7 +58,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup vcpkg (Windows)
-        uses: dawidd6/action-download-artifact@v2.15.0
+        uses: dawidd6/action-download-artifact@v2.16.0
         with:
           workflow: ci-caches.yml
           name: vcpkg-cache
@@ -110,7 +110,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Download cached GMT remote data from GitHub Artifacts
-        uses: dawidd6/action-download-artifact@v2.15.0
+        uses: dawidd6/action-download-artifact@v2.16.0
         with:
           workflow: ci-caches.yml
           name: gmt-cache
@@ -129,9 +129,6 @@ jobs:
           cd build
           cmake --build . --target docs_depends
           cmake --build . --target optimize_images
-          if [ "$RUNNER_OS" != "Windows" ]; then
-            cmake --build . --target animation
-          fi
           cmake --build . --target docs_html
           # if html.log isn't empty (i.e., sphinx raise warnings), return 1
           ! [ -s doc/rst/html.log ]

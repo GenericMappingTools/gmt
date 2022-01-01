@@ -26,6 +26,7 @@
  * on them like add, multiply, etc.
  * Some operators only work on one operand (e.g., log, exp)
  *
+ * Note on KEYS: AD(= means -A takes an input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -6478,7 +6479,8 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Create orderly output */
-		dim[GMT_COL] = 3;	dim[GMT_ROW] = n_rows;
+		dim[GMT_COL] = 3;	/* To store the 3 different flavors of T */
+		dim[GMT_ROW] = n_rows;
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
         	info.T->segment[0]->n_rows = n_rows;
@@ -6754,7 +6756,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		for (j = 0, i = nstack - eaten; j < created; j++, i++) {
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-				if (!Ctrl->T.notime) gmtmath_load_column (stack[i]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
+				if (!Ctrl->T.notime) gmtmath_load_column (stack[i]->D, Ctrl->N.tcol, info.T, COL_T);	/* Make sure t-column is copied if needed */
 			}
 		}
 
@@ -6800,7 +6802,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (!stack[last]->D)
 			stack[last]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 		for (j = 0; j < n_columns; j++) {
-			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
+			if (j == Ctrl->N.tcol && !Ctrl->Q.active && Ctrl->C.cols[j])
 				gmtmath_load_column (stack[last]->D, j, info.T, COL_T);
 			else if (!Ctrl->C.cols[j])
 				gmtmath_load_const_column (stack[last]->D, j, stack[last]->factor);

@@ -33,6 +33,7 @@ Optionally install these for more capabilities within GMT:
 
 - [Ghostscript](https://www.ghostscript.com/) (Ability to convert PostScript plots to PDF and rasters)
 - [GDAL](https://www.gdal.org/) (Ability to read and write numerous grid and image formats)
+- [GEOS](https://trac.osgeo.org/geos/) (Ability to buffer lines and polygons)
 - [PCRE](https://www.pcre.org/) or PCRE2 (Regular expression support)
 - [FFTW](http://www.fftw.org/) single-precision (Fast FFTs, >=3.3 [not needed under macOS])
 - [GLib](https://wiki.gnome.org/Projects/GLib) GTHREAD support (>=2.32)
@@ -105,8 +106,9 @@ installation parameters. For more advanced parameters, you may copy `ConfigUserA
 
 > Note for developers: It is necessary to create both `ConfigUser.cmake` and `ConfigUserAdvanced.cmake` in the `cmake`
 > directory using the templates provided in order to enable testing. Refer to the section
-> [Configuring CMake for testing GMT](MAINTENANCE.md#configuring-cmake-for-testing-gmt) in the
-> [maintenance guide](MAINTENANCE.md) for instructions on setting up `cmake/ConfigUserAdvanced.cmake`.
+> [setting up your environment](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html#setting-up-your-environment) in the
+> [contributing guide](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html)
+> for instructions on setting up `cmake/ConfigUserAdvanced.cmake`.
 
 Here is an example of settings you may want to change after copying `cmake/ConfigUserTemplate.cmake` to
 `cmake/ConfigUser.cmake`.
@@ -174,7 +176,8 @@ which will compile all the programs. You can also append ``--parallel [jobs]`` t
 tool's default number is used.
 
 > Note: These instructions build the source code for GMT. Optionally, follow the instructions for
-> [building the documentation](MAINTENANCE.md#building-the-documentation) in the [maintenance guide](MAINTENANCE.md) to
+> [building the documentation](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html#building-the-documentation)
+> in the [contributing guide](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html) to
 > build the documentation (for example, to develop the documentation or to use `gmt docs` without the GMT server).
 
 > Note for developers: Refer to the file `admin/bashrc_for_gmt` for useful aliases for configuring and building GMT.
@@ -199,8 +202,8 @@ write permission for this step so you can copy files to system directories.
 Using `sudo` will often do the trick.
 
 > Note for developers: Refer to the section
-> [Updating the development source codes](MAINTENANCE.md#updating-the-development-source-codes) in the
-> [maintenance guide](MAINTENANCE.md) for instructions on how to update the development version of GMT. Also refer to
+> [Updating the development source codes](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html#updating-the-development-source-codes) in the
+> [contributing guide](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html) for instructions on how to update the development version of GMT. Also refer to
 > the file `admin/bashrc_for_gmt` for useful aliases for updating the development source code.
 
 ## Setting path
@@ -220,4 +223,4 @@ Then, you should now be able to run GMT programs.
 ## Advanced instructions
 
 For advanced users who are interested in building documentation, running tests, or
-contributing more to GMT, please refer the [Maintenance Guide](MAINTENANCE.md).
+contributing more to GMT, please refer the [contributing guide](https://docs.generic-mapping-tools.org/dev/devdocs/contributing.html).

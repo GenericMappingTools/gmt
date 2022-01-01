@@ -22,6 +22,10 @@
  * Author:	Paul Wessel
  * Date:	1-JAN-2010
  * Version:	6 API
+ *
+ * Note on KEYS: AD)=t means -A takes an optional output Dataset as argument via the +t modifier.
+ *               G?(=1 means if -Gf|x is given then we may read an input Dataset, else we set type to ! to skip it
+ *               The "1" means we must skip the single char (f or x) before finding the file name
  */
 
 #include "gmt_dev.h"
@@ -296,7 +300,7 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 		np = save[pol].n;
 		for (pol2 = 0; save[pol].do_it && pol2 < n; pol2++) {
 			inside = gmt_non_zero_winding (GMT, save[pol2].x[0], save[pol2].y[0], save[pol].x, save[pol].y, np);
-			if (inside == 2 && !I->all) save[pol].do_it = false;
+			if (inside == GMT_INSIDE && !I->all) save[pol].do_it = false;
 		}
 	}
 
@@ -323,14 +327,14 @@ GMT_LOCAL void pscontour_sort_and_plot_ticks (struct GMT_CTRL *GMT, struct PSL_C
 
 		/* Now try to find a data point inside this contour */
 
-		for (j = 0, k = -1; k < 0 && j < nn; j++) {
+		for (j = 0, k = GMT_NOTSET; k == GMT_NOTSET && j < nn; j++) {
 			if (gmt_M_y_is_outside (GMT, y[j], ymin, ymax)) continue;	/* Outside y-range */
 			if (gmt_M_y_is_outside (GMT, x[j], xmin, xmax)) continue;	/* Outside x-range (YES, use gmt_M_y_is_outside since projected x-coordinates)*/
 
 			inside = gmt_non_zero_winding (GMT, x[j], y[j], save[pol].x, save[pol].y, np);
-			if (inside == 2) k = j;	/* OK, this point is inside */
+			if (inside == GMT_INSIDE) k = j;	/* OK, this point is inside */
 		}
-		if (k < 0) continue;	/* Unable to determine */
+		if (k == GMT_NOTSET) continue;	/* Unable to determine */
 		save[pol].high = (z[k] > save[pol].cval);
 
 		if (save[pol].high && !I->high) continue;	/* Do not tick highs */

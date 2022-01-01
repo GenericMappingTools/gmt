@@ -37,6 +37,10 @@ struct GRDCONVERT_CTRL {
 		bool active;
 		char *file;
 	} In;
+	struct GRDCONVERT_C {	/* -C[b|c|n|p] */
+		bool active;
+		unsigned int mode;	/* see gmt_constants.h */
+	} C;
 	struct GRDCONVERT_G {	/* -G<outgrid> */
 		bool active;
 		char *file;
@@ -75,7 +79,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s -G%s [-N] [%s] [%s] "
+	GMT_Usage (API, 0, "usage: %s %s -G%s [-Cb|c|n|p] [-N] [%s] [%s] "
 		"[-Z[+s<fact>][+o<shift>]] [%s] [%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
@@ -84,6 +88,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_ingrid_syntax (API, 0, "Name of grid to convert from");
 	gmt_outgrid_syntax (API, 'G', "Set name of the new converted grid file");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-Cb|c|n|p");
+	GMT_Usage (API, -2, "Control how the current and previous command histories should be handled, via directives:");
+	GMT_Usage (API, 3, "b: Append the current command's history to the previous history.");
+	GMT_Usage (API, 3, "c: Only save the current command's history.");
+	GMT_Usage (API, 3, "n: Save no history at all [Default].");
+	GMT_Usage (API, 3, "p: Only preserve the previous history.");
 	GMT_Usage (API, 1, "\n-N Do NOT write the header (for native grids only - ignored otherwise). Useful when creating "
 		"files to be used by external programs.");
 	GMT_Option (API, "R,V");
@@ -172,6 +182,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDCONVERT_CTRL *Ctrl, struct GMT
 
 			/* Processes program-specific parameters */
 
+			case 'C':	/* Control history output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
+				Ctrl->C.active = true;
+				switch (opt->arg[0]) {
+					case 'b': Ctrl->C.mode = GMT_GRDHISTORY_BOTH;	break;
+					case 'c': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
+					case 'p': Ctrl->C.mode = GMT_GRDHISTORY_OLD;	break;
+					case 'n': case '\0': Ctrl->C.mode = GMT_GRDHISTORY_NONE;	break;	/* Default */
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized directive %s\n", opt->arg);
+						n_errors++;
+						break;
+				}
+				break;
 			case 'G':
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
@@ -216,7 +240,7 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	int error = 0;
 	unsigned int hmode, type[2] = {0, 0};
 	char fname[2][GMT_BUFSIZ];
-	char command[GMT_GRID_COMMAND_LEN320] = {""};
+	char command[GMT_BUFSIZ] = {""};
 	struct GMT_GRID *Grid = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = NULL;
 	struct GRDCONVERT_CTRL *Ctrl = NULL;
@@ -307,22 +331,11 @@ EXTERN_MSC int GMT_grdconvert (void *V_API, int mode, void *args) {
 	}
 	Grid->header->type = type[GMT_OUT];
 
-	/* When converting from netcdf to netcdf, we will keep the old command, so we need to make a copy of it now */
-	command[0] = '\n';	command[1] = '\t';
-	strcat(command, "(old cmd) ");
-	strncat(command, Grid->header->command, GMT_GRID_COMMAND_LEN320-13);
+	gmt_change_grid_history (API, Ctrl->C.mode, Grid->header, command);	/* Set grid history per -C mode */
 
 	gmt_grd_init (GMT, Grid->header, options, true);
 
-	if (!GMT->common.R.active[RSET] && ((type[GMT_IN]  >= GMT_GRID_IS_CB && type[GMT_IN]  <= GMT_GRID_IS_CD)  ||	/* That is, from netCDF to netCDF */
-	                              (type[GMT_IN]  >= GMT_GRID_IS_NB && type[GMT_IN]  <= GMT_GRID_IS_ND)) &&
-	                             ((type[GMT_OUT] >= GMT_GRID_IS_CB && type[GMT_OUT] <= GMT_GRID_IS_CD)  ||
-	                              (type[GMT_OUT] >= GMT_GRID_IS_NB && type[GMT_OUT] <= GMT_GRID_IS_ND)) ) {
-		/* Do nothing, which means the new grid will keep the command string of the old grid */
-		if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_COMMAND, command, Grid))
-			Return (API->error);
-	}
-	else if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, Grid))
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_COMMAND, command, Grid))
 		Return (API->error);
 
 	if (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_is_cartesian (GMT, GMT_OUT)) {	/* Force a switch from geographic to Cartesian */

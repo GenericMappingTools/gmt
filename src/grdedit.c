@@ -49,8 +49,9 @@ struct GRDEDIT_CTRL {
 	struct GRDEDIT_A {	/* -A */
 		bool active;
 	} A;
-	struct GRDEDIT_C {	/* -C */
+	struct GRDEDIT_C {	/* -C[b|c|n|p] */
 		bool active;
+		unsigned int mode;	/* see gmt_constants.h */
 	} C;
 	struct GRDEDIT_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
@@ -103,7 +104,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Usage (API, 0, "usage: %s %s [-A] [-C] [%s] [-E[a|e|h|l|r|t|v]] [-G%s] [%s] [-L[+n|p]] "
+	GMT_Usage (API, 0, "usage: %s %s [-A] [-Cb|c|n|p] [%s] [-E[a|e|h|l|r|t|v]] [-G%s] [%s] [-L[+n|p]] "
 		"[-N<table>] [%s] [-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_GRDEDIT2D,
 		GMT_OUTGRID, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
 		GMT_i_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
@@ -114,7 +115,12 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	gmt_ingrid_syntax (API, 0, "Name of grid to be modified");
 	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Usage (API, 1, "\n-A Adjust dx/dy to be compatible with the file domain (or new -R).");
-	GMT_Usage (API, 1, "\n-C Remove the command history from the header.");
+	GMT_Usage (API, 1, "\n-Cb|c|n|p");
+	GMT_Usage (API, -2, "Control how the current and previous command histories should be handled, via directives:");
+	GMT_Usage (API, 3, "b: Append the current command's history to the previous history.");
+	GMT_Usage (API, 3, "c: Only save the current command's history.");
+	GMT_Usage (API, 3, "n: Save no history at all [Default].");
+	GMT_Usage (API, 3, "p: Only preserve the previous history.");
 	gmt_grd_info_syntax (API->GMT, 'D');
 	GMT_Usage (API, 1, "\n-E[a|e|h|l|r|t|v]");
 	GMT_Usage (API, -2, "Transform the entire grid (this may exchange x and y). Append operation:");
@@ -176,9 +182,19 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
-			case 'C':	/* Clear history */
+			case 'C':	/* Control history output -Cb|c|n|p */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
+				switch (opt->arg[0]) {
+					case 'b': Ctrl->C.mode = GMT_GRDHISTORY_BOTH;	break;
+					case 'c': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
+					case 'p': Ctrl->C.mode = GMT_GRDHISTORY_OLD;	break;
+					case 'n': case '\0': Ctrl->C.mode = GMT_GRDHISTORY_NONE;	break;	/* Default */
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized directive %s\n", opt->arg);
+						n_errors++;
+						break;
+				}
 				break;
 			case 'D':	/* Give grid information */
 				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
@@ -268,7 +284,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	double shift_amount = 0.0;
 
-	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL, *projstring = NULL;
+	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL, *projstring = NULL, command[GMT_BUFSIZ] = {""};
 
 	struct GRDEDIT_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
@@ -363,9 +379,10 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->C.active) {	/* Wipe history */
-		gmt_M_memset (G->header->command, GMT_GRID_COMMAND_LEN320, char);
-	}
+	gmt_change_grid_history (API, Ctrl->C.mode, G->header, command);	/* Set grid history per -C mode */
+
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_COMMAND, command, G))
+		Return (API->error);
 
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];

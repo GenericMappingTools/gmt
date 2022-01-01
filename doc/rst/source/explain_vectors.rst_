@@ -22,14 +22,14 @@ end point (**e**) of a line segment:
     **+b** places a vector head at the **b**\ eginning of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
-    and **I** for plain open tail.
+    and **I** for plain open tail. **Note**: For geovectors only **a** and **A** are available.
     Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
     **+e** places a vector head at the **e**\ nd of the vector path [none].
     Optionally, append **t** for a terminal line, **c** for a circle,
     **a** for arrow [Default], **i** for tail, **A** for plain open arrow,
-    and **I** for plain open tail.
+    and **I** for plain open tail. **Note**: For geovectors only **a** and **A** are available.
     Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].
 
@@ -39,11 +39,8 @@ end point (**e**) of a line segment:
 
     **+h**\ *shape* sets the shape of the vector head (range -2/2). Default
     is controlled by :term:`MAP_VECTOR_SHAPE` [default is :doc:`theme dependent </theme-settings>`].
-    A zero value produces no notch (e.g., the dashed line in the figure). Positive values
-    moves the notch toward the head apex while a negative value moves away. The example above
-    uses **+h**\ 0.5.
-
-    **+l** draws half-arrows, using only the left side of specified heads [both sides].
+    A zero value produces no notch. Positive values moves the notch toward the head apex while a
+    negative value moves it away. The example above uses **+h**\ 0.5.
 
     **+m** places a vector head at the mid-point the vector path [none].
     Append **f** or **r** for forward or reverse direction of the vector [forward].
@@ -52,15 +49,19 @@ end point (**e**) of a line segment:
     and **I** for plain open tail. Further append **l**\|\ **r** to only draw the left or right
     half-sides of this head [both sides].  Cannot be combined with **+b** or **+e**.
 
-    **+n**\ *norm* scales down vector attributes (pen thickness, head size)
+    **+n**\ [*norm*\ [/*min*]] scales down vector attributes (pen thickness, head size)
     with decreasing length, where vector plot lengths shorter than *norm* will have
-    their attributes scaled by length/\ *norm* [arrow attributes remains
+    their attributes scaled by length/\ *norm* [other arrow attributes remain
     invariant to length]. For Cartesian vectors specify a length in plot units, while
-    for geovectors specify a length in km.
+    for geovectors specify a length in map units (see `Units`_) [k]. Optionally, append
+    /*min* for the minimum shrink factor (in the 0-1 range) that we will shrink to [0.25].
+    If no argument is given then **+n** ensures vector heads are not shrunk and always
+    plotted regardless of vector length [Vector heads are not plotted if exceeding vector length].
 
     **+o**\ [*plon*\ /\ *plat*] specifies the oblique pole for the great or
     small circles.  Only needed for great circles if **+q** is given. If no
-    pole is appended then we default to the north pole.
+    pole is appended then we default to the north pole. Input arguments are then
+    *lon *lat arclength* with the latter in map distance units; see **+q** of angular limits instead.
 
     **+p**\ [*pen*] sets the vector pen attributes. If no *pen* is appended
     then the head outline is not drawn. [Default pen is half the width of stem pen, and
@@ -70,8 +71,6 @@ end point (**e**) of a line segment:
     **+q** means the input *direction*, *length* data instead represent the *start* and *stop*
     opening angles of the arc segment relative to the given point. See **+o** to specify
     a specific pole for the arc [north pole].
-
-    **+r** draws half-arrows, using only the right side of specified heads [both sides].
 
     **+t**\ [**b**\|\ **e**]\ *trim* will shift the beginning or end point (or both)
     along the vector segment by the given *trim*; append suitable unit (**c**, **i**, or **p**). If the modifiers

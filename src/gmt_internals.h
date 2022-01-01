@@ -54,7 +54,6 @@ EXTERN_MSC char *dlerror (void);
 #endif
 
 EXTERN_MSC void gmtlib_terminate_session ();
-EXTERN_MSC int gmtlib_adjust_loose_wesn (struct GMT_CTRL *GMT, double wesn[], struct GMT_GRID_HEADER *header, unsigned int verbose_level);
 EXTERN_MSC unsigned int gmtlib_pick_in_col_number (struct GMT_CTRL *GMT, unsigned int col, unsigned int *col_pos_in);
 EXTERN_MSC bool gmtlib_set_do_seconds (struct GMT_CTRL *GMT, double inc);
 EXTERN_MSC int gmtlib_getpenstyle (struct GMT_CTRL *GMT, char *line, struct GMT_PEN *P);
@@ -68,7 +67,6 @@ EXTERN_MSC void gmtlib_free_cube (struct GMT_CTRL *GMT, struct GMT_CUBE **U, boo
 EXTERN_MSC bool gmtlib_var_inc (double *x, uint64_t n);
 EXTERN_MSC char *gmtlib_last_valid_file_modifier (struct GMTAPI_CTRL *API, char* filename, const char *mods);
 EXTERN_MSC char *gmtlib_valid_filemodifiers (struct GMT_CTRL *GMT);
-EXTERN_MSC int gmtlib_delete_virtualfile  (void *API, const char *string);
 EXTERN_MSC bool gmtlib_file_lock (struct GMT_CTRL *GMT, int fd);
 EXTERN_MSC bool gmtlib_file_unlock (struct GMT_CTRL *GMT, int fd);
 EXTERN_MSC int gmtlib_file_is_jpeg2000_tile (struct GMTAPI_CTRL *API, char *file);
@@ -167,6 +165,8 @@ EXTERN_MSC void * gmtlib_ascii_textinput (struct GMT_CTRL *GMT, FILE *fp, uint64
 EXTERN_MSC double gmtlib_get_map_interval (struct GMT_CTRL *GMT, unsigned int type, struct GMT_PLOT_AXIS_ITEM *T);
 EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
 EXTERN_MSC int gmtlib_nc_get_att_text (struct GMT_CTRL *GMT, int ncid, int varid, char *name, char *text, size_t textlen);
+EXTERN_MSC int gmtlib_nc_get_att_vtext (struct GMT_CTRL *GMT, int ncid, int varid, char *name, struct GMT_GRID_HEADER *h, char *text, size_t textlen);
+EXTERN_MSC int gmtlib_nc_put_att_vtext (struct GMT_CTRL *GMT, int ncid, char *name, struct GMT_GRID_HEADER *h);
 EXTERN_MSC int gmtlib_akima (struct GMT_CTRL *GMT, double *x, double *y, uint64_t nx, double *c);
 EXTERN_MSC int gmtlib_cspline (struct GMT_CTRL *GMT, double *x, double *y, uint64_t n, double *c);
 EXTERN_MSC bool gmtlib_annot_pos (struct GMT_CTRL *GMT, double min, double max, struct GMT_PLOT_AXIS_ITEM *T, double coord[], double *pos);

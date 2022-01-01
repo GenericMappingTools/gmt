@@ -431,7 +431,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		Return (GMT_RUNTIME_ERROR);
 	}
 	/* Create output level array, if selected */
-	if (Ctrl->T.active && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
+	if (Ctrl->T.active && Ctrl->T.T.set != 2 && gmt_create_array (GMT, 'T', &(Ctrl->T.T), NULL, NULL)) {
 		GMT_Report (API, GMT_MSG_ERROR, "Option -T: Unable to set up output level array\n");
 		Return (API->error);
 	}
@@ -442,18 +442,18 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	start_k = 0; stop_k = n_layers - 1;	/* We first assume all layers are needed */
 	if (Ctrl->T.active) {
-		if (Ctrl->T.T.array[0] > level[stop_k] || Ctrl->T.T.array[Ctrl->T.T.n-1] < level[start_k]) {
+		if (Ctrl->T.T.min > level[stop_k] || Ctrl->T.T.max < level[start_k]) {
 			GMT_Report (API, GMT_MSG_ERROR, "Option -T: Specified range outside that of the data cube\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		while (start_k < n_layers && Ctrl->T.T.array[0] > level[start_k])	/* Find the first layer that is inside the output time range */
+		while (start_k < n_layers && Ctrl->T.T.min > level[start_k])	/* Find the first layer that is inside the output time range */
 			start_k++;
-		if (start_k && Ctrl->T.T.array[0] < level[start_k]) start_k--;		/* Go back one if start time is less than first layer */
+		if (start_k && Ctrl->T.T.min < level[start_k]) start_k--;		/* Go back one if start time is less than first layer */
 		if (start_k && (Ctrl->F.mode == GMT_SPLINE_AKIMA || Ctrl->F.mode == GMT_SPLINE_CUBIC))
 			start_k--;	/* One more to define the spline coefficients */
-		while (stop_k && Ctrl->T.T.array[Ctrl->T.T.n-1] < level[stop_k])	/* Find the last layer that is inside the output time range */
+		while (stop_k && Ctrl->T.T.max < level[stop_k])	/* Find the last layer that is inside the output time range */
 			stop_k--;
-		if (stop_k < n_layers && Ctrl->T.T.array[Ctrl->T.T.n-1] > level[stop_k]) stop_k++;	/* Go forward one if stop time is larger than last layer */
+		if (stop_k < n_layers && Ctrl->T.T.max> level[stop_k]) stop_k++;	/* Go forward one if stop time is larger than last layer */
 		if (stop_k < (n_layers-1) && (Ctrl->F.mode == GMT_SPLINE_AKIMA || Ctrl->F.mode == GMT_SPLINE_CUBIC))
 			stop_k++;	/* One more to define the spline coefficients */
 	}
@@ -578,9 +578,9 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 	if (Ctrl->E.active || Ctrl->S.active) {	/* Vertical profiles or slice */
 		unsigned int io_mode = GMT_WRITE_NORMAL;
-		uint64_t seg, row, rec, col;
+		uint64_t seg, row, rec, col, row_o;
 		uint64_t dim[4] = {1, 1, 1, 2};	/* Dataset dimension for one point */
-		char i_file[GMT_VF_LEN] = {""}, o_file[GMT_VF_LEN] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[GMT_LEN128] = {""};
+		char i_file[GMT_VF_LEN] = {""}, o_file[GMT_VF_LEN] = {""}, grid[GMT_LEN128] = {""}, header[GMT_LEN256] = {""}, cmd[2*PATH_MAX+GMT_LEN32] = {""};
 		struct GMT_DATASET *D = NULL;
 		struct GMT_DATASEGMENT *Si = NULL, *So = NULL;
 
@@ -598,7 +598,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 
 		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the workings of grdtrack calls  */
 
-		for (k = start_k; k <= stop_k; k++) {	/* For all selected input levels k */
+		for (k = start_k, row_o = 0; k <= stop_k; k++, row_o++) {	/* For all selected input levels k */
 			GMT_Init_VirtualFile (API, 0, i_file);	/* Reset so it can be read again */
 			if (Ctrl->Z.active)	/* Get the k'th file */
 				sprintf (grid, "%s", Ctrl->In.file[k]);
@@ -641,17 +641,17 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 					}
 					if (Ctrl->S.active) {	/* Want x,y,z[,.....],value output */
 						for (col = 0; col < GMT_Z; col++)	/* Copy over x,y */
-							So->data[col][k] = Si->data[col][row];
-						So->data[GMT_Z][k] = level[k];	/* Add level as the z column */
+							So->data[col][row_o] = Si->data[col][row];
+						So->data[GMT_Z][row_o] = level[k];	/* Add level as the z column */
 						while (col < Si->n_columns) {	/* Copy over the rest */
-							So->data[col+1][k] = Si->data[col][row];
+							So->data[col+1][row_o] = Si->data[col][row];
 							col++;
 						}
 					}
 					else {	/* Format for -E is x,y[,....],value */
 						for (col = 0; col < Si->n_columns; col++)	/* Copy over the various columns */
-							So->data[col][k] = Si->data[col][row];
-						So->data[col][k] = level[k];	/* Add level as the last data column */
+							So->data[col][row_o] = Si->data[col][row];
+						So->data[col][row_o] = level[k];	/* Add level as the last data column */
 					}
 				}
 			}
@@ -672,7 +672,7 @@ EXTERN_MSC int GMT_grdinterpolate (void *V_API, int mode, void *args) {
 		}
 		gmt_set_column_type (GMT, GMT_OUT, col, level_type);	/* This is the grid-level data type which on output is in this column */
 
-		if (Ctrl->T.active) {	/* Want to interpolate through the sampled points using the specified spline */
+		if (Ctrl->T.active && Ctrl->T.T.array) {	/* Want to interpolate through the sampled points using the specified spline */
 			if (GMT_Open_VirtualFile (API, GMT_IS_DATASET, GMT_IS_LINE, GMT_IN|GMT_IS_REFERENCE, Out, i_file) != GMT_NOERROR) {
 				GMT_Report (API, GMT_MSG_ERROR, "Unable to create virtual dataset for sampled time-series\n");
 				Return (API->error);

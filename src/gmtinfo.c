@@ -678,11 +678,11 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
 					if (wesn[YLO] < -90.0) {
 						wesn[YLO] = -90.0;
-						GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YLO] to become < -90. Reset to -90.\n");
+						GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90. Reset to -90.\n");
 					}
 					if (wesn[YHI] > 90.0) {
 						wesn[YHI] = 90.0;
-						GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YHI] to become > +90. Reset to +90.\n");
+						GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90. Reset to +90.\n");
 					}
 				}
 				if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */

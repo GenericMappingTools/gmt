@@ -43,6 +43,9 @@
  *
  * PW Update July 2015. With help from Dong Ju Choi, San Diego Supercomputing Center, we have added Open MP
  * support in greenspline and the matrix solvers in gmt_vector.c.  Requires open MP support and use of -x.
+ *
+ * Note on KEYS: CD)=f means -C takes an optional output Dataset as argument via the +f modifier.
+ *               AD(= means -A takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -2542,7 +2545,8 @@ EXTERN_MSC int GMT_greenspline (void *V_API, int mode, void *args) {
 			 * gmt_solve_svd sets to zero those we don't want but we must still loop over its full length to ensure we
 			 * include the eigenvalues we want. */
 			unsigned int width = urint (floor (log10 ((double)n_use))) + 1;	/* Width of maximum integer needed */
-			int64_t e, col, row, p; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
+			int64_t row; /* On Windows, the 'for' index variables must be signed, so redefine these 3 inside this block only */
+			uint64_t e, col, p;
 			gmt_grdfloat *current = NULL, *previous = NULL;
 			double l2_sum_n = 0.0, l2_sum_e = 0.0, predicted;
 			static char *mkind[3] = {"", "Incremental", "Cumulative"};

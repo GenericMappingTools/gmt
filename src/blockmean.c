@@ -97,7 +97,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	if (!API->external) {
 		GMT_Usage (API, 1, "\n-G<grdfile>");
 		GMT_Usage (API, -2, "Specify output grid file name; no table results will be written to standard output. "
-			"If more than one field is set via -A then <grdfile> must contain %%s to format field code.");
+			"If more than one field is set via -A then <grdfile> must contain %%s to format field code. Option -C is not allowed.");
 	}
 	GMT_Usage (API, 1, "\n-S[m|n|s|w]");
 	GMT_Usage (API, -2, "Select the quantity to be reported per block as z:");
@@ -182,7 +182,7 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 					Ctrl->E.mode = BLK_MODE_SIMPLE;
 				break;
 			case 'G':	/* Write output grid(s) */
-				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
+				if (!API->external) n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (!GMT->parent->external && Ctrl->G.n) {	/* Command line interface */
 					GMT_Report (API, GMT_MSG_ERROR, "-G can only be set once!\n");
@@ -266,6 +266,9 @@ static int parse (struct GMT_CTRL *GMT, struct BLOCKMEAN_CTRL *Ctrl, struct GMT_
 			Ctrl->A.selected[0] = true;
 			Ctrl->A.n_selected = 1;
 		}
+		n_errors += gmt_M_check_condition (GMT, Ctrl->C.active,
+			"Option -C: Cannot be combined with -G\n");
+		Ctrl->C.active = true;	/* But we set it under the hood to avoid computing mean of x and y */
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !GMT->parent->external && Ctrl->A.active && !Ctrl->G.active, "Option -A requires -G\n");
@@ -506,8 +509,8 @@ EXTERN_MSC int GMT_blockmean (void *V_API, int mode, void *args) {
 			if (!Ctrl->A.selected[k]) continue;
 			field[NF] = fcol[k];	/* Just keep record of which fields we are actually using */
 			code[NF]  = fcode[k];
-			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, NULL, NULL,
-			                                    GMT_GRID_DEFAULT_REG, GMT_NOTSET, NULL)) == NULL) Return (API->error);
+			if ((GridOut[NF] = GMT_Create_Data (API, GMT_IS_GRID, GMT_IS_SURFACE, GMT_CONTAINER_AND_DATA, NULL, Grid->header->wesn, Grid->header->inc, \
+				Grid->header->registration, GMT_NOTSET, NULL)) == NULL) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_TITLE, "Grid produced by blockmean", GridOut[NF]) != GMT_NOERROR) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_OPTION | GMT_COMMENT_IS_COMMAND, options, GridOut[NF]) != GMT_NOERROR) Return (API->error);
 			if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_REMARK, remarks[k], GridOut[NF])) Return (API->error);

@@ -9,7 +9,7 @@
  */
 
 int main () {
-	int i, m = 128;
+	unsigned int i, m = 128;
 	double sampling = 1.;
 	void *API;
 	struct GMT_DATASET *Din = NULL;

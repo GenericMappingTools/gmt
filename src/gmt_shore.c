@@ -428,6 +428,30 @@ GMT_LOCAL int gmtshore_res_to_int (char res) {
 
 /* Main Public GMT shore functions */
 
+int gmt_shore_version (struct GMTAPI_CTRL *API, char *version) {
+	/* Write GSHHG version into version which must have at least 8 positions */
+	int cdfid, err;
+	char path[PATH_MAX] = {""};
+	struct GMT_CTRL *GMT = API->GMT;
+
+	if (version == NULL)
+		return (GMT_PTR_IS_NULL);
+
+	if (!gmtshore_getpathname (GMT, "binned_GSHHS_c", path, true, true))
+		return (GMT_FILE_NOT_FOUND); /* Failed to find file */
+
+	/* Open shoreline file */
+	gmt_M_err_trap (gmt_nc_open (GMT, path, NC_NOWRITE, &cdfid));
+
+	/* Get global attributes */
+	gmt_M_memset (version, strlen (version), char);
+	gmt_M_err_trap (nc_get_att_text (cdfid, NC_GLOBAL, "version", version));
+
+	gmt_nc_close (GMT, cdfid);
+
+	return (GMT_NOERROR);
+}
+
 int gmt_set_levels (struct GMT_CTRL *GMT, char *info, struct GMT_SHORE_SELECT *I) {
 	/* Decode GMT's -A option for coastline levels */
 	int n;

@@ -1989,7 +1989,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 	n_alloc = PSL_CHUNK;
 	old_font = font = PSL->current.font_no;
 	old_size = fontsize;
-	PSL_rgb_copy (rgb, PSL->current.rgb[PSL_IS_STROKE]);	/* Initial font color is current color */
+	PSL_rgb_copy (rgb, PSL->current.rgb[PSL_IS_FONT]);	/* Initial font color is current font color */
 
 	word = PSL_memory (PSL, NULL, n_alloc, struct PSL_WORD *);
 
@@ -2666,7 +2666,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	 * param[PSL_VEC_TAIL_WIDTH] = tailwidth;
     * param[PSL_VEC_HEAD_LENGTH] = headlength;
     * param[PSL_VEC_HEAD_WIDTH] = headwidth;
-	 * param[5PSL_VEC_HEAD_SHAPE] = headshape;
+	 * param[PSL_VEC_HEAD_SHAPE] = headshape;
     * param[PSL_VEC_STATUS] = status bit flags
 	 * param[PSL_VEC_HEAD_TYPE_BEGIN] = begin head type;
     * param[PSL_VEC_HEAD_TYPE_END] = end head type
@@ -2677,7 +2677,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 
 	double angle, xtip, ytip, r, s, tailwidth, headlength, headwidth, headshape, length_inch;
 	double xx[6], yy[6], xc[3], yc[3], off[2], yshift[2], trim[2], xp = 0.0, h_penwidth;
-	int length, asymmetry[2], n, heads, outline, fill, status;
+	int length, asymmetry[2], n, heads, outline, fill, status, head_check;
 	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
@@ -2714,6 +2714,13 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	if (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) off[PSL_END] = 0.5 * tailwidth *  headlength / headwidth;
 	else if (kind[PSL_END] == PSL_VEC_TAIL) off[PSL_END] = FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - tailwidth;
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
+	head_check = PSL_vec_headcheck (status);		  /* nonzero if we should always place a head regardless of length */
+	if (head_check) {	/* Must worry about head size relative to vector length */
+		double h_length_limit = length_inch; /* Max length of arrow in inches */
+		if (heads == 3) h_length_limit *= 0.5;    /* Split this length between the two heads */
+		if (heads & 1 && headlength > h_length_limit) heads -= 1;	/* No room for head */
+		if (heads & 2 && headlength > h_length_limit) heads -= 2;	/* No room for head */
+	}
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);	/* Inherits color from current pen */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
@@ -3463,7 +3470,8 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 	return (image);
 }
 
-static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]) {
+static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[], int force) {
+   /* Pass force = 1 when you want to reset transparency regardless of rgb[3] */
 	static char text[PSL_BUFSIZ];
 
 	if (PSL_eq (rgb[0], -1.0)) {
@@ -3498,7 +3506,7 @@ static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]) {
 		psl_rgb_to_hsv (rgb, hsv);
 		sprintf (text, PSL->current.hsv_format, hsv[0], hsv[1], hsv[2]);
 	}
-	if (!PSL_eq (rgb[3], 0.0)) {
+	if (!PSL_eq (rgb[3], 0.0) || force) {
 		/* Transparency */
 		sprintf (&text[strlen(text)], " %.12g %.12g /%s PSL_transp", 1.0 - rgb[3], 1.0 - rgb[3], PSL->current.transparency_mode);
 	}
@@ -3798,7 +3806,7 @@ int PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, int n, double
 	}
 
 	if (flag & 2) {	/* End path and [optionally] fill */
-		if (!PSL_eq(rgb[0],-1.0)) PSL_command (PSL, "V %s eofill U ", psl_putcolor (PSL, rgb));
+		if (!PSL_eq(rgb[0],-1.0)) PSL_command (PSL, "V %s eofill U ", psl_putcolor (PSL, rgb, 0));
 		PSL->current.nclip++;
 		PSL_command (PSL, (flag & 4) ? "PSL_eoclip N\n" : "PSL_clip N\n");
 		PSL_comment (PSL, "End of polygon clip path.  Polygon clipping is currently ON\n");
@@ -4074,11 +4082,11 @@ int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline) {
 	}
 	else if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) {
 		/* If stroke color is transparent and fill is not, explicitly set transparency for fill */
-		PSL_command (PSL, "{%s 1 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb));
+		PSL_command (PSL, "{%s 1 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb, 0));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 	else {	/* Set new r/g/b fill, after possibly changing fill transparency */
-		PSL_command (PSL, "{%s} FS\n", psl_putcolor (PSL, rgb));
+		PSL_command (PSL, "{%s} FS\n", psl_putcolor (PSL, rgb, 0));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 
@@ -4262,7 +4270,7 @@ int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, do
    }
 
    PSL_command (PSL, "PSL_eps_begin\n");
-   PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb));
+   PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
    PSL_command (PSL, "%d %d T %.12g %.12g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / width, ysize * PSL->internal.dpu / height);
    PSL_command (PSL, "%.12g %.12g T\n", -h->llx, -h->lly);
    PSL_command (PSL, "N %.12g %.12g M %.12g %.12g L %.12g %.12g L %.12g %.12g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
@@ -4669,7 +4677,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%%%%EndPageSetup\n\n");
 
 		if (!(PSL_is_gray(PSL->init.page_rgb) && PSL_eq(PSL->init.page_rgb[0],1.0)))	/* Change background color from white but not if PSL_no_pagefill is set via psconvert */
-			PSL_command (PSL, "systemdict /PSL_no_pagefill known not {clippath %s F N} if\n", psl_putcolor (PSL, PSL->init.page_rgb));
+			PSL_command (PSL, "systemdict /PSL_no_pagefill known not {clippath %s F N} if\n", psl_putcolor (PSL, PSL->init.page_rgb, 0));
 		PSL_comment (PSL, "End of PSL header\n");
 
 		/* Save page size */
@@ -4882,7 +4890,7 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 1 /Normal PSL_transp ");
 
 	/* Then, finally, set the color using psl_putcolor */
-	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb));
+	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
 
 	/* Update the current stroke/fill color information */
 
@@ -4893,14 +4901,14 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], char *pattern, double offset) {
 	/* Creates a text string with the corresponding PS command to set the pen */
 	static char buffer[PSL_BUFSIZ];
-	sprintf (buffer, "%d W %s %s", psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb), psl_putdash (PSL, pattern, offset));
+	sprintf (buffer, "%d W %s %s", psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb, 0), psl_putdash (PSL, pattern, offset));
 	return (buffer);
 }
 
 char * PSL_makefont (struct PSL_CTRL *PSL, double size, double rgb[]) {
 	/* Creates a text string with the corresponding PS command to set the font (current font) */
 	static char buffer[PSL_BUFSIZ];
-	sprintf (buffer, "%s %d F%d", psl_putcolor (PSL, rgb), psl_ip (PSL, size), PSL->current.font_no);
+	sprintf (buffer, "%s %d F%d", psl_putcolor (PSL, rgb, 0), psl_ip (PSL, size), PSL->current.font_no);
 	return (buffer);
 }
 
@@ -4914,7 +4922,7 @@ char * PSL_makefontsize (struct PSL_CTRL *PSL, double size) {
 char * PSL_makecolor (struct PSL_CTRL *PSL, double rgb[]) {
 	/* Creates a text string with the corresponding PS command to set the color */
 	static char buffer[PSL_BUFSIZ];
-	sprintf (buffer, "%s", psl_putcolor (PSL, rgb));
+	sprintf (buffer, "%s", psl_putcolor (PSL, rgb, 0));
 	return (buffer);
 }
 
@@ -5565,7 +5573,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			color_on = !color_on;
 			ptr++;
 			if (ptr[0] == ';') {	/* Reset color to previous value */
-				PSL_command (PSL, "%s ", psl_putcolor (PSL, last_rgb));
+				PSL_command (PSL, "%s ", psl_putcolor (PSL, last_rgb, 0));
 				PSL_rgb_copy (PSL->current.rgb[PSL_IS_FONT], last_rgb);	/* Update present color */
 			}
 			else {
@@ -5600,7 +5608,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				if (s) s[0] = '@';
 				while (*ptr != ';') ptr++;
 				if (!error) {
-					PSL_command (PSL, "%s ", psl_putcolor (PSL, rgb));
+					PSL_command (PSL, "%s ", psl_putcolor (PSL, rgb, 0));
 					PSL_rgb_copy (last_rgb, PSL->current.rgb[PSL_IS_FONT]);	/* Save previous color */
 					PSL_rgb_copy (PSL->current.rgb[PSL_IS_FONT], rgb);	/* Update present color */
 				}
@@ -5940,13 +5948,13 @@ int PSL_definteger (struct PSL_CTRL *PSL, const char *param, int value) {
 }
 
 int PSL_defpen (struct PSL_CTRL *PSL, const char *param, double linewidth, char *style, double offset, double rgb[]) {
-	/* Function to set line pen attributes */
-	PSL_command (PSL, "/%s {%d W %s %s} def\n", param, psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb), psl_putdash (PSL, style, offset));
-	return (PSL_NO_ERROR);
+   /* Function to set line pen attributes. We force any transparency change since this is all inside a gsave/hrestore */
+   PSL_command (PSL, "/%s {%d W %s %s} def\n", param, psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb, 1), psl_putdash (PSL, style, offset));
+   return (PSL_NO_ERROR);
 }
 
 int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb[]) {
-	PSL_command (PSL, "/%s {%s} def\n", param, psl_putcolor (PSL, rgb));
+	PSL_command (PSL, "/%s {%s} def\n", param, psl_putcolor (PSL, rgb, 0));
 	return (PSL_NO_ERROR);
 }
 

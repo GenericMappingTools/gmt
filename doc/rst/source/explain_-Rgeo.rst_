@@ -6,10 +6,7 @@
 
     1. **-R**\ *west*/*east*/*south*/*north*\ [**+u**\ *unit*]. This is the standard way to specify geographic regions
        when using map projections where meridians and parallels are rectilinear. The coordinates may be specified in
-       decimal degrees or in [±]dd:mm[:ss.xxx][**W**\|\ **E**\|\ **S**\|\ **N**] format. Optionally, append
-       **+u**\ *unit* to specify a region in projected units (e.g., UTM meters) where *west*/*east*/*south*/*north* are
-       Cartesian projected coordinates compatible with the chosen projection (**-J**) and *unit* is an allowable
-       :ref:`distance unit <dist-units>`; we inversely project to determine the actual rectangular geographic region.
+       decimal degrees or in [±]dd:mm[:ss.xxx][**W**\|\ **E**\|\ **S**\|\ **N**] format.
 
     #. **-R**\ *west*/*south*/*east*/*north*\ **+r**. This form is useful for map projections that are oblique,
        making meridians and parallels poor choices for map boundaries. Here, we instead specify the lower left corner
@@ -29,12 +26,22 @@
 
         - **+r** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
           *winc*/*einc*/*sinc*/*ninc* [default is no adjustment]. For example, **-R**\ *FR*\ **+r**\ 1 will select the
-          national bounding box of France rounded to nearest integer degree.
-        - **+R** to extend the region outward by adding the amounts specified by *inc*, *xinc*/*yinc*, or
-          *winc*/*einc*/*sinc*/*ninc* [default is no extension].
+          national bounding box of France rounded to nearest integer degree, where *inc* can be positive to expand the
+          region or negative to shrink the region.
+        - **+R** to adjust the region by adding the amounts specified by *inc*, *xinc*/*yinc*, or
+          *winc*/*einc*/*sinc*/*ninc* [default is no extension], where *inc* can be positive to expand the
+          region or negative to shrink the region.
         - **+e** to adjust the region boundaries to be multiples of the steps indicated by *inc*, *xinc*/*yinc*, or
-          *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box extends by at least 0.25 times the increment
-          [default is no adjustment].
+          *winc*/*einc*/*sinc*/*ninc*, while ensuring that the bounding box is adjusted by at least 0.25 times the
+          increment [default is no adjustment], where *inc* can be positive to expand the region or negative to shrink
+          the region.
+
+    #. **-R**\ *xmin*/*xmax*/*ymin*/*ymax*\ [**+u**\ *unit*] specifies a region in projected units (e.g., UTM meters)
+       where *xmin*/*xmax*/*ymin*/*ymax* are Cartesian projected coordinates compatible with the chosen projection
+       (**-J**) and *unit* is an allowable :ref:`distance unit <dist-units>` [e]; we inversely project to determine the
+       actual rectangular geographic region. For projected regions centered on (0,0) you may use the short-hand
+       **-R**\ *halfwidth*\ [/*halfheight*]\ **+u**\ *unit*, where *halfheight* defaults to *halfwidth* if not given.
+       This short-hand requires the **+u** modifier.
 
     #. **-R**\ *justify*\ *lon0*/*lat0*/*nx*/*ny*, where *justify* is a 2-character combination of
        **L**\|\ **C**\|\ **R** (for left, center, or right) and **T**\|\ **M**\|\ **B** (for top, middle, or bottom)

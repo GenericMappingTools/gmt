@@ -143,12 +143,12 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 	struct GMT_DCW_STATE *State = NULL;
 	struct GMT_DCW_COUNTRY_STATE *Country_State = NULL;
 
-	if (!gmtdcw_get_path (GMT, "dcw-countries", ".txt", path)) return -1;
+	if (!gmtdcw_get_path (GMT, "dcw-countries", ".txt", path)) return GMT_NOTSET;
 
 	/* Get countries first */
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file %s [permission trouble?]\n", path);
-		return -1;
+		return GMT_NOTSET;
 	}
 	Country = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DCW_COUNTRY);
 	k = 0;
@@ -168,12 +168,12 @@ GMT_LOCAL int gmtdcw_load_lists (struct GMT_CTRL *GMT, struct GMT_DCW_COUNTRY **
 	/* Get states */
 	if (!gmtdcw_get_path (GMT, "dcw-states", ".txt", path)) {
 		gmt_M_free (GMT, Country);
-		return -1;
+		return GMT_NOTSET;
 	}
 	if ((fp = fopen (path, "r")) == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open file %s [permission trouble?]\n", path);
 		gmt_M_free (GMT, Country);
-		return -1;
+		return GMT_NOTSET;
 	}
 	State = gmt_M_memory (GMT, NULL, n_alloc, struct GMT_DCW_STATE);
 	k = 0;	n = 1;
@@ -219,11 +219,11 @@ GMT_LOCAL int gmtdcw_comp_countries (const void *p1, const void *p2) {
 
 GMT_LOCAL int gmtdcw_find_country (char *code, struct GMT_DCW_COUNTRY *list, int n) {
 	/* Basic binary search for country with given code and an alphabetically sorted list */
-	int low = 0, high = n, mid, last = -1, way;
+	int low = 0, high = n, mid, last = GMT_NOTSET, way;
 
 	while (low < high) {
 		mid = (low + high) / 2;
-		if (mid == last) return (-1);	/* No such code */
+		if (mid == last) return (GMT_NOTSET);	/* No such code */
 		way = strcmp (code, list[mid].code);
 		if (way > 0) low = mid;
 		else if (way < 0) high = mid;
@@ -246,13 +246,13 @@ GMT_LOCAL int gmtdcw_find_state (struct GMT_CTRL *GMT, char *scode, char *ccode,
 	if (check && !strncmp (ccode, "CN", 2U) && isdigit (scode[0])) {	/* Must switch to 2-character code */
 		unsigned int k = 0, id = atoi (scode);
 		while (k < DCW_N_CHINA_PROVINCES && id > gmtdcw_CN_codes[k].id) k++;
-		if (k == DCW_N_CHINA_PROVINCES) return (-1);	/* No such integer ID found in the list */
-		if (id < gmtdcw_CN_codes[k].id) return (-1);	/* No such integer ID found in the list */
+		if (k == DCW_N_CHINA_PROVINCES) return (GMT_NOTSET);	/* No such integer ID found in the list */
+		if (id < gmtdcw_CN_codes[k].id) return (GMT_NOTSET);	/* No such integer ID found in the list */
 		GMT_Report (GMT->parent, GMT_MSG_NOTICE, "FYI, Chinese province code %d is deprecated. Use %s instead\n", id, gmtdcw_CN_codes[k].code);
 		scode = gmtdcw_CN_codes[k].code;
 	}
 	for (i = 0; i < ns; i++) if (!strcmp (scode, slist[i].code) && !strcmp (ccode, slist[i].country)) return (i);
-	return (-1);
+	return (GMT_NOTSET);
 }
 
 GMT_LOCAL bool gmtdcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STATE *st_country, unsigned int n) {
@@ -269,6 +269,28 @@ GMT_LOCAL bool gmtdcw_country_has_states (char *code, struct GMT_DCW_COUNTRY_STA
 
 #define GMT_DCW_PLOTTING	1
 #define GMT_DCW_CLIPPING	2
+
+int gmt_DCW_version (struct GMTAPI_CTRL *API, char *version) {
+	/* Write DCW version into version which must have at least 8 positions */
+	int cdfid, err;
+	char path[PATH_MAX] = {""};
+	struct GMT_CTRL *GMT = API->GMT;
+	
+	if (version == NULL)
+		return (GMT_PTR_IS_NULL);
+
+	if (!gmtdcw_get_path (GMT, "dcw-gmt", ".nc", path))
+		return (GMT_FILE_NOT_FOUND);
+
+	gmt_M_err_trap (gmt_nc_open (GMT, path, NC_NOWRITE, &cdfid));
+
+	/* Get global attributes */
+	gmt_M_memset (version, strlen (version), char);
+	gmt_M_err_trap (nc_get_att_text (cdfid, NC_GLOBAL, "version", version));
+	gmt_nc_close (GMT, cdfid);
+
+	return (GMT_NOERROR);
+}
 
 struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SELECT *F, double wesn[], unsigned int mode) {
 	/* Given comma-separated names, read the corresponding netCDF variables.
@@ -473,14 +495,14 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 			want_state = true;
 		}
 		ks = gmtdcw_find_country (code, GMT_DCW_country, GMT_DCW_COUNTRIES);
-		if (ks == -1) {
+		if (ks == GMT_NOTSET) {
 			GMT_Report (GMT->parent, GMT_MSG_WARNING, "No country code matching %s (skipped)\n", code);
 			continue;
 		}
 		k = ks;
 		if (want_state) {
 			item = gmtdcw_find_state (GMT, state, code, GMT_DCW_state, GMT_DCW_STATES, new_CN_codes);
-			if (item == -1) {
+			if (item == GMT_NOTSET) {
 				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Country %s does not have a state named %s (skipped)\n", code, state);
 				continue;
 			}
@@ -573,21 +595,21 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 		k = seg = 0;
 		done = false;
 	        while (!done) {
-			first = -1;
-			while (first == -1 && k < np) {	/* Look for next start of segment marker */
+			first = GMT_NOTSET;
+			while (first == GMT_NOTSET && k < np) {	/* Look for next start of segment marker */
 				if (gmt_M_is_dnan (lon[k])) {
 					hole = (lat[k] > 0.0);
 					first = k + 1;	/* Start of segment */
 				}
 				k++;
 			}
-			if (first == -1) { done = true; continue;}	/* No more segments */
-			last = -1;
-			while (last == -1 && k < np) {/* Look for next end of segment marker (or end of line) */
+			if (first == GMT_NOTSET) { done = true; continue;}	/* No more segments */
+			last = GMT_NOTSET;
+			while (last == GMT_NOTSET && k < np) {/* Look for next end of segment marker (or end of line) */
 				if (gmt_M_is_dnan (lon[k])) last = k - 1;	/* End of segment */
 				k++;
 			}
-			if (last == -1) last = np - 1;	/* End of last segment */
+			if (last == GMT_NOTSET) last = np - 1;	/* End of last segment */
 			k--;	/* Back to last segment marker  which will be the next start marker */
 			P->n_rows = last - first + 1;	/* Number of points in this segment */
 			P->data[GMT_X] = &lon[first];
@@ -631,7 +653,7 @@ struct GMT_DATASET * gmt_DCW_operation (struct GMT_CTRL *GMT, struct GMT_DCW_SEL
 				gmt_M_malloc2 (GMT, S->data[GMT_X], S->data[GMT_Y], S->n_rows, NULL, double);
 				gmt_M_memcpy (S->data[GMT_X], P->data[GMT_X], S->n_rows, double);
 				gmt_M_memcpy (S->data[GMT_Y], P->data[GMT_Y], S->n_rows, double);
-				SH->alloc_mode = GMT_ALLOC_INTERNALLY;	/* Allocated in GMT */
+				SH->alloc_mode[GMT_X] = SH->alloc_mode[GMT_Y] = GMT_ALLOC_INTERNALLY;	/* Allocated in GMT */
 				seg++;
 			}
 		}
