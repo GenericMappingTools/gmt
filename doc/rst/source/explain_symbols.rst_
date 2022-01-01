@@ -114,7 +114,7 @@
         geographical instead of plot-distance units.  For degenerate ellipses (i.e.,
         circles) with just a *diameter* given via the input data, use **-SE-**. For a
         linear projection we assume the dimensions are given in the same units as **-R**.
-        For allowable geographical units, see `Units`_ [Default is **k** for km].
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s) [Default is k for km].
         The shape of the ellipse will be affected by the properties of the map projection.
 
     **-Sj**\ *direction*/*width*/*height*
@@ -130,7 +130,7 @@
         instead of plot-distance units. For a degenerate rectangle (i.e., square)
         with one *dimension* expected to be given via the input data, use **-SJ-**. For
         a linear projection we assume the dimensions are given in the same units as **-R**.
-        For allowable geographical units, see `Units`_ [Default is k for km].
+        For allowable geographical units, see `Units`_ and append desired unit to the dimension(s) [Default is k for km].
         The shape of the rectangle will be affected by the properties of the map projection.
 
     **-Sr**\ *width*/*height*
@@ -280,7 +280,9 @@
         vector head. Vector width is set by **-W**. See `Vector Attributes`_
         for specifying attributes. **Note**: Geovector stems are drawn as thin
         filled polygons and hence pen attributes like dashed and dotted are
-        not available. For allowable geographical units, see `Units`_.
+        not available. For allowable geographical units for the length, see `Units`_ [k].
+        If your *length* is not in distance units but in arbitrary user units (e.g., a rate in
+        mm/yr) then you can use the **-i** option to scale the corresponding column via the **+s**\ *scale* modifier.
 
     The next symbol is the programmable *custom* symbol:
 
@@ -318,7 +320,7 @@
         plotted centered or as a half-symbols on one side.  Special options exist for indicating
         motion (e.g., faults) along a line.
 
-    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b**\|\ **+c**\|\ **+f**\|\ **+s**\ [*angle*]\ \|\ **+t**][**+o**\ *offset*][**+p**\ [*pen*]].
+    **-Sf**\ [±]\ *gap*\ [/*size*][**+l**\|\ **+r**][**+b**\|\ **c**\|\ **f**\|\ **s**\ [*angle*]\ \|\ **t**\ \|\ **v**][**+o**\ *offset*][**+p**\ [*pen*]].
         Draw a **f**\ ront. Supply distance *gap* between symbols and symbol *size*.
         If *gap* is negative, it is interpreted to mean the *number* of symbols along the
         front instead. If *gap* has a leading + then we use the value exactly as given
@@ -327,7 +329,7 @@
         and *size* is thus required.  Append **+l** or **+r** to plot symbols on the left or
         right side of the front [Default is centered]. Append **+**\ *type* to
         specify which symbol to plot: **b**\ ox, **c**\ ircle, **f**\ ault,
-        **s**\ lip, or **t**\ riangle. [Default is **f**\ ault]. Slip means
+        **s**\ lip, **t**\ riangle or in\ **v**\ erted triangle. [Default is **f**\ ault]. Slip means
         left-lateral or right-lateral strike-slip arrows (centered is not an
         option). The **+s** modifier optionally accepts the angle used to draw
         the vector [20]. Alternatively, use **+S** which draws arcuate arrow
@@ -336,8 +338,8 @@
         with the same pen as set for the line (i.e., via **-W**). To use an
         alternate pen, append **+p**\ *pen*. To skip the outline, just use
         **+p** with no argument.  To make the main front line invisible, add **+i**.  **Note**:
-        By placing **-Sf** options in the segment header you can change the front
-        types on a segment-by-segment basis.
+        By placing **-Sf** options in the segment headers that differ from the one on
+        the command line you can change the front types on a segment-by-segment basis.
 
     The next type of embellished line is called a *quoted* line, which is our term for
     a line with text along it, similar to an annotated contour in a contour map. There is
@@ -517,12 +519,13 @@
             **+=**\ *prefix*
                 Prepend *prefix* to all line labels [Default is no prefix].
 
-        **Note**: By placing **-Sq** options in the segment header you can change
-        the quoted text attributes on a segment-by-segment basis.
+        **Note**: By placing **-Sq** options in the segment headers that differ from the one on
+        the command line you can change the quoted text attributes on a segment-by-segment basis.
 
     The final type of embellished line is called a *decorated* line (**-S~**).  It is a hybrid
     between a *front* and *quoted* lines in that it offers symbols similar to a front
-    but the placement can be specified in ways similar to the quoted line:
+    but the placement can be specified in ways similar to the quoted line.  However, no built-in
+    clipping exists, such as for quoted lines:
 
     .. figure:: /_images/GMT_base_symbols9.*
         :width: 600 px
@@ -615,12 +618,13 @@
 
             **+s**\ <symbol><size> or **+sk**\ *customsymbol*/*size*
                 Specify the code and size of the decorative symbol.
-                Custom symbols need to be simple, i.e., not require data columns.
+                Custom symbols need to be simple, i.e., not require data columns,
+                or give a single EPS file.
 
             **+w**
                 Specify how many (*x*,\ *y*) points will be used to estimate
                 symbol angles [Default is 10].
 
         If neither **+g** nor **+p** are set we select the default pen outline (:term:`MAP_DEFAULT_PEN`).
-        **Note**: By placing **-S~** options in the segment header you can change
-        the decorated lines on a segment-by-segment basis.
+        **Note**: By placing **-S~** options in the segment headers that differ from the one on
+        the command line you can change the decorated lines on a segment-by-segment basis.

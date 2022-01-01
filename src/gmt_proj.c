@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@
 
 #define GMT_PROJ_MAX_ITERATIONS	200
 #define GMT_PROJ_CONV_LIMIT	1e-9
-#define GMT_PROJ_IS_ZERO(x) (fabs (x) < GMT_PROJ_CONV_LIMIT)
+#define gmt_M_proj_is_zero(x) (fabs (x) < GMT_PROJ_CONV_LIMIT)
 
 GMT_LOCAL double gmtproj_robinson_spline (struct GMT_CTRL *GMT, double xp, double *x, double *y, double *c) {
 	/* Returns the interpolated value y(xp) from the Robinson coefficients */
@@ -154,7 +154,7 @@ GMT_LOCAL void gmtproj_ipolyconic_sub (struct GMT_CTRL *GMT, double y, double lo
 	gmt_M_wind_lon (GMT, *x);
 	y *= GMT->current.proj.i_EQ_RAD;
 	y += GMT->current.proj.pole * D2R;
-	if (GMT_PROJ_IS_ZERO (y))
+	if (gmt_M_proj_is_zero (y))
 		*x *= GMT->current.proj.EQ_RAD * D2R;
 	else {
 		phi = y;
@@ -302,18 +302,17 @@ GMT_LOCAL int gmtproj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y
 	v = GMT->current.proj.g_LH2 + GMT->current.proj.g_G*y*y - GMT->current.proj.g_HJ*y + one_m_e2*x*x;
 
 	if (GMT->current.proj.g_debug > 1) {
-		gmt_message (GMT, "\n");
-		gmt_message (GMT, "gmtproj_genper_tolatlong - 1 \n");
-		gmt_message (GMT, "x    %12.1f\n", x);
-		gmt_message (GMT, "y    %12.1f\n", y);
-		gmt_message (GMT, "\n");
-		gmt_message (GMT, "P    %12.7f\n", P);
-		gmt_message (GMT, "phig %12.7f\n", GMT->current.proj.g_phig);
-		gmt_message (GMT, "\n");
-		gmt_message (GMT, "B    %12.7f\n", B);
-		gmt_message (GMT, "D    %12.7f\n", D);
-		gmt_message (GMT, "u    %12.1f\n", u);
-		gmt_message (GMT, "v    %12.6e\n", v);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: gmtproj_genper_tolatlong - 1\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: x    %12.1f\n", x);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: y    %12.1f\n", y);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: \n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: P    %12.7f\n", P);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: phig %12.7f\n", GMT->current.proj.g_phig);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: \n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: B    %12.7f\n", B);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: D    %12.7f\n", D);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: u    %12.1f\n", u);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: v    %12.6e\n", v);
 	}
 	E = 1;
 
@@ -330,26 +329,25 @@ GMT_LOCAL int gmtproj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y
 	if (gmt_M_is_dnan(Kp) || gmt_M_is_dnan(X) || gmt_M_is_dnan(Y) || gmt_M_is_dnan(S)) set_exit++;
 
 	if (set_exit == 1) {
-		gmt_message (GMT, "\n");
-		gmt_message (GMT, "gmtproj_genper_tolatlong - 2\n");
-		gmt_message (GMT, "x    %12.1f\n", x);
-		gmt_message (GMT, "y    %12.1f\n", y);
-		gmt_message (GMT, "\n");
-		gmt_message (GMT, "P    %12.7f\n", P);
-		gmt_message (GMT, "phig %12.7f\n", GMT->current.proj.g_phig);
-		gmt_message (GMT, "\n");
-		gmt_message (GMT, "B    %12.7f\n", B);
-		gmt_message (GMT, "D    %12.7f\n", D);
-		gmt_message (GMT, "u    %12.1f\n", u);
-		gmt_message (GMT, "v    %12.6e\n", v);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: gmtproj_genper_tolatlong - 2\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: x    %12.1f\n", x);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: y    %12.1f\n", y);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: \n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: P    %12.7f\n", P);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: phig %12.7f\n", GMT->current.proj.g_phig);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: \n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: B    %12.7f\n", B);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: D    %12.7f\n", D);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: u    %12.1f\n", u);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: v    %12.6e\n", v);
 	}
 	if (set_exit || GMT->current.proj.g_debug > 1) {
-		gmt_message (GMT, "t    %12.7f\n", t);
-		gmt_message (GMT, "Kp   %12.1f\n", Kp);
-		gmt_message (GMT, "Kp2  %12.1f\n", Kp2);
-		gmt_message (GMT, "X    %12.1f\n", X);
-		gmt_message (GMT, "Y    %12.1f\n", Y);
-		gmt_message (GMT, "S    %12.7f\n", S);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: t    %12.7f\n", t);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: Kp   %12.1f\n", Kp);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: Kp2  %12.1f\n", Kp2);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: X    %12.1f\n", X);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: Y    %12.1f\n", Y);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: S    %12.7f\n", S);
 	}
 
 	if (h == 0) {
@@ -369,11 +367,11 @@ GMT_LOCAL int gmtproj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y
 
 		if (gmt_M_is_dnan(E)) set_exit++;
 
-		if (set_exit == 1) gmt_message (GMT, "gmtproj_genper_tolatlong - 3\n");
+		if (set_exit == 1) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: gmtproj_genper_tolatlong - 3\n");
 		if (GMT->current.proj.g_debug > 1 || set_exit) {
-			gmt_message (GMT, "asinS %12.7f\n", asind(S));
-			gmt_message (GMT, "phi   %12.7f\n", R2D*phi);
-			gmt_message (GMT, "E     %12.7f\n", E);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: asinS %12.7f\n", asind(S));
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: phi   %12.7f\n", R2D*phi);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: E     %12.7f\n", E);
 		}
 
 		do {
@@ -394,23 +392,23 @@ GMT_LOCAL int gmtproj_genper_tolatlong (struct GMT_CTRL *GMT, double x, double y
 			E = t1 * t1 - e2*sphi*sphi*(1.0/(1.0 - e2*sphi*sphi) - t2);
 
 			if (gmt_M_is_dnan(Kp) || gmt_M_is_dnan(X) || gmt_M_is_dnan(Y) || gmt_M_is_dnan(S) || gmt_M_is_dnan(phi) || gmt_M_is_dnan(E)) set_exit++;
-			if (set_exit == 1) gmt_message (GMT, "gmtproj_genper_tolatlong - 4 \n");
+			if (set_exit == 1) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: gmtproj_genper_tolatlong - 4 \n");
 			if (set_exit || GMT->current.proj.g_debug > 1) {
-				gmt_message (GMT, "\niter %d\n", niter);
-				gmt_message (GMT, "t    %12.7f\n", t);
-				gmt_message (GMT, "Kp   %12.1f\n", Kp);
-				gmt_message (GMT, "X    %12.1f\n", X);
-				gmt_message (GMT, "Y    %12.1f\n", Y);
-				gmt_message (GMT, "S    %12.7f\n", S);
-				gmt_message (GMT, "phi  %12.7f\n", phi*R2D);
-				gmt_message (GMT, "E    %12.7f\n", E);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: iter %d\n", niter);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: t    %12.7f\n", t);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: Kp   %12.1f\n", Kp);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: X    %12.1f\n", X);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: Y    %12.1f\n", Y);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: S    %12.7f\n", S);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: phi  %12.7f\n", phi*R2D);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: E    %12.7f\n", E);
 			}
 		}
 		while (fabs(phi - phi_last) > 1e-7);
 	}
-	if (set_exit == 1) gmt_message (GMT, "gmtproj_genper_tolatlong - 5\n");
+	if (set_exit == 1) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: gmtproj_genper_tolatlong - 5\n");
 	if (set_exit || GMT->current.proj.g_debug > 1) {
-		gmt_message (GMT, "gmtproj_genper_tolatlong phi    %12.7f\n", phi*R2D);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: gmtproj_genper_tolatlong phi    %12.7f\n", phi*R2D);
 		return GMT_PROJECTION_ERROR;
 	}
 	*lat = phi * R2D;
@@ -439,36 +437,34 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 	N1 = a / sqrt (1.0 - (e2*sphi1*sphi1));
 	niter = 0;
 
-	if (GMT->current.proj.g_radius || altitude < -10.0) {
-		/* use altitude as the radial distance from the center of the earth */
-		H = fabs (altitude*1e3) - a;
+	if (GMT->current.proj.g_radius) {	/* Altitude given as the radial distance from the center of the Earth (in km) */
+		H = fabs (altitude * METERS_IN_A_KM) - a;
 		P = H/a + 1.0;
 		phig = lat;
 	}
-	else if (altitude <= 0.0) {
-		/* setup altitude of geosynchronous viewpoint n */
-		double temp = 86164.1/TWO_PI;
-		H = pow (3.98603e14*temp*temp, 0.3333) - a;
+	else if (GMT->current.proj.g_geosync) {/* Select implicit altitude of geosynchronous viewpoint */
+		double temp = 86164.1/TWO_PI;	/* Siderial day rotation rate */
+		H = pow (3.98603e14*temp*temp, 0.3333) - a;	/* Standard gravitational parameter GM for Earth */
 		P = H/a + 1.0;
-		phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
+		phig = lat - asind (N1*e2*sphi1*cphi1/(P*a));
 		sincosd (phig, &sphig, &cphig);
 		if (cphi1 != 0.0)
 			H = P*a*cphig/cphi1 - N1 - h0;
 		else
 			H = P*a - N1 - h0;
 	}
-	else if (altitude < 10.0) {
+	else if (GMT->current.proj.g_earth_radius) {	/* Altitude given (in Earth radii) */
 		P = altitude;
 		/* need to setup H from P equation */
-		phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
+		phig = lat - asind (N1*e2*sphi1*cphi1/(P*a));
 		sincosd (phig, &sphig, &cphig);
 		if (cphi1 != 0.0)
 			H = P*a*cphig/cphi1 - N1 - h0;
 		else
 			H = P*a - N1 - h0;
 	}
-	else {
-		/* gmt_message (GMT, "altitude %f\n", altitude); */
+	else {	/* Altitude given as normal (in km) */
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: altitude %f\n", altitude);
 		H = altitude*1e3;
 		/* need to setup P from iterating phig */
 		phig = lat;
@@ -478,7 +474,7 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 			P = (cphi1/cphig) * (H + N1 + h0)/a;
 			phig_last = phig;
 			phig = lat - asind(N1*e2*sphi1*cphi1/(P*a));
-			/* gmt_message (GMT, "%2d P %12.7f phig %12.7f\n", niter, P, phig); */
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: %2d P %12.7f phig %12.7f\n", niter, P, phig);
 		}
 		while (fabs (phig - phig_last) > 1e-9);
 		sincosd (phig, &sphig, &cphig);
@@ -515,16 +511,16 @@ GMT_LOCAL void gmtproj_genper_setup (struct GMT_CTRL *GMT, double h0, double alt
 	GMT->current.proj.g_LH2 = GMT->current.proj.g_L*H*H;
 
 	if (GMT->current.proj.g_debug > 0) {
-		gmt_message (GMT, "a    %12.4f\n", a);
-		gmt_message (GMT, "R    %12.4f\n", R);
-		gmt_message (GMT, "e^2  %12.7f\n", e2);
-		gmt_message (GMT, "H    %12.4f\n", H);
-		gmt_message (GMT, "phi1 %12.4f\n", lat);
-		gmt_message (GMT, "lon0 %12.4f\n", lon0);
-		gmt_message (GMT, "h0   %12.4f\n", h0);
-		gmt_message (GMT, "N1   %12.1f\n", N1);
-		gmt_message (GMT, "P    %12.7f\n", P);
-		gmt_message (GMT, "phig %12.7f\n", phig);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: a    %12.4f\n", a);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: R    %12.4f\n", R);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: e^2  %12.7f\n", e2);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: H    %12.4f\n", H);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: phi1 %12.4f\n", lat);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: lon0 %12.4f\n", lon0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: h0   %12.4f\n", h0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: N1   %12.1f\n", N1);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: P    %12.7f\n", P);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: phig %12.7f\n", phig);
 	}
 
 	return;
@@ -1489,9 +1485,9 @@ GMT_LOCAL void gmtproj_genper (struct GMT_CTRL *GMT, double lon, double lat, dou
 	gmtproj_genper_to_xtyt (GMT, angle, x, y, GMT->current.proj.g_yoffset, xt, yt);
 
 	if (gmt_M_is_dnan(*yt) || gmt_M_is_dnan(*xt)) {
-		gmt_message (GMT, "genper: yt or xt nan\n");
-		gmt_message (GMT, "genper: lon %6.3f lat %6.3f\n", lon, lat);
-		gmt_message (GMT, "genper: xt %10.3e yt %10.3e\n", *xt, *yt);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: yt or xt nan\n");
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: lon %6.3f lat %6.3f\n", lon, lat);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper: xt %10.3e yt %10.3e\n", *xt, *yt);
 	}
 }
 
@@ -1537,7 +1533,7 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 	lat0 = gmtproj_genper_getgeocentric (GMT, lat0, 0.0);
 	sincosd (lat0, &(GMT->current.proj.sinp), &(GMT->current.proj.cosp));
 
-	if (!GMT_PROJ_IS_ZERO (GMT->current.proj.ECC2)) {
+	if (!gmt_M_proj_is_zero (GMT->current.proj.ECC2)) {
 		gmtproj_genper_setup (GMT, 0.0, altitude, lat0_save, lon0);
 		GMT->current.proj.central_meridian = lon0;
 		GMT->current.proj.pole = GMT->current.proj.g_phig;
@@ -1585,10 +1581,10 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 			tilt = azimuth = 0.0;
 		else {
 			if (GMT->current.proj.g_debug > 0) {
-				gmt_message (GMT, " sensor point long %7.4f lat  %7.4f\n", lon0, lat0);
-				gmt_message (GMT, " input view point long %7.4f lat %7.4f\n", vp_long, vp_lat);
-				gmt_message (GMT, " input twist %7.4f\n", twist);
-				gmt_message (GMT, " altitude %f H %f R %f P %7.4f\n", altitude, H/1000.0, R/1000.0,P);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: sensor point long %7.4f lat  %7.4f\n", lon0, lat0);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: input view point long %7.4f lat %7.4f\n", vp_long, vp_lat);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: input twist %7.4f\n", twist);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: altitude %f H %f R %f P %7.4f\n", altitude, H/1000.0, R/1000.0,P);
 			}
 
 			sincosd (90.0 - lat0, &sin_lat0, &cos_lat0);
@@ -1614,13 +1610,13 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 			if (dlong < 0) azimuth = 360.0 - azimuth;
 
 		}
-		if (GMT->current.proj.g_debug > 0) gmt_message (GMT, "vgenper: pointing at longitude %10.4f latitude %10.4f\n           with computed tilt %5.2f azimuth %6.2f\n", vp_long, vp_lat, tilt, azimuth);
+		if (GMT->current.proj.g_debug > 0) GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: pointing at longitude %10.4f latitude %10.4f\n           with computed tilt %5.2f azimuth %6.2f\n", vp_long, vp_lat, tilt, azimuth);
 
 	}
 	else if (GMT->current.proj.g_debug > 1) {
-		gmt_message (GMT, " sensor point long %6.3f lat  %6.3f\n", lon0, lat0);
-		gmt_message (GMT, " input azimuth   %6.3f tilt %6.3f\n", azimuth, tilt);
-		gmt_message (GMT, " input twist %6.3f\n", twist);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: sensor point long %6.3f lat  %6.3f\n", lon0, lat0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: input azimuth   %6.3f tilt %6.3f\n", azimuth, tilt);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: input twist %6.3f\n", twist);
 	}
 
 	if (tilt < 0.0) tilt = d_asind (GMT->current.proj.g_P_inverse);
@@ -1662,23 +1658,23 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 	Omega = 180.0 - tilt - gamma;
 
 	if (GMT->current.proj.g_debug > 0)
-		gmt_message (GMT, "vgenper: tilt %6.3f sin_tilt %10.6f P %6.4f gamma %6.4f\n   Omega %6.4f eccen %10.4f\n",
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: tilt %6.3f sin_tilt %10.6f P %6.4f gamma %6.4f\n   Omega %6.4f eccen %10.4f\n",
 		             tilt, GMT->current.proj.g_sin_tilt, P, gamma, Omega, eccen);
 
 	if (eccen == 1.0) {
 		max_yt = MIN (max_yt, rmax * 2.0);
 		if (GMT->current.proj.g_debug > 1)
-			gmt_message (GMT, "vgenper: Projected map is a parabola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n Plot truncated for projected distances > rmax %8.2f\n", tilt, omega_max, rmax/1000.0);
+			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: Projected map is a parabola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n Plot truncated for projected distances > rmax %8.2f\n", tilt, omega_max, rmax/1000.0);
 	}
 	else if (eccen > 1.0) {
 		if (width != 0.0) {
 			if (GMT->current.proj.g_debug > 1)
-				gmt_message (GMT, "vgenper: Projected map is a hyperbola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n", tilt, omega_max);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: Projected map is a hyperbola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n", tilt, omega_max);
 		}
 		else {
 			max_yt = MIN (max_yt, rmax * 2.0);
 			if (GMT->current.proj.g_debug > 1)
-				gmt_message (GMT, "vgenper: Projected map is a hyperbola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n Plot truncated for projected distances > rmax %8.2f\n", tilt, omega_max, rmax/1000.0);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: Projected map is a hyperbola with requested tilt %6.3f\n max ECA is %6.3f degrees.\n Plot truncated for projected distances > rmax %8.2f\n", tilt, omega_max, rmax/1000.0);
 		}
 	}
 	else if (eccen > 0.5) {
@@ -1687,13 +1683,13 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 			Pecc = sqrt (1.0/(1.0 - (t*t/maxecc)));
 			max_yt = R*sqrt ((Pecc-1.0)/(Pecc+1.0));
 			if (GMT->current.proj.g_debug > 1)
-				gmt_message (GMT, "vgenper: Projected map is an enlongated ellipse (eccentricity of %6.4f) with "
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: Projected map is an enlongated ellipse (eccentricity of %6.4f) with "
 				                  "requested tilt %6.3f\nwill truncate plot at rmax %8.2f\n", eccen, tilt, max_yt);
 		}
 		else {
 			if (max_yt > rmax *2.0) max_yt = rmax * 2.0;
 			if (GMT->current.proj.g_debug > 1)
-				gmt_message (GMT, "vgenper: Projected map is an enlongated ellipse with requested tilt %6.3f\n eccentricity %6.3f\n Plot truncated for projected distances > rmax %8.2f\n", tilt, eccen, rmax/1000.0);
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: Projected map is an enlongated ellipse with requested tilt %6.3f\n eccentricity %6.3f\n Plot truncated for projected distances > rmax %8.2f\n", tilt, eccen, rmax/1000.0);
 		}
 	}
 
@@ -1713,7 +1709,7 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 	lonvp += lon0;
 
 	if (GMT->current.proj.g_debug > 1)
-		gmt_message (GMT, "vgenper: pointing at longitude %10.4f latitude %10.4f\n          "
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: pointing at longitude %10.4f latitude %10.4f\n          "
 		                  "with tilt %5.2f azimuth %6.2f at distance %6.4f\n         "
 		                  "with width %6.3f height %6.3f twist %6.2f\n", lonvp, latvp, tilt, azimuth, rho, width, height, twist);
 
@@ -1736,12 +1732,12 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 
 		if (GMT->current.proj.g_debug > 2) {
 			if ((fp = fopen("g_border.txt", "w")) == NULL) {
-				gmt_message (GMT, "Failed to write the g_border.txt file\n");
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: Failed to write the g_border.txt file\n");
 			}
 			else {
-				gmt_message (GMT, "tilt %10.4f sin_tilt %10.4f cos_tilt %10.4f\n",
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: tilt %10.4f sin_tilt %10.4f cos_tilt %10.4f\n",
 				             tilt, GMT->current.proj.g_sin_tilt, GMT->current.proj.g_cos_tilt);
-				gmt_message (GMT, "azimuth %10.4f sin_azimuth %10.4f cos_azimuth %10.4f\n",
+				GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: azimuth %10.4f sin_azimuth %10.4f cos_azimuth %10.4f\n",
 				             azimuth, GMT->current.proj.g_sin_azimuth, GMT->current.proj.g_cos_azimuth);
 			}
 		}
@@ -1769,10 +1765,10 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 		}
 	}
 	if (GMT->current.proj.g_debug > 1) {
-		gmt_message (GMT, "vgenper: xt max %7.1f km\n", xt_max/1000.0);
-		gmt_message (GMT, "vgenper: xt min %7.1f km\n", xt_min/1000.0);
-		gmt_message (GMT, "vgenper: yt max %7.1f km\n", yt_max/1000.0);
-		gmt_message (GMT, "vgenper: yt min %7.1f km\n", yt_min/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: xt max %7.1f km\n", xt_max/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: xt min %7.1f km\n", xt_min/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: yt max %7.1f km\n", yt_max/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: yt min %7.1f km\n", yt_min/1000.0);
 	}
 
 	GMT->current.proj.g_xmin = xt_min;
@@ -1784,28 +1780,28 @@ GMT_LOCAL void gmtproj_vgenper (struct GMT_CTRL *GMT, double lon0, double lat0, 
 
 	if (GMT->current.proj.g_debug > 0) {
 		gmtproj_genper (GMT, lonvp, latvp, &xt_vp, &yt_vp);
-		gmt_message (GMT, "\nvgenper: polar %d north %d\n", GMT->current.proj.polar, GMT->current.proj.north_pole);
-		gmt_message (GMT, "vgenper: altitude H %7.1f km P %7.4f\n", H/1000.0, P);
-		gmt_message (GMT, "vgenper: azimuth %5.1f tilt %5.1f\n", azimuth, tilt);
-		gmt_message (GMT, "vgenper: viewpoint width %5.1f height %5.1f degrees\n", width, height);
-		gmt_message (GMT, "vgenper: radius max %7.1f km\n", GMT->current.proj.g_rmax/1000.0);
-		gmt_message (GMT, "vgenper: eccentricity %7.4f km\n", eccen);
-		gmt_message (GMT, "vgenper: eq radius max %7.1f km\n", rmax_max/1000.0);
-		gmt_message (GMT, "vgenper: polar radius max %7.1f km\n", rmax_min/1000.0);
-		gmt_message (GMT, "vgenper: lat0 radius max %7.1f km\n", rmax_at_lat0/1000.0);
-		gmt_message (GMT, "vgenper: kp %7.1f \n", kp/1000.0);
-		gmt_message (GMT, "vgenper: y offset %7.1f km\n", GMT->current.proj.g_yoffset/1000.0);
-		gmt_message (GMT, "vgenper: yt max %7.1f km\n", yt_max/1000.0);
-		gmt_message (GMT, "vgenper: yt min %7.1f km\n", yt_min/1000.0);
-		gmt_message (GMT, "vgenper: y max %7.1f km\n", GMT->current.proj.g_ymax/1000.0);
-		gmt_message (GMT, "vgenper: y min %7.1f km\n", GMT->current.proj.g_ymin/1000.0);
-		gmt_message (GMT, "vgenper: x max %7.1f km\n", GMT->current.proj.g_xmax/1000.0);
-		gmt_message (GMT, "vgenper: x min %7.1f km\n", GMT->current.proj.g_xmin/1000.0);
-		gmt_message (GMT, "vgenper: omega max %6.2f degrees\n", omega_max);
-		gmt_message (GMT, "vgenper: gamma %6.3f Omega %6.3f \n", gamma, Omega);
-		gmt_message (GMT, "vgenper: viewpoint lon %6.3f lat %6.3f \n", lonvp, latvp);
-		gmt_message (GMT, "vgenper: viewpoint xt %6.3f yt %6.3f \n", xt_vp/1000.0, yt_vp/1000.0);
-		gmt_message (GMT, "vgenper: user viewpoint %d\n", GMT->current.proj.g_box);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: polar %d north %d\n", GMT->current.proj.polar, GMT->current.proj.north_pole);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: altitude H %7.1f km P %7.4f\n", H/1000.0, P);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: azimuth %5.1f tilt %5.1f\n", azimuth, tilt);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: viewpoint width %5.1f height %5.1f degrees\n", width, height);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: radius max %7.1f km\n", GMT->current.proj.g_rmax/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: eccentricity %7.4f km\n", eccen);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: eq radius max %7.1f km\n", rmax_max/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: polar radius max %7.1f km\n", rmax_min/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: lat0 radius max %7.1f km\n", rmax_at_lat0/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: kp %7.1f \n", kp/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: y offset %7.1f km\n", GMT->current.proj.g_yoffset/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: yt max %7.1f km\n", yt_max/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: yt min %7.1f km\n", yt_min/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: y max %7.1f km\n", GMT->current.proj.g_ymax/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: y min %7.1f km\n", GMT->current.proj.g_ymin/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: x max %7.1f km\n", GMT->current.proj.g_xmax/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: x min %7.1f km\n", GMT->current.proj.g_xmin/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: omega max %6.2f degrees\n", omega_max);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: gamma %6.3f Omega %6.3f \n", gamma, Omega);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: viewpoint lon %6.3f lat %6.3f \n", lonvp, latvp);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: viewpoint xt %6.3f yt %6.3f \n", xt_vp/1000.0, yt_vp/1000.0);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "vgenper: user viewpoint %d\n", GMT->current.proj.g_box);
 	}
 
 }
@@ -1873,8 +1869,8 @@ int gmtlib_genper_map_clip_path (struct GMT_CTRL *GMT, uint64_t np, double *work
 	double x, y, xt, yt;
 
 	if (GMT->current.proj.g_debug > 0) {
-		gmt_message (GMT, "\n\ngenper_map_clip_path: np %" PRIu64 "\n", np);
-		gmt_message (GMT, " x_scale %e y_scale %e, x0 %e y0 %e\n", GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y], GMT->current.proj.origin[GMT_X], GMT->current.proj.origin[GMT_Y]);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper_map_clip_path: np %" PRIu64 "\n", np);
+		GMT_Report (GMT->parent, GMT_MSG_DEBUG, "genper_map_clip_path: x_scale %e y_scale %e, x0 %e y0 %e\n", GMT->current.proj.scale[GMT_X], GMT->current.proj.scale[GMT_Y], GMT->current.proj.origin[GMT_X], GMT->current.proj.origin[GMT_Y]);
 	}
 	assert (np > 1);
 	da = TWO_PI/(np-1);
@@ -1999,7 +1995,7 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_PROJ_IS_ZERO (lat-GMT->current.proj.pole) && GMT_PROJ_IS_ZERO (lon)) {	/* Center of projection */
+	if (gmt_M_proj_is_zero (lat-GMT->current.proj.pole) && gmt_M_proj_is_zero (lon)) {	/* Center of projection */
 		*x = *y = 0.0;
 		return;
 	}
@@ -2014,7 +2010,7 @@ GMT_LOCAL void gmtproj_azeqdist (struct GMT_CTRL *GMT, double lon, double lat, d
 	}
 	else {
 		c = d_acos (cc);
-		k = (GMT_PROJ_IS_ZERO (c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin (c);
+		k = (gmt_M_proj_is_zero (c)) ? GMT->current.proj.EQ_RAD : GMT->current.proj.EQ_RAD * c / sin (c);
 		*x = k * clat * slon;
 		*y = k * (GMT->current.proj.cosp * slat - GMT->current.proj.sinp * t);
 	}
@@ -2178,7 +2174,7 @@ GMT_LOCAL void gmtproj_grinten (struct GMT_CTRL *GMT, double lon, double lat, do
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_PROJ_IS_ZERO (flat)) {	/* Save time */
+	if (gmt_M_proj_is_zero (flat)) {	/* Save time */
 		*x = GMT->current.proj.EQ_RAD * D2R * lon;
 		*y = 0.0;
 		return;
@@ -2250,7 +2246,7 @@ GMT_LOCAL void gmtproj_winkel (struct GMT_CTRL *GMT, double lon, double lat, dou
 
 	sincos (lat, &s, &c);
 	D = d_acos (c * cos (lon));
-	if (GMT_PROJ_IS_ZERO (D))
+	if (gmt_M_proj_is_zero (D))
 		x1 = y1 = 0.0;
 	else {
 		X = s / sin (D);
@@ -2489,7 +2485,7 @@ GMT_LOCAL void gmtproj_vrobinson (struct GMT_CTRL *GMT, double lon0) {
 	int err_flag = 0;
 
 	if (GMT->current.setting.interpolant == GMT_SPLINE_LINEAR) {	/* Must reset and warn */
-		gmt_message (GMT, "-JN requires Akima or Cubic spline interpolant, set to Akima\n");
+		GMT_Report (GMT->parent, GMT_MSG_WARNING, "-JN requires Akima or Cubic spline interpolant, set to Akima\n");
 		GMT->current.setting.interpolant = GMT_SPLINE_AKIMA;
 	}
 
@@ -2592,7 +2588,7 @@ double gmtproj_left_robinson (struct GMT_CTRL *GMT, double y) {
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, NULL, GMT_N_ROBINSON, 1, &Y, &X, 0.0, GMT->current.setting.interpolant)) {
-		gmt_message (GMT, "GMT Internal error in gmtproj_left_robinson!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT Internal error in gmtproj_left_robinson!\n");
 		return GMT->session.d_NaN;
 	}
 
@@ -2607,7 +2603,7 @@ double gmtproj_right_robinson (struct GMT_CTRL *GMT, double y) {
 	y *= GMT->current.proj.i_scale[GMT_Y];
 	Y = fabs (y * GMT->current.proj.n_i_cy);
 	if (gmt_intpol (GMT, GMT->current.proj.n_Y, GMT->current.proj.n_X, NULL, GMT_N_ROBINSON, 1, &Y, &X, 0.0, GMT->current.setting.interpolant)) {
-		gmt_message (GMT, "GMT Internal error in gmtproj_right_robinson!\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "GMT Internal error in gmtproj_right_robinson!\n");
 		return GMT->session.d_NaN;
 	}
 
@@ -2704,7 +2700,7 @@ GMT_LOCAL void gmtproj_cassini (struct GMT_CTRL *P, double lon, double lat, doub
 	gmt_M_wind_lon (P, lon)	/* Remove central meridian and place lon in -180/+180 range */
 	lon *= D2R;
 
-	if (GMT_PROJ_IS_ZERO (lat)) {	/* Quick when lat is zero */
+	if (gmt_M_proj_is_zero (lat)) {	/* Quick when lat is zero */
 		*x = P->current.proj.EQ_RAD * lon;
 		*y = -P->current.proj.c_M0;
 		return;
@@ -2763,7 +2759,7 @@ GMT_LOCAL void gmtproj_cassini_sph (struct GMT_CTRL *GMT, double lon, double lat
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_PROJ_IS_ZERO (lat)) {	/* Quick when lat is zero */
+	if (gmt_M_proj_is_zero (lat)) {	/* Quick when lat is zero */
 		*x = GMT->current.proj.EQ_RAD * lon * D2R;
 		*y = -GMT->current.proj.EQ_RAD * GMT->current.proj.c_p;
 		return;
@@ -2809,9 +2805,9 @@ GMT_LOCAL void gmtproj_valbers (struct GMT_CTRL *GMT, double lon0, double lat0, 
 
 	m1 = c1 * c1 / (1.0 - GMT->current.proj.ECC2 * s1 * s1);	/* Actually m1 and m2 squared */
 	m2 = c2 * c2 / (1.0 - GMT->current.proj.ECC2 * s2 * s2);
-	q0 = (GMT_PROJ_IS_ZERO (GMT->current.proj.ECC)) ? 2.0 * s0 : GMT->current.proj.one_m_ECC2 * (s0 / (1.0 - GMT->current.proj.ECC2 * s0 * s0) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s0) / (1.0 + GMT->current.proj.ECC * s0)));
-	q1 = (GMT_PROJ_IS_ZERO (GMT->current.proj.ECC)) ? 2.0 * s1 : GMT->current.proj.one_m_ECC2 * (s1 / (1.0 - GMT->current.proj.ECC2 * s1 * s1) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s1) / (1.0 + GMT->current.proj.ECC * s1)));
-	q2 = (GMT_PROJ_IS_ZERO (GMT->current.proj.ECC)) ? 2.0 * s2 : GMT->current.proj.one_m_ECC2 * (s2 / (1.0 - GMT->current.proj.ECC2 * s2 * s2) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s2) / (1.0 + GMT->current.proj.ECC * s2)));
+	q0 = (gmt_M_proj_is_zero (GMT->current.proj.ECC)) ? 2.0 * s0 : GMT->current.proj.one_m_ECC2 * (s0 / (1.0 - GMT->current.proj.ECC2 * s0 * s0) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s0) / (1.0 + GMT->current.proj.ECC * s0)));
+	q1 = (gmt_M_proj_is_zero (GMT->current.proj.ECC)) ? 2.0 * s1 : GMT->current.proj.one_m_ECC2 * (s1 / (1.0 - GMT->current.proj.ECC2 * s1 * s1) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s1) / (1.0 + GMT->current.proj.ECC * s1)));
+	q2 = (gmt_M_proj_is_zero (GMT->current.proj.ECC)) ? 2.0 * s2 : GMT->current.proj.one_m_ECC2 * (s2 / (1.0 - GMT->current.proj.ECC2 * s2 * s2) - GMT->current.proj.i_half_ECC * log ((1.0 - GMT->current.proj.ECC * s2) / (1.0 + GMT->current.proj.ECC * s2)));
 
 	GMT->current.proj.a_n = (doubleAlmostEqualZero (ph1, ph2)) ? s1 : (m1 - m2) / (q2 - q1);
 	GMT->current.proj.a_i_n = 1.0 / GMT->current.proj.a_n;
@@ -2850,7 +2846,7 @@ GMT_LOCAL void gmtproj_albers (struct GMT_CTRL *GMT, double lon, double lat, dou
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
 	s = sind (lat);
-	if (GMT_PROJ_IS_ZERO (GMT->current.proj.ECC))
+	if (gmt_M_proj_is_zero (GMT->current.proj.ECC))
 		q = 2.0 * s;
 	else {
 		r = GMT->current.proj.ECC * s;
@@ -2987,7 +2983,7 @@ GMT_LOCAL void gmtproj_polyconic (struct GMT_CTRL *GMT, double lon, double lat, 
 
 	gmt_M_wind_lon (GMT, lon)	/* Remove central meridian and place lon in -180/+180 range */
 
-	if (GMT_PROJ_IS_ZERO(lat)) {
+	if (gmt_M_proj_is_zero(lat)) {
 		*x = GMT->current.proj.EQ_RAD * lon * D2R;
 		*y = GMT->current.proj.EQ_RAD * (lat - GMT->current.proj.pole) * D2R;
 	}
@@ -3009,7 +3005,7 @@ GMT_LOCAL void gmtproj_ipolyconic (struct GMT_CTRL *GMT, double *lon, double *la
 	x *= GMT->current.proj.i_EQ_RAD;
 	y *= GMT->current.proj.i_EQ_RAD;
 	y += GMT->current.proj.pole * D2R;
-	if (GMT_PROJ_IS_ZERO (y)) {
+	if (gmt_M_proj_is_zero (y)) {
 		*lat = y * R2D + GMT->current.proj.pole;
 		*lon = x * R2D + GMT->current.proj.central_meridian;
 	}

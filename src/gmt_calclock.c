@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -443,7 +443,7 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 
 	if (step < 0) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps must be positive.\n");
-		return (-1);
+		return (GMT_NOTSET);
 	}
 
 	switch (unit) {
@@ -453,33 +453,33 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 				GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Unit c for seconds is deprecated; use s.\n");
 				if (step > 60) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in seconds must be <= 60\n");
-					retval = -1;
+					retval = GMT_NOTSET;
 				}
 			}
 			else {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized time axis unit.\n");
-				retval = -1;
+				retval = GMT_NOTSET;
 			}
 			break;
 		case 's':
 		case 'S':
 			if (step > 60) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in seconds must be <= 60\n");
-				retval = -1;
+				retval = GMT_NOTSET;
 			}
 			break;
 		case 'm':
 		case 'M':
 			if (step > 60) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in minutes must be <= 60\n");
-				retval = -1;
+				retval = GMT_NOTSET;
 			}
 			break;
 		case 'h':
 		case 'H':
 			if (step > 24) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in hours must be <= 24\n");
-				retval = -1;
+				retval = GMT_NOTSET;
 			}
 			break;
 		case 'R':	/* Special Gregorian days: Annotate from start of each week and not first day of month */
@@ -490,14 +490,14 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 			if (GMT->current.plot.calclock.date.day_of_year) {
 				if (step > 365) {	/* This is probably an error.  */
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in year days must be <= 365\n");
-					retval = -1;
+					retval = GMT_NOTSET;
 				}
 			}
 			else {
 				/* If step is longer than 31 it is probably an error. */
 				if (step > 31) {
 					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in days of the month must be <= 31\n");
-					retval = -1;
+					retval = GMT_NOTSET;
 				}
 			}
 			break;
@@ -505,28 +505,28 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 		case 'K':
 			if (step > 7) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in weekdays must be <= 7\n");
-				retval = -1;
+				retval = GMT_NOTSET;
 			}
 			break;
 		case 'r':	/* Gregorian week.  Special case:  since weeks aren't numbered on Gregorian
 					calendar, we only allow step size = 1 here, for ticking each week start. */
 			if (step != 1) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time step must be 1 for Gregorian weeks\n");
-				retval = -1;
+				retval = GMT_NOTSET;
 			}
 			break;
 		case 'u':	/* ISO week */
 		case 'U':
 			if (step > 52) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in weeks must be <= 52\n");
-				retval = -1;
+				retval = GMT_NOTSET;
 			}
 			break;
 		case 'o':
 		case 'O':
 			if (step > 12) {
 				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Time steps in months must be <= 12\n");
-				retval = -1;
+				retval = GMT_NOTSET;
 			}
 			break;
 		case 'y':	/* No check on years */
@@ -537,7 +537,7 @@ int gmtlib_verify_time_step (struct GMT_CTRL *GMT, int step, char unit) {
 			break;
 		default:
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized time axis unit.\n");
-			retval = -1;
+			retval = GMT_NOTSET;
 			break;
 	}
 	return (retval);
@@ -881,8 +881,8 @@ void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 		/* Now undo Y2K fix to make a 2-digit year here if necessary */
 
 		if (D->day_of_year) {		/* Using the year and day-of-year as date entries */
-			if (D->item_pos[0] != -1) ival[D->item_pos[0]] = (D->Y2K_year) ? abs (calendar.year) % 100 : calendar.year;
-			if (D->item_pos[3] != -1) ival[D->item_pos[3]] = calendar.day_y;
+			if (D->item_pos[0] != GMT_NOTSET) ival[D->item_pos[0]] = (D->Y2K_year) ? abs (calendar.year) % 100 : calendar.year;
+			if (D->item_pos[3] != GMT_NOTSET) ival[D->item_pos[3]] = calendar.day_y;
 		}
 		else if (D->iso_calendar) {	/* Using ISO year, week and day-of-week entries. Order is fixed to be y-m-d */
 			ival[0] = (D->Y2K_year) ? abs (calendar.iso_y) % 100 : calendar.iso_y;
@@ -890,9 +890,9 @@ void gmt_format_calendar (struct GMT_CTRL *GMT, char *date, char *clock, struct 
 			ival[2] = calendar.iso_d;
 		}
 		else {				/* Gregorian calendar entries */
-			if (D->item_pos[0] != -1) ival[D->item_pos[0]] = (D->Y2K_year) ? abs (calendar.year) % 100 : calendar.year;
-			if (D->item_pos[1] != -1) ival[D->item_pos[1]] = calendar.month;
-			if (D->item_pos[2] != -1) ival[D->item_pos[2]] = calendar.day_m;
+			if (D->item_pos[0] != GMT_NOTSET) ival[D->item_pos[0]] = (D->Y2K_year) ? abs (calendar.year) % 100 : calendar.year;
+			if (D->item_pos[1] != GMT_NOTSET) ival[D->item_pos[1]] = calendar.month;
+			if (D->item_pos[2] != GMT_NOTSET) ival[D->item_pos[2]] = calendar.day_m;
 		}
 		gmt_M_memset (date, GMT_LEN16, char);			/* To set all to zero */
 		if (D->mw_text)	{						/* Must write month or week name */

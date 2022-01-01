@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -350,12 +350,12 @@ GMT_LOCAL int gmtesriio_read_info (struct GMT_CTRL *GMT, FILE *fp, struct GMT_GR
 int gmtlib_is_esri_grid (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header) {
 	/* Determine if file is an ESRI Interchange ASCII file */
 	FILE *fp = NULL;
-	char record[GMT_BUFSIZ] = {""};
+	char record[GMT_BUFSIZ] = {""}, *e = NULL;
 	struct GMT_GRID_HEADER_HIDDEN *HH = gmt_get_H_hidden (header);
 
 	if (!strcmp (HH->name, "="))
 		return (GMT_GRDIO_PIPE_CODECHECK);	/* Cannot check on pipes */
-	if (!strcmp (gmt_get_ext (HH->name), GMT_TILE_EXTENSION_REMOTE)) return (-1);	/* Watch out for .jp2 tiles since they may contain W|E|S|N codes as well and the ESRI check comes before GDAL check*/
+	if ((e = gmt_get_ext (HH->name)) && !strcmp (e, GMT_TILE_EXTENSION_REMOTE)) return (-1);	/* Watch out for .jp2 tiles since they may contain W|E|S|N codes as well and the ESRI check comes before GDAL check*/
 	if ((fp = gmt_fopen (GMT, HH->name, "r")) == NULL)
 		return (GMT_GRDIO_OPEN_FAILED);
 	if (fgets (record, GMT_BUFSIZ, fp) == NULL) {	/* Just get first line. Not using gmt_fgets since we may be reading a binary file */

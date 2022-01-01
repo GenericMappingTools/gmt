@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,8 @@
  * Tech Note:	1. surface uses old grid-structure (transpose of current GMT grid)
  *		   and must therefore waste time transposing grid before writing.
  *		   However, this is a tiny fraction of total run time.
+ *
+ * Note on KEYS: DD(= means -D takes an optional input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -1536,7 +1538,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid file name.\n");
 	GMT_Option (API, "I,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Message (API, GMT_TIME_NONE, "\t-A Set aspect-ratio> [Default = 1 gives an isotropic solution],\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., xinc and yinc assumed to give derivatives of equal weight; if not, specify\n");

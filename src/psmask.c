@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 #define THIS_MODULE_PURPOSE	"Clip or mask map areas with no data table coverage"
 #define THIS_MODULE_KEYS	"<D{,DDD,C-(,>X},LG)"
 #define THIS_MODULE_NEEDS	"Jd"
-#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqrstxy" GMT_OPT("Ec")
+#define THIS_MODULE_OPTIONS "-:>BJKOPRUVXYbdehipqrtwxy" GMT_OPT("Ec")
 
 enum Mask_Modes {
 	PSMASK_INSIDE  = -1,	/* Set inside nodes to NaN */
@@ -67,6 +67,9 @@ struct PSMASK_CTRL {
 		bool active;
 		struct GMT_FILL fill;
 	} G;
+	struct PSMASK_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct PSMASK_L {	/* -L<file>[+i|o] */
 		bool active;
 		int mode;	/* -1 = set inside node to NaN (+i), 0 as is, +1 set outside node to NaN (+o) */
@@ -432,43 +435,49 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct PSMASK_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <table> %s %s\n", name, GMT_I_OPT, GMT_J_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [%s] [-C] [-D<template>] [-F[l|r]] [-G<fill>]\n\t%s[-L<grid>[+i|o]] [-N] %s%s[-Q<min>] [-S%s] [-T]\n", GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_RADIUS_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n", GMT_U_OPT, GMT_V_OPT, GMT_X_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] %s[%s] [%s]\n\t[%s] [%s]\n", GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n", GMT_p_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_t_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <table> %s %s %s [%s] [-C] [-D<template>] [-F[l|r]] [-G<fill>] %s[-L<grdfile>[+i|o]] [-N] "
+		"%s%s[-Q<min>] [-S%s] [-T] [%s] [%s] [%s] [%s] %s[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_I_OPT, GMT_J_OPT, GMT_Rgeoz_OPT, GMT_B_OPT, API->K_OPT, API->O_OPT, API->P_OPT, GMT_RADIUS_OPT, GMT_U_OPT,
+		GMT_V_OPT, GMT_X_OPT, GMT_Y_OPT, GMT_b_OPT, API->c_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_p_OPT,
+		GMT_qi_OPT, GMT_r_OPT, GMT_t_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Option (API, "I,J-Z,R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Option (API, "<,B-");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Terminate existing clip-path.  No other options required.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Dump clip polygons as data polygons; no plotting takes place.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append filename template which may contain a C-format specifier.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no filename template is given we write all polygons to stdout.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If filename has no specifiers then we write all polygons to a single file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If an integer format (e.g., %%06d) is found we substitute a running segment count\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and write all polygons to individual files; see module documentation for more examples.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Cannot be used with -T; see -Q to eliminate small polygons.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force clip contours to be oriented so that the higher z-values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   are to the left (-Fl [Default]) or right (-Fr) as we move along\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the contour lines [Default is not oriented].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Option (API, "<,I,J-Z,R");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Option (API, "B-");
+	GMT_Usage (API, 1, "\n-C Terminate existing clip-path.  No other options required.");
+	GMT_Usage (API, 1, "\n-D<template>");
+	GMT_Usage (API, -2, "Dump clip polygons as data polygons; no plotting takes place. "
+		"Append filename <template> which may contain a C-format specifier. "
+		"If no filename is given we write all polygons to standard output. "
+		"If filename has no specifiers then we write all polygons to a single file. "
+		"If an integer format (e.g., %%06d) is found we substitute a running segment count "
+		"and write all polygons to individual files; see module documentation for more examples.");
+	GMT_Usage (API, -2, "Note: Cannot be used with -T; see -Q to eliminate small polygons.");
+	GMT_Usage (API, 1, "\n-F[l|r]");
+	GMT_Usage (API, -2, "Force clip contours to be oriented so that the higher z-values "
+		"are to the left (-Fl [Default]) or right (-Fr) as we move along "
+		"the contour lines [Default is not oriented].");
 	gmt_fill_syntax (API->GMT, 'G', NULL, "Select fill color/pattern [Default is no fill].");
 	GMT_Option (API, "K");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Save internal on/off node grid to <grid> for testing [no grid saved].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +i to change inside nodes to NaNs or +o to change outside nodes to NaNs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Invert the sense of the clipping [or tiling].\n");
+	GMT_Usage (API, 1, "\n-L<grdfile>[+i|o]");
+	GMT_Usage (API, -2, "Save internal on/off grid to <grdfile> for testing [no grid saved]. Optionally, add a modifier:");
+	GMT_Usage (API, 3, "+i Change inside nodes to NaNs.");
+	GMT_Usage (API, 3, "+o Change outside nodes to NaNs.");
+	GMT_Usage (API, 1, "\n-N Invert the sense of the clipping [or tiling].");
 	GMT_Option (API, "O,P");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Do not dump contours with less than <cut> points [Dump all contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Ignored unless -D is set.\n");
-	gmt_dist_syntax (API->GMT, 'S', "Set search radius to identify inside points.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This means nodes inside circles of <radius> centered on the input\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   data points are considered to be reliable estimates of the surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is -S0, i.e., only the nearest node is considered reliable.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Paint tiles [Default will trace data outline].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If set you must also specify a color/fill with -G.\n");
-	GMT_Option (API, "U,V,X,bi2,bo,c,d,e,h,i,p,qi,r,s,t,:,.");
+	GMT_Usage (API, 1, "\n-Q<min>");
+	GMT_Usage (API, -2, "Do not dump contours with less than <min> points [Dump all contours]. "
+		"Note: Ignored unless -D is set.");
+	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Set search radius to identify inside points.");
+	GMT_Usage (API, -2, "Grid nodes inside circles of <radius> centered on the input "
+		"data points are considered to be reliable estimates of the surface. "
+		"Default is -S0, i.e., only the nearest node is considered reliable.");
+	GMT_Usage (API, 1, "\n-T Paint tiles [Default will trace data outline and set a clip path]. "
+		"Note: If set you must also specify a color/fill with -G.");
+	GMT_Option (API, "U,V,X,bi2,bo,c,d,e,h,i,p,qi,r,t,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -492,15 +501,17 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
 			case 'D':	/* Dump the polygons to files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -520,6 +531,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				if (n_plus >= 0) opt->arg[n_plus] = '+';	/* Restore it */
 				break;
 			case 'F':	/* Orient the clip contours */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case 'l':
@@ -534,6 +546,7 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (gmt_getfill (GMT, opt->arg, &Ctrl->G.fill)) {
 					gmt_fill_syntax (GMT, 'G', NULL, " ");
@@ -541,9 +554,12 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				}
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				k = 0;
 				if (opt->arg[0] == '-')	/* Old style leading -<name> */
@@ -562,17 +578,21 @@ static int parse (struct GMT_CTRL *GMT, struct PSMASK_CTRL *Ctrl, struct GMT_OPT
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				Ctrl->Q.min = atoi (opt->arg);
 				break;
 			case 'S':	/* Radius of influence */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 
@@ -873,8 +893,7 @@ EXTERN_MSC int GMT_psmask (void *V_API, int mode, void *args) {
 			x = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 			y = gmt_M_memory (GMT, NULL, max_alloc_points, double);
 
-			n_edges = Grid->header->n_rows * (urint (ceil (Grid->header->n_columns / 16.0)));
-			edge = gmt_M_memory (GMT, NULL, n_edges, unsigned int);
+			edge = gmt_contour_edge_init (GMT, Grid->header, &n_edges);
 
 			GMT_Report (API, GMT_MSG_INFORMATION, "Tracing the clip path\n");
 

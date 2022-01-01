@@ -8,12 +8,21 @@ Background
 
 The GMT tools :doc:`/plot` and :doc:`/plot3d` are capable of using custom
 symbols as alternatives to the built-in, standard geometrical shapes
-such as circles, triangles, and many others. One the command line, custom
-symbols are selected via the **-Sk**\ *symbolname*\ [*size*] symbol
-selection, where *symbolname* refers to a special symbol definition file
-called ``symbolname.def`` that must be available via the standard GMT user paths. Several
-custom symbols comes pre-configured with GMT (see
-Figure :ref:`Custom symbols <Custom_symbols>`)
+such as circles, triangles, and many others. On the command line, custom
+symbols are selected via the **-Sk**\ *symbolname*\ [/*size*] symbol
+selection, where *symbolname* refers
+
+#. An Encapsulated PostScript File named ``symbolname.eps``
+#. A special symbol definition file called ``symbolname.def``
+
+Either type of file must be available via the standard GMT user paths. EPS symbols
+are widely available on the Internet or can be created, even with GMT.  If all you
+want to do is to use an EPS file as a custom symbol, then selecting the option
+**-Sk** is all you need to do.  For using an EPS file as
+part of a more general custom symbol, for instance to allow rotation, then you will
+find more information provided below.
+
+Several custom symbol definitions comes included with GMT (see Figure :ref:`Custom symbols <Custom_symbols>`)
 
 .. _Custom_symbols:
 
@@ -25,6 +34,11 @@ Figure :ref:`Custom symbols <Custom_symbols>`)
    Be aware that some symbols may have a hardwired fill or no-fill component,
    while others duplicate what is already available as standard built-in symbols.
 
+.. toggle::
+
+   Here is the source script for the figure above:
+
+   .. literalinclude:: /_verbatim/GMT_App_N_1.txt
 
 You may find it convenient to examine some of these and use them as a
 starting point for your own design; they can be found in GMT's
@@ -95,7 +109,29 @@ out parameters for pre-processing. The available types are
 
 To use the extra parameters in your macro you address them as $1, $2, etc.  There
 is no limit on how many parameters your symbol may use. To access the trailing text in
-the input file you use $t.
+the input file you use $t and for a particular word (number k = 0, 1, ...) in the
+trailing text you use $t\ *k*.
+
+Angles and azimuths
+~~~~~~~~~~~~~~~~~~~
+
+.. _Angle_azimuths:
+
+.. figure:: /_images/GMT_angle-azim.*
+   :width: 500 px
+   :align: center
+
+   a) A geographic azimuth custom symbol (@azimuth.def). b) A Cartesian angle
+   symbol (@angle.def).
+
+For variables used to pass angles or azimuths, the type of angle is controlled via the **N**
+statement in the previous section.  If a symbol accepts two angles given via variables
+or constants we will treat both angles as either azimuths or Cartesian angles.  If you are
+specifying only constants then the angles are assumed to be Cartesian unless you append
+**a** to one (or both) of the constant angles; this suffix flags the value as a geographic azimuth;
+see :ref:`Custom symbols <Angle_azimuths>` for examples of the two angles. These two custom
+symbols are remote files and can be downloaded and used as starting points for more elaborate
+symbols.
 
 Macro commands
 ~~~~~~~~~~~~~~
@@ -113,13 +149,15 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | **Name**      | **Code**   | **Purpose**                            | **Arguments**                              |
 +===============+============+========================================+============================================+
-| rotate        | **R**      | Rotate the coordinate system           | :math:`\alpha`\[**a**]                     |
-+---------------+------------+----------------------------------------+--------------------------------------------+
-| moveto        | **M**      | Set a new anchor point                 | :math:`x_0, y_0`                           |
+| arc           | **A**      | Append circular arc to existing path   | :math:`x_c, y_c, d, \alpha_1, \alpha_2`    |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | drawto        | **D**      | Draw line from previous point          | :math:`x, y`                               |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| arc           | **A**      | Append circular arc to existing path   | :math:`x_c, y_c, d, \alpha_1, \alpha_2`    |
+| moveto        | **M**      | Set a new anchor point                 | :math:`x_0, y_0`                           |
++---------------+------------+----------------------------------------+--------------------------------------------+
+| rotate        | **O**      | Rotate the coordinate system           | :math:`\alpha`\[**a**]                     |
++---------------+------------+----------------------------------------+--------------------------------------------+
+| EPS           | **P**      | Place an Encapsulated PostScript file  | :math:`x, y, size, name`                   |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | stroke        | **S**      | Stroke existing path only              |                                            |
 +---------------+------------+----------------------------------------+--------------------------------------------+
@@ -147,29 +185,35 @@ are constants.
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | pentagon      | **n**      | Plot a pentagon                        | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| plus          | **+**      | Plot a plus sign                       | :math:`x, y, size`                         |
-+---------------+------------+----------------------------------------+--------------------------------------------+
 | rect          | **r**      | Plot a rectangle                       | :math:`x, y, width, height`                |
++---------------+------------+----------------------------------------+--------------------------------------------+
+| roundrect     | **R**      | Plot a rounded rectangle               | :math:`x, y, width, height, radius`        |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | square        | **s**      | Plot a square                          | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | triangle      | **t**      | Plot a triangle                        | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
+| vector        | **v**      | Plot a simple vector with head at end  | :math:`x, y, \alpha, length`               |
++---------------+------------+----------------------------------------+--------------------------------------------+
 | wedge         | **w**      | Plot a wedge                           | :math:`x, y, d, \alpha_1, \alpha_2`        |
 +---------------+------------+----------------------------------------+--------------------------------------------+
 | cross         | **x**      | Plot a cross                           | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
-| x-dash        | **-**      | Plot a x-dash                          | :math:`x, y, size`                         |
-+---------------+------------+----------------------------------------+--------------------------------------------+
 | y-dash        | **y**      | Plot a y-dash                          | :math:`x, y, size`                         |
 +---------------+------------+----------------------------------------+--------------------------------------------+
+| x-dash        | **-**      | Plot a x-dash                          | :math:`x, y, size`                         |
++---------------+------------+----------------------------------------+--------------------------------------------+
+| plus          | **+**      | Plot a plus sign                       | :math:`x, y, size`                         |
++---------------+------------+----------------------------------------+--------------------------------------------+
 
-Note for **R**\: if an **a** is appended to the angle then :math:`\alpha` is considered
+Note for **O**\: if an **a** is appended to the angle then :math:`\alpha` is considered
 to be a map azimuth; otherwise it is a Cartesian map angle.  The **a** modifier
 does not apply if the angle is given via a variable, in which case the type of angle
-has already been specified via **N:** above and already converged before seen by **R**.
-Finally, the **R** command can also be given the negative of a variable, e.g., -$2 to
+has already been specified via **N:** above and already converged before seen by **O**.
+Finally, the **O** command can also be given the negative of a variable, e.g., -$2 to
 undo a rotation, if necessary.
+Note for **v**: The vector stem and head outline are always drawn. Head properties are automatically derived from
+the *width* of the pen only (head length = 8 times pen width, apex = 30 degrees, shape = 0.5).
 
 Symbol fill and outline
 ~~~~~~~~~~~~~~~~~~~~~~~

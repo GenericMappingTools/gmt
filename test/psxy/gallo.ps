@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.2.0_bec0f3a_2020.10.04 [64-bit] Document from psxy
+%%Title: GMT v6.2.0_46247ef_2021.02.06 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Sun Oct  4 21:38:31 2020
+%%CreationDate: Sat Feb  6 13:10:28 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,9 +112,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +255,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +288,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +338,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -554,6 +568,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -568,7 +585,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -638,6 +663,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -676,6 +715,7 @@ O0
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
+0 A
 clipsave
 0 0 M
 7087 0 D
@@ -683,9 +723,10 @@ clipsave
 -7087 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 O1
+V 3465 5354 T
 /Sk_gallo {
 PSL_eps_begin
 1.01600060 dup scale
@@ -1045,19 +1086,29 @@ grestore
 
 %%EndDocument
 PSL_eps_end } def
-V 2520 4253 T
+V -945 -1101 T
 1.57480314961 dup scale Sk_gallo U
-V 394 986 T
+U
+V 1575 2362 T
+V -1181 -1376 T
 1.96850393701 dup scale Sk_gallo U
-V 4912 876 T
+U
+V 5512 1575 T
+V -600 -699 T
 1 dup scale Sk_gallo U
-V 2924 6564 T
+U
+V 4724 8661 T
+V -1800 -2098 T
 3 dup scale Sk_gallo U
-V -413 8838 T
+U
+V 787 10236 T
+V -1200 -1398 T
 2 dup scale Sk_gallo U
+U
 U
 PSL_cliprestore
 25 W
+0 A
 /PSL_slant_y 0 def
 2 setlinecap
 N 0 11024 M 0 -11024 D S
@@ -1244,9 +1295,9 @@ clipsave
 -7087 0 D
 P
 PSL_clip N
+V
 0 W
 0 0 1 C
-V
 O1
 2202 1890 3465 5354 Sr
 2753 2362 1575 2362 Sr
@@ -1275,9 +1326,9 @@ clipsave
 -7087 0 D
 P
 PSL_clip N
+V
 0 W
 1 0 0 C
-V
 O1
 2400 3465 5354 S+
 2400 1575 2362 S+
@@ -1306,8 +1357,8 @@ clipsave
 -7087 0 D
 P
 PSL_clip N
-12 W
 V
+12 W
 {1 1 0 C} FS
 O1
 60 3465 5354 Sc

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -28,7 +28,7 @@ struct GMT_API_DICT {
 	int value;
 };
 
-#define GMT_N_API_ENUMS 251
+#define GMT_N_API_ENUMS 258
 
 static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ADD_DEFAULT", 6},
@@ -42,6 +42,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_ALLOC_INTERNALLY", 1},
 	{"GMT_ALLOC_NORMAL", 0},
 	{"GMT_ALLOC_VERTICAL", 4},
+	{"GMT_ALLOC_VIA_ICOLS", 16},
 	{"GMT_BGD", 0},
 	{"GMT_CHAR", 0},
 	{"GMT_CMYK", 1},
@@ -75,8 +76,9 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_CPT_SOFT_HINGE", 8},
 	{"GMT_CPT_TIME", 16},
 	{"GMT_CUBE_IS_STACK", 64},
+	{"GMT_DATA_IS_GEO", 256},
 	{"GMT_DATA_ONLY", 2},
-	{"GMT_DATETIME", 11},
+	{"GMT_DATETIME", 32},
 	{"GMT_DOUBLE", 9},
 	{"GMT_DUPLICATE_ALLOC", 1},
 	{"GMT_DUPLICATE_DATA", 2},
@@ -103,6 +105,8 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_GRID_IS_IMAGE", 512},
 	{"GMT_GRID_IS_REAL", 0},
 	{"GMT_GRID_NAME_LEN256", 256},
+	{"GMT_GRID_NEEDS_PAD1", 65536},
+	{"GMT_GRID_NEEDS_PAD2", 131072},
 	{"GMT_GRID_NODE_REG", 0},
 	{"GMT_GRID_NO_HEADER", 16},
 	{"GMT_GRID_PIXEL_REG", 1},
@@ -152,6 +156,8 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_IS_NONE", 16},
 	{"GMT_IS_OUTPUT", 1024},
 	{"GMT_IS_PALETTE", 3},
+	{"GMT_IS_PALETTE_KEY", 1024},
+	{"GMT_IS_PALETTE_LABEL", 2048},
 	{"GMT_IS_PERIMETER", 0},
 	{"GMT_IS_PLP", 7},
 	{"GMT_IS_POINT", 1},
@@ -225,6 +231,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_SESSION_EXTERNAL", 2},
 	{"GMT_SESSION_LOGERRORS", 8},
 	{"GMT_SESSION_NOEXIT", 1},
+	{"GMT_SESSION_NOGDALCLOSE", 64},
 	{"GMT_SESSION_NOHISTORY", 32},
 	{"GMT_SESSION_NORMAL", 0},
 	{"GMT_SESSION_RUNMODE", 16},
@@ -232,7 +239,7 @@ static struct GMT_API_DICT gmt_api_enums[GMT_N_API_ENUMS] = {
 	{"GMT_STRICT_CONVERSION", 1024},
 	{"GMT_SYNOPSIS", 1},
 	{"GMT_TBL", 0},
-	{"GMT_TEXT", 10},
+	{"GMT_TEXT", 16},
 	{"GMT_TIME_CLOCK", 1},
 	{"GMT_TIME_ELAPSED", 2},
 	{"GMT_TIME_NONE", 0},

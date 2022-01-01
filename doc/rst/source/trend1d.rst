@@ -24,6 +24,8 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -104,10 +106,10 @@ Optional Arguments
     model terms are added in the order they were given in **-N** so you
     should place the most important terms first.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -138,6 +140,10 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-q.rst_
+
+.. include:: explain_-s.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

@@ -15,8 +15,9 @@ Synopsis
 **gmt grdhisteq** *ingrid* [ |-G|\ *outgrid* ]
 [ |-C|\ *n_cells* ] [ |-D|\ [*file*] ] [ |-N|\ [*norm*] ]
 [ |-Q| ]
-|SYN_OPT-R|
-|SYN_OPT-V|
+[ |SYN_OPT-R| ]
+[ |SYN_OPT-V| ]
+[ |SYN_OPT-h| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -31,7 +32,7 @@ this application, the user might have a grid of flat topography with a
 mountain in the middle. Ordinary gray shading of this file (using
 :doc:`grdimage` or :doc:`grdview`) with a linear mapping from topography to graytone will
 result in most of the image being very dark gray, with the mountain
-being almost white. One could use **grdhisteq** to write to stdout or file an
+being almost white. One could use **grdhisteq** to write to standard output or file an
 ASCII list of those data values which divide the range of the data into
 *n_cells* segments, each of which has an equal area in the image. Using
 **awk** or :doc:`makecpt` one can take this output and build a CPT;
@@ -59,8 +60,10 @@ location of the most negative input value, and so on.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D grid file to be equalized. (See GRID FILE FORMATS below).
+.. |Add_ingrid| replace:: 2-D grid file to be equalized.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -77,36 +80,38 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of output 2-D grid file. Used with **-N** only. (See GRID FILE FORMATS below).
+.. |Add_outgrid| replace:: Give the name of the output grid file. Used with |-N| only.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-N:
 
 **-N**\ [*norm*]
     Gaussian output. Use with **-G** to make an output grid with
     standard normal scores. Append *norm* to force the scores to fall in
-    the <-1,+1> range [Default is standard normal scores].
+    the ±*norm* range [Default is standard normal scores].
 
 .. _-Q:
 
 **-Q**
     Quadratic output. Selects quadratic histogram equalization. [Default is linear].
 
-.. _-R:
-
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of *ingrid* grid. If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+    exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
+
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-h.rst_
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

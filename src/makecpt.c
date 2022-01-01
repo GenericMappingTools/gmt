@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -144,59 +144,73 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	const char *H_OPT = (API->GMT->current.setting.run_mode == GMT_MODERN) ? " [-H]" : "";
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E<nlevels>] [-F[R|r|h|c][+c[<label>]][+k<keys>]] [-G<zlo>/<zhi>]%s\n", name, H_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-I[c][z]] [-M] [-N] [-Q] [-S<mode>] [-T<min>/<max>[/<inc>[+b|i|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]]\n\t[-Z] [%s] [%s] [%s]\n\t[%s] [%s]\n\n",
-		GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_i_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [-A<transparency>[+a]] [-C<cpt>|colors] [-D[i|o]] [-E[<nlevels>]] "
+		"[-F[R|r|h|c][+c[<label>]][+k<keys>]] [-G<zlo>/<zhi>]%s [-I[c][z]] [-M] [-N] [-Q] [-S<mode>] "
+		"[-T<min>/<max>[/<inc>[+b|i|l|n]] | -T<table> | -T<z1,z2,...zn>] [%s] [-W[w]] [-Z] [%s] [%s] [%s] [%s] [%s]\n",
+		name, H_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_ho_OPT, GMT_i_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Set constant transparency for all colors; append +a to also include back-, for-, and nan-colors [0]\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<transparency>[+a]");
+	GMT_Usage (API, -2, "Set constant transparency for all colors; append +a to also include back-, for-, and nan-colors [0].");
 	if (gmt_list_cpt (API->GMT, 'C')) return (GMT_CPT_READ_ERROR);	/* Display list of available color tables */
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set back- and foreground color to match the bottom/top limits\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   in the output CPT [Default (-D or -Do) uses the output color table]. Append i\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to match the bottom/top values in the input CPT instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Use <nlevels> equidistant color levels from zmin to zmax.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This option implies we read data from given command-line files [or stdin] to\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   determine data range (use -i to select a data column, else last column is used).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <nlevels> is not set we use the number of color slices in the chosen CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Select the color model for output (R for r/g/b or grayscale or colorname,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r for r/g/b only, h for h-s-v, c for c/m/y/k) [Default uses the input model]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +c[label>] to output a discrete CPT in categorical CPT format.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The <label>, if present, sets the labels for each category. It may be a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   comma-separated list of category names, or <start>[-], where we automatically build\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +k<keys> to set categorical keys rather than numerical values.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <keys> may be a file with one key per line or a comma-separated list of keys.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If <keys> is a single letter then we build sequential alphabetical keys from that letter.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To accept one of the incoming limits, set that limit to NaN.\n");
-	if (API->GMT->current.setting.run_mode == GMT_MODERN)
-		GMT_Message (API, GMT_TIME_NONE, "\t-H Also write CPT to stdout [Default just saves as current CPT].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Reverse sense of CPT in one or two ways:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Ic Reverse sense of color table as well as back- and foreground color [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Iz Reverse sign of z-values in the color table (takes affect before -G, T are consulted).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Use GMT defaults to set back-, foreground, and NaN colors\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default uses the settings in the color table].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do not write back-, foreground, and NaN colors [Default will].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q The z-values given to -T are log10(z). Assign colors via log10(z) but write z.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Determine range in -T from input data table(s) instead.  Choose operation:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sa<scl> Make symmetric range around average (i.e., mean) and +/- <scl> * sigma.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sm<scl> Make symmetric range around median and +/- <scl> * L1_scale.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sp<scl> Make symmetric range around mode and +/- <scl> * LMS_scale.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sq<low>/<high> Set range from <low> quartile to <high> quartile.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -S<inc>[+d] Read data and round range to nearest <inc>; append +d for discrete CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sr	Read data and use min/max as range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Last data column is used in the calculation; see -i to arrange columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced color boundaries from <min> to <max> in steps of <inc>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b for log2 spacing in integer <inc> or +l for log10 spacing via <inc> = 1,2,3.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of color boundaries to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time series, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with color boundaries in the first column, or a comma-separate list of values.\n");
+	GMT_Usage (API, 1, "\n-D[i|o]");
+	GMT_Usage (API, -2, "Set back- and foreground color to match the bottom/top limits "
+		"in the output CPT [Default (-D or -Do) uses the output color table]. Append i "
+		"to match the bottom/top values in the input CPT instead.");
+	GMT_Usage (API, 1, "\n-E[<nlevels>]");
+	GMT_Usage (API, -2, "Use <nlevels> equidistant color levels from zmin to zmax. "
+		"This option implies we read data from given command-line files [or standard input] to "
+		"determine data range (use -i to select a data column, else last column is used). "
+		"If <nlevels> is not set we use the number of color slices in the chosen CPT.");
+	GMT_Usage (API, 1, "\n-F[R|r|h|c][+c[<label>]][+k<keys>]");
+	GMT_Usage (API, -2, "Select the color model for output [Default uses the input model]:");
+	GMT_Usage (API, 3, "R: Output r/g/b or grayscale or colorname.");
+	GMT_Usage (API, 3, "r: Output r/g/b only.");
+	GMT_Usage (API, 3, "h: Output h-s-v.");
+	GMT_Usage (API, 3, "c: Output c/m/y/k.");
+	GMT_Usage (API, -2, "Two modifiers control generation of categorical labels:");
+	GMT_Usage (API, 3, "+c Output a discrete CPT in categorical CPT format. "
+		"The <label>, if appended, sets the labels for each category. It may be a "
+		"comma-separated list of category names, or <start>[-] where we automatically build "
+		"labels from <start> (a letter or an integer). Append - to build range labels <start>-<start+1>.");
+	GMT_Usage (API, 3, "+k Set categorical keys rather than numerical values. "
+		"<keys> may be a file with one key per line or a comma-separated list of keys. "
+		"If <keys> is a single letter then we build sequential alphabetical keys from that letter. "
+		"If number of categories is 12 and label is M then we auto-create month name labels, and "
+		"if it is 7 and label is D then we auto-create weekday name labels.");
+	GMT_Usage (API, 1, "\n-G<zlo>/<zhi>");
+	GMT_Usage (API, -2, "Truncate incoming CPT to be limited to the z-range <zlo>/<zhi>. "
+		"To accept one of the incoming limits, set that limit to NaN.");
+	GMT_Usage (API, 1, "\n-H Modern mode only: Also write CPT to standard output [Default just saves as current CPT].");
+	GMT_Usage (API, 1, "\n-I[c][z]");
+	GMT_Usage (API, -2, "Invert sense of CPT in one or two ways:");
+	GMT_Usage (API, 3, "c: Invert sense of color table as well as back- and foreground color [Default].");
+	GMT_Usage (API, 3, "z: Invert sign of z-values in the color table (takes affect before -G, T are consulted).");
+	GMT_Usage (API, 1, "\n-M Use GMT defaults to set back-, foreground, and NaN colors [Default uses color table].");
+	GMT_Usage (API, 1, "\n-N Do not write back-, foreground, and NaN colors [Default will].");
+	GMT_Usage (API, 1, "\n-Q The z-values given to -T are log10(z). Assign colors via log10(z) but write z.");
+	GMT_Usage (API, 1, "\n-S<mode>");
+	GMT_Usage (API, -2, "Determine range in -T from input data table(s) instead.  Choose directive:");
+	GMT_Usage (API, 3, "a: Append <scl> and make symmetric range around average (i.e., mean) and +/- <scl> * sigma.");
+	GMT_Usage (API, 3, "m: Append <scl> and make symmetric range around median and +/- <scl> * L1_scale.");
+	GMT_Usage (API, 3, "p: Append <scl> and make symmetric range around mode and +/- <scl> * LMS_scale.");
+	GMT_Usage (API, 3, "q: Append <low>/<high> and set range from <low> quartile to <high> quartile.");
+	GMT_Usage (API, 3, "r: Read data and use min/max as range.");
+	GMT_Usage (API, -2, "Alternatively, just append <inc>[+d] to read data and round range to nearest <inc>; append +d for discrete CPT. "
+		"Last data column is used in the calculation; see -i to arrange columns.");
+	GMT_Usage (API, 1, "\n-T[<file>|<list>|<min>/<max>/<inc>[+b|i|l|n]]");
+	GMT_Usage (API, -2, "Set domain from <min> to <max> in steps of <inc>. Control setup via modifiers:");
+	GMT_Usage (API, 3, "+b Select log2 spacing in <inc>");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, 3, "+l Select log10 spacing via <inc> = 1,2,3.");
+	GMT_Usage (API, 3, "+n Let <inc> mean the number of points instead. of increment");
+	GMT_Usage (API, -2, "Alternatively, give a <file> with output times in the first column, or a comma-separated <list>.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Do not interpolate color palette. Alternatively, append w for a wrapped CPT.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Force a continuous color palette when derived from color and z-lists [discrete].\n");
+	GMT_Usage (API, 1, "\n-W[w]");
+	GMT_Usage (API, -2, "Do not interpolate color palette. Alternatively, append w for a wrapped CPT.");
+	GMT_Usage (API, 1, "\n-Z Force a continuous color palette when derived from color and z-lists [discrete].");
 	GMT_Option (API, "bi,di,h,i,.");
 
 	return (GMT_MODULE_USAGE);
@@ -221,10 +235,11 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	 * returned when registering these sources/destinations with the API.
 	 */
 
-	int n;
+	bool q_active = false;
 	unsigned int n_errors = 0, n_files[2] = {0, 0}, n_categorical = 0;
 	char txt_a[GMT_LEN512] = {""}, txt_b[GMT_LEN32] = {""}, *c = NULL, *keys = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) if (opt->option == 'Q') Ctrl->Q.active = true;;	/* If -T given before -Q we need to flag -T+l */
 
@@ -241,6 +256,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Sets transparency [-A<transp>[+a]] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == '+') {	/* Old syntax */
 					Ctrl->A.mode = 1;
@@ -256,22 +272,26 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->A.value = 0.01 * atof (opt->arg);
 				break;
 			case 'C':	/* CTP table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				break;
 			case 'D':	/* Set BNF to match cpt ends */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.mode = 1;
 				if (opt->arg[0] == 'i') Ctrl->D.mode = 2;
 				break;
 			case 'E':	/* Use n levels */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0] && sscanf (opt->arg, "%d", &Ctrl->E.levels) != 1) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Cannot decode value\n");
 					n_errors++;
 				}
 				break;
 			case 'F':	/* Sets format for color reporting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (gmt_validate_modifiers (GMT, opt->arg, 'F', "ck", GMT_MSG_ERROR)) n_errors++;
 				if (gmt_get_modifier (opt->arg, 'c', txt_a)) {
@@ -290,29 +310,30 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'G':	/* truncate incoming CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
-				n = sscanf (opt->arg, "%[^/]/%s", txt_a, txt_b);
-				n_errors += gmt_M_check_condition (GMT, n < 2, "Option -G: Must specify z_low/z_high\n");
-				if (!(txt_a[0] == 'N' || txt_a[0] == 'n') || !strcmp (txt_a, "-")) Ctrl->G.z_low = atof (txt_a);
-				if (!(txt_b[0] == 'N' || txt_b[0] == 'n') || !strcmp (txt_b, "-")) Ctrl->G.z_high = atof (txt_b);
-				n_errors += gmt_M_check_condition (GMT, gmt_M_is_dnan (Ctrl->G.z_low) && gmt_M_is_dnan (Ctrl->G.z_high),
-				                                   "Option -G: Both of z_low/z_high cannot be NaN\n");
+				n_errors += gmt_get_limits (GMT, 'G', opt->arg, 0, &Ctrl->G.z_low, &Ctrl->G.z_high);
 				break;
 			case 'H':	/* Modern mode only: write CPT to stdout */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				Ctrl->H.active = true;
 				break;
 			case 'I':	/* Invert table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if ((Ctrl->I.mode = gmt_parse_inv_cpt (GMT, opt->arg)) == UINT_MAX)
 					n_errors++;
 				break;
 			case 'M':	/* Use GMT defaults for BNF colors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				break;
 			case 'N':	/* Do not output BNF colors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Derive -T arguments from input data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'a':
@@ -342,6 +363,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'T':	/* Sets up color z values */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = Ctrl->T.interpolate = true;
 				n_categorical = makecpt_is_categories (GMT, opt->arg);
 				if (n_categorical == 0)
@@ -351,21 +373,24 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 				if (Ctrl->T.T.set == 2) Ctrl->T.interpolate = false;	/* Did not give increment, just min/max */
 				break;
 			case 'Q':	/* Logarithmic scale */
-				Ctrl->Q.active = true;
+				n_errors += gmt_M_repeated_module_option (API, q_active);
+				q_active = true;
 				if (opt->arg[0] != '\0' && gmt_M_compat_check (GMT, 5))
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -Qi or -Qo are deprecated; Use -T+l for old -Qo and -Q for old -Qi.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -Qi or -Qo are deprecated; Use -T+l for old -Qo and -Q for old -Qi.\n");
 				if (opt->arg[0] == 'o')	/* Input data is z, but take log10(z) before interpolation colors */
 					Ctrl->Q.mode = 2;
 				else			/* Input is log10(z) */
 					Ctrl->Q.mode = 1;
 				break;
 			case 'W':	/* Do not interpolate colors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				if (opt->arg[0] == 'w')
 					Ctrl->W.wrap = true;
 				else
 					Ctrl->W.active = true;
 				break;
 			case 'Z':	/* Continuous colors */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				break;
 
@@ -377,7 +402,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 
 	if (n_categorical) {	/* Must do some shuffling */
 		if (Ctrl->F.key) {
-			GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -T: Cannot set categorical keys with both -T and -F+k.\n");
+			GMT_Report (API, GMT_MSG_COMPAT, "Option -T: Cannot set categorical keys with both -T and -F+k.\n");
 			n_errors++;
 		}
 		else {
@@ -392,7 +417,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 	else if (Ctrl->T.T.logarithmic) Ctrl->Q.active = true, Ctrl->Q.mode = 2;
 
 	if (Ctrl->H.active && GMT->current.setting.run_mode == GMT_CLASSIC) {
-		GMT_Report (GMT->parent, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
+		GMT_Report (API, GMT_MSG_WARNING, "Option -H: Only available in modern mode - ignored in classic mode\n");
 		Ctrl->H.active = false;
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->C.active && Ctrl->C.file == NULL,
@@ -406,7 +431,7 @@ static int parse (struct GMT_CTRL *GMT, struct MAKECPT_CTRL *Ctrl, struct GMT_OP
 
 	if (!Ctrl->S.active) {
 		if (Ctrl->T.active && !Ctrl->T.interpolate && Ctrl->Z.active && (Ctrl->C.file == NULL || strchr (Ctrl->C.file, ',') == NULL)) {
-			GMT_Report (GMT->parent, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
+			GMT_Report (API, GMT_MSG_WARNING, "Without inc in -T option, -Z has no effect (ignored)\n");
 			Ctrl->Z.active = false;
 		}
 	}
@@ -583,7 +608,6 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 	}
 	nz = (int)Ctrl->T.T.n;		z = Ctrl->T.T.array;
-
 	if (Ctrl->T.T.list && (Pin->mode & GMT_CPT_TEMPORARY)) {	/* Array was passed as a comma-separated list of z-values so make sure it matches a list of colors, if given */
 		/* Got -Zcolor,color,... and -Tz,z,z */
 		int k;
@@ -624,6 +648,10 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		if (Ctrl->Q.mode == 1)
 			gmt_undo_log10 (GMT, Pout);
 	}
+	else if (nz < 2) {
+		GMT_Report (API, GMT_MSG_ERROR, "Need at least two nodes to form a CPT slice, your choice only resulted in %d nodes\n", nz);
+		Return (GMT_RUNTIME_ERROR);
+	}
 
 	if (Pout == NULL) {	/* Meaning it was not created above */
 		if (Ctrl->Q.mode == 2)
@@ -642,10 +670,12 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 	if (Ctrl->D.mode == 1) cpt_flags |= GMT_CPT_EXTEND_BNF;	/* bit 1 controls if BF will be set to equal bottom/top rgb value */
 	if (Ctrl->F.active) Pout->model = Ctrl->F.model;
 	if (Ctrl->F.cat) {	/* Flag as a categorical CPT */
+		bool got_key_file= (Ctrl->F.key && !gmt_access (GMT, Ctrl->F.key, R_OK));	/* Want categorical labels read from file */
+		unsigned int ns = 0;
 		Pout->categorical = GMT_CPT_CATEGORICAL_VAL;
-		if (Ctrl->F.label || Ctrl->F.key) {	/* Want categorical labels appended to each CPT record */
-			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+		if (Ctrl->F.label || (Ctrl->F.key && !got_key_file)) {	/* Want auto-categorical labels appended to each CPT record */
+			char **label = gmt_cat_cpt_strings (GMT, (Ctrl->F.label) ? Ctrl->F.label : Ctrl->F.key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
 				if (label[k]) Pout->data[k].label = label[k];	/* Now the job of the CPT to free these strings */
 			}
@@ -653,17 +683,24 @@ EXTERN_MSC int GMT_makecpt (void *V_API, int mode, void *args) {
 		}
 		if (Ctrl->F.key) {	/* Want categorical labels */
 			char **keys = NULL;
-			if (!gmt_access (GMT, Ctrl->F.key, R_OK)) {	/* Got a file with category keys */
-				unsigned int ns = gmt_read_list (GMT, Ctrl->F.key, &keys);
+			if (got_key_file) {	/* Got a file with category keys */
+				ns = gmt_read_list (GMT, Ctrl->F.key, &keys);
 				if (ns < Pout->n_colors) {
-					GMT_Report (API, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but %d were expected\n", Ctrl->F.key, ns, Pout->n_colors);
+					GMT_Report (API, GMT_MSG_ERROR, "The categorical keys file %s had %d entries but CPT has %d categories\n", Ctrl->F.key, ns, Pout->n_colors);
+					Return (GMT_RUNTIME_ERROR);
 				}
+				else if (ns > Pout->n_colors)
+					GMT_Report (API, GMT_MSG_WARNING, "The categorical keys file %s had %d entries but only %d are needed - skipping the extra keys\n", Ctrl->F.key, ns, Pout->n_colors);
 			}
 			else	/* Got comma-separated keys */
-				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors);
-			for (unsigned int k = 0; k < Pout->n_colors; k++) {
+				keys = gmt_cat_cpt_strings (GMT, Ctrl->F.key, Pout->n_colors, &ns);
+			for (unsigned int k = 0; k < MIN (Pout->n_colors, ns); k++) {
 				if (Pout->data[k].key) gmt_M_str_free (Pout->data[k].key);
-				if (keys[k]) Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+				if (k < ns && keys[k]) {
+					Pout->data[k].key = keys[k];	/* Now the job of the CPT to free these strings */
+					if (Pout->data[k].label) gmt_M_str_free (Pout->data[k].label);
+					Pout->data[k].label = strdup (keys[k]);
+				}
 			}
 			gmt_M_free (GMT, keys);	/* But the master array can go */
 			Pout->categorical = GMT_CPT_CATEGORICAL_KEY;

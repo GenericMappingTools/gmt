@@ -21,7 +21,7 @@ Synopsis
 [ |-I|\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**] ]
 [ |-L| ]
 [ |-S|\ [**x**][**y**] ]
-[ |-T|\ *dz*\ [**+c**\ *col*] ]
+[ |-T|\ *dz*\ [**w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**][**+c**\ *col*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
@@ -35,6 +35,7 @@ Synopsis
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -105,15 +106,16 @@ Optional Arguments
     information for each segment in the virtual data set: *tbl_number, seg_number,
     n_rows, start_rec, stop_rec*. Mode **t** does the same but honors the input
     table organization and thus resets *seg_number, start_rec, stop_rec* at the
-    start of each new table.
+    start of each new table [Default is **i**].
 
 .. _-I:
 
 **-I**\ [**b**\|\ **e**\|\ **f**\|\ **p**\|\ **s**]\ *dx*\ [/*dy*\ [/*dz*...][**+e**\|\ **r**\|\ **R**]
-    Report the min/max of the first *n* columns to the nearest multiple
-    of the provided increments (separate the *n* increments by slashes),
-    and output results in the form **-R**\ *w/e/s/n* (unless **-C** is
-    set). If only one increment is given we also use it for the second
+    Compute the *min*\ /*max* values of the first *n* columns to the nearest multiple
+    of the provided increments (separate the *n* increments by slashes) [default is 2 columns].
+    By default, output results in the form **-R**\ *w/e/s/n*, unless **-C** is
+    set in which case we output each *min* and *max* value in separate output columns.
+    If only one increment is given we also use it for the second
     column (for backwards compatibility). To override this behavior, use
     **-Ip**\ *dx*. If the input *x*- and *y*-coordinates all have the
     same phase shift relative to the *dx* and *dy* increments then we
@@ -154,14 +156,16 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ *dz*\ [**+c**\ *col*]
+**-T**\ *dz*\ [**w**\|\ **d**\|\ **h**\|\ **m**\|\ **s**][**+c**\ *col*]
     Report the min/max of the first (0'th) column to the nearest multiple of *dz* and output this as the
     string **-T**\ *zmin/zmax/dz*. To use another column, append **+c**\ *col*. Cannot be used together with **-I**.
+    **Note**: If your column has absolute time then you may append a valid fixed time unit to *dz*, or rely
+    on the current setting of :term:`TIME_UNIT` [**s**].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-aspatial.rst_
 
@@ -194,6 +198,8 @@ Optional Arguments
 
 .. include:: explain_-s.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
@@ -207,7 +213,7 @@ Examples
 
 To find the extreme values in the remote file @ship_15.txt::
 
-    gmt info @ship_15.tx
+    gmt info @ship_15.txt
 
 Output should look like::
 
@@ -259,4 +265,3 @@ See Also
 :doc:`gmt`,
 :doc:`gmtconvert`,
 :doc:`plot`
-

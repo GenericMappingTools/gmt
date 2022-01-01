@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -50,6 +50,9 @@ struct GRDGDAL_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDGDAL_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDGDAL_M {	/* -M[+r+w] which read-write machinery. GMT or GDAL  */
 		bool active;
 		bool read_gdal, write_gdal;
@@ -73,27 +76,32 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *C) {	/* Deallo
 	if (!C) return;
 	if (C->A.dem_method) gmt_M_str_free (C->A.dem_method);
 	if (C->A.dem_cpt) gmt_M_str_free (C->A.dem_cpt);
+	if (C->fname_in) gmt_M_str_free (C->fname_in);
 	gmt_M_free (GMT, C);
 }
 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <infile> -A<prog>[+m<method>+c<cpt>] [-F<gd opts>] [-G<outgrid>] %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M[+r+w]] [%s] [%s]\n\n", GMT_Rx_OPT, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s <infile> -A<prog>[+m<method>[+c<cpt>]] [-F<gd opts>] [-G%s] [%s] [-M[+r|w]] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_OUTGRID, GMT_I_OPT, GMT_Rx_OPT, GMT_V_OPT,
+		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify input file name. This can be either a GMT table or an OGR file (See -M).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify the GDAL program name (currently: info, dem, grid, translate, rasterize or warp).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   When program is 'dem' append +m<method> (pick one of hillshade, color-relief, \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   slope, TRI, TPI or roughness) and, for color-relief, +c<cpt_name>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G sets output grid or image file name.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F List of GDAL options for the selected program in -A wrapped in double quotes.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<infile> Specify input file name. This can be either a GMT table or an OGR file (See -M).");
+	GMT_Usage (API, 1, "\n-A<prog>[+m<method>[+c<cpt>]]");
+	GMT_Usage (API, -2, "Specify the GDAL program name (currently: info, dem, grid, translate, rasterize or warp). When "
+		"program is 'dem' append +m<method> (pick one of hillshade, color-relief, slope, TRI, TPI or roughness) and, "
+		"for color-relief, +c<cpt_name>.");
+	gmt_outgrid_syntax (API, 'G', "Set output grid or image file name");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-F List of GDAL options for the selected program in -A wrapped in double quotes.");
 	GMT_Option  (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Read and write with GDAL. Use +r to only read or +w to write.\n");
-	GMT_Option  (API, "R,V,bi,e,g,h,i,qi,r,:,.");
+	GMT_Usage (API, 1, "\n-M[+r|w]");
+	GMT_Usage (API, -2, "Read and write with GDAL. Use +r to only read or +w to write.");
+	GMT_Option  (API, "R,V,bi,d,e,g,h,i,qi,r,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -107,27 +115,29 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 	char txt_a[GMT_LEN16] = {""}, txt_b[GMT_LEN256] = {""}, *p;
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
 		switch (opt->option) {
 			/* Processes program-specific parameters */
 			case '<':	/* Input file(s) */
-				Ctrl->fname_in = opt->arg;
+				Ctrl->fname_in = strdup(opt->arg);
 				n_files++;
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) {	/* No grid found */
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) 	/* No dataset found */
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) {	/* No grid found */
+					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->fname_in))) 	/* No dataset found */
 						n_errors++;
 				}
 				break;
 
 			case 'A':	/* GDAL prog name */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				Ctrl->A.prog_name = opt->arg;
 				if (gmt_get_modifier (opt->arg, 'm', txt_a)) {
 					if (strcmp(txt_a, "hillshade") && strcmp(txt_a, "color-relief") && strcmp(txt_a, "slope") &&
 					    strcmp(txt_a, "TRI") && strcmp(txt_a, "TPI") && strcmp(txt_a, "roughness")) {
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "-A option. \"%s\" is not a valid method\n", txt_a);
+						GMT_Report (API, GMT_MSG_ERROR, "-A option. \"%s\" is not a valid method\n", txt_a);
 						n_errors++;
 						break;
 					}
@@ -140,21 +150,26 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'F':	/* -F<gdal options> */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.opts = strdup(opt->arg);
 				break;
 
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 
 			case 'M':	/* -M[+r+w] which read-write machinery. GMT or GDAL */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				if (opt->arg[0] == '\0')
 					Ctrl->M.read_gdal = Ctrl->M.write_gdal = true;
@@ -163,12 +178,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGDAL_CTRL *Ctrl, struct GMT_OP
 					if (strstr(opt->arg, "+w")) Ctrl->M.write_gdal = true;
 				}
 				if (!Ctrl->M.read_gdal && !Ctrl->M.write_gdal) {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "-M option. Modifiers must be either +r or +w\n");
+					GMT_Report (API, GMT_MSG_ERROR, "-M option. Modifiers must be either +r or +w\n");
 					n_errors++;
 				}
 				break;
 
 			case 'W':	/* -W<fname> sets output VECTOR data fname when written by GDAL -- NOT USED YET */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				Ctrl->W.file = opt->arg;
 				Ctrl->M.write_gdal = true;
@@ -222,8 +238,8 @@ EXTERN_MSC int GMT_grdgdal (void *V_API, int mode, void *args) {
 		Return (GMT_MEMORY_ERROR);
 	}
 	/* Populate GDAL control structure form user's selections */
-	st->fname_in  = Ctrl->fname_in;
-	st->fname_out = Ctrl->G.file;
+	st->fname_in  = strdup(Ctrl->fname_in);
+	st->fname_out = strdup(Ctrl->G.file);
 	st->opts = Ctrl->F.opts;
 	st->M.read_gdal  = Ctrl->M.read_gdal;
 	st->M.write_gdal = Ctrl->M.write_gdal;

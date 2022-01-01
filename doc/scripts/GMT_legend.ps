@@ -1,17 +1,16 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
-%%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from pslegend
+%%HiResBoundingBox: 0 0 612.0000 792.0000
+%%Title: GMT v6.2.0_eb9390f_2021.05.26 [64-bit] Document from legend
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:58 2018
+%%CreationDate: Wed May 26 14:05:38 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
 %%Pages: 1
 %%EndComments
-
 %%BeginProlog
 250 dict begin
 /! {bind def} bind def
@@ -112,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /ISOLatin1+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -336,9 +349,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -556,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -570,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -594,9 +616,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +659,21 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
+    U
+} def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
     U
 } def
 /PSL_nclip 0 def
@@ -648,213 +681,206 @@ end
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_cliprestore {cliprestore /PSL_nclip PSL_nclip 1 sub def} def
 %%EndProlog
-
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
-PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
-
 %%Page: 1 1
-
 %%BeginPageSetup
 V 0.06 0.06 scale
 %%EndPageSetup
-
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
 FQ
 O0
 1200 1200 TM
-
 % PostScript produced by:
-%@GMT: gmt pslegend -Dx0/0+w5.6i+jBL+l1.2 -C0.05i -F+p+gsnow1 -B0 table.txt --FONT_ANNOT_PRIMARY=12p --FONT_LABEL=12p
-%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
-%GMTBoundingBox: 72 72 403.2 259.2
+%@GMT: gmt legend -Dx0/0+w5.6i+jBL+l1.2 -C0.05i -F+p+gsnow1 -B0 table.txt --FONT_LABEL=12p
+%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.75000000 0.000 5.600 0.000 3.750 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+/PSL_legend_box_width 6720 def
+/PSL_legend_box_height 4500 def
 {1 0.98 0.98 C} FS
-4320 6720 3360 2160 Sr
+4500 6720 3360 2250 Sr
 17 W
-N 0 3720 M 6720 0 D S
-N 0 3360 M 6720 0 D S
+N 0 3900 M 6720 0 D S
+N 0 3540 M 6720 0 D S
 {0.565 0.933 0.565 C} FS
-292 403 202 3206 Sr
-292 1478 1142 3206 Sr
-292 1075 2419 3206 Sr
-292 1344 3629 3206 Sr
-292 1344 4973 3206 Sr
-292 538 5914 3206 Sr
-292 538 6451 3206 Sr
+292 403 202 3386 Sr
+292 1478 1142 3386 Sr
+292 1075 2419 3386 Sr
+292 1344 3629 3386 Sr
+292 1344 4973 3386 Sr
+292 538 5914 3386 Sr
+292 538 6451 3386 Sr
 {0.678 0.847 0.902 C} FS
-240 403 202 2460 Sr
-240 1478 1142 2460 Sr
-240 1075 2419 2460 Sr
-240 1344 3629 2460 Sr
-240 1344 4973 2460 Sr
-240 538 5914 2460 Sr
-240 538 6451 2460 Sr
+240 403 202 2640 Sr
+240 1478 1142 2640 Sr
+240 1075 2419 2640 Sr
+240 1344 3629 2640 Sr
+240 1344 4973 2640 Sr
+240 538 5914 2640 Sr
+240 538 6451 2640 Sr
 {1 0.502 0.502 C} FS
-240 403 202 1740 Sr
-240 1478 1142 1740 Sr
-240 1075 2419 1740 Sr
-240 1344 3629 1740 Sr
-240 1344 4973 1740 Sr
-240 538 5914 1740 Sr
-240 538 6451 1740 Sr
+240 403 202 1920 Sr
+240 1478 1142 1920 Sr
+240 1075 2419 1920 Sr
+240 1344 3629 1920 Sr
+240 1344 4973 1920 Sr
+240 538 5914 1920 Sr
+240 538 6451 1920 Sr
 {0.678 0.847 0.902 C} FS
-240 403 202 1500 Sr
-240 1478 1142 1500 Sr
-240 1075 2419 1500 Sr
-240 1344 3629 1500 Sr
-240 1344 4973 1500 Sr
-240 538 5914 1500 Sr
-240 538 6451 1500 Sr
-52 403 202 1354 Sr
-52 1478 1142 1354 Sr
-52 1075 2419 1354 Sr
-52 1344 3629 1354 Sr
-52 1344 4973 1354 Sr
-52 538 5914 1354 Sr
-52 538 6451 1354 Sr
-N 0 1320 M 6720 0 D S
-N 403 3720 M 0 -2400 D S
-N 1882 3720 M 0 -2400 D S
-N 2957 3720 M 0 -2400 D S
-N 4301 3720 M 0 -2400 D S
-N 5645 3720 M 0 -2400 D S
-N 6182 3720 M 0 -2400 D S
+240 403 202 1680 Sr
+240 1478 1142 1680 Sr
+240 1075 2419 1680 Sr
+240 1344 3629 1680 Sr
+240 1344 4973 1680 Sr
+240 538 5914 1680 Sr
+240 538 6451 1680 Sr
+52 403 202 1534 Sr
+52 1478 1142 1534 Sr
+52 1075 2419 1534 Sr
+52 1344 3629 1534 Sr
+52 1344 4973 1534 Sr
+52 538 5914 1534 Sr
+52 538 6451 1534 Sr
+N 0 1500 M 6720 0 D S
+N 403 3900 M 0 -2400 D S
+N 1882 3900 M 0 -2400 D S
+N 2957 3900 M 0 -2400 D S
+N 4301 3900 M 0 -2400 D S
+N 5645 3900 M 0 -2400 D S
+N 6182 3900 M 0 -2400 D S
 25 W
 FQ
 O1
-4320 6720 3360 2160 Sr
+4500 6720 3360 2250 Sr
 0 A
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt psxy -R0/5.6/0/3.6 -Jx1i -O -K -N -S @GMTAPI@-000002 --GMT_HISTORY=false
-%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
+%@GMT: gmt plot -R0/5.6/0/3.75 -Jx1i -O -K -N -S @GMTAPI@-S-I-D-D-T-N-000002 --PROJ_LENGTH_UNIT=inch --GMT_HISTORY=readonly
+%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.75000000 0.000 5.600 0.000 3.750 +xy
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-4 W
+3.32550952342 setmiterlimit
 V
+4 W
 {1 0.98 0.98 C} FS
-60 240 3540 Sc
+60 240 3720 Sc
 {1 0 0 C} FS
 O1
-60 240 3180 Sc
+60 240 3360 Sc
 {1 0.647 0 C} FS
-60 240 2940 Sc
+60 240 3120 Sc
 {1 1 0 C} FS
-60 240 2700 Sc
+60 240 2880 Sc
 {0 1 0 C} FS
-60 240 2460 Sc
+60 240 2640 Sc
 {0 0 1 C} FS
-60 240 2220 Sc
+60 240 2400 Sc
 {0 1 1 C} FS
-60 240 1980 Sc
+60 240 2160 Sc
 {1 0 1 C} FS
-60 240 1740 Sc
+60 240 1920 Sc
 {1 A} FS
-60 240 1500 Sc
+60 240 1680 Sc
 U
 %%EndObject
 0 A
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -F+f+j @GMTAPI@-000001 --GMT_HISTORY=false
-%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
+%@GMT: gmt text -R0/5.6/0/3.75 -Jx1i -O -K -N -F+f+j @GMTAPI@-S-I-D-D-N-N-000001 --GMT_HISTORY=readonly
+%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.75000000 0.000 5.600 0.000 3.750 +xy
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 PSL_font_encode 4 get 0 eq {ISOLatin1+_Encoding /Times-Roman /Times-Roman PSL_reencode PSL_font_encode 4 1 put} if
-3360 3885 M 400 F4
+3360 4065 M 400 F4
 (Eight Largest Cities in North America) bc Z
 PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-1142 3470 M 200 F0
+1142 3650 M 200 F0
 (City Name) bc Z
-2419 3470 M (Country) bc Z
-3629 3470 M (Population) bc Z
-4973 3470 M (Climate) bc Z
-5914 3470 M (WC?) bc Z
-6451 3470 M (OL?) bc Z
-1822 3110 M (Mexico City) br Z
-2897 3110 M (Mexico) br Z
-4241 3110 M (8,851,080) br Z
-5585 3110 M (Tropical) br Z
-5914 3110 M (Y) bc Z
-6451 3110 M (Y) bc Z
-1822 2870 M (New York City) br Z
-2897 2870 M (USA) br Z
-4241 2870 M (8,405,837) br Z
-5585 2870 M (Tempered) br Z
-5914 2870 M (Y) bc Z
-6451 2870 M (N) bc Z
-1822 2630 M (Los Angeles) br Z
-2897 2630 M (USA) br Z
-4241 2630 M (3,904,657) br Z
-5585 2630 M (Subtropical) br Z
-5914 2630 M (Y) bc Z
-6451 2630 M (Y) bc Z
-1822 2390 M (Toronto) br Z
-2897 2390 M (Canada) br Z
-4241 2390 M (2,795,060) br Z
-5585 2390 M (Tempered) br Z
-5914 2390 M (N) bc Z
-6451 2390 M (N) bc Z
-1822 2150 M (Chicago) br Z
-2897 2150 M (USA) br Z
-4241 2150 M (2,714,856) br Z
-5585 2150 M (Tempered) br Z
-5914 2150 M (Y) bc Z
-6451 2150 M (N) bc Z
-1822 1910 M (Houston) br Z
-2897 1910 M (USA) br Z
-4241 1910 M (2,714,856) br Z
-5585 1910 M (subtropical) br Z
-5914 1910 M (N) bc Z
-6451 1910 M (N) bc Z
-1822 1670 M (Havana) br Z
-2897 1670 M (Cuba) br Z
-4241 1670 M (2,106,146) br Z
-5585 1670 M (Tropical) br Z
-5914 1670 M (N) bc Z
-6451 1670 M (N) bc Z
-1822 1430 M (Montreal) br Z
-2897 1430 M (Canada) br Z
-4241 1430 M (1,649,519) br Z
-5585 1430 M (Tempered) br Z
-5914 1430 M (N) bc Z
-6451 1430 M (Y) bc Z
-6660 1120 M 150 F4
+2419 3650 M (Country) bc Z
+3629 3650 M (Population) bc Z
+4973 3650 M (Climate) bc Z
+5914 3650 M (WC?) bc Z
+6451 3650 M (OL?) bc Z
+1822 3290 M (Mexico City) br Z
+2897 3290 M (Mexico) br Z
+4241 3290 M (8,851,080) br Z
+5585 3290 M (Tropical) br Z
+5914 3290 M (Y) bc Z
+6451 3290 M (Y) bc Z
+1822 3050 M (New York City) br Z
+2897 3050 M (USA) br Z
+4241 3050 M (8,405,837) br Z
+5585 3050 M (Tempered) br Z
+5914 3050 M (Y) bc Z
+6451 3050 M (N) bc Z
+1822 2810 M (Los Angeles) br Z
+2897 2810 M (USA) br Z
+4241 2810 M (3,904,657) br Z
+5585 2810 M (Subtropical) br Z
+5914 2810 M (Y) bc Z
+6451 2810 M (Y) bc Z
+1822 2570 M (Toronto) br Z
+2897 2570 M (Canada) br Z
+4241 2570 M (2,795,060) br Z
+5585 2570 M (Tempered) br Z
+5914 2570 M (N) bc Z
+6451 2570 M (N) bc Z
+1822 2330 M (Chicago) br Z
+2897 2330 M (USA) br Z
+4241 2330 M (2,714,856) br Z
+5585 2330 M (Tempered) br Z
+5914 2330 M (Y) bc Z
+6451 2330 M (N) bc Z
+1822 2090 M (Houston) br Z
+2897 2090 M (USA) br Z
+4241 2090 M (2,714,856) br Z
+5585 2090 M (subtropical) br Z
+5914 2090 M (N) bc Z
+6451 2090 M (N) bc Z
+1822 1850 M (Havana) br Z
+2897 1850 M (Cuba) br Z
+4241 1850 M (2,106,146) br Z
+5585 1850 M (Tropical) br Z
+5914 1850 M (N) bc Z
+6451 1850 M (N) bc Z
+1822 1610 M (Montreal) br Z
+2897 1610 M (Canada) br Z
+4241 1610 M (1,649,519) br Z
+5585 1610 M (Tempered) br Z
+5914 1610 M (N) bc Z
+6451 1610 M (Y) bc Z
+6660 1300 M 150 F4
 (Information from Wikipedia) br Z
 %%EndObject
 0 A
 FQ
 O0
 0 0 TM
-
 % PostScript produced by:
-%@GMT: gmt pstext -R0/5.6/0/3.6 -Jx1i -O -K -N -M -F+a+f+j @GMTAPI@-000003 --GMT_HISTORY=false
-%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.60000000 0.000 5.600 0.000 3.600 +xy
+%@GMT: gmt text -R0/5.6/0/3.75 -Jx1i -O -K -N -M -F+a+f+j @GMTAPI@-S-I-D-D-X-N-000003 --GMT_HISTORY=readonly
+%@PROJ: xy 0.00000000 5.60000000 0.00000000 3.75000000 0.000 5.600 0.000 3.750 +xy
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 /PSL_linespace 240 def
 /PSL_parwidth 6600 def
 /PSL_parjust 4 def
@@ -940,19 +966,32 @@ O0
   /k2 k1 1 add def
   /char1 PSL_word k1 get def
   /char2 PSL_word k2 get def
+  /flag2 PSL_flag k2 get def
   /w1 char1 stringwidth pop def
+  flag2 64 and 64 eq {
+    /fn2 PSL_fnt k2 get def
+    fz PSL_fontname fn2 get Y
+  } if
   /w2 char2 stringwidth pop def
   /delta w1 w2 sub 2 div PSL_scale mul def
   delta 0.0 gt {
     /dx1 0 def
     /dx2 delta def
   }
-  { /dx1 delta neg def
+  {
+    /dx1 delta neg def
     /dx2 0 def
   } ifelse
   dx1 0 G currentpoint
+  flag2 64 and 64 eq {
+   /fn1 PSL_fnt k1 get def
+    fz PSL_fontname fn1 get Y
+  } if
   pr_char 0 char1 PSL_show M
   delta 0 G
+  flag2 64 and 64 eq {
+    fz PSL_fontname fn2 get Y
+  } if
   pr_char 0 char2 ashow
   dx2 0 G
 }!
@@ -1028,7 +1067,7 @@ O0
     {
       1 PSL_mode eq {
         start PSL_expand
-	start PSL_placeword
+        start PSL_placeword
       }
       {PSL_word start get PSL_wordheight
       } ifelse
@@ -1078,7 +1117,7 @@ O0
 1 array astore def
 /PSL_n 46 def
 /PSL_n1 45 def
-/PSL_y0 970 def
+/PSL_y0 1150 def
 /PSL_spaces [() ( ) (  ) ] def
 /PSL_lastfn -1 def
 /PSL_lastfz -1 def
@@ -1139,7 +1178,7 @@ PSL_max_word_width PSL_parwidth gt { /PSL_parwidth PSL_max_word_width def } if
     PSL_count k 0 put
   } if
 } for
-V 60 970 T
+V 60 1150 T
 0 0 M
 0 PSL_textjustifier
 /PSL_justify 9 def
@@ -1152,15 +1191,13 @@ PSL_x0 PSL_y0 T
 1 PSL_textjustifier U
 %%EndObject
 %%EndObject
-
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U
 showpage
-
 %%Trailer
-
 end
 %%EOF

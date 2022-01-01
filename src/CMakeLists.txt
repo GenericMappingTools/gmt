@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -94,7 +94,7 @@ endif (GM)
 find_program (FFMPEG ffmpeg)
 if (FFMPEG)
 	execute_process(COMMAND ffmpeg -version OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
-	string (REGEX MATCH "[0-9]+\\.[0-9]+\\.[0-9]+" answer "${answer}")
+	string (REGEX MATCH "[0-9]+(.[0-9]+)?(.[0-9]+)?" answer "${answer}")
 	set (GMT_CONFIG_FFMPEG_MESSAGE "yes (${answer})" CACHE INTERNAL "FFMPEG config message")
 else (FFMPEG)
 	message (WARNING "Cannot find ffmpeg - gmt movie will be unable to make movies from frames")
@@ -122,9 +122,11 @@ else (WIN32)
 	if (GS)
 		execute_process(COMMAND gs --version OUTPUT_VARIABLE answer OUTPUT_STRIP_TRAILING_WHITESPACE)
 		set (GMT_CONFIG_GS_MESSAGE "yes (${answer})" CACHE INTERNAL "GS config message")
+		set (GMT_CONFIG_GS_VERSION "${answer}" CACHE INTERNAL "GS version")
 	else (GS)
 		message (WARNING "Cannot find ghostscript program gs - gmt psconvert will be unable to convert PostScript to other formats")
 		set (GMT_CONFIG_GS_MESSAGE "no" CACHE INTERNAL "GS config message")
+		set (GMT_CONFIG_GS_VERSION "x.xx.x" CACHE INTERNAL "GS version")
 	endif (GS)
 endif (WIN32)
 
@@ -265,7 +267,7 @@ endif (APPLE)
 find_package (OpenMP)
 if (GMT_OPENMP)
 	set (GMT_ENABLE_OPENMP TRUE)
-	message (WARNING "CMake variable GMT_OPENMP is deprecated and will be removed in the futhure releases. Use GMT_ENABLE_OPENMP instead.")
+	message (WARNING "CMake variable GMT_OPENMP is deprecated and will be removed in the future releases. Use GMT_ENABLE_OPENMP instead.")
 endif (GMT_OPENMP)
 if (OPENMP_FOUND AND GMT_ENABLE_OPENMP)
 	set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
@@ -351,7 +353,8 @@ set (SHARED_LIB_PURPOSE "GMT ${SHARED_LIB_NAME}: The main modules of the Generic
 set (GMT_PROGRAM ${GMT_SOURCE_DIR}/src/gmtprogram.c)
 
 # Legacy modules for which to install compatibility links via install_module_symlink
-set (GMT_COMPAT_MODULES minmax gmtdp gmtstitch grdreformat ps2raster originator PARENT_SCOPE)
+set (GMT_COMPAT_MODULES minmax gmtdp gmtstitch grdreformat ps2raster originator)
+set (GMT_COMPAT_MODULES ${GMT_COMPAT_MODULES} PARENT_SCOPE) # needed by share/tools/gmt5syntax.in
 
 # gmt core modules
 set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c dimfilter.c docs.c filter1d.c
@@ -360,11 +363,11 @@ set (GMT_PROGS_SRCS batch.c blockmean.c blockmedian.c blockmode.c dimfilter.c do
 	grd2cpt.c grd2kml.c grd2xyz.c grdblend.c grdclip.c grdcontour.c grdconvert.c grdcut.c grdedit.c
 	grdfft.c grdfill.c grdfilter.c grdgdal.c grdgradient.c grdhisteq.c grdimage.c grdinfo.c
 	grdinterpolate.c grdlandmask.c grdmask.c grdmath.c grdmix.c grdpaste.c grdproject.c grdsample.c
-	grdtrack.c grdtrend.c grdvector.c grdview.c grdvolume.c greenspline.c kml2gmt.c makecpt.c
+	grdselect.c grdtrack.c grdtrend.c grdvector.c grdview.c grdvolume.c greenspline.c kml2gmt.c makecpt.c
 	mapproject.c movie.c nearneighbor.c project.c psbasemap.c psclip.c pscoast.c pscontour.c
 	psconvert.c psevents.c pshistogram.c psimage.c pslegend.c psmask.c psrose.c psscale.c
 	pssolar.c psternary.c pstext.c pswiggle.c psxy.c psxyz.c sample1d.c spectrum1d.c sph2grd.c
-	sphdistance.c sphinterpolate.c sphtriangulate.c splitxyz.c surface.c trend1d.c trend2d.c
+	sphdistance.c sphinterpolate.c sphtriangulate.c gmtsplit.c surface.c trend1d.c trend2d.c
 	triangulate.c xyz2grd.c)
 
 # libpslib
@@ -372,17 +375,18 @@ set (GMT_PSL_SRCS postscriptlight.c declspec.h psl_config.h PSL_Standard+.h
 	PSL_Standard.h PSL_ISOLatin1+.h PSL_ISOLatin1.h PSL_ISO-8859-1.h
 	PSL_ISO-8859-2.h PSL_ISO-8859-3.h PSL_ISO-8859-4.h PSL_ISO-8859-5.h
 	PSL_ISO-8859-6.h PSL_ISO-8859-7.h PSL_ISO-8859-8.h PSL_ISO-8859-9.h
-	PSL_ISO-8859-10.h PSL_ISO-8859-13.h PSL_ISO-8859-14.h PSL_ISO-8859-15.h
+	PSL_ISO-8859-10.h PSL_ISO-8859-11.h PSL_ISO-8859-13.h PSL_ISO-8859-14.h
+	PSL_ISO-8859-15.h PSL_ISO-8859-16.h
 	PSL_strings.h PSL_patterns.h)
 
 set (GMT_MBSYSTEM_SRCS gmt_mbsystem_glue.c)
 
 # libgmt
 set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
-	gmt_common_runpath.h gmt_common_sighandler.c gmt_common_string.h clear.c begin.c
+	gmt_common_runpath.h gmt_common_sighandler.h gmt_common_string.h clear.c begin.c
 	gmt_color_rgb.h gmt_colornames.h gmt_media_size.h gmt_mgg_header2.h
 	gmt_modern.c end.c declspec.h gmt_hidden.h gmt_remote.h gmt_remote.c
-	figure.c gmt_dev.h gmt_common.h gmt_constants.h compat/qsort.h
+	figure.c gmt_dev.h gmt_common.h gmt_common_longoptions.h gmt_constants.h compat/qsort.h
 	gmt_contour.h gmt_customio.h gmt_datums.h gmt_dcw.h gmt_decorate.h gmt_defaults.h
 	gmt_ellipsoids.h gmt_error.h gmt_gdalread.h gmt_glib.h gmt_grd.h gmt_grdio.h gmt_hash.h
 	gmt_internals.h gmt_io.h gmt_macros.h gmt_media_name.h gmt_modern.h
@@ -403,7 +407,7 @@ set (GMT_LIB_SRCS block_subs.h gmt_common_byteswap.h gmt_common_math.h
 	${CMAKE_CURRENT_BINARY_DIR}/gmt_${SHARED_LIB_NAME}_glue.c
 	kiss_fft/_kiss_fft_guts.h kiss_fft/kiss_fft.c kiss_fft/kiss_fft.h
 	kiss_fft/kiss_fftnd.c kiss_fft/kiss_fftnd.h
-	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS})
+	${GMT_TRIANGLE_SRCS} ${GMT_MBSYSTEM_SRCS} ${EXTRA_SOURCES})
 
 # source codes for testing API
 if (DO_API_TESTS)
@@ -662,8 +666,8 @@ if (BUILD_DEVELOPER)
 	install (FILES postscriptlight.h gmt_common_math.h gmt_common_string.h gmt_common.h gmt_constants.h gmt_contour.h
 		gmt_dcw.h gmt_decorate.h gmt_defaults.h gmt_error.h gmt_error_codes.h gmt_fft.h gmt_gdalread.h gmt_grd.h
 		gmt_grdio.h gmt_hash.h gmt_io.h gmt_macros.h gmt_memory.h gmt_modern.h gmt_nan.h gmt_notposix.h gmt_plot.h
-		gmt_private.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_symbol.h gmt_synopsis.h
-		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h gmt_hidden.h gmt_mb.h gmt_remote.h
+		gmt_private.h gmt_project.h gmt_prototypes.h gmt_psl.h gmt_shore.h gmt_common_sighandler.h gmt_symbol.h gmt_synopsis.h
+		gmt_texture.h gmt_time.h gmt_types.h gmt_dev.h gmt_customio.h gmt_hidden.h gmt_mb.h gmt_remote.h gmt_common_byteswap.h
 		DESTINATION ${GMT_INCLUDEDIR}
 		COMPONENT Runtime)
 	install (FILES compat/qsort.h

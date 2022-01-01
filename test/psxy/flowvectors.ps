@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
+%%Title: GMT v6.4.0_769b9ef-dirty_2021.12.27 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 27 12:16:30 2019
+%%CreationDate: Mon Dec 27 14:34:10 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -123,7 +123,7 @@
 % Translate and memorize advance
 /PSL_xorig 0 def /PSL_yorig 0 def
 /TM {2 copy T PSL_yorig add /PSL_yorig edef PSL_xorig add /PSL_xorig edef}!
-% To reencode one font with the provided encoding vector
+% To re-encode one font with the provided encoding vector
 /PSL_reencode {findfont dup length dict begin
   {1 index /FID ne {def}{pop pop} ifelse} forall
   exch /Encoding edef currentdict end definefont pop
@@ -144,10 +144,12 @@
   countdictstack PSL_dict_count sub {end} repeat	% Clean up dict stack
   PSL_eps_state restore					% Restore saved state
 }!
-/PSL_transp {						% Set transparency
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{		% Using ghostscript
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}	% Or Adobe
-  {pop pop} ifelse} ifelse				% Or skip if neither are supported
+/PSL_transp {             % Changes the transparency settings
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }  % Ghostscript
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if } % Or Adobe
+  ifelse
 }!
 
 /Standard+_Encoding [
@@ -368,9 +370,16 @@ PSL_pathtextdict begin
       dy dx atan R				% Rotate the x-axis to coincide
 						% with the current segment.
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {  % Show text normally, if requested
+        char show}
+      if
+      PSL_font_FO { % Fill first then outline, if requested
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF { % Outline text then fill, if requested
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def		% Update the current position
     						% before we restore ourselves to
 						% the untransformed state.
@@ -434,6 +443,9 @@ end
   /PSL_strokeline false def			% true draws line, false skips
   /PSL_fillbox psl_bits 128 and 128 eq def		% true to paint box opaque before placing text, false gives transparent box
   /PSL_drawbox psl_bits 256 and 256 eq def		% true to draw box outline before placing text, false gives no outline
+  /PSL_font_F  psl_bits 1536 and 0 eq def     % true to paint regular text
+  /PSL_font_FO psl_bits 512 and 512 eq def    % true to fill text first then draw outline
+  /PSL_font_OF psl_bits 1024 and 1024 eq def  % true to draw outline of text first then fill inside
   /PSL_n_paths1 PSL_n_paths 1 sub def		% one less is the upper limit in for loop over the paths
   /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
 
@@ -489,10 +501,12 @@ end
     PSL_xp j PSL_xx i get put		% Add this point to the path
     PSL_yp j PSL_yy i get put
     node_type 1 eq			% If this is a cut point we either stroke or place text
-    {n 0 eq				% n is 0 so this is the strokable segment
+    {n 0 eq		% n is 0 so this is the strokable segment
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath		% here, n = 1 so this is the segment along which text should be placed
-	PSL_CT_textline} ifelse		% Reverse path if needed to place text correctly
+      {   % here, n = 1 so this is the segment along which text should be placed
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse		% Reverse path if needed to place text correctly
       /j 0 def
       PSL_xp j PSL_xx i get put		% Place new first point in array
       PSL_yp j PSL_yy i get put
@@ -760,7 +774,10 @@ end
   /PSL_placetext psl_bits 2 and 2 eq def	% true to place text, false to just make space
   /PSL_rounded psl_bits 32 and 32 eq def	% true for rounded box shape, false gives rectangular box
   /PSL_fillbox psl_bits 128 and 128 eq def	% true to paint box opaque before placing text
-  /PSL_drawbox psl_bits 256 and 256 eq def	% true to draw box outline before placing text
+  /PSL_drawbox psl_bits 256 and 256 eq def  % true to draw box outline before placing text
+  /PSL_font_F  psl_bits 1536 and 0 eq def     % true to paint regular text
+  /PSL_font_FO psl_bits 512 and 512 eq def    % true to fill text first then draw outline
+  /PSL_font_OF psl_bits 1024 and 1024 eq def  % true to draw outline of text first then fill inside
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def	% Upper limit in loop over labels
   /PSL_usebox PSL_fillbox PSL_drawbox or def	% true if we need box outline for fill or stroke or both
   0 1 PSL_n_labels_minus_1			% Loop psl_k = 0 < PSL_n_labels
@@ -775,7 +792,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if	% Outline it, if requested
       N						% Done, so remove path
     } if
-    PSL_placetext {PSL_ST_place_label} if	% Show text, if requested
+    PSL_font_F {  % Show text normally, if requested
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO { % Fill first then outline, if requested
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF { % Outline text then fill, if requested
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 
@@ -844,12 +869,28 @@ end
   psl_x0 neg psl_y0 neg T psl_angle neg R psl_xp neg psl_yp neg T	% Unto trans/rot above
 } def
 
-/PSL_ST_place_label	% Just place the current label
+/PSL_ST_place_label % Just place the current label normally
 {
-    V psl_xp psl_yp T psl_angle R	% Set origin at text point and rotate the coordinate system to follow baseline text
-    psl_SW PSL_justx mul psl_y0 M	% Goto LL point on label
-    psl_label dup sd neg 0 exch G show	% Place the text, adjust vertically for any depth below baseline
-    U					% Undo damage to coordinate system
+    V psl_xp psl_yp T psl_angle R % Set origin at text point and rotate the coordinate system to follow baseline text
+    psl_SW PSL_justx mul psl_y0 M % Goto LL point on label
+    psl_label dup sd neg 0 exch G show  % Place the text, adjust vertically for any depth below baseline
+    U         % Undo damage to coordinate system
+} def
+
+/PSL_ST_place_label_FO % Just place the current label by filling it, then outlining it
+{
+    V psl_xp psl_yp T psl_angle R % Set origin at text point and rotate the coordinate system to follow baseline text
+    psl_SW PSL_justx mul psl_y0 M % Goto LL point on label
+    psl_label dup sd neg 0 exch G false charpath V fs U S N % Place the text, adjust vertically for any depth below baseline
+    U         % Undo damage to coordinate system
+} def
+
+/PSL_ST_place_label_OF % Just place the current label by drawing outline, then filling it
+{
+    V psl_xp psl_yp T psl_angle R % Set origin at text point and rotate the coordinate system to follow baseline text
+    psl_SW PSL_justx mul psl_y0 M % Goto LL point on label
+    psl_label dup sd neg 0 exch G false charpath V S U fs N % Place the text, adjust vertically for any depth below baseline
+    U         % Undo damage to coordinate system
 } def
 
 /PSL_nclip 0 def							% The depth of clipping in effect
@@ -861,6 +902,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -881,8 +923,9 @@ V 0.06 0.06 scale
 %
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -892,21 +935,24 @@ O0
 1200 1200 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -Rg -JG-10/30/6i -i0:1,2+s5000,3,4+s5000 -P -Bafg -Ct.cpt -S=0.15i+jc+e+n300+p0.25p+h0.5 -W1.5p --PS_COMMENTS=true
-%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.180918 +units=m +no_defs
+%@GMT: gmt psxy -Rg -JG-10/30/6i -i0:1,2+s5000,3,4+s5000 -P -Bafg -Ct.cpt -S=0.15i+jc+e+n300/0+p0.25p+h0.5 -W1.5p --PS_COMMENTS=true
+%@PROJ: ortho 0.00000000 360.00000000 -90.00000000 90.00000000 -6371007.181 6371007.181 -6371007.181 6371007.181 +unavailable +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %GMTBoundingBox: 72 72 432 432
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 %
-% Start of basemap
+% Start of basemap (placed before the plot contents)
+%
+%
+% Start of gridlines - if any
 %
 %
 % Map gridlines (primary)
 %
 4 W
+0 A
 %
 % Lon = 0
 %
@@ -3544,12 +3590,7 @@ P S
 %
 8 W
 %
-% Map boundaries
-%
-25 W
-N 3600 3600 3600 0 360 arc S
-%
-% End of basemap
+% End of basemap (placed before the plot contents)
 %
 %
 % Activate Map clip path
@@ -3814,10 +3855,12 @@ PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-/PSL_vecheadpen {4 W 0 A [] 0 B} def
+/PSL_vecheadpen {4 W 0 A 1 1 /Normal PSL_transp [] 0 B} def
 V
+25 W
 V
 {0 A} FS
+O0
 %
 % Temporarily set FO to P for complex polygon building
 %
@@ -3955,7 +3998,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--11 0 -10 1 -11 0 -10 1 -11 1 0 -18 11 -1 10 0 11 -1 10 0 11 -1 11 3830 5833 SP
+-11 1 -10 0 -10 1 -11 1 0 -17 11 -1 10 0 10 -1 11 0 9 3830 5832 SP
 %
 % Reset FO and fill the path
 %
@@ -3972,56 +4015,62 @@ O0
 % Start of polygon clip path
 %
 clipsave
-3850 5850 M
-107 -28 D
-24 -7 D
+3836 5854 M
+78 -20 D
+67 -19 D
+-11 -2 D
+-11 -1 D
+-11 -2 D
 -12 -2 D
--12 -1 D
--12 -2 D
--12 -2 D
--12 -2 D
+-11 -1 D
+-11 -2 D
 -11 -2 D
 -12 -1 D
--12 -2 D
--12 -2 D
--12 -2 D
--12 -2 D
-29 26 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-12 -1 D
+-11 -2 D
+33 29 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-3850 5850 M
-107 -28 D
-24 -7 D
+3836 5854 M
+78 -20 D
+67 -19 D
+-11 -2 D
+-11 -1 D
+-11 -2 D
 -12 -2 D
--12 -1 D
--12 -2 D
--12 -2 D
--12 -2 D
+-11 -1 D
+-11 -2 D
 -11 -2 D
 -12 -1 D
--12 -2 D
--12 -2 D
--12 -2 D
--12 -2 D
-29 26 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-12 -1 D
+-11 -2 D
+33 29 D
 FO
-3850 5850 M
-107 -28 D
-24 -7 D
+3836 5854 M
+78 -20 D
+67 -19 D
+-11 -2 D
+-11 -1 D
+-11 -2 D
 -12 -2 D
--12 -1 D
--12 -2 D
--12 -2 D
--12 -2 D
+-11 -1 D
+-11 -2 D
 -11 -2 D
 -12 -1 D
--12 -2 D
--12 -2 D
--12 -2 D
--12 -2 D
-29 26 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-12 -1 D
+-11 -2 D
+33 29 D
 P S
 PSL_cliprestore
 %
@@ -4324,7 +4373,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--1 -8 -1 -8 -1 -7 -1 -8 -1 -8 24 -6 1 8 1 8 1 7 1 8 2 8 11 4442 6253 SP
+-2 -8 -1 -7 -1 -8 -1 -8 24 -6 1 8 1 8 1 7 1 8 9 4443 6253 SP
 %
 % Reset FO and fill the path
 %
@@ -4341,29 +4390,26 @@ O0
 % Start of polygon clip path
 %
 clipsave
-4417 6274 M
-28 47 D
-13 19 D
-12 19 D
-27 -104 D
--37 31 D
+4411 6265 M
+51 82 D
+8 12 D
+30 -116 D
+-41 35 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-4417 6274 M
-28 47 D
-13 19 D
-12 19 D
-27 -104 D
--37 31 D
+4411 6265 M
+51 82 D
+8 12 D
+30 -116 D
+-41 35 D
 FO
-4417 6274 M
-28 47 D
-13 19 D
-12 19 D
-27 -104 D
--37 31 D
+4411 6265 M
+51 82 D
+8 12 D
+30 -116 D
+-41 35 D
 P S
 PSL_cliprestore
 %
@@ -4383,7 +4429,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--11 0 -10 0 -11 1 -11 0 -10 0 3 -19 11 0 11 0 10 -1 11 0 11 -1 11 4527 5745 SP
+-11 0 -10 1 -11 0 -10 0 3 -18 11 0 10 0 11 -1 10 0 9 4528 5744 SP
 %
 % Reset FO and fill the path
 %
@@ -4400,59 +4446,62 @@ O0
 % Start of polygon clip path
 %
 clipsave
-4543 5764 M
-93 -23 D
-46 -13 D
--11 -2 D
--10 -2 D
--11 -2 D
--10 -1 D
--11 -2 D
--10 -2 D
--11 -2 D
--10 -3 D
+4528 5768 M
+130 -33 D
+24 -7 D
 -11 -2 D
 -11 -2 D
 -10 -2 D
 -11 -2 D
-24 29 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-10 -2 D
+-11 -2 D
+-11 -2 D
+-11 -3 D
+-11 -2 D
+27 33 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-4543 5764 M
-93 -23 D
-46 -13 D
--11 -2 D
--10 -2 D
--11 -2 D
--10 -1 D
--11 -2 D
--10 -2 D
--11 -2 D
--10 -3 D
+4528 5768 M
+130 -33 D
+24 -7 D
 -11 -2 D
 -11 -2 D
 -10 -2 D
 -11 -2 D
-24 29 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-10 -2 D
+-11 -2 D
+-11 -2 D
+-11 -3 D
+-11 -2 D
+27 33 D
 FO
-4543 5764 M
-93 -23 D
-46 -13 D
--11 -2 D
--10 -2 D
--11 -2 D
--10 -1 D
--11 -2 D
--10 -2 D
--11 -2 D
--10 -3 D
+4528 5768 M
+130 -33 D
+24 -7 D
 -11 -2 D
 -11 -2 D
 -10 -2 D
 -11 -2 D
-24 29 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-11 -2 D
+-10 -2 D
+-11 -2 D
+-11 -2 D
+-11 -3 D
+-11 -2 D
+27 33 D
 P S
 PSL_cliprestore
 %
@@ -4740,7 +4789,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--11 3 -10 4 -10 4 -11 3 0 -15 10 -4 11 -4 10 -3 10 -4 9 5301 5558 SP
+-11 4 -11 4 -11 4 0 -15 10 -4 11 -4 11 -3 7 5301 5557 SP
 %
 % Reset FO and fill the path
 %
@@ -4748,7 +4797,7 @@ O0
 FO
 U
 V
-4 W
+3 W
 {1 0.0258 0 C} FS
 O1
 2 setlinecap
@@ -4757,23 +4806,23 @@ O0
 % Start of polygon clip path
 %
 clipsave
-5317 5569 M
-102 -62 D
--104 13 D
-24 16 D
+5305 5576 M
+114 -69 D
+-115 14 D
+26 18 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-5317 5569 M
-102 -62 D
--104 13 D
-24 16 D
+5305 5576 M
+114 -69 D
+-115 14 D
+26 18 D
 FO
-5317 5569 M
-102 -62 D
--104 13 D
-24 16 D
+5305 5576 M
+114 -69 D
+-115 14 D
+26 18 D
 P S
 PSL_cliprestore
 %
@@ -4793,7 +4842,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-2 8 2 7 -7 3 -1 -7 -2 -8 5 5448 4790 SP
+2 9 2 9 2 8 2 9 2 9 -6 3 -2 -9 -2 -9 -2 -9 -2 -8 -2 -9 11 5448 4790 SP
 %
 % Reset FO and fill the path
 %
@@ -4801,40 +4850,6 @@ O0
 FO
 U
 V
-4 W
-{0.801 0 0 C} FS
-O1
-2 setlinecap
-O0
-%
-% Start of polygon clip path
-%
-clipsave
-5453 4781 M
--18 -33 D
--1 42 D
-8 -13 D
-PSL_clip N
-%
-% End of polygon clip path.  Polygon clipping is currently ON
-%
-8 -13 0 10 -1 11 0 11 0 10 -5 -8 -4 -8 -5 -9 -4 -8 9 5453 4781 SP
-5453 4781 M
--18 -33 D
--1 42 D
-8 -13 D
-P S
-PSL_cliprestore
-%
-% Clipping reduced by 1 level
-%
-0 setlinecap
-O1
-U
-V
-25 W
-{0 A} FS
-O0
 %
 % Temporarily set FO to P for complex polygon building
 %
@@ -5368,7 +5383,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--6 1 -6 2 -6 1 -6 2 -6 1 5 -22 6 -2 6 -1 7 -2 6 -1 6 -2 11 6524 4853 SP
+-6 2 -6 1 -6 2 -6 1 5 -21 6 -2 6 -1 7 -2 6 -1 9 6524 4852 SP
 %
 % Reset FO and fill the path
 %
@@ -5385,59 +5400,65 @@ O0
 % Start of polygon clip path
 %
 clipsave
-6530 4874 M
-55 -36 D
-28 -19 D
--6 -1 D
+6520 4880 M
+54 -34 D
+39 -27 D
+-5 -1 D
+-5 -1 D
+-6 -2 D
+-5 -1 D
+-5 -1 D
 -5 -1 D
 -5 -2 D
--6 -1 D
 -5 -1 D
--5 -2 D
 -6 -1 D
 -5 -2 D
--6 -1 D
+-5 -1 D
 -6 -1 D
 -5 -2 D
--6 -1 D
-9 31 D
+-5 -1 D
+9 35 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-6530 4874 M
-55 -36 D
-28 -19 D
--6 -1 D
+6520 4880 M
+54 -34 D
+39 -27 D
+-5 -1 D
+-5 -1 D
+-6 -2 D
+-5 -1 D
+-5 -1 D
 -5 -1 D
 -5 -2 D
--6 -1 D
 -5 -1 D
--5 -2 D
 -6 -1 D
 -5 -2 D
--6 -1 D
+-5 -1 D
 -6 -1 D
 -5 -2 D
--6 -1 D
-9 31 D
+-5 -1 D
+9 35 D
 FO
-6530 4874 M
-55 -36 D
-28 -19 D
--6 -1 D
+6520 4880 M
+54 -34 D
+39 -27 D
+-5 -1 D
+-5 -1 D
+-6 -2 D
+-5 -1 D
+-5 -1 D
 -5 -1 D
 -5 -2 D
--6 -1 D
 -5 -1 D
--5 -2 D
 -6 -1 D
 -5 -2 D
--6 -1 D
+-5 -1 D
 -6 -1 D
 -5 -2 D
--6 -1 D
-9 31 D
+-5 -1 D
+9 35 D
 P S
 PSL_cliprestore
 %
@@ -7481,7 +7502,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-0 -4 -1 -4 0 -5 0 -4 -1 -4 23 5 0 4 0 4 1 4 0 5 0 4 11 2735 6817 SP
+0 -4 0 -4 0 -4 -1 -5 21 5 1 4 0 4 0 4 0 5 9 2736 6817 SP
 %
 % Reset FO and fill the path
 %
@@ -7498,29 +7519,26 @@ O0
 % Start of polygon clip path
 %
 clipsave
-2711 6820 M
-26 39 D
-13 19 D
-19 -24 D
-13 -19 D
--35 4 D
+2707 6813 M
+37 56 D
+6 9 D
+35 -48 D
+-38 5 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-2711 6820 M
-26 39 D
-13 19 D
-19 -24 D
-13 -19 D
--35 4 D
+2707 6813 M
+37 56 D
+6 9 D
+35 -48 D
+-38 5 D
 FO
-2711 6820 M
-26 39 D
-13 19 D
-19 -24 D
-13 -19 D
--35 4 D
+2707 6813 M
+37 56 D
+6 9 D
+35 -48 D
+-38 5 D
 P S
 PSL_cliprestore
 %
@@ -7741,7 +7759,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--9 -6 -8 -6 3 -2 9 6 9 6 5 1990 6558 SP
+-7 -5 -7 -5 4 -1 7 4 7 5 5 1990 6558 SP
 %
 % Reset FO and fill the path
 %
@@ -7749,7 +7767,7 @@ O0
 FO
 U
 V
-4 W
+1 W
 {0.832 0 0 C} FS
 O1
 2 setlinecap
@@ -7758,19 +7776,21 @@ O0
 % Start of polygon clip path
 %
 clipsave
-1993 6564 M
-50 26 D
--39 -31 D
-4 9 D
+1988 6561 M
+55 29 D
+-26 -20 D
+-17 -15 D
+5 11 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-4 9 -8 -6 -8 -7 -7 -6 -8 -6 -8 -6 10 5 10 5 10 5 10 5 10 6 11 1993 6564 SP
-1993 6564 M
-50 26 D
--39 -31 D
-4 9 D
+5 11 -8 -7 -9 -8 -9 -7 -8 -7 -9 -6 11 5 11 6 11 6 11 6 11 6 11 1988 6561 SP
+1988 6561 M
+55 29 D
+-26 -20 D
+-17 -15 D
+5 11 D
 P S
 PSL_cliprestore
 %
@@ -7950,7 +7970,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-4 6 5 7 5 6 4 7 -10 -3 -4 -7 -5 -6 -5 -7 -4 -6 9 1369 6178 SP
+5 6 5 7 5 7 -9 -3 -5 -7 -5 -6 -5 -7 7 1369 6178 SP
 %
 % Reset FO and fill the path
 %
@@ -7958,7 +7978,7 @@ O0
 FO
 U
 V
-4 W
+3 W
 {0.961 0 0 C} FS
 O1
 2 setlinecap
@@ -7967,19 +7987,23 @@ O0
 % Start of polygon clip path
 %
 clipsave
-1373 6172 M
--62 -71 D
-30 61 D
-6 -10 D
+1380 6180 M
+-69 -79 D
+34 68 D
+6 -11 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-6 -10 3 7 4 8 4 8 4 7 4 8 4 8 3 7 4 8 -8 -9 -7 -9 -8 -9 -8 -9 -8 -8 -7 -9 -8 -9 -8 -9 17 1373 6172 SP
-1373 6172 M
--62 -71 D
-30 61 D
-6 -10 D
+1380 6180 M
+-69 -79 D
+34 68 D
+6 -11 D
+FO
+1380 6180 M
+-69 -79 D
+34 68 D
+6 -11 D
 P S
 PSL_cliprestore
 %
@@ -8267,7 +8291,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-0 -8 0 -9 1 -8 0 -8 12 11 -1 9 0 8 0 8 -1 8 9 687 5017 SP
+1 -8 0 -9 0 -9 11 11 0 9 -1 8 0 9 7 687 5017 SP
 %
 % Reset FO and fill the path
 %
@@ -8275,7 +8299,7 @@ O0
 FO
 U
 V
-4 W
+3 W
 {1 0.0203 0 C} FS
 O1
 2 setlinecap
@@ -8284,26 +8308,26 @@ O0
 % Start of polygon clip path
 %
 clipsave
-674 5017 M
-13 80 D
-3 20 D
-20 -64 D
--19 0 D
+672 5006 M
+18 111 D
+20 -65 D
+3 -6 D
+-22 0 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-674 5017 M
-13 80 D
-3 20 D
-20 -64 D
--19 0 D
+672 5006 M
+18 111 D
+20 -65 D
+3 -6 D
+-22 0 D
 FO
-674 5017 M
-13 80 D
-3 20 D
-20 -64 D
--19 0 D
+672 5006 M
+18 111 D
+20 -65 D
+3 -6 D
+-22 0 D
 P S
 PSL_cliprestore
 %
@@ -8527,7 +8551,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--3 3 -2 3 -4 3 -3 3 -3 2 -3 3 -8 -23 3 -3 3 -3 3 -3 3 -3 3 -3 3 -2 13 328 4526 SP
+-2 3 -3 2 -3 3 -3 3 -3 3 -3 2 -8 -23 3 -3 3 -3 3 -2 3 -3 3 -3 2 -2 13 328 4526 SP
 %
 % Reset FO and fill the path
 %
@@ -8544,26 +8568,26 @@ O0
 % Start of polygon clip path
 %
 clipsave
-345 4550 M
-21 -55 D
-13 -32 D
--63 3 D
-25 32 D
+344 4553 M
+15 -42 D
+20 -48 D
+-65 3 D
+25 34 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-345 4550 M
-21 -55 D
-13 -32 D
--63 3 D
-25 32 D
+344 4553 M
+15 -42 D
+20 -48 D
+-65 3 D
+25 34 D
 FO
-345 4550 M
-21 -55 D
-13 -32 D
--63 3 D
-25 32 D
+344 4553 M
+15 -42 D
+20 -48 D
+-65 3 D
+25 34 D
 P S
 PSL_cliprestore
 %
@@ -10703,7 +10727,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-1 0 0 -1 1 -1 0 -1 1 -1 1 -1 21 -12 0 1 -1 1 -1 1 -1 1 0 1 12 1776 498 SP
+1 0 0 -1 1 -1 0 -1 1 -1 22 -13 -1 1 0 1 -1 1 -1 1 0 1 11 1776 498 SP
 %
 % Reset FO and fill the path
 %
@@ -10720,32 +10744,29 @@ O0
 % Start of polygon clip path
 %
 clipsave
-1747 517 M
-16 -5 D
-16 -2 D
+1746 517 M
+23 -6 D
+10 -1 D
 24 -22 D
-12 -10 D
-10 -7 D
--41 26 D
+23 -18 D
+-42 26 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-1747 517 M
-16 -5 D
-16 -2 D
+1746 517 M
+23 -6 D
+10 -1 D
 24 -22 D
-12 -10 D
-10 -7 D
--41 26 D
+23 -18 D
+-42 26 D
 FO
-1747 517 M
-16 -5 D
-16 -2 D
+1746 517 M
+23 -6 D
+10 -1 D
 24 -22 D
-12 -10 D
-10 -7 D
--41 26 D
+23 -18 D
+-42 26 D
 P S
 PSL_cliprestore
 %
@@ -11916,7 +11937,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--10 3 -11 3 -10 3 -11 3 -10 3 -7 -17 10 -3 11 -3 10 -3 11 -3 10 -3 11 3776 5789 SP
+-11 3 -10 3 -10 3 -11 3 -6 -17 10 -3 10 -3 11 -3 10 -3 9 3776 5789 SP
 %
 % Reset FO and fill the path
 %
@@ -11933,26 +11954,26 @@ O0
 % Start of polygon clip path
 %
 clipsave
-3803 5802 M
-90 -49 D
-30 -17 D
--142 11 D
-41 19 D
+3790 5810 M
+123 -68 D
+10 -6 D
+-158 12 D
+45 22 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-3803 5802 M
-90 -49 D
-30 -17 D
--142 11 D
-41 19 D
+3790 5810 M
+123 -68 D
+10 -6 D
+-158 12 D
+45 22 D
 FO
-3803 5802 M
-90 -49 D
-30 -17 D
--142 11 D
-41 19 D
+3790 5810 M
+123 -68 D
+10 -6 D
+-158 12 D
+45 22 D
 P S
 PSL_cliprestore
 %
@@ -11972,7 +11993,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-12 3 12 3 12 3 12 4 11 3 -6 20 -12 -4 -12 -3 -11 -3 -12 -3 -12 -3 11 3278 5569 SP
+12 3 11 3 12 3 12 4 -6 19 -12 -3 -12 -3 -12 -3 -11 -3 9 3278 5569 SP
 %
 % Reset FO and fill the path
 %
@@ -11989,59 +12010,68 @@ O0
 % Start of polygon clip path
 %
 clipsave
-3263 5540 M
--12 0 D
--12 -1 D
--13 0 D
--12 -1 D
--12 -1 D
--13 0 D
--12 -1 D
+3281 5541 M
 -12 -1 D
 -12 0 D
--13 -1 D
 -12 -1 D
+-11 0 D
 -12 -1 D
 -12 0 D
-139 74 D
--24 -42 D
+-12 -1 D
+-12 0 D
+-12 -1 D
+-11 -1 D
+-12 0 D
+-12 -1 D
+-12 -1 D
+-11 -1 D
+-12 0 D
+144 77 D
+10 5 D
+-26 -46 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-3263 5540 M
--12 0 D
--12 -1 D
--13 0 D
--12 -1 D
--12 -1 D
--13 0 D
--12 -1 D
+3281 5541 M
 -12 -1 D
 -12 0 D
--13 -1 D
 -12 -1 D
+-11 0 D
 -12 -1 D
 -12 0 D
-139 74 D
--24 -42 D
+-12 -1 D
+-12 0 D
+-12 -1 D
+-11 -1 D
+-12 0 D
+-12 -1 D
+-12 -1 D
+-11 -1 D
+-12 0 D
+144 77 D
+10 5 D
+-26 -46 D
 FO
-3263 5540 M
--12 0 D
--12 -1 D
--13 0 D
--12 -1 D
--12 -1 D
--13 0 D
--12 -1 D
+3281 5541 M
 -12 -1 D
 -12 0 D
--13 -1 D
 -12 -1 D
+-11 0 D
 -12 -1 D
 -12 0 D
-139 74 D
--24 -42 D
+-12 -1 D
+-12 0 D
+-12 -1 D
+-11 -1 D
+-12 0 D
+-12 -1 D
+-12 -1 D
+-11 -1 D
+-12 0 D
+144 77 D
+10 5 D
+-26 -46 D
 P S
 PSL_cliprestore
 %
@@ -13378,7 +13408,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-1 11 1 12 1 11 1 11 1 11 1 11 -23 4 -1 -11 -2 -11 -1 -11 -1 -11 -1 -11 -1 -11 13 2515 2776 SP
+1 11 1 11 1 11 1 11 1 11 1 11 -23 5 -1 -11 -2 -11 -1 -11 -1 -11 -1 -11 -1 -11 13 2515 2776 SP
 %
 % Reset FO and fill the path
 %
@@ -13397,7 +13427,8 @@ O0
 clipsave
 2545 2746 M
 -59 -157 D
--29 172 D
+-28 161 D
+-1 12 D
 40 -45 D
 PSL_clip N
 %
@@ -13405,12 +13436,14 @@ PSL_clip N
 %
 2545 2746 M
 -59 -157 D
--29 172 D
+-28 161 D
+-1 12 D
 40 -45 D
 FO
 2545 2746 M
 -59 -157 D
--29 172 D
+-28 161 D
+-1 12 D
 40 -45 D
 P S
 PSL_cliprestore
@@ -14082,7 +14115,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--10 -4 -10 -5 -10 -4 6 -11 11 4 10 5 10 4 7 3592 1709 SP
+-8 -4 -9 -3 -8 -4 7 -10 8 4 8 3 8 3 7 3592 1709 SP
 %
 % Reset FO and fill the path
 %
@@ -14090,7 +14123,7 @@ O0
 FO
 U
 V
-4 W
+2 W
 {0.927 0 0 C} FS
 O1
 2 setlinecap
@@ -14099,21 +14132,21 @@ O0
 % Start of polygon clip path
 %
 clipsave
-3597 1726 M
-86 16 D
--33 -26 D
--33 -25 D
-7 25 D
+3587 1724 M
+96 18 D
+-37 -29 D
+-36 -28 D
+7 28 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-7 25 -8 -6 -9 -7 -8 -6 -8 -6 -8 -7 -8 -6 -9 -6 -8 -7 11 2 11 2 11 2 10 2 11 2 11 2 11 2 10 2 17 3597 1726 SP
-3597 1726 M
-86 16 D
--33 -26 D
--33 -25 D
-7 25 D
+7 28 -9 -7 -9 -7 -9 -7 -9 -7 -9 -7 -10 -7 -9 -8 -9 -7 12 3 12 2 12 2 12 2 12 3 12 2 12 2 12 2 17 3587 1724 SP
+3587 1724 M
+96 18 D
+-37 -29 D
+-36 -28 D
+7 28 D
 P S
 PSL_cliprestore
 %
@@ -14385,7 +14418,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--9 -5 -9 -5 -9 -4 -9 -5 7 -11 9 5 9 5 9 4 9 5 9 4232 1301 SP
+-10 -5 -9 -4 -10 -5 8 -10 9 4 10 5 9 5 7 4232 1301 SP
 %
 % Reset FO and fill the path
 %
@@ -14393,7 +14426,7 @@ O0
 FO
 U
 V
-4 W
+3 W
 {0.979 0 0 C} FS
 O1
 2 setlinecap
@@ -14402,29 +14435,29 @@ O0
 % Start of polygon clip path
 %
 clipsave
-4237 1320 M
-102 29 D
+4226 1317 M
+113 32 D
 -35 -28 D
 -17 -15 D
--26 -20 D
-8 27 D
+-35 -27 D
+9 30 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-4237 1320 M
-102 29 D
+4226 1317 M
+113 32 D
 -35 -28 D
 -17 -15 D
--26 -20 D
-8 27 D
+-35 -27 D
+9 30 D
 FO
-4237 1320 M
-102 29 D
+4226 1317 M
+113 32 D
 -35 -28 D
 -17 -15 D
--26 -20 D
-8 27 D
+-35 -27 D
+9 30 D
 P S
 PSL_cliprestore
 %
@@ -14771,7 +14804,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-10 0 10 0 10 0 10 0 10 0 8 18 -10 0 -10 -1 -10 0 -10 0 -10 0 11 4929 1053 SP
+10 0 10 0 10 1 9 0 9 16 -10 0 -10 0 -10 0 -10 0 9 4929 1053 SP
 %
 % Reset FO and fill the path
 %
@@ -14788,26 +14821,32 @@ O0
 % Start of polygon clip path
 %
 clipsave
-4901 1034 M
--95 23 D
--18 5 D
-140 27 D
--42 -28 D
+4913 1031 M
+-36 8 D
+-35 9 D
+-54 14 D
+122 23 D
+33 7 D
+-46 -31 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-4901 1034 M
--95 23 D
--18 5 D
-140 27 D
--42 -28 D
+4913 1031 M
+-36 8 D
+-35 9 D
+-54 14 D
+122 23 D
+33 7 D
+-46 -31 D
 FO
-4901 1034 M
--95 23 D
--18 5 D
-140 27 D
--42 -28 D
+4913 1031 M
+-36 8 D
+-35 9 D
+-54 14 D
+122 23 D
+33 7 D
+-46 -31 D
 P S
 PSL_cliprestore
 %
@@ -14827,7 +14866,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-12 0 12 0 11 0 4 9 -11 0 -12 0 -11 0 7 4279 679 SP
+9 0 9 0 9 0 4 9 -9 0 -9 0 -10 0 7 4280 679 SP
 %
 % Reset FO and fill the path
 %
@@ -14835,7 +14874,7 @@ O0
 FO
 U
 V
-4 W
+2 W
 {0.948 0 0 C} FS
 O1
 2 setlinecap
@@ -14844,21 +14883,26 @@ O0
 % Start of polygon clip path
 %
 clipsave
-4262 669 M
--71 13 D
--10 3 D
-94 13 D
--26 -14 D
+4271 667 M
+-90 18 D
+93 13 D
+11 2 D
+-29 -17 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
--26 -14 12 2 12 2 11 1 12 2 12 2 12 1 11 2 12 1 -10 3 -10 2 -10 2 -11 1 -10 2 -10 2 -10 2 -10 2 17 4262 669 SP
-4262 669 M
--71 13 D
--10 3 D
-94 13 D
--26 -14 D
+4271 667 M
+-90 18 D
+93 13 D
+11 2 D
+-29 -17 D
+FO
+4271 667 M
+-90 18 D
+93 13 D
+11 2 D
+-29 -17 D
 P S
 PSL_cliprestore
 %
@@ -15037,7 +15081,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
--8 -3 -7 -4 -8 -3 -7 -3 -3 -12 8 3 7 4 8 3 7 3 9 5787 1393 SP
+-8 -3 -8 -3 -8 -4 -2 -11 8 4 7 3 8 4 7 5787 1392 SP
 %
 % Reset FO and fill the path
 %
@@ -15045,7 +15089,7 @@ O0
 FO
 U
 V
-4 W
+3 W
 {0.959 0 0 C} FS
 O1
 2 setlinecap
@@ -15054,23 +15098,29 @@ O0
 % Start of polygon clip path
 %
 clipsave
-5801 1410 M
-69 16 D
+5793 1409 M
+77 17 D
 -28 -20 D
--20 -13 D
 -29 -19 D
-20 25 D
+-29 -19 D
+23 28 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-20 25 -10 -6 -9 -7 -10 -6 -10 -7 -10 -6 -9 -7 -10 -6 -9 -7 8 2 9 2 9 2 8 2 9 2 9 2 9 2 8 2 17 5801 1410 SP
-5801 1410 M
-69 16 D
+5793 1409 M
+77 17 D
 -28 -20 D
--20 -13 D
 -29 -19 D
-20 25 D
+-29 -19 D
+23 28 D
+FO
+5793 1409 M
+77 17 D
+-28 -20 D
+-29 -19 D
+-29 -19 D
+23 28 D
 P S
 PSL_cliprestore
 %
@@ -15090,7 +15140,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-11 5 11 5 11 5 -1 8 -11 -5 -10 -5 -11 -5 7 5320 928 SP
+9 4 8 4 9 4 0 8 -9 -4 -9 -4 -8 -4 7 5320 928 SP
 %
 % Reset FO and fill the path
 %
@@ -15098,7 +15148,7 @@ O0
 FO
 U
 V
-4 W
+2 W
 {0.947 0 0 C} FS
 O1
 2 setlinecap
@@ -15107,33 +15157,47 @@ O0
 % Start of polygon clip path
 %
 clipsave
-5308 913 M
+5317 916 M
+-10 -3 D
+-10 -3 D
+-10 -3 D
+-10 -3 D
+-10 -3 D
 -10 -3 D
 -10 -3 D
 -10 -3 D
 -11 -3 D
--10 -3 D
--10 -3 D
--10 -3 D
--11 -3 D
-81 50 D
--17 -21 D
+90 56 D
+-19 -24 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
--17 -21 10 6 10 6 10 7 10 6 10 6 10 6 10 6 11 7 -11 -3 -10 -3 -10 -3 -10 -3 -11 -3 -10 -3 -10 -3 -10 -3 17 5308 913 SP
-5308 913 M
+5317 916 M
+-10 -3 D
+-10 -3 D
+-10 -3 D
+-10 -3 D
+-10 -3 D
 -10 -3 D
 -10 -3 D
 -10 -3 D
 -11 -3 D
+90 56 D
+-19 -24 D
+FO
+5317 916 M
+-10 -3 D
+-10 -3 D
+-10 -3 D
+-10 -3 D
+-10 -3 D
 -10 -3 D
 -10 -3 D
 -10 -3 D
 -11 -3 D
-81 50 D
--17 -21 D
+90 56 D
+-19 -24 D
 P S
 PSL_cliprestore
 %
@@ -15153,7 +15217,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-4 -4 3 -4 4 -4 3 -4 4 -4 22 9 -3 5 -4 4 -3 4 -4 4 -3 4 11 4687 509 SP
+4 -5 3 -4 4 -4 3 -4 23 10 -4 4 -3 4 -4 4 -3 4 9 4687 509 SP
 %
 % Reset FO and fill the path
 %
@@ -15170,26 +15234,26 @@ O0
 % Start of polygon clip path
 %
 clipsave
-4655 506 M
--8 70 D
-38 -19 D
-44 -19 D
--47 -5 D
+4655 498 M
+-8 78 D
+85 -40 D
+6 -2 D
+-52 -5 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-4655 506 M
--8 70 D
-38 -19 D
-44 -19 D
--47 -5 D
+4655 498 M
+-8 78 D
+85 -40 D
+6 -2 D
+-52 -5 D
 FO
-4655 506 M
--8 70 D
-38 -19 D
-44 -19 D
--47 -5 D
+4655 498 M
+-8 78 D
+85 -40 D
+6 -2 D
+-52 -5 D
 P S
 PSL_cliprestore
 %
@@ -15442,7 +15506,7 @@ O0
 %
 % Perimeter polygon for fill only
 %
-8 2 7 2 8 2 7 2 8 1 7 2 14 14 -8 -2 -7 -2 -8 -1 -7 -2 -8 -2 -7 -2 13 5406 644 SP
+7 2 7 2 7 1 7 2 8 2 7 1 13 14 -7 -1 -7 -2 -7 -2 -7 -1 -7 -2 -7 -2 13 5406 644 SP
 %
 % Reset FO and fill the path
 %
@@ -15459,59 +15523,59 @@ O0
 % Start of polygon clip path
 %
 clipsave
-5371 622 M
+5374 622 M
 -6 0 D
--6 0 D
--7 0 D
 -6 0 D
 -6 0 D
 -7 0 D
 -6 0 D
--7 0 D
+-6 0 D
+-6 0 D
+-6 0 D
+-6 0 D
 -6 0 D
 -7 0 D
--6 0 D
--20 1 D
-101 34 D
-39 15 D
--50 -31 D
+-25 1 D
+106 36 D
+38 14 D
+-52 -32 D
 PSL_clip N
 %
 % End of polygon clip path.  Polygon clipping is currently ON
 %
-5371 622 M
+5374 622 M
 -6 0 D
--6 0 D
--7 0 D
 -6 0 D
 -6 0 D
 -7 0 D
 -6 0 D
--7 0 D
+-6 0 D
+-6 0 D
+-6 0 D
+-6 0 D
 -6 0 D
 -7 0 D
--6 0 D
--20 1 D
-101 34 D
-39 15 D
--50 -31 D
+-25 1 D
+106 36 D
+38 14 D
+-52 -32 D
 FO
-5371 622 M
+5374 622 M
 -6 0 D
--6 0 D
--7 0 D
 -6 0 D
 -6 0 D
 -7 0 D
 -6 0 D
--7 0 D
+-6 0 D
+-6 0 D
+-6 0 D
+-6 0 D
 -6 0 D
 -7 0 D
--6 0 D
--20 1 D
-101 34 D
-39 15 D
--50 -31 D
+-25 1 D
+106 36 D
+38 14 D
+-52 -32 D
 P S
 PSL_cliprestore
 %
@@ -15821,7 +15885,14 @@ O0
 %
 % Perimeter polygon for fill only
 %
-3 2 4 3 3 2 3 3 -13 -7 -3 -2 -4 -3 -3 -3 -3 -2 9 5374 482 SP
+5373 482 M
+-24 -20 D
+-13 -9 D
+-12 -6 D
+33 25 D
+4 4 D
+P
+FO
 %
 % Reset FO and fill the path
 %
@@ -15829,44 +15900,6 @@ O0
 FO
 U
 V
-4 W
-{0.96 0 0 C} FS
-O1
-2 setlinecap
-O0
-%
-% Start of polygon clip path
-%
-clipsave
-5383 486 M
--19 -14 D
--14 -9 D
--20 -13 D
-12 14 D
-13 5 D
-PSL_clip N
-%
-% End of polygon clip path.  Polygon clipping is currently ON
-%
-13 5 2 2 1 2 1 1 2 2 1 2 2 2 1 1 2 2 -7 -4 -7 -5 -6 -4 -7 -5 -7 -4 -6 -5 -7 -4 -6 -5 17 5383 486 SP
-5383 486 M
--19 -14 D
--14 -9 D
--20 -13 D
-12 14 D
-13 5 D
-P S
-PSL_cliprestore
-%
-% Clipping reduced by 1 level
-%
-0 setlinecap
-O1
-U
-V
-25 W
-{0 A} FS
-O0
 %
 % Temporarily set FO to P for complex polygon building
 %
@@ -15969,13 +16002,32 @@ PSL_cliprestore
 %
 % Clipping reduced by 1 level
 %
+%
+% Start of basemap (placed after the plot contents)
+%
+%
+% Start of map frame
+%
+25 W
+0 A
+N 3600 3600 3600 0 360 arc S
+%
+% End of map frame
+%
+%
+% End of basemap (placed after the plot contents)
+%
 %%EndObject
 
 grestore
 %
-% Run PSL movie completion function, if defined
+% Run PSL movie label completion function, if defined
 %
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+%
+% Run PSL movie progress indicator completion function, if defined
+%
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 %

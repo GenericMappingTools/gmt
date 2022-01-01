@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_1ded948 [64-bit] Document from psbasemap
+%%Title: GMT v6.2.0rc2 [64-bit] Document from psbasemap
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec  6 10:51:12 2018
+%%CreationDate: Mon May 24 14:28:45 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -112,9 +112,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -253,9 +255,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -279,6 +288,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -326,8 +338,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -336,9 +350,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -556,6 +568,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -570,7 +585,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -594,9 +617,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -639,8 +660,21 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
+    U
+} def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
     U
 } def
 /PSL_nclip 0 def
@@ -651,6 +685,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -662,8 +697,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -673,14 +709,14 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psbasemap -R135/162/42/51 -JM6i -Bafg -BWSnE -P -K -Xc
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%GMTBoundingBox: -216 72 432 209.226
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%GMTBoundingBox: -216 72 432 209.226403246
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 3487 D
 S
@@ -722,6 +758,7 @@ N 0 1099 M -83 0 D S
 N 7200 1099 M 83 0 D S
 N 0 3069 M -83 0 D S
 N 7200 3069 M 83 0 D S
+25 W
 83 W
 N -42 0 M 0 360 D S
 N 7242 0 M 0 360 D S
@@ -848,10 +885,15 @@ N -83 3570 M 0 -3653 D S
 4000 -167 M (150è) tc Z
 5333 -167 M (155è) tc Z
 6667 -167 M (160è) tc Z
+/PSL_AH1 0
 -167 1099 M (45è) mr Z
 7367 1099 M (45è) ml Z
+(45è) sw mx
 -167 3069 M (50è) mr Z
 7367 3069 M (50è) ml Z
+(50è) sw mx
+def
+0 A
 %%EndObject
 0 A
 FQ
@@ -859,13 +901,21 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -W1p @Matthews_2016_subduction_subset.txt
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -W1p /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
 4469 3042 M
 -118 -397 D
 -101 -203 D
@@ -929,6 +979,8 @@ O0
 -56 -42 D
 -55 -42 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -937,67 +989,84 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i -O Lhalfxprofile.gmt -W1p,red -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
 3565 3290 M
-285 -74 D
-245 -66 D
-263 -75 D
-111 -33 D
+288 -74 D
+324 -89 D
+302 -88 D
+168 -51 D
 S
 3491 2972 M
-326 -119 D
-411 -158 D
-123 -50 D
+293 -107 D
+272 -103 D
+286 -113 D
+178 -73 D
 S
 3340 2633 M
-266 -145 D
-49 -28 D
-261 -148 D
-210 -123 D
+68 -36 D
+33 -19 D
+51 -27 D
+33 -19 D
+200 -111 D
+246 -141 D
+179 -105 D
+129 -77 D
 S
 3131 2331 M
-131 -72 D
-97 -55 D
-242 -137 D
-175 -102 D
-127 -75 D
+132 -73 D
+246 -138 D
+274 -159 D
+239 -142 D
+31 -19 D
 S
 3196 2259 M
-228 -267 D
-200 -239 D
-138 -168 D
+243 -284 D
+107 -128 D
+106 -127 D
+23 -29 D
+173 -211 D
+23 -29 D
 S
 3642 680 M
--163 609 D
--56 207 D
+-160 598 D
+-105 385 D
 S
 3457 645 M
--136 281 D
--163 332 D
--72 144 D
+-192 396 D
+-174 353 D
+-82 162 D
 S
 3262 496 M
--231 323 D
--124 169 D
--83 114 D
--53 71 D
+-172 241 D
+-197 271 D
+-74 100 D
+-43 57 D
+-42 58 D
+-65 86 D
 S
 2958 279 M
--50 69 D
--21 27 D
--60 83 D
--21 27 D
--154 207 D
--31 42 D
--32 41 D
--126 167 D
+-123 167 D
+-145 195 D
+-190 251 D
+-43 57 D
+-97 126 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -1006,68 +1075,74 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Rhalfxprofile.gmt -W1p,blue -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 0 0 1 C
-4469 3042 M
-223 -68 D
-202 -64 D
-310 -102 D
-145 -50 D
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
+4647 2988 M
+335 -106 D
+312 -105 D
+55 -19 D
 S
-4351 2645 M
-211 -86 D
-278 -118 D
-292 -129 D
-51 -23 D
+4520 2576 M
+159 -66 D
+262 -113 D
+225 -100 D
+17 -8 D
 S
-4126 2189 M
-206 -123 D
-79 -48 D
-266 -164 D
-185 -117 D
+4279 2098 M
+80 -48 D
+158 -97 D
+158 -98 D
+187 -118 D
 15 -10 D
 S
-3903 1890 M
-219 -132 D
-308 -191 D
-212 -135 D
+4053 1800 M
+313 -193 D
+123 -78 D
+31 -19 D
+122 -78 D
 S
-3762 1585 M
-45 -56 D
-23 -27 D
-257 -320 D
-185 -235 D
-21 -28 D
+3871 1451 M
+191 -238 D
+199 -252 D
+32 -42 D
 S
-3423 1496 M
--181 650 D
--56 196 D
+3377 1663 M
+-175 625 D
+-16 54 D
 S
-3086 1402 M
--145 289 D
--218 423 D
--35 66 D
+3009 1556 M
+-217 425 D
+-104 199 D
 S
-2771 1173 M
--85 113 D
--21 29 D
--97 128 D
--65 86 D
--187 244 D
--45 57 D
+2669 1309 M
+-87 115 D
+-32 44 D
+-166 217 D
+-34 43 D
+-56 73 D
+-23 29 D
 -23 29 D
 S
-2463 942 M
--54 69 D
--86 112 D
--319 405 D
--68 85 D
+2360 1075 M
+-209 268 D
+-169 213 D
+-46 57 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -1076,11 +1151,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Rhalfxprofile.gmt -Sc0.4c -Gblue -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1088,35 +1163,35 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 0 1 C} FS
-94 4469 3042 Sc
-94 4912 2904 Sc
+94 4647 2988 Sc
+94 5000 2876 Sc
 94 5349 2758 Sc
-94 4351 2645 Sc
-94 4771 2471 Sc
+94 4520 2576 Sc
+94 4854 2435 Sc
 94 5183 2289 Sc
-94 4126 2189 Sc
-94 4506 1960 Sc
+94 4279 2098 Sc
+94 4581 1914 Sc
 94 4877 1727 Sc
-94 3903 1890 Sc
-94 4276 1663 Sc
+94 4053 1800 Sc
+94 4350 1617 Sc
 94 4642 1432 Sc
-94 3762 1585 Sc
-94 4032 1251 Sc
+94 3871 1451 Sc
+94 4085 1185 Sc
 94 4293 919 Sc
-94 3423 1496 Sc
-94 3307 1915 Sc
+94 3377 1663 Sc
+94 3283 2000 Sc
 94 3186 2342 Sc
-94 3086 1402 Sc
-94 2891 1788 Sc
+94 3009 1556 Sc
+94 2851 1866 Sc
 94 2688 2180 Sc
-94 2771 1173 Sc
-94 2514 1515 Sc
+94 2669 1309 Sc
+94 2462 1583 Sc
 94 2248 1859 Sc
-94 2463 942 Sc
-94 2203 1276 Sc
+94 2360 1075 Sc
+94 2151 1343 Sc
 94 1936 1613 Sc
 U
 PSL_cliprestore
@@ -1128,11 +1203,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Lhalfxprofile.gmt -Sc0.4c -Gred -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1140,36 +1215,45 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
 94 3565 3290 Sc
-94 4020 3171 Sc
-94 4469 3042 Sc
+94 3930 3195 Sc
+94 4290 3094 Sc
+94 4647 2988 Sc
 94 3491 2972 Sc
-94 3925 2812 Sc
-94 4351 2645 Sc
+94 3838 2845 Sc
+94 4181 2713 Sc
+94 4520 2576 Sc
 94 3340 2633 Sc
-94 3737 2414 Sc
-94 4126 2189 Sc
+94 3658 2458 Sc
+94 3971 2280 Sc
+94 4279 2098 Sc
 94 3131 2331 Sc
-94 3521 2113 Sc
-94 3903 1890 Sc
+94 3444 2157 Sc
+94 3751 1980 Sc
+94 4053 1800 Sc
 94 3196 2259 Sc
-94 3483 1921 Sc
-94 3762 1585 Sc
+94 3427 1989 Sc
+94 3652 1720 Sc
+94 3871 1451 Sc
 94 3642 680 Sc
-94 3534 1084 Sc
-94 3423 1496 Sc
+94 3556 1003 Sc
+94 3468 1330 Sc
+94 3377 1663 Sc
 94 3457 645 Sc
-94 3275 1021 Sc
-94 3086 1402 Sc
+94 3312 945 Sc
+94 3163 1249 Sc
+94 3009 1556 Sc
 94 3262 496 Sc
-94 3020 833 Sc
-94 2771 1173 Sc
+94 3069 766 Sc
+94 2872 1037 Sc
+94 2669 1309 Sc
 94 2958 279 Sc
-94 2714 609 Sc
-94 2463 942 Sc
+94 2763 543 Sc
+94 2564 808 Sc
+94 2360 1075 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -1180,11 +1264,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K sz_pol_left.gmt -F+f9p,Helvetica,white+r0
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1196,50 +1280,59 @@ PSL_clip N
 3565 3290 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 150 F0
 (0) mc Z
-4020 3171 M (1) mc Z
-4469 3042 M (2) mc Z
-4912 2904 M (3) mc Z
-5349 2758 M (4) mc Z
-3491 2972 M (5) mc Z
-3925 2812 M (6) mc Z
-4351 2645 M (7) mc Z
-4771 2471 M (8) mc Z
-5183 2289 M (9) mc Z
-3340 2633 M (10) mc Z
-3737 2414 M (11) mc Z
-4126 2189 M (12) mc Z
-4506 1960 M (13) mc Z
-4877 1727 M (14) mc Z
-3131 2331 M (15) mc Z
-3521 2113 M (16) mc Z
-3903 1890 M (17) mc Z
-4276 1663 M (18) mc Z
-4642 1432 M (19) mc Z
-3196 2259 M (20) mc Z
-3483 1921 M (21) mc Z
-3762 1585 M (22) mc Z
-4032 1251 M (23) mc Z
-4293 919 M (24) mc Z
-3642 680 M (25) mc Z
-3534 1084 M (26) mc Z
-3423 1496 M (27) mc Z
-3307 1915 M (28) mc Z
-3186 2342 M (29) mc Z
-3457 645 M (30) mc Z
-3275 1021 M (31) mc Z
-3086 1402 M (32) mc Z
-2891 1788 M (33) mc Z
-2688 2180 M (34) mc Z
-3262 496 M (35) mc Z
-3020 833 M (36) mc Z
-2771 1173 M (37) mc Z
-2514 1515 M (38) mc Z
-2248 1859 M (39) mc Z
-2958 279 M (40) mc Z
-2714 609 M (41) mc Z
-2463 942 M (42) mc Z
-2203 1276 M (43) mc Z
-1936 1613 M (44) mc Z
+3930 3195 M (1) mc Z
+4290 3094 M (2) mc Z
+4647 2988 M (3) mc Z
+5000 2876 M (4) mc Z
+5349 2758 M (5) mc Z
+3491 2972 M (6) mc Z
+3838 2845 M (7) mc Z
+4181 2713 M (8) mc Z
+4520 2576 M (9) mc Z
+4854 2435 M (10) mc Z
+5183 2289 M (11) mc Z
+3340 2633 M (12) mc Z
+3658 2458 M (13) mc Z
+3971 2280 M (14) mc Z
+4279 2098 M (15) mc Z
+4581 1914 M (16) mc Z
+4877 1727 M (17) mc Z
+3131 2331 M (18) mc Z
+3444 2157 M (19) mc Z
+3751 1980 M (20) mc Z
+4053 1800 M (21) mc Z
+4350 1617 M (22) mc Z
+4642 1432 M (23) mc Z
+3196 2259 M (24) mc Z
+3427 1989 M (25) mc Z
+3652 1720 M (26) mc Z
+3871 1451 M (27) mc Z
+4085 1185 M (28) mc Z
+4293 919 M (29) mc Z
+3642 680 M (30) mc Z
+3556 1003 M (31) mc Z
+3468 1330 M (32) mc Z
+3377 1663 M (33) mc Z
+3283 2000 M (34) mc Z
+3186 2342 M (35) mc Z
+3457 645 M (36) mc Z
+3312 945 M (37) mc Z
+3163 1249 M (38) mc Z
+3009 1556 M (39) mc Z
+2851 1866 M (40) mc Z
+2688 2180 M (41) mc Z
+3262 496 M (42) mc Z
+3069 766 M (43) mc Z
+2872 1037 M (44) mc Z
+2669 1309 M (45) mc Z
+2462 1583 M (46) mc Z
+2248 1859 M (47) mc Z
+2958 279 M (48) mc Z
+2763 543 M (49) mc Z
+2564 808 M (50) mc Z
+2360 1075 M (51) mc Z
+2151 1343 M (52) mc Z
+1936 1613 M (53) mc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1248,12 +1341,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -Ss0.25i -Gblack @Matthews_2016_subduction_subset.txt
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -Ss0.25i -Gblack /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1261,8 +1354,8 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 150 4469 3042 Ss
 150 4351 2645 Ss
@@ -1280,12 +1373,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K @Matthews_2016_subduction_subset.txt -F+f12p,Helvetica,white+r0
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt -F+f12p,Helvetica,white+r0
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1312,11 +1405,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K -F+cTL+jTL+f18p -Dj0.2i -Gwhite
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1345,13 +1438,13 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psbasemap -R135/162/42/51 -JM6i -O -Bafg -BWsnE -K -Y3.1i
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 3487 D
 S
@@ -1393,6 +1486,7 @@ N 0 1099 M -83 0 D S
 N 7200 1099 M 83 0 D S
 N 0 3069 M -83 0 D S
 N 7200 3069 M 83 0 D S
+25 W
 83 W
 N -42 0 M 0 360 D S
 N 7242 0 M 0 360 D S
@@ -1511,12 +1605,17 @@ N 7283 3487 M -7366 0 D S
 N 7283 3570 M -7366 0 D S
 N 0 3570 M 0 -3653 D S
 N -83 3570 M 0 -3653 D S
+/PSL_AH1 0
 -167 1099 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (45è) mr Z
 7367 1099 M (45è) ml Z
+(45è) sw mx
 -167 3069 M (50è) mr Z
 7367 3069 M (50è) ml Z
+(50è) sw mx
+def
+0 A
 %%EndObject
 0 A
 FQ
@@ -1524,13 +1623,21 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -W1p @Matthews_2016_subduction_subset.txt
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -W1p /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
 4469 3042 M
 -118 -397 D
 -101 -203 D
@@ -1594,6 +1701,8 @@ O0
 -56 -42 D
 -55 -42 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -1602,71 +1711,87 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i -O Lhalfxprofile.gmt -W1p,red -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
 5349 2758 M
--272 92 D
--256 84 D
--315 97 D
--37 11 D
+-257 87 D
+-221 73 D
+-299 93 D
+-263 78 D
+-19 5 D
 S
 3491 2972 M
-326 -119 D
-411 -158 D
-123 -50 D
+293 -107 D
+272 -103 D
+286 -113 D
+178 -73 D
 S
 4877 1727 M
--107 69 D
--47 29 D
--155 97 D
--204 125 D
--238 142 D
+-77 50 D
+-63 39 D
+-188 118 D
+-190 116 D
+-225 135 D
+-163 95 D
 S
 3131 2331 M
-131 -72 D
-97 -55 D
-242 -137 D
-175 -102 D
-127 -75 D
+132 -73 D
+246 -138 D
+274 -159 D
+239 -142 D
+31 -19 D
 S
 4293 919 M
--217 277 D
--257 320 D
--23 27 D
--34 42 D
+-208 266 D
+-214 266 D
+-80 99 D
+-128 155 D
+-11 15 D
 S
 3186 2342 M
-170 -602 D
-67 -244 D
+107 -378 D
+94 -336 D
+81 -298 D
 S
 3457 645 M
--136 281 D
--163 332 D
--72 144 D
+-192 396 D
+-174 353 D
+-82 162 D
 S
 2248 1859 M
-45 -57 D
-254 -330 D
+23 -29 D
+101 -131 D
+34 -43 D
+166 -217 D
 21 -29 D
-108 -142 D
-21 -29 D
-74 -99 D
+151 -201 D
+43 -58 D
+43 -57 D
+31 -43 D
+11 -14 D
 S
 2958 279 M
--50 69 D
--21 27 D
--60 83 D
--21 27 D
--154 207 D
--31 42 D
--32 41 D
--126 167 D
+-123 167 D
+-145 195 D
+-190 251 D
+-43 57 D
+-97 126 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -1675,62 +1800,71 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Rhalfxprofile.gmt -W1p,blue -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 0 0 1 C
-4469 3042 M
--205 60 D
--319 89 D
--341 89 D
--39 10 D
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
+4290 3094 M
+-170 49 D
+-229 62 D
+-210 56 D
+-116 29 D
 S
-4351 2645 M
-211 -86 D
-278 -118 D
-292 -129 D
-51 -23 D
+4520 2576 M
+159 -66 D
+262 -113 D
+225 -100 D
+17 -8 D
 S
-4126 2189 M
--258 151 D
--229 129 D
--232 128 D
--67 36 D
+3971 2280 M
+-213 122 D
+-233 130 D
+-84 46 D
+-84 46 D
+-17 9 D
 S
-3903 1890 M
-219 -132 D
-308 -191 D
-212 -135 D
+4053 1800 M
+313 -193 D
+123 -78 D
+31 -19 D
+122 -78 D
 S
-3762 1585 M
--208 252 D
--213 253 D
--145 169 D
+3652 1720 M
+-83 99 D
+-190 227 D
+-183 213 D
 S
-3423 1496 M
-152 -564 D
-67 -252 D
+3468 1330 M
+120 -447 D
+54 -203 D
 S
-3086 1402 M
--145 289 D
--218 423 D
--35 66 D
+3009 1556 M
+-217 425 D
+-104 199 D
 S
-2771 1173 M
-126 -170 D
-51 -71 D
-154 -211 D
-160 -225 D
+2872 1037 M
+156 -215 D
+143 -198 D
+91 -128 D
 S
-2463 942 M
--54 69 D
--86 112 D
--319 405 D
--68 85 D
+2360 1075 M
+-209 268 D
+-169 213 D
+-46 57 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -1739,11 +1873,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Rhalfxprofile.gmt -Sc0.4c -Gblue -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_15
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1751,35 +1885,35 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 0 1 C} FS
-94 4469 3042 Sc
-94 4020 3171 Sc
+94 4290 3094 Sc
+94 3930 3195 Sc
 94 3565 3290 Sc
-94 4351 2645 Sc
-94 4771 2471 Sc
+94 4520 2576 Sc
+94 4854 2435 Sc
 94 5183 2289 Sc
-94 4126 2189 Sc
-94 3737 2414 Sc
+94 3971 2280 Sc
+94 3658 2458 Sc
 94 3340 2633 Sc
-94 3903 1890 Sc
-94 4276 1663 Sc
+94 4053 1800 Sc
+94 4350 1617 Sc
 94 4642 1432 Sc
-94 3762 1585 Sc
-94 3483 1921 Sc
+94 3652 1720 Sc
+94 3427 1989 Sc
 94 3196 2259 Sc
-94 3423 1496 Sc
-94 3534 1084 Sc
+94 3468 1330 Sc
+94 3556 1003 Sc
 94 3642 680 Sc
-94 3086 1402 Sc
-94 2891 1788 Sc
+94 3009 1556 Sc
+94 2851 1866 Sc
 94 2688 2180 Sc
-94 2771 1173 Sc
-94 3020 833 Sc
+94 2872 1037 Sc
+94 3069 766 Sc
 94 3262 496 Sc
-94 2463 942 Sc
-94 2203 1276 Sc
+94 2360 1075 Sc
+94 2151 1343 Sc
 94 1936 1613 Sc
 U
 PSL_cliprestore
@@ -1791,11 +1925,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Lhalfxprofile.gmt -Sc0.4c -Gred -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_16
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1803,36 +1937,45 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
 94 5349 2758 Sc
-94 4912 2904 Sc
-94 4469 3042 Sc
+94 5000 2876 Sc
+94 4647 2988 Sc
+94 4290 3094 Sc
 94 3491 2972 Sc
-94 3925 2812 Sc
-94 4351 2645 Sc
+94 3838 2845 Sc
+94 4181 2713 Sc
+94 4520 2576 Sc
 94 4877 1727 Sc
-94 4506 1960 Sc
-94 4126 2189 Sc
+94 4581 1914 Sc
+94 4279 2098 Sc
+94 3971 2280 Sc
 94 3131 2331 Sc
-94 3521 2113 Sc
-94 3903 1890 Sc
+94 3444 2157 Sc
+94 3751 1980 Sc
+94 4053 1800 Sc
 94 4293 919 Sc
-94 4032 1251 Sc
-94 3762 1585 Sc
+94 4085 1185 Sc
+94 3871 1451 Sc
+94 3652 1720 Sc
 94 3186 2342 Sc
-94 3307 1915 Sc
-94 3423 1496 Sc
+94 3283 2000 Sc
+94 3377 1663 Sc
+94 3468 1330 Sc
 94 3457 645 Sc
-94 3275 1021 Sc
-94 3086 1402 Sc
+94 3312 945 Sc
+94 3163 1249 Sc
+94 3009 1556 Sc
 94 2248 1859 Sc
-94 2514 1515 Sc
-94 2771 1173 Sc
+94 2462 1583 Sc
+94 2669 1309 Sc
+94 2872 1037 Sc
 94 2958 279 Sc
-94 2714 609 Sc
-94 2463 942 Sc
+94 2763 543 Sc
+94 2564 808 Sc
+94 2360 1075 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -1843,11 +1986,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K sz_pol_left.gmt -F+f9p,Helvetica,white+r0
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_17
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1859,50 +2002,59 @@ PSL_clip N
 5349 2758 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 150 F0
 (0) mc Z
-4912 2904 M (1) mc Z
-4469 3042 M (2) mc Z
-4020 3171 M (3) mc Z
-3565 3290 M (4) mc Z
-3491 2972 M (5) mc Z
-3925 2812 M (6) mc Z
-4351 2645 M (7) mc Z
-4771 2471 M (8) mc Z
-5183 2289 M (9) mc Z
-4877 1727 M (10) mc Z
-4506 1960 M (11) mc Z
-4126 2189 M (12) mc Z
-3737 2414 M (13) mc Z
-3340 2633 M (14) mc Z
-3131 2331 M (15) mc Z
-3521 2113 M (16) mc Z
-3903 1890 M (17) mc Z
-4276 1663 M (18) mc Z
-4642 1432 M (19) mc Z
-4293 919 M (20) mc Z
-4032 1251 M (21) mc Z
-3762 1585 M (22) mc Z
-3483 1921 M (23) mc Z
-3196 2259 M (24) mc Z
-3186 2342 M (25) mc Z
-3307 1915 M (26) mc Z
-3423 1496 M (27) mc Z
-3534 1084 M (28) mc Z
-3642 680 M (29) mc Z
-3457 645 M (30) mc Z
-3275 1021 M (31) mc Z
-3086 1402 M (32) mc Z
-2891 1788 M (33) mc Z
-2688 2180 M (34) mc Z
-2248 1859 M (35) mc Z
-2514 1515 M (36) mc Z
-2771 1173 M (37) mc Z
-3020 833 M (38) mc Z
-3262 496 M (39) mc Z
-2958 279 M (40) mc Z
-2714 609 M (41) mc Z
-2463 942 M (42) mc Z
-2203 1276 M (43) mc Z
-1936 1613 M (44) mc Z
+5000 2876 M (1) mc Z
+4647 2988 M (2) mc Z
+4290 3094 M (3) mc Z
+3930 3195 M (4) mc Z
+3565 3290 M (5) mc Z
+3491 2972 M (6) mc Z
+3838 2845 M (7) mc Z
+4181 2713 M (8) mc Z
+4520 2576 M (9) mc Z
+4854 2435 M (10) mc Z
+5183 2289 M (11) mc Z
+4877 1727 M (12) mc Z
+4581 1914 M (13) mc Z
+4279 2098 M (14) mc Z
+3971 2280 M (15) mc Z
+3658 2458 M (16) mc Z
+3340 2633 M (17) mc Z
+3131 2331 M (18) mc Z
+3444 2157 M (19) mc Z
+3751 1980 M (20) mc Z
+4053 1800 M (21) mc Z
+4350 1617 M (22) mc Z
+4642 1432 M (23) mc Z
+4293 919 M (24) mc Z
+4085 1185 M (25) mc Z
+3871 1451 M (26) mc Z
+3652 1720 M (27) mc Z
+3427 1989 M (28) mc Z
+3196 2259 M (29) mc Z
+3186 2342 M (30) mc Z
+3283 2000 M (31) mc Z
+3377 1663 M (32) mc Z
+3468 1330 M (33) mc Z
+3556 1003 M (34) mc Z
+3642 680 M (35) mc Z
+3457 645 M (36) mc Z
+3312 945 M (37) mc Z
+3163 1249 M (38) mc Z
+3009 1556 M (39) mc Z
+2851 1866 M (40) mc Z
+2688 2180 M (41) mc Z
+2248 1859 M (42) mc Z
+2462 1583 M (43) mc Z
+2669 1309 M (44) mc Z
+2872 1037 M (45) mc Z
+3069 766 M (46) mc Z
+3262 496 M (47) mc Z
+2958 279 M (48) mc Z
+2763 543 M (49) mc Z
+2564 808 M (50) mc Z
+2360 1075 M (51) mc Z
+2151 1343 M (52) mc Z
+1936 1613 M (53) mc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -1911,12 +2063,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -Ss0.25i -Gblack @Matthews_2016_subduction_subset.txt
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -Ss0.25i -Gblack /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_18
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1924,8 +2076,8 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 150 4469 3042 Ss
 150 4351 2645 Ss
@@ -1943,12 +2095,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K @Matthews_2016_subduction_subset.txt -F+f12p,Helvetica,white+r0
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt -F+f12p,Helvetica,white+r0
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_19
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1975,11 +2127,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K -F+cTL+jTL+f18p -Dj0.2i -Gwhite
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_20
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2008,13 +2160,13 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psbasemap -R135/162/42/51 -JM6i -O -Bafg -BWsnE -K -Y3.1i
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_21
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 0 0 M
 0 3487 D
 S
@@ -2056,6 +2208,7 @@ N 0 1099 M -83 0 D S
 N 7200 1099 M 83 0 D S
 N 0 3069 M -83 0 D S
 N 7200 3069 M 83 0 D S
+25 W
 83 W
 N -42 0 M 0 360 D S
 N 7242 0 M 0 360 D S
@@ -2174,12 +2327,17 @@ N 7283 3487 M -7366 0 D S
 N 7283 3570 M -7366 0 D S
 N 0 3570 M 0 -3653 D S
 N -83 3570 M 0 -3653 D S
+/PSL_AH1 0
 -167 1099 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (45è) mr Z
 7367 1099 M (45è) ml Z
+(45è) sw mx
 -167 3069 M (50è) mr Z
 7367 3069 M (50è) ml Z
+(50è) sw mx
+def
+0 A
 %%EndObject
 0 A
 FQ
@@ -2187,13 +2345,21 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -W1p @Matthews_2016_subduction_subset.txt
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -W1p /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_22
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
 4469 3042 M
 -118 -397 D
 -101 -203 D
@@ -2257,6 +2423,8 @@ O0
 -56 -42 D
 -55 -42 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -2265,68 +2433,83 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i -O Lhalfxprofile.gmt -W1p,red -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_23
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 1 0 0 C
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
 5349 2758 M
--272 92 D
--256 84 D
--315 97 D
--37 11 D
+-257 87 D
+-221 73 D
+-299 93 D
+-263 78 D
+-19 5 D
 S
 5183 2289 M
--154 69 D
--275 120 D
--297 124 D
--106 43 D
+-103 47 D
+-226 99 D
+-228 97 D
+-230 95 D
+-215 86 D
 S
 4877 1727 M
--107 69 D
--47 29 D
--155 97 D
--204 125 D
--238 142 D
+-77 50 D
+-63 39 D
+-188 118 D
+-190 116 D
+-225 135 D
+-163 95 D
 S
 4642 1432 M
--227 145 D
--231 143 D
--281 170 D
+-137 88 D
+-47 29 D
+-201 126 D
+-267 163 D
+-239 142 D
 S
 4293 919 M
--217 277 D
--257 320 D
--23 27 D
--34 42 D
+-208 266 D
+-214 266 D
+-80 99 D
+-128 155 D
+-11 15 D
 S
 3642 680 M
--163 609 D
--56 207 D
+-160 598 D
+-105 385 D
 S
 3457 645 M
--136 281 D
--163 332 D
--72 144 D
+-192 396 D
+-174 353 D
+-82 162 D
 S
 3262 496 M
--231 323 D
--124 169 D
--83 114 D
--53 71 D
+-172 241 D
+-197 271 D
+-74 100 D
+-43 57 D
+-42 58 D
+-65 86 D
 S
 2958 279 M
--50 69 D
--21 27 D
--60 83 D
--21 27 D
--154 207 D
--31 42 D
--32 41 D
--126 167 D
+-123 167 D
+-145 195 D
+-190 251 D
+-43 57 D
+-97 126 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -2335,65 +2518,74 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Rhalfxprofile.gmt -W1p,blue -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_24
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+V
 17 W
 0 0 1 C
-4469 3042 M
--205 60 D
--319 89 D
--341 89 D
--39 10 D
+clipsave
+0 0 M
+7200 0 D
+0 3487 D
+-7200 0 D
+P
+PSL_clip N
+4290 3094 M
+-170 49 D
+-229 62 D
+-210 56 D
+-116 29 D
 S
-4351 2645 M
--248 99 D
--304 116 D
--308 112 D
+4181 2713 M
+-324 125 D
+-274 101 D
+-92 33 D
 S
-4126 2189 M
--258 151 D
--229 129 D
--232 128 D
--67 36 D
+3971 2280 M
+-213 122 D
+-233 130 D
+-84 46 D
+-84 46 D
+-17 9 D
 S
-3903 1890 M
--206 121 D
--224 129 D
--309 173 D
--33 18 D
+3751 1980 M
+-275 158 D
+-65 37 D
+-197 110 D
+-83 46 D
 S
-3762 1585 M
--208 252 D
--213 253 D
--145 169 D
+3652 1720 M
+-83 99 D
+-190 227 D
+-183 213 D
 S
-3423 1496 M
--181 650 D
--56 196 D
+3377 1663 M
+-175 625 D
+-16 54 D
 S
-3086 1402 M
--145 289 D
--218 423 D
--35 66 D
+3009 1556 M
+-217 425 D
+-104 199 D
 S
-2771 1173 M
--85 113 D
--21 29 D
--97 128 D
--65 86 D
--187 244 D
--45 57 D
+2669 1309 M
+-87 115 D
+-32 44 D
+-166 217 D
+-34 43 D
+-56 73 D
+-23 29 D
 -23 29 D
 S
-2463 942 M
--54 69 D
--86 112 D
--319 405 D
--68 85 D
+2360 1075 M
+-209 268 D
+-169 213 D
+-46 57 D
 S
+PSL_cliprestore
+U
 %%EndObject
 0 A
 FQ
@@ -2402,11 +2594,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Rhalfxprofile.gmt -Sc0.4c -Gblue -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_25
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2414,35 +2606,35 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 0 1 C} FS
-94 4469 3042 Sc
-94 4020 3171 Sc
+94 4290 3094 Sc
+94 3930 3195 Sc
 94 3565 3290 Sc
-94 4351 2645 Sc
-94 3925 2812 Sc
+94 4181 2713 Sc
+94 3838 2845 Sc
 94 3491 2972 Sc
-94 4126 2189 Sc
-94 3737 2414 Sc
+94 3971 2280 Sc
+94 3658 2458 Sc
 94 3340 2633 Sc
-94 3903 1890 Sc
-94 3521 2113 Sc
+94 3751 1980 Sc
+94 3444 2157 Sc
 94 3131 2331 Sc
-94 3762 1585 Sc
-94 3483 1921 Sc
+94 3652 1720 Sc
+94 3427 1989 Sc
 94 3196 2259 Sc
-94 3423 1496 Sc
-94 3307 1915 Sc
+94 3377 1663 Sc
+94 3283 2000 Sc
 94 3186 2342 Sc
-94 3086 1402 Sc
-94 2891 1788 Sc
+94 3009 1556 Sc
+94 2851 1866 Sc
 94 2688 2180 Sc
-94 2771 1173 Sc
-94 2514 1515 Sc
+94 2669 1309 Sc
+94 2462 1583 Sc
 94 2248 1859 Sc
-94 2463 942 Sc
-94 2203 1276 Sc
+94 2360 1075 Sc
+94 2151 1343 Sc
 94 1936 1613 Sc
 U
 PSL_cliprestore
@@ -2454,11 +2646,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i Lhalfxprofile.gmt -Sc0.4c -Gred -O -K
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_26
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2466,36 +2658,45 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {1 0 0 C} FS
 94 5349 2758 Sc
-94 4912 2904 Sc
-94 4469 3042 Sc
+94 5000 2876 Sc
+94 4647 2988 Sc
+94 4290 3094 Sc
 94 5183 2289 Sc
-94 4771 2471 Sc
-94 4351 2645 Sc
+94 4854 2435 Sc
+94 4520 2576 Sc
+94 4181 2713 Sc
 94 4877 1727 Sc
-94 4506 1960 Sc
-94 4126 2189 Sc
+94 4581 1914 Sc
+94 4279 2098 Sc
+94 3971 2280 Sc
 94 4642 1432 Sc
-94 4276 1663 Sc
-94 3903 1890 Sc
+94 4350 1617 Sc
+94 4053 1800 Sc
+94 3751 1980 Sc
 94 4293 919 Sc
-94 4032 1251 Sc
-94 3762 1585 Sc
+94 4085 1185 Sc
+94 3871 1451 Sc
+94 3652 1720 Sc
 94 3642 680 Sc
-94 3534 1084 Sc
-94 3423 1496 Sc
+94 3556 1003 Sc
+94 3468 1330 Sc
+94 3377 1663 Sc
 94 3457 645 Sc
-94 3275 1021 Sc
-94 3086 1402 Sc
+94 3312 945 Sc
+94 3163 1249 Sc
+94 3009 1556 Sc
 94 3262 496 Sc
-94 3020 833 Sc
-94 2771 1173 Sc
+94 3069 766 Sc
+94 2872 1037 Sc
+94 2669 1309 Sc
 94 2958 279 Sc
-94 2714 609 Sc
-94 2463 942 Sc
+94 2763 543 Sc
+94 2564 808 Sc
+94 2360 1075 Sc
 U
 PSL_cliprestore
 %%EndObject
@@ -2506,11 +2707,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K sz_pol_left.gmt -F+f9p,Helvetica,white+r0
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_27
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2522,50 +2723,59 @@ PSL_clip N
 5349 2758 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 150 F0
 (0) mc Z
-4912 2904 M (1) mc Z
-4469 3042 M (2) mc Z
-4020 3171 M (3) mc Z
-3565 3290 M (4) mc Z
-5183 2289 M (5) mc Z
-4771 2471 M (6) mc Z
-4351 2645 M (7) mc Z
-3925 2812 M (8) mc Z
-3491 2972 M (9) mc Z
-4877 1727 M (10) mc Z
-4506 1960 M (11) mc Z
-4126 2189 M (12) mc Z
-3737 2414 M (13) mc Z
-3340 2633 M (14) mc Z
-4642 1432 M (15) mc Z
-4276 1663 M (16) mc Z
-3903 1890 M (17) mc Z
-3521 2113 M (18) mc Z
-3131 2331 M (19) mc Z
-4293 919 M (20) mc Z
-4032 1251 M (21) mc Z
-3762 1585 M (22) mc Z
-3483 1921 M (23) mc Z
-3196 2259 M (24) mc Z
-3642 680 M (25) mc Z
-3534 1084 M (26) mc Z
-3423 1496 M (27) mc Z
-3307 1915 M (28) mc Z
-3186 2342 M (29) mc Z
-3457 645 M (30) mc Z
-3275 1021 M (31) mc Z
-3086 1402 M (32) mc Z
-2891 1788 M (33) mc Z
-2688 2180 M (34) mc Z
-3262 496 M (35) mc Z
-3020 833 M (36) mc Z
-2771 1173 M (37) mc Z
-2514 1515 M (38) mc Z
-2248 1859 M (39) mc Z
-2958 279 M (40) mc Z
-2714 609 M (41) mc Z
-2463 942 M (42) mc Z
-2203 1276 M (43) mc Z
-1936 1613 M (44) mc Z
+5000 2876 M (1) mc Z
+4647 2988 M (2) mc Z
+4290 3094 M (3) mc Z
+3930 3195 M (4) mc Z
+3565 3290 M (5) mc Z
+5183 2289 M (6) mc Z
+4854 2435 M (7) mc Z
+4520 2576 M (8) mc Z
+4181 2713 M (9) mc Z
+3838 2845 M (10) mc Z
+3491 2972 M (11) mc Z
+4877 1727 M (12) mc Z
+4581 1914 M (13) mc Z
+4279 2098 M (14) mc Z
+3971 2280 M (15) mc Z
+3658 2458 M (16) mc Z
+3340 2633 M (17) mc Z
+4642 1432 M (18) mc Z
+4350 1617 M (19) mc Z
+4053 1800 M (20) mc Z
+3751 1980 M (21) mc Z
+3444 2157 M (22) mc Z
+3131 2331 M (23) mc Z
+4293 919 M (24) mc Z
+4085 1185 M (25) mc Z
+3871 1451 M (26) mc Z
+3652 1720 M (27) mc Z
+3427 1989 M (28) mc Z
+3196 2259 M (29) mc Z
+3642 680 M (30) mc Z
+3556 1003 M (31) mc Z
+3468 1330 M (32) mc Z
+3377 1663 M (33) mc Z
+3283 2000 M (34) mc Z
+3186 2342 M (35) mc Z
+3457 645 M (36) mc Z
+3312 945 M (37) mc Z
+3163 1249 M (38) mc Z
+3009 1556 M (39) mc Z
+2851 1866 M (40) mc Z
+2688 2180 M (41) mc Z
+3262 496 M (42) mc Z
+3069 766 M (43) mc Z
+2872 1037 M (44) mc Z
+2669 1309 M (45) mc Z
+2462 1583 M (46) mc Z
+2248 1859 M (47) mc Z
+2958 279 M (48) mc Z
+2763 543 M (49) mc Z
+2564 808 M (50) mc Z
+2360 1075 M (51) mc Z
+2151 1343 M (52) mc Z
+1936 1613 M (53) mc Z
 PSL_cliprestore
 %%EndObject
 0 A
@@ -2574,12 +2784,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -Ss0.25i -Gblack @Matthews_2016_subduction_subset.txt
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt psxy -R135/162/42/51 -JM6i -O -K -Ss0.25i -Gblack /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_28
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2587,8 +2797,8 @@ clipsave
 -7200 0 D
 P
 PSL_clip N
-4 W
 V
+4 W
 {0 A} FS
 150 4469 3042 Ss
 150 4351 2645 Ss
@@ -2606,12 +2816,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K @Matthews_2016_subduction_subset.txt -F+f12p,Helvetica,white+r0
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K /Users/pwessel/.gmt/cache/Matthews_2016_subduction_subset.txt -F+f12p,Helvetica,white+r0
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_29
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2638,11 +2848,11 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt pstext -R135/162/42/51 -JM6i -O -K -F+cTL+jTL+f18p -Dj0.2i -Gwhite
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_30
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2659,15 +2869,16 @@ O0
 
 % PostScript produced by:
 %@GMT: gmt psxy -R135/162/42/51 -JM6i -O -T
-%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314245 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
+%@PROJ: merc 135.00000000 162.00000000 42.00000000 51.00000000 -1502813.126 1502813.126 5132380.528 6588066.570 +proj=merc +lon_0=148.5 +k=1 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_31
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 %%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

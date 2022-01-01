@@ -12,10 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt vector** [ *tables* ] [ |-A|\ **m**\ [*conf*]\|\ *vector* ]
+**gmt vector** [ *table* ]
+[ |-A|\ **m**\ [*conf*]\|\ *vector* ]
 [ |-C|\ [**i**\|\ **o**] ]
-[ |-E| ] [ |-N| ] [ |-S|\ *vector* ]
-[ |-T|\ **a**\|\ **d**\|\ **D**\|\ **p**\ *az*\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x** ]
+[ |-E| ]
+[ |-N| ]
+[ |-S|\ *vector* ]
+[ |-T|\ **a**\|\ **d**\|\ **D**\|\ **p**\ *azim*\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -24,8 +27,10 @@ Synopsis
 [ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-j| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -36,7 +41,7 @@ Description
 
 **vector** reads either (x, y), (x, y, z), (r, theta) or (lon, lat)
 [or (lat,lon); see **-:**] coordinates from the first 2-3 columns on
-standard input [or one or more *tables*]. If **-fg** is selected and only two items
+standard input [or one or more tables]. If **-fg** is selected and only two items
 are read (i.e., lon, lat) then these coordinates are converted to
 Cartesian three-vectors on the unit sphere. Otherwise we expect (r,
 theta) unless **-Ci** is in effect. If no file is found we expect a
@@ -65,9 +70,9 @@ Optional Arguments
 .. _-A:
 
 **-A**\ **m**\ [*conf*]\|\ *vector*
-    Specify a single, primary vector instead of reading *tables*; see
-    *tables* for possible vector formats. Alternatively, append **m**
-    to read *tables* and set the single, primary vector to be the mean
+    Specify a single, primary vector instead of reading data table(s); see
+    *table* for possible vector formats. Alternatively, append **m**
+    to read *table* and set the single, primary vector to be the mean
     resultant vector first. We also compute the confidence ellipse for
     the mean vector (azimuth of major axis, major axis, and minor axis;
     for geographic data the axes will be reported in km). You may
@@ -104,12 +109,12 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *az*\|\ **s**\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x**
+**-T**\ **a**\|\ **d**\|\ **D**\|\ **p**\ *azim*\|\ **s**\|\ **r**\ [*arg*]\|\ **R**\|\ **s**\|\ **t**\ [*arg*]\|\ **x**
     Specify the vector transformation of interest. Append **a** for
     average, **b** for the pole of the two points bisector, **d** for
     dot product (use **D** to get angle in degrees between the two
-    vectors), **p**\ *az* for the pole to the great circle specified by
-    input vector and the circle's *az* (no second vector used), **s** for vector sum,
+    vectors), **p**\ *azim* for the pole to the great circle specified by
+    input vector and the circle's *azim* (no second vector used), **s** for vector sum,
     **r**\ *par* for vector rotation (here, *par* is a single
     angle for 2-D Cartesian data and *lon/lat/angle* for a 3-D rotation
     pole and angle), **R** will instead rotate the fixed secondary vector
@@ -120,15 +125,19 @@ Optional Arguments
     from the third and fourth data column in the file, and **x** for cross-product.
     If **-T** is not given then no transformation takes place; the
     output is determined by other options such as **-A**, **-C**,
-    **-E**, and **-N**.
+    **-E**, and **-N**. **Note**: For **-Tt** and geographic coordinates we will
+    perform a great circle calculation unless **-je** is selected.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 or 3 input columns].
 .. include:: explain_-bi.rst_
+
+.. |Add_-bo| replace:: [Default is same as input].
+.. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-d.rst_
@@ -146,6 +155,8 @@ Optional Arguments
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
+
+.. include:: explain_distcalc.rst_
 
 .. include:: explain_-ocols.rst_
 
@@ -207,10 +218,15 @@ the point -30/60 at an azimuth of 105 degrees, use::
     gmt vector -A-30/60 -Tp105 -fg > pole.txt
 
 To translate all locations in the geographic file points.txt
-by 65 km to the NE, try::
+by 65 km to the NE on a spherical Earth, try::
 
     gmt vector points -Tt45/65k -fg > shifted.txt
 
+
+To determine the point that is 23 nautical miles along a geodesic
+with a bearing of 310 degrees from the origin at (8E, 50N), try::
+
+    echo 8 50 | gmt vector -Tt310/23n -je
 
 Rotations
 ---------

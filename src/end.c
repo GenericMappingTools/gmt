@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -36,12 +36,13 @@
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [show] [%s]\n\n", name, GMT_V_OPT);
+	GMT_Usage (API, 0, "usage: %s [show] [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tshow Display each figure in the default viewer.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\nshow");
+	GMT_Usage (API, -2, "Display each figure in the default viewer.");
 	GMT_Option (API, "V,;");
 
 	return (GMT_MODULE_USAGE);
@@ -57,6 +58,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *show) 
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		switch (opt->option) {
@@ -64,14 +66,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMT_OPTION *options, bool *show) 
 				if (!strncmp (opt->arg, "show", 4U))
 					*show = true;
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized argument %s\n", opt->arg);
+					GMT_Report (API, GMT_MSG_ERROR, "Unrecognized argument %s\n", opt->arg);
 					n_errors++;
 				}
 				break;
 			case 'V':	/* This is OK */
 				break;
 			default:
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized option %s\n", opt->arg);
+				GMT_Report (API, GMT_MSG_ERROR, "Unrecognized option %s\n", opt->arg);
 				n_errors++;
 				break;
 		}

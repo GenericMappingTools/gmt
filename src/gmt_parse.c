@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -281,10 +281,11 @@ GMT_LOCAL int gmtparse_complete_options (struct GMT_CTRL *GMT, struct GMT_OPTION
 		if (!strcmp (GMT_unique_option[k], "B")) B_id = k;	/* B_id === 0 but just in case this changes we do this search anyway */
 	assert (B_id != GMT_NOTSET);	/* Safety valve just in case */
 	check_B = (strncmp (GMT->init.module_name, "psscale", 7U) && strncmp (GMT->init.module_name, "docs", 4U));
-	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame file unless module is psscale, overwriting any previous file */
+	if (GMT->current.setting.run_mode == GMT_MODERN && n_B && check_B) {	/* Write gmt.frame.<fig> file unless module is psscale, overwriting any previous file */
 		char file[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		snprintf (file, PATH_MAX, "%s/gmt.frame", GMT->parent->gwf_dir);
+		int fig = gmt_get_current_figure (GMT->parent);	/* Get current figure number */
+		snprintf (file, PATH_MAX, "%s/gmt.frame.%d", GMT->parent->gwf_dir, fig);
 		if ((fp = fopen (file, "w")) == NULL) {
 			GMT_Report (GMT->parent, GMT_MSG_DEBUG, "Unable to create file %s\n", file);
 			return (-1);
@@ -457,35 +458,84 @@ GMT_LOCAL struct GMT_OPTION *gmtparse_fix_gdal_files (struct GMT_OPTION *opt) {
 	return opt;
 }
 
-/*! */
-GMT_LOCAL void gmtparse_ensure_b_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
-	bool do_sort = false;
-	char *c = NULL;
-	unsigned int k, n_B = 0, this_priority, priority[12]; /* Worst case is -Bpx, -Bsx, ... */
+struct B_PRIORITY {
+	unsigned int level;
 	struct GMT_OPTION *opt;
+};
 
-	gmt_M_memset (priority, 12, unsigned int);
+GMT_LOCAL int gmtparse_compare_B (const void *p1, const void *p2) {
+	const struct B_PRIORITY *a = p1, *b = p2;
 
-	for (opt = options; opt; opt = opt->next) {
-		if (opt->option != 'B') continue;	/* Only look at -B options here */
-		if (gmtlib_B_is_frame (GMT, opt->arg)) continue;	/* Don't care about the frame setting here */
-		if ((c = gmt_first_modifier (GMT, opt->arg, "aflLpsSu"))) {	/* Option has axis modifier(s) */
-			c[0] = '\0';	/* Temporary chop them off */
-			k = 0;	/* Start of option string, then advance past any leading [p|s][x|y|z] */
-			if (strchr ("ps",  opt->arg[k])) k++;
-			if (strchr ("xyz", opt->arg[k])) k++;
-			this_priority = (opt->arg[k]) ? 1 : 2;	/* If nothing then probably just a label setting, else we have a leading interval setting */
-			c[0] = '+';	/* Restore modifiers */
+	if (a->level < b->level) return (-1);
+	if (a->level > b->level) return (+1);
+	return (0);
+}
+
+/*! */
+GMT_LOCAL struct GMT_OPTION * gmtparse_ensure_b_and_dash_options_order (struct GMT_CTRL *GMT, struct GMT_OPTION *options) {
+	bool do_sort = false, got_theme = false;
+	char *c = NULL;
+	unsigned int np, n_B = 0, n_par = 0, k, j, this_priority;
+	struct GMT_OPTION *opt, *head = NULL;
+	struct B_PRIORITY *priority = NULL; /* Worst case is -Bpx, -Bsx, ... */
+
+	if (options == NULL) return NULL;	/* Nothing to do */
+
+	for (np = 0, opt = options; opt; opt = opt->next, np++);	/* Count the options */
+	priority = gmt_M_memory (GMT, NULL, np, struct B_PRIORITY);
+
+	for (opt = options, k = 0; opt; opt = opt->next, k++) {
+		priority[k].opt = opt;
+		if (! (opt->option == 'B' || opt->option == '-')) continue;	/* Only look at -B --PAR options here */
+		if (opt->option == '-') {	/* --PAR=value */
+			if (!strncmp (opt->arg, "GMT_THEME", 9U)) {	/* We need to process GMT_THEME first */
+				this_priority = 4;	/* We need to process GMT_THEME first */
+				got_theme = true;
+			}
+			else
+				this_priority = 5;	/* The rest can be at the end */
+			n_par++;
 		}
-		else /* Must be interval setting */
+		else if (gmtlib_B_is_frame (GMT, opt->arg)) {	/* Do a special check for -Bs which could be confused with secondary annotations */
+			if (opt->arg[0] == 's' && opt->arg[1] == '\0')	/* Place -Bs at the end */
+				this_priority = 3;
+			else	/* Don't care about the other frame setting here */
+				this_priority = 2;
+			n_B++;
+		}
+		else if ((c = gmt_first_modifier (GMT, opt->arg, GMT_AXIS_MODIFIERS))) {	/* Option has axis modifier(s) */
+			c[0] = '\0';	/* Temporary chop them off */
+			j = 0;	/* Start of option string, then advance past any leading [p|s][x|y|z] */
+			if (strchr ("ps",  opt->arg[j])) j++;
+			if (strchr ("xyz", opt->arg[j])) j++;
+			this_priority = (opt->arg[j]) ? 1 : 2;	/* If nothing then probably just a label setting, else we have a leading interval setting */
+			c[0] = '+';	/* Restore modifiers */
+			n_B++;
+		}
+		else { /* Must be interval setting */
 			this_priority = 1;
-		priority[n_B] = this_priority;
-		n_B++;
+			n_B++;
+		}
+		priority[k].level = this_priority;
 	}
-	if (n_B < 2) return;	/* Nothing to sort */
-	for (k = 1; k < n_B; k++) if (priority[k] < priority[k-1]) do_sort = true;
-	if (!do_sort) return;	/* No need to sort */
-	GMT_Report (GMT->parent, GMT_MSG_WARNING, "GMT_Parse_Options: List interval-setting -B options before other axis -B options to ensure proper parsing.\n");
+	for (k = 1; k < np; k++) if (priority[k].level < priority[k-1].level) do_sort = true;
+	if (n_B <= 1 && !(got_theme && n_par > 1)) do_sort = true;	/* Sorting needed */
+	if (do_sort) mergesort (priority, np, sizeof (struct B_PRIORITY), gmtparse_compare_B);
+	/* Rebuild options links */
+	head = opt = GMT_Make_Option (GMT->parent, priority[0].opt->option, priority[0].opt->arg);
+	for (k = 1; k < np; k++) {
+		opt->next = GMT_Make_Option (GMT->parent, priority[k].opt->option, priority[k].opt->arg);
+		opt = opt->next;
+	}
+	gmt_M_free (GMT, priority);
+
+	if (do_sort && n_B > 1) {
+		char *cmd = GMT_Create_Cmd (GMT->parent, head);
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT_Parse_Options: Interval-setting -B options were reordered to appear before axis and frame -B options to ensure proper parsing.\n");
+		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "GMT_Parse_Options: New option order: %s\n", cmd);
+		GMT_Destroy_Cmd (GMT->parent, &cmd);
+	}
+	return (head);
 }
 
 /*! . */
@@ -533,7 +583,7 @@ struct GMT_OPTION *GMT_Create_Options (void *V_API, int n_args_in, const void *i
 		unsigned int pos = 0, new_n_args = 0, k;
 		bool quoted;
 		size_t n_alloc = GMT_SMALL_CHUNK;
-		char p[GMT_LEN1024] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
+		char p[GMT_BUFSIZ] = {""}, *txt_in = strdup (in);	/* Passed a single text string */
 		new_args = gmt_M_memory (G, NULL, n_alloc, char *);
 		/* txt_in can contain options that take multi-word text strings, e.g., -B+t"My title".  We avoid the problem of splitting
 		 * these items by temporarily replacing spaces inside quoted strings with ASCII 31 US (Unit Separator), do the strtok on
@@ -1020,7 +1070,7 @@ int GMT_Delete_Option (void *V_API, struct GMT_OPTION *current, struct GMT_OPTIO
 }
 
 /*! . */
-int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION *options) {
+int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION *in_options) {
 	/* GMT_Parse_Common parses the option list for a program and detects the GMT common options.
 	 * These are processed in the order required by GMT regardless of order given.
 	 * The settings will override values set previously by other commands.
@@ -1028,7 +1078,7 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	 * Note: GMT_CRITICAL_OPT_ORDER is defined in gmt_common.h
 	 */
 
-	struct GMT_OPTION *opt = NULL;
+	struct GMT_OPTION *opt = NULL, *options = NULL;
 	char list[2] = {0, 0}, critical_opt_order[] = GMT_CRITICAL_OPT_ORDER;
 	unsigned int i, n_errors;
 	struct GMTAPI_CTRL *API = NULL;
@@ -1040,11 +1090,12 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 	 * by consulting the current GMT history machinery.  If not possible then we have an error to report */
 
 	API = gmtparse_get_api_ptr (V_API);	/* Cast void pointer to a GMTAPI_CTRL pointer */
-	if (gmtparse_complete_options (API->GMT, options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
+	if (gmtparse_complete_options (API->GMT, in_options)) return_error (API, GMT_OPTION_HISTORY_ERROR);	/* Replace shorthand failed */
 
-	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmtparse_check_b_options (API->GMT, options);	/* Determine the syntax of the -B option(s) */
+	if (API->GMT->common.B.mode == 0) API->GMT->common.B.mode = gmtparse_check_b_options (API->GMT, in_options);	/* Determine the syntax of the -B option(s) */
 
-	gmtparse_ensure_b_options_order (API->GMT, options);	/* Avoid parsing axes labels etc before axis increments since we may auto-set increments in the former */
+	/* Need sorted list to avoid parsing axes labels etc before axis increments since we may auto-set increments in the former, and also --GMT_THEME must be parsed before other -- */
+	options = gmtparse_ensure_b_and_dash_options_order (API->GMT, in_options);
 
 	n_errors = gmtparse_check_extended_R (API->GMT, options);	/* Possibly parse -I if required by -R */
 
@@ -1067,11 +1118,47 @@ int GMT_Parse_Common (void *V_API, const char *given_options, struct GMT_OPTION 
 			if (opt->option != list[0]) continue;
 		}
 	}
+	if (GMT_Destroy_Options (API, &options)) {
+		return_error (V_API, GMT_RUNTIME_ERROR);	/* Failed to free temp options list */
+	}
 
 	/* Update [read-only] pointer to the current option list */
-	API->GMT->current.options = options;
+	API->GMT->current.options = in_options;
 	if (n_errors) return_error (API, GMT_PARSE_ERROR);	/* One or more options failed to parse */
 	if (gmt_M_is_geographic (API->GMT, GMT_IN)) API->GMT->current.io.warn_geo_as_cartesion = false;	/* Don't need this warning */
 
+	if (API->GMT->current.io.cycle_col != GMT_NOTSET) {
+		unsigned int k = 2 * API->GMT->current.io.cycle_col;
+		API->GMT->current.io.cycle_min = API->GMT->common.R.wesn[k];
+		API->GMT->current.io.cycle_max = API->GMT->common.R.wesn[k+1];
+		switch (API->GMT->current.io.cycle_operator) {
+			case GMT_CYCLE_SEC:	/* Return 0.000-0.999999 second */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+			case GMT_CYCLE_MIN:	/* Return 0.000-59.999999 seconds */
+				API->GMT->current.io.cycle_range = GMT_MIN2SEC_F;
+				break;
+			case GMT_CYCLE_HOUR:	/* Return 0.000-59.999999 minutes */
+				API->GMT->current.io.cycle_range = GMT_HR2MIN_F;
+				break;
+			case GMT_CYCLE_DAY:	/* Return 0.000-23.999999 hours */
+				API->GMT->current.io.cycle_range = GMT_DAY2HR_F;
+				break;
+			case GMT_CYCLE_WEEK:	/* Return 0.00000-6.9999999 days */
+				API->GMT->current.io.cycle_range = GMT_WEEK2DAY_F;
+				API->GMT->current.io.cycle_interval = true;
+				break;
+			case GMT_CYCLE_ANNUAL:	/* Return 0.000000-11.999999 months */
+				API->GMT->current.io.cycle_range = 12.0;
+				API->GMT->current.io.cycle_interval = true;
+				break;
+			case GMT_CYCLE_YEAR:	/* Return 0.00000-0.99999999 years */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+			case GMT_CYCLE_CUSTOM:	/* Return 0.00000-0.99999999 custom cycle */
+				API->GMT->current.io.cycle_range = 1.0;
+				break;
+		}
+	}
 	return (GMT_OK);
 }

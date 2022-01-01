@@ -5,6 +5,7 @@ cat << EOF > lines.txt
 EOF
 
 gmt begin GMT_linecap
+	gmt set GMT_THEME cookbook
 	gmt plot lines.txt -R-0.25/5.25/-0.2/1.4 -Jx1i -W4p
 	gmt plot lines.txt -Y0.2i -W4p,orange,.
 	gmt plot lines.txt -Y0.2i -W4p,red,9_4_2_4:2p

@@ -12,7 +12,8 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdrotater** *ingrid* |-E|\ *rot_file*\|\ *lon*/*lat*/*angle*
+**gmt grdrotater** *ingrid*
+|-E|\ *rot_file*\|\ *lon*/*lat*/*angle*\ [**+i**]
 |-G|\ *outgrid*
 [ |-A|\ *region* ]
 [ |-D|\ *rotoutline* ]
@@ -24,8 +25,11 @@ Synopsis
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
+[ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-n| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -44,18 +48,22 @@ rotated region is not the entire globe.
 Required Arguments
 ------------------
 
-*ingrid*
-    Name of a grid file in geographical (lon, lat) coordinates.
+.. |Add_ingrid| replace:: Name of a grid file in geographical (lon, lat) coordinates.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. include:: explain_rots.rst_
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of output grid. This is the grid with the data reconstructed
+.. |Add_outgrid| replace:: Name of output grid. This is the grid with the data reconstructed
     according to the specified rotation. If more than one reconstruction
     time is implied then *outgrid* must contain a C-format specifier
     to format a floating point number (reconstruction time) to text.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -76,7 +84,7 @@ Optional Arguments
     time is implied then *rotoutline* must contain a C-format specifier
     to format a floating point number (reconstruction time) to text.
     If only one time is implied and **-D** is not set then we write the
-    polygon to stdout (but see **-N**).
+    polygon to standard output (but see **-N**).
 
 .. _-F:
 
@@ -88,7 +96,7 @@ Optional Arguments
 
 **-N**
     Do Not output the rotated polygon outline [Default will write it to
-    stdout, or to a file via **-D**].
+    standard output, or to a file via **-D**].
 
 .. _-R:
 
@@ -113,10 +121,10 @@ Optional Arguments
     option is given and **-E** specified a rotation file then we equate
     the rotation file times with the reconstruction times.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: ../../explain_-bi.rst_
@@ -127,11 +135,14 @@ Optional Arguments
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-d.rst_
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-f.rst_
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_colon.rst_
 .. include:: ../../explain_-n.rst_
+.. include:: ../../explain_-ocols.rst_
 .. include:: ../../explain_help.rst_
 .. include:: ../../explain_grdresample2.rst_
 

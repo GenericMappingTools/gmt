@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -95,13 +95,14 @@ struct GMT_GDALREAD_IN_CTRL {
 	} P;
 	struct GD_p {	/* Pad array in output */
 		bool active;
-		int pad;
+		unsigned int pad[4];
 	} p;
 	struct GD_W {	/* Convert proj4 string into WKT */
 		bool active;
 	} W;
 	struct GD_R {	/* Sub-region in referenced coords */
 		bool active;
+		bool periodic;
 		char *region;
 	} R;
 	struct GD_Z {	/* Tell to store data in a complex array */

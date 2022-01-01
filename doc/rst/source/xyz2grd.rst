@@ -12,11 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt xyz2grd** [ *table* ] |-G|\ *grdfile*
+**gmt xyz2grd** [ *table* ] |-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**d**\|\ **f**\|\ **l**\|\ **m**\|\ **n**\|\ **r**\|\ **S**\|\ **s**\|\ **u**\|\ **z**] ]
-[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
+[ |SYN_OPT-D2| ]
 [ |-J|\ *parameters* ]
 [ |-S|\ [*zfile*] ]
 [ |SYN_OPT-V| ]
@@ -29,6 +29,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -45,7 +46,8 @@ mean value. As an option (using **-Z**), a 1-column z-table may be read
 assuming all nodes are present (z-tables can be in organized in a number
 of formats, see **-Z** below.)  **Note**: **xyz2grd** does not grid the data,
 it simply reformats existing data to a grid structure.  For gridding,
-see **surface**, **greenspline**, **nearneighbor**, or **triangulate**.
+see :doc:`surface`, :doc:`greenspline`, :doc:`nearneighbor`, or
+:doc:`triangulate`.
 
 Required Arguments
 ------------------
@@ -57,18 +59,19 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See GRID FILE
-    FORMAT below.)
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
 .. include:: explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -92,24 +95,24 @@ Optional Arguments
 
 .. include:: explain_-D_cap.rst_
 
-.. _-J:
-
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant metadata in
     netCDF grids. Remember also that PROJ syntax can be used directly in **-J**. This referencing will be
     recognized by GDAL and increasingly also by GMT.
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
 **-S**\ [*zfile*]
     Swap the byte-order of the input only. No grid file is produced. You
     must also supply the **-Z** option. The output is written to *zfile*
-    (or stdout if not supplied).
+    (or standard output if not supplied).
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -132,29 +135,18 @@ Optional Arguments
     to be swapped, append **w**. Select one of several data types (all
     binary except **a**):
 
-    **A** ASCII representation of one or more floating point values per record
-
-    **a** ASCII representation of a single item per record
-
-    **c** int8_t, signed 1-byte character
-
-    **u** uint8_t, unsigned 1-byte character
-
-    **h** int16_t, signed 2-byte integer
-
-    **H** uint16_t, unsigned 2-byte integer
-
-    **i** int32_t, signed 4-byte integer
-
-    **I** uint32_t, unsigned 4-byte integer
-
-    **l** int64_t, long (8-byte) integer
-
-    **L** uint64_t, unsigned long (8-byte) integer
-
-    **f** 4-byte floating point single precision
-
-    **d** 8-byte floating point double precision
+    - **A** ASCII representation of one or more floating point values per record
+    - **a** ASCII representation of a single item per record
+    - **c** int8_t, signed 1-byte character
+    - **u** uint8_t, unsigned 1-byte character
+    - **h** int16_t, signed 2-byte integer
+    - **H** uint16_t, unsigned 2-byte integer
+    - **i** int32_t, signed 4-byte integer
+    - **I** uint32_t, unsigned 4-byte integer
+    - **l** int64_t, long (8-byte) integer
+    - **L** uint64_t, unsigned long (8-byte) integer
+    - **f** 4-byte floating point single precision
+    - **d** 8-byte floating point double precision
 
     Default format is scanline orientation of ASCII numbers: **-ZTLa**.
     The difference between **A** and **a** is that the latter can decode both
@@ -187,13 +179,13 @@ Optional Arguments
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
 
+.. include:: explain_-w.rst_
+
 .. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
 
 .. include:: explain_float.rst_
-
-.. include:: explain_grd_output.rst_
 
 .. include:: explain_grd_coord.rst_
 

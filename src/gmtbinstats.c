@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,10 +30,10 @@
 #define THIS_MODULE_CLASSIC_NAME	"gmtbinstats"
 #define THIS_MODULE_MODERN_NAME	"gmtbinstats"
 #define THIS_MODULE_LIB		"core"
-#define THIS_MODULE_PURPOSE	"Bin data and determine statistics per bin"
+#define THIS_MODULE_PURPOSE	"Bin spatial data and determine statistics per bin"
 #define THIS_MODULE_KEYS	"<D{,>?}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-:RVabdefghiqrs"
+#define THIS_MODULE_OPTIONS "-:RVabdefghiqrw"
 
 enum gmtbinstats_types {
 	GMTBINSTATS_LOWER = 1,
@@ -82,6 +82,9 @@ struct GMTBINSTATS_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 	} G;
+	struct GMTBINSTATS_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GMTBINSTATS_N {	/* -N */
 		bool active;
 	} N;
@@ -124,49 +127,52 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G<outgrid> %s\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s -S%s [-E<empty>] [-N] [-T[h|r]] [%s] [-W[+s]]\n", GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n", GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n", GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -Ca|d|g|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z -G%s %s %s -S%s [-E<empty>] [-N] "
+		"[-T[h|r]] [%s] [-W[+s|w]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_RADIUS_OPT, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT,
+		GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Name of output grid.\n");
-	GMT_Option (API, "I");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify the statistic of data we should report per bin.  Choose from.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a: The mean (average)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d: The median absolute deviation (MAD)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g: The full data range (max-min)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i: The 25-75%% interquartile range\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   l: The minimum (low)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   L: The minimum of all positive values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   m: The median\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n: The number of values [Default]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   o: The LMS scale\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p: The mode (maximum likelihood)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   q: The selected quantile value; append quantile [50%%]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r: The r.m.s.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s: The standard deviation\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   u: The maximum (upper)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   U: The maximum of all negative values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z: The sum\n");
-	GMT_Option (API, "R");
-	gmt_dist_syntax (API->GMT, 'S', "Compute statistics using points inside this search radius.");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Value to use for empty bins [Default is NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize the output by the area of the bins [no normalization].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Use area-covering tiling to set up non-overlapping bins. Choose binning scheme:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   h hexagonal binning, write non-equidistant table to standard output (or file named in -G).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   r rectangular binning, writes equidistant grid (named via -G) [Default].\n");
+	GMT_Usage (API, 1, "\n-C Specify the statistic of data we should report per bin.  Choose from:");
+	GMT_Usage (API, -3, "a: The mean (average)");
+	GMT_Usage (API, -3, "d: The median absolute deviation (MAD)");
+	GMT_Usage (API, -3, "g: The full data range (max-min)");
+	GMT_Usage (API, -3, "i: The 25-75%% interquartile range");
+	GMT_Usage (API, -3, "l: The minimum (low)");
+	GMT_Usage (API, -3, "L: The minimum of all positive values");
+	GMT_Usage (API, -3, "m: The median");
+	GMT_Usage (API, -3, "n: The number of values [Default]");
+	GMT_Usage (API, -3, "o: The LMS scale");
+	GMT_Usage (API, -3, "p: The mode (maximum likelihood)");
+	GMT_Usage (API, -3, "q: The selected quantile value; append quantile [50%%]");
+	GMT_Usage (API, -3, "r: The r.m.s.");
+	GMT_Usage (API, -3, "s: The standard deviation");
+	GMT_Usage (API, -3, "u: The maximum (upper)");
+	GMT_Usage (API, -3, "U: The maximum of all negative values");
+	GMT_Usage (API, -3, "z: The sum");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
+	GMT_Option (API, "I");
+	GMT_Option (API, "R");
+	gmt_dist_syntax (API->GMT, "S" GMT_RADIUS_OPT, "Compute statistics using points inside this search radius.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-E Value to use for empty bins [Default is NaN].");
+	GMT_Usage (API, 1, "\n-N Normalize the output by the area of the bins [no normalization].");
+	GMT_Usage (API, 1, "\n-T Use area-covering tiling to set up non-overlapping bins. Choose binning scheme:");
+	GMT_Usage (API, -3, "h: hexagonal binning, write non-equidistant table to standard output (or file named in -G).");
+	GMT_Usage (API, -3, "r: rectangular binning, writes equidistant grid (named via -G) [Default].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Input <table> has observation weights in 4th column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   We then compute the weighted version of selection in -C.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +s to read standard deviations s instead and compute weight = 1/s.\n");
+	GMT_Usage (API, 1, "\n-W[+s|w]");
+	GMT_Usage (API, -2, "Weighted input given, weights in 4th column; compute the weighted version "
+		"of selection in -C [Default is unweighted]. Select modifier:");
+	GMT_Usage (API, 3, "+s Read standard deviations and compute weights as 1/s.");
+	GMT_Usage (API, 3, "+w Read weights directly [Default].");
 	GMT_Option (API, "a,bi");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   Default is 3 (or 4 if -W is set) columns.");
 	GMT_Option (API, "di,e,f,h,i");
-	GMT_Option (API, "qi,r,s,:,.");
+	GMT_Option (API, "qi,r,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -186,12 +192,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 		switch (opt->option) {
 
 			case '<':	/* Input file(s) */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'E':	/* NaN value */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0])
 					Ctrl->E.value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
@@ -201,14 +208,18 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'C':	/* -Ca|d|i|l|L|m|n|o|p|q[<val>]|r|s|u|U|z */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				switch (opt->arg[0]) {
 					case 'a': Ctrl->C.mode = GMTBINSTATS_MEAN;	break;
@@ -235,14 +246,17 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 						break;
 				}
 				break;
-			case 'M':	/* Normalize by area */
+			case 'N':	/* Normalize by area */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* Search radius */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->S.radius), &(Ctrl->S.unit));
 				break;
 			case 'T':	/* Select hexagonal or rectangular tiling */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 'h': Ctrl->T.mode = GMTBINSTATS_HEXAGONAL; break;
@@ -254,7 +268,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'W':	/* Use weights */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
+				if (gmt_validate_modifiers (GMT, opt->arg, 'W', "sw", GMT_MSG_ERROR)) n_errors++;
 				Ctrl->W.sigma = (strstr (opt->arg, "+s")) ? true : false;
 				break;
 			default:	/* Report bad options */
@@ -271,6 +287,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTBINSTATS_CTRL *Ctrl, struct GM
 			n_errors += gmt_M_check_condition (GMT, gmt_M_is_geographic (GMT, GMT_IN), "Option -Th: Hexagonal tiling is a Cartesian operation\n");
 			n_errors += gmt_M_check_condition (GMT, !doubleAlmostEqual (GMT->common.R.inc[GMT_X], GMT->common.R.inc[GMT_Y]), "Option -Th: Give a single argument reflecting desired y-increment\n");
 			n_errors += gmt_M_check_condition (GMT, Ctrl->E.active, "Option -Th: The -E option is not allowed for hexagonal tiling\n");
+		}
+		else {
+			n_errors += gmt_M_check_condition (GMT, !Ctrl->G.active, "Option -Tr: -G is a required argument when -Tr is used\n");
 		}
 		n_errors += gmt_M_check_condition (GMT, Ctrl->S.active, "Option -T: No search radius -S can be set for tiling\n");
 	}
@@ -536,7 +555,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 		x_right += max_d_col * Grid->header->inc[GMT_X];
 	}
 	y_top = Grid->header->wesn[YHI] + d_row * Grid->header->inc[GMT_Y];	y_bottom = Grid->header->wesn[YLO] - d_row * Grid->header->inc[GMT_Y];
-	if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* For geographic grids we must ensure the extended y-domain is physically possible */
+	if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* For geographic grids we must ensure the extended y-domain is physically possible */
 		if (y_bottom < -90.0) y_bottom = -90.0;
 		if (y_top > 90.0) y_top = 90.0;
 	}
@@ -549,7 +568,7 @@ EXTERN_MSC int GMT_gmtbinstats (void *V_API, int mode, void *args) {
 	y_wrap_ij = (Grid->header->n_rows - 1) * Grid->header->mx;	/* Add to node index to go to bottom row if padded */
 	hex_tiling = (Ctrl->T.mode == GMTBINSTATS_HEXAGONAL);
 	rect_tiling = (Ctrl->T.mode == GMTBINSTATS_RECTANGULAR);
-	geographic = gmt_M_is_geographic (GMT, GMT_IN);
+	geographic = gmt_M_x_is_lon (GMT, GMT_IN);
 
 	GMT_Report (API, GMT_MSG_INFORMATION, "Processing input table data\n");
 	if (GMT_Begin_IO (API, GMT_IS_DATASET, GMT_IN, GMT_HEADER_ON) != GMT_NOERROR) {	/* Enables data input and sets access mode */

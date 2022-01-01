@@ -23,6 +23,7 @@ Synopsis
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -67,7 +68,7 @@ ASCII unless **-bo** is set) are as follows:
     Signal-to-Noise-Ratio (SNR) is coh / (1 - coh). SNR = 1 when coh = 0.5.
 
 In addition, a single file with all of the above as individual columns will
-be written to *stdout* (unless disabled via **-T**).
+be written to standard output (unless disabled via **-T**).
 
 Required Arguments
 ------------------
@@ -112,7 +113,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**
+**-L**\ [**h**\|\ **m**]
     Leave trend alone. By default, a linear trend will be removed prior
     to the transform. Alternatively, append **m** to just remove the
     mean value or **h** to remove the mid-value.
@@ -124,15 +125,14 @@ Optional Arguments
     If **-N** is given with no argument then we disable the writing of individual
     output files and instead write a single composite results table to standard output.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
-
+    :start-after: **Syntax**
+    :end-before: **Description**
 .. _-T:
 
 **-T**
-    Disable the writing of a single composite results table to stdout.  Only individual output
+    Disable the writing of a single composite results table to standard output.  Only individual output
     files for each selected component (see **-C**) will be written.
 
 .. _-W:
@@ -165,6 +165,8 @@ Optional Arguments
 .. include:: explain_-icols.rst_
 
 .. include:: explain_-qi.rst_
+
+.. include:: explain_-s.rst_
 
 .. include:: explain_help.rst_
 

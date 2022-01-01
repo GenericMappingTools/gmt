@@ -1,6 +1,6 @@
 /*
  *
- *  Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *  Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -110,6 +110,7 @@
 #cmakedefine HAVE___FUNC__
 #cmakedefine HAVE___FUNCTION__
 #cmakedefine HAVE__GETCWD
+#cmakedefine HAVE__RMDIR
 #cmakedefine HAVE_GETPID
 #cmakedefine HAVE__GETPID
 #cmakedefine HAVE_GETPWUID
@@ -327,10 +328,12 @@
 #	define _FILE_OFFSET_BITS 64
 #endif
 
-/* Check whether conditions for sighandler are met */
-#if !(defined(HAVE_SIGNAL_H_) && defined(HAVE_SYS_RESOURCE_H_) && \
+/* Check whether conditions for sighandler are met under *nix */
+#ifndef WIN32
+#   if !(defined(HAVE_SIGNAL_H_) && defined(HAVE_SYS_RESOURCE_H_) && \
 			defined(HAVE_SYS_TIME_H_) && defined(HAVE_SYS_UCONTEXT_H_))
-#	define NO_SIGHANDLER
+#	  define NO_SIGHANDLER
+#   endif
 #endif
 
 #endif /* !GMT_CONFIG_H */

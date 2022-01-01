@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000
-%%Title: GMT v6.2.0_8a4275f-dirty_2020.10.14 [64-bit] Document from plot
+%%Title: GMT v6.2.0_dd76236_2021.04.21 [64-bit] Document from plot
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Wed Oct 14 15:24:22 2020
+%%CreationDate: Wed Apr 21 20:37:18 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -637,6 +662,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -681,6 +720,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1600 0 M
 800 0 D
 S
@@ -1063,7 +1103,6 @@ N 2240 0 M 0 -17 D S
 N 80 1247 M -14 -8 D S
 N 2400 0 M 0 -17 D S
 N 0 1386 M -14 -9 D S
-0 A [] 0 B
 25 W
 2400 0 M
 -1 53 D
@@ -1169,29 +1208,32 @@ N 0 1386 M -14 -9 D S
 7 -70 D
 1 -44 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1600 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (Default) bc Z
 1533 0 M 117 F0
 V -90 R (0è) tc Z U
 2467 0 M V -90 R (0è) bc Z U
-1435 367 M V -60 R (30è) tc Z U
 2243 833 M V -60 R (30è) bc Z U
 1167 635 M V -30 R (60è) tc Z U
 1633 1443 M V -30 R (60è) bc Z U
-800 733 M (90è) tc Z
 800 1667 M (90è) bc Z
 433 635 M V 30 R (120è) tc Z U
 -33 1443 M V 30 R (120è) bc Z U
+/PSL_AH1 0
 1760 -67 M V 270.3124 R (0.6) ml Z U
 262 798 M V 29.6876 R (0.6) mr Z U
-2080 -67 M V 270.3124 R (0.8) ml Z U
-102 1075 M V 29.6876 R (0.8) mr Z U
+(0.6) sw mx
+(0.8) sw mx
 2400 -67 M V 270.3124 R (1.0) ml Z U
 -58 1353 M V 29.6876 R (1.0) mr Z U
+(1.0) sw mx
+def
+0 A
 %%EndObject
 0 -8815 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -1207,6 +1249,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2400 0 M
 -1600 0 D
 S
@@ -1524,7 +1567,6 @@ N 1333 0 M 0 -17 D S
 N 533 462 M -14 -8 D S
 N 1067 0 M 0 -17 D S
 N 667 231 M -15 -8 D S
-0 A [] 0 B
 25 W
 800 0 M
 -800 1386 D
@@ -1567,23 +1609,30 @@ N 667 231 M -15 -8 D S
 3 -87 D
 0 -18 D
 P S
-/PSL_H_y 267 def
+/PSL_H_y 234 def
 1200 1600 PSL_H_y add M
-PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053f) bc Z
+PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 2467 0 M 117 F0
 V -90 R (0è) bc Z U
 2243 833 M V -60 R (30è) bc Z U
 1633 1443 M V -30 R (60è) bc Z U
 800 1667 M V -1.42108547152e-14 R (90è) bc Z U
 -33 1443 M V 30 R (120è) bc Z U
+/PSL_AH1 0
 2400 -67 M V 270.3124 R (0.4) ml Z U
 -58 1353 M V 29.6876 R (0.4) mr Z U
+(0.4) sw mx
 1867 -67 M V 270.3124 R (0.6) ml Z U
 209 891 M V 29.6876 R (0.6) mr Z U
+(0.6) sw mx
 1334 -67 M V 270.3124 R (0.8) ml Z U
 475 429 M V 29.6876 R (0.8) mr Z U
+(0.8) sw mx
+def
+0 A
 %%EndObject
 -2805 -8815 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -1599,6 +1648,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2400 0 M
 -889 0 D
 S
@@ -1984,7 +2034,6 @@ N 1689 0 M 0 -17 D S
 N 356 770 M -15 -8 D S
 N 1511 0 M 0 -17 D S
 N 444 616 M -14 -8 D S
-0 A [] 0 B
 25 W
 1511 0 M
 -2 55 D
@@ -2096,29 +2145,32 @@ N 444 616 M -14 -8 D S
 3 -87 D
 0 -18 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1600 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053fe) bc Z
 2467 0 M 117 F0
 V -90 R (0è) bc Z U
 1444 0 M V -90 R (0è) tc Z U
 2243 833 M V -60 R (30è) bc Z U
-1358 322 M V -60 R (30è) tc Z U
 1633 1443 M V -30 R (60è) bc Z U
 1122 558 M V -30 R (60è) tc Z U
 800 1667 M (90è) bc Z
-800 644 M (90è) tc Z
 -33 1443 M V 30 R (120è) bc Z U
 478 558 M V 30 R (120è) tc Z U
+/PSL_AH1 0
 2400 -67 M V 270.3124 R (0è) ml Z U
 -58 1353 M V 29.6876 R (0è) mr Z U
-2045 -67 M V 270.3124 R (20è) ml Z U
-120 1045 M V 29.6876 R (20è) mr Z U
-1689 -67 M V 270.3124 R (40è) ml Z U
-298 737 M V 29.6876 R (40è) mr Z U
+(0è) sw mx
+(20èN) sw mx
+1689 -67 M V 270.3124 R (40èN) ml Z U
+298 737 M V 29.6876 R (40èN) mr Z U
+(40èN) sw mx
+def
+0 A
 %%EndObject
 -5610 -8815 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -2134,6 +2186,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2400 0 M
 -595 0 D
 S
@@ -2802,7 +2855,6 @@ N 1835 0 M 0 -17 D S
 N 283 896 M -15 -8 D S
 N 1805 0 M 0 -17 D S
 N 298 870 M -15 -8 D S
-0 A [] 0 B
 25 W
 1805 0 M
 -3 77 D
@@ -2909,11 +2961,12 @@ N 298 870 M -15 -8 D S
 3 -87 D
 0 -18 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1600 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053fp) bc Z
 2467 0 M 117 F0
 V -90 R (0è) bc Z U
@@ -2926,16 +2979,18 @@ V -90 R (0è) bc Z U
 800 938 M (90è) tc Z
 -33 1443 M V 30 R (120è) bc Z U
 331 813 M V 30 R (120è) tc Z U
+/PSL_AH1 0
 2400 -67 M V 270.3124 R (1000) ml Z U
 -58 1353 M V 29.6876 R (1000) mr Z U
-2252 -67 M V 270.3124 R (1500) ml Z U
-16 1224 M V 29.6876 R (1500) mr Z U
-2103 -67 M V 270.3124 R (2000) ml Z U
-91 1095 M V 29.6876 R (2000) mr Z U
-1954 -67 M V 270.3124 R (2500) ml Z U
-165 966 M V 29.6876 R (2500) mr Z U
+(1000) sw mx
+(1500) sw mx
+(2000) sw mx
+(2500) sw mx
 1805 -67 M V 270.3124 R (3000) ml Z U
 240 837 M V 29.6876 R (3000) mr Z U
+(3000) sw mx
+def
+0 A
 %%EndObject
 0 -6010 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -2951,6 +3006,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1333 0 M
 1067 0 D
 S
@@ -3513,7 +3569,6 @@ N 1387 0 M 0 -17 D S
 N 507 508 M -15 -8 D S
 N 1333 0 M 0 -17 D S
 N 533 462 M -14 -8 D S
-0 A [] 0 B
 25 W
 2400 0 M
 -1 53 D
@@ -3619,33 +3674,35 @@ N 533 462 M -14 -8 D S
 4 -52 D
 0 -18 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1600 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053z) bc Z
 1267 0 M 117 F0
 V -90 R (0è) tc Z U
 2467 0 M V -90 R (0è) bc Z U
-1204 233 M V -60 R (30è) tc Z U
 2243 833 M V -60 R (30è) bc Z U
-1033 404 M V -30 R (60è) tc Z U
 1633 1443 M V -30 R (60è) bc Z U
 800 467 M (90è) tc Z
 800 1667 M V -1.42108547152e-14 R (90è) bc Z U
-567 404 M V 30 R (120è) tc Z U
 -33 1443 M V 30 R (120è) bc Z U
+/PSL_AH1 0
 2400 -67 M V 270.3124 R (0) ml Z U
 -58 1353 M V 29.6876 R (0) mr Z U
-2134 -67 M V 270.3124 R (500) ml Z U
-75 1122 M V 29.6876 R (500) mr Z U
+(0) sw mx
+(500) sw mx
 1867 -67 M V 270.3124 R (1000) ml Z U
 209 891 M V 29.6876 R (1000) mr Z U
-1600 -67 M V 270.3124 R (1500) ml Z U
-342 660 M V 29.6876 R (1500) mr Z U
+(1000) sw mx
+(1500) sw mx
 1334 -67 M V 270.3124 R (2000) ml Z U
 475 429 M V 29.6876 R (2000) mr Z U
+(2000) sw mx
+def
+0 A
 %%EndObject
 -2805 -6010 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -3661,6 +3718,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2400 0 M
 -725 0 D
 S
@@ -4059,7 +4117,6 @@ N 2305 0 M 0 -17 D S
 N 47 1303 M -14 -8 D S
 N 2355 0 M 0 -17 D S
 N 22 1347 M -14 -8 D S
-0 A [] 0 B
 25 W
 1675 0 M
 -3 67 D
@@ -4166,29 +4223,32 @@ N 22 1347 M -14 -8 D S
 3 -87 D
 0 -18 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1600 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053zp) bc Z
 2467 0 M 117 F0
 V -90 R (0è) bc Z U
 1608 0 M V -90 R (0è) tc Z U
 2243 833 M V -60 R (30è) bc Z U
-1500 404 M V -60 R (30è) tc Z U
 1633 1443 M V -30 R (60è) bc Z U
 1204 700 M V -30 R (60è) tc Z U
 800 1667 M (90è) bc Z
-800 808 M (90è) tc Z
 -33 1443 M V 30 R (120è) bc Z U
 396 700 M V 30 R (120è) tc Z U
+/PSL_AH1 0
 1804 -67 M V 270.3124 R (4000) ml Z U
 240 836 M V 29.6876 R (4000) mr Z U
-2055 -67 M V 270.3124 R (5000) ml Z U
-115 1053 M V 29.6876 R (5000) mr Z U
+(4000) sw mx
+(5000) sw mx
 2306 -67 M V 270.3124 R (6000) ml Z U
 -10 1270 M V 29.6876 R (6000) mr Z U
+(6000) sw mx
+def
+0 A
 %%EndObject
 -5610 -6010 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -4204,20 +4264,12 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
-322 1843 M
-321 557 D
-S
+0 A
 557 1608 M
 557 321 D
 S
-643 1286 M
-643 0 D
-S
 557 965 M
 557 -322 D
-S
-322 729 M
-321 -557 D
 S
 0 643 M
 0 -643 D
@@ -4549,16 +4601,10 @@ S
 -8 0 D
 S
 8 W
-N 322 1843 M -17 -29 D S
-N 643 2400 M 17 29 D S
 N 557 1608 M -29 -17 D S
 N 1114 1929 M 29 17 D S
-N 643 1286 M -33 0 D S
-N 1286 1286 M 33 0 D S
 N 557 965 M -29 16 D S
 N 1114 643 M 29 -17 D S
-N 322 729 M -17 29 D S
-N 643 172 M 17 -29 D S
 N 0 643 M 0 33 D S
 N 0 0 M 0 -33 D S
 N 386 1954 M -29 17 D S
@@ -4569,34 +4615,24 @@ N 643 2400 M -29 17 D S
 N 0 0 M -33 0 D S
 N 322 1843 M -9 -14 D S
 N 643 2400 M 8 14 D S
-N 413 1779 M -10 -13 D S
-N 827 2271 M 10 13 D S
-N 493 1700 M -13 -11 D S
-N 985 2113 M 13 11 D S
+N 455 1741 M -12 -12 D S
+N 909 2196 M 12 11 D S
 N 557 1608 M -15 -9 D S
 N 1114 1929 M 14 9 D S
-N 604 1506 M -15 -6 D S
-N 1209 1726 M 15 6 D S
-N 633 1398 M -16 -3 D S
-N 1267 1509 M 16 3 D S
+N 621 1453 M -16 -5 D S
+N 1242 1619 M 16 4 D S
 N 643 1286 M -17 0 D S
 N 1286 1286 M 17 0 D S
-N 633 1174 M -16 3 D S
-N 1267 1063 M 16 -3 D S
-N 604 1066 M -15 6 D S
-N 1209 846 M 15 -5 D S
+N 621 1120 M -16 4 D S
+N 1242 953 M 16 -4 D S
 N 557 965 M -15 8 D S
 N 1114 643 M 14 -8 D S
-N 493 873 M -13 11 D S
-N 985 459 M 13 -10 D S
-N 413 794 M -10 12 D S
-N 827 301 M 10 -13 D S
+N 455 831 M -12 12 D S
+N 909 377 M 12 -12 D S
 N 322 729 M -9 15 D S
 N 643 172 M 8 -14 D S
-N 220 682 M -6 16 D S
-N 440 78 M 6 -16 D S
-N 112 653 M -3 16 D S
-N 223 20 M 3 -17 D S
+N 166 665 M -4 16 D S
+N 333 44 M 4 -16 D S
 N 0 643 M 0 17 D S
 N 0 0 M 0 -17 D S
 N 322 1843 M -15 9 D S
@@ -4611,7 +4647,6 @@ N 579 2289 M -15 8 D S
 N 0 129 M -17 -1 D S
 N 643 2400 M -14 9 D S
 N 0 0 M -17 0 D S
-0 A [] 0 B
 25 W
 643 2400 M
 56 -34 D
@@ -4703,31 +4738,30 @@ N 0 0 M -17 0 D S
 -53 39 D
 -28 17 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 643 2400 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053a) bc Z
-288 1785 M 117 F0
-V -30 R (30è) tc Z U
-676 2458 M V -30 R (30è) bc Z U
-499 1574 M V -60 R (60è) tc Z U
+499 1574 M 117 F0
+V -60 R (60è) tc Z U
 1172 1963 M V -60 R (60è) bc Z U
-576 1286 M V -90 R (90è) tc Z U
-1353 1286 M V -90 R (90è) bc Z U
 499 998 M V 60 R (120è) bc Z U
 1172 610 M V 420 R (120è) tc Z U
-288 787 M V 30 R (150è) bc Z U
-676 115 M V 390 R (150è) tc Z U
 0 710 M (180è) bc Z
 0 -67 M V 360 R (180è) tc Z U
+/PSL_AH1 0
 329 1989 M V -30.7280553398 R (0.6) mr Z U
 -67 514 M V 0.728055339806 R (0.6) mr Z U
-457 2211 M V -30.7280553398 R (0.8) mr Z U
--67 256 M V 0.728055339806 R (0.8) mr Z U
+(0.6) sw mx
+(0.8) sw mx
 586 2434 M V -30.7280553398 R (1.0) mr Z U
 -67 -1 M V 0.728055339806 R (1.0) mr Z U
+(1.0) sw mx
+def
+0 A
 %%EndObject
 -557 -2805 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -4743,20 +4777,12 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
-1757 0 M
-643 0 D
-S
+0 A
 1671 322 M
 557 321 D
 S
-1435 557 M
-322 557 D
-S
 1114 643 M
 0 643 D
-S
-792 557 M
--321 557 D
 S
 557 322 M
 -557 321 D
@@ -5059,16 +5085,10 @@ S
 -4 -8 D
 S
 8 W
-N 1757 0 M -33 0 D S
-N 2400 0 M 33 0 D S
 N 1671 322 M -29 -17 D S
 N 2228 643 M 29 17 D S
-N 1435 557 M -16 -29 D S
-N 1757 1114 M 17 29 D S
 N 1114 643 M 0 -33 D S
 N 1114 1286 M 0 33 D S
-N 792 557 M 17 -29 D S
-N 471 1114 M -17 29 D S
 N 557 322 M 29 -17 D S
 N 0 643 M -29 17 D S
 N 1886 0 M 0 -33 D S
@@ -5079,34 +5099,24 @@ N 2400 0 M 0 -33 D S
 N 0 643 M -17 -29 D S
 N 1757 0 M -17 0 D S
 N 2400 0 M 17 0 D S
-N 1747 112 M -16 -3 D S
-N 2380 223 M 17 3 D S
-N 1718 220 M -16 -6 D S
-N 2322 440 M 16 6 D S
+N 1735 166 M -16 -4 D S
+N 2356 333 M 16 4 D S
 N 1671 322 M -15 -9 D S
 N 2228 643 M 14 8 D S
-N 1606 413 M -12 -10 D S
-N 2099 827 M 13 10 D S
-N 1527 493 M -11 -13 D S
-N 1941 985 M 10 13 D S
+N 1569 455 M -12 -12 D S
+N 2023 909 M 12 12 D S
 N 1435 557 M -8 -15 D S
 N 1757 1114 M 8 14 D S
-N 1334 604 M -6 -15 D S
-N 1554 1209 M 5 15 D S
-N 1226 633 M -3 -16 D S
-N 1337 1267 M 3 16 D S
+N 1280 621 M -4 -16 D S
+N 1447 1242 M 4 16 D S
 N 1114 643 M 0 -17 D S
 N 1114 1286 M 0 17 D S
-N 1002 633 M 3 -16 D S
-N 891 1267 M -3 16 D S
-N 894 604 M 6 -15 D S
-N 674 1209 M -6 15 D S
+N 947 621 M 5 -16 D S
+N 781 1242 M -4 16 D S
 N 792 557 M 9 -15 D S
 N 471 1114 M -9 14 D S
-N 700 493 M 11 -13 D S
-N 287 985 M -11 13 D S
-N 621 413 M 13 -10 D S
-N 129 827 M -13 10 D S
+N 659 455 M 12 -12 D S
+N 204 909 M -11 12 D S
 N 557 322 M 14 -9 D S
 N 0 643 M -14 8 D S
 N 1757 0 M 0 -17 D S
@@ -5121,7 +5131,6 @@ N 2271 0 M 0 -17 D S
 N 111 579 M -8 -15 D S
 N 2400 0 M 0 -17 D S
 N 0 643 M -8 -14 D S
-0 A [] 0 B
 25 W
 2400 0 M
 -1 53 D
@@ -5234,31 +5243,30 @@ N 0 643 M -8 -14 D S
 4 -44 D
 1 -35 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1286 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053t30) bc Z
-1690 0 M 117 F0
-V -90 R (30è) tc Z U
-2467 0 M V -90 R (30è) bc Z U
-1613 288 M V -60 R (60è) tc Z U
+1613 288 M 117 F0
+V -60 R (60è) tc Z U
 2285 676 M V -60 R (60è) bc Z U
-1402 499 M V -30 R (90è) tc Z U
-1790 1172 M V -30 R (90è) bc Z U
 1114 576 M (120è) tc Z
 1114 1353 M V -2.84217094304e-14 R (120è) bc Z U
-826 499 M V 30 R (150è) tc Z U
-437 1172 M V 30 R (150è) bc Z U
 615 288 M V 60 R (180è) tc Z U
 -58 676 M V 60 R (180è) bc Z U
+/PSL_AH1 0
 1886 -67 M V 270.390525 R (0.6) ml Z U
 412 328 M V 59.609475 R (0.6) mr Z U
-2143 -67 M V 270.390525 R (0.8) ml Z U
-189 457 M V 59.609475 R (0.8) mr Z U
+(0.6) sw mx
+(0.8) sw mx
 2400 -67 M V 270.390525 R (1.0) ml Z U
 -34 586 M V 59.609475 R (1.0) mr Z U
+(1.0) sw mx
+def
+0 A
 %%EndObject
 -2805 -3362 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -5274,20 +5282,12 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
-0 1757 M
-0 643 D
-S
+0 A
 322 1671 M
 321 557 D
 S
-557 1435 M
-557 322 D
-S
 643 1114 M
 643 0 D
-S
-557 792 M
-557 -321 D
 S
 322 557 M
 321 -557 D
@@ -5451,16 +5451,10 @@ S
 -7 -4 D
 S
 8 W
-N 0 1757 M 0 -33 D S
-N 0 2400 M 0 33 D S
 N 322 1671 M -17 -29 D S
 N 643 2228 M 17 29 D S
-N 557 1435 M -29 -16 D S
-N 1114 1757 M 29 17 D S
 N 643 1114 M -33 0 D S
 N 1286 1114 M 33 0 D S
-N 557 792 M -29 17 D S
-N 1114 471 M 29 -17 D S
 N 322 557 M -17 29 D S
 N 643 0 M 17 -29 D S
 N 0 1886 M -33 0 D S
@@ -5471,34 +5465,24 @@ N 0 2400 M -33 0 D S
 N 643 0 M -29 -17 D S
 N 0 1757 M 0 -17 D S
 N 0 2400 M 0 17 D S
-N 112 1747 M -3 -16 D S
-N 223 2380 M 3 17 D S
-N 220 1718 M -6 -16 D S
-N 440 2322 M 6 16 D S
+N 166 1735 M -4 -16 D S
+N 333 2356 M 4 16 D S
 N 322 1671 M -9 -15 D S
 N 643 2228 M 8 14 D S
-N 413 1606 M -10 -12 D S
-N 827 2099 M 10 13 D S
-N 493 1527 M -13 -11 D S
-N 985 1941 M 13 10 D S
+N 455 1569 M -12 -12 D S
+N 909 2023 M 12 12 D S
 N 557 1435 M -15 -8 D S
 N 1114 1757 M 14 8 D S
-N 604 1334 M -15 -6 D S
-N 1209 1554 M 15 5 D S
-N 633 1226 M -16 -3 D S
-N 1267 1337 M 16 3 D S
+N 621 1280 M -16 -4 D S
+N 1242 1447 M 16 4 D S
 N 643 1114 M -17 0 D S
 N 1286 1114 M 17 0 D S
-N 633 1002 M -16 3 D S
-N 1267 891 M 16 -3 D S
-N 604 894 M -15 6 D S
-N 1209 674 M 15 -6 D S
+N 621 947 M -16 5 D S
+N 1242 781 M 16 -4 D S
 N 557 792 M -15 9 D S
 N 1114 471 M 14 -9 D S
-N 493 700 M -13 11 D S
-N 985 287 M 13 -11 D S
-N 413 621 M -10 13 D S
-N 827 129 M 10 -13 D S
+N 455 659 M -12 12 D S
+N 909 204 M 12 -11 D S
 N 322 557 M -9 14 D S
 N 643 0 M 8 -14 D S
 N 0 1757 M -17 0 D S
@@ -5513,7 +5497,6 @@ N 0 2271 M -17 1 D S
 N 579 111 M -15 -8 D S
 N 0 2400 M -17 0 D S
 N 643 0 M -14 -9 D S
-0 A [] 0 B
 25 W
 0 2400 M
 33 0 D
@@ -5593,31 +5576,30 @@ N 643 0 M -14 -9 D S
 -49 7 D
 -66 3 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 643 2400 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053a\053t30) bc Z
-0 1690 M 117 F0
-(30è) tc Z
-0 2467 M (30è) bc Z
-288 1613 M V -30 R (60è) tc Z U
+288 1613 M 117 F0
+V -30 R (60è) tc Z U
 676 2285 M V -30 R (60è) bc Z U
-499 1402 M V -60 R (90è) tc Z U
-1172 1790 M V -60 R (90è) bc Z U
 576 1114 M V -90 R (120è) tc Z U
 1353 1114 M V -90 R (120è) bc Z U
-499 826 M V 60 R (150è) bc Z U
-1172 437 M V 420 R (150è) tc Z U
 288 615 M V 30 R (180è) bc Z U
 676 -58 M V 390 R (180è) tc Z U
+/PSL_AH1 0
 -67 1886 M V -0.728055339806 R (0.6) mr Z U
 329 411 M V 30.7280553398 R (0.6) mr Z U
--67 2144 M V -0.728055339806 R (0.8) mr Z U
-457 189 M V 30.7280553398 R (0.8) mr Z U
+(0.6) sw mx
+(0.8) sw mx
 -67 2401 M V -0.728055339806 R (1.0) mr Z U
 586 -34 M V 30.7280553398 R (1.0) mr Z U
+(1.0) sw mx
+def
+0 A
 %%EndObject
 -6167 -2805 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -5633,6 +5615,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 612 0 M
 1788 0 D
 S
@@ -6071,7 +6054,6 @@ N 2221 0 M 0 -17 D S
 N 61 1512 M -16 -5 D S
 N 2400 0 M 0 -17 D S
 N 0 1680 M -16 -5 D S
-0 A [] 0 B
 25 W
 2400 0 M
 -2 90 D
@@ -6139,29 +6121,33 @@ N 0 1680 M -16 -5 D S
 -17 -7 D
 612 -1680 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1788 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (Default) bc Z
 2467 0 M 117 F0
 V -90 R (0è) bc Z U
 2218 928 M V -60 R (30è) bc Z U
 1539 1606 M V -30 R (60è) bc Z U
 612 1855 M V -1.42108547152e-14 R (90è) bc Z U
+/PSL_AH1 0
 549 -23 M V 20 R (0.0) mr Z U
 612 -67 M V 90 R (0.0) mr Z U
-970 -67 M V 270.286358333 R (0.2) ml Z U
-427 314 M V 19.7136416667 R (0.2) mr Z U
+(0.0) sw mx
+(0.2) sw mx
 1327 -67 M V 270.286358333 R (0.4) ml Z U
 304 650 M V 19.7136416667 R (0.4) mr Z U
-1685 -67 M V 270.286358333 R (0.6) ml Z U
-182 986 M V 19.7136416667 R (0.6) mr Z U
+(0.4) sw mx
+(0.6) sw mx
 2043 -67 M V 270.286358333 R (0.8) ml Z U
 60 1322 M V 19.7136416667 R (0.8) mr Z U
-2400 -67 M V 270.286358333 R (1.0) ml Z U
--63 1658 M V 19.7136416667 R (1.0) mr Z U
+(0.8) sw mx
+(1.0) sw mx
+def
+0 A
 %%EndObject
 0 -306 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -6177,6 +6163,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 1505 0 M
 895 0 D
 S
@@ -6832,7 +6819,6 @@ N 2310 0 M 1 -17 D S
 N 45 1308 M -15 -8 D S
 N 2400 0 M 0 -17 D S
 N 0 1386 M -14 -9 D S
-0 A [] 0 B
 25 W
 2400 0 M
 -1 53 D
@@ -6943,33 +6929,34 @@ N 0 1386 M -14 -9 D S
 4 -69 D
 0 -8 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1600 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053r4c) bc Z
 1438 0 M 117 F0
 V -90 R (0è) tc Z U
 2467 0 M V -90 R (0è) bc Z U
-1353 319 M V -60 R (30è) tc Z U
 2243 833 M V -60 R (30è) bc Z U
 1119 553 M V -30 R (60è) tc Z U
 1633 1443 M V -30 R (60è) bc Z U
-800 638 M (90è) tc Z
 800 1667 M (90è) bc Z
 481 553 M V 30 R (120è) tc Z U
 -33 1443 M V 30 R (120è) bc Z U
+/PSL_AH1 0
 1684 -67 M V 270.3124 R (0.2) ml Z U
 300 732 M V 29.6876 R (0.2) mr Z U
-1863 -67 M V 270.3124 R (0.4) ml Z U
-211 887 M V 29.6876 R (0.4) mr Z U
-2042 -67 M V 270.3124 R (0.6) ml Z U
-121 1043 M V 29.6876 R (0.6) mr Z U
+(0.2) sw mx
+(0.4) sw mx
+(0.6) sw mx
 2221 -67 M V 270.3124 R (0.8) ml Z U
 32 1198 M V 29.6876 R (0.8) mr Z U
-2400 -67 M V 270.3124 R (1.0) ml Z U
--58 1353 M V 29.6876 R (1.0) mr Z U
+(0.8) sw mx
+(1.0) sw mx
+def
+0 A
 %%EndObject
 -2805 -400 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -6985,6 +6972,7 @@ O0
 0 setlinejoin
 3.32550952342 setmiterlimit
 4 W
+0 A
 2400 0 M
 -895 0 D
 S
@@ -7640,7 +7628,6 @@ N 1684 0 M 0 -17 D S
 N 358 765 M -14 -8 D S
 N 1594 0 M 0 -17 D S
 N 403 688 M -15 -8 D S
-0 A [] 0 B
 25 W
 1505 0 M
 -3 62 D
@@ -7750,33 +7737,34 @@ N 403 688 M -15 -8 D S
 3 -87 D
 0 -18 D
 P S
-/PSL_H_y 300 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 267 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1200 1600 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (\053f\053r4c) bc Z
 2467 0 M 117 F0
 V -90 R (0è) bc Z U
 1438 0 M V -90 R (0è) tc Z U
 2243 833 M V -60 R (30è) bc Z U
-1353 319 M V -60 R (30è) tc Z U
 1633 1443 M V -30 R (60è) bc Z U
 1119 553 M V -30 R (60è) tc Z U
 800 1667 M (90è) bc Z
-800 638 M (90è) tc Z
 -33 1443 M V 30 R (120è) bc Z U
 481 553 M V 30 R (120è) tc Z U
+/PSL_AH1 0
 2400 -67 M V 270.3124 R (0.0) ml Z U
 -58 1353 M V 29.6876 R (0.0) mr Z U
-2221 -67 M V 270.3124 R (0.2) ml Z U
-32 1198 M V 29.6876 R (0.2) mr Z U
-2042 -67 M V 270.3124 R (0.4) ml Z U
-121 1043 M V 29.6876 R (0.4) mr Z U
+(0.0) sw mx
+(0.2) sw mx
+(0.4) sw mx
 1863 -67 M V 270.3124 R (0.6) ml Z U
 211 887 M V 29.6876 R (0.6) mr Z U
-1684 -67 M V 270.3124 R (0.8) ml Z U
-300 732 M V 29.6876 R (0.8) mr Z U
+(0.6) sw mx
+(0.8) sw mx
+def
+0 A
 %%EndObject
 -5610 -400 TM
 PSL_plot_completion /PSL_plot_completion {} def

@@ -12,7 +12,9 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt hotspotter** [*table*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt hotspotter** [*table*]
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-N|\ *upper_age* ]
@@ -21,10 +23,12 @@ Synopsis
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-qi| ]
+[ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -51,8 +55,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *CVAgrid*
-    Specify name for output grid file.
+.. |Add_outgrid| replace::  Specify name for output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -90,10 +96,10 @@ Optional Arguments
     Truncate seamount ages exceeding the upper age set with **-N** [no
     truncation].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 5 input columns].
 .. include:: ../../explain_-bi.rst_
@@ -105,7 +111,7 @@ Optional Arguments
 .. include:: ../../explain_-e.rst_
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-h.rst_../../explain_-V.rst_
+.. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_-icols.rst_
 .. include:: ../../explain_-ocols.rst_

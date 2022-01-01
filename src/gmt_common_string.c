@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  *  gmt_chop                Chops off any CR or LF at end of string
  *  gmt_chop_ext            Chops off the trailing .xxx (file extension)
  *  gmt_get_ext             Returns a pointer to the tailing .xxx (file extension)
+ *  gmt_get_word            Return the specified word entry from a list
  *  gmt_strdup_noquote		Duplicates a string but removes any surrounding single or double quotes
  *  gmt_strstrip            Strip leading and trailing whitespace from string
  *  gmt_strlshift           Left shift a string by n characters
@@ -77,11 +78,13 @@ char *gmt_chop_ext (char *string) {
 	 * '.' with '\0' and returns a pointer to the extension or NULL if not found. */
 	char *p;
 	assert (string != NULL); /* NULL pointer */
-	if ((p = strrchr(string, '.'))) {
-		*p = '\0';
-		return (p + 1);
-	}
-	return NULL;
+    if ((p = strrchr(string, '.')) == NULL) return NULL; /* No extension found */
+    if (strchr (p, '/')) return NULL; /* Found a directory with a period */
+#ifdef WIN32
+    if (strchr (p, '\\')) return NULL; /* Found a directory with a period */
+#endif
+    *p = '\0';
+    return (p + 1);
 }
 
 void gmt_chop (char *string) {
@@ -244,6 +247,19 @@ char *gmt_strrstr (const char *s, const char *m) {
             break;
     }
     return last;
+}
+
+char *gmt_get_word (char *list, char *sep, unsigned int col) {
+	/* Return word number col in the list with separator sep */
+	char *word, *trail, *orig, *retval;
+	unsigned int k = 0;
+	if (list == NULL || sep == NULL) return (NULL);
+	orig = strdup (list);
+	trail = orig;
+	while ((word = strsep (&trail, sep)) != NULL && k < col) k++;
+	retval = (k == col) ? strdup (word) : NULL;
+	free (orig);
+	return (retval);
 }
 
 unsigned int gmt_get_modifier (const char *string, char modifier, char *token) {
@@ -857,3 +873,15 @@ char *basename(char *path) {
 	 assert(strlen(newstr) == newstr_len);
 	 return newstr;
 }
+
+#ifndef HAVE_CHARCAT	/* Do not think this is a standard function but just in case */
+char *chrcat (char *dest, const char add) {
+	/* Simple function to add a single character to a string. No check if there is room
+	 * only that it is not NULL, and we explicitly terminate the updated string */
+	if (dest) {
+		dest[strlen(dest)] = add;
+		dest[strlen(dest)] = '\0';
+	}
+	return (dest);
+}
+#endif

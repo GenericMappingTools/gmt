@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -79,6 +79,7 @@ struct GRDGRADIENT_CTRL {
 		/* Note: If -Qc is set with -N then -G is not required. GMT_Encode_Options turns off the primary output */
 		bool active;
 		unsigned int mode;
+		char *file;
 	} Q;
 	struct GRDGRADIENT_S {	/* -S<slopefile> */
 		bool active;
@@ -130,50 +131,61 @@ GMT_LOCAL double grdgradient_specular (double n_columns, double n_rows, double n
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> [-A<azim>[/<azim2>]] [-D[a][c][o][n]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R] [%s]\n\t[-S<slopegrid>] [%s] [-fg] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -G%s [-A<azim>[/<azim2>]] [-D[a][c][o][n]] "
+		"[-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]] "
+		"[-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]] [-Qc|r|R[+f<file>]] [%s] [-S<slopegrid>] [%s] "
+		"[-fg] [%s] [%s]\n", name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is name of input grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Set azimuth (0-360 CW from North (+y)) for directional derivatives.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -A<azim>/<azim2> will compute two directions and select the one larger in magnitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  If <azim> is a grid we expect variable azimuths on a grid coregistered with <ingrid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Find the direction of the vector grad z (up-slope direction).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append a to get the aspect instead (down-slope direction).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append c to report Cartesian angle (0-360 CCW from East (+x-axis)) [Default: azimuth].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append o to get bidirectional orientations [0-180] rather than directions [0-360].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append n to add 90 degrees to the values from c or o.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Compute Lambertian radiance appropriate to use with grdimage/grdview.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Provide the azimuth and elevation of the light vector.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append any of [+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     for parameters that control the reflectance properties of the surface\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default values are: +a0.55+d0.6p0.4+s10].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Es for a simpler Lambertian algorithm (note that with this algorithm\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     you only have to provide azimuth and elevation).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ep for the Peucker piecewise linear approximation (simpler but faster algorithm).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Em for another algorithm that gives results close to ESRI's 'hillshade' but faster\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     In this case the azimuth and elevation are hardwired to 315 and 45 degrees;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     if you provide other values they will be ignored.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Output file for results from -A or -D.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize gradients so that max |grad| = <amp> [1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Nt will make atan transform, then scale to <amp> [1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Ne will make exp  transform, then scale to <amp> [1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +a<ambient> to add <ambient> to the result [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    For -Nt|e, optionally append +s<sigma> and/or +o<offset> to set\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    sigma and offset for the transform [Default estimates from the data].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    See -Q to use the same offset, sigma for multiple grid calculations.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Control handling of -N arguments from previous calculations. Append code:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c: Create stat file and write the offset and sigma of this run.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     r: Read offset and sigma of the previous run from stat file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     R: Remove & read.  As r but also removes the stat file after use.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The values obtained are used if +o and/or +s modifiers in -N are given no argument.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of input grid");
+	gmt_outgrid_syntax (API, 'G', "Set output grid file for results from -A or -D");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<azim>[/<azim2>]");
+	GMT_Usage (API, -2, "Set azimuth (0-360 CW from North (+y)) for directional derivatives. "
+		"Appending /<azim2> will compute two directions and select the one larger in magnitude. "
+		"If <azim> is a grid we expect variable azimuths on a grid co-registered with <ingrid>.");
+	GMT_Usage (API, 1, "\n-D[a][c][o][n]");
+	GMT_Usage (API, -2, "Find the direction of the vector grad z (up-slope direction) given directive:");
+	GMT_Usage (API, 3, "a: Get the aspect instead (down-slope direction).");
+	GMT_Usage (API, 3, "c: Report Cartesian angle (0-360 CCW from East (+x-axis)) [Default: azimuth].");
+	GMT_Usage (API, 3, "o: Get bidirectional orientations [0-180] rather than directions [0-360].");
+	GMT_Usage (API, -2, "Append n to add 90 degrees to the values from c or o.");
+	GMT_Usage (API, 1, "\n-E[s|p|m]<azim>/<elev>[+a<ambient>][+d<diffuse>][+p<specular>][+s<shine>]");
+	GMT_Usage (API, -2, "Compute Lambertian radiance appropriate to use with grdimage|grdview. "
+		"Provide the azimuth and elevation of the light vector. "
+		"Optionally, append modifiers to further control the reflectance properties of the surface:");
+	GMT_Usage (API, 3, "+a Set the <ambient> light value [0.55].");
+	GMT_Usage (API, 3, "+d Set the <diffuse> light value [0.6].");
+	GMT_Usage (API, 3, "+p Set <specular> value [0.4].");
+	GMT_Usage (API, 3, "+s Set <shine> value [10].");
+	GMT_Usage (API, -2, "Directives s|p|m can simplify the setup:");
+	GMT_Usage (API, 3, "s: Simpler Lambertian algorithm (only requires azimuth and elevation).");
+	GMT_Usage (API, 3, "p: Peucker piecewise linear approximation (simpler but faster algorithm).");
+	GMT_Usage (API, 3, "m: Similar to ESRI's 'hillshade' but faster. Note: azimuth and elevation are hardwired to 315 and 45 degrees; "
+		"if you provide other values they will be ignored.");
+	GMT_Usage (API, 1, "\n-N[t|e][<amp>][+a<ambient>][+s<sigma>][+o<offset>]");
+	GMT_Usage (API, -2, "Normalize gradients so that max |grad| = <amp> [1.0]. Optional directives:");
+	GMT_Usage (API, 3, "t: Make atan transform, then scale to <amp> [1.0].");
+	GMT_Usage (API, 3, "e: Make exp  transform, then scale to <amp> [1.0].");
+	GMT_Usage (API, -2, "Several modifiers can be used to affect the final result:");
+	GMT_Usage (API, 3, "+a Add <ambient> light [0].");
+	GMT_Usage (API, 3, "+o Offset gradients by <offset> [Default estimates <offset> from the data].");
+	GMT_Usage (API, 3, "+s Normalize gradients by <sigma> [Default estimates <sigma> from the data].");
+	GMT_Usage (API, -2, "See -Q to use the same offset, sigma for multiple grid calculations.");
+	GMT_Usage (API, 1, "\n-Qc|r|R[+f<file>]");
+	GMT_Usage (API, -2, "Control handling of -N arguments from previous calculations. Append directive:");
+	GMT_Usage (API, 3, "c: Create statistics file and write the offset and sigma of this run.");
+	GMT_Usage (API, 3, "r: Read offset and sigma of the previous run from statistics file.");
+	GMT_Usage (API, 3, "R: Remove and read.  As r but also removes the statistics file after use.");
+	GMT_Usage (API, -2, "Optionally, append +f<file> to write/read the statistics to/from a specified file. Note: The values "
+		"obtained are used if +o and/or +s modifiers in -N are given no argument.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Output file for |grad z|; requires -D.\n");
+	GMT_Usage (API, 1, "\n-S<slopegrid>");
+	GMT_Usage (API, -2, "Output file for |grad z|; requires -D.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
+	GMT_Usage (API, 1, "\n-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.");
 	GMT_Option (API, "n,.");
 
 	return (GMT_MODULE_USAGE);
@@ -199,12 +211,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Set azimuth(s) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (!gmt_access (GMT, opt->arg, F_OK)) {	/* file with variable azimuths exists */
 					Ctrl->A.file = strdup (opt->arg);
@@ -217,6 +230,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'D':	/* Find direction of grad|z| */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				j = 0;
 				while (opt->arg[j]) {
@@ -234,6 +248,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'E':	/* Lambertian family radiance */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'p':	/* Peucker */
@@ -252,6 +267,8 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 						}
 						else if (j == 1)
 							Ctrl->E.elevation = 45;
+
+						Ctrl->E.azimuth = -Ctrl->E.azimuth + 90;	/* The algorithm use mat angles but we want azimuths */
 						break;
 					default:
 						Ctrl->E.mode = 3;	/* "full" Lambertian case */
@@ -296,9 +313,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'G':	/* Output grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'L':	/* GMT4 BCs */
 				if (gmt_M_compat_check (GMT, 4)) {
@@ -325,6 +343,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':	/* Normalization */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;	j = 0;
 				if (opt->arg[0] && strchr ("et", opt->arg[0])) {	/* Got -Ne or -Nt, possibly with arguments */
 					Ctrl->N.mode = (opt->arg[0] == 't') ? 1 : 2;
@@ -355,6 +374,11 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'Q':	/* Read/write normalization values */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
+				if (gmt_validate_modifiers (GMT, opt->arg, 'Q', "f", GMT_MSG_ERROR)) n_errors++;
+				if (gmt_get_modifier (opt->arg, 'f', p)) {
+					if (p[0]) Ctrl->Q.file = strdup (p);
+				}
 				Ctrl->Q.active = true;
 				switch (opt->arg[0]) {
 					case 'r': Ctrl->Q.mode = 1; break;
@@ -367,9 +391,10 @@ static int parse (struct GMT_CTRL *GMT, struct GRDGRADIENT_CTRL *Ctrl, struct GM
 				}
 				break;
 			case 'S':	/* Slope grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0]) Ctrl->S.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->S.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->S.file))) n_errors++;
 				break;
 
 			default:	/* Report bad options */
@@ -442,13 +467,15 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode & 1) {	/* Read in previous statistics */
 		char sfile[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		GMT_Report (API, GMT_MSG_DEBUG, "Read statistics file [%s] with offset and sigma\n", sfile);
-		if (GMT->session.TMPDIR)
+		if (Ctrl->Q.file)
+			sprintf (sfile, "%s", Ctrl->Q.file);
+		else if (GMT->session.TMPDIR)
 			sprintf (sfile, "%s/grdgradient.stat", GMT->session.TMPDIR);
 		else if (API->tmp_dir)
 			sprintf (sfile, "%s/grdgradient.stat", API->tmp_dir);
 		else
 			sprintf (sfile, "grdgradient.stat");
+		GMT_Report (API, GMT_MSG_DEBUG, "Read statistics file [%s] with offset and sigma\n", sfile);
 		if (access (sfile, F_OK)) {
 			GMT_Report (API, GMT_MSG_ERROR, "Unable to find statistics file from last run [%s]!\n", sfile);
 			Return (GMT_FILE_NOT_FOUND);
@@ -836,13 +863,15 @@ EXTERN_MSC int GMT_grdgradient (void *V_API, int mode, void *args) {
 	if (Ctrl->Q.mode == 2) {	/* Write the new statistics */
 		char sfile[PATH_MAX] = {""};
 		FILE *fp = NULL;
-		GMT_Report (API, GMT_MSG_DEBUG, "Create statistics file [%s] with offset and sigma\n", sfile);
-		if (GMT->session.TMPDIR)
+		if (Ctrl->Q.file)
+			sprintf (sfile, "%s", Ctrl->Q.file);
+		else if (GMT->session.TMPDIR)
 			sprintf (sfile, "%s/grdgradient.stat", GMT->session.TMPDIR);
 		else if (API->tmp_dir)
 			sprintf (sfile, "%s/grdgradient.stat", API->tmp_dir);
 		else
 			sprintf (sfile, "grdgradient.stat");
+		GMT_Report (API, GMT_MSG_DEBUG, "Create statistics file [%s] with offset and sigma\n", sfile);
 		if ((fp = fopen (sfile, "w")) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot create statistics file from this run [%s]!\n", sfile);
 			Return (GMT_ERROR_ON_FOPEN);

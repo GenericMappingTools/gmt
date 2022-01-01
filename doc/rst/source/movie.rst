@@ -15,24 +15,24 @@ Synopsis
 **gmt movie** *mainscript*
 |-C|\ *canvas*
 |-N|\ *prefix*
-|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
-[ |-A|\ [**+l**\ [*n*]]\ [**+s**\ *stride*] ]
+|-T|\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-D|\ *displayrate* ]
 [ |-E|\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*] ]
-[ |-F|\ *format*\ [**+t**]\ [**+o**\ *options*]]
+[ |-F|\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**] ]
 [ |-G|\ [*fill*]\ [**+p**\ *pen*] ]
-[ |-H|\ *factor*]
+[ |-H|\ *scale*]
 [ |-I|\ *includefile* ]
 [ |-K|\ [**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]\ [**+p**] ]
 [ |-L|\ *labelinfo* ]
-[ |-M|\ [*frame*],[*format*] ]
+[ |-M|\ [*frame*],[*format*][**+r**\ *dpu*] ]
 [ |-P|\ *progress* ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *background* ]
-[ **-Sf**\ *foreground* ]
+[ |-Sb|\ *background* ]
+[ |-Sf|\ *foreground* ]
 [ |SYN_OPT-V| ]
+[ |-W|\ [*dir*] ]
 [ |-Z|\ [**s**] ]
-[ |-W|\ [*workdir*] ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -48,8 +48,8 @@ animation job.  Instead, the user can focus on composing the main frame plot and
 parallel execution of frames and assembly of images into a movie take place in the background.
 Individual frames are converted from *PostScript* plots to lossless, transparent PNG images and optionally
 assembled into an animation (this last step requires external tools that must be present in
-your path; see Technical Details below).  For opaque PNG images, simply specify a background
-color via **-G**.
+your path; see Technical Details below). The user can add title sequences, fading, labels, and
+progress indicators as desired. 
 
 Required Arguments
 ------------------
@@ -66,20 +66,33 @@ Required Arguments
 
 **-C**\ *canvassize*
     Specify the canvas size used when composing the movie frames. You can choose from a
-    set of preset formats or specify a custom layout.  The named 16:9 ratio
-    formats have a canvas dimension of 24 x 13.5 cm *or* 9.6 x 5.4 inch and are
-    (with pixel dimensions given in parenthesis):
-    **4320p** (7680 x 4320), **2160p** (3840 x 2160), **1080p** (1920 x 1080), **720p** (1280 x 720),
-    **540p** (960 x 540), **480p** (854 x 480), **360p** (640 x 360), and **240p** (426 x 240).
-    We also accept **8k** or **uhd-2** to mean **4320p**, **4k** or **uhd** to mean **2160p**, and **hd** to mean **1080p**.
-    The recognized 4:3 ratio formats have a canvas dimension of 24 x 18 cm *or* 9.6 x 7.2 inch
-    and are (with pixel dimensions given in parenthesis):
-    **uxga** (1600 x 1200), **sxga+** (1400 x 1050), **xga** (1024 x 768),
-    **svga** (800 x 600), and **dvd** (640 x 480).
+    set of preset formats (see Table :ref:`Presets <tbl-presets>`) or specify a custom layout.
     **Note**: Your :term:`PROJ_LENGTH_UNIT` setting determines if **movie** sets
     you up to work with the SI or US canvas dimensions.  Instead of a named format you can
     request a custom format directly by giving *width*\ x\ *height*\ x\ *dpu*,
     where *dpu* is the dots-per-unit pixel density (pixel density is set automatically for the named formats).
+    
+    .. _tbl-presets:
+
+    =================================== ================
+    Preset format (alias)               Pixel dimensions
+    =================================== ================
+    *16:9 (24x13.5 cm or 9.6x5.4 inch)*
+    4320p (8k and uhd-2)                7680 x 4320
+    2160p (4k and uhd)                  3840 x 2160
+    1080p (hd)                          1920 x 1080
+    720p                                1280 x 720
+    540p                                960 x 540
+    480p                                854 x 480
+    360p                                640 x 360
+    240p                                426 x 240
+    *4:3 (24x18 cm or 9.6x7.2 inch)*
+    uxga                                1600 x 1200
+    sxga+                               1400 x 1050
+    xga                                 1024 x 768
+    svga                                800 x 600
+    dvd                                 640 x 480
+    =================================== ================
 
 .. _-N:
 
@@ -87,39 +100,32 @@ Required Arguments
     Determines the name of the final movie file and a sub-directory with frame images (but see **-W**).
     **Note**: If the subdirectory exist then we exit immediately.  You are therefore required to remove any
     old directory by that name first.  This is done to prevent the accidental loss of valuable data.
+    You can prevent this issue by using **-Z** to delete the directory after a successful run.
 
 .. _-T:
 
-**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
+**-T**\ *nframes*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
     Either specify how many image frames to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of frames instead), or supply a file with a set of parameters,
     one record (i.e., row) per frame.  The values in the columns will be available to the
     *mainscript* as named variables **MOVIE_COL0**, **MOVIE_COL1**, etc., while any trailing text
     can be accessed via the variable **MOVIE_TEXT**.  Append **+w** to split the trailing
     string into individual words that can be accessed via variables **MOVIE_WORD0**, **MOVIE_WORD1**,
-    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
-    as the valid separator(s).  The number of records equals
-    the number of frames. Note that the *background* script is allowed to create *timefile*,
+    etc. By default we look for either tabs or spaces to separate words.  Append *str* to select other character(s)
+    as the valid separator(s) instead. To just use TAB as the only valid separator use **+W** instead.
+    The number of records equals the number of frames. Note that the *background* script is allowed to create *timefile*,
     hence we check for its existence both before *and* after the background script has completed.  Normally,
     the frame numbering starts at 0; you can change this by appending a different starting frame
     number via **+s**\ *first*.  **Note**: All frames are still included; this modifier only affects
     the numbering of the given frames.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming frames.  For instance, name_000010.png has a tag width of 6.  By default, this
     is automatically set but if you are splitting large jobs across several computers then you
-    must use the same tag width for all names.
+    must use the same tag width for all names. **Note**: If just *nframes* is given then only **MOVIE_FRAME**
+    is available as no data file is available.
 
 
 Optional Arguments
 ------------------
-
-.. _-A:
-
-**-A**\ [**+l**\ [*n*]]\ [**+s**\ *stride*]
-    Build an animated GIF file.  You may specify if the movie should play more than once (i.e., loop)
-    via **+l** and if so append how many times to repeat [infinite].  If a video product is also
-    selected (**-F**) then you can limit the frames being used to make the GIF file.  Append **+s**\ *stride*
-    to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
-    20, 50, 100, 200, and 500.
 
 .. _-D:
 
@@ -130,7 +136,7 @@ Optional Arguments
 
 **-E**\ *titlepage*\ [**+d**\ *duration*\ [**s**]][**+f**\ [**i**\|\ **o**]\ *fade*\ [**s**]]\ [**+g**\ *fill*]
     Give a *titlepage* script that creates a static title page for the movie [no title].
-    Alternatively, *titlepage* can be a *PostScript* plot (file extension .ps) of dimensions exactly matching
+    Alternatively, *titlepage* can be a *PostScript* or *EPS* plot (file extension .ps) of dimensions exactly matching
     the canvas size set in **-C**. You control the duration of the title sequence with **+d** and specify
     the number of frames (or append **s** for a duration in seconds instead) [4s].
     Optionally, supply the fade length via **+f**\ *fade* (in frames or seconds [1s]) as well [no fading];
@@ -140,28 +146,33 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *format*\ [**+t**]\ [**+o**\ *options*]
-    Set the format of the final video product.  Repeatable.  Choose either **mp4** (MPEG-4 movie) or
-    **webm** (WebM movie).  You may optionally add additional FFmpeg encoding settings for this format
-    via the **+o** modifier (in quotes if more than one word). If **none** is chosen then no PNGs will
-    be created at all; this requires **-M**.  Choose **+t** to generate transparent PNG images [opaque].
+**-F**\ *gif*\|\ *mp4*\|\ *webm*\|\ *png*\ [**+l**\ [*n*]][**+o**\ *options*][**+s**\ *stride*][**+t**]
+    Select a video product.  Repeatable to make more than one product.  Choose from *gif* (animated GIF),
+    *mp4* (MPEG-4 movie), *webm* (WebM movie) or just *png* images (implied by all the others).  You may optionally
+    add additional FFmpeg encoding settings for *mp4* and *webm* via the **+o** modifier (in quotes if more
+    than one word). Choose **+t** to generate transparent PNG images [opaque]. If just *png* is chosen then no
+    animation will be assembled.  For *gif* you may consider using modifier **+l** for turning on looping and
+    optionally append how many times to repeat [infinite].  If either a *mp4* or *webm* product has been
+    selected then you can limit the frames being used to make a GIF animation:  Append **+s**\ *stride*
+    to only use every *stride* frame, with *stride* being one of a fixed set of strides: 2, 5, 10,
+    20, 50, 100, 200, and 500. No **-F** means no video products are created at all; this requires **-M**.
 
 .. _-G:
 
 **-G**\ [*fill*]\ [**+p**\ *pen*] :ref:`(more ...) <-Gfill_attrib>`
-    Set the canvas color or fill before plotting commences [none].
+    Set the canvas color or fill before plotting commences [no fill].
     Optionally, append **+p** to draw the canvas outline with *pen* [no outline].
 
 .. _-H:
 
-**-H**\ *factor*
+**-H**\ *scale*
     Given the finite dots-per-unit used to rasterize *PostScript* frames to PNGs, the quantizing of features
     to discrete pixel will lead to rounding.  Some of this is mitigated by the anti-aliasing settings.  However,
     changes from frame to frame is outside the control of the individual frame rasterization and we
     find that, in particular, moving text may appear jittery when seen in the final animation.  You can mitigate
-    this effect by selecting a scale *factor* that, in effect, temporarily increases the effective dots-per-unit
-    by *factor*, rasterizes the frame, then downsamples the image by the same factor at the end.  The larger
-    the *factor*, the smoother the transitions.  Because processing time increases with *factor* we suggest you
+    this effect by selecting an integer *scale* that, in effect, temporarily increases the effective dots-per-unit
+    by *scale*, rasterizes the frame, then down-samples the image by the same scale at the end.  The larger
+    the *scale*, the smoother the transitions.  Because processing time increases with *scale* we suggest you
     try values in the 2-5 range.  Note that images can also suffer from quantizing when the original data have
     much higher resolution than your final frame pixel dimensions.  The **-H** option may then be used to smooth the
     result to avoid aliasing [no downsampling].  This effect is called `subpixel <https://en.wikipedia.org/wiki/Subpixel_rendering>`_ rendering.
@@ -188,7 +199,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *labelinfo*
+**-L**\ *labelinfo*\ [*modifiers*]
     Automatic labeling of individual frames.  Repeatable up to 32 labels.  Places the chosen label at the frame perimeter:
     **e** selects the elapsed time in seconds as the label; append **+s**\ *scale* to set the length
     in seconds of each frame [Default is 1/*framerate*],
@@ -204,33 +215,38 @@ Optional Arguments
     used if **+g** or **+p** are set.  Append units **c**\|\ **i**\|\ **p** or % of the font size [15%].
     Append **+f** to use a specific *font* [:term:`FONT_TAG`].
     Append **+g** to fill the label bounding box with *fill* color [no fill].
+    Append **+h**\ [*dx*/*dy*/][*shade*] to place drop-down shade behind the label bounding box. You can
+    adjust the offset with *dx*/*dy* [4p/-4p] and shade color [gray50]; requires **+g** [no shade].
     Use **+j**\ *refpoint* to specify where the label should be plotted [TL].
     Append **+o**\ *dx*\ [/*dy*] to offset label in direction implied by *justify*. Append units
     **c**\|\ **i**\|\ **p** or % of the font size [20% of font size].
     Append **+p** to draw the outline of the bounding box using selected *pen* [no outline].
+    Append **+r** in conjunction with **+g** or **+p** to select a rounded rectangular label box [straight].
     Append **+t** to provide a *format* statement to be used with the label item selected [no special formatting].
     If **-Lt** is used then the format statement must contain a %s-like format, else it may have an integer (%d)
     or floating point  (%e, %f, %g) format specification.
 
 .. _-M:
 
-**-M**\ [*frame*],[*format*]
+**-M**\ [*frame*\|\ **f**\|\ **m**\|\ **l**],[*format*][**+r**\ *dpu*]
     In addition to making the animation sequence, select a single master frame [0] for a cover page.  The master frame will
     be written to the current directory with name *prefix.format*, where *format* can one of the
-    graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].
+    graphics extensions from the allowable graphics :ref:`formats <tbl-formats>` [pdf].  Instead of a frame number
+    we also recognize the codes **f**\ irst, **m**\ iddle, and **l**\ ast frame. **Note**: For raster frame formats
+    you may optionally specify the *dpu* of that frame via the **+r** modifier [same dpu as the movie frames].
 
 .. _-P:
 
-**-P**\ *progress*
+**-P**\ *progress*\ [*modifiers*]
     Automatic placement of progress indicator(s). Repeatable up to 32 indicators.  Places the chosen indicator at the frame perimeter.
     Select from six indicators called a-f [a].  Indicators a-c are different types of circular indicators while d-f are
     linear (axis-like) indicators.  Specify dimension of the indicator with **+w**\ *width* [5% of max canvas dimension for
     circular indicators and 60% of relevant canvas dimension for the linear indicators] and placement via **+j**\ *justify*
     [TR for circular and BC for axes]. Indicators b-f can optionally add annotations if modifier **+a** is used, append one of
-    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col* \|\ **t**\ *col* to indicate what should be annotated (see **-L**
+    **e**\|\ **f**\|\ **p**\|\ **s**\|\ **c**\ *col*\ \|\ **t**\ *col* to indicate what should be annotated (see **-L**
     for more information on what these are); append **+f** to use a specific *font* [:term:`FONT_ANNOT_SECONDARY` scaled as needed].
     Append **+o**\ *dx*\ [/*dy*] to offset indicator in direction implied by *justify*.  Append **+g** to set moving item *fill* color [see below for defaults].
-    Use **+p**\ *pen* to set moving item *pen*.  For corresponding static fill and pen, use **+G** and **+P** instead.
+    Use **+p**\ *pen* to set moving item *pen*.  For setting the corresponding static fill and pen, use **+G** and **+P** instead.
 
 .. _-Q:
 
@@ -248,7 +264,7 @@ Optional Arguments
     to make the movie, and (2) It may make a static background plot that should form the background for all frames.
     If a plot is generated the script must make sure it uses the same positioning (i.e., **-X -Y**) as the main script
     so that the layered plot will stack correctly (unless you actually want a different offset).  Alternatively,
-    *background* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
+    *background* can be a *PostScript* or *EPS* plot layer of dimensions exactly matching the canvas size.
 
 .. _-Sf:
 
@@ -256,18 +272,18 @@ Optional Arguments
     The optional GMT modern mode *foreground* (written in the same scripting language as *mainscript*) can be
     used to make a static foreground plot that should be overlain on all frames.  Make sure the script uses the same
     positioning (i.e., **-X -Y**) as the main script so that the layers will stack correctly.  Alternatively,
-    *foreground* can be a *PostScript* plot layer of dimensions exactly matching the canvas size.
+    *foreground* can be a *PostScript* or *EPS* plot layer of dimensions exactly matching the canvas size.
 
-.. _movie-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [*workdir*]
+**-W**\ [*dir*]
     By default, all temporary files and frame PNG file are created in the subdirectory *prefix* set via **-N**.
-    You can override that selection by giving another *workdir* as a relative or full directory path. If no
+    You can override that selection by giving another *dir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
     problems related to low space in the main directory.
@@ -280,6 +296,9 @@ Optional Arguments
     If your *mainscript* and all input scripts via **-E**, **-I**, and **-S** should be deleted as well then
     append **s**.
 
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
+
 .. _-cores:
 
 **-x**\ [[-]\ *n*]
@@ -287,7 +306,8 @@ Optional Arguments
     By default we try to use all available cores.  Append *n* to only use *n* cores
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
-    The parallel processing does not depend on OpenMP.
+    The parallel processing does not depend on OpenMP. **Note**: One core is utilized by
+    **movie** so in effect *n-1* cores are used for the individual frames.
 
 .. include:: explain_help.rst_
 
@@ -305,12 +325,12 @@ and those that change with the frame number.  The constants are accessible by al
 Also, if **-I** was used then any static parameters listed there will be available to all the scripts as well.
 In addition, the *mainscript* also has access to parameters that vary with the frame counter:
 **MOVIE_FRAME**\ : The current frame number (an integer, e.g., 136),
-**MOVIE_TAG**\ : The formatted frame number (a string, e.g., 000136), and
-**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_TAG**),
+**MOVIE_ITEM**\ : The formatted frame number (a string, e.g., 000136), and
+**MOVIE_NAME**\ : The name prefix for the current frame (i.e., *prefix*\ _\ **MOVIE_ITEM**),
 Furthermore, if a *timefile* was given then variables **MOVIE_COL0**\ , **MOVIE_COL1**\ , etc. are
 also set, yielding one variable per column in *timefile*.  If *timefile* has trailing text then that text can
 be accessed via the variable **MOVIE_TEXT**, and if word-splitting was explicitly requested by **-T+w** or
-implicitly by selecting word labels in **-F** or **-P**) then
+implicitly by selecting word labels in **-L** or **-P**) then
 the trailing text is also split into individual word parameters **MOVIE_WORD0**\ , **MOVIE_WORD1**\ , etc.
 
 Data Files
@@ -320,6 +340,15 @@ The movie scripts will be able to find any files present in the starting directo
 as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
+
+Custom gmt.conf files
+---------------------
+
+If you have a gmt.conf file in the top directory with your main script prior to running **movie** then it will be
+used and shared across all the scripts created and executed *unless* your scripts use **-C** when starting a new
+modern mode session. The preferred ways of changing GMT defaults is via :doc:`gmtset` calls in your input scripts.
+**Note**: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the *preflight*
+script to be used by other scripts is futile.
 
 Plotting Temporal Changes
 -------------------------
@@ -342,6 +371,14 @@ accomplish these effects:
 
 Your Canvas
 -----------
+
+.. figure:: /_images/GMT_movie_canvas.*
+   :width: 400 px
+   :align: center
+
+   The **MOVIE_WIDTH** and **MOVIE_HEIGHT** parameters reflect your canvas dimension.  You can use the
+   regular **-X** and **-Y** options to set a logical origin for your intended plot [72p, 72p] and use your
+   projection parameters (**-J**) to indicate the area selected for plotting (green).
 
 As you can see from **-C**, unless you specified a custom format you are given a canvas size that is either 24 x 13.5 cm (16:9)
 or 24 x 18 cm (4:3).  If your :term:`PROJ_LENGTH_UNIT` setting is inch then the custom canvas sizes are just
@@ -404,9 +441,21 @@ parameter file.  Using the **-Q** option will just produce these scripts which y
 **Note**: The *mainscript* is duplicated per frame and each copy is run simultaneously on all available cores.
 Multi-treaded GMT modules will therefore be limited to a single core as well.
 
-The conversion of PNG frames to an animated GIF (**-F**\ gif) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
+The conversion of PNG frames to an animated GIF (**-F**\ *gif*) relies on `GraphicsMagick <http://www.graphicsmagick.org/>`_.
 Thus, **gm** must be accessible via your standard search path. Likewise, the conversion of
-PNG frames to an MP4 (**-F**\ mp4) or WebM (**-F**\ webm) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_.
+PNG frames to an MP4 (**-F**\ *mp4*) or WebM (**-F**\ *webm*) movie relies on `FFmpeg <https://www.ffmpeg.org/>`_.
+
+Shell Limitations
+-----------------
+
+As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
+involves a sub-shell), we advice against using commands in your main script that involve piping the result
+from one GMT module into another (e.g., gmt blockmean ..... | gmt surface ...).  Because **movie** is running
+many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
+In our experience, piping in the context of movie script may corrupt the GMT history files, resulting in
+stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
+a temporary file when writing movie main scripts. **Note**: Piping from a non-GMT module into a GMT module
+or vice versa is not a problem (e.g., echo ..... | gmt plot ...).
 
 Hints for Movie Makers
 ----------------------
@@ -419,7 +468,7 @@ require the frame number you will need to make a file that you can pass to **-T*
 then have all the values you need, per frame (i.e., row), with values across all the columns you need.
 If you need to assign various fixed variables that do not change with time then your *mainscript*
 will look shorter and cleaner if you offload those assignments to a separate *includefile* (**-I**).
-To test your movie, start by using options **-F**\ none **-Q -M** to ensure your master frame page looks correct.
+To test your movie, start by using options **-Q -M** to ensure your master frame page looks correct.
 This page shows you one frame of your movie (you can select which frame via the **-M** arguments).  Fix any
 issues with your use of variables and options until this works.  You can then try to remove **-Q**.
 We recommend you make a very short (i.e., **-T**) and small (i.e., **-C**) movie so you don't have to wait very
@@ -489,7 +538,7 @@ To make an animated GIF movie based on the script globe.sh, which simply spins a
 frame number to serve as the view longitude, using a custom square 600 by 600 pixel canvas and 360 frames,
 place a frame counter in the top left corner, and place a progress indicator in the top right corner, try::
 
-    gmt movie globe.sh -Nglobe -T360 -Agif -C6ix6ix100 -Lf -P
+    gmt movie globe.sh -Nglobe -T360 -Fgif -C6ix6ix100 -Lf -P
 
 Here, the globe.sh bash script simply plots a map with :doc:`coast` but uses the frame number variable
 as the center longitude::
@@ -501,7 +550,7 @@ as the center longitude::
 As the automatic frame loop is executed the different frames will be produced with different
 longitudes.  The equivalent DOS batch script setup would be::
 
-    gmt movie globe.bat -Nglobe -T360 -Agif -C6ix6ix100 -Lf -P
+    gmt movie globe.bat -Nglobe -T360 -Fgif -C6ix6ix100 -Lf -P
 
 Now, the globe.bat DOS script is simply::
 
@@ -560,6 +609,32 @@ horizontally, then combine the two resulting strips vertically::
     ffmpeg -i top.mp4 -i bottom.mp4 -filter_complex vstack=inputs=2 four_movies.mp4
 
 For more information on such manipulations, see the FFmpeg documentation.
+
+
+Adding an Audio Track
+---------------------
+
+If you wish to add an *audio* track to the animation, say a narration that explains your animation,
+you can record your audio using a suitable tool and save it to a \*.mp3 or \*.m4a file.  The audio track
+should be approximately the same length as the video.  Then, simply combine the two with FFmpeg::
+
+    ffmpeg -loglevel warning -i yourslientmovie.mp4 -y -i narration.m4a final.mp4
+
+For more information on audio manipulations, see the FFmpeg documentation.
+
+Deprecations
+------------
+
+- 6.3.0: Consolidate -A into -F for a more unified option. `#5613 <https://github.com/GenericMappingTools/gmt/pull/5613>`_
+
+macOS Issues
+------------
+
+**Note**: The limit on the number of concurrently open files is relatively small by default on macOS and when building
+numerous frames at the same time it is not unusual to get failures in **movie** jobs with the message "Too many open files". 
+We refer you to this helpful
+`article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
+for various solutions. 
 
 See Also
 --------

@@ -14,10 +14,11 @@ Synopsis
 
 **gmt sphinterpolate** [ *table* ]
 |-G|\ *grdfile*
+|SYN_OPT-I|
+|SYN_OPT-R|
 [ |-D|\ [*east*] ]
-[ |SYN_OPT-I| ]
 [ |-Q|\ *mode*\ [*options*] ]
-[ |SYN_OPT-R| ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
@@ -27,6 +28,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -51,8 +53,19 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Name of the output grid to hold the interpolation.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
+
+.. _-I:
+
+.. include:: explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rgeo.rst_
 
 Optional Arguments
 ------------------
@@ -64,10 +77,6 @@ Optional Arguments
     [Default assumes there are no duplicates, except possibly at the poles].
     Append a repeating longitude (*east*) to skip records with that longitude instead
     of the full (slow) search for duplicates.
-
-.. _-I:
-
-.. include:: explain_-I.rst_
 
 .. _-Q:
 
@@ -94,20 +103,15 @@ Optional Arguments
     iterations used to converge at solutions for gradients when variable
     tensions are selected (e.g., **-T** only) [3]
 
-.. _-R:
-
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rgeo.rst_
-
 .. _-T:
 
 **-T**
     Use variable tension (ignored with **-Q**\ 0 [constant]
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -127,12 +131,16 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
-.. include:: explain_-qi.rst_
+.. include:: explain_-icols.rst_
 
-.. include:: explain_colon.rst_
+.. include:: explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
+
+.. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
 

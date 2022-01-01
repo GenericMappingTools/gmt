@@ -14,26 +14,29 @@ Synopsis
 
 **gmt 2kml** [ *table* ]
 [ |-A|\ **a**\|\ **g**\|\ **s**\ [*alt*\|\ **x**\ *scale*] ]
-[ |-C|\ *cpt* ] [ |-D|\ *descriptfile* ]
+[ |-C|\ *cpt* ]
+[ |-D|\ *descriptfile* ]
 [ |-E|\ [**+e**][**+s**] ]
 [ |-F|\ **e**\|\ **s**\|\ **t**\|\ **l**\|\ **p**\|\ **w** ]
 [ |-G|\ [*color*]\ [**+f**\|\ **n**] ]
-[ |-I|\ *icon* ] [ **-K**]
-[ |-L|\ *col1:name1*,\ *col2:name2*,... ]
+[ |-I|\ *icon* ]
+[ |-K| ]
+[ |-L|\ *name1*,\ *name2*,... ]
 [ |-N|\ [**t**\|\ *col*\|\ *name\_template*\|\ *name*] ]
-[ **-O**]
-[ |-Q|\ **a**\|\ **i**\ *az* ]
-[ |-Q|\ **s**\ *scale* ]
+[ |-O| ]
+[ |-Q|\ **a**\|\ **i**\|\ **s**\ *arg* ]
 [ |-R|\ **e**\|\ *w/e/s/n* ]
 [ |-S|\ **c**\|\ **n**\ *scale*] ]
 [ |-T|\ *title*\ [/*foldername*] ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
-[ |-Z|\ *args* ]
+[ |-Z|\ [**+a**\ *alt_min/alt_max*]\ [**+f**\ *minfade/maxfade*]\ [**+l**\ *minLOD/maxLOD*]\ [**+o**][**+v**] ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
 [ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
@@ -147,8 +150,7 @@ Optional Arguments
 **-I**\ *icon*
     Specify the URL to an alternative icon that should be used for the
     symbol [Default is a Google Earth circle]. If the URL starts with +
-    then we will prepend
-    `http://maps.google.com/mapfiles/kml/ <http://maps.google.com/mapfiles/kml/>`_
+    then we will prepend ``http://maps.google.com/mapfiles/kml/``
     to the name. To turn off icons entirely (e.g., when just wanting a
     text label), use **-I**-. [Default is a local icon with no directory path].
 
@@ -156,6 +158,8 @@ Optional Arguments
 
 **-K**
     Allow more KML code to be appended to the output later [finalize the KML file].
+
+.. _-L:
 
 **-L**\ *name1*,\ *name2*,...
     Extended data given. Append one or more column names separated by
@@ -198,17 +202,15 @@ Optional Arguments
 
 .. _-Q:
 
-**-Qa**\|\ **i**\ *azimuth*
+**-Qa**\|\ **i**\|\ **s**\ *arg*
     Option in support of wiggle plots (requires **-Fw**). You may
     control which directions the positive wiggles will tend to point
-    to with **-Qa**.  The provided azimuth defines a half-circle
+    to with **-Qa**.  The appended *azimuth* defines a half-circle
     centered on the selected azimuth [0] where positive anomalies
     will plot.  If outside then switch by 180 degrees.  Alternatively,
-    use **-Qi** to set a fixed direction with no further variation.
-
-**-Qs**\ *scale*
-    Required setting for wiggle plots (i.e., it requires **-Fw**).
-    Sets a wiggle scale in *z*-data units per the user's units (given
+    use **-Qi** to set a fixed *azimuth* with no further variation.
+    Scaling is also required via **-Qs**\ *scale*.
+    Set a wiggle scale in *z*-data units per the user's units (given
     via the trailing unit taken from d|m|s|e|f|k|M|n|u [e]). This scale
     is then inverted to yield degrees per user z-unit and used to
     convert wiggle anomalies to map distances and positions.
@@ -223,7 +225,7 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ **c**\|\ **n**\ *scale*]
+**-S**\ **c**\|\ **n**\ *scale*
     Scale icons or labels. Here, **-Sc** sets a scale for the symbol
     icon, whereas **-Sn** sets a scale for the name labels [1 for both].
 
@@ -236,10 +238,10 @@ Optional Arguments
     name is "*Name* Features", where *Name* is Point, Event, Timespan,
     Line, Polygon or Wiggle].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -254,15 +256,17 @@ Optional Arguments
 
 .. _-Z:
 
-**-Z**\ *args*
+**-Z**\ [**+a**\ *alt_min/alt_max*]\ [**+f**\ *minfade/maxfade*]\ [**+l**\ *minLOD/maxLOD*]\ [**+o**][**+v**]
     Set one or more attributes of the Document and Region tags. Append
     **+a**\ *alt\_min/alt\_max* to specify limits on visibility based on
-    altitude. Append **+l**\ *lod\_min/lod\_max* to specify limits on
-    visibility based on Level Of Detail, where *lod\_max* == -1 means it
-    is visible to infinite size. Append **+f**\ *fade\_min/fade\_max* to
-    fade in and out over a ramp [abrupt]. Append **+v** to make a
-    feature *not* visible when loaded [visible]. Append **+o** to open a
-    folder or document in the sidebar when loaded [closed].
+    altitude. Append **+f**\ *fade\_min/fade\_max* to fade in and out
+    over a ramp [abrupt]. Append **+l**\ *lod\_min/lod\_max* to specify limits on
+    visibility based on Level Of Detail, where a *lod\_max* of -1 means it
+    is visible to infinite size. Append **+o** to open a older or document
+    in the sidebar when loaded [closed]. Append **+v** to make a feature
+    *not* visible when loaded [visible].
+
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 or more input columns, depending on settings].
 .. include:: explain_-bi.rst_
@@ -386,6 +390,13 @@ switching between folders and documents.  The gmt_shell_scripts.sh
 contains function gmt_build_kmz that can assist in building a KMZ file
 from any number of KML files (and optionally images they may refer to).
 
+If you have made a series of KML files (which may depend on other items
+like local PNG images), you can consolidate these into a single KMZ file
+for saving space and for grouping related files together.  The bash function
+**gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
+do this.  You need to source gmt_shell_functions.sh first before you can
+use it.
+
 Kml Hierarchy
 -------------
 
@@ -456,23 +467,13 @@ Segment Information
 text description*\ ". If present, these are parsed to supply name and
 description tags, respectively, for the current feature.
 
-Making KMZ files
-----------------
-
-If you have made a series of KML files (which may depend on other items
-like local PNG images), you can consolidate these into a single KMZ file
-for saving space and for grouping related files together.  The bash function
-**gmt_build_kmz** in the :doc:`gmt_shell_functions.sh` can be used to
-do this.  You need to source gmt_shell_functions.sh first before you can
-use it.
-
 See Also
 --------
 
-:doc:`gmt` ,
+:doc:`gmt`,
 :doc:`gmt.conf`,
 :doc:`gmt_shell_functions.sh`,
 :doc:`grd2kml`,
 :doc:`img2google <supplements/img/img2google>`,
-:doc:`kml2gmt` ,
+:doc:`kml2gmt`,
 :doc:`psconvert`

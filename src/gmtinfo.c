@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Get information about data tables"
 #define THIS_MODULE_KEYS	"<D{,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vabdefghioqrs" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vabdefghioqrsw" GMT_OPT("HMm")
 
 EXTERN_MSC int gmtlib_geo_C_format (struct GMT_CTRL *GMT);
 EXTERN_MSC unsigned int gmtlib_log_array (struct GMT_CTRL *GMT, double min, double max, double delta, double **array);
@@ -58,6 +58,7 @@ struct GMTINFO_CTRL {	/* All control options for this program (except common arg
 	} A;
 	struct GMTINFO_C {	/* -C */
 		bool active;
+		unsigned int extra;	/* Undocumented hidden feature only needed via gmt_init_module to get -R */
 	} C;
 	struct GMTINFO_D {	/* -D[dx[/dy[/<dz>..]]] */
 		bool active;
@@ -125,50 +126,60 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]] [-E<L|l|H|h>[<col>]] [-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..][+e|r|R<incs>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L] [-S[x][y]] [-T<dz>[+c<col>]] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] [-Aa|t|s] [-C] [-D[<dx>[/<dy>]]] [-EL|l|H|h[<col>]] "
+		"[-Fi|d|t] [-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]] [-L] [-S[x][y]] [-T<dz>[%s][+c<col>]] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]",
+		name, GMT_TIME_FIX_UNITS_DISPLAY, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_o_OPT, GMT_qi_OPT, GMT_r_OPT, GMT_s_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Select reports for (a)ll [Default], per (t)able, or per (s)egment.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Format the min and max into separate columns; -o may be used to limit output.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Modifies results obtained by -I by shifting the region to better align with\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the data center.  Optionally, append granularity for this shift [exact].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Return the record with extreme value in specified column <col> [last column].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Specify l or h for min or max value, respectively.  Upper case L or H\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   means we operate instead on the absolute values of the data.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Return various counts of tables, segments, headers, and records, depending on mode:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i: One record with the number of tables, segments, data records, headers, and overall records.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t: Tables:  Same as D but the counts resets per table.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Return textstring -Rw/e/s/n to nearest multiple of dx/dy (assumes at least two columns).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -C is set then no -R string is issued.  Instead, the number of increments\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   given determines how many columns are rounded off to the nearest multiple.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only one increment is given we also use it for the second column (for backwards compatibility).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To override this behavior, use -Ip<dx>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     and allow -r to change from gridline-registration to pixel-registration.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Ib to report the bounding box polygon for the data files (or segments; see -A).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +r to modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc>\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to round region to these multiples; use +R to extend region by those increments instead,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Determine limiting region. With -I it rounds inward so bounds are within data range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Use -A to find the limiting common bounds of all segments or tables.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra space for error bars. Useful together with -I.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sx leaves space for horizontal error bar using value in third (2) column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -Sy leaves space for vertical error bar using value in third (2) column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -S or -Sxy leaves space for both error bars using values in third&fourth (2&3) columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Return textstring -Tzmin/zmax/dz to nearest multiple of the given dz.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Calculations are based on the first (0) column; append +c<col> to use another column.\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[a|t|s]");
+	GMT_Usage (API, -2, "Select reports for (a)ll [Default], per (t)able, or per (s)egment.");
+	GMT_Usage (API, 1, "\n-C Format the min and max into separate columns; -o may be used to limit output.");
+	GMT_Usage (API, 1, "\n-D Modifies results obtained by -I by shifting the region to better align with "
+		"the data center.  Optionally, append granularity for this shift [exact].");
+	GMT_Usage (API, 1, "\n-EL|l|H|h[<col>]");
+	GMT_Usage (API, -2, "Return the record with extreme value in specified column <col> [last column]. "
+		"Specify l or h for min or max value, respectively. Upper case L or H "
+		"means we operate instead on the absolute values of the data.");
+	GMT_Usage (API, 1, "\n-Fi|d|t");
+	GMT_Usage (API, -2, "Return various counts of tables, segments, headers, and records, depending on mode:");
+	GMT_Usage (API, 3, "i: One record with the number of tables, segments, data records, headers, and overall records.");
+	GMT_Usage (API, 3, "d: Dataset: One record per segment with tbl_no, seg_no, nrows, start_rec, stop_rec.");
+	GMT_Usage (API, 3, "t: Tables:  Same as D but the counts resets per table.");
+	GMT_Usage (API, 1, "\n-I[b|e|f|p|s]<dx>[/<dy>[/<dz>..]][+e|r|R<incs>]");
+	GMT_Usage (API, -2, "Return textstring -Rw/e/s/n to nearest multiple of <dx>/<dy> (assumes at least two columns). "
+		"Give -Ie to just report the min/max extent in the -Rw/e/s/n string (no multiples). "
+		"If -C is set then no -R string is issued.  Instead, the number of increments "
+		"given determines how many columns are rounded off to the nearest multiple. "
+		"If only one increment is given we also use it for the second column (for backwards compatibility). "
+		"To override this behavior, use -Ip<dx>. "
+		"If input data are regularly distributed we use observed phase shifts in determining -R [no phase shift] "
+		"and allow -r to change from gridline-registration to pixel-registration. "
+		"Use -Ib to report the bounding box polygon for the data files (or segments; see -A). "
+		"Use -If<dx>[/<dy>] to report an extended region optimized for fastest results in FFTs. "
+		"Use -Is<dx>[/<dy>] to report an extended region optimized for fastest results in surface. "
+		"Append +r to modify the region further: Append <inc>, <xinc>/<yinc>, or <winc>/<einc>/<sinc>/<ninc> "
+		"to round region to these multiples; use +R to extend region by those increments instead, "
+		"or use +e which is like +r but makes sure the region extends at least by %g x <inc>.\n", GMT_REGION_INCFACTOR);
+	GMT_Usage (API, 1, "\n-L Determine limiting region. With -I it rounds inward so bounds are within data range. "
+		"Use -A to find the limiting common bounds of all segments or tables.");
+	GMT_Usage (API, 1, "\n-S[x][y]");
+	GMT_Usage (API, -2, "Add extra space for error bars. Useful together with -I.");
+	GMT_Usage (API, 3, "-Sx: Leaves space for horizontal error bar using value in third (2) column.");
+	GMT_Usage (API, 3, "-Sy: Leaves space for vertical error bar using value in third (2) column.");
+	GMT_Usage (API, 3, "-S or -Sxy: Leaves space for both error bars using values in third&fourth (2&3) columns.");
+	GMT_Usage (API, 1, "\n-T<dz>[%s][+c<col>]", GMT_TIME_FIX_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Return textstring -Tzmin/zmax/dz to nearest multiple of the given <dz>.");
+	GMT_Usage (API, -2, "Note: Calculations are based on the first (0) column; append +c<col> to use another column. "
+		"If the column is absolute time you may append a valid fixed time unit to <dz> (Default is set by TIME_UNIT [s]).");
 	GMT_Option (API, "V,a");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   Reports the names and data types of the aspatial fields.\n");
-	GMT_Option (API, "bi2,d,e,f,g,h,i,o,qi,r,s,:,.");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Reports the names and data types of the aspatial fields.\n");
+	GMT_Option (API, "bi2,d,e,f,g,h,i,o,qi,r,s,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -191,13 +202,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 		switch (opt->option) {
 
 			case '<':	/* Input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				Ctrl->n_files++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Reporting unit */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'a':
@@ -216,9 +228,14 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'C':	/* Column output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				break;
+			case '0':	/* Hidden option to get 2 more columns back with column types */
+				Ctrl->C.extra = 2;	/* Need to report back x and y data types */
+				break;
 			case 'D':	/* Region adjustment Granularity */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (opt->arg[0]) {
 					if ((Ctrl->D.ncol = gmt_getincn (GMT, opt->arg, Ctrl->D.inc, GMT_MAX_COLUMNS)) < 0) n_errors++;
@@ -226,6 +243,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'E':	/* Extrema reporting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'L':
@@ -248,6 +266,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				if (opt->arg[1]) Ctrl->E.col = atoi (&opt->arg[1]);
 				break;
 			case 'F':	/* Record/segment reporting only */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case '\0': case 'i': Ctrl->F.mode = GMT_INFO_TOTAL; break;
@@ -260,6 +279,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'I':	/* Granularity */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (strchr (opt->arg, '+')) n_errors += gmt_parse_region_extender (GMT, 'I', opt->arg, &(Ctrl->I.extend), Ctrl->I.delta);	/* Possibly extend the final region before reporting */
 				j = 1;
@@ -282,13 +302,19 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 							n_errors++;
 						}
 						break;	/* -I- is backwards compatible */
-					default: j = 0;	break;
+					default:	/* Numbers.  Check for stray letters */
+						if (opt->arg[0] && isalpha (opt->arg[0])) {
+							GMT_Report (API, GMT_MSG_ERROR, "Option -I: Bad argument %s.\n", opt->arg);
+							n_errors++;
+						}
+						j = 0;
+						break;
 				}
 				if (opt->arg[j] == '\0' && !(Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)) {
 						n_errors++;
 						GMT_Report (API, GMT_MSG_ERROR, "Option -I: No increment given.\n");
 				}
-				else {
+				else if (!n_errors) {
 					if (Ctrl->I.mode == ACTUAL_BOUNDS || Ctrl->I.mode == BOUNDBOX)
 						Ctrl->I.ncol = 2;
 					else {
@@ -299,9 +325,11 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'L':	/* Detect limiting range */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				break;
 			case 'S':	/* Error bar output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				j = 0;
 				while (opt->arg[j]) {
@@ -312,22 +340,35 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 				if (j == 2) Ctrl->S.xbar = Ctrl->S.ybar = true;
 				break;
 			case 'T':	/* makecpt inc string */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if ((c = strchr (opt->arg, '/')) && gmt_M_compat_check (GMT, 5)) {	/* Let it slide for now */
-					GMT_Report (API, GMT_MSG_COMPAT, "Option -T<inc>[/<col>] syntax is deprecated; use -T<inc>[+c<col>] instead.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -T<inc>[/<col>] syntax is deprecated; use -T<inc>[%s][+c<col>] instead.\n", GMT_TIME_FIX_UNITS_DISPLAY);
 					j = sscanf (opt->arg, "%lf/%d", &Ctrl->T.inc, &Ctrl->T.col);
 					if (j == 1) Ctrl->T.col = 0;
 				}
 				else if (c || opt->arg[0] == '\0') {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Syntax is -T<inc>[+c<col>].\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -T: Syntax is -T<inc>[%s][<[+c<col>].\n", GMT_TIME_FIX_UNITS_DISPLAY);
 					n_errors++;
 				}
 				else {	/* Modern syntax and parsing */
-					if ((c = strstr (opt->arg, "+c"))) {
+					size_t L;
+					if ((c = strstr (opt->arg, "+c"))) {	/* Specified alternate column */
 						Ctrl->T.col = atoi (&c[2]);
 						c[0] = '\0';	/* Temporarily hide the modifier */
 					}
 					Ctrl->T.inc = atof (opt->arg);
+					if ((L = strlen (opt->arg))) {	/* Switch to another valid time unit */
+						char unit = opt->arg[L-1];
+						if (strchr (GMT_TIME_FIX_UNITS, unit)) {	/* Change to another valid time unit */
+							API->GMT->current.setting.time_system.unit = unit;
+							(void) gmt_init_time_system_structure (API->GMT, &API->GMT->current.setting.time_system);
+						}
+						else if (isalpha (unit)) {	/* Got junk */
+							GMT_Report (API, GMT_MSG_ERROR, "Option -T: Bad time unit %c. Choose from %s.\n", unit, GMT_TIME_FIX_UNITS_DISPLAY);
+							n_errors++;
+						}	/* else it was just part of dz */
+					}
 					if (c) c[0] = '+';	/* Restore the modifier */
 				}
 				break;
@@ -361,7 +402,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTINFO_CTRL *Ctrl, struct GMT_OP
 		}
 	}
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.active && !Ctrl->I.active, "Option-D requires -I\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && !Ctrl->C.active && Ctrl->I.ncol < 2,
+	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->I.mode != BOUNDBOX && !Ctrl->C.active && Ctrl->I.ncol < 2 && special,
 	                                   "Option -Ip requires -C\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->I.active && Ctrl->T.active,
 	                                   "Only one of -I and -T can be specified\n");
@@ -634,23 +675,23 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 				}
 				gmt_extend_region (GMT, wesn, Ctrl->I.extend, Ctrl->I.delta);	/* Possibly extend the region */
-				if (gmt_M_is_geographic (GMT, GMT_IN)) {
-					if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
-						if (wesn[YLO] < -90.0) {
-							wesn[YLO] = -90.0;
-							GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YLO] to become < -90. Reset to -90.\n");
-						}
-						if (wesn[YHI] > 90.0) {
-							wesn[YHI] = 90.0;
-							GMT_Report (API, GMT_MSG_WARNING, "Using -I caused wesn[YHI] to become > +90. Reset to +90.\n");
-						}
-						if (fabs (wesn[XHI] - wesn[XLO]) > 360.0) {
-							GMT_Report (API, GMT_MSG_WARNING,
-							            "Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
-							wesn[XLO] = (wesn[XLO] < 0.0) ? -180.0 : 0.0;
-							wesn[XHI] = (wesn[XLO] < 0.0) ? +180.0 : 360.0;
-							full_range = true;
-						}
+				if (gmt_M_y_is_lat (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+					if (wesn[YLO] < -90.0) {
+						wesn[YLO] = -90.0;
+						GMT_Report (API, GMT_MSG_WARNING, "Using -I caused south to become < -90. Reset to -90.\n");
+					}
+					if (wesn[YHI] > 90.0) {
+						wesn[YHI] = 90.0;
+						GMT_Report (API, GMT_MSG_WARNING, "Using -I caused north to become > +90. Reset to +90.\n");
+					}
+				}
+				if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must make sure we don't get outside valid bounds */
+					if (fabs (wesn[XHI] - wesn[XLO]) > 360.0) {
+						GMT_Report (API, GMT_MSG_WARNING,
+						            "Using -I caused longitude range to exceed 360. Reset to a range of 360.\n");
+						wesn[XLO] = (wesn[XLO] < 0.0) ? -180.0 : 0.0;
+						wesn[XHI] = (wesn[XLO] < 0.0) ? +180.0 : 360.0;
+						full_range = true;
 					}
 				}
 				if (Ctrl->L.active) {
@@ -687,12 +728,18 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[YHI], GMT_Y);	strcat (record, &buffer[i]);
 			}
 			else if (Ctrl->T.active) {	/* Return -T string */
-				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
+				unsigned int save = gmt_get_column_type (GMT, GMT_OUT, Ctrl->T.col);	/* Remember what column type this is */
+				wesn[XLO]  = floor (xyzmin[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;	/* Round min/max given the increment */
 				wesn[XHI]  = ceil  (xyzmax[Ctrl->T.col] / Ctrl->T.inc) * Ctrl->T.inc;
 				sprintf (record, "-T");
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XLO], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, wesn[XHI], Ctrl->T.col);		strcat (record, &buffer[i]);	strcat (record, "/");
+				if (save == GMT_IS_ABSTIME) gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, GMT_IS_FLOAT);	/* Must temporarily switch to float to typeset increment */
 				i = gmtinfo_strip_blanks_and_output (GMT, buffer, Ctrl->T.inc, Ctrl->T.col);	strcat (record, &buffer[i]);
+				if (save == GMT_IS_ABSTIME) {	/* Append unit used */
+					gmt_set_column_type (GMT, GMT_OUT, Ctrl->T.col, save);	/* Reset column type */
+					chrcat (record, GMT->current.setting.time_system.unit);
+				}
 			}
 			else if (Ctrl->E.active) {	/* Return extreme record */
 				gmt_M_memcpy (Out->data, dchosen, ncol, double);
@@ -761,9 +808,14 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 					}
 				}
 			}
-			if (do_report)
+			if (do_report) {
+				if (Ctrl->C.extra) {	/* Needed by gmtinit_get_region_from_data */
+					Out->data[4] = gmt_get_column_type (GMT, GMT_IN, GMT_X);
+					Out->data[5] = gmt_get_column_type (GMT, GMT_IN, GMT_Y);
+				}
 				GMT_Put_Record (API, GMT_WRITE_DATA, Out);	/* Write data record to output destination */
-			got_stuff = true;		/* We have at lwesn[XHI] reported something */
+			}
+			got_stuff = true;		/* We have at least reported something */
 			for (col = 0; col < ncol; col++) {	/* Reset counters for next block */
 				xyzmin[col] = DBL_MAX;
 				xyzmax[col] = -DBL_MAX;
@@ -838,7 +890,7 @@ EXTERN_MSC int GMT_gmtinfo (void *V_API, int mode, void *args) {
 			if (Ctrl->I.active && ncol < 2 && !Ctrl->C.active) Ctrl->I.active = false;
 			first_data_record = false;
 			if (Ctrl->C.active) {
-				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(2*ncol), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
+				if ((error = GMT_Set_Columns (API, GMT_OUT, (unsigned int)(2*ncol+Ctrl->C.extra), GMT_COL_FIX_NO_TEXT)) != GMT_NOERROR)
 					Return (error);
 			}
 			else if (Ctrl->E.active) {

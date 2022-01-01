@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -80,16 +80,19 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<info.tbf>] -T<TAG> [-D] [-F] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<info.tbf>] -T<TAG> [-D] [-F] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
-	GMT_Message (API, GMT_TIME_NONE, "\t<info.tbf> is one track bin file from x2sys_binlist [Default reads stdin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for this compilation.\n");
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Remove the listed tracks  [Default will add to database].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Force updates to earlier entries for a track with new information.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default refuses to process tracks already in the database].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<info.tbf> is one track bin file from x2sys_binlist [Default reads standard input].");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D Remove the listed tracks  [Default will add to database].");
+	GMT_Usage (API, 1, "\n-F Force updates to earlier entries for a track with new information "
+		"[Default refuses to process tracks already in the database].");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -105,6 +108,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -120,16 +124,20 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_PUT_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Remove all traces of these tracks from the database */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			case 'F':	/* Force update of existing tracks if new data are found */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;	/* Swap option for index.b reading [Obsolete but left for backwardness] */
 				break;
 

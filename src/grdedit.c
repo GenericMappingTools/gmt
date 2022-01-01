@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -39,7 +39,7 @@
 #define THIS_MODULE_PURPOSE	"Modify header or content of a grid"
 #define THIS_MODULE_KEYS	"<G{,ND(,GG}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:JRVbdefhi" GMT_OPT("H")
+#define THIS_MODULE_OPTIONS "-:JRVbdefhiw" GMT_OPT("H")
 
 struct GRDEDIT_CTRL {
 	struct GRDEDIT_In {
@@ -49,8 +49,9 @@ struct GRDEDIT_CTRL {
 	struct GRDEDIT_A {	/* -A */
 		bool active;
 	} A;
-	struct GRDEDIT_C {	/* -C */
+	struct GRDEDIT_C {	/* -C[b|c|n|p] */
 		bool active;
+		unsigned int mode;	/* see gmt_constants.h */
 	} C;
 	struct GRDEDIT_D {	/* -D[+x<xname>][+yyname>][+z<zname>][+s<scale>][+ooffset>][+n<invalid>][+t<title>][+r<remark>] */
 		bool active;
@@ -103,40 +104,50 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> [-A] [-C] [%s]\n", name, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-E[a|e|h|l|r|t|v]] [-G<outgrid>] [%s] [-L[+n|p]] [-N<table>] [%s] [-S] [-T]\n", GMT_J_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s]\n\n", GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT, GMT_i_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s [-A] [-Cb|c|n|p] [%s] [-E[a|e|h|l|r|t|v]] [-G%s] [%s] [-L[+n|p]] "
+		"[-N<table>] [%s] [-S] [-T] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_GRDEDIT2D,
+		GMT_OUTGRID, GMT_J_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_w_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is file to be modified.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Adjust dx/dy to be compatible with the file domain or -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Remove the command history from the header.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of grid to be modified");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Adjust dx/dy to be compatible with the file domain (or new -R).");
+	GMT_Usage (API, 1, "\n-Cb|c|n|p");
+	GMT_Usage (API, -2, "Control how the current and previous command histories should be handled, via directives:");
+	GMT_Usage (API, 3, "b: Append the current command's history to the previous history.");
+	GMT_Usage (API, 3, "c: Only save the current command's history.");
+	GMT_Usage (API, 3, "n: Save no history at all [Default].");
+	GMT_Usage (API, 3, "p: Only preserve the previous history.");
 	gmt_grd_info_syntax (API->GMT, 'D');
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Transpose or rotate the entire grid (this may exchange x and y).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  a Rotate grid around 180 degrees.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  e Exchange x(lon) and y(lat).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  h Flip grid left-to-right (as grdmath FLIPLR).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  l Rotate grid 90 degrees left (counter-clockwise).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  r Rotate grid 90 degrees right (clockwise).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  t Transpose grid [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  v Flip grid top-to-bottom (as grdmath FLIPUD).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify new output grid file [Default updates given grid file].\n");
+	GMT_Usage (API, 1, "\n-E[a|e|h|l|r|t|v]");
+	GMT_Usage (API, -2, "Transform the entire grid (this may exchange x and y). Append operation:");
+	GMT_Usage (API, 3, "a: Flip grid horizontally and vertically (h + v).");
+	GMT_Usage (API, 3, "e: Exchange x(lon) and y(lat).");
+	GMT_Usage (API, 3, "h: Flip grid left-to-right (as grdmath FLIPLR).");
+	GMT_Usage (API, 3, "l: Rotate grid 90 degrees left (counter-clockwise).");
+	GMT_Usage (API, 3, "r: Rotate grid 90 degrees right (clockwise).");
+	GMT_Usage (API, 3, "t: Transpose grid [Default].");
+	GMT_Usage (API, 3, "v: Flip grid top-to-bottom (as grdmath FLIPUD).");
+	gmt_outgrid_syntax (API, 'G', "Specify new output grid file [Default updates given grid file]");
 	GMT_Option (API, "J");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Shift the grid\'s longitude range (geographic grids only):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -L+n Adjust <west>/<east> so <east> <= 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -L+p Adjust <west>/<east> so <west> >= 0\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default adjusts <west>/<east> so <west> >= -180 or <east> <= +180\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N <table> has new xyz values to replace existing grid nodes.\n");
+	GMT_Usage (API, 1, "\n-L[+n|p]");
+	GMT_Usage (API, -2, "Shift the grid\'s longitude range (geographic grids only):");
+	GMT_Usage (API, 3, "+n Adjust <west>/<east> so <east> <= 0.");
+	GMT_Usage (API, 3, "+p Adjust <west>/<east> so <west> >= 0.");
+	GMT_Usage (API, -2, "Default adjusts <west>/<east> so <west> >= -180 or <east> <= +180.");
+	GMT_Usage (API, 1, "\n-N<table>");
+	GMT_Usage (API, -2, "Give <table> with new xyz values to replace the corresponding, existing grid nodes.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S For global grids of 360 degree longitude range.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Will rotate entire grid to coincide with new borders in -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggle header from grid-line to pixel-registered grid or vice versa.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   This shrinks -R by 0.5*{dx,dy} going from pixel to grid-line registration\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and expands  -R by 0.5*{dx,dy} going from grid-line to pixel registration.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   No grid values will be changed (a non-destructive change to the grid).\n");
-	GMT_Option (API, "V,bi3,di,e,f,h,i.:,.");
+	GMT_Usage (API, 1, "\n-S For global grids of 360 degree longitude range: "
+		"Will rotate entire grid in longitude to coincide with new borders in -R.");
+	GMT_Usage (API, 1, "\n-T Toggle header from grid-line to pixel-registered grid or vice versa. "
+		"Note: This shrinks the grid region by 0.5*{dx,dy} going from pixel to grid-line registration "
+		"and expands it by 0.5*{dx,dy} going from grid-line to pixel registration. "
+		"No grid values will be changed (it is a non-destructive change to the grid).");
+	GMT_Option (API, "V,bi3,di,e,f,h,i,w,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -152,6 +163,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 		switch (opt->option) {
@@ -161,22 +173,36 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Adjust increments */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
-			case 'C':	/* Clear history */
+			case 'C':	/* Control history output -Cb|c|n|p */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
+				switch (opt->arg[0]) {
+					case 'b': Ctrl->C.mode = GMT_GRDHISTORY_BOTH;	break;
+					case 'c': Ctrl->C.mode = GMT_GRDHISTORY_NEW;	break;
+					case 'p': Ctrl->C.mode = GMT_GRDHISTORY_OLD;	break;
+					case 'n': case '\0': Ctrl->C.mode = GMT_GRDHISTORY_NONE;	break;	/* Default */
+					default:
+						GMT_Report (API, GMT_MSG_ERROR, "Option -C: Unrecognized directive %s\n", opt->arg);
+						n_errors++;
+						break;
+				}
 				break;
 			case 'D':	/* Give grid information */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.information = strdup (opt->arg);
 				break;
 			case 'E':	/* Transpose or rotate grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				if (opt->arg[0] == '\0')	/* Default transpose */
 					Ctrl->E.mode = 't';
@@ -184,15 +210,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 					Ctrl->E.mode = opt->arg[0];
 				else {
 					n_errors++;
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -E: Unrecognized modifier %c\n", opt->arg[0]);
+					GMT_Report (API, GMT_MSG_ERROR, "Option -E: Unrecognized modifier %c\n", opt->arg[0]);
 				}
 				break;
 			case 'G':	/* Separate output grid file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'L':	/* Rotate w/e */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (strstr (opt->arg, "+n")) Ctrl->L.mode = -1;
 				else if (strstr (opt->arg, "+p")) Ctrl->L.mode = +1;
@@ -200,14 +228,17 @@ static int parse (struct GMT_CTRL *GMT, struct GRDEDIT_CTRL *Ctrl, struct GMT_OP
 					n_errors++;
 				break;
 			case 'N':	/* Replace nodes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (opt->arg[0]) Ctrl->N.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->N.file))) n_errors++;
 				break;
 			case 'S':	/* Rotate global grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':	/* Toggle registration */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 
@@ -253,7 +284,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 
 	double shift_amount = 0.0;
 
-	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL, *projstring = NULL;
+	char *registration[2] = {"gridline", "pixel"}, *out_file = NULL, *projstring = NULL, command[GMT_BUFSIZ] = {""};
 
 	struct GRDEDIT_CTRL *Ctrl = NULL;
 	struct GMT_GRID *G = NULL;
@@ -300,6 +331,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 	}
 	grid_was_read = Ctrl->G.active;
 	HH = gmt_get_H_hidden (G->header);
+	if (gmt_M_is_geographic (GMT, GMT_IN)) gmt_set_geographic (GMT, GMT_OUT);	/* Out same as in */
 
 	if ((G->header->type == GMT_GRID_IS_SF || G->header->type == GMT_GRID_IS_SD) && Ctrl->T.active) {
 		GMT_Report (API, GMT_MSG_ERROR, "Toggling registrations not possible for Surfer grid formats\n");
@@ -347,9 +379,10 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 		}
 	}
 
-	if (Ctrl->C.active) {	/* Wipe history */
-		gmt_M_memset (G->header->command, GMT_GRID_COMMAND_LEN320, char);
-	}
+	gmt_change_grid_history (API, Ctrl->C.mode, G->header, command);	/* Set grid history per -C mode */
+
+	if (GMT_Set_Comment (API, GMT_IS_GRID, GMT_COMMENT_IS_COMMAND, command, G))
+		Return (API->error);
 
 	if (Ctrl->S.active) {
 		shift_amount = GMT->common.R.wesn[XLO] - G->header->wesn[XLO];
@@ -443,7 +476,7 @@ EXTERN_MSC int GMT_grdedit (void *V_API, int mode, void *args) {
 
 		switch (Ctrl->E.mode) {
 			case 'a': /* Rotate grid around 180 degrees */
-				GMT_Report (API, GMT_MSG_INFORMATION, "Rotate grid around 180 degrees\n");
+				GMT_Report (API, GMT_MSG_INFORMATION, "Flip grid horizontally and vertically\n");
 				break;
 			case 'e': /* Exchange lon and lat */
 				GMT_Report (API, GMT_MSG_INFORMATION, "Exchange x|longitude and y|latitude\n");

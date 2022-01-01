@@ -40,12 +40,15 @@ Synopsis
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-t| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
 **psmask** **-C** [ **-K** ] [ **-O** ]
 
-.. include:: mask_common.rst_
+.. include:: mask.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 

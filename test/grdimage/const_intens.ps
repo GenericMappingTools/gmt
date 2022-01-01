@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000
-%%Title: GMT v6.2.0_99c2dd8_2020.10.14 [64-bit] Document from text
+%%Title: GMT v6.2.0_2cec3a0_2021.03.18 [64-bit] Document from text
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Oct 15 09:42:02 2020
+%%CreationDate: Thu Mar 18 17:56:35 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,43 +111,45 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
-/ISOLatin1+_Encoding [
+/Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
-/.notdef	/bullet		/ellipsis	/trademark	/emdash		/endash		/fi		/zcaron
+/.notdef	/threequarters	/threesuperior	/trademark	/twosuperior	/yacute		/ydieresis	/zcaron
 /space		/exclam		/quotedbl	/numbersign	/dollar		/percent	/ampersand	/quoteright
-/parenleft	/parenright	/asterisk	/plus		/comma		/minus		/period		/slash
+/parenleft	/parenright	/asterisk	/plus		/comma		/hyphen		/period		/slash
 /zero		/one		/two		/three		/four		/five		/six		/seven
 /eight		/nine		/colon		/semicolon	/less		/equal		/greater	/question
 /at		/A		/B		/C		/D		/E		/F		/G
 /H		/I		/J		/K		/L		/M		/N		/O
 /P		/Q		/R		/S		/T		/U		/V		/W
 /X		/Y		/Z		/bracketleft	/backslash	/bracketright	/asciicircum	/underscore
-/quoteleft	/a		/b		/c 		/d		/e		/f		/g
+/quoteleft	/a		/b		/c		/d		/e		/f		/g
 /h		/i		/j		/k		/l		/m		/n		/o
 /p		/q		/r		/s		/t		/u		/v		/w
-/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/scaron
-/OE		/dagger		/daggerdbl	/Lslash		/fraction	/guilsinglleft	/Scaron		/guilsinglright
-/oe		/Ydieresis	/Zcaron		/lslash		/perthousand	/quotedblbase	/quotedblleft	/quotedblright
-/dotlessi	/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
-/dieresis	/quotesinglbase	/ring		/cedilla	/quotesingle	/hungarumlaut	/ogonek		/caron
-/space		/exclamdown	/cent		/sterling	/currency	/yen		/brokenbar	/section
-/dieresis	/copyright	/ordfeminine	/guillemotleft	/logicalnot	/hyphen		/registered	/macron
-/degree		/plusminus	/twosuperior	/threesuperior	/acute		/mu		/paragraph	/periodcentered
-/cedilla	/onesuperior	/ordmasculine	/guillemotright	/onequarter	/onehalf	/threequarters	/questiondown
-/Agrave		/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Ccedilla
-/Egrave		/Eacute		/Ecircumflex	/Edieresis	/Igrave		/Iacute		/Icircumflex	/Idieresis
-/Eth		/Ntilde		/Ograve		/Oacute		/Ocircumflex	/Otilde		/Odieresis	/multiply
-/Oslash		/Ugrave		/Uacute		/Ucircumflex	/Udieresis	/Yacute		/Thorn		/germandbls
-/agrave		/aacute		/acircumflex	/atilde		/adieresis	/aring		/ae		/ccedilla
-/egrave		/eacute		/ecircumflex	/edieresis	/igrave		/iacute		/icircumflex	/idieresis
-/eth		/ntilde		/ograve		/oacute		/ocircumflex	/otilde		/odieresis	/divide
-/oslash		/ugrave		/uacute		/ucircumflex	/udieresis	/yacute		/thorn		/ydieresis
+/x		/y		/z		/braceleft	/bar		/braceright	/asciitilde	/florin
+/Atilde		/Ccedilla	/Eth		/Lslash		/Ntilde		/Otilde		/Scaron		/Thorn
+/Yacute		/Ydieresis	/Zcaron		/atilde		/brokenbar	/ccedilla	/copyright	/degree
+/divide		/eth		/logicalnot	/lslash		/minus		/mu		/multiply	/ntilde
+/onehalf	/onequarter	/onesuperior	/otilde		/plusminus	/registered	/scaron		/thorn
+/.notdef	/exclamdown	/cent		/sterling	/fraction	/yen		/florin		/section
+/currency	/quotesingle	/quotedblleft	/guillemotleft	/guilsinglleft	/guilsinglright	/fi		/fl
+/Aacute		/endash		/dagger		/daggerdbl	/periodcentered	/Acircumflex	/paragraph	/bullet
+/quotesinglbase	/quotedblbase	/quotedblright	/guillemotright	/ellipsis	/perthousand	/Adieresis	/questiondown
+/Agrave		/grave		/acute		/circumflex	/tilde		/macron		/breve		/dotaccent
+/dieresis	/Eacute		/ring		/cedilla	/Ecircumflex	/hungarumlaut	/ogonek		/caron
+/emdash		/Edieresis	/Egrave		/Iacute		/Icircumflex	/Idieresis	/Igrave		/Oacute
+/Ocircumflex	/Odieresis	/Ograve		/Uacute		/Ucircumflex	/Udieresis	/Ugrave		/aacute
+/acircumflex	/AE		/adieresis	/ordfeminine	/agrave		/eacute		/ecircumflex	/edieresis
+/egrave		/Oslash		/OE		/ordmasculine	/iacute		/icircumflex	/idieresis	/igrave
+/oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
+/udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
 /PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -637,6 +662,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -661,77 +700,68 @@ FQ
 O0
 1200 1200 TM
 % PostScript produced by:
-%@GMT: gmt text -R0/5.90551/0/8.20891 -Jx1i -N -F+jBC+f32p,Helvetica,black @GMTAPI@-S-I-D-D-N-N-000000 -Xr1i -Yr1i --GMT_HISTORY=readonly
-%@PROJ: xy 0.00000000 5.90551000 0.00000000 8.20891000 0.000 5.906 0.000 8.209 +xy
+%@GMT: gmt text -R0/5.90551/0/7.84627 -Jx1i -N -F+jBC+f26.0063p,Helvetica-Bold,black @GMTAPI@-S-I-D-D-N-N-000000 -Xr1i -Yr1i --GMT_HISTORY=readonly
+%@PROJ: xy 0.00000000 5.90551000 0.00000000 7.84627000 0.000 5.906 0.000 7.846 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
-3543 10565 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-533 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+3543 9741 M 433 F1
 (Constant Intensity Changes) bc Z
 %%EndObject
 PSL_plot_completion /PSL_plot_completion {} def
 0 A
 FQ
 O0
-0 5339 TM
+0 4904 TM
 % PostScript produced by:
-%@GMT: gmt grdimage @earth_relief_01d_p.grd -I-0.5 -BWENS -Bxaf -Byaf -Xa0i -Ya4.4493i -R-180/180/-90/90 -JCyl_stere/6i
+%@GMT: gmt grdimage @earth_relief_01d_p.grd -I-0.5 -BWrtS -Bxaf -Byaf -Xa0i -Ya4.0867i -R-180/180/-90/90 -JCyl_stere/6i
 %@PROJ: cyl_stere -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -12742014.362 12742014.362  +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
-N 0 0 M 0 -83 D S
-N 0 4511 M 0 84 D S
-N 1181 0 M 0 -83 D S
-N 1181 4511 M 0 84 D S
-N 2362 0 M 0 -83 D S
-N 2362 4511 M 0 84 D S
-N 3543 0 M 0 -83 D S
-N 3543 4511 M 0 84 D S
-N 4724 0 M 0 -83 D S
-N 4724 4511 M 0 84 D S
-N 5906 0 M 0 -83 D S
-N 5906 4511 M 0 84 D S
-N 7087 0 M 0 -83 D S
-N 7087 4511 M 0 84 D S
-N 7087 953 M 83 0 D S
-N 0 953 M -83 0 D S
-N 7087 953 M 83 0 D S
-N 0 953 M -83 0 D S
-N 7087 2256 M 83 0 D S
-N 0 2256 M -83 0 D S
-N 7087 2256 M 83 0 D S
-N 0 2256 M -83 0 D S
-N 7087 3558 M 83 0 D S
-N 0 3558 M -83 0 D S
-N 7087 3558 M 83 0 D S
-N 0 3558 M -83 0 D S
-0 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(-180∞) tc Z
-0 4678 M (-180∞) bc Z
-1181 -167 M (-120∞) tc Z
-1181 4678 M (-120∞) bc Z
-2362 -167 M (-60∞) tc Z
-2362 4678 M (-60∞) bc Z
-3543 -167 M (0∞) tc Z
-3543 4678 M (0∞) bc Z
-4724 -167 M (60∞) tc Z
-4724 4678 M (60∞) bc Z
-5906 -167 M (120∞) tc Z
-5906 4678 M (120∞) bc Z
-7087 -167 M (180∞) tc Z
-7087 4678 M (180∞) bc Z
--167 953 M (-60∞) mr Z
-7253 953 M (-60∞) ml Z
--167 2256 M (0∞) mr Z
-7253 2256 M (0∞) ml Z
--167 3558 M (60∞) mr Z
-7253 3558 M (60∞) ml Z
+0 A
+N 0 0 M 0 -77 D S
+N 0 4511 M 0 78 D S
+N 1181 0 M 0 -77 D S
+N 1181 4511 M 0 78 D S
+N 2362 0 M 0 -77 D S
+N 2362 4511 M 0 78 D S
+N 3543 0 M 0 -77 D S
+N 3543 4511 M 0 78 D S
+N 4724 0 M 0 -77 D S
+N 4724 4511 M 0 78 D S
+N 5906 0 M 0 -77 D S
+N 5906 4511 M 0 78 D S
+N 7087 0 M 0 -77 D S
+N 7087 4511 M 0 78 D S
+N 7087 953 M 77 0 D S
+N 0 953 M -77 0 D S
+N 7087 953 M 77 0 D S
+N 0 953 M -77 0 D S
+N 7087 2256 M 77 0 D S
+N 0 2256 M -77 0 D S
+N 7087 2256 M 77 0 D S
+N 0 2256 M -77 0 D S
+N 7087 3558 M 77 0 D S
+N 0 3558 M -77 0 D S
+N 7087 3558 M 77 0 D S
+N 0 3558 M -77 0 D S
+0 -124 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+155 F0
+(180è) tc Z
+1181 -124 M (120èW) tc Z
+2362 -124 M (60èW) tc Z
+3543 -124 M (0è) tc Z
+4724 -124 M (60èE) tc Z
+5906 -124 M (120èE) tc Z
+7087 -124 M (180è) tc Z
+-124 953 M (60èS) mr Z
+-124 2256 M (0è) mr Z
+-124 3558 M (60èN) mr Z
 clipsave
 0 0 M
 7087 0 D
@@ -1909,189 +1939,180 @@ aP'u%VVZX[5*P7Oa9+aGeYQYHKF8k?*]bKk3/kd$WIg?K@:Y%u8OiBc@.fZ"Y1MaeRm]HnZJ^i9L>0EA
 &`RB`&[2#^O$OYUr(:B=0_`&kS]H3]9r("Bg^gc,Hs.O>D\?pOaPANL#Ot#>#N2$~>
 U
 PSL_cliprestore
-0 A [] 0 B
-25 W
-83 W
-N -42 0 M 0 525 D S
-N 7128 0 M 0 525 D S
-1 A
-N -42 525 M 0 428 D S
-N 7128 525 M 0 428 D S
+23 W
 0 A
-N -42 953 M 0 368 D S
-N 7128 953 M 0 368 D S
+46 W
+N -23 0 M 0 525 D S
+N 7110 0 M 0 525 D S
 1 A
-N -42 1321 M 0 330 D S
-N 7128 1321 M 0 330 D S
+N -23 525 M 0 428 D S
+N 7110 525 M 0 428 D S
 0 A
-N -42 1651 M 0 308 D S
-N 7128 1651 M 0 308 D S
+N -23 953 M 0 368 D S
+N 7110 953 M 0 368 D S
 1 A
-N -42 1959 M 0 297 D S
-N 7128 1959 M 0 297 D S
+N -23 1321 M 0 330 D S
+N 7110 1321 M 0 330 D S
 0 A
-N -42 2256 M 0 297 D S
-N 7128 2256 M 0 297 D S
+N -23 1651 M 0 308 D S
+N 7110 1651 M 0 308 D S
 1 A
-N -42 2553 M 0 307 D S
-N 7128 2553 M 0 307 D S
+N -23 1959 M 0 297 D S
+N 7110 1959 M 0 297 D S
 0 A
-N -42 2860 M 0 330 D S
-N 7128 2860 M 0 330 D S
+N -23 2256 M 0 297 D S
+N 7110 2256 M 0 297 D S
 1 A
-N -42 3190 M 0 368 D S
-N 7128 3190 M 0 368 D S
+N -23 2553 M 0 307 D S
+N 7110 2553 M 0 307 D S
 0 A
-N -42 3558 M 0 429 D S
-N 7128 3558 M 0 429 D S
+N -23 2860 M 0 330 D S
+N 7110 2860 M 0 330 D S
 1 A
-N -42 3987 M 0 524 D S
-N 7128 3987 M 0 524 D S
+N -23 3190 M 0 368 D S
+N 7110 3190 M 0 368 D S
 0 A
-N 0 -42 M 295 0 D S
-N 0 4553 M 295 0 D S
+N -23 3558 M 0 429 D S
+N 7110 3558 M 0 429 D S
 1 A
-N 295 -42 M 296 0 D S
-N 295 4553 M 296 0 D S
+N -23 3987 M 0 524 D S
+N 7110 3987 M 0 524 D S
 0 A
-N 591 -42 M 295 0 D S
-N 591 4553 M 295 0 D S
+N 0 -23 M 295 0 D S
+N 0 4535 M 295 0 D S
 1 A
-N 886 -42 M 295 0 D S
-N 886 4553 M 295 0 D S
+N 295 -23 M 296 0 D S
+N 295 4535 M 296 0 D S
 0 A
-N 1181 -42 M 295 0 D S
-N 1181 4553 M 295 0 D S
+N 591 -23 M 295 0 D S
+N 591 4535 M 295 0 D S
 1 A
-N 1476 -42 M 296 0 D S
-N 1476 4553 M 296 0 D S
+N 886 -23 M 295 0 D S
+N 886 4535 M 295 0 D S
 0 A
-N 1772 -42 M 295 0 D S
-N 1772 4553 M 295 0 D S
+N 1181 -23 M 295 0 D S
+N 1181 4535 M 295 0 D S
 1 A
-N 2067 -42 M 295 0 D S
-N 2067 4553 M 295 0 D S
+N 1476 -23 M 296 0 D S
+N 1476 4535 M 296 0 D S
 0 A
-N 2362 -42 M 295 0 D S
-N 2362 4553 M 295 0 D S
+N 1772 -23 M 295 0 D S
+N 1772 4535 M 295 0 D S
 1 A
-N 2657 -42 M 296 0 D S
-N 2657 4553 M 296 0 D S
+N 2067 -23 M 295 0 D S
+N 2067 4535 M 295 0 D S
 0 A
-N 2953 -42 M 295 0 D S
-N 2953 4553 M 295 0 D S
+N 2362 -23 M 295 0 D S
+N 2362 4535 M 295 0 D S
 1 A
-N 3248 -42 M 295 0 D S
-N 3248 4553 M 295 0 D S
+N 2657 -23 M 296 0 D S
+N 2657 4535 M 296 0 D S
 0 A
-N 3543 -42 M 296 0 D S
-N 3543 4553 M 296 0 D S
+N 2953 -23 M 295 0 D S
+N 2953 4535 M 295 0 D S
 1 A
-N 3839 -42 M 295 0 D S
-N 3839 4553 M 295 0 D S
+N 3248 -23 M 295 0 D S
+N 3248 4535 M 295 0 D S
 0 A
-N 4134 -42 M 295 0 D S
-N 4134 4553 M 295 0 D S
+N 3543 -23 M 296 0 D S
+N 3543 4535 M 296 0 D S
 1 A
-N 4429 -42 M 295 0 D S
-N 4429 4553 M 295 0 D S
+N 3839 -23 M 295 0 D S
+N 3839 4535 M 295 0 D S
 0 A
-N 4724 -42 M 296 0 D S
-N 4724 4553 M 296 0 D S
+N 4134 -23 M 295 0 D S
+N 4134 4535 M 295 0 D S
 1 A
-N 5020 -42 M 295 0 D S
-N 5020 4553 M 295 0 D S
+N 4429 -23 M 295 0 D S
+N 4429 4535 M 295 0 D S
 0 A
-N 5315 -42 M 295 0 D S
-N 5315 4553 M 295 0 D S
+N 4724 -23 M 296 0 D S
+N 4724 4535 M 296 0 D S
 1 A
-N 5610 -42 M 296 0 D S
-N 5610 4553 M 296 0 D S
+N 5020 -23 M 295 0 D S
+N 5020 4535 M 295 0 D S
 0 A
-N 5906 -42 M 295 0 D S
-N 5906 4553 M 295 0 D S
+N 5315 -23 M 295 0 D S
+N 5315 4535 M 295 0 D S
 1 A
-N 6201 -42 M 295 0 D S
-N 6201 4553 M 295 0 D S
+N 5610 -23 M 296 0 D S
+N 5610 4535 M 296 0 D S
 0 A
-N 6496 -42 M 295 0 D S
-N 6496 4553 M 295 0 D S
+N 5906 -23 M 295 0 D S
+N 5906 4535 M 295 0 D S
 1 A
-N 6791 -42 M 296 0 D S
-N 6791 4553 M 296 0 D S
+N 6201 -23 M 295 0 D S
+N 6201 4535 M 295 0 D S
 0 A
-8 W
-N -83 0 M 7253 0 D S
-N -83 -83 M 7253 0 D S
-N 7087 -83 M 0 4678 D S
-N 7170 -83 M 0 4678 D S
-N 7170 4511 M -7253 0 D S
-N 7170 4595 M -7253 0 D S
-N 0 4595 M 0 -4678 D S
-N -83 4595 M 0 -4678 D S
+N 6496 -23 M 295 0 D S
+N 6496 4535 M 295 0 D S
+1 A
+N 6791 -23 M 296 0 D S
+N 6791 4535 M 296 0 D S
+0 A
+5 W
+N -46 0 M 7179 0 D S
+N -46 -46 M 7179 0 D S
+N 7087 -46 M 0 4604 D S
+N 7133 -46 M 0 4604 D S
+N 7133 4511 M -7179 0 D S
+N 7133 4558 M -7179 0 D S
+N 0 4558 M 0 -4604 D S
+N -46 4558 M 0 -4604 D S
 %%EndObject
-0 -5339 TM
+0 -4904 TM
 PSL_plot_completion /PSL_plot_completion {} def
 0 A
 FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt grdimage @earth_relief_01d_p.grd -I+0.5 -BWENS -Bxaf -Byaf -Xa0i -Ya0i -R-180/180/-90/90 -JCyl_stere/6i
+%@GMT: gmt grdimage @earth_relief_01d_p.grd -I+0.5 -BWrtS -Bxaf -Byaf -Xa0i -Ya0i -R-180/180/-90/90 -JCyl_stere/6i
 %@PROJ: cyl_stere -180.00000000 180.00000000 -90.00000000 90.00000000 -20015109.356 20015109.356 -12742014.362 12742014.362  +a=6371007.181 +b=6371007.181 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
 3.32550952342 setmiterlimit
 8 W
-N 0 0 M 0 -83 D S
-N 0 4511 M 0 84 D S
-N 1181 0 M 0 -83 D S
-N 1181 4511 M 0 84 D S
-N 2362 0 M 0 -83 D S
-N 2362 4511 M 0 84 D S
-N 3543 0 M 0 -83 D S
-N 3543 4511 M 0 84 D S
-N 4724 0 M 0 -83 D S
-N 4724 4511 M 0 84 D S
-N 5906 0 M 0 -83 D S
-N 5906 4511 M 0 84 D S
-N 7087 0 M 0 -83 D S
-N 7087 4511 M 0 84 D S
-N 7087 953 M 83 0 D S
-N 0 953 M -83 0 D S
-N 7087 953 M 83 0 D S
-N 0 953 M -83 0 D S
-N 7087 2256 M 83 0 D S
-N 0 2256 M -83 0 D S
-N 7087 2256 M 83 0 D S
-N 0 2256 M -83 0 D S
-N 7087 3558 M 83 0 D S
-N 0 3558 M -83 0 D S
-N 7087 3558 M 83 0 D S
-N 0 3558 M -83 0 D S
-0 -167 M PSL_font_encode 0 get 0 eq {ISOLatin1+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
-200 F0
-(-180∞) tc Z
-0 4678 M (-180∞) bc Z
-1181 -167 M (-120∞) tc Z
-1181 4678 M (-120∞) bc Z
-2362 -167 M (-60∞) tc Z
-2362 4678 M (-60∞) bc Z
-3543 -167 M (0∞) tc Z
-3543 4678 M (0∞) bc Z
-4724 -167 M (60∞) tc Z
-4724 4678 M (60∞) bc Z
-5906 -167 M (120∞) tc Z
-5906 4678 M (120∞) bc Z
-7087 -167 M (180∞) tc Z
-7087 4678 M (180∞) bc Z
--167 953 M (-60∞) mr Z
-7253 953 M (-60∞) ml Z
--167 2256 M (0∞) mr Z
-7253 2256 M (0∞) ml Z
--167 3558 M (60∞) mr Z
-7253 3558 M (60∞) ml Z
+0 A
+N 0 0 M 0 -77 D S
+N 0 4511 M 0 78 D S
+N 1181 0 M 0 -77 D S
+N 1181 4511 M 0 78 D S
+N 2362 0 M 0 -77 D S
+N 2362 4511 M 0 78 D S
+N 3543 0 M 0 -77 D S
+N 3543 4511 M 0 78 D S
+N 4724 0 M 0 -77 D S
+N 4724 4511 M 0 78 D S
+N 5906 0 M 0 -77 D S
+N 5906 4511 M 0 78 D S
+N 7087 0 M 0 -77 D S
+N 7087 4511 M 0 78 D S
+N 7087 953 M 77 0 D S
+N 0 953 M -77 0 D S
+N 7087 953 M 77 0 D S
+N 0 953 M -77 0 D S
+N 7087 2256 M 77 0 D S
+N 0 2256 M -77 0 D S
+N 7087 2256 M 77 0 D S
+N 0 2256 M -77 0 D S
+N 7087 3558 M 77 0 D S
+N 0 3558 M -77 0 D S
+N 7087 3558 M 77 0 D S
+N 0 3558 M -77 0 D S
+0 -124 M PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+155 F0
+(180è) tc Z
+1181 -124 M (120èW) tc Z
+2362 -124 M (60èW) tc Z
+3543 -124 M (0è) tc Z
+4724 -124 M (60èE) tc Z
+5906 -124 M (120èE) tc Z
+7087 -124 M (180è) tc Z
+-124 953 M (60èS) mr Z
+-124 2256 M (0è) mr Z
+-124 3558 M (60èN) mr Z
 clipsave
 0 0 M
 7087 0 D
@@ -3344,126 +3365,126 @@ KNZT<o;)HFT^D>`)MfiQfhik]Uqc"H>B\\cj0DR4qZC6cK-<E4iZO'gSldP?^gT+&#%@)q&)WmkM.^"p
 opKB->FlobrSoL0mpr'hTKiEYH2e\$F742~>
 U
 PSL_cliprestore
-0 A [] 0 B
-25 W
-83 W
-N -42 0 M 0 525 D S
-N 7128 0 M 0 525 D S
-1 A
-N -42 525 M 0 428 D S
-N 7128 525 M 0 428 D S
+23 W
 0 A
-N -42 953 M 0 368 D S
-N 7128 953 M 0 368 D S
+46 W
+N -23 0 M 0 525 D S
+N 7110 0 M 0 525 D S
 1 A
-N -42 1321 M 0 330 D S
-N 7128 1321 M 0 330 D S
+N -23 525 M 0 428 D S
+N 7110 525 M 0 428 D S
 0 A
-N -42 1651 M 0 308 D S
-N 7128 1651 M 0 308 D S
+N -23 953 M 0 368 D S
+N 7110 953 M 0 368 D S
 1 A
-N -42 1959 M 0 297 D S
-N 7128 1959 M 0 297 D S
+N -23 1321 M 0 330 D S
+N 7110 1321 M 0 330 D S
 0 A
-N -42 2256 M 0 297 D S
-N 7128 2256 M 0 297 D S
+N -23 1651 M 0 308 D S
+N 7110 1651 M 0 308 D S
 1 A
-N -42 2553 M 0 307 D S
-N 7128 2553 M 0 307 D S
+N -23 1959 M 0 297 D S
+N 7110 1959 M 0 297 D S
 0 A
-N -42 2860 M 0 330 D S
-N 7128 2860 M 0 330 D S
+N -23 2256 M 0 297 D S
+N 7110 2256 M 0 297 D S
 1 A
-N -42 3190 M 0 368 D S
-N 7128 3190 M 0 368 D S
+N -23 2553 M 0 307 D S
+N 7110 2553 M 0 307 D S
 0 A
-N -42 3558 M 0 429 D S
-N 7128 3558 M 0 429 D S
+N -23 2860 M 0 330 D S
+N 7110 2860 M 0 330 D S
 1 A
-N -42 3987 M 0 524 D S
-N 7128 3987 M 0 524 D S
+N -23 3190 M 0 368 D S
+N 7110 3190 M 0 368 D S
 0 A
-N 0 -42 M 295 0 D S
-N 0 4553 M 295 0 D S
+N -23 3558 M 0 429 D S
+N 7110 3558 M 0 429 D S
 1 A
-N 295 -42 M 296 0 D S
-N 295 4553 M 296 0 D S
+N -23 3987 M 0 524 D S
+N 7110 3987 M 0 524 D S
 0 A
-N 591 -42 M 295 0 D S
-N 591 4553 M 295 0 D S
+N 0 -23 M 295 0 D S
+N 0 4535 M 295 0 D S
 1 A
-N 886 -42 M 295 0 D S
-N 886 4553 M 295 0 D S
+N 295 -23 M 296 0 D S
+N 295 4535 M 296 0 D S
 0 A
-N 1181 -42 M 295 0 D S
-N 1181 4553 M 295 0 D S
+N 591 -23 M 295 0 D S
+N 591 4535 M 295 0 D S
 1 A
-N 1476 -42 M 296 0 D S
-N 1476 4553 M 296 0 D S
+N 886 -23 M 295 0 D S
+N 886 4535 M 295 0 D S
 0 A
-N 1772 -42 M 295 0 D S
-N 1772 4553 M 295 0 D S
+N 1181 -23 M 295 0 D S
+N 1181 4535 M 295 0 D S
 1 A
-N 2067 -42 M 295 0 D S
-N 2067 4553 M 295 0 D S
+N 1476 -23 M 296 0 D S
+N 1476 4535 M 296 0 D S
 0 A
-N 2362 -42 M 295 0 D S
-N 2362 4553 M 295 0 D S
+N 1772 -23 M 295 0 D S
+N 1772 4535 M 295 0 D S
 1 A
-N 2657 -42 M 296 0 D S
-N 2657 4553 M 296 0 D S
+N 2067 -23 M 295 0 D S
+N 2067 4535 M 295 0 D S
 0 A
-N 2953 -42 M 295 0 D S
-N 2953 4553 M 295 0 D S
+N 2362 -23 M 295 0 D S
+N 2362 4535 M 295 0 D S
 1 A
-N 3248 -42 M 295 0 D S
-N 3248 4553 M 295 0 D S
+N 2657 -23 M 296 0 D S
+N 2657 4535 M 296 0 D S
 0 A
-N 3543 -42 M 296 0 D S
-N 3543 4553 M 296 0 D S
+N 2953 -23 M 295 0 D S
+N 2953 4535 M 295 0 D S
 1 A
-N 3839 -42 M 295 0 D S
-N 3839 4553 M 295 0 D S
+N 3248 -23 M 295 0 D S
+N 3248 4535 M 295 0 D S
 0 A
-N 4134 -42 M 295 0 D S
-N 4134 4553 M 295 0 D S
+N 3543 -23 M 296 0 D S
+N 3543 4535 M 296 0 D S
 1 A
-N 4429 -42 M 295 0 D S
-N 4429 4553 M 295 0 D S
+N 3839 -23 M 295 0 D S
+N 3839 4535 M 295 0 D S
 0 A
-N 4724 -42 M 296 0 D S
-N 4724 4553 M 296 0 D S
+N 4134 -23 M 295 0 D S
+N 4134 4535 M 295 0 D S
 1 A
-N 5020 -42 M 295 0 D S
-N 5020 4553 M 295 0 D S
+N 4429 -23 M 295 0 D S
+N 4429 4535 M 295 0 D S
 0 A
-N 5315 -42 M 295 0 D S
-N 5315 4553 M 295 0 D S
+N 4724 -23 M 296 0 D S
+N 4724 4535 M 296 0 D S
 1 A
-N 5610 -42 M 296 0 D S
-N 5610 4553 M 296 0 D S
+N 5020 -23 M 295 0 D S
+N 5020 4535 M 295 0 D S
 0 A
-N 5906 -42 M 295 0 D S
-N 5906 4553 M 295 0 D S
+N 5315 -23 M 295 0 D S
+N 5315 4535 M 295 0 D S
 1 A
-N 6201 -42 M 295 0 D S
-N 6201 4553 M 295 0 D S
+N 5610 -23 M 296 0 D S
+N 5610 4535 M 296 0 D S
 0 A
-N 6496 -42 M 295 0 D S
-N 6496 4553 M 295 0 D S
+N 5906 -23 M 295 0 D S
+N 5906 4535 M 295 0 D S
 1 A
-N 6791 -42 M 296 0 D S
-N 6791 4553 M 296 0 D S
+N 6201 -23 M 295 0 D S
+N 6201 4535 M 295 0 D S
 0 A
-8 W
-N -83 0 M 7253 0 D S
-N -83 -83 M 7253 0 D S
-N 7087 -83 M 0 4678 D S
-N 7170 -83 M 0 4678 D S
-N 7170 4511 M -7253 0 D S
-N 7170 4595 M -7253 0 D S
-N 0 4595 M 0 -4678 D S
-N -83 4595 M 0 -4678 D S
+N 6496 -23 M 295 0 D S
+N 6496 4535 M 295 0 D S
+1 A
+N 6791 -23 M 296 0 D S
+N 6791 4535 M 296 0 D S
+0 A
+5 W
+N -46 0 M 7179 0 D S
+N -46 -46 M 7179 0 D S
+N 7087 -46 M 0 4604 D S
+N 7133 -46 M 0 4604 D S
+N 7133 4511 M -7179 0 D S
+N 7133 4558 M -7179 0 D S
+N 0 4558 M 0 -4604 D S
+N -46 4558 M 0 -4604 D S
 %%EndObject
 0 0 TM
 PSL_plot_completion /PSL_plot_completion {} def

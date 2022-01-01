@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -103,7 +103,6 @@
  */
 
 #include "gmt_dev.h"
-#include "gmt_common_byteswap.h"
 #include "gmt_internals.h"
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
@@ -111,7 +110,6 @@
 /* Global variables used by X2SYS functions */
 
 char *X2SYS_HOME;
-static char *X2SYS_program;
 
 struct MGD77_CONTROL M;
 
@@ -226,9 +224,9 @@ GMT_LOCAL int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return (err);
 	/* When error code is non-zero: print error message and pass error code on */
 	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, " %s [%s]\n", x2sys_strerror(GMT, err), file);
 	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", x2sys_strerror(GMT, err));
 	return (err);
 }
 
@@ -328,7 +326,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	X->TAG = strdup (TAG);
 	X->info = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_DATA_INFO);
 	X->file_type = X2SYS_ASCII;
-	X->x_col = X->y_col = X->t_col = -1;
+	X->x_col = X->y_col = X->t_col = GMT_NOTSET;
 	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s/%s.%s", TAG, fname, X2SYS_FMT_EXT);
 	X->dist_flag = 0;	/* Cartesian distances */
@@ -1662,9 +1660,9 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return X2SYS_NOERROR;
 	/* When error code is non-zero: print error message and exit */
 	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s [%s]\n", x2sys_strerror(GMT, err), file);
 	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", x2sys_strerror(GMT, err));
 	return GMT_RUNTIME_ERROR;
 }
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -43,7 +43,7 @@
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 #endif
 #ifndef MOD	/* Knuth-style modulo function (remainder after floored division) */
-#define MOD(x, y) (x - y * floor((double)(x)/(double)(y)))
+#define MOD(x, y) ((x) - (y) * floor((double)(x)/(double)(y)))
 #endif
 
 #ifdef DOUBLE_PRECISION_GRID
@@ -58,6 +58,9 @@
 #define gmt_nc_get_varm_grdfloat nc_get_varm_float
 #define gmt_nc_put_varm_grdfloat nc_put_varm_float
 #endif
+
+/*! Macro to apply columns log/scale/offset conversion on the fly */
+#define gmt_M_convert_col(S,x) ((S.convert) ? ((S.convert & 2) ? log10 (x) : x) * S.scale + S.offset : x)
 
 /* This macro is called via each modules "Return" macro so API and options are available */
 #define gmt_M_free_options(mode) {if (GMT_Destroy_Options (API, &options) != GMT_OK) return (GMT_MEMORY_ERROR);}
@@ -160,8 +163,11 @@
 /* See if no CPT name was given (+u|U modifier may be present but not filename) */
 #define gmt_M_no_cpt_given(arg) (arg == NULL || arg[0] == '\0' || gmt_M_cpt_mod(arg))
 
-/*! Copy two RGB[T] arrays (a = b) */
+/*! Copy two RGB[T] arrays (a = b) including transparency */
 #define gmt_M_rgb_copy(a,b) memcpy (a, b, 4 * sizeof(double))
+
+/*! Copy two RGB[T] arrays (a = b) excluding transparency */
+#define gmt_M_rgb_only_copy(a,b) memcpy (a, b, 3 * sizeof(double))
 
 /*! To compare is two colors are ~ the same */
 #define gmt_M_eq(a,b) (fabs((a)-(b)) < GMT_CONV4_LIMIT)
@@ -190,6 +196,12 @@
 
 /*! Determine if a RGB combination is in fact B/W */
 #define gmt_M_is_bw(rgb) (gmt_M_is_gray(rgb) && (gmt_M_eq(rgb[0],0.0) || gmt_M_eq(rgb[0],1.0)))
+
+/*! Get a color component from a n*4 column-oriented colormap */
+#define gmt_M_get_rgba(map,index,color,n) map[index + (color)*(n)]
+
+/*! Set a color component in a n*4 column-oriented colormap */
+#define gmt_M_set_rgba(map,index,color,n,value) map[index + (color)*(n)] = (value)
 
 /*! Macros to do conversion to inches with PROJ_LENGTH_UNIT as default */
 

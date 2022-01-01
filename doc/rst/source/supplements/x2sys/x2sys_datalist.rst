@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ *name1*,\ *name2*,... ]
 [ |-I|\ [*list*] ]
-[ |-L|\ [*corrtable*] ]
+[ |-L|\ [*corrections*] ]
 [ |SYN_OPT-R| ]
 [ |-S| ] [
 [ |SYN_OPT-V| ]
@@ -77,7 +77,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*corrtable*]
+**-L**\ [*corrections*]
     Apply optimal corrections to columns where such corrections are
     available. Append the correction table to use [Default uses the
     correction table *TAG*\ \_corrections.txt which is expected to
@@ -97,10 +97,10 @@ Optional Arguments
     Suppress output records where all the data columns are NaN [Default
     will output all records].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bo| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-bo.rst_

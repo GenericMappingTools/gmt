@@ -13,7 +13,7 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdfft** *ingrid* [ *ingrid2* ]
-[ |-G|\ *outfile*\|\ *table* ]
+|-G|\ *outfile*\|\ *table*
 [ |-A|\ *azimuth* ]
 [ |-C|\ *zlevel* ]
 [ |-D|\ [*scale*\|\ **g**] ]
@@ -22,7 +22,7 @@ Synopsis
 [ |-I|\ [*scale*\|\ **g**] ]
 [ |-N|\ *params* ]
 [ |-Q|\ ]
-[ |-S|\ *scale* ]
+[ |-S|\ *scale*\|\ **d** ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-f| ]
 [ |SYN_OPT--| ]
@@ -44,13 +44,15 @@ to meters using :doc:`grdedit` or scale the output with :doc:`grdmath`.
 Required Arguments
 ------------------
 
-*ingrid*
-    2-D binary grid file to be operated on. (See GRID FILE FORMATS
-    below). For cross-spectral operations, also give the second grid
-    file *ingrid2*.
+.. |Add_ingrid| replace:: 2-D binary grid file to be operated on. For
+    cross-spectral operations, also give the second grid file *ingrid2*.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
+
 **-G**\ *outfile*
-    Specify the name of the output grid file or the 1-D spectrum table
-    (see **-E**). (See GRID FILE FORMATS below).
+    Specify the name of the output grid file (see :ref:`Grid File Formats
+    <grd_inout_full>`) or the 1-D spectrum table (see **-E**).
 
 Optional Arguments
 ------------------
@@ -85,7 +87,7 @@ Optional Arguments
     the x or y direction instead. No grid file is created. If one grid
     is given then f (i.e., frequency or wave number), power[f],
     and 1 standard deviation in power[f] are written to the file set by
-    **-G** [stdout]. If two grids are given we write f and 8 quantities:
+    **-G** [standard output]. If two grids are given we write f and 8 quantities:
     Xpower[f], Ypower[f], coherent power[f], noise power[f], phase[f],
     admittance[f], gain[f], coherency[f].  Each quantity is followed by
     its own 1-std dev error estimate, hence the output is 17 columns wide.
@@ -134,11 +136,14 @@ Optional Arguments
         using a 2nd-order Butterworth filter, with half-weight at 30, while
         **-F**\ 400/-/2 will highpass the data.
 
+    **Note**: For filtering in the time (or space) domain instead, see
+    :doc:`grdfilter`.
+
 .. _-G:
 
 **-G**\ *outfile*\|\ *table*
     Filename for output netCDF grid file OR 1-D data table (see **-E**).
-    This is optional for -E (spectrum written to stdout) but mandatory for
+    This is optional for -E (spectrum written to standard output) but mandatory for
     all other options that require a grid output.
 
 .. _-I:
@@ -151,6 +156,8 @@ Optional Arguments
     is gravity anomalies in mGal and output should be geoid heights in
     meters. [Default is no scale].
 
+.. _-N:
+
 .. include:: explain_fft.rst_
 
 .. _-Q:
@@ -162,22 +169,21 @@ Optional Arguments
 
 .. _-S:
 
-**-S**\ *scale*
+**-S**\ *scale*\|\ **d**
     Multiply each element by *scale* in the space domain (after the
-    frequency domain operations). [Default is 1.0].
+    frequency domain operations). [Default is 1.0].  Alternatively,
+    append **d** to convert deflection of vertical to micro-radians.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 |SYN_OPT-f|
    Geographic grids (dimensions of longitude, latitude) will be converted to
    meters via a "Flat Earth" approximation using the current ellipsoid parameters.
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Grid Distance Units
 -------------------

@@ -27,5 +27,12 @@
 #	# GMT_KNOWN_FAILURE
 #
 # to the script anywhere.
+#
+# If a script is known to fail on a specific platform, you can
+# exclude the test by adding one of the following comments:
+#
+#	# GMT_KNOWN_FAILURE_WINDOWS
+#	# GMT_KNOWN_FAILURE_MACOS
+#	# GMT_KNOWN_FAILURE_LINUX
 
 # P. Wessel, June 2019

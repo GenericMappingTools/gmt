@@ -12,8 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdcut** *ingrid* |-G|\ *outgrid*
+**gmt grdcut**
+*ingrid*
+|-G|\ *outgrid*
 |SYN_OPT-R|
+[ |-D|\ [**+t**] ]
+[ |-F|\ *polygonfile*\ [**+c**][**+i**] ]
 [ |-J|\ *parameters* ]
 [ |-N|\ [*nodata*] ]
 [ |-S|\ *lon/lat/radius*\ [**+n**] ]
@@ -28,45 +32,70 @@ Description
 -----------
 
 **grdcut** will produce a new *outgrid* file which is a subregion of
-*ingrid*. The subregion is specified with **-R** as in other programs;
+*ingrid*. The subregion may be specified with **-R** as in other programs;
 the specified range must not exceed the range of *ingrid* (but see **-N**).
 If in doubt, run :doc:`grdinfo` to check range. Alternatively, define the subregion
 indirectly via a range check on the node values or via distances from a
-given point. Finally, you can use **-J** for oblique projections to determine
-the corresponding rectangular **-R** setting that will give a grid that fully
-covers the oblique domain.
-Complementary to **grdcut** there is :doc:`grdpaste`, which
-will join together two grid files along a common edge.
+fixed point. Finally, you can use **-J** for oblique projections to determine
+the corresponding rectangular **-R** setting that will give a subregion that fully
+covers the oblique domain.  **Note**: If the input grid is actually an image (gray-scale,
+RGB, or RGBA), then options **-N** and **-Z** are unavailable, while for multi-layer
+Geotiff files only options **-R**, **-S** and **-G** are supported, i.e., you can cut out
+a sub-region only (which we do via gdal_translate if you have multiple bands).
+Complementary to **grdcut** there is :doc:`grdpaste`, which will join together
+two grid files (not images) along a common edge.
 
 Required Arguments
 ------------------
 
-*ingrid*
-    This is the input grid file.
+.. |Add_ingrid| replace:: Input grid file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outgrid*
-    This is the output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
+
+.. |Add_-R| replace:: This defines the subregion to be cut out. |Add_-R_links|
+.. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
 
-.. _-J:
+.. _-D:
 
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+**-D**\ [**+t**]
+    A "dry run": Simply report the region and increment of what would be the
+    extracted grid given the selected options.  No grid is created (**-G** is disallowed)
+    and instead we write a single data record with *west east south north xinc yinc*
+    to standard output. The increments will reflect the input grid unless it is a
+    remote gridded data set without implied resolution. Append **+t** to instead receive
+    the information as the trailing string "-Rwest/east/south/north -Ixinc/yinc".
+
+.. _-F:
+
+**-F**\ *polygonfile*\ [**+c**][**+i**]
+    Specify a multisegment closed polygon file.  All grid nodes outside the
+    polygon will be set to NaN.  Append **+i** to invert that and set all
+    nodes inside the polygon to NaN instead. Optionally, append **+c** to
+    crop the grid region to reflect the bounding box of the polygon.
+
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-N:
 
 **-N**\ [*nodata*]
     Allow grid to be extended if new **-R** exceeds existing boundaries.
     Append *nodata* value to initialize nodes outside current region [Default is NaN].
-
-.. _-R:
-
-.. |Add_-R| replace:: This defines the subregion to be cut out.
-.. include:: explain_-R.rst_
 
 .. _-S:
 
@@ -76,10 +105,10 @@ Optional Arguments
     nodes on or inside the circle are contained in the subset. If
     **+n** is appended we set all nodes outside the circle to NaN.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -103,8 +132,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grd_coord.rst_
 
@@ -142,6 +169,32 @@ To return the subregion of a grid that contains all nodes within a
 distance of 500 km from the point 45,30 try::
 
     gmt grdcut bathy.nc -Gsubset_bathy.nc -S45/30/500k -V
+
+To create a topography grid with data only inside France and set it
+to NaN outside France, based on the 10x10 minute DEM, try::
+
+    gmt coast -EFR -M > FR.txt
+    gmt grdcut @earth_relief_10m -FFR.txt+c -GFR_only.grd
+    gmt grdimage FR_only.grd -B -pdf map
+
+To determine what grid region and resolution (in text format) most suitable for a 24 cm wide map
+that is using an oblique projection to display the remote Earth Relief data grid, try::
+
+    gmt grdcut @earth_relief -R270/20/305/25+r -JOc280/25.5/22/69/24c -D+t -V
+
+Notes
+-----
+
+If the input file is a geotiff with multiple data bands then the output format will
+depend on your selection (if any) of the bands to keep: If you do not specify
+any bands (which means we consider all the available bands) or you select more
+than one band, then the output file can either be another geotiff (if you give
+a .tif[f] extension) or it can be a multiband netCDF file (if you give a .nc or .grd
+extension). If you select a single band from the input geotiff then GMT will
+normally read that in as a single grid layer and thus write a netCDF grid (unless
+you append another grid format specifier). However, if your output filename has
+a .tif[f] extension then we will instead write it as a one-band geotiff.
+All geotiff output operations are done via GDAL's gdal_translate.
 
 See Also
 --------

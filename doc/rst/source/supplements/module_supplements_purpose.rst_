@@ -4,9 +4,9 @@
 
 .. |gpsgridder_purpose| replace:: Interpolate GPS strains using Green's functions for elastic deformation
 
-.. |velo_purpose| replace:: Plot velocity vectors, crosses, and wedges
+.. |velo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
-.. |psvelo_purpose| replace:: Plot velocity vectors, crosses, and wedges
+.. |psvelo_purpose| replace:: Plot velocity vectors, crosses, anisotropy bars and wedges
 
 .. |gshhg_purpose| replace:: Extract data tables from binary GSHHG or WDBII data files
 
@@ -42,7 +42,7 @@
 
 .. |grdredpol_purpose| replace:: Compute the Continuous Reduction To the Pole, AKA differential RTP
 
-.. |grdseamount_purpose| replace:: Create synthetic seamounts (Gaussian, parabolic, cone or disc, circular or elliptical)
+.. |grdseamount_purpose| replace:: Create synthetic seamounts (Gaussian, parabolic, polynomial, cone or disc; circular or elliptical)
 
 .. |talwani2d_purpose| replace:: Compute geopotential anomalies over 2-D bodies by the method of Talwani
 

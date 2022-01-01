@@ -18,7 +18,7 @@ Synopsis
 [ |-D|\ [**g**\|\ **n**] ]
 [ |-E| ]
 [ |-F|\ [**k**]\ *filter* ]
-[ |-N|\ [*norm*] ]
+[ |-N|\ **g**\|\ **m**\|\ **s** ]
 [ |-Q| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
@@ -47,17 +47,19 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file. (See GRID FILE FORMAT below.)
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
 .. include:: explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -89,16 +91,21 @@ Optional Arguments
 
 .. _-N:
 
-**-N**\ [*norm*]
+**-N**\ **g**\|\ **m**\|\ **s**
     Normalization used for coefficients.  Choose among **m**: Mathematical
     normalization - inner products summed over surface equal 1 [Default].
     **g** Geodesy normalization - inner products summed over surface
     equal 4pi. **s**: Schmidt normalization - as used in geomagnetism.
 
-.. _-V:
+.. _-Q:
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+**-Q**
+    Coefficients have phase convention from physics, i.e., the :math:`(-1)^m` factor.
+
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 4 input columns].
 .. include:: explain_-bi.rst_
@@ -117,19 +124,17 @@ Optional Arguments
 
 .. include:: explain_float.rst_
 
-.. include:: explain_grd_output.rst_
-
 .. include:: explain_grd_coord.rst_
 
 Examples
 --------
 
 To create a 1 x 1 degree global grid file from the ASCII
-coefficients in the remote file EGM96_to_360.txt, use
+coefficients in the remote file EGM96_to_36.txt, use
 
    ::
 
-    gmt sph2grd @EGM96_to_360.txt -GEGM96_to_360.nc -Rg -I1 -V
+    gmt sph2grd @EGM96_to_36.txt -GEGM96_to_36.nc -Rg -I1 -V
 
 Reference
 ---------

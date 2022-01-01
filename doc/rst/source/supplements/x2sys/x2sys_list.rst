@@ -17,7 +17,7 @@ Synopsis
 [ |-E| ]
 [ |-F|\ *flags* ]
 [ |-I|\ [*list*] ]
-[ |-L|\ [*corrtable*] ]
+[ |-L|\ [*corrections*] ]
 [ |-N|\ *nx_min*\ [**+p**] ]
 [ |-Q|\ **e**\|\ **i** ]
 [ |SYN_OPT-R| ]
@@ -33,7 +33,7 @@ Description
 -----------
 
 **x2sys_list** will read the crossover ASCII data base *coedbase.txt*
-(or *stdin*) and extract a subset of the crossovers based on the other
+(or standard input) and extract a subset of the crossovers based on the other
 arguments. The output may be ASCII or binary.
 
 Required Arguments
@@ -47,12 +47,12 @@ Required Arguments
 
 .. include:: explain_tag.rst_
 
-Optional Arguments
-------------------
-
 *coedbase.txt*
     The name of the input ASCII crossover error data base as produced by
     :doc:`x2sys_cross`. If not given we read standard input instead.
+
+Optional Arguments
+------------------
 
 .. _-A:
 
@@ -111,7 +111,7 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ [*corrtable*]
+**-L**\ [*corrections*]
     Apply optimal corrections to the chosen observable. Append the
     correction table to use [Default uses the correction table
     *TAG*\ \_corrections.txt which is expected to reside in the
@@ -147,10 +147,10 @@ Optional Arguments
     involving any track pair].  Append **+b** to print info relative
     to both tracks in the pair.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

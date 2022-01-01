@@ -13,8 +13,8 @@ Synopsis
 .. include:: common_SYN_OPTs.rst_
 
 **gmt grdtrack** [ *table* ] |-G|\ *grd1* |-G|\ *grd2* ...
-[ |-A|\ **f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**] ]
-[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**] ]
+[ |-A|\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**] ]
+[ |-C|\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**] ]
 [ |-D|\ *dfile* ]
 [ |-E|\ *line* ]
 [ |-F|\ [**+b**][**+n**][**+r**][**+z**\ *z0*] ]
@@ -24,6 +24,7 @@ Synopsis
 [ |-T|\ [*radius*][**+e**\|\ **p**]]
 [ |-V|\ [*level*] ]
 [ |-Z| ]
+[ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -36,6 +37,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ **-:**\ [**i**\|\ **o**] ]
 [ |SYN_OPT--| ]
 
@@ -62,14 +64,14 @@ Required Arguments
 ------------------
 
 *table*
-    This is an ASCII (or binary, see **-bi**)
-    file where the first 2 columns hold the (x,y) positions where the
-    user wants to sample the 2-D data set.
+    This is an ASCII (or binary, see **-bi**) file where the first 2 columns
+    hold the (x,y) positions where the user wants to sample the 2-D data set.
+    If no tables are given then we read from standard input, unless |-E| is set.
 
 .. _-G:
 
 **-G**\ *gridfile*
-    *grdfile* is a 2-D binary grid file with the function f(x,y). If the
+    *gridfile* is a 2-D binary grid file with the function f(x,y). If the
     specified grid is in Sandwell/Smith Mercator format you must append
     a comma-separated list of arguments that includes a scale to
     multiply the data (usually 1 or 0.1), the mode which stand for the
@@ -82,14 +84,14 @@ Required Arguments
     **-G** as many times as you have grids you wish to sample.
     Alternatively, use **-G+l**\ *list* to pass a list of file names.
     The grids are sampled and results are output in the order given.
-    (See GRID FILE FORMAT below.)
+    (See :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
 
 .. _-A:
 
-**-Af**\|\ **p**\|\ **m**\|\ **r**\|\ **R**\ [**+l**]
+**-A**\ [**f**\|\ **p**\|\ **m**\|\ **r**\|\ **R**][**+l**]
     For track resampling (if **-C** or **-E** are set) we can select how this is to
     be performed. Append **f** to keep original points, but add
     intermediate points if needed [Default], **m** as **f**, but first
@@ -103,7 +105,7 @@ Optional Arguments
 
 .. _-C:
 
-**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **+v**][**l**\|\ **r**]
+**-C**\ *length*/\ *ds*\ [*/spacing*][**+a**\|\ **v**][**d**\|\ **f**\ *value*][**l**\|\ **r**]
     Use input line segments to create an equidistant and (optionally)
     equally-spaced set of crossing profiles along which we sample the
     grid(s) [Default simply samples the grid(s) at the input locations].
@@ -123,7 +125,12 @@ Optional Arguments
     `Units`_ below). The default unit for geographic grids is meter while
     Cartesian grids implies the user unit.  The output columns will be
     *lon*, *lat*, *dist*, *azimuth*, *z1*, *z2*, ..., *zn* (The *zi* are
-    the sampled values for each of the *n* grids)
+    the sampled values for each of the *n* grids). Use **+d** to
+    change the profiles from being orthogonal to the line by the given
+    *deviation* [0]. Looking in the direction of the line, a positive *deviation*
+    will rotate the crosslines clockwise and a negative one will rotate them
+    counter-clockwise.  Finally, you can use **+f** to set a fixed azimuth
+    for all profiles.
 
 .. _-D:
 
@@ -193,10 +200,10 @@ Optional Arguments
     Do *not* skip points that fall outside the domain of the grid(s)
     [Default only output points within grid domain].
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -240,19 +247,20 @@ Optional Arguments
    and give *radius* = 0 if you do not want to limit the radius search.
    To instead replace the input point with the coordinates of the nearest node, append **+p**.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
 **-Z**
     Only write out the sampled z-values [Default writes all columns].
+    **Note**: If used in conjunction with **-s** then the default
+    column becomes 0 instead of 2.  If specifying specific columns
+    in **-s** then start numbering the z-columns from 0 instead of 2.
 
-**-:**
-    Toggles between (longitude,latitude) and (latitude,longitude)
-    input/output. [Default is (longitude,latitude)].
+.. include:: explain_-aspatial.rst_
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -287,13 +295,17 @@ Optional Arguments
 
 .. include:: explain_-s.rst_
 
+.. include:: explain_-w.rst_
+
+**-:**
+    Toggles between (longitude,latitude) and (latitude,longitude)
+    input/output. [Default is (longitude,latitude)].
+
 .. include:: explain_help.rst_
 
 .. include:: explain_distunits.rst_
 
 .. include:: explain_precision.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grdresample2.rst_
 
@@ -323,14 +335,14 @@ To sample the file hawaii_topo.nc along the SEASAT track track_4.xyg
 (An ASCII table containing longitude, latitude, and SEASAT-derived
 gravity, preceded by one header record)::
 
-    grdtrack track_4.xyg -Ghawaii_topo.nc -h > track_4.xygt
+    gmt grdtrack track_4.xyg -Ghawaii_topo.nc -h > track_4.xygt
 
 To sample the Sandwell/Smith IMG format file topo.8.2.img (2 minute
 predicted bathymetry on a Mercator grid) and the Muller et al age grid
 age.3.2.nc along the lon,lat coordinates given in the file
 cruise_track.xy, try::
 
-    grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
+    gmt grdtrack cruise_track.xy -Gtopo.8.2.img,1,1 -Gage.3.2.nc > depths-age.d
 
 To sample the Sandwell/Smith IMG format file grav.18.1.img (1 minute
 free-air anomalies on a Mercator grid) along 100-km-long cross-profiles
@@ -339,12 +351,12 @@ erecting cross-profiles every 25 km and sampling the grid every 3 km, try
 
    ::
 
-    grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
+    gmt grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -Ar > xprofiles.txt
 
 The same thing, but now determining the central anomaly location along track,
 with a threshold of 25 mGal, try::
 
-    grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -F+z25 > locations.txt
+    gmt grdtrack track.xy -Ggrav.18.1.img,0.1,1 -C100k/3/25 -F+z25 > locations.txt
 
 To sample the grid data.nc along a line from the lower left to the upper
 right corner, using a grid spacing of 1 km on the geodesic, and output distances as well,

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2009-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -60,8 +60,8 @@ extern "C" {
 #define PSL_CIRCLE		((int)'c')
 #define PSL_DIAMOND		((int)'d')
 #define PSL_ELLIPSE		((int)'e')
-#define PSL_HEXAGON		((int)'h')
 #define PSL_OCTAGON		((int)'g')
+#define PSL_HEXAGON		((int)'h')
 #define PSL_INVTRIANGLE		((int)'i')
 #define PSL_ROTRECT		((int)'j')
 #define PSL_MARC		((int)'m')
@@ -89,7 +89,7 @@ enum PSL_enum_vecattr {
 	PSL_VEC_ARROW_PLAIN	= 5,		/* Stylized vector head (just triangle lines; cannot be filled) */
 	PSL_VEC_TAIL_PLAIN	= 6,		/* Stylized vector tail (just inward triangle lines; cannot be filled) */
 	PSL_VEC_BEGIN		= 1,		/* Place vector head at beginning of vector. Add PSL_VEC_BEGIN_L for left only, PSL_VEC_BEGIN_R for right only */
-	PSL_VEC_END		= 2,		/* Place vector head at end of vector.  Add PSL_VEC_END_L for left only, and PSL_VEC_END_R for right only */
+	PSL_VEC_END			= 2,		/* Place vector head at end of vector.  Add PSL_VEC_END_L for left only, and PSL_VEC_END_R for right only */
 	PSL_VEC_HEADS		= 3,		/* Mask for either head end */
 	PSL_VEC_BEGIN_L		= 4,		/* Left-half head at beginning */
 	PSL_VEC_BEGIN_R		= 8,		/* Right-half head at beginning */
@@ -111,7 +111,47 @@ enum PSL_enum_vecattr {
 	PSL_VEC_MID_FWD		= 262144,	/* End point of vector should be moved a distance along the line */
 	PSL_VEC_MID_BWD		= 524288,	/* End point of vector should be moved a distance along the line */
 	PSL_VEC_COMPONENTS	= 1048576,	/* Not yet needed in postscriptlight: Got vector dx, dy Cartesian components */
-	PSL_VEC_SCALE		= 2097152};	/* Not yet needed in postscriptlight: If not set we determine the required inch-to-degree scale */
+	PSL_VEC_SCALE		= 2097152,	/* Not yet needed in postscriptlight: If not set we determine the required inch-to-degree scale */
+	PSL_VEC_LINE		= 4194304};	/* Flag that we are adding vector heads to a line, not a stand-alone vector */
+
+enum PSL_enum_vecdim {	/* Indices into the dim[] array passed to psl_vector */
+	PSL_VEC_XTIP 			= 0,	/* x-coordinate of tip of vector in inches */
+	PSL_VEC_YTIP 			= 1,	/* y-coordinate of tip of vector in inches */
+	PSL_VEC_TAIL_WIDTH		= 2,	/* Width of tail stem (pen width) in inches */
+	PSL_VEC_HEAD_LENGTH		= 3,	/* Length of the vector head in inches */
+	PSL_VEC_HEAD_WIDTH		= 4,	/* Width of the vector head in inches */
+	PSL_VEC_HEAD_SHAPE		= 5,	/* Shape (0-2) of the vector head */
+	PSL_VEC_STATUS			= 6,	/* Sum of all vector bit flags */
+	PSL_VEC_HEAD_TYPE_BEGIN	= 7,	/* Type of vector head at beginning of vector */
+	PSL_VEC_HEAD_TYPE_END	= 8,	/* Type of vector head at end of vector */
+	PSL_VEC_TRIM_BEGIN		= 9,	/* Amount of line trim at beginning of vector in inches*/
+	PSL_VEC_TRIM_END		= 10,	/* Amount of line trim at end of vector in inches*/
+	PSL_VEC_HEAD_PENWIDTH	= 11};	/* Pen width of vector head outline */
+
+enum PSL_enum_wedgedim {	/* Indices into the dim[] array passed to psl_wedge */
+	 PSL_WEDGE_RADIUS_O    = 0,	/* Outer radius of wedge in inches */
+	 PSL_WEDGE_ANGLE_BEGIN = 1,	/* Begin angle in degrees */
+	 PSL_WEDGE_ANGLE_END   = 2,	/* End angle in degrees */
+	 PSL_WEDGE_STATUS      = 3,	/* Status bit flags */
+	 PSL_WEDGE_RADIUS_I    = 4, 	/* Inner radius of wedge in inches */
+	 PSL_WEDGE_DR          = 5, 	/* Radial increment in inches */
+	 PSL_WEDGE_DA          = 6, 	/* Azimuthal increment in degrees */
+	 PSL_WEDGE_ACTION      = 7 };	/* Sets filling (1) and/or outline (2) */
+
+enum PSL_enum_matharcdim {	/* Indices into the dim[] array passed to psl_matharc */
+	 PSL_MATHARC_RADIUS			= 0,	/* Radius of arc in inches */
+	 PSL_MATHARC_ANGLE_BEGIN	= 1,	/* Begin angle in degrees */
+	 PSL_MATHARC_ANGLE_END		= 2,	/* End angle in degrees */
+	 PSL_MATHARC_HEAD_LENGTH	= 3,	/* Length of the vector head in inches */
+	 PSL_MATHARC_HEAD_WIDTH		= 4,	/* Width of the vector head in inches */
+	 PSL_MATHARC_ARC_PENWIDTH	= 5,	/* Pen width of arc in inches  */
+	 PSL_MATHARC_HEAD_SHAPE		= 6,	/* Shape (0-2) of the vector head */
+	 PSL_MATHARC_STATUS			= 7,	/* Sum of all vector bit flags */
+	 PSL_MATHARC_HEAD_TYPE_BEGIN= 8,	/* Type of vector head at beginning of vector */
+	 PSL_MATHARC_HEAD_TYPE_END	= 9,	/* Type of vector head at end of vector */
+	 PSL_MATHARC_TRIM_BEGIN		= 10,	/* Amount of line trim at beginning of vector in degrees */
+	 PSL_MATHARC_TRIM_END		= 11,	/* Amount of line trim at end of vector in degrees */
+	 PSL_MATHARC_HEAD_PENWIDTH	= 12};	/* Pen width of vector head outline in inches  */
 
 /* PSL macros for dealing with vector attributes */
 
@@ -120,6 +160,7 @@ enum PSL_enum_vecattr {
 #define PSL_vec_side(status,head) (((status>>(2+2*head))&3) ? 2*((status>>(2+2*head))&3)-3 : 0)	/* Return side selection for this head as 0,-1,+1 */
 #define PSL_vec_outline(status) ((status&PSL_VEC_OUTLINE) || (status&PSL_VEC_OUTLINE2))	/* Return true if outline is currently selected */
 #define PSL_vec_fill(status) ((status&PSL_VEC_FILL) || (status&PSL_VEC_FILL2))		/* Return true if fill is currently selected */
+#define PSL_vec_headcheck(status) (((status)&PSL_VEC_LINE) == 0)	/* Flag when vector head is actually the end point of a line so we should not consider length a factor to exclude heads */
 
 /* PSL codes for arguments of PSL_beginplot and other routines */
 
@@ -154,7 +195,7 @@ enum PSL_enum_const {PSL_CM	= 0,
 	PSL_MAX_EPS_FONTS	= 6,
 	PSL_MAX_DIMS		= 13,		/* Max number of dim arguments to PSL_plot_symbol */
 	PSL_N_PATTERNS		= 91,		/* Current number of predefined patterns + 1, # 91 is user-supplied */
-	PSL_NAME_LEN		= 32,		/* Max length of font names */
+	PSL_FONTNAME_LEN	= 64,		/* Max length of font names */
 	PSL_BUFSIZ		= 4096U};
 
 /* PSL codes for pen movements (used by PSL_plotpoint, PSL_plotline, PSL_plotarc) */
@@ -207,7 +248,9 @@ enum PSL_enum_txt {PSL_TXT_INIT	= 1,
 	PSL_TXT_ROUND		= 32,
 	PSL_TXT_CURVED		= 64,
 	PSL_TXT_FILLBOX		= 128,
-	PSL_TXT_DRAWBOX		= 256};
+	PSL_TXT_DRAWBOX		= 256,
+	PSL_TXT_FILLPEN		= 512,
+	PSL_TXT_PENFILL		= 1024};
 
 /* PSL codes for text hyphen substitution (PSL_settextmode) */
 
@@ -264,7 +307,7 @@ enum PSL_enum_err {PSL_BAD_VALUE = -99,	/* Bad value */
  *--------------------------------------------------------------------*/
 
 struct PSL_FONT {	/* Definition */
-	char name[PSL_NAME_LEN];/* Name of this font */
+	char name[PSL_FONTNAME_LEN];/* Name of this font */
 	double height;		/* Height of A for unit fontsize */
 	int encoded;		/* true if we never should re-encode this font (e.g. symbols) */
 				/* This is also changed to true after we do re-encode a font */
@@ -406,6 +449,7 @@ EXTERN_MSC int PSL_plotaxis (struct PSL_CTRL *PSL, double annotation_int, char *
 EXTERN_MSC int PSL_plotbitimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, double f_rgb[], double b_rgb[]);
 EXTERN_MSC int PSL_plotcolorimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, int nx, int ny, int nbits);
 EXTERN_MSC int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, struct imageinfo *h);
+EXTERN_MSC int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, double *rgb, struct imageinfo *h);
 EXTERN_MSC int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type);
 EXTERN_MSC int PSL_plotcurve (struct PSL_CTRL *PSL, double *x, double *y, int n, int type);
 EXTERN_MSC int PSL_plotparagraph (struct PSL_CTRL *PSL, double x, double y, double fontsize, char *paragraph, double angle, int justify);

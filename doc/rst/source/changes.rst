@@ -4,6 +4,160 @@
 Changelog
 =========
 
+New Features in GMT 6.3
+=======================
+
+GMT 6.3 includes a new module, many new features, general code and documentation improvements, and numerous
+bug fixes! Here are the general updates included in 6.3:
+
+* Add new -B axis modifier +e to skip annotation(s) at end of an axis (`#5873 <https://github.com/GenericMappingTools/gmt/pull/5873>`_)
+* Allow for a fixed label offset (`#5320 <https://github.com/GenericMappingTools/gmt/pull/5320>`_)
+* Implement auto resolution for remote grids for plotting modules (`#5753 <https://github.com/GenericMappingTools/gmt/pull/5753>`_)
+* Simplify conversions between km and degrees (`#5824 <https://github.com/GenericMappingTools/gmt/pull/5824>`_)
+
+New Modules in GMT 6.3
+----------------------
+
+* :doc:`grdselect`: Make selections or determine common regions from 2-D grids, images or 3-D cubes (`#5929 <https://github.com/GenericMappingTools/gmt/pull/5929>`_)
+
+New Core Module Features in GMT 6.3
+-----------------------------------
+
+* :doc:`begin`, :doc:`figure`, and :doc:`psconvert`: JPEG quality and recognition of modifiers (`#5574 <https://github.com/GenericMappingTools/gmt/pull/5574>`_)
+* :doc:`coast`: Enable country-based clipping in -E (`#5334 <https://github.com/GenericMappingTools/gmt/pull/5334>`_)
+* :doc:`coast`: Allow -Ecode+L to list for specific country (`#5744 <https://github.com/GenericMappingTools/gmt/pull/5744>`_)
+* :doc:`colorbar`: Add modifier +r to reverse direction of scalebar (`#5230 <https://github.com/GenericMappingTools/gmt/pull/5230>`_)
+* :doc:`colorbar`: Allow colorbar length and/or width to be given in percentages (`#5775 <https://github.com/GenericMappingTools/gmt/pull/5775>`_)
+* :doc:`colorbar`: Handle CPTs with transparency (`#5328 <https://github.com/GenericMappingTools/gmt/pull/5328>`_)
+* :doc:`events`: Support temporal color changes (`#5695 <https://github.com/GenericMappingTools/gmt/pull/5695>`_)
+* :doc:`gmtmath`: Improve -Q behavior (`#5362 <https://github.com/GenericMappingTools/gmt/pull/5362>`_)
+* :doc:`grd2cpt` and :doc:`makecpt`: Add suitable shorthands for creating month and day labels (`#5201 <https://github.com/GenericMappingTools/gmt/pull/5201>`_)
+* :doc:`grd2cpt`: Let -L have ability to only set one limit (`#5317 <https://github.com/GenericMappingTools/gmt/pull/5317>`_)
+* :doc:`grd2xyz`: Add option -L to limit output to a single vector (`#5705 <https://github.com/GenericMappingTools/gmt/pull/5705>`_)
+* :doc:`grd2xyz`: Let option -T write STL output file (`#5955 <https://github.com/GenericMappingTools/gmt/pull/5955>`_)
+* :doc:`grdclip`: Handle polar resampling via -Ar|t (`#5264 <https://github.com/GenericMappingTools/gmt/pull/5264>`_)
+* :doc:`grdgradient`: Add +f modifier to -Q to specify file (`#5866 <https://github.com/GenericMappingTools/gmt/pull/5866>`_)
+* :doc:`grdimage`: Resample 2nd grid used for intensities (`#5363 <https://github.com/GenericMappingTools/gmt/pull/5363>`_)
+* :doc:`grdinfo`: Add ability to specify the two tails separately in -T+a (`#5924 <https://github.com/GenericMappingTools/gmt/pull/5924>`_)
+* :doc:`grdmath`: Add CUMSUM operator (`#5239 <https://github.com/GenericMappingTools/gmt/pull/5239>`_)
+* :doc:`grdtrack`: Let -C also accept a fixed azimuth for all profiles (`#5849 <https://github.com/GenericMappingTools/gmt/pull/5849>`_)
+* :doc:`grdtrend`: Fit model along xx or yy only. (`#5496 <https://github.com/GenericMappingTools/gmt/pull/5496>`_)
+* :doc:`inset`: Let begin optionally take -R -J to determine inset size instead of via -D (`#5903 <https://github.com/GenericMappingTools/gmt/pull/5903>`_)
+* :doc:`plot`: Add inverted triangle to front symbol choices (`#5983 <https://github.com/GenericMappingTools/gmt/pull/5983>`_)
+* :doc:`plot`: For error bars, allow asymmetrical bounds as well (`#5844 <https://github.com/GenericMappingTools/gmt/pull/5844>`_)
+* :doc:`plot`, :doc:`plot3d`, and :doc:`clip`: Add polar resampling via -Ar|t (`#5263 <https://github.com/GenericMappingTools/gmt/pull/5263>`_)
+* :doc:`project`: Let -G accept increment unit and +n modifier (`#5984 <https://github.com/GenericMappingTools/gmt/pull/5984>`_)
+* :doc:`mapproject`: Report rectangular region that covers an obliquely defined region (`#5782 <https://github.com/GenericMappingTools/gmt/pull/5782>`_)
+* :doc:`movie`: Let master frame accept a different dpu than the movie frames (`#5198 <https://github.com/GenericMappingTools/gmt/pull/5198>`_)
+* :doc:`subplot`: Allow drop-down shade modifier in tag option (`#5333 <https://github.com/GenericMappingTools/gmt/pull/5333>`_)
+* :doc:`text`: Implement smart justify -Dj for -M (`#5995 <https://github.com/GenericMappingTools/gmt/pull/5995>`_)
+
+Supplement updates in GMT 6.3
+-----------------------------
+
+* :doc:`/supplements/seis/coupe` and :doc:`/supplements/seis/meca`: Add linear moment scaling (`#5649 <https://github.com/GenericMappingTools/gmt/pull/5649>`_)
+* :doc:`/supplements/potential/grdflexure`: Let input list of grids and load times optionally also have load density (`#5249 <https://github.com/GenericMappingTools/gmt/pull/5249>`_)
+* :doc:`greenspline` and :doc:`/supplements/geodesy/gpsgridder`: Improve histories, update and add animations (`#5734 <https://github.com/GenericMappingTools/gmt/pull/5734>`_)
+
+Enhancements in GMT 6.3
+-----------------------
+
+* Add v (vector) to custom symbol kit, plus handle azimuth vs angle (`#5606 <https://github.com/GenericMappingTools/gmt/pull/5606>`_)
+* Allow trailing comments in custom symbol files (`#5610 <https://github.com/GenericMappingTools/gmt/pull/5610>`_)
+* Let -d set starting column via modifier (`#5966 <https://github.com/GenericMappingTools/gmt/pull/5966>`_)
+* Let -f\ *col* explicitly set start of input trailing text (`#5370 <https://github.com/GenericMappingTools/gmt/pull/5370>`_)
+* Let multi-layer geotiff files be cut via gdal_translate (`#5819 <https://github.com/GenericMappingTools/gmt/pull/5819>`_)
+
+Documentation updates in GMT 6.3
+--------------------------------
+
+* Add a GMT team page and update contributor recognition model (`#5589 <https://github.com/GenericMappingTools/gmt/pull/5589>`_)
+* Add deprecations section to ReST documentation (`#5847 <https://github.com/GenericMappingTools/gmt/pull/5847>`_)
+* Migrate remote dataset documentation to external site (`#6021 <https://github.com/GenericMappingTools/gmt/pull/6021>`_)
+* New gallery example 53 showing subplots and shading (`#5336 <https://github.com/GenericMappingTools/gmt/pull/5336>`_)
+* Improved animations in the gallery
+* Update formatting of usage messages across all modules
+
+Deprecations in GMT 6.3
+-----------------------
+
+* Clean up aspects of SVD function usage in GMT (`#5725 <https://github.com/GenericMappingTools/gmt/pull/5725>`_)
+* Complete -D parsing update (`#5827 <https://github.com/GenericMappingTools/gmt/pull/5827>`_)
+* Consolidate -A into -F for a more unified option (`#5613 <https://github.com/GenericMappingTools/gmt/pull/5613>`_)
+* Deprecate the ugly perspective -JG syntax and introduce a modern form (`#5780 <https://github.com/GenericMappingTools/gmt/pull/5780>`_)
+* :doc:`greenspline`: Update -C for writing intermediate grids (`#5714 <https://github.com/GenericMappingTools/gmt/pull/5714>`_)
+* Let gmt end better handle -A args (`#5583 <https://github.com/GenericMappingTools/gmt/pull/5583>`_)
+* Update -g synopsis, syntax, usage and docs (`#5617 <https://github.com/GenericMappingTools/gmt/pull/5617>`_)
+
+New Features in GMT 6.2
+=======================
+
+GMT 6.2 includes a new module, new common option, general code and documentation improvements, and numerous
+bug fixes! Here are the general updates included in 6.2:
+
+#. Addition of :doc:`theme-settings` (sets of GMT defaults), with a default modern theme for modern mode, and
+   :ref:`auto scaling options <cookbook/features:Automatic GMT settings>` for many GMT defaults.
+#. New :doc:`animation 13 <animations/anim13>` of seismic waveforms.
+#. New :doc:`animation 14 <animations/anim14>` of earthquake focal mechanisms.
+#. Support for **+a**\ *angle* for y-axis as well as x-axis with the :ref:`-B axes settings <gmt:Axes settings>`.
+#. General improvements to the automatic determination of frame attributes.
+#. New **+d**\ *divisor* modifier to the :ref:`-i option <gmt:The **-i** option>` to simplify scaling of input values.
+#. Allow parsing of **-Jz**\ *1:zzzzzz* for vertical scale.
+#. New GMT configuration parameters :term:`MAP_FRAME_PERCENT`, :term:`COLOR_SET`, and :term:`COLOR_CPT`.
+#. Add support for reading variable in NetCDF-4 groups.
+#. Allow specifying the reciprocal increment for generating 1d arrays.
+#. Allow LaTeX expressions in single-line titles and Cartesian axes labels, add support for multi-line plot titles, and
+   add support for subtitles.
+#. Many general documentation improvements.
+#. Various improvements to the API in support of developments taking place in the external wrappers (Python, Julia, Matlab).
+
+New Common Options in GMT 6.2:
+------------------------------
+
+#. :ref:`-w <gmt:The **-w** option>`: Convert selected coordinate to repeating cycles.
+
+New Modules in GMT 6.2:
+-----------------------
+
+#. :doc:`gmtbinstats`: Bin spatial data and determine statistics per bin, with support for both hexagonal and rectangular tiling.
+
+New Core Module Features in GMT 6.2:
+------------------------------------
+
+#. :doc:`colorbar`: New **+x** and **+y** modifiers to the **-S** option for setting axis label and unit; Support
+   slanted annotations with **-S**.
+#. :doc:`events`: New **-Z** option to animate geodesy and seismology symbols; New **-H** option to enable text label
+   boxes; Support plotting lines as series of closely spaced circles.
+#. :doc:`gmtmath`: New **VPDF** operator.
+#. :doc:`gmtsplit`: New name for previous module splitxyz.
+#. :doc:`grd2xyz`: New modifier for the **-W** option to set the length unit used.
+#. :doc:`grdcut`: New **-F** option to clip a grid based on a polygon.
+#. :doc:`grdfft`: New **-Q** option for no wavenumber operations.
+#. :doc:`grdmath`: New **FISHER** and **VPDF** operators.
+#. :doc:`greenspline`, :doc:`grdinterpolate`: Enable writing of 3-D netCDF data cubes.
+#. :doc:`histogram`: New **-E** option for custom bar widths and optional shift; New **+b** modifier to **-C** to set
+   color based on the bin value.
+#. :doc:`legend`: New **-M** option to handle both hidden and given information.
+#. :doc:`makecpt`, :doc:`grd2cpt`: Simplify the addition of category labels to CPT files with **-F**.
+#. :doc:`movie`: New modifiers to **-L** and **-P** to enable drop-shadow and rounded rectangular boxes.
+#. :doc:`plot`, :doc:`plot3d`: New **-H** option to scale the symbol size as well as the symbol pen outline attributes;
+   Support sequential auto-colors for polygon fills or line pens.
+#. :doc:`rose`: New **-N** option to draw the equivalent circular normal distribution.
+#. :doc:`subplot`: New **-D** option to accept previous default plot settings.
+#. :doc:`ternary`: Add support for drawing lines and polygons.
+#. :doc:`text`: New **-S** option to cast shade beneath a text box.
+
+Supplement updates in GMT 6.2:
+------------------------------
+
+#. :doc:`coupe </supplements/seis/coupe>`: Updated syntax for the **-A** option.
+#. :doc:`coupe </supplements/seis/coupe>`, :doc:`meca </supplements/seis/meca>`,
+   :doc:`velo </supplements/geodesy/velo>`: New scaling option **-H**; allow variable transparency; allow adjusting
+   symbol color via intensity; allow setting symbol color using colormaps.
+#. :doc:`gmtgravmag3d </supplements/potential/gmtgravmag3d>`: Add option to create geometric bodies (spheres, prisms,
+   ellipsoids, etc.) and compute their effect.
+#. :doc:`grdseamount </supplements/potential/grdseamount>`: Add polynomial seamount shape.
+
 Release of GMT 6.1.1
 ====================
 
@@ -30,7 +184,7 @@ changes, we mention
  #. Add modifier **+v** for a *vertical* oblique Equator in -JO [horizontal].
  #. New **-B** modifier **+i** for placing internal frame annotations
  #. New **-B** modifier **+f** to turn on fancy geographic annotations.
- #. New polar projection (**-JP**) modifiers  (**+f**\|\ **r**\|\ **t**\|\ **z**) adds new 
+ #. New polar projection (**-JP**) modifiers  (**+f**\|\ **r**\|\ **t**\|\ **z**) adds new
     capabilities for annotating azimuths, depths or radii.
  #. Revise verbosity default levels and their names and abbreviations.
  #. Add Web-Mercator as new sphere that can be selected.
@@ -38,22 +192,22 @@ changes, we mention
  #. Allow both **-i** and **-o** to specify an open-ended list of columns to end of record.
  #. API improvements to support the GMT/MEX, PyGMT, and GMT.jl environments.
 
-New Common Options:
--------------------
- #. **-l**: Add automatic legend entries from the modules :doc:`plot`, :doc:`plot3d`, 
+New Common Options in GMT 6.1:
+------------------------------
+ #. **-l**: Add automatic legend entries from the modules :doc:`plot`, :doc:`plot3d`,
     :doc:`grdcontour` and :doc:`pscontour` in modern mode.
  #. **-q**\[**i**\|\ **o**\ ]: Select specific data rows to complement selection of data columns (via **-i**, **-o**).
 
-New Modules:
-------------
+New Modules in GMT 6.1:
+-----------------------
 
 #. :doc:`batch`: Automate batch job processing by replicating a master script with job-specific parameters.
 #. :doc:`grdmix`: Blending and transforming grids and images, including manipulating transparency.
 #. :doc:`grdinterpolate`: Interpolate new 2-D grids or 1-D data series from a 3-D data cube.
 #. :doc:`grdgdal`: Execute GDAL raster programs (such as info, dem, grid, translate, rasterize or warp), from GMT.
 
-New Core Module Features:
--------------------------
+New Core Module Features in GMT 6.1:
+------------------------------------
 
 #. :doc:`begin`: Ignore the user's *gmt.conf* files normally included by using **-C**.
 #. :doc:`colorbar`: Option **-S** has been enhanced to handle bar appearance when **-B** is not used.
@@ -87,8 +241,8 @@ New Core Module Features:
 #. :doc:`sample1d`: Adds a smoothing cubic spline via **-Fs**\ *p* (for a fit parameter *p*), with optional weights (**-W**).
 #. :doc:`surface`: Let **-D** take a modifier **+z**\ *value* to set a constant breakline level.
 
-Supplement updates:
--------------------
+Supplement updates in GMT 6.1:
+------------------------------
 #. *seis*: Update all module syntax to GMT 6 standards and make their i/o more robust.
 #. *potential*: :doc:`grdflexure </supplements/potential/grdflexure>` adds new transfer functions now documented with equations.
 
@@ -113,8 +267,8 @@ there are numerous changes:
 #. The default mode remains *classic*, the only mode previously available.  All
    existing classic mode GMT 4 and 5 scripts will run as before.
 
-Modern mode modules
--------------------
+Modern mode modules in GMT 6.0
+------------------------------
 
 GMT modern mode is supported by five new commands:
 
@@ -137,16 +291,16 @@ The entire cookbook, tutorial and gallery examples all use modern mode. In moder
 the default graphics format is PDF and scripts can open up the plots in the default
 viewer automatically.
 
-New modules
------------
+New modules in GMT 6.0
+----------------------
 
 Apart from modern mode we have added a few modules that are accessible to all users:
 
 #. :doc:`events` makes a snapshot of all time-dependent events.
 #. :doc:`/supplements/geodesy/earthtide` (supplement) computes the solid Earth tides.
 
-General improvements
---------------------
+General improvements in GMT 6.0
+-------------------------------
 
 While our focus has been almost exclusively on GMT modern mode, there is a
 range of new capabilities have been added to all of GMT; here is a
@@ -211,8 +365,8 @@ summary of these changes:
    options **-Re** and **-Ra** will examine the data files given and determine the exact or approximate region,
    respectively.
 
-Module enhancements
--------------------
+Module enhancements in GMT 6.0
+------------------------------
 
 Several modules have obtained new options to extend their capabilities:
 
@@ -324,8 +478,8 @@ to standardize GMT non-common option usage across the suite.
 Nevertheless, there have been many user-level enhancements as well.
 Here is a summary of these changes in three key areas:
 
-New modules
------------
+New modules in GMT 5.4
+----------------------
 
 We have added a new module to the GMT core called
 :doc:`ternary`.
@@ -335,8 +489,8 @@ The *mgd77* supplement has gained a new tool :doc:`mgd77header <supplements/mgd7
 for creating a valid MGD77-format header from basic metadata and information
 determined from the header-less data file.
 
-General improvements
---------------------
+General improvements in GMT 5.4
+-------------------------------
 
 A range of new capabilities have been added to all of GMT; here is a
 summary of these changes:
@@ -380,7 +534,7 @@ summary of these changes:
    Pablo Valdés during the GMT4 era. These are now complemented by new custom
    symbols for structural geology designed by José A. Álvarez-Gómez.
 
-*  The :doc:`PSL <postscriptlight>` library no longer needs run-time files to configure the
+*  The :doc:`PSL </devdocs/postscriptlight>` library no longer needs run-time files to configure the
    list of standard fonts and character encodings, reducing the number of configure
    files required.
 
@@ -421,8 +575,8 @@ summary of these changes:
    will now get the old-style symbol.  The new and superior vector symbols
    will require the use of the new (and standard) syntax.
 
-Module enhancements
--------------------
+Module enhancements in GMT 5.4
+------------------------------
 
 Several modules have obtained new options to extend their capabilities:
 
@@ -491,8 +645,8 @@ Several modules have obtained new options to extend their capabilities:
    groups of jobs across many cores, packaging KMLs into a single KMZ archive,
    and more.
 
-API changes
------------
+API changes in GMT 5.4
+----------------------
 
 We have introduced one change that breaks backwards compatibility for users of
 the API functions.  We don't do this lightly but given the API is still considered
@@ -566,8 +720,8 @@ we are building toward MATLAB and Python.  Nevertheless, there have
 been many user-level enhancements as well.
 Here is a summary of these changes in three key areas:
 
-New modules
------------
+New modules in GMT 5.3
+----------------------
 
 We have added a new module to the GMT core called
 :doc:`solar`.
@@ -588,8 +742,8 @@ to the *potential* supplement.  This tool is a Green's function gridding module
 that grids vector data assumed to be coupled via an elastic model.  The prime
 usage is for gridding GPS velocity components.
 
-General improvements
---------------------
+General improvements in GMT 5.3
+-------------------------------
 
 There are many changes to GMT, mostly under the hood, but also changes that
 affect users directly.  We have added four new examples and one new animation
@@ -599,7 +753,7 @@ as well. For specific enhancements, we have:
 *  All GMT-distributed color palette tables (CPTs, now a total of 44) are
    *dynamic* and many have a *hinge* and a default *range*.  What this means
    is that the range of all CPTs have been normalized to 0-1, expect that
-   those with a hinge are normalized to -1/+1, with 0 being the normalized
+   those with a hinge are normalized to ±1, with 0 being the normalized
    hinge location.  CPTs with a hinge are interpolated separately on either
    side of the hinge, since a hinge typically signifies a dramatic color
    change (e.g., at sea-level) and we do not want that color change to be
@@ -730,8 +884,8 @@ only added to the 5.2-series.  All in all, almost 200 new features (a combinatio
 of new programs, new options, and enhancements) have been implemented.
 Here is a summary of these changes in six key areas:
 
-New modules
------------
+New modules in GMT 5.2
+----------------------
 
 There are two new modules in the core system:
 
@@ -776,8 +930,8 @@ Finally, we have renamed our PostScript Light (PSL) library from psl
 to PostScriptLight to avoid package name conflicts.  This library will eventually
 become decoupled from GMT and end up as a required prerequisite.
 
-New common options
-------------------
+New common options in GMT 5.2
+-----------------------------
 
 We have added two new lower-case GMT common options:
 
@@ -798,8 +952,8 @@ We have added two new lower-case GMT common options:
    supplement's :doc:`x2sys_solve <supplements/x2sys/x2sys_solve>`.
    This list will grow longer with time.
 
-New default parameters
-----------------------
+New default parameters in GMT 5.2
+---------------------------------
 
 There have been a few changes to the GMT Defaults parameters.  All changes
 are backwards compatible:
@@ -825,8 +979,8 @@ are backwards compatible:
 
 *  :term:`TIME_REPORT` now has defaults for absolute or elapsed time stamps.
 
-Updated common options
-----------------------
+Updated common options in GMT 5.2
+---------------------------------
 
 Two of the established GMT common options have seen minor improvements:
 
@@ -841,8 +995,8 @@ Two of the established GMT common options have seen minor improvements:
    dimensions (requires **-I** to use the increments).  The optional justification
    keys specify how the reference point relate to the grid region.
 
-General improvements
---------------------
+General improvements in GMT 5.2
+-------------------------------
 
 Several changes have affects across GMT; these are:
 
@@ -888,8 +1042,8 @@ Several changes have affects across GMT; these are:
    means the desired code will be given as last item on each data record.  Such custom
    symbols must be specified with uppercase **-SK**.
 
-Program-specific improvements
------------------------------
+Program-specific improvements in GMT 5.2
+----------------------------------------
 
 Finally, here is a list of enhancements to individual modules.  Any
 changes to existing syntax will be backwards compatible:
@@ -1050,7 +1204,7 @@ changes to existing syntax will be backwards compatible:
    modifiers **+1** or **+2** which will compute
    the first or second derivatives of the spline, respectively.
 
-*  :doc:`spectrum1d` can now turn off single-output data to stdout via **-T**
+*  :doc:`spectrum1d` can now turn off single-output data to standard output via **-T**
    or turn off multi-file output via **-N**.
 
 *  :doc:`sphdistance` can now also perform a nearest-neighbor gridding where
@@ -1074,7 +1228,7 @@ A few supplement modules have new features as well:
 *  :doc:`grdgravmag3d <supplements/potential/grdgravmag3d>` adds **-H** to compute magnetic anomaly.
 
 *  :doc:`grdpmodeler <supplements/spotter/grdpmodeler>` can now output more than one model
-   prediction into several grids or as a record written to stdout.  Also gains the **-N** option
+   prediction into several grids or as a record written to standard output.  Also gains the **-N** option
    used by other spotter tools to extend the model duration.
 
 
@@ -1084,7 +1238,7 @@ New Features in GMT 5
 GMT 5 represents a new branch of GMT development that mostly preserves the
 capabilities of the previous versions while adding over 200 new features
 to an already extensive bag of tricks.  Our PostScript library
-:doc:`PSL <postscriptlight>` has seen a complete rewrite as well
+:doc:`PSL </devdocs/postscriptlight>` has seen a complete rewrite as well
 and produce shorter and more compact PostScript. However, the big news
 is aimed for developers who wish to leverage GMT in their own applications.
 We have completely revamped the code base so that high-level
@@ -1104,8 +1258,8 @@ switches (you will receive a warning instead).  This is discussed below.
 
 Below are six key areas of improvements in GMT 5.
 
-New programs
-------------
+New programs in GMT 5
+---------------------
 
 First, a few new programs have been added and some have been
 promoted (and possibly renamed) from earlier supplements:
@@ -1200,8 +1354,8 @@ Finally, the spotter supplement has added one new module:
 :doc:`grdpmodeler <supplements/spotter/grdpmodeler>`:
     Evaluate a plate model on a geographic grid.
 
-New common options
-------------------
+New common options in GMT 5
+---------------------------
 
 First we discuss changes that have been
 implemented by a series of new lower-case GMT common options:
@@ -1240,8 +1394,8 @@ implemented by a series of new lower-case GMT common options:
    transparency level for that layer. However, as PostScript has no provision for
    transparency you can only see the effect if you convert it to PDF.
 
-Updated common options
-----------------------
+Updated common options in GMT 5
+-------------------------------
 
 Some of the established GMT common options have seen significant
 improvements; these include:
@@ -1264,8 +1418,8 @@ While just giving - (the hyphen) as argument presents just the synopsis of the c
 line arguments, we now also support giving + which in addition will list
 the explanations for all options that are not among the GMT common set.
 
-New default parameters
-----------------------
+New default parameters in GMT 5
+-------------------------------
 
 Most of the GMT default parameters have changed names in order to
 group parameters into logical groups and to use more consistent naming.
@@ -1322,8 +1476,8 @@ Among these are:
 *  *DIR_TMP*: was supposed to indicate the directory in which to store temporary files. But needs to be known without
    gmt.conf file as well. So the environment variable **$GMT_TMPDIR** is used instead.
 
-General improvements
---------------------
+General improvements in GMT 5
+-----------------------------
 
 Other wide-ranging changes have been implemented in different
 ways, such as
@@ -1373,8 +1527,8 @@ ways, such as
 
 *  GMT now ships with 36 standard color palette tables (CPT), up from 24.
 
-Program-specific improvements
------------------------------
+Program-specific improvements in GMT 5
+--------------------------------------
 
 Finally, here is a list of numerous enhancements to individual programs:
 

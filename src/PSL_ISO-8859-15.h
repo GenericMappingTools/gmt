@@ -19,8 +19,8 @@
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef\n\
-/space		/exclamdown	/cent		/sterling	/.notdef	/yen		/Scaron		/section\n\
-/scaron		/copyright	/ordfeminine	/guillemotleft	/logicalnot	/hyphen		/registered	/macron\n\
+/uni00A0	/exclamdown	/cent		/sterling	/Euro		/yen		/Scaron		/section\n\
+/scaron		/copyright	/ordfeminine	/guillemotleft	/logicalnot	/uni00AD	/registered	/macron\n\
 /degree		/plusminus	/twosuperior	/threesuperior	/Zcaron		/mu		/paragraph	/periodcentered\n\
 /zcaron		/onesuperior	/ordmasculine	/guillemotright	/OE		/oe		/Ydieresis	/questiondown\n\
 /Agrave		/Aacute		/Acircumflex	/Atilde		/Adieresis	/Aring		/AE		/Ccedilla\n\

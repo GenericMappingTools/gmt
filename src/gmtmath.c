@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -26,6 +26,7 @@
  * on them like add, multiply, etc.
  * Some operators only work on one operand (e.g., log, exp)
  *
+ * Note on KEYS: AD(= means -A takes an input Dataset as argument which may be followed by optional modifiers.
  */
 
 #include "gmt_dev.h"
@@ -36,7 +37,7 @@
 #define THIS_MODULE_PURPOSE	"Reverse Polish Notation (RPN) calculator for data tables"
 #define THIS_MODULE_KEYS	"<D(,AD(=,TD(,>D}"
 #define THIS_MODULE_NEEDS	""
-#define THIS_MODULE_OPTIONS "-:>Vbdefghioqs" GMT_OPT("HMm")
+#define THIS_MODULE_OPTIONS "-:>Vbdefghioqsw" GMT_OPT("HMm")
 
 #define SPECIFIC_OPTIONS "AEILNQST"	/* All non-common options except for -C which we will actually process in the loop over args */
 
@@ -111,8 +112,9 @@ struct GMTMATH_CTRL {	/* All control options for this program (except common arg
 		bool active;
 		uint64_t ncol, tcol;
 	} N;
-	struct GMTMATH_Q {	/* -Q */
+	struct GMTMATH_Q {	/* -Q[c|i|p|n] */
 		bool active;
+		int unit;
 	} Q;
 	struct GMTMATH_S {	/* -S[f|l] */
 		bool active;
@@ -160,6 +162,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.cols = gmt_M_memory (GMT, NULL, GMT_MAX_COLUMNS, bool);
 	C->E.eigen = 1e-7;	/* Default cutoff of small eigenvalues */
 	C->N.ncol = 2;
+	C->Q.unit = GMT->current.setting.proj_length_unit;	/* Default output unit conversion for -Q */
 
 	return (C);
 }
@@ -470,261 +473,282 @@ GMT_LOCAL bool gmtmath_same_domain (struct GMT_DATASET *A, uint64_t t_col, struc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q] [-S[f|l]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T[<min>/<max>/<inc>[+b|i|l|n]] | -T<file|list>] [%s] [%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] A B op C op ... = [outfile]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [-A<ftable>[+e][+r][+s|w]] [-C<cols>] [-E<eigen>] [-I] [-L] [-N<n_col>[/<t_col>]] [-Q[%s|n]] [-S[f|l]] "
+		"[-T[<file>|<list>|<min>/<max>/<inc>[+b|i|l|n]]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] A B op C op ... = [<outfile>]\n",
+		name, GMT_DIM_UNITS_DISPLAY, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_s_OPT, GMT_w_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n= <outfile>");
+	GMT_Usage (API, -2, "Writes the final stack result to the named file and pops it off the stack. "
+		"If no file is named then we write to standard output.");
+	GMT_Usage (API, 1, "\n<operands>");
+	GMT_Usage (API, -2, "A, B, etc. are table files, constants, or symbols (see below). "
+		"To read from standard input, give filename as STDIN (which can appear more than once). "
+		"The stack can hold up to %d entries (given enough memory).", GMTMATH_STACK_SIZE);
+	GMT_Usage (API, 1, "\n<operators>");
+	GMT_Usage (API, -2, "Trigonometric operators expect radians unless noted otherwise. "
+		"The operator names, the number of input and output arguments, and operation:\n");
+	/* Should we add an operator that has more characters that these, then the -20 will need to increase */
 	GMT_Message (API, GMT_TIME_NONE,
-		"\tA, B, etc. are table files, constants, or symbols (see below).\n"
-		"\tTo read stdin give filename as STDIN (which can appear more than once).\n"
-		"\tThe stack can hold up to %d entries (given enough memory).\n", GMTMATH_STACK_SIZE);
-	GMT_Message (API, GMT_TIME_NONE,
-		"\tTrigonometric operators expect radians unless noted otherwise.\n"
-		"\tThe operators and number of input and output arguments:\n\n"
-		"\tName       #args   Returns\n"
-		"\t--------------------------\n");
-	GMT_Message (API, GMT_TIME_NONE,
-		"	ABS        1  1    abs (A)\n"
-		"	ACOS       1  1    acos (A)\n"
-		"	ACOSH      1  1    acosh (A)\n"
-		"	ACOT       1  1    acot (A)\n"
-		"	ACOTH      1  1    acoth (A)\n"
-		"	ACSC       1  1    acsc (A)\n"
-		"	ACSCH      1  1    acsch (A)\n"
-		"	ADD        2  1    A + B\n"
-		"	AND        2  1    B if A == NaN, else A\n"
-		"	ASEC       1  1    asec (A)\n"
-		"	ASECH      1  1    asech (A)\n"
-		"	ASIN       1  1    asin (A)\n"
-		"	ASINH      1  1    asinh (A)\n"
-		"	ATAN       1  1    atan (A)\n"
-		"	ATAN2      2  1    atan2 (A, B)\n"
-		"	ATANH      1  1    atanh (A)\n"
-		"	BCDF       3  1    Binomial cumulative distribution function for p = A, n = B and x = C\n"
-		"	BEI        1  1    bei (A)\n"
-		"	BER        1  1    ber (A)\n"
-		"	BPDF       3  1    Binomial probability density function for p = A, n = B and x = C\n"
-		"	BITAND     2  1    A & B (bitwise AND operator)\n"
-		"	BITLEFT    2  1    A << B (bitwise left-shift operator)\n"
-		"	BITNOT     1  1    ~A (bitwise NOT operator, i.e., return two's complement)\n"
-		"	BITOR      2  1    A | B (bitwise OR operator)\n"
-		"	BITRIGHT   2  1    A >> B (bitwise right-shift operator)\n"
-		"	BITTEST    2  1    1 if bit B of A is set, else 0 (bitwise TEST operator)\n"
-		"	BITXOR     2  1    A ^ B (bitwise XOR operator)\n"
-		"	CEIL       1  1    ceil (A) (smallest integer >= A)\n"
-		"	CHI2CRIT   2  1    Chi-squared distribution critical value for alpha = A and nu = B\n"
-		"	CHI2CDF    2  1    Chi-squared cumulative distribution function for chi2 = A and nu = B\n"
-		"	CHI2PDF    2  1    Chi-squared probability density function for chi = A and nu = B\n"
-		"	COL        1  1    Places column A on the stack\n"
-		"	COMB       2  1    Combinations n_C_r, with n = A and r = B\n"
-		"	CORRCOEFF  2  1    Correlation coefficient r(A, B)\n"
-		"	COS        1  1    cos (A) (A in radians)\n"
-		"	COSD       1  1    cos (A) (A in degrees)\n"
-		"	COSH       1  1    cosh (A)\n"
-		"	COT        1  1    cot (A) (A in radians)\n"
-		"	COTD       1  1    cot (A) (A in degrees)\n"
-		"	COTH       1  1    coth (A)\n"
-		"	CSC        1  1    csc (A) (A in radians)\n"
-		"	CSCD       1  1    csc (A) (A in degrees)\n"
-		"	CSCH       1  1    csch (A)\n"
-		"	PCDF       2  1    Poisson cumulative distribution function for x = A and lambda = B\n"
-		"	DDT        1  1    d(A)/dt Central 1st derivative\n"
-		"	D2DT2      1  1    d^2(A)/dt^2 2nd derivative\n"
-		"	D2R        1  1    Converts Degrees to Radians\n"
-		"	DENAN      2  1    Replace NaNs in A with values from B\n"
-		"	DILOG      1  1    dilog (A)\n"
-		"	DIFF       1  1    Difference (forward) between adjacent elements of A (A[1]-A[0], A[2]-A[1], ..., NaN)\n"
-		"	DIV        2  1    A / B\n"
-		"	DUP        1  2    Places duplicate of A on the stack\n"
-		"	ECDF       2  1    Exponential cumulative distribution function for x = A and lambda = B\n"
-		"	ECRIT      2  1    Exponential distribution critical value for alpha = A and lambda = B\n"
-		"	EPDF       2  1    Exponential probability density function for x = A and lambda = B\n"
-		"	ERF        1  1    Error function erf (A)\n"
-		"	ERFC       1  1    Complementary Error function erfc (A)\n"
-		"	ERFINV     1  1    Inverse error function of A\n"
-		"	EQ         2  1    1 if A == B, else 0\n"
-		"	EXCH       2  2    Exchanges A and B on the stack\n"
-		"	EXP        1  1    exp (A)\n"
-		"	FACT       1  1    A! (A factorial)\n"
-		"	FCRIT      3  1    F distribution critical value for alpha = A, nu1 = B, and nu2 = C\n"
-		"	FCDF       3  1    F cumulative distribution function for F = A, nu1 = B, and nu2 = C\n"
-		"	FLIPUD     1  1    Reverse order of each column\n"
-		"	FLOOR      1  1    floor (A) (greatest integer <= A)\n"
-		"	FMOD       2  1    A % B (remainder after truncated division)\n"
-		"	FPDF       3  1    F probability density distribution for F = A, nu1 = B and nu2 = C\n"
-		"	GE         2  1    1 if A >= B, else 0\n"
-		"	GT         2  1    1 if A > B, else 0\n"
-		"	HSV2LAB    3  3    Convert hsv to lab, with h = A, s = B and v = C\n"
-		"	HSV2RGB    3  3    Convert hsv to rgb, with h = A, s = B and v = C\n"
-		"	HSV2XYZ    3  3    Convert hsv to xyz, with h = A, s = B and v = C\n"
-		"	HYPOT      2  1    hypot (A, B) = sqrt (A*A + B*B)\n"
-		"	I0         1  1    Modified Bessel function of A (1st kind, order 0)\n"
-		"	I1         1  1    Modified Bessel function of A (1st kind, order 1)\n"
-		"	IFELSE     3  1    B if A != 0, else C\n"
-		"	IN         2  1    Modified Bessel function of A (1st kind, order B)\n"
-		"	INRANGE    3  1    1 if B <= A <= C, else 0\n"
-		"	INT        1  1    Numerically integrate A\n"
-		"	INV        1  1    1 / A\n"
-		"	ISFINITE   1  1    1 if A is finite, else 0\n"
-		"	ISNAN      1  1    1 if A == NaN, else 0\n"
-		"	J0         1  1    Bessel function of A (1st kind, order 0)\n"
-		"	J1         1  1    Bessel function of A (1st kind, order 1)\n"
-		"	JN         2  1    Bessel function of A (1st kind, order B)\n"
-		"	K0         1  1    Modified Kelvin function of A (2nd kind, order 0)\n"
-		"	K1         1  1    Modified Bessel function of A (2nd kind, order 1)\n"
-		"	KN         2  1    Modified Bessel function of A (2nd kind, order B)\n"
-		"	KEI        1  1    kei (A)\n"
-		"	KER        1  1    ker (A)\n"
-		"	KURT       1  1    Kurtosis of A\n"
-		"	LAB2HSV    3  3    Convert lab to hsv, with l = A, a = B and b = C\n"
-		"	LAB2RGB    3  3    Convert lab to rgb, with l = A, a = B and b = C\n"
-		"	LAB2XYZ    3  3    Convert lab to xyz, with l = A, a = B and b = C\n"
-		"	LCDF       1  1    Laplace cumulative distribution function for z = A\n"
-		"	LCRIT      1  1    Laplace distribution critical value for alpha = A\n"
-		"	LE         2  1    1 if A <= B, else 0\n"
-		"	LMSSCL     1  1    LMS scale estimate (LMS STD) of A\n"
-		"	LMSSCLW    1  1    Weighted LMS scale estimate (LMS STD) of A for weights in B\n"
-		"	LOG        1  1    log (A) (natural log)\n"
-		"	LOG10      1  1    log10 (A) (base 10)\n"
-		"	LOG1P      1  1    log (1+A) (accurate for small A)\n"
-		"	LOG2       1  1    log2 (A) (base 2)\n"
-		"	LOWER      1  1    The lowest (minimum) value of A\n"
-		"	LPDF       1  1    Laplace probability density function for z = A\n"
-		"	LRAND      2  1    Laplace random noise with mean A and std. deviation B\n"
-		"	LSQFIT     1  0    Current table is [A | b]; return LS solution to A * x = b via Cholesky decomposition\n"
-		"	LT         2  1    1 if A < B, else 0\n"
-		"	MAD        1  1    Median Absolute Deviation (L1 STD) of A\n"
-		"	MADW       2  1    Weighted Median Absolute Deviation (L1 STD) of A for weights in B\n"
-		"	MAX        2  1    Maximum of A and B\n"
-		"	MEAN       1  1    Mean value of A\n"
-		"	MEANW      2  1    Weighted mean value of A for weights in B\n"
-		"	MEDIAN     1  1    Median value of A\n"
-		"	MEDIANW    2  1    Weighted median value of A for weights in B\n"
-		"	MIN        2  1    Minimum of A and B\n"
-		"	MOD        2  1    A mod B (remainder after floored division)\n"
-		"	MODE       1  1    Mode value (Least Median of Squares) of A\n"
-		"	MODEW      2  1    Weighted mode value of A for weights in B\n"
-		"	MUL        2  1    A * B\n"
-		"	NAN        2  1    NaN if A == B, else A\n"
-		"	NEG        1  1    -A\n"
-		"	NEQ        2  1    1 if A != B, else 0\n"
-		"	NORM       1  1    Normalize (A) so max(A)-min(A) = 1\n"
-		"	NOT        1  1    NaN if A == NaN, 1 if A == 0, else 0\n"
-		"	NRAND      2  1    Normal, random values with mean A and std. deviation B\n"
-		"	OR         2  1    NaN if B == NaN, else A\n"
-		"	PERM       2  1    Permutations n_P_r, with n = A and r = B\n"
-		"	PLM        3  1    Associated Legendre polynomial P(A) degree B order C\n"
-		"	PLMg       3  1    Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)\n"
-		"	POP        1  0    Delete top element from the stack\n"
-		"	POW        2  1    A ^ B\n"
-		"	PPDF       2  1    Poisson probability density function for x = A and lambda = B\n"
-		"	PQUANT     2  1    The B'th Quantile (0-100%) of A\n"
-		"	PQUANTW    3  1    The C'th Quantile (0-100%) of A for weights in B\n"
-		"	PSI        1  1    Psi (or Digamma) of A\n"
-		"	PV         3  1    Legendre function Pv(A) of degree v = real(B) + imag(C)\n"
-		"	QV         3  1    Legendre function Qv(A) of degree v = real(B) + imag(C)\n"
-		"	R2         2  1    R2 = A^2 + B^2\n"
-		"	R2D        1  1    Convert Radians to Degrees\n"
-		"	RAND       2  1    Uniform random values between A and B\n"
-		"	RCDF       1  1    Rayleigh cumulative distribution function for z = A\n"
-		"	RCRIT      1  1    Rayleigh distribution critical value for alpha = A\n"
-		"	RGB2HSV    3  3    Convert rgb to hsv, with r = A, g = B and b = C\n"
-		"	RGB2LAB    3  3    Convert rgb to lab, with r = A, g = B and b = C\n"
-		"	RGB2XYZ    3  3    Convert rgb to xyz, with r = A, g = B and b = C\n"
-		"	RPDF       1  1    Rayleigh probability density function for z = A\n"
-		"	RINT       1  1    rint (A) (round to integral value nearest to A)\n"
-		"	RMS        1  1    Root-mean-square of A\n"
-		"	RMSW       2  1    Weighted Root-mean-square of A for weights in B\n"
-		"	ROLL       2  0    Cyclicly shifts the top A stack items by an amount B\n"
-		"	ROTT       2  1    Rotate A by the (constant) shift B in the t-direction\n"
-		"	SEC        1  1    sec (A) (A in radians)\n"
-		"	SECD       1  1    sec (A) (A in degrees)\n"
-		"	SECH       1  1    sech (A)\n"
-		"	SIGN       1  1    sign (+1 or -1) of A\n"
-		"	SIN        1  1    sin (A) (A in radians)\n"
-		"	SINC       1  1    sinc (A) (sin (pi*A)/(pi*A))\n"
-		"	SIND       1  1    sin (A) (A in degrees)\n"
-		"	SINH       1  1    sinh (A)\n"
-		"	SKEW       1  1    Skewness of A\n"
-		"	SORT       3  1    Sort all columns in stack based on column A in direction of B (-1 descending |+1 ascending)\n"
-		"	SQR        1  1    A^2\n"
-		"	SQRT       1  1    sqrt (A)\n"
-		"	STD        1  1    Standard deviation of A\n"
-		"	STDW       2  1    Weighted standard deviation of A for weights in B\n"
-		"	STEP       1  1    Heaviside step function H(A)\n"
-		"	STEPT      1  1    Heaviside step function H(t-A)\n"
-		"	SUB        2  1    A - B\n"
-		"	SUM        1  1    Cumulative sum of A\n"
-		"	SVDFIT     1  0    Current table is [A | b]; return LS solution to A * x = B via SVD decomposition (see -E)\n"
-		"	TAN        1  1    tan (A) (A in radians)\n"
-		"	TAND       1  1    tan (A) (A in degrees)\n"
-		"	TANH       1  1    tanh (A)\n"
-		"	TAPER      1  1    Unit weights cosine-tapered to zero within A of end margins\n"
-		"	TCDF       2  1    Student's t cumulative distribution function for t = A and nu = B\n"
-		"	TN         2  1    Chebyshev polynomial Tn(-1<A<+1) of degree B\n"
-		"	TPDF       2  1    Student's t probability density function for t = A and nu = B\n"
-		"	TCRIT      2  1    Student's t distribution critical value for alpha = A and nu = B\n"
-		"	UPPER      1  1    The highest (maximum) value of A\n"
-		"	VAR        1  1    Variance of A\n"
-		"	VARW       2  1    Weighted variance of A for weights in B\n"
-		"	WCDF       3  1    Weibull cumulative distribution function for x = A, scale = B, and shape = C\n"
-		"	WCRIT      3  1    Weibull distribution critical value for alpha = A, scale = B, and shape = C\n"
-		"	WPDF       3  1    Weibull probability density function for x = A, scale = B and shape = C\n"
-		"	XOR        2  1    B if A == NaN, else A\n"
-		"	XYZ2HSV    3  3    Convert xyz to hsv, with x = A, y = B and z = C\n"
-		"	XYZ2LAB    3  3    Convert xyz to lab, with x = A, y = B and z = C\n"
-		"	XYZ2RGB    3  3    Convert xyz to rgb, with x = A, y = B and z = C\n"
-		"	Y0         1  1    Bessel function of A (2nd kind, order 0)\n"
-		"	Y1         1  1    Bessel function of A (2nd kind, order 1)\n"
-		"	YN         2  1    Bessel function of A (2nd kind, order B)\n"
-		"	ZCRIT      1  1    Normal distribution critical value for alpha = A\n"
-		"	ZCDF       1  1    Normal cumulative distribution function for z = A\n"
-		"	ZPDF       1  1    Normal probability density function for z = A\n"
-		"	ROOTS      2  1    Treats col A as f(t) = 0 and returns its roots\n");
-	GMT_Message (API, GMT_TIME_NONE,
-		"\n\tThe special symbols are:\n\n"
-		"\tPI                  = 3.1415926...\n"
-		"\tE                   = 2.7182818...\n"
-		"\tEULER               = 0.5772156...\n"
-		"\tPHI (golden ratio)  = 1.6180339...\n"
-		"\tF_EPS (single eps)  = 1.192092896e-07\n"
-		"\tD_EPS (double eps)  = 2.2204460492503131e-16\n"
-		"\tTMIN, TMAX, TRANGE, or TINC = the corresponding constant.\n"
-		"\tN                   = number of records.\n"
-		"\tT                   = table with t-coordinates.\n"
-		"\tTNORM               = table with normalized [-1 to +1] t-coordinates.\n"
-		"\tTROW                = table with row numbers 0, 1, ..., N-1.\n"
-		"\n\tUse macros for frequently used long expressions; see the gmtmath man page.\n"
-		"\tStore stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.\n"
-		"\n\tOPTIONS:\n\n"
-		"\t-A Set up and solve a linear system A x = b, and return vector x.\n"
-		"\t   Requires -N and initializes extended matrix [A | b] from <ftable> holding t and f(t) only.\n"
-		"\t   t goes into column <t_col> while f(t) goes into column <n_col> - 1 (i.e., r.h.s. vector b).\n"
-		"\t   No additional data files are read.  Output will be a single column with coefficients.\n"
-		"\t   Append +r to only place f(t) in b and leave A initialized to zeros.\n"
-		"\t   Append +w if 3rd column contains weights and +s if 3rd column contains 1-sigmas.\n"
-		"\t   Append +e to evaluate solution and write t, f(t), the solution, residuals[, weight|sigma].\n"
-		"\t   Use either LSQFIT or SVDFIT to solve the [weighted] linear system.\n"
-		"\t-C Change which columns to operate on [Default is all except time].\n"
-		"\t   -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.\n"
-		"\t-E Set minimum eigenvalue used by LSQFIT and SVDFIT [1e-7].\n"
-		"\t-I Reverse the output sequence into descending order [ascending].\n"
-		"\t-L Apply operators on a per-segment basis [cumulates operations across file].\n"
-		"\t-N Set the number of columns and optionally the id of the time column (0 is first) [2/0].\n"
-		"\t   If input files are given, -N will add extra columns initialized to zero, if needed.\n"
-		"\t-Q Quick scalar calculator (Shorthand for -Ca -N1/0 -T0/0/1).\n"
-		"\t   Allows constants to have plot units (i.e., %s); if so the answer is converted using PROJ_LENGTH_UNIT.\n"
-		"\t-S Only write first row upon completion of calculations [write all rows].\n"
-		"\t   Optionally, append l for last row or f for first row [Default].\n"
-		"\t-T Set domain from <min> to <max> in steps of <inc>. Append +n to <inc> if number of points was given instead.\n"
-		"\t   Alternatively, append +i to indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).\n"
-		"\t   Append +b for log2 spacing in <inc> and +l for log10 spacing via <inc> = 1,2,3.\n"
-		"\t   Alternatively, give a file with output times in the first column, or a comma-separated list.\n"
-		"\t   If no domain is given we assume no time, i.e., only data columns are present.\n"
-		"\t   This choice also implies -Ca.\n", GMT_DIM_UNITS_DISPLAY);
-	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,o,q,s,.");
+		"     Name     #args  Returns\n"
+		"     -----------------------\n");
+	GMT_Message (API, GMT_TIME_NONE, "     ABS        1 1  ");	GMT_Usage (API, -21, "abs (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACOS       1 1  ");	GMT_Usage (API, -21, "acos (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACOSH      1 1  ");	GMT_Usage (API, -21, "acosh (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACOT       1 1  ");	GMT_Usage (API, -21, "acot (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACOTH      1 1  ");	GMT_Usage (API, -21, "acoth (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACSC       1 1  ");	GMT_Usage (API, -21, "acsc (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ACSCH      1 1  ");	GMT_Usage (API, -21, "acsch (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ADD        2 1  ");	GMT_Usage (API, -21, "A + B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     AND        2 1  ");	GMT_Usage (API, -21, "B if A == NaN, else A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ASEC       1 1  ");	GMT_Usage (API, -21, "asec (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ASECH      1 1  ");	GMT_Usage (API, -21, "asech (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ASIN       1 1  ");	GMT_Usage (API, -21, "asin (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ASINH      1 1  ");	GMT_Usage (API, -21, "asinh (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ATAN       1 1  ");	GMT_Usage (API, -21, "atan (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ATAN2      2 1  ");	GMT_Usage (API, -21, "atan2 (A, B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ATANH      1 1  ");	GMT_Usage (API, -21, "atanh (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BCDF       3 1  ");	GMT_Usage (API, -21, "Binomial cumulative distribution function for p = A, n = B and x = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BEI        1 1  ");	GMT_Usage (API, -21, "Kelvin function bei (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BER        1 1  ");	GMT_Usage (API, -21, "Kelvin function ber (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BPDF       3 1  ");	GMT_Usage (API, -21, "Binomial probability density function for p = A, n = B and x = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BITAND     2 1  ");	GMT_Usage (API, -21, "A & B (bitwise AND operator)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BITLEFT    2 1  ");	GMT_Usage (API, -21, "A << B (bitwise left-shift operator)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BITNOT     1 1  ");	GMT_Usage (API, -21, "~A (bitwise NOT operator, i.e., return two's complement)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BITOR      2 1  ");	GMT_Usage (API, -21, "A | B (bitwise OR operator)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BITRIGHT   2 1  ");	GMT_Usage (API, -21, "A >> B (bitwise right-shift operator)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BITTEST    2 1  ");	GMT_Usage (API, -21, "1 if bit B of A is set, else 0 (bitwise TEST operator)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     BITXOR     2 1  ");	GMT_Usage (API, -21, "A ^ B (bitwise XOR operator)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     CEIL       1 1  ");	GMT_Usage (API, -21, "ceil (A) (smallest integer >= A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     CHI2CRIT   2 1  ");	GMT_Usage (API, -21, "Chi-squared distribution critical value for alpha = A and nu = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     CHI2CDF    2 1  ");	GMT_Usage (API, -21, "Chi-squared cumulative distribution function for chi2 = A and nu = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     CHI2PDF    2 1  ");	GMT_Usage (API, -21, "Chi-squared probability density function for chi = A and nu = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     COL        1 1  ");	GMT_Usage (API, -21, "Places column A on the stack"); 
+	GMT_Message (API, GMT_TIME_NONE, "     COMB       2 1  ");	GMT_Usage (API, -21, "Combinations n_C_r, with n = A and r = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     CORRCOEFF  2 1  ");	GMT_Usage (API, -21, "Correlation coefficient r(A, B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     COS        1 1  ");	GMT_Usage (API, -21, "cos (A) (A in radians)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     COSD       1 1  ");	GMT_Usage (API, -21, "cos (A) (A in degrees)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     COSH       1 1  ");	GMT_Usage (API, -21, "cosh (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     COT        1 1  ");	GMT_Usage (API, -21, "cot (A) (A in radians)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     COTD       1 1  ");	GMT_Usage (API, -21, "cot (A) (A in degrees)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     COTH       1 1  ");	GMT_Usage (API, -21, "coth (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     CSC        1 1  ");	GMT_Usage (API, -21, "csc (A) (A in radians)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     CSCD       1 1  ");	GMT_Usage (API, -21, "csc (A) (A in degrees)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     CSCH       1 1  ");	GMT_Usage (API, -21, "csch (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PCDF       2 1  ");	GMT_Usage (API, -21, "Poisson cumulative distribution function for x = A and lambda = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     DDT        1 1  ");	GMT_Usage (API, -21, "d(A)/dt Central 1st derivative"); 
+	GMT_Message (API, GMT_TIME_NONE, "     D2DT2      1 1  ");	GMT_Usage (API, -21, "d^2(A)/dt^2 2nd derivative"); 
+	GMT_Message (API, GMT_TIME_NONE, "     D2R        1 1  ");	GMT_Usage (API, -21, "Converts Degrees to Radians"); 
+	GMT_Message (API, GMT_TIME_NONE, "     DENAN      2 1  ");	GMT_Usage (API, -21, "Replace NaNs in A with values from B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     DILOG      1 1  ");	GMT_Usage (API, -21, "dilog (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     DIFF       1 1  ");	GMT_Usage (API, -21, "Forward difference between elements of A (A[1]-A[0], A[2]-A[1], ..., NaN)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     DIV        2 1  ");	GMT_Usage (API, -21, "A / B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     DUP        1 2  ");	GMT_Usage (API, -21, "Places duplicate of A on the stack"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ECDF       2 1  ");	GMT_Usage (API, -21, "Exponential cumulative distribution function for x = A and lambda = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ECRIT      2 1  ");	GMT_Usage (API, -21, "Exponential distribution critical value for alpha = A and lambda = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     EPDF       2 1  ");	GMT_Usage (API, -21, "Exponential probability density function for x = A and lambda = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ERF        1 1  ");	GMT_Usage (API, -21, "Error function erf (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ERFC       1 1  ");	GMT_Usage (API, -21, "Complementary Error function erfc (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ERFINV     1 1  ");	GMT_Usage (API, -21, "Inverse error function of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     EQ         2 1  ");	GMT_Usage (API, -21, "1 if A == B, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     EXCH       2 2  ");	GMT_Usage (API, -21, "Exchanges A and B on the stack"); 
+	GMT_Message (API, GMT_TIME_NONE, "     EXP        1 1  ");	GMT_Usage (API, -21, "exp (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     FACT       1 1  ");	GMT_Usage (API, -21, "A! (A factorial)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     FCRIT      3 1  ");	GMT_Usage (API, -21, "F distribution critical value for alpha = A, nu1 = B, and nu2 = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     FCDF       3 1  ");	GMT_Usage (API, -21, "F cumulative distribution function for F = A, nu1 = B, and nu2 = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     FLIPUD     1 1  ");	GMT_Usage (API, -21, "Reverse order of each column"); 
+	GMT_Message (API, GMT_TIME_NONE, "     FLOOR      1 1  ");	GMT_Usage (API, -21, "floor (A) (greatest integer <= A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     FMOD       2 1  ");	GMT_Usage (API, -21, "A % B (remainder after truncated division)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     FPDF       3 1  ");	GMT_Usage (API, -21, "F probability density distribution for F = A, nu1 = B and nu2 = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     GE         2 1  ");	GMT_Usage (API, -21, "1 if A >= B, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     GT         2 1  ");	GMT_Usage (API, -21, "1 if A > B, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     HSV2LAB    3 3  ");	GMT_Usage (API, -21, "Convert hsv to lab, with h = A, s = B and v = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     HSV2RGB    3 3  ");	GMT_Usage (API, -21, "Convert hsv to rgb, with h = A, s = B and v = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     HSV2XYZ    3 3  ");	GMT_Usage (API, -21, "Convert hsv to xyz, with h = A, s = B and v = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     HYPOT      2 1  ");	GMT_Usage (API, -21, "hypot (A, B) = sqrt (A*A + B*B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     I0         1 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (1st kind, order 0)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     I1         1 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (1st kind, order 1)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     IFELSE     3 1  ");	GMT_Usage (API, -21, "B if A != 0, else C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     IN         2 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (1st kind, order B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     INRANGE    3 1  ");	GMT_Usage (API, -21, "1 if B <= A <= C, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     INT        1 1  ");	GMT_Usage (API, -21, "Numerically integrate A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     INV        1 1  ");	GMT_Usage (API, -21, "1 / A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ISFINITE   1 1  ");	GMT_Usage (API, -21, "1 if A is finite, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ISNAN      1 1  ");	GMT_Usage (API, -21, "1 if A == NaN, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     J0         1 1  ");	GMT_Usage (API, -21, "Bessel function of A (1st kind, order 0)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     J1         1 1  ");	GMT_Usage (API, -21, "Bessel function of A (1st kind, order 1)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     JN         2 1  ");	GMT_Usage (API, -21, "Bessel function of A (1st kind, order B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     K0         1 1  ");	GMT_Usage (API, -21, "Modified Kelvin function of A (2nd kind, order 0)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     K1         1 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (2nd kind, order 1)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     KN         2 1  ");	GMT_Usage (API, -21, "Modified Bessel function of A (2nd kind, order B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     KEI        1 1  ");	GMT_Usage (API, -21, "Kelvin function kei (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     KER        1 1  ");	GMT_Usage (API, -21, "Kelvin function ker (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     KURT       1 1  ");	GMT_Usage (API, -21, "Kurtosis of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LAB2HSV    3 3  ");	GMT_Usage (API, -21, "Convert lab to hsv, with l = A, a = B and b = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LAB2RGB    3 3  ");	GMT_Usage (API, -21, "Convert lab to rgb, with l = A, a = B and b = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LAB2XYZ    3 3  ");	GMT_Usage (API, -21, "Convert lab to xyz, with l = A, a = B and b = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LCDF       1 1  ");	GMT_Usage (API, -21, "Laplace cumulative distribution function for z = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LCRIT      1 1  ");	GMT_Usage (API, -21, "Laplace distribution critical value for alpha = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LE         2 1  ");	GMT_Usage (API, -21, "1 if A <= B, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LMSSCL     1 1  ");	GMT_Usage (API, -21, "LMS scale estimate (LMS STD) of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LMSSCLW    1 1  ");	GMT_Usage (API, -21, "Weighted LMS scale estimate (LMS STD) of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LOG        1 1  ");	GMT_Usage (API, -21, "log (A) (natural log)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LOG10      1 1  ");	GMT_Usage (API, -21, "log10 (A) (base 10)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LOG1P      1 1  ");	GMT_Usage (API, -21, "log (1+A) (accurate for small A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LOG2       1 1  ");	GMT_Usage (API, -21, "log2 (A) (base 2)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LOWER      1 1  ");	GMT_Usage (API, -21, "The lowest (minimum) value of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LPDF       1 1  ");	GMT_Usage (API, -21, "Laplace probability density function for z = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LRAND      2 1  ");	GMT_Usage (API, -21, "Laplace random noise with mean A and std. deviation B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LSQFIT     1 0  ");	GMT_Usage (API, -21, "Current stack is [A | b]; Solve A * x = b via Cholesky decomposition"); 
+	GMT_Message (API, GMT_TIME_NONE, "     LT         2 1  ");	GMT_Usage (API, -21, "1 if A < B, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MAD        1 1  ");	GMT_Usage (API, -21, "Median Absolute Deviation (L1 STD) of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MADW       2 1  ");	GMT_Usage (API, -21, "Weighted Median Absolute Deviation (L1 STD) of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MAX        2 1  ");	GMT_Usage (API, -21, "Maximum of A and B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MEAN       1 1  ");	GMT_Usage (API, -21, "Mean value of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MEANW      2 1  ");	GMT_Usage (API, -21, "Weighted mean value of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MEDIAN     1 1  ");	GMT_Usage (API, -21, "Median value of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MEDIANW    2 1  ");	GMT_Usage (API, -21, "Weighted median value of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MIN        2 1  ");	GMT_Usage (API, -21, "Minimum of A and B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MOD        2 1  ");	GMT_Usage (API, -21, "A mod B (remainder after floored division)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MODE       1 1  ");	GMT_Usage (API, -21, "Mode value (Least Median of Squares) of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MODEW      2 1  ");	GMT_Usage (API, -21, "Weighted mode value of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     MUL        2 1  ");	GMT_Usage (API, -21, "A * B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     NAN        2 1  ");	GMT_Usage (API, -21, "NaN if A == B, else A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     NEG        1 1  ");	GMT_Usage (API, -21, "-A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     NEQ        2 1  ");	GMT_Usage (API, -21, "1 if A != B, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     NORM       1 1  ");	GMT_Usage (API, -21, "Normalize (A) so max(A)-min(A) = 1"); 
+	GMT_Message (API, GMT_TIME_NONE, "     NOT        1 1  ");	GMT_Usage (API, -21, "NaN if A == NaN, 1 if A == 0, else 0"); 
+	GMT_Message (API, GMT_TIME_NONE, "     NRAND      2 1  ");	GMT_Usage (API, -21, "Normal, random values with mean A and std. deviation B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     OR         2 1  ");	GMT_Usage (API, -21, "NaN if B == NaN, else A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PERM       2 1  ");	GMT_Usage (API, -21, "Permutations n_P_r, with n = A and r = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PLM        3 1  ");	GMT_Usage (API, -21, "Associated Legendre polynomial P(A) degree B order C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PLMg       3 1  ");	GMT_Usage (API, -21, "Normalized associated Legendre polynomial P(A) degree B order C (geophysical convention)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     POP        1 0  ");	GMT_Usage (API, -21, "Delete top element from the stack"); 
+	GMT_Message (API, GMT_TIME_NONE, "     POW        2 1  ");	GMT_Usage (API, -21, "A ^ B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PPDF       2 1  ");	GMT_Usage (API, -21, "Poisson probability density function for x = A and lambda = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PQUANT     2 1  ");	GMT_Usage (API, -21, "The B'th Quantile (0-100%) of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PQUANTW    3 1  ");	GMT_Usage (API, -21, "The C'th Quantile (0-100%) of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PSI        1 1  ");	GMT_Usage (API, -21, "Psi (or Digamma) of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     PV         3 1  ");	GMT_Usage (API, -21, "Legendre function Pv(A) of degree v = real(B) + imag(C)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     QV         3 1  ");	GMT_Usage (API, -21, "Legendre function Qv(A) of degree v = real(B) + imag(C)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     R2         2 1  ");	GMT_Usage (API, -21, "R2 = A^2 + B^2"); 
+	GMT_Message (API, GMT_TIME_NONE, "     R2D        1 1  ");	GMT_Usage (API, -21, "Convert Radians to Degrees"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RAND       2 1  ");	GMT_Usage (API, -21, "Uniform random values between A and B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RCDF       1 1  ");	GMT_Usage (API, -21, "Rayleigh cumulative distribution function for z = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RCRIT      1 1  ");	GMT_Usage (API, -21, "Rayleigh distribution critical value for alpha = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RGB2HSV    3 3  ");	GMT_Usage (API, -21, "Convert rgb to hsv, with r = A, g = B and b = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RGB2LAB    3 3  ");	GMT_Usage (API, -21, "Convert rgb to lab, with r = A, g = B and b = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RGB2XYZ    3 3  ");	GMT_Usage (API, -21, "Convert rgb to xyz, with r = A, g = B and b = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RPDF       1 1  ");	GMT_Usage (API, -21, "Rayleigh probability density function for z = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RINT       1 1  ");	GMT_Usage (API, -21, "rint (A) (round to integral value nearest to A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RMS        1 1  ");	GMT_Usage (API, -21, "Root-mean-square of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     RMSW       2 1  ");	GMT_Usage (API, -21, "Weighted Root-mean-square of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ROLL       2 0  ");	GMT_Usage (API, -21, "Cyclicly shifts the top A stack items by an amount B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ROTT       2 1  ");	GMT_Usage (API, -21, "Rotate A by the (constant) shift B in the t-direction"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SEC        1 1  ");	GMT_Usage (API, -21, "sec (A) (A in radians)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SECD       1 1  ");	GMT_Usage (API, -21, "sec (A) (A in degrees)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SECH       1 1  ");	GMT_Usage (API, -21, "sech (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SIGN       1 1  ");	GMT_Usage (API, -21, "sign (+1 or -1) of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SIN        1 1  ");	GMT_Usage (API, -21, "sin (A) (A in radians)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SINC       1 1  ");	GMT_Usage (API, -21, "sinc (A) (sin (pi*A)/(pi*A))"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SIND       1 1  ");	GMT_Usage (API, -21, "sin (A) (A in degrees)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SINH       1 1  ");	GMT_Usage (API, -21, "sinh (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SKEW       1 1  ");	GMT_Usage (API, -21, "Skewness of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SORT       3 1  ");	GMT_Usage (API, -21, "Sort all columns based on column A in direction of B (-1 descending |+1 ascending)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SQR        1 1  ");	GMT_Usage (API, -21, "A^2"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SQRT       1 1  ");	GMT_Usage (API, -21, "sqrt (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     STD        1 1  ");	GMT_Usage (API, -21, "Standard deviation of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     STDW       2 1  ");	GMT_Usage (API, -21, "Weighted standard deviation of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     STEP       1 1  ");	GMT_Usage (API, -21, "Heaviside step function H(A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     STEPT      1 1  ");	GMT_Usage (API, -21, "Heaviside step function H(t-A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SUB        2 1  ");	GMT_Usage (API, -21, "A - B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SUM        1 1  ");	GMT_Usage (API, -21, "Cumulative sum of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     SVDFIT     1 0  ");	GMT_Usage (API, -21, "Current stack is [A | b]; solve A * x = B via SVD decomposition (see -E)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     TAN        1 1  ");	GMT_Usage (API, -21, "tan (A) (A in radians)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     TAND       1 1  ");	GMT_Usage (API, -21, "tan (A) (A in degrees)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     TANH       1 1  ");	GMT_Usage (API, -21, "tanh (A)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     TAPER      1 1  ");	GMT_Usage (API, -21, "Unit weights cosine-tapered to zero within A of end margins"); 
+	GMT_Message (API, GMT_TIME_NONE, "     TCDF       2 1  ");	GMT_Usage (API, -21, "Student's t cumulative distribution function for t = A and nu = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     TN         2 1  ");	GMT_Usage (API, -21, "Chebyshev polynomial Tn(-1<A<+1) of degree B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     TPDF       2 1  ");	GMT_Usage (API, -21, "Student's t probability density function for t = A and nu = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     TCRIT      2 1  ");	GMT_Usage (API, -21, "Student's t distribution critical value for alpha = A and nu = B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     UPPER      1 1  ");	GMT_Usage (API, -21, "The highest (maximum) value of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     VAR        1 1  ");	GMT_Usage (API, -21, "Variance of A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     VARW       2 1  ");	GMT_Usage (API, -21, "Weighted variance of A for weights in B"); 
+	GMT_Message (API, GMT_TIME_NONE, "     VPDF       3 1  ");	GMT_Usage (API, -21, "Von Mises probability density function for angles = A, mu = B, and kappa = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     WCDF       3 1  ");	GMT_Usage (API, -21, "Weibull cumulative distribution function for x = A, scale = B, and shape = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     WCRIT      3 1  ");	GMT_Usage (API, -21, "Weibull distribution critical value for alpha = A, scale = B, and shape = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     WPDF       3 1  ");	GMT_Usage (API, -21, "Weibull probability density function for x = A, scale = B and shape = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     XOR        2 1  ");	GMT_Usage (API, -21, "B if A == NaN, else A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     XYZ2HSV    3 3  ");	GMT_Usage (API, -21, "Convert xyz to hsv, with x = A, y = B and z = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     XYZ2LAB    3 3  ");	GMT_Usage (API, -21, "Convert xyz to lab, with x = A, y = B and z = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     XYZ2RGB    3 3  ");	GMT_Usage (API, -21, "Convert xyz to rgb, with x = A, y = B and z = C"); 
+	GMT_Message (API, GMT_TIME_NONE, "     Y0         1 1  ");	GMT_Usage (API, -21, "Bessel function of A (2nd kind, order 0)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     Y1         1 1  ");	GMT_Usage (API, -21, "Bessel function of A (2nd kind, order 1)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     YN         2 1  ");	GMT_Usage (API, -21, "Bessel function of A (2nd kind, order B)"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ZCRIT      1 1  ");	GMT_Usage (API, -21, "Normal distribution critical value for alpha = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ZCDF       1 1  ");	GMT_Usage (API, -21, "Normal cumulative distribution function for z = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ZPDF       1 1  ");	GMT_Usage (API, -21, "Normal probability density function for z = A"); 
+	GMT_Message (API, GMT_TIME_NONE, "     ROOTS      2 1  ");	GMT_Usage (API, -21, "Treat col A as f(t) = 0 and returns its roots");
+	
+	GMT_Usage (API, -2, "\nThe special symbols are:\n");
+	GMT_Message (API, GMT_TIME_NONE, "     PI                 = "); GMT_Usage (API, -26, "3.1415926...");
+	GMT_Message (API, GMT_TIME_NONE, "     E                  = "); GMT_Usage (API, -26, "2.7182818...");
+	GMT_Message (API, GMT_TIME_NONE, "     EULER              = "); GMT_Usage (API, -26, "0.5772156...");
+	GMT_Message (API, GMT_TIME_NONE, "     PHI (golden ratio) = "); GMT_Usage (API, -26, "1.6180339...");
+	GMT_Message (API, GMT_TIME_NONE, "     F_EPS (single eps) = "); GMT_Usage (API, -26, "1.192092896e-07");
+	GMT_Message (API, GMT_TIME_NONE, "     D_EPS (double eps) = "); GMT_Usage (API, -26, "2.2204460492503131e-16");
+	GMT_Message (API, GMT_TIME_NONE, "     TMIN               = "); GMT_Usage (API, -26, "min \"time\" value set via -T");
+	GMT_Message (API, GMT_TIME_NONE, "     TMAX               = "); GMT_Usage (API, -26, "max \"time\" value set via -T");
+	GMT_Message (API, GMT_TIME_NONE, "     TRANGE             = "); GMT_Usage (API, -26, "range of \"time\" values");
+	GMT_Message (API, GMT_TIME_NONE, "     TINC               = "); GMT_Usage (API, -26, "increment of \"time\" values");
+	GMT_Message (API, GMT_TIME_NONE, "     N                  = "); GMT_Usage (API, -26, "number of records");
+	GMT_Message (API, GMT_TIME_NONE, "     T                  = "); GMT_Usage (API, -26, "table with t-coordinates");
+	GMT_Message (API, GMT_TIME_NONE, "     TNORM              = "); GMT_Usage (API, -26, "table with normalized [-1 to +1] t-coordinates");
+	GMT_Message (API, GMT_TIME_NONE, "     TROW               = "); GMT_Usage (API, -26, "table with row numbers 0, 1, ..., N-1");
+	GMT_Usage (API, -2, "\nUse macros for frequently used long expressions; see the gmtmath man page. "
+		"Store stack to named variable via STO@<label>, recall via [RCL]@<label>, clear via CLR@<label>.");
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<ftable>[+e][+r][+s|w]");
+	GMT_Usage (API, -2, "Set up and solve a linear system A x = b, and return vector x. "
+		"Requires -N and initializes extended matrix [A | b] from <ftable> holding t and f(t) only. "
+		"Vector t goes into column <t_col> while f(t) goes into column <n_col> - 1 (i.e., r.h.s. vector b). "
+		"No additional data files are read.  Output will be a single column with coefficients.");
+	GMT_Usage (API, 3, "+e Evaluate solution and write t, f(t), the solution, residuals[, weight|sigma].");
+	GMT_Usage (API, 3, "+r Only place f(t) in b and leave A initialized to zeros.");
+	GMT_Usage (API, 3, "+s Third column contains 1-sigmas.");
+	GMT_Usage (API, 3, "+w Third column contains weights");
+	GMT_Usage (API, -2, "Use either LSQFIT or SVDFIT to solve the [weighted] linear system.");
+	GMT_Usage (API, 1, "\n-C<cols>");
+	GMT_Usage (API, -2, "Change which columns to operate on [Default is all except time]. "
+		"Plain -C reverts to the default, -Cr toggles current settings, and -Ca selects all columns.");
+	GMT_Usage (API, 1, "\n-E<eigen>");
+	GMT_Usage (API, -2, "Set minimum eigenvalue used by LSQFIT and SVDFIT [1e-7].");
+	GMT_Usage (API, 1, "\n-I Reverse the output sequence into descending order [ascending].");
+	GMT_Usage (API, 1, "\n-L Apply operators on a per-segment basis [accumulates operations across file].");
+	GMT_Usage (API, 1, "\n-N<n_col>[/<t_col>]");
+	GMT_Usage (API, -2, "Set the number of columns and optionally the id of the time column (0 is first) [2/0]. "
+		"If input files are given, -N will add extra columns initialized to zero, if needed.");
+	GMT_Usage (API, 1, "\n-Q[%s|n]", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, -2, "Quick scalar calculator (Shorthand for -Ca -N1/0 -T0/0/1). "
+		"Allows constants to have dimensional units (i.e., %s); if so the answer is converted using PROJ_LENGTH_UNIT. "
+		"Optionally, append another unit or n for no unit conversion on output.", GMT_DIM_UNITS_DISPLAY);
+	GMT_Usage (API, 1, "\n-S[f|l]");
+	GMT_Usage (API, -2, "Only write first row upon completion of calculations [write all rows]. "
+		"Optionally, append l for last row or f for first row [Default].");
+	GMT_Usage (API, 1, "\n-T[<file>|<list>|<min>/<max>/<inc>[+b|i|l|n]]");
+	GMT_Usage (API, -2, "Set domain from <min> to <max> in steps of <inc>. Control setup via modifiers:");
+	GMT_Usage (API, 3, "+b Select log2 spacing in <inc>");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, 3, "+l Select log10 spacing via <inc> = 1,2,3.");
+	GMT_Usage (API, 3, "+n Let <inc> mean the number of points instead. of increment");
+	GMT_Usage (API, -2, "Alternatively, give a <file> with output times in the first column, or a comma-separated <list>. "
+		"If no domain is appended then we assume no time, i.e., only data columns are present. "
+		"This choice implicitly sets -Ca.");
+	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,o,q,s,w,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -769,6 +793,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 			/* Processes program-specific parameters */
 
 			case 'A':	/* y(x) table for LSQFIT/SVDFIT operations */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;	k = 0;
 				if (opt->arg[0] == '-') {	/* Old-style leading hyphen to the filename has been replaced by modifier +r */
 					if (gmt_M_compat_check (GMT, 5)) {
@@ -801,8 +826,10 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					Ctrl->A.file = strdup (&opt->arg[k]);
 				break;
 			case 'C':	/* Processed in the main loop but not here; just skip */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				break;
 			case 'E':	/* Set minimum eigenvalue cutoff */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.eigen = atof (opt->arg);
 				break;
 			case 'F':	/* Now obsolete, using -o instead */
@@ -814,19 +841,29 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'I':	/* Reverse output order */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				break;
 			case 'L':	/* Apply operator per segment basis */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Sets no of columns and optionally the time column [0] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (sscanf (opt->arg, "%" PRIu64 "/%" PRIu64, &Ctrl->N.ncol, &Ctrl->N.tcol) == 1) Ctrl->N.tcol = 0;
 				break;
 			case 'Q':	/* Quick for -Ca -N1/0 -T0/0/1 */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
+				if (opt->arg[0] == 'n')	/* Want no unit conversion on output */
+					Ctrl->Q.unit = GMT_INCH;	/* We do this which will convert from inch to inch, i.e., no change */
+				else if (opt->arg[0] && strchr (GMT_DIM_UNITS, opt->arg[0]))	/* Want a specific unit conversion from inch to this unit on output */
+					Ctrl->Q.unit = gmt_get_dim_unit (GMT, opt->arg[0]);
+					/* else: Default GMT unit on output */
 				break;
 			case 'S':	/* Only want one row (first or last) */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				switch (opt->arg[0]) {
 					case 'f': case 'F': case '\0':
@@ -840,6 +877,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTMATH_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'T':	/* Either get a file with time coordinate or a min/max/dt setting */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				t_arg = opt->arg;
 				break;
@@ -1173,7 +1211,7 @@ GMT_LOCAL int gmtmath_BCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 }
 
 GMT_LOCAL int gmtmath_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
-/*OPERATOR: BEI 1 1 bei (A).  */
+/*OPERATOR: BEI 1 1 Kelvin function bei (A).  */
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -1186,7 +1224,7 @@ GMT_LOCAL int gmtmath_BEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int gmtmath_BER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col) {
-/*OPERATOR: BER 1 1 ber (A).  */
+/*OPERATOR: BER 1 1 Kelvin function ber (A).  */
 	uint64_t s, row;
 	double a = 0.0;
 	struct GMT_DATATABLE *T = S[last]->D->table[0];
@@ -2718,7 +2756,7 @@ GMT_LOCAL int gmtmath_KN (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struc
 }
 
 GMT_LOCAL int gmtmath_KEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: KEI 1 1 kei (A).  */
+/*OPERATOR: KEI 1 1 Kelvin function kei (A).  */
 {
 	uint64_t s, row;
 	double a = 0.0;
@@ -2730,7 +2768,7 @@ GMT_LOCAL int gmtmath_KEI (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, stru
 }
 
 GMT_LOCAL int gmtmath_KER (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
-/*OPERATOR: KER 1 1 ker (A).  */
+/*OPERATOR: KER 1 1 Kelvin function ker (A).  */
 {
 	uint64_t s, row;
 	double a = 0.0;
@@ -3088,7 +3126,7 @@ GMT_LOCAL int gmtmath_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 			wmode = gmt_mode_weighted (GMT, pair, k);
 			/* 3. Compute the absolute deviations from this mode */
 			for (row = 0; row < k; row++) pair[row].value = (gmt_grdfloat)fabs (pair[row].value - wmode);
-			/* 4. Find the weighted median absolue deviation and scale it */
+			/* 4. Find the weighted median absolute deviation and scale it */
 			lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = lmsscl;
 		}
@@ -3101,7 +3139,7 @@ GMT_LOCAL int gmtmath_LMSSCLW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, 
 	wmode = gmt_mode_weighted (GMT, pair, k);
 	/* 3. Compute the absolute deviations from this mode */
 	for (row = 0; row < k; row++) pair[row].value = (gmt_grdfloat)fabs (pair[row].value - wmode);
-	/* 4. Find the weighted median absolue deviation and scale it */
+	/* 4. Find the weighted median absolute deviation and scale it */
 	lmsscl = MAD_NORMALIZE * gmt_median_weighted (GMT, pair, k);
 	gmt_M_free (GMT, pair);
 
@@ -3336,7 +3374,7 @@ GMT_LOCAL int gmtmath_MADW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 			wmed = gmt_median_weighted (GMT, pair, k);
 			/* 3. Compute the absolute deviations from this median */
 			for (row = 0; row < k; row++) pair[row].value = (gmt_grdfloat)fabs (pair[row].value - wmed);
-			/* 4. Find the weighted median absolue deviation */
+			/* 4. Find the weighted median absolute deviation */
 			wmad = gmt_median_weighted (GMT, pair, k);
 			for (row = 0; row < info->T->segment[s]->n_rows; row++) T_prev->segment[s]->data[col][row] = wmad;
 		}
@@ -5201,6 +5239,31 @@ GMT_LOCAL int gmtmath_VARW (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, str
 	return 0;
 }
 
+GMT_LOCAL int gmtmath_VPDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
+/*OPERATOR: VPDF 3 1 Von Mises probability density function for angles = A, mu = B and kappa = C.  */
+{
+	uint64_t s, row;
+	unsigned int prev1 = last - 1, prev2 = last - 2;
+	double x, mu, kappa, q;
+	struct GMT_DATATABLE *T = (S[last]->constant) ? NULL : S[last]->D->table[0], *T_prev1 = (S[prev1]->constant) ? NULL : S[prev1]->D->table[0], *T_prev2 = S[prev2]->D->table[0];
+
+	if (S[last]->constant) {	/* KAPPA is a constant; set once and compute q once for efficiency in avoiding gmt_io calls in the loop */
+		kappa = S[last]->factor;
+		q = 1.0 / (TWO_PI * gmt_i0 (GMT, kappa));
+	}
+	if (S[prev1]->constant) mu = S[prev1]->factor;	/* mu is a constant; set once */
+	for (s = 0; s < info->T->n_segments; s++) for (row = 0; row < info->T->segment[s]->n_rows; row++) {
+		x = (S[prev2]->constant) ? S[prev2]->factor : T_prev2->segment[s]->data[col][row];	/* Angle */
+		if (!S[prev1]->constant) mu = T_prev1->segment[s]->data[col][row];	/* Update mu */
+		if (!S[last]->constant) {	/* Must update kappa and hence q */
+			kappa = T->segment[s]->data[col][row];
+			q = 1.0 / (TWO_PI * gmt_i0 (GMT, kappa));
+		}
+		T_prev2->segment[s]->data[col][row] = q * exp (kappa * cosd (x - mu));
+	}
+	return 0;
+}
+
 GMT_LOCAL int gmtmath_WCDF (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, struct GMTMATH_STACK *S[], unsigned int last, unsigned int col)
 /*OPERATOR: WCDF 3 1 Weibull cumulative distribution function for x = A, scale = B, and shape = C.  */
 {
@@ -5598,7 +5661,7 @@ GMT_LOCAL int gmtmath_ROOTS (struct GMT_CTRL *GMT, struct GMTMATH_INFO *info, st
 
 /* ---------------------- end operator functions --------------------- */
 
-#define GMTMATH_N_OPERATORS 197
+#define GMTMATH_N_OPERATORS 198
 
 GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO *, struct GMTMATH_STACK **S, unsigned int, unsigned int), unsigned int n_args[], unsigned int n_out[]) {
 	/* Operator function	# of operands	# of outputs */
@@ -5800,6 +5863,7 @@ GMT_LOCAL void gmtmath_init (int (*ops[])(struct GMT_CTRL *, struct GMTMATH_INFO
 	ops[194] = gmtmath_XYZ2HSV;	n_args[194] = 3;	n_out[194] = 3;
 	ops[195] = gmtmath_XYZ2LAB;	n_args[195] = 3;	n_out[195] = 3;
 	ops[196] = gmtmath_XYZ2RGB;	n_args[196] = 3;	n_out[196] = 3;
+	ops[197] = gmtmath_VPDF;	n_args[197] = 3;	n_out[197] = 1;
 }
 
 GMT_LOCAL void gmtmath_free_stack (struct GMTAPI_CTRL *API, struct GMTMATH_STACK **stack) {
@@ -6205,6 +6269,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		"XYZ2HSV",	/* id = 194 */
 		"XYZ2LAB",	/* id = 195 */
 		"XYZ2RGB",	/* id = 196 */
+		"VPDF",	/* id = 197 */
 		"" /* last element is intentionally left blank */
 	};
 
@@ -6291,6 +6356,16 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 				/* Read but request IO reset since the file (which may be a memory reference) will be read again later */
 				Return (API->error);
 			}
+			 /* When operating on time (1 column file) the output is no longer abstime unless the user set -fo */
+			if (gmt_get_column_type (GMT, GMT_IN, GMT_X) == GMT_IS_ABSTIME && !GMT->common.f.active[GMT_OUT]) {	/* Special check if detected time in x and no -fo setting */
+				uint64_t col, start_col = (D_in->n_columns == 1) ? GMT_X : GMT_Y;
+				/* Any time columns subject to calculation will be set to relative time */
+				for (col = start_col; col < D_in->n_columns; col++) {
+					if (gmt_get_column_type (GMT, GMT_IN, col) == GMT_IS_ABSTIME)
+						gmt_set_column_type (GMT, GMT_OUT, col, GMT_IS_RELTIME);
+				}
+			}
+
 			got_t_from_file = 1;
 		}
 	}
@@ -6310,12 +6385,12 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 			GMT_Report (API, GMT_MSG_ERROR, "Cannot have data files when -A is specified\n");
 			Return (GMT_RUNTIME_ERROR);
 		}
-		gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -A files */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -A files */
 		if ((A_in = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->A.file, NULL)) == NULL) {
 			GMT_Report (API, GMT_MSG_ERROR, "Failure while reading file %s\n", Ctrl->A.file);
 			Return (API->error);
 		}
-		gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
 		rhs = A_in->table[0];	/* Only one table */
 		if (Ctrl->A.w_mode) {	/* Need at least 3 columns */
 			if (rhs->n_columns < 3) {
@@ -6404,7 +6479,8 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		}
 	}
 	else {	/* Create orderly output */
-		dim[GMT_COL] = 3;	dim[GMT_ROW] = n_rows;
+		dim[GMT_COL] = 3;	/* To store the 3 different flavors of T */
+		dim[GMT_ROW] = n_rows;
 		if ((Time = GMT_Create_Data (API, GMT_IS_DATASET, GMT_IS_NONE, 0, dim, NULL, NULL, 0, 0, NULL)) == NULL) Return (GMT_MEMORY_ERROR);
 		info.T = Time->table[0];
         	info.T->segment[0]->n_rows = n_rows;
@@ -6466,7 +6542,11 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (strchr (SPECIFIC_OPTIONS THIS_MODULE_OPTIONS GMT_OPT("F"), opt->option)) continue;
 		if (opt->option == 'C') {	/* Change affected columns */
 			no_C = false;
-			if (gmtmath_decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) touched_t_col = true;
+			if (gmtmath_decode_columns (opt->arg, Ctrl->C.cols, n_columns, Ctrl->N.tcol)) {
+				touched_t_col = true;
+				if (gmt_get_column_type (GMT, GMT_IN, Ctrl->N.tcol) == GMT_IS_ABSTIME && !GMT->common.f.active[GMT_OUT])	/* If no -fo setting and still abstime we change to reltime */
+					gmt_set_column_type (GMT, GMT_OUT, Ctrl->N.tcol, GMT_IS_RELTIME);
+			}
 			continue;
 		}
 		if (opt->option == GMT_OPT_OUTFILE) continue;	/* We do output after the loop */
@@ -6676,7 +6756,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		for (j = 0, i = nstack - eaten; j < created; j++, i++) {
 			if (stack[i]->constant && !stack[i]->D) {
 				stack[i]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
-				if (!Ctrl->T.notime) gmtmath_load_column (stack[i]->D, COL_T, info.T, COL_T);	/* Make sure t-column is copied if needed */
+				if (!Ctrl->T.notime) gmtmath_load_column (stack[i]->D, Ctrl->N.tcol, info.T, COL_T);	/* Make sure t-column is copied if needed */
 			}
 		}
 
@@ -6722,7 +6802,7 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 		if (!stack[last]->D)
 			stack[last]->D = gmt_alloc_dataset (GMT, Template, 0, n_columns, GMT_ALLOC_NORMAL);
 		for (j = 0; j < n_columns; j++) {
-			if (j == COL_T && !Ctrl->Q.active && Ctrl->C.cols[j])
+			if (j == Ctrl->N.tcol && !Ctrl->Q.active && Ctrl->C.cols[j])
 				gmtmath_load_column (stack[last]->D, j, info.T, COL_T);
 			else if (!Ctrl->C.cols[j])
 				gmtmath_load_const_column (stack[last]->D, j, stack[last]->factor);
@@ -6760,8 +6840,8 @@ EXTERN_MSC int GMT_gmtmath (void *V_API, int mode, void *args) {
 			template_used = true;
 		}
 		DH = gmt_get_DD_hidden (R);
-		if (dimension && Ctrl->Q.active) {	/* Encountered dimensioned items on the command line, must return in current units */
-			R->table[0]->segment[0]->data[0][0] *= GMT->session.u2u[GMT_INCH][GMT->current.setting.proj_length_unit];
+		if (dimension && Ctrl->Q.active) {	/* Encountered dimensioned items on the command line, and want return in selected units */
+			R->table[0]->segment[0]->data[0][0] *= GMT->session.u2u[GMT_INCH][Ctrl->Q.unit];
 		}
 		if (place_t_col && Ctrl->N.tcol < R->n_columns) {
 			gmtmath_load_column (R, Ctrl->N.tcol, info.T, COL_T);	/* Put T in the time column of the item on the stack if possible */

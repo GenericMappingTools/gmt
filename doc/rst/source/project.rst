@@ -12,15 +12,20 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt project** [ *table* ] |-C|\ *cx*/*cy* [ |-A|\ *azimuth* ]
-[ |-E|\ *bx*/*by* ] [ |-F|\ *flags* ]
-[ |-G|\ *dist*\ [/*colat*][**+c**\|\ **h**] ]
-[ |-L|\ [**w**\|\ *l\_min*/*l\_max*] ]
-[ |-N| ] [ |-Q| ] [ |-S| ]
+**gmt project** [ *table* ]
+|-C|\ *cx*/*cy*
+[ |-A|\ *azimuth* ]
+[ |-E|\ *bx*/*by* ]
+[ |-F|\ *flags* ]
+[ |-G|\ *dist*\ [*unit*][/*colat*][**+c**][**+h**][**+n**] ]
+[ |-L|\ [**w**\|\ *lmin*/*lmax*] ]
+[ |-N| ]
+[ |-Q| ]
+[ |-S| ]
 [ |-T|\ *px*/*py* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ *w\_min*/*w\_max* ]
-[ |-Z|\ *major*/*minor*/*azimuth*\ [**+e**] ]
+[ |-W|\ *wmin*/*wmax* ]
+[ |-Z|\ *major*\ [*unit*][/*minor*/*azimuth*][**+e**] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-e| ]
@@ -39,71 +44,76 @@ Synopsis
 Description
 -----------
 
-**project** reads arbitrary (*x*, *y*\ [,\ *z*]) data from standard input
-[or *table* ] and writes to standard output any combination of (*x*,
-*y*, *z*, *p*, *q*, *r*, *s*), where (*p*, *q*) are the coordinates in
-the projection, (*r*, *s*) is the position in the (*x*, *y*) coordinate
-system of the point on the profile (*q* = 0 path) closest to (*x*, *y*),
-and *z* is all remaining columns in the input (beyond the required *x*
-and *y* columns).
+**project** reads arbitrary (:math:`x`, :math:`y` [,\ *z*]) data from standard input
+[or *table*] and writes to standard output any combination of (:math:`x, y`, *z*,
+:math:`p, q, r, s`), where (:math:`p, q`) are the coordinates in
+the projection, (:math:`r, s`) is the position in the (:math:`x, y`) coordinate
+system of the point on the profile (:math:`q = 0` path) closest to (:math:`x, y`),
+and *z* is all remaining columns in the input (beyond the required :math:`x`
+and :math:`y` columns).
 
-Alternatively, **project** may be used to generate (*r*, *s*, *p*)
-triples at equal increments *dist* along a profile. In this case (
-**-G** option), no input is read.
+Alternatively, **project** may be used to generate (:math:`r,s,p`)
+triples at equal increments *dist* along a profile using |-G|. In this case, no input is read.
 
-Projections are defined in any (but only) one of three ways:
+Projections are defined in one of three ways:
 
-(Definition 1) By a Center **-C** and an Azimuth **-A** in degrees
-clockwise from North.
+  1. By a center (*cx*/*cy*) using |-C| and an azimuth in degrees clockwise from North using |-A|.
+  2. By a center (*cx*/*cy*) using |-C| and end point (*bx*/*by*) of the projection path using |-E|.
+  3. By a center (*cx*/*cy*) using |-C| and a rotation pole position (*px*/*py*) using |-T| (not allowed when a
+     Cartesian transformation is set by |-N|).
 
-(Definition 2) By a Center **-C** and end point E of the projection path **-E**.
-
-(Definition 3) By a Center **-C** and a roTation pole position **-T**.
-
-To spherically project data along a great circle path, an oblique
-coordinate system is created which has its equator along that path, and
-the zero meridian through the Center. Then the oblique longitude
-(*p*) corresponds to the distance from the Center
-along the great circle, and the oblique latitude (*q*) corresponds to
-the distance perpendicular to the great circle path. When moving in the
-increasing (*p*) direction, (toward *B* or in the
-*azimuth* direction), the positive (*q*) direction is to your left. If a
-Pole has been specified, then the positive (*q*) direction is toward the
+To spherically project data along a great circle path, an oblique coordinate
+system is created which has its equator along that path, and the zero meridian
+through *cx*/*cy*. Then the oblique longitude (:math:`p`) corresponds to the
+distance from *cx*/*cy* along the great circle, and the oblique latitude (*q*)
+corresponds to the distance perpendicular to the great circle path. When moving
+in the increasing (:math:`p`) direction, (in the direction set by
+|-A|\ *azimuth* ), the positive (:math:`q`) direction is to the left. If a pole
+has been specified by |-T|, then the positive (*q*) direction is toward the
 pole.
 
-To specify an oblique projection, use the **-T** option to set the Pole.
-Then the equator of the projection is already determined and the **-C**
-option is used to locate the *p* = 0 meridian. The Center *cx/cy* will
-be taken as a point through which the *p* = 0 meridian passes. If you do
-not care to choose a particular point, use the South pole (*ox* = 0,
-*oy* = -90).
+To specify an oblique projection, use the |-T| option to set the pole.
+Then the equator of the projection is already determined and the |-C|
+option is used to locate the :math:`p = 0` meridian. The center *cx/cy* will
+be taken as a point through which the :math:`p = 0` meridian passes. If you do
+not care to choose a particular point, use the South pole (*cx* = 0,
+*cy* = -90).
 
-Data can be selectively windowed by using the **-L** and **-W** options.
-If **-W** is used, the projection Width is set to use only points with
-*w\_min* < q < *w\_max*. If **-L** is set, then the Length is set to use
-only those points with *l\_min* < p < *l\_max*. If the **-E** option has
-been used to define the projection, then **-Lw** may be selected to
-window the length of the projection to exactly the span from **O** to
-**B**.
+Data can be selectively windowed by using the |-L| and |-W| options.
+If |-W| is used, the projection width is set to use only points with
+:math:`w_{min} < q < w_{max}`. If |-L| is set, then the length is set to use
+only those points with :math:`l_{min} < p < l_{max}`. If the |-E| option has
+been used to define the projection, then |-L|\ **w** may be selected to
+window the length of the projection to exactly the span from the center (|-C|) to
+to the endpoint (|-E|).
 
 Flat Earth (Cartesian) coordinate transformations can also be made. Set
-**-N** and remember that *azimuth* is clockwise from North (the *y*
+|-N| and remember that *azimuth* is clockwise from North (the :math:`y`
 axis), NOT the usual cartesian theta, which is counterclockwise from the
-*x* axis. *azimuth* = 90 - theta.
+:math:`x` axis. (i.e., :math:`azimuth = 90 - theta`).
 
-No assumptions are made regarding the units for *x*, *y*, *r*, *s*, *p*,
-*q*, *dist*, *l\_min*, *l\_max*, *w\_min*, *w\_max*. If **-Q** is
-selected, map units are assumed and *x*, *y*, *r*, *s* must be in
-degrees and *p*, *q*, *dist*, *l\_min*, *l\_max*, *w\_min*, *w\_max*
+No assumptions are made regarding the units for :math:`x, y, r, s, p, q`, *dist*,
+:math:`l_{min}, l_{max}, w_{min}, w_{max}`. If |-Q| is
+selected, map units are assumed and :math:`x, y, r, s`, must be in
+degrees and :math:`p, q`, *dist*, :math:`l_{min}, l_{max}, w_{min}, w_{max}`
 will be in km.
 
 Calculations of specific great-circle and geodesic distances or for
 back-azimuths or azimuths are better done using :doc:`mapproject` as
-**project** is strictly spherical.
+:doc:`project` is strictly spherical.
 
-**project** is CASE SENSITIVE. Use UPPER CASE for all one-letter
-designators which begin optional arguments. Use lower case for the
-xyzpqrs letters in **F**\ *flags*.
+
+.. figure:: /_images/project_setup.*
+   :width: 500 px
+   :align: center
+
+   Explanation of the coordinate system utilized by project.  The input point
+   (red circle) is given in the original *x-y* (or *lon-lat*) coordinate system and is projected to
+   the *p-q* coordinate system, defined by the center (**C**) and either the end-point
+   (**E**) or azimuth (:math:`\alpha`), or for geographic data a rotation pole **T** (not shown).
+   The blue point has projected coordinates (p,0) and is reported as (r,s) in the original
+   coordinate system.  Options **-L** (limit range of *p*) and **-W** (limit range of *q*)
+   can be used to exclude data outside the specified limits (light gray area).
 
 Required Arguments
 ------------------
@@ -114,10 +124,9 @@ Required Arguments
 .. _-C:
 
 **-C**\ *cx*/*cy*
-    *cx/cy* sets the origin of the projection, in Definition 1 or 2. If
-    Definition 3 is used (**-T**), then *cx/cy* are the coordinates of a
-    point through which the oblique zero meridian (*p* = 0) should pass.
-    The *cx/cy* is not required to be 90 degrees from the pole.
+    Set the origin *cx*/*cy* of the projection when used with |-A| or |-E| or set the coordinates *cx*/*cy* of a point
+    through which the oblique zero meridian (:math:`p = 0`) should pass when used with |-T|. *cx*/*cy* is not required
+    to be 90 degrees from the pole set by |-T|.
 
 Optional Arguments
 ------------------
@@ -125,60 +134,60 @@ Optional Arguments
 .. _-A:
 
 **-A**\ *azimuth*
-    *azimuth* defines the azimuth of the projection (Definition 1).
+    Set the *azimuth* of the projection. The *azimuth* is clockwise from North (the :math:`y` axis) regardless of
+    whether spherical or Cartesian coordinate transformation is applied.
 
 .. _-E:
 
 **-E**\ *bx*/*by*
-   *bx/by* defines the end point of the projection path (Definition 2).
+   Set the end point *bx/by* of the projection path.
 
 .. _-F:
 
 **-F**\ *flags*
-    Specify your desired output using any combination of **xyzpqrs**, in
-    any order [Default is **xyzpqrs**]. Do not space between the letters.
-    Use lower case. The output will be ASCII (or binary, see **-bo**)
-    columns of values corresponding to your *flags*. The **z** flag is
-    special and refers to all numerical columns beyond the leading **x** and **y** in
-    your input record.  If output format is ASCII then **z** also includes any
-    trailing text (which is placed at the end of the record regardless
-    of the order of **z** in *flags*). **Note**: If **-G** is selected, then the
-    output order is hardwired to be **rsp** and **-F** is not allowed.
+    Specify the desired output using any combination of *xyzpqrs* in any order, where (:math:`p, q`) are the
+    coordinates in the projection, (:math:`r, s`) is the position in the (:math:`x, y`) coordinate system of the point
+    on the profile (:math:`q = 0` path) closest to (:math:`x, y`), and *z* is all remaining columns in the input
+    (beyond the required :math:`x` and :math:`y` columns). [Default is *xyzpqrs*]. If output format is ASCII then
+    *z* also includes any trailing text (which is placed at the end of the record regardless of the order of *z*
+    in *flags*). Use lower case and do not add spaces between the letters. **Note**: If |-G| is selected, then the
+    output order is set to be *rsp* and |-F| is not allowed.
 
 .. _-G:
 
-**-G**\ *dist*\ [/*colat*][**+c**\|\ **h**]
-    Generate mode. No input is read. Create (*r*, *s*, *p*) output
-    points every *dist* units of *p*. See **-Q** option. Alternatively,
-    append **/**\ *colat* for a small circle instead [Default is a
-    colatitude of 90, i.e., a great circle]. If setting a pole with **-T**
-    and you want the small circle to go through *cx*/*cy*, append **+c** to
-    compute the required colatitude. Use **-C** and **-E** to
-    generate a circle that goes through the center and end point. Note,
-    in this case the center and end point cannot be farther apart than
-    2\*\|\ *colat*\|. Finally, if you append **+h** the we will report
-    the position of the pole as part of the segment header [no header].
+**-G**\ *dist*\ [*unit*][/*colat*][**+c**][**+h**][**+n**]
+    Create (*r*, *s*, *p*) output points every *dist* units of *p*, assuming all units are the same unless
+    :math:`x, y, r, s` are set to degrees using |-Q|. No input is read when |-G| is used. See `Units`_ for
+    selecting geographic distance units [km]. The following directives and modifiers are supported:
+
+    - Optionally, append /*colat* for a small circle instead [Default is a colatitude of 90, i.e., a great circle]. Note,
+      when using |-C| and |-E| to generate a circle that goes through the center and end point, the center and end point
+      cannot be farther apart than :math:`2|colat|`.
+    - Optionally, append **+c** when using |-T| to calculate the colatitude that will lead to the small circle
+      going through the center *cx*/*cy*.
+    - Optionally, append **+h** to report the position of the pole as part of the segment header when using |-T|
+      [Default is no header].
+    - Optionally, append **+n** to indicate a desired number of points rather than an increment. Requires |-C| and |-E| or |-Z|
+      so that a length can be computed.
 
 .. _-L:
 
-**-L**\ [**w**\|\ *l\_min*/*l\_max*]
-    Length controls. Project only those points whose *p* coordinate is
-    within *l\_min* < *p* < *l\_max*. If **-E** has been set, then you
-    may alternatively use **-Lw** to stay within the distance from **C** to **E**.
+**-L**\ [**w**\|\ *lmin*/*lmax*]
+    Specify length controls for the projected points. Project only those points whose *p* coordinate is
+    within :math:`l_{min} < p < l_{max}`. If |-E| has been set, then you may alternatively use **-Lw** to stay within
+    the distance from *cx*/*cy* to *bx*/*by*.
 
 .. _-N:
 
 **-N**
-    Flat Earth. Make a Cartesian coordinate transformation in the plane.
+    Specify the Flat Earth case (i.e., Cartesian coordinate transformation in the plane).
     [Default uses spherical trigonometry.]
 
 .. _-Q:
 
 **-Q**
-    Map type units, i.e., project assumes *x*, *y*, *r*, *s* are in
-    degrees while *p*, *q*, *dist*, *l\_min*, *l\_max*, *w\_min*,
-    *w\_max* are in km. If **-Q** is not set, then all these are assumed
-    to be in the same units.
+    Specify that  :math:`x`, :math:`y`, *r*, *s* are in degrees while *p*, *q*, *dist*, *lmin*, *lmax*, *wmin*,
+    *wmax* are in km. If **-Q** is not set, then all these are assumed to be in the same units.
 
 .. _-S:
 
@@ -189,33 +198,37 @@ Optional Arguments
 .. _-T:
 
 **-T**\ *px*/*py*
-    *px/py* sets the position of the rotation pole of the projection.
-    (Definition 3).
+    Set the position of the rotation pole of the projection as *px/py*.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ *w\_min*/*w\_max*
-    Width controls. Project only those points whose *q* coordinate is
-    within *w\_min* < *q* < *w\_max*.
+**-W**\ *wmin*/*wmax*
+    Specify width controls for the projected points. Project only those points whose *q* coordinate is
+    within :math:`w_{min} < q < w_{max}`.
 
-**-Z**\ *major*/*minor*/*azimuth*\ [**+e**]
-    Used in conjunction with **-C** (sets its center) and **-G** (sets the
-    distance increment) to create the coordinates of an ellipse
-    with *major* and *minor* axes given in km (unless **-N** is given) and the *azimuth* of the
-    major axis in degrees.  Append **+e** to adjust the increment set via
-    **-G** so that the the ellipse has equal distance increments [Default
-    uses the given increment and closes the ellipse].
+.. _-Z:
 
+**-Z**\ *major*\ [*unit*][/*minor*/*azimuth*][**+e**]
+    Create the coordinates of an ellipse with *major* and *minor* axes given in km (unless |-N| is given for a
+    Cartesian ellipse) and the *azimuth* of the major axis in degrees; used in conjunction with |-C| (sets its center)
+    and |-G| (sets the distance increment). **Note**: For the Cartesian ellipse (which requires |-N|), we expect
+    *direction* counter-clockwise from the horizontal instead of an *azimuth*. A geographic *major* may be specified
+    in any desired unit [Default is km] by appending the unit (e.g., 3d for degrees); if so we assume the *minor* axis
+    and the increment are also given in the same unit (see `Units`_).  For degenerate ellipses you can just supply a
+    single *diameter* instead. The following modifiers are supported:
+
+    - Append **+e** to adjust the increment set via |-G| so that the ellipse has equal distance increments [Default
+      uses the given increment and closes the ellipse].
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
 
-.. |Add_-bo| replace:: [Default is given by **-F** or **-G**].
+.. |Add_-bo| replace:: [Default is given by |-F| or |-G|].
 .. include:: explain_-bo.rst_
 
 .. |Add_-d| unicode:: 0x20 .. just an invisible code
@@ -242,6 +255,8 @@ Optional Arguments
 .. include:: explain_-s.rst_
 
 .. include:: explain_colon.rst_
+
+.. include:: explain_distunits.rst_
 
 .. include:: explain_help.rst_
 
@@ -287,7 +302,7 @@ defined by the great circle from the pole to a point 15E,15N, try
 
     gmt project -C15/15 -T40/85 -G1/80 -L-45/45 > some_circle.xyp
 
-To generate points approximately every 10km along an ellipse centered on (30W,70N) with
+To generate points approximately every 10 km along an ellipse centered on (30W,70N) with
 major axis of 1500 km with azimuth of 30 degree and a minor axis of 600 km, try
 
    ::
@@ -308,8 +323,8 @@ with a large negative *q* coordinate. This will take those points which
 are on our right as we walk along the great circle path, or to the NE in this example.)
 
 To make a Cartesian coordinate transformation of mydata.xy so that the
-new origin is at 5,3 and the new *x* axis (*p*) makes
-an angle of 20 degrees with the old *x* axis, use:
+new origin is at 5,3 and the new :math:`x` axis (*p*) makes
+an angle of 20 degrees with the old :math:`x` axis, use:
 
    ::
 

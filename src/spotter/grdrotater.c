@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *   Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -31,7 +31,7 @@
 #define THIS_MODULE_PURPOSE	"Finite rotation reconstruction of geographic grid"
 #define THIS_MODULE_KEYS	"<G{,FD(,GG},TD("
 #define THIS_MODULE_NEEDS	"g"
-#define THIS_MODULE_OPTIONS "-:>RVbdfghno" GMT_OPT("HMmQ")
+#define THIS_MODULE_OPTIONS "-:>RVbdfhno" GMT_OPT("HMmQ")
 
 #define PAD 3	/* Used to polish up a rotated grid by checking near neighbor nodes */
 
@@ -96,36 +96,40 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> %s -G<outgrid> [-F<polygontable>]\n", name, SPOTTER_E_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<region>] [-D<rotoutline>] [-N] [%s] [-S] [-T<time(s)>] [%s]\n", GMT_Rgeo_OPT, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s] [%s]\n\n", GMT_b_OPT, GMT_d_OPT, GMT_g_OPT, GMT_h_OPT, GMT_n_OPT, GMT_o_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s %s -G%s [-F<polygontable>] [-A<region>] [-D<rotoutline>] [-N] "
+		"[%s] [-S] [-T<time>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n", name, GMT_INGRID, SPOTTER_E_OPT, GMT_OUTGRID, GMT_Rgeo_OPT,
+		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_f_OPT, GMT_h_OPT, GMT_n_OPT, GMT_o_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is the gridded data file in geographic coordinates to be rotated.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set output filename for the new, rotated grid.  The boundary of the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   original grid (or a subset; see -F) after rotation is written to stdout (but see -D)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   unless the grid is global.  If more than one reconstruction time is chosen\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then -D is required unless -N is used and <outgrid> must be a filename template\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   containing a C-format specifier for formatting a double (for the variable time).\n");
-	spotter_rot_usage (API, 'E');
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, specify a single finite rotation (in degrees) to be applied.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Set the west/east/south/north bounds for the rotated grid [Default will\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   determine the natural extent of the rotated grid instead].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Write the rotated polygon or grid outline to <rotoutline> [stdout].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Required if more than one reconstruction time is chosen and -N is not set\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and must then contain a C-format specifier for formatting a double (for the variable time).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify a multi-segment closed polygon table that describes the area of the grid\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   that should be projected [Default projects entire grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT output the rotated polygon or grid outlines.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of grid in geographic coordinates to be rotated");
+	gmt_outgrid_syntax (API, 'G', "Set output filename for the new, rotated grid.  The boundary of the "
+		"original grid (or a subset; see -F) after rotation is written to standard output (but see -D) "
+		"unless the grid is global.  If more than one reconstruction time is chosen "
+		"then -D is required unless -N is used and <outgrid> must be a filename template "
+		"containing a C-format specifier for formatting a double (for the variable time).");
+	spotter_rot_usage (API);
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<region>");
+	GMT_Usage (API, -2, "Set the west/east/south/north bounds for the rotated grid [Default will "
+		"determine the natural extent of the rotated grid instead].");
+	GMT_Usage (API, 1, "\n-D<rotoutline>");
+	GMT_Usage (API, -2, "Write the rotated polygon or grid outline to <rotoutline> [standard output]. "
+		"Required if more than one reconstruction time is chosen and -N is not set "
+		"and must then contain a C-format specifier for formatting a double (for the variable time).");
+	GMT_Usage (API, 1, "\n-F<polygontable>");
+	GMT_Usage (API, -2, "Specify a multi-segment closed polygon table that describes the area of the grid "
+		"that should be projected [Default projects entire grid].");
+	GMT_Usage (API, 1, "\n-N Do NOT output the rotated polygon or grid outlines.");
 	GMT_Option (API, "Rg");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Do NOT rotate the grid - just produce the rotated outlines (requires -D).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set the time(s) of reconstruction.  Append a single time (-T<time>),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   an equidistant range of times (-T<min>/<max>/<inc> or -T<min>/<max>/<npoints>+n),\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or the name of a file with a list of times (-T<tfile>).  If no -T is set\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then the reconstruction times equal the rotation times given in -E.\n");
-	GMT_Option (API, "V,bi2,bo,d,g,h,n,:,.");
+	GMT_Usage (API, 1, "\n-S Do NOT rotate the grid - just produce the rotated outlines (requires -D).");
+	GMT_Usage (API, 1, "\n-T<time>");
+	GMT_Usage (API, -2, "Set the time(s) of reconstruction.  Append a single time (-T<time>), "
+		"an equidistant range of times (-T<min>/<max>/<inc> or -T<min>/<max>/<npoints>+n), "
+		"or the name of a file with a list of times (-T<tfile>).  If no -T is set "
+		"then the reconstruction times equal the rotation times given in -E.");
+	GMT_Option (API, "V,bi2,bo,d,f,h,n,:,.");
 
 	return (GMT_MODULE_USAGE);
 
@@ -156,12 +160,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Supplemental parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'g' && opt->arg[1] == '\0') {	/* Got -Ag */
 					Ctrl->A.wesn[0] = 0.0;	Ctrl->A.wesn[1] = 360.0;	Ctrl->A.wesn[2] = -90.0;	Ctrl->A.wesn[3] = 90.0;
@@ -201,6 +206,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.file = strdup (opt->arg);
 				break;
@@ -208,26 +214,32 @@ static int parse (struct GMT_CTRL *GMT, struct GRDROTATER_CTRL *Ctrl, struct GMT
 				GMT_Report (API, GMT_MSG_COMPAT, "-e is deprecated and was removed in 5.3. Use -E instead.\n");
 				/* Intentionally fall through */
 			case 'E':	/* File with stage poles or a single rotation pole */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				n_errors += spotter_parse (GMT, opt->option, opt->arg, &(Ctrl->E.rot));
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':	/* New: -Tage, -Tmin/max/inc, -Tmin/max/n+, -Tfile; compat mode: -Tlon/lat/angle Finite rotation parameters */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (!gmt_access (GMT, opt->arg, R_OK)) {	/* Gave a file with times in first column */
 					uint64_t seg, row;
@@ -385,7 +397,6 @@ GMT_LOCAL struct GMT_DATASET * grdrotater_get_grid_path (struct GMT_CTRL *GMT, s
 	S->min[GMT_Y] = h->wesn[YLO];	S->max[GMT_Y] = h->wesn[YHI];
 	SH = gmt_get_DS_hidden (S);
 	SH->pole = 0;
-	SH->alloc_mode = GMT_ALLOC_INTERNALLY;
 
 	return (D);
 }

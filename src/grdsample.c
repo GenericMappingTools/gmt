@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,6 +47,9 @@ struct GRDSAMPLE_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct GRDSAMPLE_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct GRDSAMPLE_T {	/* -T */
 		bool active;
 	} T;
@@ -71,20 +74,21 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -G<outgrid> [%s]\n", name, GMT_I_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-T] [%s] [%s]\n\t[%s] [%s]%s[%s]\n\n", GMT_Rgeo_OPT,
-		GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -G%s [%s] [%s] [-T] [%s] [%s] [%s] [%s]%s[%s]\n",
+		name, GMT_INGRID, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_r_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is data set to be resampled.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set the name of the interpolated output grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of input grid to be resampled");
+	gmt_outgrid_syntax (API, 'G', "Set the name of the interpolated output grid");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "I");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   When omitted: grid spacing is copied from input grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R Specify a subregion [Default is old region].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Translate between grid registration and pixel registration.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Implies resampling halfway between nodes (a destructive change to the grid).\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "If -I is not given then grid spacing is copied from the input grid.");
+	GMT_Usage (API, 1, "\n%s", GMT_Rgeo_OPT);
+	GMT_Usage (API, -2, "Specify a subregion [Default is input grid region].");
+	GMT_Usage (API, 1, "\n-T Translate between grid registration and pixel registration. "
+		"Implies resampling halfway between nodes (a destructive change to the grid).");
 	GMT_Option (API, "V,f,n,r,x,.");
 
 	return (GMT_MODULE_USAGE);
@@ -110,17 +114,20 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'G':	/* Output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Grid spacings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'L':	/* BCs */
@@ -151,6 +158,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDSAMPLE_CTRL *Ctrl, struct GMT_
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'T':	/* Convert from pixel file <-> gridfile */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (GMT->common.R.active[FSET]) GMT->common.R.active[GSET] = false;	/* Override any implicit -r via -Rgridfile */
 				break;
@@ -242,9 +250,11 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 	else
 		registration = Gin->header->registration;
 
+	gmt_increment_adjust (GMT, wesn_o, inc, registration);	/* In case user specified incs using distance units we must call this here before adjusting wesn_o */
+
 	if (GMT->common.R.active[RSET]) {		/* Gave -R */
-		bool wrap_360_i = (gmt_M_is_geographic (GMT, GMT_IN) && gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]));
-		bool wrap_360_o = (gmt_M_is_geographic (GMT, GMT_OUT) && gmt_M_360_range (wesn_o[XLO], wesn_o[XHI]));
+		bool wrap_360_i = (gmt_M_x_is_lon (GMT, GMT_IN) && gmt_M_360_range (Gin->header->wesn[XLO], Gin->header->wesn[XHI]));
+		bool wrap_360_o = (gmt_M_x_is_lon (GMT, GMT_OUT) && gmt_M_360_range (wesn_o[XLO], wesn_o[XHI]));
 		unsigned int k;
 
 		/* Adjust wesn used to READ subset unless 360 geographic */
@@ -256,7 +266,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			while (wesn_i[YHI] > wesn_o[YHI]) wesn_i[YHI] -= Gin->header->inc[GMT_Y], k++;	/* Now on or inside boundary */
 			if (wesn_i[YHI] < Gin->header->wesn[YHI] && k) wesn_i[YHI] += Gin->header->inc[GMT_Y];	/* Now exactly on boundary or just outside but still inside input grid north boundary */
 		}
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between grid and -R */
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between grid and -R */
 			int shift = 0;
 			if (Gin->header->wesn[XHI] < wesn_i[XLO]) shift += 360;
 			else if (Gin->header->wesn[XLO] > wesn_i[XHI]) shift -= 360;
@@ -269,6 +279,12 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 			}
 		}
 		if (!wrap_360_o && !wrap_360_i) {	/* Can only shrink wesn_i if there is no 360-wrapping going on */
+			if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap between these two wesn_? arrays */
+				if ((wesn_o[XLO] - wesn_i[XLO]) >= 360.0)
+					wesn_i[XLO] += 360.0, wesn_i[XHI] += 360.0;
+				else if ((wesn_o[XLO] - wesn_i[XLO]) <= -360.0)
+					wesn_i[XLO] -= 360.0, wesn_i[XHI] -= 360.0;
+			}
 			k = 0;
 			while (wesn_i[XLO] < wesn_o[XLO]) wesn_i[XLO] += Gin->header->inc[GMT_X], k++;	/* Now on or inside boundary */
 			if (wesn_i[XLO] > Gin->header->wesn[XLO] && k) wesn_i[XLO] -= Gin->header->inc[GMT_X];	/* Now exactly on boundary or just outside but still inside input grid south boundary */
@@ -280,7 +296,7 @@ EXTERN_MSC int GMT_grdsample (void *V_API, int mode, void *args) {
 		/* Adjust wesn_o used to CREATE the output grid: It cannot exceed the input grid bounds */
 		while (wesn_o[YLO] < Gin->header->wesn[YLO]) wesn_o[YLO] += inc[GMT_Y];	/* Now on or inside boundary */
 		while (wesn_o[YHI] > Gin->header->wesn[YHI]) wesn_o[YHI] -= inc[GMT_Y];	/* Now on or inside boundary */
-		if (gmt_M_is_geographic (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
+		if (gmt_M_x_is_lon (GMT, GMT_IN)) {	/* Must carefully check the longitude overlap */
 			int shift = 0;
 			if (Gin->header->wesn[XHI] < wesn_o[XLO]) shift += 360;
 			else if (Gin->header->wesn[XLO] > wesn_o[XHI]) shift -= 360;

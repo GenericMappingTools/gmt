@@ -1,6 +1,6 @@
 /*
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -79,15 +79,16 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -T<tolerance> [%s] [%s]\n", name, GMT_V_OPT, GMT_b_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+
+	GMT_Usage (API, 0, "usage: %s [<table>] -T<tolerance>[<unit>] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT,
+		GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	gmt_dist_syntax (API->GMT, 'T', "Set tolerance as the maximum distance mismatch.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   No units means we will do a Cartesian calculation instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	gmt_dist_syntax (API->GMT, "T<tolerance>[<unit>]", "Set tolerance as the maximum distance mismatch. ");
+	GMT_Usage (API, -2, "If no units are appended we will do a Cartesian calculation instead.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "<");
 	GMT_Option (API, "V,bi2,bo,d,e,f,g,h,i,o,q,:,.");
 
@@ -103,12 +104,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 			case '>':	/* Write to named output file instead of stdout */
 				Ctrl->Out.active = true;
@@ -118,6 +120,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTSIMPLIFY_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'T':	/* Set tolerance distance */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.mode = gmt_get_distance (GMT, opt->arg, &(Ctrl->T.tolerance), &(Ctrl->T.unit));
 				break;

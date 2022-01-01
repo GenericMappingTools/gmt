@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -75,28 +75,30 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTGET_CTRL *C) {	/* Dealloc
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D<download>] [-G<defaultsfile>] [-I<inc>] [-L] [-N] [-Q] [PARAMETER1 PARAMETER2 PARAMETER3 ...] [%s]\n", name, GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\n\tFor available PARAMETERS, see %s man page\n", GMT_SETTINGS_FILE);
+	GMT_Usage (API, 0, "usage: %s [-D<download>] [-G<defaultsfile>] [-I<inc>] [-L] [-N] [-Q] [%s] [PARAMETER1 PARAMETER2 PARAMETER3 ...]\n", name, GMT_V_OPT);
+	GMT_Usage (API, 1, "Note: For available PARAMETERS, see %s documentation", GMT_SETTINGS_FILE);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Download data from the selected GMT server [%s]\n", API->GMT->session.DATASERVER);
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append one of the directories to download:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      cache: The entire contents of the cache directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      data: The entire contents of the data directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append =<planet> to only download the data/<planet> directory.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append =<dataset1,dataset2...> to only download the stated datasets.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    -Dall downloads both cache and all datasets.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Run \"gmt docs data\" to learn about available data sets.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name of specific %s file to process.\n", GMT_SETTINGS_FILE);
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default looks for file in current directory.  If not found,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   it looks in the home directory, if not found it uses the GMT defaults].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Limit the download of data sets to grid spacings of <inc> or larger [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Write one parameter value per line [Default writes all on one line].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Do NOT convert grids downloaded with -D to netCDF but leave as JP2.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q In conjunction with -D, will list but not download the selected data.\n");
-	GMT_Option (API, "V,.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D<download>");
+	GMT_Usage (API, -2, "Download data from the selected GMT server [%s]. Append one of the directories to download:", API->GMT->session.DATASERVER);
+	GMT_Usage (API, 3, "cache: The entire contents of the cache directory.");
+	GMT_Usage (API, 3, "data: The entire contents of the data directory. "
+		"Append =<planet> to only download the data/<planet> directory, or "
+		"append =<dataset1,dataset2...> to only download the stated datasets.");
+	GMT_Usage (API, -2, "Alternatively, -Dall downloads both cache and all datasets. "
+		"Note: Run \"gmt docs data\" to learn about available data sets.");
+	GMT_Usage (API, 1, "\n-G<defaultsfile>");
+	GMT_Usage (API, -2, "Set name of specific %s file to process "
+		"Default looks for file in current directory.  If not found, n"
+		"it looks in the home directory, if not found it uses the GMT defaults].", GMT_SETTINGS_FILE);
+	GMT_Usage (API, 1, "\n-I<inc>");
+	GMT_Usage (API, -2, "Limit the download of data sets to grid spacing of <inc> or larger [0].");
+	GMT_Usage (API, 1, "\n-L Write one parameter value per line [Default writes all on one line].");
+	GMT_Usage (API, 1, "\n-N Do NOT convert grids downloaded with -D to netCDF but leave as JP2.");
+	GMT_Usage (API, 1, "\n-Q In conjunction with -D, will list but not download the selected data.");
+	GMT_Option (API, "V");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -110,6 +112,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 
 	unsigned int n_errors = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -121,27 +124,33 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Optional defaults file on input and output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (opt->arg[0]) Ctrl->D.dir = strdup (opt->arg);
 				break;
 			case 'G':	/* Optional defaults file on input and output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':	/* Set increment limitation */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (gmt_getincn (GMT, opt->arg, &Ctrl->I.inc, 1) != 1)
 					n_errors++;
 
 				break;
 			case 'L':	/* One per line */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Leave JP2 as is */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'Q':	/* Report data sets available */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				break;
 
@@ -163,7 +172,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTGET_CTRL *Ctrl, struct GMT_OPT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.active && Ctrl->N.active,
 	                                 "Option -Q: -N will be ignored\n");
 	if (Ctrl->D.active && Ctrl->D.dir && !(!strcmp (Ctrl->D.dir, "all") || !strcmp (Ctrl->D.dir, "cache") || !strncmp (Ctrl->D.dir, "data", 4U))) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -D: Requires arguments all, cache, data[=<planet>] or data=<datasetlist>\n");
+		GMT_Report (API, GMT_MSG_ERROR, "Option -D: Requires arguments all, cache, data[=<planet>] or data=<datasetlist>\n");
 		n_errors++;
 	}
 
@@ -204,6 +213,8 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 
 
 	if (Ctrl->D.active) {	/* Remote data download */
+		gmt_refresh_server (API);	/* Refresh hash and info tables as needed since we need to know what is there */
+
 		if (!strncmp (Ctrl->D.dir, "all", 3U) || !strncmp (Ctrl->D.dir, "data", 4U)) {	/* Want data */
 			bool found;
 			int k;
@@ -212,8 +223,6 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 			char planet[GMT_LEN32] = {""}, group[GMT_LEN32] = {""}, dataset[GMT_LEN64] = {""}, size[GMT_LEN32] = {""}, message[GMT_LEN256] = {""};
 			double world[4] = {-180.0, +180.0, -90.0, +90.0};
 			struct GMT_RECORD *Out = NULL;
-
-			gmt_refresh_server (API);	/* Refresh hash and info tables as needed since we need to know what is there */
 
 			if (Ctrl->Q.active) {	/* Must activate data output machinery for a DATASET with no numerical columns */
 				Out = gmt_new_record (GMT, NULL, message);
@@ -273,7 +282,7 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 				}
 				else {
 					if (API->remote_info[k].tile_size > 0.0) {	/* Must obtain all tiles */
-						char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles);
+						char **list = gmt_get_dataset_tiles (API, world, k, &n_tiles, NULL);
 						for (t = 0; t < n_tiles; t++)
 							gmt_download_file_if_not_found (GMT, list[t], GMT_AUTO_DIR);
 						gmt_free_list (GMT, list, n_tiles);
@@ -317,7 +326,12 @@ EXTERN_MSC int GMT_gmtget (void *V_API, int mode, void *args) {
 
 	/* Read the supplied default file or the users defaults to override system settings */
 
-	if (Ctrl->G.active || API->external) gmt_getdefaults (GMT, Ctrl->G.file);	/* Update defaults if using external API */
+	if (Ctrl->G.active || API->external) {
+		if (gmt_getdefaults (GMT, Ctrl->G.file) && Ctrl->G.file) {	/* Update defaults if using external API */
+			GMT_Report (API, GMT_MSG_ERROR, "Unable to access or read %s\n", Ctrl->G.file);
+			Return (GMT_RUNTIME_ERROR);
+		}
+	}
 
 	error = gmt_pickdefaults (GMT, Ctrl->L.active, options);		/* Process command line arguments */
 

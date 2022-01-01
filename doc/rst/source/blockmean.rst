@@ -21,7 +21,7 @@ Synopsis
 [ |-G|\ [*grdfile*] ]
 [ |-S|\ [**m**\|\ **n**\|\ **s**\|\ **w**] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**i**\|\ **o**][**+s**] ]
+[ |-W|\ [**i**\|\ **o**][**+s**\|\ **w**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -32,6 +32,7 @@ Synopsis
 [ |SYN_OPT-o| ]
 [ |SYN_OPT-q| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -66,8 +67,10 @@ Required Arguments
 
 .. include:: explain_-I.rst_
 
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -103,23 +106,23 @@ Optional Arguments
     Write one or more fields directly to grids; no table data are written to
     standard output.  If more than one fields are specified via **-A** then
     *grdfile* must contain the format flag %s so that we can embed the field
-    code in the file names.
+    code in the file names.  **Note**: Option **-C** is irrelevant and not allowed.
 
 .. _-S:
 
 **-S**\ [**m**\|\ **n**\|\ **s**\|\ **w**]
     Use **-Sn** to report the number of input points inside each block,
     **-Ss** to report the sum of all *z*-values inside a block, **-Sw**
-    to report the sum of weights [Default (or **-Sm** reports mean value].
+    to report the sum of weights [Default or **-Sm** reports mean value].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [**i**\|\ **o**][**+s**]
+**-W**\ [**i**\|\ **o**][**+s**\|\ **w**]
     Weighted modifier[s]. Unweighted input and output have 3 columns
     *x*,\ *y*,\ *z*; Weighted i/o has 4 columns *x*,\ *y*,\ *z*,\ *w*.
     Weights can be used in input to construct weighted mean values for
@@ -127,7 +130,8 @@ Optional Arguments
     several runs, etc. Use **-W** for weighted i/o, **-Wi** for weighted
     input only, and **-Wo** for weighted output only. [Default uses
     unweighted i/o]. If your weights are actually uncertainties (one sigma)
-    then append **+s** and we compute weight = 1/sigma.
+    then append **+s** and we compute weight = 1/sigma.  Otherwise (or via **+w**
+    we use the weights directly).
 
 .. include:: explain_-aspatial.rst_
 
@@ -163,6 +167,8 @@ Optional Arguments
     (*x*,\ *y*) < 11 is one of 25 blocks; otherwise 9.5 <= (*x*,\ *y*)
     < 10.5 is one of 36 blocks.
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 .. include:: explain_help.rst_

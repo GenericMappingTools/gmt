@@ -1,5 +1,5 @@
 /*
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -103,6 +103,9 @@ struct DIMFILTER_CTRL {
 		bool active;
 		char *file;
 	} G;
+	struct DIMFILTER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct DIMFILTER_L {	/* -L */
 		bool active;
 	} L;
@@ -130,7 +133,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C = gmt_M_memory (GMT, NULL, 1, struct DIMFILTER_CTRL);
 
 	/* Initialize values whose defaults are not 0/false/NULL */
-	C->F.filter = C->N.filter = C->D.mode = -1;
+	C->F.filter = C->N.filter = C->D.mode = GMT_NOTSET;
 	C->F.mode = DIMFILTER_MODE_KIND_AVE;
 	C->N.n_sectors = 1;
 	return (C);
@@ -260,47 +263,57 @@ static char *dimtemplate =
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> -D<distance_flag> -F<type><filter_width>[<modifier>] -G<outgrid> -N<type><n_sectors>[<modifier>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-L] [-Q] [%s]\n", GMT_I_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T] [%s] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s -D0-4 -F<type><width>[+l|u] -G%s %s "
+		"-N<type><n_sectors>[+l|u] [%s] [-L] [-Q] [%s] [-T] [%s] [%s] [%s] [%s]\n", name,
+		GMT_INGRID, GMT_OUTGRID, GMT_I_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_ho_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is grid to be filtered.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\tDistance flag determines how grid (x,y) maps into distance units of filter width as follows:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D0 grid x,y same units as <filter_width>, cartesian Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D1 grid x,y in degrees, <filter_width> in km, cartesian Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D2 grid x,y in degrees, <filter_width> in km, x_scaled by cos(middle y), cartesian Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   These first three options are faster; they allow weight matrix to be computed only once.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Next two options are slower; weights must be recomputed for each scan line.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D3 grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), cartesian Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -D4 grid x,y in degrees, <filter_width> in km, spherical Distances.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Sets the primary filter type and full (6 sigma) filter-width  Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (b)oxcar, (c)osine arch, (g)aussian, (m)edian filters\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or p(maximum likelihood Probability estimator -- a mode estimator):\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +l to return the lowest mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +u to return the uppermost mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Sets output name for filtered grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets the secondary filter type and the number of sectors.  Choose between\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (l)ower, (u)pper, (a)verage, (m)edian, and (p) the mode estimator). If using p:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +l to return the lowest mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t      Append +u to return the uppermost mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of grid to be filtered");
+	GMT_Usage (API, 1, "\n-D0-4");
+	GMT_Usage (API, -2, "Distance flag determines how grid (x,y) maps into distance units of filter width as follows:");
+	GMT_Usage (API, 3, "0: grid x,y same units as <filter_width>, Cartesian distances.");
+	GMT_Usage (API, 3, "1: grid x,y in degrees, <filter_width> in km, Cartesian distances.");
+	GMT_Usage (API, 3, "2: grid x,y in degrees, <filter_width> in km, x scaled by cos(middle y), Cartesian distances.");
+	GMT_Usage (API, -2, "These first three methods are faster; they allow weight matrix to be computed only once. "
+		"Next two options are slower; weights must be recomputed for each scan line:");
+	GMT_Usage (API, 3, "3: grid x,y in degrees, <filter_width> in km, x_scale varies as cos(y), Cartesian distances.");
+	GMT_Usage (API, 3, "4: grid x,y in degrees, <filter_width> in km, spherical Distances.");
+	GMT_Usage (API, 1, "\n-F<type><width>[+l|u]");
+	GMT_Usage (API, -2, "Set the primary filter <type> and full (6 sigma) filter <width>. Choose from:");
+	GMT_Usage (API, 3, "b: Boxcar filter.");
+	GMT_Usage (API, 3, "c: Cosine arch filter.");
+	GMT_Usage (API, 3, "g: Gaussian filter.");
+	GMT_Usage (API, 3, "m: Median filter.");
+	GMT_Usage (API, 3, "p: Maximum likelihood Probability estimator -- a mode filter.");
+	GMT_Usage (API, 4, "+l Return the lowest mode if multiple modes are found [return average].");
+	GMT_Usage (API, 4, "+u Return the uppermost mode if multiple modes are found [return average].");
+	gmt_outgrid_syntax (API, 'G', "Set output name for filtered grid");
+	GMT_Usage (API, 1, "\n-N<type><n_sectors>[+l|u]");
+	GMT_Usage (API, -2, "Set the secondary filter type and the number of sectors.  Choose from:");
+	GMT_Usage (API, 3, "l: Lowest value from all sectors.");
+	GMT_Usage (API, 3, "u: Uppermost value from all sectors.");
+	GMT_Usage (API, 3, "a: Average value from all sectors.");
+	GMT_Usage (API, 3, "m: Median value from all sectors.");
+	GMT_Usage (API, 3, "p: Mode value from all sectors.");
+	GMT_Usage (API, 4, "+l Return the lowest mode if multiple modes are found [return average].");
+	GMT_Usage (API, 4, "+u Return the uppermost mode if multiple modes are found [return average].");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 #ifdef OBSOLETE
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Remove local planar trend from data, apply filter, then add back trend at filtered value.\n");
+	GMT_Usage (API, 1, "\n-E Remove local planar trend from data, apply filter, then add back trend at filtered value.");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Sets new Increment of output grid; enter xinc, optionally xinc/yinc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Default is yinc = xinc.  Append an m [or s] to xinc or yinc to indicate minutes [or seconds];\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The new xinc and yinc should be divisible by the old ones (new lattice is subset of old).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Write dim.template.sh to stdout and stop; no other options allowed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Select error analysis mode; see documentation for how to prepare for using this option.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-R Sets new Range of output grid; enter <WESN> (xmin, xmax, ymin, ymax) separated by slashes.\n");
+	GMT_Option (API, "I");
+	GMT_Usage (API, -2, "Note: If the output increment(s) are NOT integer multiples of the input ones, filtering will be considerably slower.");
+	GMT_Usage (API, 1, "\n-L Write bash script dim.template.sh to standard output and stop; no other options allowed.");
+	GMT_Usage (API, 1, "\n-Q Select error analysis mode; see documentation for how to prepare for using this option.");
+	GMT_Option (API, "R");
 #ifdef OBSOLETE
 	GMT_Message (API, GMT_TIME_NONE, "\t-S Sets output name for standard error grdfile and implies that we will compute a 2nd grid with\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   a statistical measure of deviations from the average value.  For the convolution filters this\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   yields the standard deviation while for the median/mode filters we use MAD.\n");
 #endif
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Toggles between grid and pixel registration for output grid [Default is same as input registration].\n");
+	GMT_Usage (API, 1, "\n-T Toggles between grid and pixel registration for output grid [Default is same as input registration].");
 	GMT_Option (API, "V,f,h,.");
 
 	return (GMT_MODULE_USAGE);
@@ -337,6 +350,7 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0, n_files = 0, set = 0;
 	int k;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 #ifdef OBSOLETE
 	int slow;
 #endif
@@ -347,7 +361,7 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 			case '<':	/* Input file (only one is accepted) */
 				if (n_files++ > 0) break;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
 				else
 					Ctrl->In.active = true;
@@ -357,10 +371,12 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				set++;
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				k = atoi (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, k < 0 || k > 4, "Option -D: Choose from the range 0-4\n");
@@ -369,11 +385,13 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 				break;
 #ifdef OBSOLETE
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				set++;
 				break;
 #endif
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'b':
@@ -401,19 +419,24 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 				set++;
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				set++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				set++;
 				break;
 			case 'L':	/* Write shell template to stdout */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				break;
 			case 'N':	/* Scan: Option to set the number of sections and how to reduce the sector results to a single value */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				switch (opt->arg[0]) {
 					case 'l':	/* Lower bound (min) */
@@ -443,17 +466,20 @@ static int parse (struct GMT_CTRL *GMT, struct DIMFILTER_CTRL *Ctrl, struct GMT_
 				set++;
 				break;
 			case 'Q':	/* entering the MAD error analysis mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				set++;
 				break;
 #ifdef OBSOLETE
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.file = strdup (opt->arg);
 				set++;
 				break;
 #endif
 			case 'T':	/* Toggle registration */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				set++;
 				break;

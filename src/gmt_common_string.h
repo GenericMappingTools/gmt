@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -52,6 +52,7 @@ extern "C" {
 EXTERN_MSC unsigned int gmt_strtok (const char *string, const char *sep, unsigned int *start, char *token);
 EXTERN_MSC void gmt_strtok_m (char *in, char **token, char **remain, char *sep);
 EXTERN_MSC unsigned int gmt_get_modifier (const char *string, char modifier, char *token);
+EXTERN_MSC char *gmt_get_word (char *list, char *sep, unsigned int col);
 EXTERN_MSC void gmt_chop (char *string);
 EXTERN_MSC char *gmt_chop_ext (char *string);
 EXTERN_MSC char *gmt_get_ext (const char *string);
@@ -84,6 +85,10 @@ EXTERN_MSC char *stresep (char **stringp, const char *delim, int esc);
 
 #ifndef HAVE_BASENAME
 EXTERN_MSC char *basename(char *path);
+#endif
+
+#ifndef HAVE_CHARCAT    /* Do not think this is a standard function but just in case */
+EXTERN_MSC char *chrcat (char *dest, const char add);
 #endif
 
 #ifdef __cplusplus

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *      Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -25,6 +25,12 @@
 
 #ifndef GMT_REMOTE_H
 #define GMT_REMOTE_H
+
+struct GMT_RESOLUTION {	/* Struct to hold information about the various resolutions for a remote data set family */
+	char inc[GMT_LEN8];	/* Grid spacing in text format. E.g., 30m, 03s, etc. */
+	char reg;			/* Grid/Image registration (g or p). E.g., g */
+	double resolution;	/* In number of nodes per degree. E.g, for 01m that is 60 */
+};
 
 struct GMT_DATA_INFO {
 	int id;						/* Running number 0-(n-1) AFTER array is sorted */
@@ -53,14 +59,26 @@ struct GMT_DATA_HASH {			/* Holds file hashes (probably SHA256) */
 	size_t size;				/* File size in bytes */
 };
 
+enum GMT_tile_coverage {	/* Values in any tile coverage grid (e.g., srtm_tiles.nc) */
+	GMT_NO_TILE      = 0,	/* No high-resolution data for this tile */
+	GMT_PARTIAL_TILE = 1,	/* There is data, but part of tile is ocean */
+	GMT_FULL_TILE    = 2	/* There is complete coverage on land */
+};
+
 #define GMT_SRTM_ONLY	1	/* Mode so that when srtm_relief* is used we do not blend in earth_relief_15s */
 
 #define GMT_HASH_SERVER_FILE "gmt_hash_server.txt"
 #define GMT_INFO_SERVER_FILE "gmt_data_server.txt"
 
+#define GMT_HASH_TIME_OUT		10L	/* Not waiting longer than this to time out on getting the hash file */
+#define GMT_CONNECT_TIME_OUT	10L	/* Not waiting longer than this to time out on getting a response from the server */
+
 #define GMT_TILE_EXTENSION_REMOTE  		"jp2"	/* Tile extension of JPEG2000 files to be downloaded */
 #define GMT_TILE_EXTENSION_REMOTE_LEN	3U		/* Length of JPEG2000 file extension */
 #define GMT_TILE_EXTENSION_LOCAL		"nc"	/* Tile extension of netCDF nc short int files to be saved */
 #define GMT_TILE_EXTENSION_LOCAL_LEN	2U		/* Length of nc short int file extension */
+
+#define GMT_IMAGE_DPU_VALUE	300	/* 300 dots per inch */
+#define GMT_IMAGE_DPU_UNIT	'i'	/* 300 dpts per inch */
 
 #endif /* GMT_REMOTE_H */

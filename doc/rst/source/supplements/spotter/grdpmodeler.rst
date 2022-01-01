@@ -12,16 +12,20 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdpmodeler** |-E|\ *rot_file* **-S**\ *flags*
+**gmt grdpmodeler** 
 [ *agegrdfile* ]
+|-E|\ *rot_file*\|\ *ID1-ID2*\|\ *lon*/*lat*/*angle*\ [**+i**]
+**-S**\ *flags*
 [ |-F|\ *polygonfile* ]
 [ |-G|\ *outgrid* ]
+[ |SYN_OPT-I| ]
 [ |SYN_OPT-R| ]
 [ |-T|\ *age* ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
 [ |SYN_OPT-h| ]
+[ |SYN_OPT-o| ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
@@ -71,14 +75,25 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Name of output grid. This is the grid with the model predictions
+.. |Add_outgrid| replace:: Name of output grid. This is the grid with the model predictions
     given the specified rotations. **Note**: If you specified more than one
     model prediction in **-S** then the filename *must* be a template
     that contains the format %s; this will be replaced with the corresponding
     tags az, dist, stage, vel, omega, dlon, dlat, lon, lat.
     If the **-G** option is not used then we create no grids and instead
     write *lon, lat, age, predictions* records to standard output.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
+
+.. _-I:
+
+.. include:: ../../explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-Rgeo.rst_
 
 .. _-T:
 
@@ -87,10 +102,10 @@ Optional Arguments
     age grid). This lets you evaluate the model at a snapshot in time.
     Required if no age grid was provided.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: ../../explain_-bi.rst_
@@ -100,6 +115,11 @@ Optional Arguments
 
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_-h.rst_
+
+.. include:: ../../explain_-ocols.rst_
+
+.. |Add_nodereg| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_nodereg.rst_
 
 .. include:: ../../explain_help.rst_
 

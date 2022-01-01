@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 #
+# GMT_KNOWN_FAILURE_WINDOWS
+#
 
 ps=gspline_5.ps
 

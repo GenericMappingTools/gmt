@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -218,10 +218,8 @@ GMT_LOCAL double okb_mag (unsigned int n_vert, unsigned int km, unsigned int pm,
 			z1     = loc_or[i].z;	z2 = loc_or[i+1].z;
 			ano_p  = eq_43(mz, c_psi, tg_psi, auxil, qsi2, eta2, z2) -
 			         eq_43(mz, c_psi, tg_psi, auxil, qsi1, eta1, z1);
+			ano += ano_p;
 		}
-		else
-			ano_p = 0;
-		ano += ano_p;
 	}
 	return (ano * mag_fac);
 }

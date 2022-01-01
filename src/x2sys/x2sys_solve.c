@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -175,26 +175,31 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -Ec|d|g|h|s|t|z -T<TAG> [<coedata>] [%s] [-W[+u]]\n\t[%s] [%s]%s[%s]\n\n",
+	GMT_Usage (API, 0, "usage: %s [<COEdbase>] -C<column> -Ec|d|g|h|s|t|z -T<TAG> [%s] [-W[+u]] [%s] [%s]%s[%s]\n",
 		name, GMT_V_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_x_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Specify the column name to process (e.g., faa, mag).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Equation to fit: specify <flag> to indicate model to fit per track:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c (constant offset):   Determine offset [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     d (drift by distance): Determine offset and drift-vs-distance rate.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g (gravity latitude):  Determine amplitude of latitude gravity function.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     h (magnetic heading):  Determine amplitude of heading magnetic function.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s (data scale):        Determine scaling factor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t (drift over time):   Determine offset and drift-vs-time rate.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     z (data scale/offset): Determine offset and scaling factor.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the x2sys tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<coedata> is the ASCII data output file from x2sys_list [or we read stdin].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [standard input].");
+	GMT_Usage (API, 1, "\n-C<column>");
+	GMT_Usage (API, -2, "Specify the column name to process (e.g., faa, mag).");
+	GMT_Usage (API, 1, "\n-Ec|d|g|h|s|t|z");
+	GMT_Usage (API, -2, "Equation to fit: specify <flag> to indicate model to fit per track:");
+	GMT_Usage (API, 3, "c: Constant offset... Determine offset [Default].");
+	GMT_Usage (API, 3, "d: Drift by distance. Determine offset and drift-vs-distance rate.");
+	GMT_Usage (API, 3, "g: Gravity latitude.. Determine amplitude of latitude gravity function.");
+	GMT_Usage (API, 3, "h: Magnetic heading.. Determine amplitude of heading magnetic function.");
+	GMT_Usage (API, 3, "s: Data scale........ Determine scaling factor.");
+	GMT_Usage (API, 3, "t: Drift over time... Determine offset and drift-vs-time rate.");
+	GMT_Usage (API, 3, "z: Data scale/offset. Determine offset and scaling factor.");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Weights are present in last column for weighted fit [no weights].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +u to report unweighted mean/std [Default, report weighted stats].\n");
+	GMT_Usage (API, 1, "\n-W[+u]");
+	GMT_Usage (API, -2, "Weights are present in last column for weighted fit [no weights]. "
+		"Append +u to report unweighted mean/std [Default, report weighted stats].");
 	GMT_Option (API, "bi,di,x,.");
 
 	return (GMT_MODULE_USAGE);
@@ -210,6 +215,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -225,10 +231,12 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'C':	/* Needed to report correctly */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'E':	/* Which model to fit */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				switch (opt->arg[0]) {
 					case 'c':
@@ -253,16 +261,18 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_SOLVE_CTRL *Ctrl, struct GM
 						Ctrl->E.mode = F_IS_SCALE_OFF;
 						break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized model: %s\n", opt->arg);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized model: %s\n", opt->arg);
 						n_errors++;
 						break;
 				}
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if (!strcmp (opt->arg, "+u") || opt->arg[0] == 'u')		/* Report unweighted statistics anyway */
 					Ctrl->W.unweighted_stats = true;

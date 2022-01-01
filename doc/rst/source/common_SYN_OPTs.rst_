@@ -1,5 +1,9 @@
 .. |SYN_OPT-B| replace:: |-B|\ [**p**\|\ **s**]\ *parameters*
 
+.. |SYN_OPT-D2| replace:: |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*]
+
+.. |SYN_OPT-D3| replace:: |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+v**\ *vname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*]
+
 .. |SYN_OPT-I| replace:: |-I|\ *increment*
 
 .. |SYN_OPT-R| replace:: |-R|\ *region*
@@ -24,11 +28,11 @@
 
 .. |SYN_OPT-c| replace:: **-c**\ :ref:`row,col|index <-c_full>`
 
-.. |SYN_OPT-d| replace:: **-d**\ :ref:`nodata <-d_full>`
+.. |SYN_OPT-d| replace:: **-d**\ :ref:`nodata <-d_full>`\ [**+c**\ *col*]\ 
 
-.. |SYN_OPT-di| replace:: **-di**\ :ref:`nodata <-di_full>`
+.. |SYN_OPT-di| replace:: **-di**\ :ref:`nodata <-di_full>`\ [**+c**\ *col*]\ 
 
-.. |SYN_OPT-do| replace:: **-do**\ :ref:`nodata <-do_full>`
+.. |SYN_OPT-do| replace:: **-do**\ :ref:`nodata <-do_full>`\ [**+c**\ *col*]\ 
 
 .. |SYN_OPT-e| replace:: **-e**\ :ref:`regexp <-e_full>`
 
@@ -64,7 +68,9 @@
 
 .. |SYN_OPT-r| replace:: **-r**\ :ref:`reg <nodereg_full>`
 
-.. |SYN_OPT-x| replace:: **-x**\ [[-]\ *n*]
+.. |SYN_OPT-w| replace:: **-w**\ :ref:`flags <-w_full>`
+
+.. |SYN_OPT-x| replace:: **-x**\ [[-]\ :ref:`n <core_full>`]
 
 .. |SYN_OPT-:| replace:: **-:**\ [**i**\|\ **o**]
 
@@ -72,8 +78,32 @@
 
 .. |SYN_OPT--| replace:: **--PAR**\ =\ *value*
 
-.. |SYN_OPT-Area| replace:: **-A**\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
+.. |SYN_OPT-Area| replace:: |-A|\ *min\_area*\ [/*min\_level*/*max\_level*][**+a**\ [**g**\|\ **i**][**s**\|\ **S**]][**+l**\|\ **r**][**+p**\ *percent*]
 
+.. |Add_-B_links| replace:: :ref:`(See full description) <-B_full>` :ref:`(See cookbook information)
+    <cookbook/options:Map frame and axes annotations: The **-B** option>`.
+
+.. |Add_-J_links| replace:: :ref:`(See full description) <-J_full>` :ref:`(See cookbook summary)
+    <cookbook/options:Coordinate transformations and map projections: The **-J** option>`
+    :ref:`(See projections table) <proj-codes>`.
+
+.. |Add_-R_auto_table| replace:: **Note**: If using modern mode and |-R| is not provided, the region
+   will be set based on previous plotting commands. If this is the first plotting command in the
+   :ref:`modern mode levels <cookbook/features:GMT Modern Mode Hierarchical Levels>` and |-R| is not
+   provided, the region will be automatically determined based on the data in *table*
+   (equivalent to using **-Ra**). |Add_-R_links|
+
+.. |Add_-R_links| replace:: :ref:`(See full description) <-R_full>` :ref:`(See cookbook information)
+    <cookbook/options:Data domain or map region: The **-R** option>`.
+
+.. |Add_-XY_links| replace:: :ref:`(See full description) <-XY_full>` :ref:`(See cookbook information)
+    <cookbook/options:Plot positioning and layout: The **-X** **-Y** options>`.
+
+.. |Add_-U_links| replace:: :ref:`(See full description) <-U_full>` :ref:`(See cookbook information)
+    <cookbook/options:Timestamps on plots: The **-U** option>`.
+
+.. |Add_-V_links| replace:: :ref:`(See full description) <-V_full>` :ref:`(See cookbook information)
+    <cookbook/options:Verbose feedback: The **-V** option>`.
 
 .. |br| raw:: html
 
@@ -84,157 +114,175 @@
 
    </span></a></strong>
 
-.. |-A| replace:: |h-A| **-A**\ |h-x|
+.. |-A| replace:: |h-A|\ **-A**\ |h-x|
 
 .. |h-A| raw:: html
 
    <a class="reference internal" href="#a"><span>
 
-.. |-B| replace:: |h-B| **-B**\ |h-x|
+.. |-B| replace:: |h-B|\ **-B**\ |h-x|
 
 .. |h-B| raw:: html
 
    <a class="reference internal" href="#b"><span>
 
-.. |-C| replace:: |h-C| **-C**\ |h-x|
+.. |-C| replace:: |h-C|\ **-C**\ |h-x|
 
 .. |h-C| raw:: html
 
    <a class="reference internal" href="#c"><span>
 
-.. |-D| replace:: |h-D| **-D**\ |h-x|
+.. |-D| replace:: |h-D|\ **-D**\ |h-x|
 
 .. |h-D| raw:: html
 
    <a class="reference internal" href="#d"><span>
 
-.. |-E| replace:: |h-E| **-E**\ |h-x|
+.. |-E| replace:: |h-E|\ **-E**\ |h-x|
 
 .. |h-E| raw:: html
 
    <a class="reference internal" href="#e"><span>
 
-.. |-F| replace:: |h-F| **-F**\ |h-x|
+.. |-F| replace:: |h-F|\ **-F**\ |h-x|
 
 .. |h-F| raw:: html
 
    <a class="reference internal" href="#f"><span>
 
-.. |-G| replace:: |h-G| **-G**\ |h-x|
+.. |-G| replace:: |h-G|\ **-G**\ |h-x|
 
 .. |h-G| raw:: html
 
    <a class="reference internal" href="#g"><span>
 
-.. |-H| replace:: |h-H| **-H**\ |h-x|
+.. |-H| replace:: |h-H|\ **-H**\ |h-x|
 
 .. |h-H| raw:: html
 
    <a class="reference internal" href="#h"><span>
 
-.. |-I| replace:: |h-I| **-I**\ |h-x|
+.. |-I| replace:: |h-I|\ **-I**\ |h-x|
 
 .. |h-I| raw:: html
 
    <a class="reference internal" href="#i"><span>
 
-.. |-J| replace:: |h-J| **-J**\ |h-x|
+.. |-J| replace:: |h-J|\ **-J**\ |h-x|
 
 .. |h-J| raw:: html
 
    <a class="reference internal" href="#j"><span>
 
-.. |-K| replace:: |h-K| **-K**\ |h-x|
+.. |-Jz| replace:: |h-Jz|\ **-Jz**\ |h-x|
+
+.. |h-Jz| raw:: html
+
+   <a class="reference internal" href="#jz"><span>
+
+.. |-K| replace:: |h-K|\ **-K**\ |h-x|
 
 .. |h-K| raw:: html
 
    <a class="reference internal" href="#k"><span>
 
-.. |-L| replace:: |h-L| **-L**\ |h-x|
+.. |-L| replace:: |h-L|\ **-L**\ |h-x|
 
 .. |h-L| raw:: html
 
    <a class="reference internal" href="#l"><span>
 
-.. |-M| replace:: |h-M| **-M**\ |h-x|
+.. |-M| replace:: |h-M|\ **-M**\ |h-x|
 
 .. |h-M| raw:: html
 
    <a class="reference internal" href="#m"><span>
 
-.. |-N| replace:: |h-N| **-N**\ |h-x|
+.. |-N| replace:: |h-N|\ **-N**\ |h-x|
 
 .. |h-N| raw:: html
 
    <a class="reference internal" href="#n"><span>
 
-.. |-O| replace:: |h-O| **-O**\ |h-x|
+.. |-O| replace:: |h-O|\ **-O**\ |h-x|
 
 .. |h-O| raw:: html
 
    <a class="reference internal" href="#o"><span>
 
-.. |-P| replace:: |h-P| **-P**\ |h-x|
+.. |-P| replace:: |h-P|\ **-P**\ |h-x|
 
 .. |h-P| raw:: html
 
    <a class="reference internal" href="#p"><span>
 
-.. |-Q| replace:: |h-Q| **-Q**\ |h-x|
+.. |-Q| replace:: |h-Q|\ **-Q**\ |h-x|
 
 .. |h-Q| raw:: html
 
    <a class="reference internal" href="#q"><span>
 
-.. |-R| replace:: |h-R| **-R**\ |h-x|
+.. |-R| replace:: |h-R|\ **-R**\ |h-x|
 
 .. |h-R| raw:: html
 
    <a class="reference internal" href="#r"><span>
 
-.. |-S| replace:: |h-S| **-S**\ |h-x|
+.. |-S| replace:: |h-S|\ **-S**\ |h-x|
 
 .. |h-S| raw:: html
 
    <a class="reference internal" href="#s"><span>
 
-.. |-T| replace:: |h-T| **-T**\ |h-x|
+.. |-Sb| replace:: |h-Sb|\ **-Sb**\ |h-x|
+
+.. |h-Sb| raw:: html
+
+   <a class="reference internal" href="#sb"><span>
+
+.. |-Sf| replace:: |h-Sf|\ **-Sf**\ |h-x|
+
+.. |h-Sf| raw:: html
+
+   <a class="reference internal" href="#sf"><span>
+
+.. |-T| replace:: |h-T|\ **-T**\ |h-x|
 
 .. |h-T| raw:: html
 
    <a class="reference internal" href="#t"><span>
 
-.. |-U| replace:: |h-U| **-U**\ |h-x|
+.. |-U| replace:: |h-U|\ **-U**\ |h-x|
 
 .. |h-U| raw:: html
 
    <a class="reference internal" href="#u"><span>
 
-.. |-V| replace:: |h-V| **-V**\ |h-x|
+.. |-V| replace:: |h-V|\ **-V**\ |h-x|
 
 .. |h-V| raw:: html
 
    <a class="reference internal" href="#v"><span>
 
-.. |-W| replace:: |h-W| **-W**\ |h-x|
+.. |-W| replace:: |h-W|\ **-W**\ |h-x|
 
 .. |h-W| raw:: html
 
    <a class="reference internal" href="#w"><span>
 
-.. |-X| replace:: |h-X| **-X**\ |h-x|
+.. |-X| replace:: |h-X|\ **-X**\ |h-x|
 
 .. |h-X| raw:: html
 
    <a class="reference internal" href="#x"><span>
 
-.. |-Y| replace:: |h-Y| **-Y**\ |h-x|
+.. |-Y| replace:: |h-Y|\ **-Y**\ |h-x|
 
 .. |h-Y| raw:: html
 
    <a class="reference internal" href="#y"><span>
 
-.. |-Z| replace:: |h-Z| **-Z**\ |h-x|
+.. |-Z| replace:: |h-Z|\ **-Z**\ |h-x|
 
 .. |h-Z| raw:: html
 

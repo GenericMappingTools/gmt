@@ -46,13 +46,17 @@ have the same registration as the input grid.
 Required Arguments
 ------------------
 
-*ingrid*
-    The name of the input 2-D binary grid file. (See GRID FILE FORMAT below.)
+.. |Add_ingrid| replace:: 2-D gridded data file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outgrid*
-    The name of the output grid file. (See GRID FILE FORMAT below.)
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -61,10 +65,10 @@ Optional Arguments
 
 .. include:: explain_-I.rst_
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-T:
 
@@ -73,10 +77,10 @@ Optional Arguments
     grid-registered, the output will be pixel-registered and vice-versa.
     This is a *destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -91,8 +95,6 @@ Optional Arguments
 .. include:: explain_help.rst_
 
 .. include:: explain_float.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 .. include:: explain_grdresample2.rst_
 

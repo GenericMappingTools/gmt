@@ -21,7 +21,7 @@ Synopsis
 [ |-D|\ **b**\ *stopdate* ]
 [ |-F| ]
 [ |-G|\ **d**\|\ **t**\|\ **n**\ *gap* ]
-[ |-I|\ *ignore* ]
+[ |-I|\ **a\|c\|m\|t** ]
 [ |-K| ]
 [ |-L|\ *trackticks* ]
 [ |SYN_OPT-O| ]
@@ -38,7 +38,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: mgd77track_common.rst_
+.. include:: mgd77track.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: ../../common_classic.rst_
 
@@ -57,7 +59,9 @@ plot to the default printer, enter the following command:
     gmt mgd77track 01010007 -R70W/20E/40S/20N -Jm0.1 -B10g5 -A10 \
                    -La1da1000kf6hf250k \| lpr
 
-.. include:: mgd77track_notes.rst_
+.. include:: mgd77track.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

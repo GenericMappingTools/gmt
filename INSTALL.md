@@ -2,10 +2,9 @@
 
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
 
-GMT is available on Windows, macOS, Linux and FreeBSD.
+GMT is available on Windows, macOS, Linux, FreeBSD and OpenBSD.
 Source and binary packages are provided for the latest release,
-and can be downloaded from the [GMT main site](https://www.generic-mapping-tools.org)
-and [the GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
+and can be downloaded from the [GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
 
 This file provides instructions for installing GMT binary packages on
 different operating systems. Please refer to the [Building Instructions](BUILDING.md)
@@ -15,7 +14,7 @@ for compiling GMT source package (either stable release or development version).
 
 - [Windows](#windows)
 - [macOS](#macos)
-  * [Application Bundle](#application-bundle)
+  * [Application Bundles](#application-bundles)
   * [Install via Homebrew](#install-via-homebrew)
   * [Install via Macports](#install-via-macports)
 - [Linux](#linux)
@@ -23,50 +22,71 @@ for compiling GMT source package (either stable release or development version).
   * [RHEL/CentOS](#rhelcentos)
   * [Ubuntu/Debian](#ubuntudebian)
   * [ArchLinux](#archlinux)
+  * [Gentoo](#gentoo)
 - [Cross Platform Install Instructions](#cross-platform-install-instructions)
   * [Install via conda](#install-via-conda)
 - [FreeBSD](#freebsd)
-  * [Install via Ports](#install-via-ports)
+  * [Install via Ports](#install-via-freebsd-ports)
+- [OpenBSD](#openbsd)
+  * [Install via Ports](#install-via-openbsd-ports)
 
 ## Windows
 
 We provide 32 and 64 bit standalone installers (e.g., gmt-6.x.x-win64.exe)
-on the [GMT main site](https://www.generic-mapping-tools.org).
+in the [GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
 The installers come with GDAL, FFmpeg, and Ghostscript pre-installed.
 
 In addition to the GMT installer, you also need to download and install
 [GraphicsMagick](http://www.graphicsmagick.org/) if you want to create
 animated GIFs.
 
+
+**NOTE:**
+There are several options for using [GMT on non-UNIX systems](https://docs.generic-mapping-tools.org/latest/cookbook/non-unix-platforms.html)
+such as Windows, including [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/),
+MinGW/MSYS2, Cygwin, or DOS batch scripts. The last option will not provide you
+with any UNIX tools so you will be limited to what you can do with DOS batch files.
+One simple option for accessing a UNIX style bash terminal is *Git for Windows*,
+which can be downloaded from [their official website](https://gitforwindows.org/).
+
 **NOTE:**
 At the installation step, you may get the warning message:
 
 > Warning! Failed to add GMT to PATH. Please add the GMT bin path to PATH manually.
 
-Usually it means your system variable **PATH** is already too long and the GMT
+Usually it means your system variable `PATH` is already too long and the GMT
 installer can't add its path to the variable. As it says, you need to ignore
 the warning message, and then manually add the GMT bin path
-(e.g., `C:\programs\gmt6`) to **PATH** after finishing the installation.
-If you don't know how to manually modify **PATH**, just search Google for
+(e.g., `C:\programs\gmt6\bin`) to `PATH` after finishing the installation.
+If you don't know how to manually modify `PATH`, just search Google for
 "How to change windows path variable".
 
 ## macOS
 
-### Application Bundle
+### Application Bundles
 
-We provide macOS application bundle on the [GMT main site](https://www.generic-mapping-tools.org).
-The bundle comes with GDAL, FFmpeg, Ghostscript and GraphicsMagick pre-installed.
+We provide macOS application bundles for Intel and ARM architectures in the [GitHub repository](https://github.com/GenericMappingTools/gmt/releases).
+The bundles come with GDAL, FFmpeg, Ghostscript and GraphicsMagick pre-installed.
 
-Download the application bundle (gmt-6.x.x-darwin-x86_64.dmg), double-click to mount it
-and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
+Download the suitable application bundle (gmt-6.x.x-darwin-x86_64.dmg or gmt-6.x.x-darwin-arm64.dmg),
+double-click to mount it and drag GMT-6.x.x.app to the "Applications" folder (or any other folder).
 
 GMT-6.x.x.app opens a terminal from which you can invoke GMT programs and scripts.
 If you like, you can add the GMT programs contained in the application bundle to
 your search path for executables. For that, just run GMT-6.x.x.app once and follow
 the instructions at the end of the GMT splash screen.
 
-**Note**: The installer is always built for the latest macOS version only,
-and works for macOS Sierra (10.12) or higher.
+**Note**: The installers are always built for the latest macOS version only. The
+table below lists macOS compatibility requirements for the bundle. The arm64
+version requires a computer with the M1 Apple Silicon chip.
+
+| **GMT Version** | **Minimum MacOS** |
+|-------------|-------------|
+| 6.2         | macOS 10.15 |
+| 6.1.1       | macOS 10.15 |
+| 6.1.0       | macOS 10.15 |
+| 6.0.0       | macOS 10.13 |
+| 5.4         | macOS 10.12 |
 
 ### Install via Homebrew
 
@@ -109,6 +129,9 @@ Install [MacPorts](https://www.macports.org) and then the required ports in this
 
 Optional FFTW-3 support and experimental OpenMP parallel acceleration can be
 enabled with the `+fftw3` and `+openmp` flags.
+
+GMT is installed in `/opt/local/lib/gmt6`. To use GMT in command line or scripts,
+you need to add `/opt/local/lib/gmt6/bin` to your `PATH`.
 
 You also need to install other GMT run-time dependencies separately:
 
@@ -181,8 +204,20 @@ Install other GMT dependencies (some are optional) via:
 
 ### ArchLinux
 
-ArchLinux official repository doesn't provide GMT packages, but AUR (ArchLinux User Repository) does.
-You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericMappingTools/gmt/wiki/Install-latest-GMT-on-ArchLinux) in the wiki.
+Install GMT via:
+
+    sudo pacman -S gmt
+
+ArchLinux official repository doesn't provide GMT extra data yet, but AUR (ArchLinux User Repository) does.
+You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericMappingTools/gmt/wiki/Install-latest-GMT-on-ArchLinux) in the wiki for those.
+
+### Gentoo
+
+**NOTE:** This may provide old GMT versions. Consider [building from source](BUILDING.md).
+
+Install GMT via:
+
+    sudo emerge --verbose --ask sci-geosciences/gmt
 
 ## Cross Platform Install Instructions
 
@@ -191,7 +226,7 @@ You can follow the [Install latest GMT on ArchLinux](https://github.com/GenericM
 You can use the [conda package manager](https://conda.io/) that comes with the
 [Anaconda Python Distribution](https://www.anaconda.com/distribution/) to install GMT.
 
-1. Download and install the [Python **3.7** **64-bit** version of Miniconda](https://conda.io/en/latest/miniconda.html).
+1. Download and install the [Python **3.8** **64-bit** version of Miniconda](https://conda.io/en/latest/miniconda.html).
    This will give you access to the conda package manager. **Make sure you select to
    have conda added to your `PATH` when asked by the installer**. If you have
    the Anaconda Python distribution installed, you won't need to do this step.
@@ -224,6 +259,16 @@ latest release from source](BUILDING.md).
 
 The FreeBSD Ports Collection is a diverse collection of utility and application software that has been ported to FreeBSD.
 
+**Precompiled**
+
+Install precompiled gmt binaries with
+
+```
+$ pkg install gmt
+```
+
+**Compile from Ports**
+
 If not done already, set up the **Ports Collection** (see
 https://www.freebsd.org/doc/en_US.ISO8859-1/books/handbook/ports-using.html):
 
@@ -242,4 +287,22 @@ Then change into directory `/usr/ports/graphics/gmt` and build:
 
 ```
 make install clean
+```
+
+## OpenBSD
+
+GMT may be installed on OpenBSD using Ports or from source.
+
+**NOTE:** The Ports Collection may provide old GMT versions. If you want the latest GMT release, consider [building the
+latest release from source](BUILDING.md).
+
+### Install via Ports
+For more information, please refer to relevant documentation from the OpenBSD project.
+
+**Precompiled**
+
+Install precompiled gmt binaries with
+
+```
+$ pkg_add gmt
 ```

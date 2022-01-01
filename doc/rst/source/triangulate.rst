@@ -16,7 +16,7 @@ Synopsis
 [ |-C|\ *slpfile* ]
 [ |-D|\ **x**\|\ **y** ]
 [ |-E|\ *empty* ]
-[ |-G|\ *grdfile* ]
+[ |-G|\ *outgrid* ]
 [ |SYN_OPT-I| ]
 [ |-J|\ *parameters* ]
 [ |-M| ]
@@ -24,6 +24,7 @@ Synopsis
 [ |-Q|\ [**n**] ]
 [ |SYN_OPT-R| ]
 [ |-S| ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-b| ]
@@ -34,6 +35,8 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -44,7 +47,7 @@ Description
 
 **triangulate** reads one or more ASCII [or binary] files (or standard
 input) containing x,y[,z] and performs Delaunay triangulation, i.e., it
-find how the points should be connected to give the most equilateral
+finds how the points should be connected to give the most equilateral
 triangulation possible. If a map projection (give **-R** and **-J**) is
 chosen then it is applied before the triangulation is calculated. By
 default, the output is triplets of point id numbers that make up each
@@ -93,23 +96,25 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    Use triangulation to grid the data onto an even grid (specified with
-    **-R** **-I**). Append the name of the output grid file. The
+.. |Add_outgrid| replace:: Use triangulation to grid the data onto an even grid (specified with
+    |-R| and |-I|). Append the name of the output grid file. The
     interpolation is performed in the original coordinates, so if your
     triangles are close to the poles you are better off projecting all
     data to a local coordinate system before using **triangulate** (this
     is true of all gridding routines) or instead select **sphtriangulate**.
     For natural nearest neighbor gridding you must add **-Qn**.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
 .. include:: explain_-I.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-M:
 
@@ -132,10 +137,10 @@ Optional Arguments
     output. Optionally, append **n** for combining the edges into
     closed Voronoi polygons.
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -150,10 +155,10 @@ Optional Arguments
     the **-G** option [Default will not output the triangulation or
     Voronoi polygons is gridding is selected].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -185,6 +190,10 @@ Optional Arguments
 
 .. |Add_nodereg| replace:: (Only valid with **-G**).
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
+
+.. include:: explain_-w.rst_
 
 .. include:: explain_colon.rst_
 

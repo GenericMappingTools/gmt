@@ -4,26 +4,27 @@
 
 # Generic Mapping Tools
 
-[![Azure](https://dev.azure.com/GenericMappingTools/GMT/_apis/build/status/GenericMappingTools.gmt?branchName=master)](https://dev.azure.com/GenericMappingTools/GMT/_build/?definitionId=2)
+![Tests](https://github.com/GenericMappingTools/gmt/workflows/Tests/badge.svg)
 [![CodeCov](https://img.shields.io/codecov/c/github/GenericMappingTools/gmt.svg)](https://codecov.io/gh/GenericMappingTools/gmt/)
 [![Coverity](https://scan.coverity.com/projects/7153/badge.svg)](https://scan.coverity.com/projects/gmt)
 [![Documentation (development version)](https://img.shields.io/badge/docs-development-green.svg)](http://docs.generic-mapping-tools.org/dev/)
 [![GitHub release](https://img.shields.io/github/release/GenericMappingTools/gmt)](https://github.com/GenericMappingTools/gmt/releases)
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.0-4baaaa.svg)](CODE_OF_CONDUCT.md)
 
 ## What is GMT?
 
 GMT is an open source collection of about 90 command-line tools for manipulating
 geographic and Cartesian data sets (including filtering, trend fitting, gridding,
 projecting, etc.) and producing high-quality illustrations ranging from simple x–y
-plots via contour maps to artificially illuminated surfaces and 3D perspective
-views. The GMT supplements add another 50 more specialized and discipline-specific
+plots via contour maps to artificially illuminated surfaces, 3D perspective
+views and animations. The GMT supplements add another 50 more specialized and discipline-specific
 tools. GMT supports over 30 map projections and transformations and requires
 support data such as [GSHHG](http://www.soest.hawaii.edu/pwessel/gshhg/)
 coastlines, rivers, and political boundaries and optionally
 [DCW](http://www.soest.hawaii.edu/pwessel/dcw) country polygons.
 
-GMT is developed and maintained by [the GMT Team](AUTHORS.md),
-with help from a global set of [contributors](AUTHORS.md)
+GMT is developed and maintained by [the GMT Team](https://docs.generic-mapping-tools.org/dev/devdocs/team.html),
+with help from a global set of [contributors](THANKS.md)
 and support by the [National Science Foundation](http://www.nsf.gov/).
 
 ## The GMT World Domination
@@ -38,7 +39,7 @@ hobbyists.
 
 ## Installation
 
-GMT has been installed successfully under UNIX/Linux/macOS/FreeBSD on workstations. It
+GMT has been installed successfully under UNIX/Linux/macOS/FreeBSD/OpenBSD on workstations. It
 also installs under Windows and in UNIX emulators such as Cygwin or on virtual
 machines.  We anticipate few problems if you are installing the package on
 other platforms.
@@ -47,7 +48,7 @@ Note there are three GMT tar archives available (#3 is optional):
 
 1. gmt-6.x.x.tar.gz:          The GMT 6 distribution
 2. gshhg-gmt-2.x.x.tar.gz:    All five resolutions of GSHHG coastline data
-3. dcw-gmt-1.x.x.tar.gz:      Digital Chart of the World polygon data
+3. dcw-gmt-2.x.x.tar.gz:      Digital Chart of the World polygon data
 
 For macOS and Windows users there are separate installers available.
 You can obtain GMT and support data from the [GMT main site](https://www.generic-mapping-tools.org).
@@ -83,7 +84,7 @@ Contributions are welcome and appreciated. Please refer to the [contributing gui
 
 ## License
 
-Copyright (c) 1991-2020 by [the GMT Team](AUTHORS.md).
+Copyright (c) 1991-2021 by [the GMT Team](https://www.generic-mapping-tools.org/team.html).
 
 GMT is released under the
 [GNU Lesser General Public License](http://www.gnu.org/licenses/lgpl.html)
@@ -101,7 +102,7 @@ GMT may be linked with these libraries (* means optional):
 [Fastest Fourier Transform in the West (FFTW*)](http://www.fftw.org),
 [Linear Algebra Package (LAPACK*)](http://www.netlib.org/lapack/),
 [Basic Linear Algebra Subprograms (BLAS*)](http://www.netlib.org/blas/),
-[GLIB*](https://developer.gnome.org/glib/), and
+[GLIB*](https://wiki.gnome.org/Projects/GLib), and
 [ZLIB*](https://www.zlib.net). GMT may call these executables:
 GDAL (ogr2ogr, gdal_translate), [Ghostscript](https://www.ghostscript.com),
 [FFmpeg](https://www.ffmpeg.org),

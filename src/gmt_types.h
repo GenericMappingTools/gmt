@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,11 +66,11 @@ struct GMT_MATH_MACRO {
 struct GMT_KEYWORD_DICTIONARY {	/* Used for keyword-value lookup */
 	char separator;			/* Single character separating 2 or more identical specifications [0 for no repeat] */
 	char short_option;		/* Single character GMT option code */
-	char long_option[31];		/* Name of corresponding long option */
-	char short_directives[32];	/* Single character directives, comma-separated */
-	char long_directives[256];	/* Long name directives, comma-separated */
-	char short_modifiers[32];	/* Single character modifiers, comma-separated */
-	char long_modifiers[256];	/* Long name modifiers, comma-separated */
+	char long_option[GMT_LEN32-1];		/* Name of corresponding long option */
+	char short_directives[GMT_LEN32];	/* Single character directives, comma-separated */
+	char long_directives[GMT_LEN256];	/* Long name directives, comma-separated */
+	char short_modifiers[GMT_LEN32];	/* Single character modifiers, comma-separated */
+	char long_modifiers[GMT_LEN256];	/* Long name modifiers, comma-separated */
 };
 
 /*! Definition of structure use for finding optimal n_columns/n_rows for surface */
@@ -110,6 +110,12 @@ struct GMT_RANGE {
 	double west;
 	double east;
 	double center;	/* Forced to be 0-360 */
+};
+
+/*! For accessing singular values in sorted order */
+struct GMT_SINGULAR_VALUE {
+	double value;
+	unsigned int order;
 };
 
 /*! For information on 1-D array */
@@ -176,12 +182,14 @@ struct GMT_SUBPLOT {
 	double dim[2];			/* Dimension of entire subplot */
 	double origin[2];		/* Location of lower left figure origin set via -X -Y */
 	double off[2];			/* Offset from justification point of panel tag */
-	double clearance[4];		/* Space around text for surrounding textbox */
+	double soff[2];			/* Shade offset from justification point of panel tag */
+	double clearance[4];	/* Space around text for surrounding textbox */
 	double gap[4];			/* Shrink plottable region to make space for enhancements */
 	char refpoint[3];		/* Reference point for panel tag */
 	char justify[3];		/* Justification relative to refpoint */
 	char tag[GMT_LEN128];		/* Panel tag, e.g., a) */
 	char fill[GMT_LEN64];		/* Panel fill color */
+	char shade[GMT_LEN64];		/* Panel tag shade color */
 	char pen[GMT_LEN64];		/* Panel tag pen outline */
 	char Baxes[GMT_LEN128];		/* The -B setting for selected axes, including +color, tec */
 	char Btitle[GMT_LEN128];	/* The -B setting for any title */
@@ -244,6 +252,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	bool is_world;			/* true if map has 360 degrees of longitude range */
 	bool is_world_tm;			/* true if GMT_TM map is global? */
 	bool lon_wrap;			/* true when longitude wrapping over 360 degrees is allowed */
+	bool lat_wrap;			/* true when "latitude" wrapping over 180 degrees is allowed (may be periodic time in y-axis instead) */
 	bool z_periodic;			/* true if grid values are 0-360 degrees (phases etc) */
 	bool loxodrome;				/* true if we are computing loxodrome distances */
 	unsigned int meridian_straight;		/* 1 if meridians plot as straight lines, 2 for special case */
@@ -260,6 +269,8 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	double dlon;				/* Steps taken in longitude along gridlines (gets reset in gmt_init.c) */
 	double dlat;				/* Steps taken in latitude along gridlines (gets reset in gmt_init.c) */
 	double path_step;			/* Sampling interval if resampling of paths should be done */
+	double lon_wrap_range;		/* 360 for longitudes, but others values for periodic time */
+	double lat_wrap_range;		/* Usually means for for periodic time */
 	bool (*outside) (struct GMT_CTRL *, double, double);	/* Pointer to function checking if a lon/lat point is outside map */
 	bool (*overlap) (struct GMT_CTRL *, double, double, double, double);	/* Pointer to function checking for overlap between 2 regions */
 	bool (*will_it_wrap) (struct GMT_CTRL *, double *, double *, uint64_t, uint64_t *);	/* true if consecutive points indicate wrap */
@@ -277,6 +288,7 @@ struct GMT_MAP {		/* Holds all map-related parameters */
 	void (*get_crossings) (struct GMT_CTRL *, double *, double *, double, double, double, double);	/* Returns map crossings in x or y */
 	double (*geodesic_meter) (struct GMT_CTRL *, double, double, double, double);	/* pointer to geodesic function returning distance between two points points in meter */
 	double (*geodesic_az_backaz) (struct GMT_CTRL *, double, double, double, double, bool);	/* pointer to geodesic function returning azimuth or backazimuth between two points points */
+	void (*second_point) (struct GMT_CTRL *, double, double, double, double, double *, double *, double *);	/* pointer to function returning second point (and bakaz) given first point, az, and dist */
 };
 
 struct GMT_GCAL {	/* (proleptic) Gregorian calendar  */
@@ -347,6 +359,7 @@ struct GMT_PLOT {		/* Holds all plotting-related parameters */
 	bool substitute_pi;		/* true when -R or -B was given with pi and we want to use pi in annotations if possible */
 	unsigned int mode_3D;		/* Determines if we draw fore and/or back 3-D box lines [Default is both] */
 	unsigned int *pen;		/* Pen (PSL_MOVE = up, PSL_DRAW = down) for these points */
+	unsigned int color_seq_id[2];	/* Next sequential color entries (table,segment) in the auto-CPT list of colors from COLOR_SET */
 	struct GMT_PLOT_CALCLOCK calclock;
 	/* The rest of the struct contains pointers that may point to memory not included by this struct */
 	double *x;			/* Holds the x/y (inches) of a line to be plotted */
@@ -383,6 +396,7 @@ struct GMT_INTERNAL {
 	 * modified directly by user interaction. */
 	unsigned int func_level;	/* Keeps track of what level in a nested GMT_func calling GMT_func etc we are.  GMT_CONTROLLER (0) is initiating process (e.g. gmt.c) */
 	bool mem_set;			/* true when we have initialized the tmp memory already */
+	bool sample_along_arc;		/* true when sample1d need exact sampling along the arc */
 	size_t mem_cols;		/* Current number of allocated columns for temp memory */
 	size_t mem_rows;		/* Current number of allocated rows for temp memory */
 	size_t mem_txt_alloc;

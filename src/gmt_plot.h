@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -47,12 +47,13 @@
 #define GMT_SYMBOL_DRAW		((int)'D')
 #define GMT_SYMBOL_STROKE	((int)'S')
 #define GMT_SYMBOL_ARC		((int)'A')
-#define GMT_SYMBOL_ROTATE	((int)'R')
+#define GMT_SYMBOL_ROTATE	((int)'O')	/* Since R stands for rounded rectangle in plot */
 #define GMT_SYMBOL_VARROTATE	((int)'V')
 #define GMT_SYMBOL_AZIMROTATE	((int)'Z')
 #define GMT_SYMBOL_TEXTURE	((int)'T')
 #define GMT_SYMBOL_GEOVECTOR	((int)'=')
 #define GMT_SYMBOL_VARTEXT	((int)'L')
+#define GMT_SYMBOL_EPS	((int)'P')
 
 #define GMT_SYMBOL_LINE		0
 #define GMT_SYMBOL_NONE		((int)' ')
@@ -63,6 +64,7 @@
 /*! FRONT symbols */
 
 enum GMT_enum_front {GMT_FRONT_FAULT = 0,
+	GMT_FRONT_ITRIANGLE,
 	GMT_FRONT_TRIANGLE,
 	GMT_FRONT_SLIP,
 	GMT_FRONT_SLIPC,
@@ -112,7 +114,7 @@ struct GMT_VECT_ATTR {
 	bool parsed_v4;		/* true if we parsed old-style <vectorwidth/headlength/headwidth> attribute */
 	float v_angle;		/* Head angle */
 	float v_norm;		/* shrink when lengths are smaller than this */
-	float v_stem;		/* Min length in % of visible vector when head is large [10%] */
+	float v_norm_limit;	/* Only shrink down to this factor [0.25] */
 	float v_width;		/* Width of vector stem in inches */
 	float v_shape;		/* Shape of vector head [MAP_VECTOR_SHAPE] */
 	float h_length;		/* Length of vector head in inches */

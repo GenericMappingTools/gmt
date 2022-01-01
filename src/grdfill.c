@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 #define THIS_MODULE_MODERN_NAME	"grdfill"
 #define THIS_MODULE_LIB		"core"
 #define THIS_MODULE_PURPOSE	"Interpolate across holes in a grid"
-#define THIS_MODULE_KEYS	"<G{,>G}"
+#define THIS_MODULE_KEYS	"<G{,>?}"
 #define THIS_MODULE_NEEDS	""
 #define THIS_MODULE_OPTIONS	"-RVf"
 
@@ -58,6 +58,10 @@ struct GRDFILL_CTRL {
 		bool active;
 		unsigned int mode;	/* 0 = region, 1 = polygons */
 	} L;
+	struct GRDFILL_N {	/* -N<value> */
+		bool active;
+		float value;
+	} N;
 };
 
 static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new control structure */
@@ -80,23 +84,29 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <ingrid> [-A<mode><options>] [-G<outgrid>] [-L[p]]\n\t[%s] [%s] [%s] [%s]\n\n",
-		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s [-Ac|n|s[<arg>]] [-G%s] [-L[p]] [-N<value>] [%s] [%s] [%s] [%s]\n",
+		name, GMT_INGRID, GMT_OUTGRID, GMT_Rgeo_OPT, GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<ingrid> is the grid file with NaN-holes.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Specify algorithm and parameters for in-fill:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c<value> Fill in NaNs with the constant <value>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n<radius> Fill in NaNs with nearest neighbor values;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     append <max_radius> nodes for the outward search.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default radius is sqrt(nx^2+ny^2), with (nx,ny) the dimensions of the grid].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   s Fill in NaNs with a spline (optionally append tension).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G <outgrid> is the file to write the filled-in grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Just list the subregions w/e/s/n of each hole.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   No grid fill takes place and -G is ignored.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append p to write polygons corresponding to these regions.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of grid with NaN holes");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-Ac|n|s[<arg>]");
+	GMT_Usage (API, -2, "Specify algorithm and any required parameters for in-fill:");
+	GMT_Usage (API, 3, "c: Fill in NaN holes with the given constant <value>.");
+	GMT_Usage (API, 3, "n: Fill in NaN holes with nearest neighbor values; "
+		"append <max_radius> nodes for the outward search "
+		"[Default radius is sqrt(nx^2+ny^2), with (nx,ny) the dimensions of the grid].");
+	GMT_Usage (API, 3, "s: Fill in NaN holes with a spline (optionally append tension).");
+	GMT_Usage (API, -2, "Note: -A is required unless -L is used.");
+	gmt_outgrid_syntax (API, 'G', "Give filename for where to write the filled-in grid");
+	GMT_Usage (API, 1, "\n-L[p]");
+	GMT_Usage (API, -2, "Just list the sub-regions w/e/s/n of each hole. "
+		"No grid fill takes place and -G is ignored. "
+		"Optionally, append p to write polygons corresponding to these regions.");
+	GMT_Usage (API, 1, "\n-N<value>");
+	GMT_Usage (API, -2, "Set alternate node <value> to indicate a hole [Default looks for NaN-nodes].");
 	GMT_Option (API, "R,V,f,.");
 
 	return (GMT_MODULE_USAGE);
@@ -120,17 +130,18 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 			case '>':	/* Output file  */
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'c':	/* Constant fill */
@@ -152,6 +163,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 				break;
 
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (Ctrl->G.file) {
 					GMT_Report (API, GMT_MSG_ERROR, "Specify only one output file\n");
@@ -159,14 +171,26 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 				}
 				else {
 					Ctrl->G.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				}
 				break;
 
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0] == 'p')
 					Ctrl->L.mode = 1;
+				break;
+
+			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
+				Ctrl->N.active = true;
+				if (opt->arg[0] && !strchr ("Nn", opt->arg[0]))
+					Ctrl->N.value = (float) atof (opt->arg);
+				else {
+					GMT_Report (API, GMT_MSG_ERROR, "Option -N: No value (or NaN) given\n");
+					n_errors++;
+				}
 				break;
 
 			default:	/* Report bad options */
@@ -176,7 +200,9 @@ static int parse (struct GMT_CTRL *GMT, struct GRDFILL_CTRL *Ctrl, struct GMT_OP
 	}
 
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->In.file, "Must specify input grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->L.active), "Must specify an algorithm with -A unless -L is used\n");
 	n_errors += gmt_M_check_condition (GMT, !(Ctrl->L.active || Ctrl->G.file), "Must specify output grid file\n");
+	n_errors += gmt_M_check_condition (GMT, !(Ctrl->A.active || Ctrl->L.active), "Must specify either -A or -L\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -520,6 +546,14 @@ EXTERN_MSC int GMT_grdfill (void *V_API, int mode, void *args) {
 	else if (GMT_Read_Data (API, GMT_IS_GRID, GMT_IS_FILE, GMT_IS_SURFACE, GMT_DATA_ONLY, NULL, Ctrl->In.file, Grid) == NULL) {
 		Return (API->error);	/* Get all */
 	}
+
+	if (Ctrl->N.active) {	/* User wants a specific value to indicate a hole instead of NaN; replace those values with NaNs since that is what is expected below */
+		gmt_M_grd_loop (GMT, Grid, row, col, node) {	/* Loop over all grid nodes */
+			if (floatAlmostEqualZero (Grid->data[node], Ctrl->N.value))
+				Grid->data[node] = GMT->session.f_NaN;
+		}
+	}
+	/* Here any hole is identified as a patch of NaNs */
 
 	if (Ctrl->A.mode == ALG_NN) {	/* Do Eric Xu's NN algorithm and bail */
 		int64_t radius = lrint (Ctrl->A.value);

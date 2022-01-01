@@ -37,23 +37,26 @@ range of data values is required, or for reclassification of data values.
 Required Arguments
 ------------------
 
-*ingrid*
-    The input 2-D binary grid file.
+.. |Add_ingrid| replace:: The input 2-D binary grid file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-G:
 
-**-G**\ *outgrid*
-    *outgrid* is the modified output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 Optional Arguments
 ------------------
 
-.. _-R:
-
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of *ingrid* grid. If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of *ingrid* grid. If this subsection
+    exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -69,14 +72,12 @@ Optional Arguments
     your data are known to be integer values.  Repeat the option
     for as many replacements as are needed.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_help.rst_
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

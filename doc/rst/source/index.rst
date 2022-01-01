@@ -13,10 +13,11 @@ Quick links
    :columns: 3
 
    - :doc:`std-opts`
-   - :doc:`proj-codes`
+   - :ref:`Projections Specifications <proj-codes>`
    - :doc:`Default Settings (gmt.conf) <gmt.conf>`
    - :doc:`Colors <gmtcolors>`
    - :doc:`35 Postscript Fonts </cookbook/postscript-fonts>`
+   - :doc:`Using LaTeX in text </cookbook/gmt-latex>`
    - :doc:`Built-in CPTs </cookbook/cpts>`
    - :doc:`Built-in patterns </cookbook/predefined-patterns>`
    - :doc:`Octal Codes of Characters </cookbook/octal-codes>`
@@ -24,57 +25,72 @@ Quick links
    - :ref:`Pen Syntax <-Wpen_attrib>`
    - :ref:`Fill Syntax <-Gfill_attrib>`
    - :ref:`Grid Format Specifications <tbl-grdformats>`
+   - :doc:`theme-settings`
 
 .. Add a hidden toctree to suppress "document isn't included in any toctree" warnings
 .. toctree::
    :hidden:
 
    std-opts
-   proj-codes
    gmt.conf
    gmtcolors
+   theme-settings
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Getting started
+.. panels::
 
-   gallery
-   animations
-   tutorial
+    .. toctree::
+        :maxdepth: 1
+        :caption: Getting started
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Reference documentation
+        gallery
+        animations
+        tutorial
+        tutorial_jl
 
-   modules
-   cookbook
-   datasets
+    ---
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Resources
+    .. toctree::
+        :maxdepth: 1
+        :caption: Reference documentation
 
-   users-contrib-scripts
-   users-contrib-symbols
-   changes
-   deprecated-defaults
-   switching
-   migrating
+        modules
+        cookbook
+        datasets
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Classic Mode
+    ---
 
-   std-opts-classic
-   modules-classic
+    .. toctree::
+        :maxdepth: 1
+        :caption: Resources
 
-.. toctree::
-   :maxdepth: 1
-   :caption: Developer Resources
+        changes
+        users-contrib-scripts
+        users-contrib-symbols
+        deprecated-defaults
+        switching
+        migrating
 
-   Contributing Guide <https://github.com/GenericMappingTools/gmt/blob/master/CONTRIBUTING.md>
-   Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
-   reStructuredText Cheatsheet <rst-cheatsheet>
-   Debugging GMT <debug>
-   GMT C API <api>
-   PostScriptLight C API <postscriptlight>
+    ---
+
+    .. toctree::
+        :maxdepth: 1
+        :caption: Classic Mode
+
+        std-opts-classic
+        modules-classic
+
+    ---
+
+    .. toctree::
+        :maxdepth: 1
+        :caption: Development
+
+        Code of Conduct <https://github.com/GenericMappingTools/gmt/blob/master/CODE_OF_CONDUCT.md>
+        /devdocs/contributing
+        /devdocs/maintenance
+        /devdocs/team
+        reStructuredText Cheatsheet </devdocs/rst-cheatsheet>
+        Debugging GMT </devdocs/debug>
+        GMT C API </devdocs/api>
+        PostScriptLight C API </devdocs/postscriptlight>
+        /devdocs/devdocs

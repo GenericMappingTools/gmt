@@ -23,7 +23,9 @@ Synopsis
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
+[ |SYN_OPT-e| ]
 [ |SYN_OPT-f| ]
+[ |SYN_OPT-g| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-n| ]
@@ -61,7 +63,7 @@ Required Arguments
 
 *outgrid*
     The name of a 2-D grid file that will hold the final result. (See
-    GRID FILE FORMATS below).
+    :ref:`Grid File Formats <grd_inout_full>`).
 
 Optional Arguments
 ------------------
@@ -97,12 +99,12 @@ Optional Arguments
 **-N**
     Turn off strict domain match checking when multiple grids are
     manipulated [Default will insist that each grid domain is within
-    1e-4 \* grid_spacing of the domain of the first grid listed].
+    :math:`10^{-4}` times the grid spacing of the domain of the first grid listed].
 
-.. _-R:
-
-.. |Add_-R| unicode:: 0x20 .. just an invisible code
+.. |Add_-R| replace:: |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -113,10 +115,10 @@ Optional Arguments
     follow **-S** with a reducing operator, i.e., from the list ADD, AND, MAD,
     LMSSCL, MAX, MEAN, MEDIAN, MIN, MODE, MUL, RMS, STD, SUB, VAR or XOR.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. include:: explain_-aspatial.rst_
 
@@ -127,6 +129,9 @@ Optional Arguments
 
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_
+
+.. |Add_-e| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-e.rst_
 
 .. |Add_-f| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-f.rst_
@@ -151,11 +156,11 @@ Optional Arguments
 Operators
 ---------
 
-Choose among the following 224 operators. "args" are the number of input
+Choose among the following operators. "Args" are the number of input
 and output arguments.
 
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| Operator      | args  | Returns                                                                                                |
+| Operator      | Args  | Returns                                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **ABS**       | 1 1   | abs (A)                                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -191,9 +196,9 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **BPDF**      | 3 1   | Binomial probability density function for p = A, n = B, and x = C                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **BEI**       | 1 1   | bei (A)                                                                                                |
+| **BEI**       | 1 1   | Kelvin function bei (A)                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **BER**       | 1 1   | ber (A)                                                                                                |
+| **BER**       | 1 1   | Kelvin function ber (A)                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **BITAND**    | 2 1   | A & B (bitwise AND operator)                                                                           |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -244,6 +249,8 @@ and output arguments.
 | **CSC**       | 1 1   | csc (A) (A in radians)                                                                                 |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CSCD**      | 1 1   | csc (A) (A in degrees)                                                                                 |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **CUMSUM**    | 2 1   | Cumulative sum of each row (B=±1|3) or column (B=±2|4) in A. Sign of B gives direction of summation    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **CURV**      | 1 1   | Curvature of A (Laplacian)                                                                             |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -299,6 +306,8 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FCRIT**     | 3 1   | F distribution critical value for alpha = A, nu1 = B, and nu2 = C                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **FISHER**    | 3 1   | Fisher probability density function at nodes for center lon = A, lat = B, with kappa = C               |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FLIPLR**    | 1 1   | Reverse order of values in each row                                                                    |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **FLIPUD**    | 1 1   | Reverse order of values in each column                                                                 |
@@ -349,9 +358,9 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **K1**        | 1 1   | Modified Bessel function of A (2nd kind, order 1)                                                      |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **KEI**       | 1 1   | kei (A)                                                                                                |
+| **KEI**       | 1 1   | Kelvin function kei (A)                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
-| **KER**       | 1 1   | ker (A)                                                                                                |
+| **KER**       | 1 1   | Kelvin function ker (A)                                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **KM2DEG**    | 1 1   | Converts Kilometers to Spherical Degrees                                                               |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
@@ -559,6 +568,8 @@ and output arguments.
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **VARW**      | 2 1   | Weighted variance of A for weights in B                                                                |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
+| **VPDF**      | 3 1   | Von Mises density distribution P(x,mu,kappa), with x = A, mu = B, and kappa = C                        |
++---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **WCDF**      | 3 1   | Weibull cumulative distribution function for x = A, scale = B, and shape = C                           |
 +---------------+-------+--------------------------------------------------------------------------------------------------------+
 | **WCRIT**     | 3 1   | Weibull distribution critical value for alpha = A, scale = B, and shape = C                            |
@@ -733,15 +744,19 @@ Notes On Operators
    only r,g,b and h,s,v triplet conversions, but also l,a,b (CIE L a b ) and
    sRGB (x, y, z) conversions between all four color spaces.
 
-#. The DAYNIGHT operator returns a grid with ones on the side facing the given
+#. The **DAYNIGHT** operator returns a grid with ones on the side facing the given
    sun location at (A,B).  If the transition width (C) is zero then we get
    either 1 or 0, but if C is nonzero then we approximate the step function
    using an atan-approximation instead.  Thus, the values are never exactly
    0 or 1, but close, and the smaller C the closer we get.
 
-.. include:: explain_float.rst_
+#. The **VPDF** operator expects angles in degrees.
 
-.. include:: explain_grd_inout_short.rst_
+#. The **CUMSUM** operator normally resets the accumulated sums at the end of a
+   row or column.  Use ±3 or ±4 to have the accumulated sums continue with the
+   start of the next row or column.
+
+.. include:: explain_float.rst_
 
 .. include:: explain_grd_coord.rst_
 
@@ -826,7 +841,7 @@ per node of all the grids matching the name model_*.grd using::
 
 To create a geotiff with resolution 0.5x0.5 degrees with distances in km from the coast line, use::
 
-    grdmath -RNO,IS -Dc -I.5 LDISTG = distance.tif=gd:GTIFF
+    gmt grdmath -RNO,IS -Dc -I.5 LDISTG = distance.tif=gd:GTIFF
 
 References
 ----------

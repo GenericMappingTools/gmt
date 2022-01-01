@@ -125,7 +125,12 @@ Optional Arguments
     keys instead of numerical entries then append **+k**\ *keys*, where
     *keys* is either a file with one key per record or a single letter (e.g., D),
     then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
-    For comma-separated lists of keys, use **-T** instead.
+    For comma-separated lists of keys, use **-T** instead.  **Note**: If **+cM** is given and the number
+    of categories is 12, then we automatically create a list of month names.
+    Likewise, if **+cD** is given and the number of categories is 7 then we
+    make a list of weekday names.  The format of these labels will depend on the
+    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
+    :term:`TIME_WEEK_START` settings.
 
 .. _-G:
 
@@ -140,7 +145,7 @@ Optional Arguments
 **-H**\
     Modern mode only: Write the CPT to standard output as well [Default saves
     the CPT as the session current CPT]. Required for scripts used to make
-    animations via :doc:`movie` where we must pass named CPT files.
+    animations via :doc:`movie` and :doc:`batch` where we must pass named CPT files.
 
 .. _-I:
 
@@ -179,7 +184,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *mode*
-    Determine a suitable range for the **-T** option from the input table(s) (or stdin).
+    Determine a suitable range for the **-T** option from the input table(s) (or standard input).
     Choose from several types of range determinations:
     **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
@@ -202,10 +207,10 @@ Optional Arguments
     up categorical CPTs with string keys you can also give a comma-separated
     list of your keys.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 

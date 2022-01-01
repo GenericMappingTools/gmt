@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -295,7 +295,7 @@ struct OGR_FEATURES *gmt_ogrread2(struct GMT_CTRL *GMT, struct OGRREAD_CTRL *Ctr
 	hDS = GDALOpenEx(Ctrl->name, GDAL_OF_VECTOR, NULL, NULL, NULL);
 	if (hDS == NULL) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open data source <%s>\n", Ctrl->name);
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
@@ -303,7 +303,7 @@ struct OGR_FEATURES *gmt_ogrread2(struct GMT_CTRL *GMT, struct OGRREAD_CTRL *Ctr
 	if (nLayers < 1) {
 		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No OGR layers available.\n");
 		GDALClose(hDS);
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
@@ -327,7 +327,7 @@ struct OGR_FEATURES *gmt_ogrread2(struct GMT_CTRL *GMT, struct OGRREAD_CTRL *Ctr
 		if (Ctrl->layer >= nLayers) {
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Selected layer (%d) is larger than n layers in file.\n", Ctrl->layer+1);
 			GDALClose(hDS);
-			GDALDestroyDriverManager();
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
 			return NULL;
 		}
 		first_layer = Ctrl->layer;	last_layer = Ctrl->layer + 1;
@@ -409,6 +409,6 @@ struct OGR_FEATURES *gmt_ogrread2(struct GMT_CTRL *GMT, struct OGRREAD_CTRL *Ctr
 	}
 
 	GDALClose(hDS);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	return out;
 }

@@ -2,7 +2,6 @@ Modules (Classic Mode)
 ======================
 
 .. note::
-
    Looking for the *modern mode* modules like ``begin`` and ``figure``? See the
    :doc:`equivalent page for modern mode <modules>`.
 
@@ -41,7 +40,6 @@ All modules are requested via a call to the :doc:`gmt` program.
     gmtconnect
     gmtconvert
     gmtdefaults
-    grdgdal
     gmtget
     gmtinfo
     gmtlogo-classic
@@ -51,6 +49,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     gmtset
     gmtsimplify
     gmtspatial
+    gmtsplit
     gmtvector
     gmtwhich
     grd2cpt
@@ -65,6 +64,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     grdfft
     grdfill
     grdfilter
+    grdgdal
     grdgradient
     grdhisteq
     grdimage-classic
@@ -77,6 +77,7 @@ All modules are requested via a call to the :doc:`gmt` program.
     grdpaste
     grdproject
     grdsample
+    grdselect
     grdtrack
     grdtrend
     grdvector-classic
@@ -112,7 +113,6 @@ All modules are requested via a call to the :doc:`gmt` program.
     sphdistance
     sphinterpolate
     sphtriangulate
-    splitxyz
     surface
     trend1d
     trend2d
@@ -207,6 +207,7 @@ Core Modules
     - :doc:`gmtset`
     - :doc:`gmtsimplify`
     - :doc:`gmtspatial`
+    - :doc:`gmtsplit`
     - :doc:`gmtvector`
     - :doc:`gmtwhich`
     - :doc:`grd2cpt`
@@ -233,6 +234,7 @@ Core Modules
     - :doc:`grdpaste`
     - :doc:`grdproject`
     - :doc:`grdsample`
+    - :doc:`grdselect`
     - :doc:`grdtrack`
     - :doc:`grdtrend`
     - :doc:`grdvector-classic`
@@ -268,7 +270,6 @@ Core Modules
     - :doc:`sphdistance`
     - :doc:`sphinterpolate`
     - :doc:`sphtriangulate`
-    - :doc:`splitxyz`
     - :doc:`surface`
     - :doc:`trend1d`
     - :doc:`trend2d`
@@ -469,6 +470,8 @@ Information retrieval
 +-----------------------+-----------------------+
 | :doc:`grdinfo`        | |grdinfo_purpose|     |
 +-----------------------+-----------------------+
+| :doc:`grdselect`      | |grdselect_purpose|   |
++-----------------------+-----------------------+
 
 Mathematical operations on tables or grids
 ------------------------------------------
@@ -501,6 +504,8 @@ Convert or extract subsets of data
 +-----------------------+-----------------------+
 | :doc:`gmtspatial`     | |gmtspatial_purpose|  |
 +-----------------------+-----------------------+
+| :doc:`gmtsplit`       | |gmtsplit_purpose|    |
++-----------------------+-----------------------+
 | :doc:`gmtvector`      | |gmtvector_purpose|   |
 +-----------------------+-----------------------+
 | :doc:`grd2kml`        | |grd2kml_purpose|     |
@@ -514,8 +519,6 @@ Convert or extract subsets of data
 | :doc:`grdcut`         | |grdcut_purpose|      |
 +-----------------------+-----------------------+
 | :doc:`grdpaste`       | |grdpaste_purpose|    |
-+-----------------------+-----------------------+
-| :doc:`splitxyz`       | |splitxyz_purpose|    |
 +-----------------------+-----------------------+
 | :doc:`xyz2grd`        | |xyz2grd_purpose|     |
 +-----------------------+-----------------------+

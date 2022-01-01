@@ -17,16 +17,17 @@ Synopsis
 [ |-A|\ **b**\|\ **B**\|\ **f**\|\ **F**\|\ **o**\|\ **O**\ [*lon0*/*lat0*][**+v**] ]
 [ |-C|\ [*dx*/*dy*][**+m**] ]
 [ |-D|\ **c**\|\ **i**\|\ **p** ]
-[ |-E|\ [*datum*] ] [ |-F|\ [*unit*] ]
+[ |-E|\ [*datum*] ]
+[ |-F|\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**] ]
 [ |-G|\ [*lon0*/*lat0*][**+a**][**+i**][**+u**\ *unit*][**+v**] ]
 [ |-I| ]
-[ |-L|\ *line.xy*\ [**+u**\ *unit*][**+p**] ]
+[ |-L|\ *table*\ [**+p**][**+u**\ *unit*] ]
 [ |-N|\ [**a**\|\ **c**\|\ **g**\|\ **m**] ]
 [ |-Q|\ [**d**\|\ **e**] ]
 [ |-S| ]
 [ |-T|\ [**h**]\ *from*\ [/*to*] ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **w**\|\ **x**] ]
+[ |-W|\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **r**\|\ **R**\|\ **w**\|\ **x**] ]
 [ |-Z|\ [*speed*][**+a**][**+i**][**+f**][**+t**\ *epoch*] ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -72,18 +73,17 @@ Required Arguments
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
 
-.. _-J:
-
-.. |Add_-J| unicode:: 0x20 .. just an invisible code
+.. |Add_-J| replace:: |Add_-J_links|
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. _-R:
-
-.. |Add_-R| replace:: Special case for the UTM
-    projection: If **-C** is used and **-R** is not given then the
-    region is set to coincide with the given UTM zone so as to preserve
-    the full ellipsoidal solution (See RESTRICTIONS for more information).
+.. |Add_-R| replace:: Special case for the UTM projection: If **-C** is used and **-R** is not given then the
+    region is set to coincide with the given UTM zone so as to preserve the full ellipsoidal solution
+    (See :ref:`mapproject:Restrictions` for more information). |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 Optional Arguments
 ------------------
@@ -102,7 +102,7 @@ Optional Arguments
     previous point.  Alternatively, append **+v** to obtain a
     *variable* 2nd point (*lon0*/*lat0*) via columns 3-4 in the input file.
     See `Output Order`_ for how **-A** affects the output record.  If **-R**
-    and **-J*** are given the we project the coordinates first and then
+    and **-J** are given the we project the coordinates first and then
     compute Cartesian angles instead.
 
 .. _-C:
@@ -137,7 +137,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [*unit*]
+**-F**\ [**e**\|\ **f**\|\ **k**\|\ **M**\|\ **n**\|\ **u**\|\ **c**\|\ **i**\|\ **p**]
     Force 1:1 scaling, i.e., output (or input, see **-I**) data are in
     actual projected meters. To specify other units, append the desired
     unit (see `Units`_). Without **-F**, the output (or input, see **-I**)
@@ -170,9 +170,9 @@ Optional Arguments
 
 .. _-L:
 
-**-L**\ *line.xy*\ [**+u**\ *unit* \|\ *c*  \|\ *C*][**+p**]
+**-L**\ *table*\ [**+p**][**+u**\ *unit* \|\ *c*  \|\ *C*]
     Determine the shortest distance from the input data points to the
-    line(s) given in the ASCII multisegment file *line.xy*. The distance
+    line(s) given in the ASCII multisegment file *table*. The distance
     and the coordinates of the nearest point will be appended to the
     output as three new columns. Append the distance unit via **+u** (see `Units`_
     for available units and how distances are computed [great circle using authalic radius]),
@@ -183,6 +183,8 @@ Optional Arguments
     report the line segment id and the fractional point number instead
     of lon/lat of the nearest point.
     See `Output Order`_ for how **-L** affects the output record.
+    **Note**: Calculation mode for geographic data is spherical, hence **-je**
+    cannot be used in combination with **-L**.
 
 .. _-N:
 
@@ -221,14 +223,14 @@ Optional Arguments
     after the inverse projection). Make sure that the
     :term:`PROJ_ELLIPSOID` setting is correct for your case.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **w**\|\ **x**]
+**-W**\ [**g**\|\ **h**\|\ **j**\|\ **n**\|\ **r**\|\ **R**\|\ **w**\|\ **x**]
     Prints map width and height on standard output.  No input files are read.
     To only output the width or the height, append **w** or **h**, respectively.
     To output the plot coordinates of a map point, give **g**\ *lon*/*lat*.
@@ -236,7 +238,10 @@ Optional Arguments
     To output the map coordinates of a reference point, select **j**\ *code* (with
     standard two-character justification codes), **n**\ *rx*/*ry*, where the reference
     point is given as normalized positions in the 0-1 range, or **x**\ *px*/*py*,
-    where a plot point is given directly [Default returns the width and height of the map].
+    where a plot point is given directly. To output the rectangular domain that
+    covers an oblique area as defined by **-R -J**, append **r**,
+    or use **R** to get the result in -Rw/e/s/n string format [Default returns
+    the width and height of the map].
 
 .. _-Z:
 
@@ -340,11 +345,11 @@ Clarke-1866 ellipsoid) to WGS 84, run
 
 To compute the closest distance (in km) between each point in the input
 file quakes.txt and the line segments given in the multisegment ASCII
-file coastline.xy, run
+file coastline.txt, run
 
    ::
 
-    gmt mapproject quakes.txt -Lcoastline.xy+uk > quake_dist.txt
+    gmt mapproject quakes.txt -Lcoastline.txt+uk > quake_dist.txt
 
 Given a file with longitude and latitude, compute both incremental
 and accumulated distance along track, and estimate travel times
@@ -365,7 +370,12 @@ To determine the geographic coordinates of the mid-point of this transverse Merc
 
     gmt mapproject -R-80/-70/20/40 -Jt-75/1:500000 -WjCM > mid_point.txt
 
-where :term:`TIME_UNIT` is set to hour so that the speed is
+To determine the rectangular region that encompasses the oblique region
+defined by an oblique Mercator projection, try
+
+   ::
+
+    gmt mapproject -R270/20/305/25+r -JOc280/25.5/22/69/2c -WR
 
 Restrictions
 ------------
