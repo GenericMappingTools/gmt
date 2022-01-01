@@ -15,7 +15,7 @@
  *	Contact info: www.generic-mapping-tools.org
  *--------------------------------------------------------------------*/
 /* MGD-77 Data Record Field Defaults:
- * Paul Wessel and M. T. Chandler *
+ * Paul Wessel and M. T. Hamilton (nee Chandler) *
  *
 		   Name,                          Abbrev,     Start,  Length,  FortranCode,   Factor,   readMGD77,   order,   printMGD77,   printVALS,   Not_given    */
 		{ "Data Record Type",                      "drt",         1U,	   1,        "int",        1,       "%1d",       1,        "%1d",        NULL,           "9" },

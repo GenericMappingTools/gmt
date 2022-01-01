@@ -34,7 +34,7 @@
  *	testing purposes.
  *
  *	Authors:
- *		Michael Chandler and Paul Wessel
+ *		Michael Hamilton (nee Chandler) and Paul Wessel
  *		School of Ocean and Earth Science and Technology
  *		University of Hawaii
  *

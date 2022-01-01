@@ -24,7 +24,7 @@
  * Note: Program expects first row to be a header as (no header row will trigger error):
  * #rec	TZ	year	month	day	hour	min	lat		lon		ptc	twt	depth	bcc	btc	mtf1	mtf2	mag	msens	diur	msd	gobs	eot	faa	nqc	id	sln	sspn
  *
- * Author:	Michael Chandler, ported to GMT5 by P. Wessel
+ * Author:	Michael Hamilton (nee Chandler), ported to GMT5 by P. Wessel
  * Date:	23-MAY-2012
  * Prted to GMT5 on 13-DEC-2016 by P. Wessel
  *
