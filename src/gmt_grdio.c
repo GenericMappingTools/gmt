@@ -2311,7 +2311,7 @@ int gmt_grd_setregion (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *h, double *
 	/* First make an educated guess whether the grid and region are geographical and global */
 	grid_global = gmt_grd_is_global (GMT, h);
 
-	off = (h->registration == GMT_GRID_PIXEL_REG) 0.5 : 0.0;
+	off = (h->registration == GMT_GRID_PIXEL_REG) ? 0.5 : 0.0;
 	/* Initial assignment of wesn */
 	wesn[YLO] = GMT->common.R.wesn[YLO] - off * h->inc[GMT_Y], wesn[YHI] = GMT->common.R.wesn[YHI] + off * h->inc[GMT_Y];
 	if (gmt_M_360_range (GMT->common.R.wesn[XLO], GMT->common.R.wesn[XHI]) && gmt_M_x_is_lon (GMT, GMT_IN)) off = 0.0;
