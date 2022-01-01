@@ -14,15 +14,16 @@ Synopsis
 
 **gmt batch** *mainscript*
 |-N|\ *prefix*
-|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
+|-T|\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
 [ |-I|\ *includefile* ]
 [ |-M|\ [*job*] ]
 [ |-Q|\ [**s**] ]
-[ **-Sb**\ *preflight* ]
-[ **-Sf**\ *postflight* ]
+[ |-Sb|\ *preflight* ]
+[ |-Sf|\ *postflight* ]
 [ |SYN_OPT-V| ]
-[ |-W|\ [*workdir*] ]
+[ |-W|\ [*dir*] ]
 [ |-Z| ]
+[ |SYN_OPT-f| ]
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
@@ -58,22 +59,24 @@ Required Arguments
 
 .. _-T:
 
-**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]]
+**-T**\ *njobs*\|\ *min*/*max*/*inc*\ [**+n**]\|\ *timefile*\ [**+p**\ *width*]\ [**+s**\ *first*]\ [**+w**\ [*str*]\|\ **W**]
     Either specify how many jobs to make, create a one-column data set width values from
     *min* to *max* every *inc* (append **+n** if *inc* is number of jobs instead), or supply a file with
     a set of parameters, one record (i.e., row) per job.  The values in the columns will be available to the
     *mainscript* as named variables **BATCH_COL0**, **BATCH_COL1**, etc., while any trailing text
     can be accessed via the variable **BATCH_TEXT**.  Append **+w** to split the trailing
     string into individual *words* that can be accessed via variables **BATCH_WORD0**, **BATCH_WORD1**,
-    etc. By default we use any white-space to separate words.  Append *str* to select another character(s)
-    as the valid separator(s). The number of records equals the number of jobs. Note that the *preflight* script is allowed to
+    etc. By default we look for either tabs or spaces to separate words.  Append *str* to select other character(s)
+    as the valid separator(s) instead. To just use TAB as the only valid separator use **+W** instead.
+    The number of records equals the number of jobs. Note that the *preflight* script is allowed to
     create *timefile*, hence we check for its existence both before *and* after the *preflight* script has
     completed.  Normally, the job numbering starts at 0; you can change this by appending a different starting
     job number via **+s**\ *first*.  **Note**: All jobs are still included; this modifier only affects
     the numbering of the given jobs.  Finally, **+p** can be used to set the tag *width* of the format
     used in naming jobs.  For instance, name_000010.grd has a tag width of 6.  By default, this is
     automatically set but if you are splitting large jobs across several computers (via **+s**) then you
-    must use the same tag width for all names.
+    must use the same tag width for all names. **Note**: If just *njobs* is given then only **BATCH_JOB**
+    is available as no data file is available.
 
 
 Optional Arguments
@@ -117,26 +120,29 @@ Optional Arguments
     using the products or stacked data after the main processing is completed. It does not have to be a GMT
     script.
 
-.. _batch-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
-**-W**\ [*workdir*]
+**-W**\ [*dir*]
     By default, all temporary files and job products are created in the subdirectory *prefix* set via **-N**.
-    You can override that selection by giving another *workdir* as a relative or full directory path. If no
+    You can override that selection by giving another *dir* as a relative or full directory path. If no
     path is given then we create a working directory in the system temp folder named *prefix*.  The main benefit
     of a working directory is to avoid endless syncing by agents like DropBox or TimeMachine, or to avoid
     problems related to low space in the main directory.  The product files will still be placed in the *prefix*
-    directory.  The *workdir* is removed unless **-Q** is specified for debugging.
+    directory.  The *dir* is removed unless **-Q** is specified for debugging.
 
 .. _-Z:
 
 **-Z**
     Erase the *mainscript* and all input scripts given via **-I** and **-S** upon completion.  Not compatible
     with **-Q**.
+
+.. |Add_-f| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-f.rst_
 
 .. _-cores:
 
@@ -146,7 +152,7 @@ Optional Arguments
     (if too large it will be truncated to the maximum cores available).  Finally,
     give a negative *n* to select (all - *n*) cores (or at least 1 if *n* equals or exceeds all).
     The parallel processing does not depend on OpenMP; new jobs are launched when the previous ones
-    complete.
+    complete. **Note**: One core is reserved by **batch** so in effect *n-1* are used for the jobs.
 
 .. include:: explain_help.rst_
 
@@ -160,8 +166,8 @@ and those that change with the job number.  The constants are accessible by all 
 total number of jobs (given or inferred from **-T**). Also, if **-I** was used then any static parameters
 listed therein will be available to all the scripts as well. In addition, the *mainscript* also has access
 to parameters that vary with the job counter: **BATCH_JOB**\ : The current job number (an integer, e.g., 136),
-**BATCH_TAG**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
-The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_TAG**), Furthermore, if a *timefile*
+**BATCH_ITEM**\ : The formatted job number given the precision (a string, e.g., 000136), and **BATCH_NAME**\ :
+The name prefix unique to the current job (i.e., *prefix*\ _\ **BATCH_ITEM**), Furthermore, if a *timefile*
 was given then variables **BATCH_COL0**\ , **BATCH_COL1**\ , etc. are also set, yielding one variable per
 column in *timefile*.  If *timefile* has trailing text then that text can be accessed via the variable
 **BATCH_TEXT**, and if word-splitting was explicitly requested by **+w** modifier to **-T** then the trailing
@@ -176,6 +182,15 @@ The batch scripts will be able to find any files present in the starting directo
 as well as any new files produced by *mainscript* or the optional scripts set via **-S**.
 No path specification is needed to access these files.  Other files may
 require full paths unless their directories were already included in the :term:`DIR_DATA` setting.
+
+Custom gmt.conf files
+---------------------
+
+If you have a gmt.conf file in the top directory with your main script prior to running **batch** then it will be
+used and shared across all the scripts created and executed *unless* your scripts use **-C** when starting a new
+modern mode session. The preferred ways of changing GMT defaults is via :doc:`gmtset` calls in your input scripts.
+**Note**: Each script is run in isolation (modern) mode so trying to create a gmt.conf file via the *preflight*
+script to be used by other scripts is futile.
 
 Constructing the Main Script
 ----------------------------
@@ -215,6 +230,18 @@ many products each batch job makes, we ensure each job creates a unique file whe
 these special (and empty) files is how **batch** learns that a particular job has completed and it is time to
 launch another one.
 
+
+Shell Limitations
+-----------------
+
+As we cannot control how a shell (e.g., bash or csh) implements piping between two processes (it often
+involves a sub-shell), we advice against using commands in your main script that involve piping the result
+from one GMT module into another (e.g., gmt blockmean ..... | gmt surface ...).  Because **batch** is running
+many instances of your main script simultaneously, odd things can happen when sub-shells are involved.
+In our experience, piping in the context of batch script may corrupt the GMT history files, resulting in
+stray messages from some frames, such as region not set, etc.  Split such pipe constructs into two using
+a temporary file when writing batch main scripts. **Note**: Piping from a non-GMT module into a GMT module
+or vice versa is not a problem (e.g., echo ..... | gmt convert ...).
 
 Hints for Batch Makers
 ----------------------
@@ -266,13 +293,13 @@ build the pre.sh, main.sh, and post.sh scripts on the fly, hence we need to esca
 start with a dollar sign that we need to be written verbatim). At the end of the execution we find 20 grids
 (e.g., such as filter_07.grd), as well as the filter_std.grd file obtained by stacking all the individual
 scripts and computing a standard deviation. The information needed to do all of this is hidden from the user;
-the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch***
+the actual batch scripts that we execute are derived from the user-provided main.sh script and **batch**
 supplies the extra machinery. The **batch** module automatically manages the parallel execution loop over all
 jobs using all available cores and launches new jobs as old ones complete.
 
 As another example, we get a list of all European countries and make a simple coast plot of each of them,
 placing their name in the title and the 2-character ISO code in the upper left corner, then in postflight
-we combine all the individual PDFs into a single file and delete them::
+we combine all the individual PDFs into a single PDF file and delete the individual files::
 
     cat << EOF > pre.sh
     gmt begin
@@ -291,7 +318,16 @@ we combine all the individual PDFs into a single file and delete them::
     EOF
     gmt batch main.sh -Sbpre.sh -Sfpost.sh -Tcountries.txt+w"\t" -Ncountries -V -W -Zs
 
-Here, the postflight script is not even a GMT script; it simply runs gs and deletes what we don't want.
+Here, the postflight script is not even a GMT script; it simply runs gs (Ghostscript) and deletes what we don't want to keep.
+
+macOS Issues
+------------
+
+**Note**: The limit on the number of concurrently open files is relatively small by default on macOS and when executing
+numerous jobs at the same time it is not unusual to get failures in **batch** jobs with the message "Too many open files". 
+We refer you to this helpful
+`article <https://superuser.com/questions/433746/is-there-a-fix-for-the-too-many-open-files-in-system-error-on-os-x-10-7-1>`_
+for various solutions. 
 
 See Also
 --------

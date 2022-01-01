@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -58,14 +58,17 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [-D[s|u]]\n\n", name);
+	GMT_Usage (API, 0, "usage: %s [-D[s|u]] [%s]\n", name, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Print the current GMT default settings.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append s to print the SI version of the system defaults.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append u to print the US version of the system defaults.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tALL settings will be written to standard output.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D[s|u]");
+	GMT_Usage (API, -2, "Print the current GMT default settings. Optionally append a directive:");
+	GMT_Usage (API, 3, "s: Print the SI version of the system defaults.");
+	GMT_Usage (API, 3, "u: Print the US version of the system defaults.");
+	GMT_Usage (API, -2, "Note: ALL settings will be written to standard output.");
+	GMT_Option (API, "V");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -79,6 +82,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GM
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -90,12 +94,13 @@ static int parse (struct GMT_CTRL *GMT, struct GMTDEFAULTS_CTRL *Ctrl, struct GM
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Get GMT system-wide defaults settings */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.mode = opt->arg[0];
 				break;
 			case 'L':	/* List the user's current GMT defaults settings */
 				if (gmt_M_compat_check (GMT, 4)) {
-					GMT_Report (GMT->parent, GMT_MSG_COMPAT, "Option -L is deprecated; it is now the default behavior.\n");
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -L is deprecated; it is now the default behavior.\n");
 				}
 				else
 					n_errors += gmt_default_error (GMT, opt->option);
@@ -144,12 +149,12 @@ EXTERN_MSC int GMT_gmtdefaults (void *V_API, int mode, void *args) {
 	/*---------------------------- This is the gmtdefaults main code ----------------------------*/
 
 	if (Ctrl->D.active) {	/* Start with default params using SI settings */
-		gmt_conf (GMT);		/* Get SI defaults */
+		gmt_conf_SI (GMT);		/* Get SI defaults */
 		if (Ctrl->D.mode == 'u')
 			gmt_conf_US (GMT);	/* Change a few to US defaults */
 	}
 	else
-		gmt_getdefaults (GMT, NULL);	/* Get local GMT default settings (if any) [and PSL if selected] */
+		(void)gmt_getdefaults (GMT, NULL);	/* Get local GMT default settings (if any) [and PSL if selected] */
 
 	/* To ensure that all is written to stdout we must set updated to true */
 

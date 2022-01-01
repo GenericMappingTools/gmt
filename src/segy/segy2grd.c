@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by T. Henstock
+ *	Copyright (c) 1991-2021 by T. Henstock
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@
 #define THIS_MODULE_PURPOSE	"Converting SEGY data to a grid"
 #define THIS_MODULE_KEYS	"GG}"
 #define THIS_MODULE_NEEDS	"R"
-#define THIS_MODULE_OPTIONS "-VRr" GMT_OPT("F")
+#define THIS_MODULE_OPTIONS "-VRdr" GMT_OPT("F")
 
 #define COUNT	1
 #define AVERAGE	2
@@ -77,11 +77,6 @@ struct SEGY2GRD_CTRL {
 		bool active;
 		unsigned int value;
 	} M;
-	struct SEGY2GRD_N {	/* -N */
-		bool active;
-		double d_value;
-		float f_value;
-	} N;
 	struct SEGY2GRD_Q {	/* -Qx|y */
 		bool active[2];
 		double value[2];
@@ -102,8 +97,6 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 
 	C->A.mode = AVERAGE;
 	C->M.value = 10000;
-	C->N.f_value = GMT->session.f_NaN;
-	C->N.d_value = GMT->session.d_NaN;
 	C->Q.value[X_ID] = 1.0;
 	return (C);
 }
@@ -119,32 +112,41 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <segyfile> -G<grdfile> %s\n", name, GMT_Id_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t%s [-A[n|z]]\n\t[%s] [-L<nsamp>]\n", GMT_Rgeo_OPT, GMT_GRDEDIT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-M<ntraces>] [-N<nodata>] [-Q<mode><value>] [-S<header>] [%s] [%s] [%s]\n\n", GMT_V_OPT, GMT_r_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <segyfile> -G%s %s %s [-A[n|z]] [%s] [-L<nsamp>] "
+		"[-M<ntraces>] [-Q<mode><value>] [-S<header>] [%s] [%s] [%s] [%s]\n",
+		name, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_GRDEDIT2D, GMT_V_OPT, GMT_di_OPT, GMT_r_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\tsegyfile(s) is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Set name the output grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid size(s).\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<segyfile> is an IEEE floating point SEGY file. Traces are all assumed to start at 0 time/depth.");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file");
+	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
+	GMT_Usage (API, -2, "Specify grid size(s).");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A (or -Az): Add multiple entries at the same node.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append n (-An): Count number of multiple entries per node instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   [Default (no -A option) will compute mean values].\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A[n|z]");
+	GMT_Usage (API, -2, "Add multiple entries at the same node according to directive:");
+	GMT_Usage (API, 3, "n: Count and store number of multiple entries per node.");
+	GMT_Usage (API, 3, "z: Add multiple entries at the same node [Default].");
+	GMT_Usage (API, -2, "Note: Default (no -A option) will compute mean values].");
 	gmt_grd_info_syntax (API->GMT, 'D');
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Let <nsamp> override number of samples.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-M Fix number of traces. Default reads all traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   -M0 will read number in binary header, -Mn will attempt to read only n traces.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set value for nodes without corresponding input sample [Default is NaN].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append <mode><value> to change either of two different settings:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qx<scl> applies scalar x-scale to coordinates in trace header to match the coordinates specified in -R.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     -Qy<s_int> specifies sample interval as <s_int> if incorrect in the SEGY file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Append <header> to set variable spacing\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -S not set, assumes even spacing of samples at dx, dy supplied with -I.\n");
-	GMT_Option (API, "V,r,.");
+	GMT_Usage (API, 1, "\n-L<nsamp>");
+	GMT_Usage (API, -2, "Specify <nsamp> to override number of samples.");
+	GMT_Usage (API, 1, "\n-M<ntraces>");
+	GMT_Usage (API, -2, "Fix the number of traces. -M0 will read number in binary header, while "
+		"-M<ntraces> will attempt to read only <ntraces> traces [Default reads all traces].");
+	GMT_Usage (API, 1, "\n-Q<mode><value>");
+	GMT_Usage (API, -2, "Append <mode><value> to change either of two different settings:");
+	GMT_Usage (API, 3, "x: Append <scl> applied to coordinates in trace header to match the coordinates specified in -R.");
+	GMT_Usage (API, 3, "y: Append <s_int> as sample interval if incorrect in the SEGY file.");
+	GMT_Usage (API, 1, "\n-S<header>");
+	GMT_Usage (API, -2, "Append <header> to set variable spacing. "
+		"<header> is c for cdp, o for offset, b<number> for 4-byte float starting at byte number. "
+		"Note: If -S not set, assumes even spacing of samples at dx, dy supplied with -I.");
+	GMT_Option (API, "V,di");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "Also sets value for nodes without input SEGY coverage [Default is NaN].");
+	GMT_Option (API, "r,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -169,12 +171,13 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				if (n_files++ > 0) break;
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0] == 'n')
 					Ctrl->A.mode = COUNT;
@@ -186,50 +189,64 @@ static int parse (struct GMT_CTRL *GMT, struct SEGY2GRD_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.text = strdup (opt->arg);
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
-			case 'N':
-				if (!opt->arg[0]) {
-					GMT_Report (API, GMT_MSG_ERROR, "Option -N: Must specify value or NaN\n");
-					n_errors++;
+			case 'N':	/* Deprecated 7.29.2021 PW, use -di */
+				if (gmt_M_compat_check (GMT, 6)) {	/* Honor old -N<value> option */
+					GMT_Report (API, GMT_MSG_COMPAT, "Option -N is deprecated; use GMT common option -di<nodata> instead.\n");
+					if (opt->arg[0]) {
+						char arg[GMT_LEN64] = {""};
+						sprintf (arg, "i%s", opt->arg);
+						n_errors += gmt_parse_d_option (GMT, arg);
+					}
+					else {
+						GMT_Report (API, GMT_MSG_ERROR, "Option -N: Must specify value or NaN\n");
+						n_errors++;
+					}
 				}
-				else {
-					Ctrl->N.d_value = (opt->arg[0] == 'N' || opt->arg[0] == 'n') ? GMT->session.d_NaN : atof (opt->arg);
-					Ctrl->N.f_value = (float)Ctrl->N.d_value;
-					Ctrl->N.active = true;
-				}
+				else
+					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'Q':
 				switch (opt->arg[0]) {
 					case 'x': /* over-rides of header info */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[X_ID]);
 						Ctrl->Q.active[X_ID] = true;
 						Ctrl->Q.value[X_ID] = atof (&opt->arg[1]);
 						break;
 					case 'y': /* over-rides of header info */
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active[Y_ID]);
 						Ctrl->Q.active[Y_ID] = true;
 						Ctrl->Q.value[Y_ID] = atof (&opt->arg[1]);
 						break;
 				}
 				break;
 			case 'L':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.value = atoi (opt->arg);
 				break;
 			case 'M':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->M.active);
 				Ctrl->M.active = true;
 				Ctrl->M.value = atoi (opt->arg);
 				break;
 			/* variable spacing */
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				if (Ctrl->S.active) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -S: Can only be set once\n");
 					n_errors++;
@@ -272,7 +289,7 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	uint64_t ij, ij0, n_samp = 0, isamp;
 
-	double idy, x0, yval;
+	double idy, x0, yval, no_data_d;
 
 	char line[GMT_BUFSIZ] = {""};
 
@@ -282,7 +299,7 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 /* SEGY parameters */
 	char reelhead[3200] = {""};
-	float *data = NULL;
+	float *data = NULL, no_data_f;
 	SEGYHEAD *header = NULL;
 	SEGYREEL binhead;
 
@@ -408,9 +425,12 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 
 	/* starts reading actual data here....... */
 
+	no_data_d = (GMT->common.d.active[GMT_IN]) ? GMT->common.d.nan_proxy[GMT_IN] : GMT->session.d_NaN;
+	no_data_f = (GMT->common.d.active[GMT_IN]) ? (gmt_grdfloat)GMT->common.d.nan_proxy[GMT_IN] : GMT->session.f_NaN;
+
 	if (read_cont) {	/* old-style segy2grd */
 		ix = 0;
-		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = Ctrl->N.f_value;
+		for (ij = 0; ij < Grid->header->size; ij++) Grid->data[ij] = no_data_f;
 		if (Grid->header->n_columns < Ctrl->M.value) {
 			GMT_Report (API, GMT_MSG_WARNING, "Number of traces in header > size of grid. Reading may be truncated\n");
 			Ctrl->M.value = Grid->header->n_columns;
@@ -535,7 +555,7 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 			}
 			else if (flag[ij] == 0) {
 				n_empty++;
-				Grid->data[ij] = Ctrl->N.f_value;
+				Grid->data[ij] = no_data_f;
 			}
 			else {	/* More than 1 value went to this node */
 				if (Ctrl->A.mode == COUNT)
@@ -548,10 +568,10 @@ EXTERN_MSC int GMT_segy2grd (void *V_API, int mode, void *args) {
 		}
 
 		if (gmt_M_is_verbose (GMT, GMT_MSG_INFORMATION)) {
-			if (gmt_M_is_dnan (Ctrl->N.d_value))
+			if (gmt_M_is_dnan (no_data_d))
 				strcpy (line, "NaN\n");
 			else
-				sprintf (line, GMT->current.setting.format_float_out, Ctrl->N.d_value);
+				sprintf (line, GMT->current.setting.format_float_out, no_data_d);
 			GMT_Report (API, GMT_MSG_INFORMATION, " n_read: %d  n_used: %d  n_filled: %d  n_empty: %d set to %s\n", n_read, n_used, n_filled, n_empty, line);
 		}
 		if (n_stuffed) GMT_Report (API, GMT_MSG_WARNING, "%d nodes had multiple entries that were averaged\n", n_stuffed);

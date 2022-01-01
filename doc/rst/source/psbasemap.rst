@@ -33,7 +33,9 @@ Synopsis
 [ |SYN_OPT-t| ]
 [ |SYN_OPT--| ]
 
-.. include:: basemap_common.rst_
+.. include:: basemap.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
@@ -222,8 +224,8 @@ Another basemap for middle Europe may be created by
 
     gmt psbasemap -R0/90/25/55 -Jl45/20/32/45/0.1i -Bafg -B+t"Lambert Conformal Conic" -P > lambertc.ps
 
-Equidistant
-~~~~~~~~~~~
+Conic Equidistant
+~~~~~~~~~~~~~~~~~
 
 Yet another basemap of width 6 inch for middle Europe may be created by
 
@@ -257,8 +259,8 @@ Follow the instructions for stereographic projection if you want to
 impose rectangular boundaries on the azimuthal equal-area map but
 substitute **-Ja** for **-Js**.
 
-Equidistant
-~~~~~~~~~~~
+Azimuthal Equidistant
+~~~~~~~~~~~~~~~~~~~~~
 
 A 15-cm-wide global map in which distances from the center (here 125/10)
 to any point is true can be obtained by:
@@ -298,7 +300,7 @@ and height will product a 6-inch-wide basemap:
 
    ::
 
-    gmt psbasemap -Rg -JG-74/41.5/160/210/55/30/30/6i -Bafg -B+t"General Perspective" -P > genper.ps
+    gmt psbasemap -Rg -JG-74/41.5/6i+z160+a210+t55+v30 -Bafg -B+t"General Perspective" -P > genper.ps
 
 Stereographic [conformal]
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -428,7 +430,9 @@ degrees about an axis centered on the map, try
 
     gmt psbasemap -R10/40/10/40 -JM10c -P -Bafg -B+t"I am rotated" -p90+w25/25 -Xc -P > rotated.ps
 
-.. include:: basemap_notes.rst_
+.. include:: basemap.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 See Also
 --------

@@ -1,4 +1,4 @@
-#include "gmt_dev.h"
+#include "gmt.h"
 
 /* Testing reading a grid into a matrix, then writing the matrix to a grid file.
  * The test script apigrd2mat,sh will compare the two.

@@ -56,8 +56,6 @@ gmt psmeca -R -J -Ba0 -Sa1c -K -O -X5c -C1p >> $ps << EOF
 239.384 34.556 12.   180     18   -88  5 239.8 34.7 Long Title
 EOF
 
-gmt psmeca -R -J -Ba0 -Sm1c -K -O -X5c -C1p >> $ps << EOF
+gmt psmeca -R -J -Ba0 -Sm1c -O -X5c -C1p >> $ps << EOF
 239.384 34.556 12. 7.68 0.09 -7.77 1.39 4.52 -3.26 26 X Y 010176A
 EOF
-
-gmt psxy -R -J -T -O >> $ps

@@ -16,6 +16,5 @@ awk '{printf "@~a@~ = %s@.\n", $3}' q4.txt | gmt pstext -R -J -O -K -F+f10p+cBL 
 gmt psxy -R -J -Skgeo-lineation/5c -O -N -W2p,red -Gred -Bag0.5 -BWSne q1.txt -K -X9c >> $ps
 awk '{printf "@~a@~ = %s@.\n", $3}' q1.txt | gmt pstext -R -J -O -K -F+f10p+cBL -Gwhite -Dj0.2c >> $ps
 gmt psxy -R -J -Skgeo-lineation/5c -O -N -W2p,red -Gred -Bag0.5 -BWSne q2.txt -K -Y-10c >> $ps
-awk '{printf "@~a@~ = %s@.\n", $3}' q2.txt | gmt pstext -R -J -O -K -F+f10p+cBL -Gwhite -Dj0.2c >> $ps
-gmt psxy -R -J -O -T >> $ps
+awk '{printf "@~a@~ = %s@.\n", $3}' q2.txt | gmt pstext -R -J -O -F+f10p+cBL -Gwhite -Dj0.2c >> $ps
 rm -f geo-lineation.def

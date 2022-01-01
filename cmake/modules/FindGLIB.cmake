@@ -81,6 +81,11 @@ if (GLIBCONFIG_INCLUDE_DIR)
   string(REGEX MATCH "#define GLIB_MICRO_VERSION ([0-9]+)" _dummy "${GLIBCONFIG_H_CONTENTS}")
   set(GLIB_VERSION_MICRO "${CMAKE_MATCH_1}")
   set(GLIB_VERSION "${GLIB_VERSION_MAJOR}.${GLIB_VERSION_MINOR}.${GLIB_VERSION_MICRO}")
+
+  # GMT requires GLIB>=2.32
+  if (${GLIB_VERSION} VERSION_LESS "2.32")
+	  message (FATAL_ERROR "GLIB ${GLIB_VERSION} found but GMT requires GLIB>=2.32")
+  endif (${GLIB_VERSION} VERSION_LESS "2.32")
 endif (GLIBCONFIG_INCLUDE_DIR)
 
 # Additional Glib components.  We only look for libraries, as not all of them

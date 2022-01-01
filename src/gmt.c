@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -28,17 +28,6 @@
 
 #include "gmt_dev.h"
 
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
-#ifdef	__APPLE__
-	/* Apple Xcode expects _Nullable to be defined but it is not if gcc */
-#ifndef _Nullable
-#	define _Nullable
-#	endif
-#	endif
-#	include <signal.h>
-#	include "gmt_common_sighandler.h"
-#endif
-
 #define PROGRAM_NAME	"gmt"
 
 /* Determine the system environmental parameter that leads to shared libraries */
@@ -60,21 +49,25 @@ int main (int argc, char *argv[]) {
 	char *progname = NULL;			/* Last component from the pathname */
 	char *module = NULL;			/* Module name */
 
-#if !(defined(WIN32) || defined(NO_SIGHANDLER))
-	/* Install signal handler */
+#ifndef NO_SIGHANDLER
+	/* Install a signal handler */
+#ifdef WIN32	/* Only handle Ctrl-C under Windows */
+    if (!SetConsoleCtrlHandler ((PHANDLER_ROUTINE)sig_handler_win32, TRUE)) {
+        fprintf (stderr, "Unable to install Windows signal handler!\n");
+        return EXIT_FAILURE;
+    }
+#else	/* Unix/Linux/macOS */
 	struct sigaction act;
 	sigemptyset(&act.sa_mask); /* Empty mask of signals to be blocked during execution of the signal handler */
-	act.sa_sigaction = sig_handler;
-#if 0 /* summit 2016 decision: disable CTRL-C interrupt feature */
-	act.sa_flags = SA_SIGINFO | SA_NODEFER; /* Do not prevent the signal from being received from within its own signal handler. */
-	sigaction (SIGINT,  &act, NULL);
-#endif
+	act.sa_sigaction = sig_handler_unix;
 	act.sa_flags = SA_SIGINFO;
-	sigaction (SIGILL,  &act, NULL);
+	sigaction (SIGINT,  &act, NULL);	/* Catching Ctrl-C will also wipe a session work directory and destroy GMT session */
+	sigaction (SIGILL,  &act, NULL);	/* The other signals will exit with a full backtrace */
 	sigaction (SIGFPE,  &act, NULL);
 	sigaction (SIGBUS,  &act, NULL);
 	sigaction (SIGSEGV, &act, NULL);
-#endif /* !(defined(WIN32) || defined(NO_SIGHANDLER)) */
+#endif	/* Unix/Linux/macOS */
+#endif	/* !defined(NO_SIGHANDLER) */
 
 	/* Look for and process any -V[flag] so we may use GMT_Report_Error early on for debugging.
 	 * Note: Because first 16 bits of mode may be used for other things we must left-shift by 16 */
@@ -130,7 +123,7 @@ int main (int argc, char *argv[]) {
 			/* Try all remaining arguments: */
 
 			/* Print module list */
-			if (!strcmp (argv[arg_n], "--help")) {
+			if (!strcmp (argv[arg_n], "--help") || !strcmp (argv[arg_n], "--show-help")) {
 				fprintf (stderr, "\n\tGMT - The Generic Mapping Tools, Version %s [%u cores]\n", GMT_VERSION, api_ctrl->n_cores);
 				fprintf (stderr, "\t(c) 1991-%d The GMT Team (https://www.generic-mapping-tools.org/team.html).\n\n", GMT_VERSION_YEAR);
 				fprintf (stderr, "Supported in part by the US National Science Foundation (http://www.nsf.gov/)\n");
@@ -165,7 +158,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* Print version and exit */
-			else if (!strncmp (argv[arg_n], "--version", 5U)) {
+			else if (!strncmp (argv[arg_n], "--version", 5U) || !strncmp (argv[arg_n], "--show-version", 10U)) {
 				fprintf (stdout, "%s\n", GMT_PACKAGE_VERSION_WITH_GIT_REVISION);
 				status = GMT_NOERROR;
 			}
@@ -193,7 +186,15 @@ int main (int argc, char *argv[]) {
 
 			/* Show URL of the remote GMT data server */
 			else if (!strncmp (argv[arg_n], "--show-dataserver", 17U)) {
-				fprintf(stdout, "%s\n", api_ctrl->GMT->session.DATASERVER);
+				fprintf(stdout, "%s\n", gmt_dataserver_url (api_ctrl));
+				status = GMT_NOERROR;
+			}
+
+			/* Show DCW version of the current release */
+			else if (!strncmp (argv[arg_n], "--show-dcw", 10U)) {
+				char version[16] = {"unknown"};
+				gmt_DCW_version (api_ctrl, version);
+				fprintf(stdout, "%s\n", version);
 				status = GMT_NOERROR;
 			}
 
@@ -206,6 +207,14 @@ int main (int argc, char *argv[]) {
 			/* Show the directory that contains the 'gmt' executable */
 			else if (!strncmp (argv[arg_n], "--show-bindir", 10U)) {
 				fprintf (stdout, "%s\n", api_ctrl->GMT->init.runtime_bindir);
+				status = GMT_NOERROR;
+			}
+
+			/* Show GSHHG version of the current release */
+			else if (!strncmp (argv[arg_n], "--show-gshhg", 10U)) {
+				char version[16] = {"unknown"};
+				gmt_shore_version (api_ctrl, version);
+				fprintf(stdout, "%s\n", version);
 				status = GMT_NOERROR;
 			}
 
@@ -234,7 +243,7 @@ int main (int argc, char *argv[]) {
 			}
 
 			/* print new shell template */
-			else if (!strncmp (argv[arg_n], "--new-script", 12U)) {
+			else if (!strncmp (argv[arg_n], "--new-script", 12U) || !strncmp (argv[arg_n], "--show-new-script", 17U)) {
 				unsigned int type = 0;	/* Default is bash */
 				time_t right_now = time (NULL);
 				char *s = NULL, *txt = NULL, *shell[3] = {"bash", "csh", "batch"}, stamp[GMT_LEN32] = {""};
@@ -265,6 +274,9 @@ int main (int argc, char *argv[]) {
 					type = 1;	/* Select csh */
 				if (type < 2) {	/* Start the shell via env and pass -e to exit script upon error */
 					printf ("#!/usr/bin/env -S %s -e\n", shell[type]);
+#ifdef __APPLE__
+					if (type == 0) printf ("set -e\n");	/* Explicitly needed for bash under macOS */
+#endif
 					printf ("%s GMT modern mode %s template\n", comment[type], shell[type]);
 				}
 				printf ("%s Date:    %s\n%s User:    %s\n%s Purpose: Purpose of this script\n", comment[type], stamp, comment[type], name, comment[type]);
@@ -280,9 +292,9 @@ int main (int argc, char *argv[]) {
 				status = GMT_NOERROR;
 			}
 			/* print new glue C code for supplement */
-			else if (!strncmp (argv[arg_n], "--new-glue", 10U)) {
+			else if (!strncmp (argv[arg_n], "--new-glue", 10U) || !strncmp (argv[arg_n], "--show-new-glue", 15U)) {
 				char *s = strstr (argv[arg_n], "=");	if (s) s++;	/* Skip the equal */
-				if (s && s[0] == '\0') {
+				if (!s || s[0] == '\0') {
 					fprintf (stderr, "gmt: ERROR: --new-glue library name not given\n");
 					status = GMT_RUNTIME_ERROR;
 				}
@@ -341,7 +353,7 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "       %s <module name> [<module-options>]\n\n", PROGRAM_NAME);
 			fprintf (stderr, "options:\n");
 			fprintf (stderr, "  --help              List descriptions of available GMT modules.\n");
-			fprintf (stderr, "  --new-script[=L]    Write GMT modern mode script template to stdout.\n");
+			fprintf (stderr, "  --new-script[=L]    Write GMT modern mode script template to standard output.\n");
 			fprintf (stderr, "                      Optionally specify bash|csh|batch [Default is current shell].\n");
 			fprintf (stderr, "  --new-glue=name     Write C code for external supplements to glue them to GMT.\n");
 			fprintf (stderr, "  --show-bindir       Show directory with GMT executables.\n");
@@ -351,7 +363,9 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-cores        Show number of available cores.\n");
 			fprintf (stderr, "  --show-datadir      Show directory/ies with user data.\n");
 			fprintf (stderr, "  --show-dataserver   Show URL of the remote GMT data server.\n");
+			fprintf (stderr, "  --show-dcw          Show the DCW data version used.\n");
 			fprintf (stderr, "  --show-doi          Show the DOI for the current release.\n");
+			fprintf (stderr, "  --show-gshhg        Show the GSHHG data version used.\n");
 			fprintf (stderr, "  --show-library      Show path of the shared GMT library.\n");
 			fprintf (stderr, "  --show-modules      Show all modern module names.\n");
 			fprintf (stderr, "  --show-modules-core Show all modern module names (core only).\n");
@@ -360,8 +374,8 @@ int main (int argc, char *argv[]) {
 			fprintf (stderr, "  --show-userdir      Show full path of user's ~/.gmt dir\n");
 			fprintf (stderr, "  --version           Print GMT version number.\n\n");
 			fprintf (stderr, "if <module-options> is \'=\' we call exit (0) if module exist and non-zero otherwise.\n\n");
+			status = GMT_NOERROR;
 		}
-		status = GMT_RUNTIME_ERROR;
 	} /* status == GMT_NOT_A_VALID_OPTION */
 
 	gmt_M_str_free (progname); /* Was already dereferenced in gmt_chop_ext, so no NULL check needed */

@@ -15,11 +15,12 @@ Synopsis
 **gmt psxyz** [ *table* ] |-J|\ *parameters*
 |-J|\ **z**\|\ **Z**\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy*\ [/*dz*] ]
 [ |-G|\ *fill* ]
+[ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-K| ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
@@ -42,11 +43,14 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
-[ |SYN_OPT-t| ]
+[ |SYN_OPT-tv| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: plot3d_common.rst_
+.. include:: plot3d.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 

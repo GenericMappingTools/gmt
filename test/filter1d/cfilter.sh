@@ -51,5 +51,4 @@ cat << EOF > myfilt.txt
 EOF
 gmt psxy -R -J -O -T -K -Y-2.5i >> $ps
 cat tmp.eps >> $ps
-gmt filter1d -Ffmyfilt.txt noise.txt | gmt psxy -R-500/500/-300/300 -J -O -K -W2p,blue >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt filter1d -Ffmyfilt.txt noise.txt | gmt psxy -R-500/500/-300/300 -J -O -W2p,blue >> $ps

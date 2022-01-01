@@ -22,7 +22,7 @@ Synopsis
 [ |-I|\ [*intensfile*\|\ *intensity*\|\ *modifiers*] ]
 [ |-J|\ **z**\|\ **-Z**\ *parameters* ]
 [ |-K| ] [ |-M| ] [ |-N| ]
-[ |-O| ] [ |-P| ] [ |-Q| ]
+[ |-O| ] [ |-P| ] [ |-Q|\ [*color*] ]
 [ |SYN_OPT-Rz| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
@@ -35,11 +35,15 @@ Synopsis
 [ |SYN_OPT-x| ]
 [ |SYN_OPT--| ]
 
-.. include:: grdimage_common.rst_
+.. include:: grdimage.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 
-.. include:: grdimage_notes.rst_
+.. include:: grdimage.rst
+    :start-after: .. module_note_begins
+    :end-before: .. module_note_ends
 
 Examples
 --------

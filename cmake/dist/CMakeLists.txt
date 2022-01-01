@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify
@@ -42,7 +42,7 @@ if (WIN32)
     endif()
 endif (WIN32)
 if (APPLE)
-    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-darwin-x86_64")
+    set (CPACK_PACKAGE_FILE_NAME "gmt-${CPACK_PACKAGE_VERSION}-darwin-${CMAKE_HOST_SYSTEM_PROCESSOR}")
 endif (APPLE)
 
 # Install components:

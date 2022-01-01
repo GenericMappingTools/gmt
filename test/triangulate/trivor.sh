@@ -20,6 +20,4 @@ EOF
 gmt triangulate nodes.xy -M | gmt psxy -R0/10/0/10 -JX6i -P -K -W0.25p,red > $ps
 gmt psxy -R -J -O -B2g1 -Sc0.2i -Gwhite -W0.25p nodes.xy -K >> $ps
 $AWK '{printf "%s %s %d\n", $1, $2, NR-1}' nodes.xy | gmt pstext -R -J -F+f8p -O -K >> $ps
-gmt triangulate nodes.xy -M -Q -R0/10/0/10 | gmt psxy -R0/10/0/10 -J -O -K -W1p >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+gmt triangulate nodes.xy -M -Q -R0/10/0/10 | gmt psxy -R0/10/0/10 -J -O -W1p >> $ps

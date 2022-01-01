@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -250,9 +250,25 @@ GMT_LOCAL int get_data(struct GMT_CTRL *GMT, struct OGR_FEATURES *out, OGRFeatur
 }
 
 struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename, double *region) {
+	/* This has become an helper function just to maintain backward compatibility */
+	struct OGRREAD_CTRL *Ctrl = NULL;
+	struct OGR_FEATURES *out = NULL;
+
+	Ctrl = gmt_M_memory (GMT, NULL, 1, struct OGRREAD_CTRL);
+	Ctrl->name = ogr_filename;
+	if (region) {
+		Ctrl->region[0] = region[0];	Ctrl->region[1] = region[1];
+		Ctrl->region[2] = region[2];	Ctrl->region[3] = region[3];
+	}
+	out = gmt_ogrread2(GMT, Ctrl);
+	gmt_M_free (GMT, Ctrl);
+	return out;
+}
+
+struct OGR_FEATURES *gmt_ogrread2(struct GMT_CTRL *GMT, struct OGRREAD_CTRL *Ctrl) {
 
 	bool have_region = false;
-	int	 i, ind, iLayer, nEmptyGeoms, nAttribs = 0;
+	int	 i, ind, iLayer, nLayer, first_layer, last_layer, nEmptyGeoms, nAttribs = 0;
 	int	 nLayers;		/* number of layers in dataset */
 	int	 nFeature, nMaxFeatures, nMaxGeoms;
 	double	x_min, y_min, x_max, y_max;
@@ -269,25 +285,25 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename, doubl
 	OGREnvelope sEnvelop;
 	OGRwkbGeometryType eType;
 
-	if (region != NULL) {
-		x_min = region[0];	x_max = region[1];	y_min = region[2];	y_max = region[3];
+	if (Ctrl->region[0] != 0 && Ctrl->region[1] != 0 && Ctrl->region[2] != 0 && Ctrl->region[3] != 0) {
+		x_min = Ctrl->region[0];	x_max = Ctrl->region[1];	y_min = Ctrl->region[2];	y_max = Ctrl->region[3];
 		have_region = true;
 	}
 
 	GDALAllRegister();
 
-	hDS = GDALOpenEx(ogr_filename, GDAL_OF_VECTOR, NULL, NULL, NULL);
+	hDS = GDALOpenEx(Ctrl->name, GDAL_OF_VECTOR, NULL, NULL, NULL);
 	if (hDS == NULL) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open data source <%s>\n", ogr_filename);
-		GDALDestroyDriverManager();
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unable to open data source <%s>\n", Ctrl->name);
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
 	nLayers = OGR_DS_GetLayerCount(hDS);	/* Get available layers */
 	if (nLayers < 1) {
-		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No OGR layers available. Bye.\n");
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "No OGR layers available.\n");
 		GDALClose(hDS);
-		GDALDestroyDriverManager();
+		gmtlib_GDALDestroyDriverManager(GMT->parent);
 		return NULL;
 	}
 
@@ -303,9 +319,24 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename, doubl
 		OGR_G_AddGeometryDirectly(poSpatialFilter, hPolygon);
 	}
 
+	/* See if we have a layer selection */
+	if (Ctrl->layer < 0) {
+		first_layer = 0;	last_layer = nLayers;
+	}
+	else {
+		if (Ctrl->layer >= nLayers) {
+			GMT_Report (GMT->parent, GMT_MSG_ERROR, "Selected layer (%d) is larger than n layers in file.\n", Ctrl->layer+1);
+			GDALClose(hDS);
+			gmtlib_GDALDestroyDriverManager(GMT->parent);
+			return NULL;
+		}
+		first_layer = Ctrl->layer;	last_layer = Ctrl->layer + 1;
+		nLayers = 1;
+	}
+
 	/* Get MAX number of features of all layers */
 	nMaxFeatures = nMaxGeoms = 1;
-	for (i = 0; i < nLayers; i++) {
+	for (i = first_layer; i < last_layer; i++) {
 		hLayer = GDALDatasetGetLayer(hDS, i);
 
 		if (have_region) OGR_L_SetSpatialFilter(hLayer, poSpatialFilter);
@@ -330,9 +361,9 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename, doubl
 	out[0].n_cols   = nMaxGeoms;
 	out[0].n_layers = nLayers;
 
-	for (iLayer = nFeature = nEmptyGeoms = 0; iLayer < nLayers; iLayer++) {
+	for (iLayer = first_layer, nFeature = nEmptyGeoms = nLayer = 0; iLayer < last_layer; iLayer++, nLayer++) {
 
-		ind = nMaxGeoms * nMaxFeatures * iLayer;	/* n_columns * n_rows * iLayer */
+		ind = nMaxGeoms * nMaxFeatures * nLayer;	/* n_columns * n_rows * iLayer */
 		hLayer = GDALDatasetGetLayer(hDS, iLayer);
 		OGR_L_ResetReading(hLayer);
 		hFeatureDefn = OGR_L_GetLayerDefn(hLayer);
@@ -374,9 +405,10 @@ struct OGR_FEATURES *gmt_ogrread(struct GMT_CTRL *GMT, char *ogr_filename, doubl
 
 			OGR_F_Destroy(hFeature);
 		}
+		nFeature = 0;		/* Reset for next layer */
 	}
 
 	GDALClose(hDS);
-	GDALDestroyDriverManager();
+	gmtlib_GDALDestroyDriverManager(GMT->parent);
 	return out;
 }

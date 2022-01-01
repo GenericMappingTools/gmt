@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,6 @@
 #include "gmt_internals.h"
 
 #define MAX_SWEEPS 50
-
-struct GMT_SINGULAR_VALUE {	/* Used for sorting of eigenvalues in the SVD functions */
-	double value;
-	unsigned int order;
-};
 
 /* Local functions */
 
@@ -340,6 +335,61 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartonly (struct GMT_CTRL *GMT, double 
 	return (n_new);
 }
 
+GMT_LOCAL uint64_t gmtvector_fix_up_path_polar (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode) {
+	/* Takes pointers to a list of <n> theta/r pairs (in user units) and adds
+	 * auxiliary points if the distance between two given points exceeds
+	 * <step> units.
+	 * If mode=0: returns points along a straight line
+	 * If mode=1: staircase; first follows r, then theta
+	 * If mode=2: staircase; first follows theta, then r
+	 * Returns the new number of points (original plus auxiliary).
+	 */
+
+	uint64_t i, j, n_new, n_step = 0;
+	double *x = NULL, *y = NULL, c;
+
+	if (mode == GMT_STAIRS_OFF) return n;	/* Nothing to do */
+
+	x = *a_x;	y = *a_y;
+
+	gmt_prep_tmp_arrays (GMT, GMT_NOTSET, 1, 2);	/* Init or reallocate tmp vectors */
+	GMT->hidden.mem_coord[GMT_X][0] = x[0];	GMT->hidden.mem_coord[GMT_Y][0] = y[0];	n_new = 1;
+	if (step <= 0.0) step = 1.0;	/* Sanity valve; if step not given we set it to 1 */
+
+	for (i = 1; i < n; i++) {
+		if (mode == GMT_STAIRS_X) {	/* First follow theta, then r */
+			n_step = lrint (fabs (x[i] - x[i-1]) / step);
+			for (j = 1; j <= n_step; j++) {
+				c = j / (double)n_step;
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i-1];
+				n_new++;
+			}
+			GMT->hidden.mem_coord[GMT_X][n_new] = x[i];	GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];	n_new++;
+		}
+		else if (mode == GMT_STAIRS_Y) {	/* First follow r, then theta */
+			GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1];	GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];	n_new++;
+			n_step = lrint (fabs (x[i] - x[i-1]) / step);
+			for (j = 1; j <= n_step; j++) {
+				c = j / (double)n_step;
+				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
+				GMT->hidden.mem_coord[GMT_Y][n_new] = y[i];
+				n_new++;
+			}
+		}
+		gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+	}
+
+	/* Destroy old allocated memory and put the new one in place */
+	gmt_M_free (GMT, x);	gmt_M_free (GMT, y);
+	*a_x = gmtlib_assign_vector (GMT, n_new, GMT_X);
+	*a_y = gmtlib_assign_vector (GMT, n_new, GMT_Y);
+
+	return (n_new);
+}
+
 GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double **a_x, double **a_y, uint64_t n, double step, unsigned int mode) {
 	/* Takes pointers to a list of <n> x/y pairs (in user units) and adds
 	 * auxiliary points if the distance between two given points exceeds
@@ -363,7 +413,7 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double
 	for (i = 1; i < n; i++) {
 		if (mode == GMT_STAIRS_Y) {	/* First follow x, then y */
 			n_step = lrint (fabs (x[i] - x[i-1]) / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
 				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1] * (1 - c) + x[i] * c;
@@ -382,7 +432,7 @@ GMT_LOCAL uint64_t gmtvector_fix_up_path_cartesian (struct GMT_CTRL *GMT, double
 		}
 		else if (mode == GMT_STAIRS_X) {	/* First follow y, then x */
 			n_step = lrint (fabs (y[i]-y[i-1]) / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
 				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = x[i-1];
@@ -1041,11 +1091,26 @@ int gmt_svdcmp (struct GMT_CTRL *GMT, double *a, unsigned int m_in, unsigned int
 
 */
 
+struct GMT_SINGULAR_VALUE * gmt_sort_svd_values (struct GMT_CTRL *GMT, double *w, unsigned int n) {
+	/* Store the eigenvalues in a structure and sort it so that the array is
+	 * sorted from large to small values while the order reflects the original position in w */
+	struct GMT_SINGULAR_VALUE *eigen = gmt_M_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
+	for (unsigned int i = 0; i < n; i++) {	/* Load in original order from |w| */
+		eigen[i].value = fabs (w[i]);
+		eigen[i].order = i;
+	}
+	qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), gmtvector_compare_singular_values);
+	return (eigen);
+}
+
 int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int nu, double *v, double *w, double *b, unsigned int k, double *x, double cutoff, unsigned int mode) {
-	/* Mode = 0: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
-	 * mode = 1: Use the first cutoff singular values only. If cutoff is < 1 we assume this is the fraction of eigenvalues we want.
+	/* Mode = 0 [GMT_SVD_EIGEN_RATIO_CUTOFF]: Use all singular values s_j for which s_j/s_0 > cutoff [0 = all]
+	 * mode = 1 [GMT_SVD_EIGEN_NUMBER_CUTOFF]: Use the first cutoff singular values only.
+	 * mode = 2 [GMT_SVD_EIGEN_PERCENT_CUTOFF]: Use a percentage fraction of eigenvalues we want.
+	 * mode = 3 [GMT_SVD_EIGEN_VARIANCE_CUTOFF]: Use a percentage fraction of explained variance to find the eigenvalues we want.
+	 * We return the number of eigenvalues that passed the checks.
 	 */
-	double w_abs, sing_max;
+	double w_abs, sing_max, percent;
 	int i, j, n_use = 0, n = (int)nu;	/* Because OpenMP cannot handle unsigned loop variables */
 	double s, *tmp = gmt_M_memory (GMT, NULL, n, double);
 	gmt_M_unused(m);	/* Since we are actually only doing square matrices... */
@@ -1054,38 +1119,42 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 	gmt_M_unused(v);	/* Not used when we solve via Lapack */
 #endif
 	GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Evaluate solution\n");
-	/* find maximum singular value.  Assumes w[] may have negative eigenvalues */
 
+	/* Find maximum singular value.  Assumes w[] may have negative eigenvalues */
 	sing_max = fabs (w[0]);
 	for (i = 1; i < n; i++) {
 		w_abs = fabs (w[i]);
 		sing_max = MAX (sing_max, w_abs);
 	}
 
-	if (mode == 1 && cutoff > 0.0 && cutoff <= 1.0) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
+	if (mode == GMT_SVD_EIGEN_PERCENT_CUTOFF) {	/* Gave desired fraction of eigenvalues to use instead; scale to # of values */
 		double was = cutoff;
 		cutoff = rint (n*cutoff);
+		mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION, "gmt_solve_svd: Given fraction %g corresponds to %d eigenvalues\n", was, irint(cutoff));
 	}
+	else if (mode == GMT_SVD_EIGEN_VARIANCE_CUTOFF) {	/* Determine N cutoff via model variance desired */
+		struct GMT_SINGULAR_VALUE *eigen = gmt_sort_svd_values (GMT, w, n);	/* Sort the eigenvalues */
+		double l2_sum_n = 0.0, l2_sum_k = 0.0;
+		for (i = 0; i < n; i++)	/* Get total sum of squared eigenvalues */
+			l2_sum_n += eigen[i].value * eigen[i].value;
+		l2_sum_n *= cutoff;	/* Fraction of explained model variance */
+		for (i = 0; i < n; i++) {	/* Determine i that gives >= variance percentage */
+			l2_sum_k += eigen[i].value * eigen[i].value;
+			if (l2_sum_k >= l2_sum_n) break;
+		}
+		cutoff = i;
+		mode = GMT_SVD_EIGEN_NUMBER_CUTOFF;
+	}
 
-	if (mode) {
-		 /* mode = 1: Find the m largest singular values, with m = cutoff (if <1 it is the fraction of values).
+	if (mode == GMT_SVD_EIGEN_NUMBER_CUTOFF) {
+		 /* Find the m largest singular values, with m = cutoff (if <1 it is the fraction of values).
 		 * Either case requires sorted singular values so we need to do some work first.
 		 * It also assumes that the matrix passed is a squared normal equation kind of matrix
-		 * so that the singular values are the individual variace contributions. */
-		struct GMT_SINGULAR_VALUE {
-			double value;
-			unsigned int order;
-		} *eigen;
-		int n_eigen = 0;
-		eigen = gmt_M_memory (GMT, NULL, n, struct GMT_SINGULAR_VALUE);
-		for (i = 0; i < n; i++) {	/* Load in original order from |w| */
-			eigen[i].value = fabs (w[i]);
-			eigen[i].order = i;
-		}
-		qsort (eigen, n, sizeof (struct GMT_SINGULAR_VALUE), gmtvector_compare_singular_values);
+		 * so that the singular values are the individual variance contributions. */
+		struct GMT_SINGULAR_VALUE *eigen = gmt_sort_svd_values (GMT, w, n);	/* Sort the eigenvalues */
+		int n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 
-		n_eigen = (unsigned int)lrint (cutoff);	/* Desired number of eigenvalues to use instead */
 		for (i = 0; i < n; i++) {	/* Visit all singular values in decreasing magnitude */
 			if (i < n_eigen) {	/* Still within specified limit so we add this singular value */
 				w[eigen[i].order] = 1.0 / w[eigen[i].order];
@@ -1107,14 +1176,15 @@ int gmt_solve_svd (struct GMT_CTRL *GMT, double *u, unsigned int m, unsigned int
 				w[i] = 0.0;
 		}
 	}
-	if (mode == 0)
+	percent = 100.0 * (double)n_use / (double)n;
+	if (mode == GMT_SVD_EIGEN_RATIO_CUTOFF)
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
-		            "gmt_solve_svd: Ratio limit %g ratained %d singular values\n", cutoff, n_use);
-	if (mode == 2)
+		            "gmt_solve_svd: Ratio limit %g retained %d singular values (%.1lf%%\n", cutoff, n_use, percent);
+	else
 		GMT_Report (GMT->parent, GMT_MSG_INFORMATION,
-		            "gmt_solve_svd: Selected first %d singular values\n", n_use);
+		            "gmt_solve_svd: Selected the largest %d singular values (%.1lf%%)\n", n_use, percent);
 
-	/* Here w contains 1/eigenvalue so we multiply by w if w != 0*/
+	/* Here w contains 1/eigenvalue so we multiply by w if w != 0 */
 
 #ifdef HAVE_LAPACK
 	/* New Lapack SVD evaluation */
@@ -1428,6 +1498,9 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 	double a[3], b[3], x[3], *lon = NULL, *lat = NULL;
 	double c, d, fraction, theta, minlon, maxlon;
 	double dlon, lon_i, boost, f_lat_a, f_lat_b;
+	double E[3], R[3][3], R0[3][3], ds_radians, angle_radians;
+
+	if (GMT->current.proj.projection_GMT == GMT_POLAR) return (gmtvector_fix_up_path_polar (GMT, a_lon, a_lat, n, 1.0, mode));	/* r-theta stepping */
 
 	if (gmt_M_is_cartesian (GMT, GMT_IN)) return (gmtvector_fix_up_path_cartonly (GMT, a_lon, a_lat, n, mode));	/* Stair case only */
 
@@ -1482,7 +1555,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			lon_i = lon[i-1] + dlon;	/* Use lon_i instead of lon[i] in the marching since this avoids any jumping */
 			theta = fabs (dlon) * cosd (lat[i-1]);
 			n_step = lrint (theta / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
 				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1] * (1 - c) + lon_i * c;
@@ -1504,7 +1577,7 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 		else if (mode == GMT_STAIRS_X) {	/* First follow parallel, then meridian */
 			theta = fabs (lat[i]-lat[i-1]);
 			n_step = lrint (theta / step);
-			for (j = 1; j < n_step; j++) {
+			for (j = 1; j <= n_step; j++) {
 				c = j / (double)n_step;
 				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
 				GMT->hidden.mem_coord[GMT_X][n_new] = lon[i-1];
@@ -1579,24 +1652,42 @@ uint64_t gmt_fix_up_path (struct GMT_CTRL *GMT, double **a_lon, double **a_lat, 
 			/* Next point is now point i */
 		}
 		else if ((n_step = lrint (boost * theta / step)) > 1) {	/* Must insert (n_step - 1) points, i.e. create n_step intervals */
-			fraction = 1.0 / (double)n_step;
-			minlon = MIN (lon[i-1], lon[i]);
-			maxlon = MAX (lon[i-1], lon[i]);
-			meridian = doubleAlmostEqualZero (maxlon, minlon);	/* A meridian; make a gap so tests below will give right range */
-			for (j = 1; j < n_step; j++) {
-				c = j * fraction;
-				d = 1 - c;
-				for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
-				gmt_normalize3v (GMT, x);		/* Make unit vector */
-				gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
-				gmt_cart_to_geo (GMT, &GMT->hidden.mem_coord[GMT_Y][n_new], &GMT->hidden.mem_coord[GMT_X][n_new], x, true);
-				if (meridian)
-					GMT->hidden.mem_coord[GMT_X][n_new] = minlon;
-				else if (GMT->hidden.mem_coord[GMT_X][n_new] < minlon)
-					GMT->hidden.mem_coord[GMT_X][n_new] += 360.0;
-				else if (GMT->hidden.mem_coord[GMT_X][n_new] > maxlon)
-					GMT->hidden.mem_coord[GMT_X][n_new] -= 360.0;
-				n_new++;
+			/* Do this by crossing the end point vectors to get a rotation pole, then rotate a towards b in equal angular steps */
+			if (GMT->hidden.sample_along_arc) {	/* Need accurate incremental spacing so do the slower along-arc approach */
+				gmt_cross3v (GMT, a, b, E);	/* Get pole E to plane trough a and b */
+				gmt_normalize3v (GMT, E);	/* Make sure E has unit length */
+				gmtlib_init_rot_matrix (R0, E);	/* Get partial rotation matrix since no actual angle is applied yet */
+				ds_radians = D2R * theta / n_step;
+				for (j = 1; j < n_step; j++) {
+					angle_radians = j * ds_radians;		/* The required rotation for this point relative to FZ origin */
+					gmt_M_memcpy (R, R0, 9, double);	/* Get a copy of the "0-angle" rotation matrix */
+					gmtlib_load_rot_matrix (angle_radians, R, E);	/* Build the actual rotation matrix for this angle */
+					gmt_matrix_vect_mult (GMT, 3U, R, a, x);	/* Rotate a along the arc towards b */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					gmt_cart_to_geo (GMT, &GMT->hidden.mem_coord[GMT_Y][n_new], &GMT->hidden.mem_coord[GMT_X][n_new], x, true);	/* Get lon/lat of this point along arc */
+					n_new++;
+				}
+			}
+			else {	/* Use the linear interpolation along the cord which is faster */
+				fraction = 1.0 / (double)n_step;
+				minlon = MIN (lon[i-1], lon[i]);
+				maxlon = MAX (lon[i-1], lon[i]);
+				meridian = doubleAlmostEqualZero (maxlon, minlon);	/* A meridian; make a gap so tests below will give right range */
+				for (j = 1; j < n_step; j++) {
+					c = j * fraction;
+					d = 1 - c;
+					for (k = 0; k < 3; k++) x[k] = a[k] * d + b[k] * c;
+					gmt_normalize3v (GMT, x);		/* Make unit vector */
+					gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */
+					gmt_cart_to_geo (GMT, &GMT->hidden.mem_coord[GMT_Y][n_new], &GMT->hidden.mem_coord[GMT_X][n_new], x, true);
+					if (meridian)
+						GMT->hidden.mem_coord[GMT_X][n_new] = minlon;
+					else if (GMT->hidden.mem_coord[GMT_X][n_new] < minlon)
+						GMT->hidden.mem_coord[GMT_X][n_new] += 360.0;
+					else if (GMT->hidden.mem_coord[GMT_X][n_new] > maxlon)
+						GMT->hidden.mem_coord[GMT_X][n_new] -= 360.0;
+					n_new++;
+				}
 			}
 		}
 		gmt_prep_tmp_arrays (GMT, GMT_NOTSET, n_new, 2);	/* Init or reallocate tmp read vectors */

@@ -14,8 +14,7 @@ gmt pslegend -R -J -O -K -Dx1c/15c+w8c+jTL -F+p+g$color >> $ps <<%
 P
 T This text wraps to the next line. It uses all standard paragraph modes. But what if you want to use left alignment?
 %
-gmt pslegend -R -J -O -K -Dx1c/12c+w8c+jTL -F+p+g$color >> $ps <<%
+gmt pslegend -R -J -O -Dx1c/12c+w8c+jTL -F+p+g$color >> $ps <<%
 P - - - - - - - l
 T Same trying to do left alignment. That seems to work nicely but needs 8 parameters on P line.
 %
-gmt psxy -R -J -O -T >> $ps

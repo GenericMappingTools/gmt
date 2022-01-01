@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 # Plot r,az vectors on the globe
+#
+# GRAPHICSMAGICK_RMS = 0.02
+#
 ps=vectors.ps
 gmt grdmath -Rg -I30 -r 0.5 Y COSD ADD = r.nc
 gmt grdmath -Rg -I30 -r X = az.nc

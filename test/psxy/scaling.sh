@@ -31,5 +31,4 @@ echo 0 2 150 | gmt psxy -R -J -O -K -Sci -i0,1,2+s0.01+o-0.5 -Gblack >> $ps
 # Simulate what we want with awk, first for cm
 echo 0 0 150 | awk '{print $1, $2, ($3-50)*0.01}' | gmt psxy -R -J -Baf -O -K -Scc -Gblack -X6c >> $ps
 # Simulate what we want with awk, for inch
-echo 0 2 150 | awk '{print $1, $2, ($3-50)*0.01}' | gmt psxy -R -J -O -K -Sci -Gblack >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo 0 2 150 | awk '{print $1, $2, ($3-50)*0.01}' | gmt psxy -R -J -O -Sci -Gblack >> $ps

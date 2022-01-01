@@ -9,6 +9,4 @@ gmt pscoast -Dl -R -J -A1000 -G220 -W0.25p -N1 -B0 -O -K -X3.5i >> $ps
 gmt pscoast -Dl -R -J -A1000 -Slightblue -G220 -W0.25p -N1 -B0 -O -K -X-3.5 -Y-3.25i >> $ps
 gmt pscoast -Dl -R -J -A1000 -Slightblue -W0.25p -N1 -O -K -B0 -X3.5i >> $ps
 gmt pscoast -Dl -R99.811/-47.587/323.501/31.558r -JE195.470/19.970/3i -A1000 -Slightblue -W0.25p -N1 -B0 -O -K -X-3.5i -Y-3.25i >> $ps
-gmt pscoast -Dl -R -J -A1000 -Slightblue -G220 -W0.25p -N1 -B0 -O -K -X3.5i >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+gmt pscoast -Dl -R -J -A1000 -Slightblue -G220 -W0.25p -N1 -B0 -O -X3.5i >> $ps

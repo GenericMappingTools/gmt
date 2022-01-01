@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_f7290d3 [64-bit] Document from pssac
+%%Title: GMT v6.2.0_1d42355-dirty_2020.10.06 [64-bit] Document from pssac
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Dec 27 13:24:42 2018
+%%CreationDate: Tue Oct  6 22:22:59 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -150,7 +150,7 @@
 /oacute		/ae		/ocircumflex	/odieresis	/ograve		/dotlessi	/uacute		/ucircumflex
 /udieresis	/oslash		/oe		/germandbls	/ugrave		/Aring		/aring		/ydieresis
 ] def
-/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 43 array astore def
+/PSL_font_encode 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 39 array astore def
 /F0 {/Helvetica Y}!
 /F1 {/Helvetica-Bold Y}!
 /F2 {/Helvetica-Oblique Y}!
@@ -190,10 +190,6 @@
 /F36 {/Ryumin-Light-EUC-V Y}!
 /F37 {/GothicBBB-Medium-EUC-H Y}!
 /F38 {/GothicBBB-Medium-EUC-V Y}!
-/F39 {/STSong-Light--UniGB-UTF8-H Y}!
-/F40 {/STFangsong-Light--UniGB-UTF8-H Y}!
-/F41 {/STHeiti-Regular--UniGB-UTF8-H Y}!
-/F42 {/STKaiti-Regular--UniGB-UTF8-H Y}!
 /PSL_pathtextdict 26 dict def
 /PSL_pathtext
   {PSL_pathtextdict begin
@@ -340,9 +336,7 @@ end
   n 0 eq {PSL_CT_drawline} if
 } def
 /PSL_CT_textline
-{ /psl_fnt PSL_fnt k get def
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
-  psl_fnt cvx exec
+{ PSL_fnt k get cvx exec
   /PSL_height PSL_heights k get def
   PSL_placetext	{PSL_CT_placelabel} if
   PSL_clippath {PSL_CT_clippath} if
@@ -598,9 +592,7 @@ end
   /psl_xp PSL_txt_x psl_k get def
   /psl_yp PSL_txt_y psl_k get def
   /psl_label PSL_label_str psl_k get def
-  /psl_fnt PSL_label_font psl_k get def
-  psl_fnt cvx exec
-  psl_fnt (FS) search {pop pop pop /PSL_fmode 2 def} {pop /PSL_fmode 1 def} ifelse
+  PSL_label_font psl_k get cvx exec
   /PSL_height PSL_heights psl_k get def
   /psl_boxH PSL_height PSL_gap_y 2 mul add def
   /PSL_just PSL_label_justify psl_k get def
@@ -643,8 +635,7 @@ end
 {
     V psl_xp psl_yp T psl_angle R
     psl_SW PSL_justx mul psl_y0 M
-    psl_label dup sd neg 0 exch G
-    PSL_fmode 1 eq {show} {false charpath V S U fs N} ifelse
+    psl_label dup sd neg 0 exch G show
     U
 } def
 /PSL_nclip 0 def
@@ -655,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -666,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -678,11 +671,11 @@ O0
 % PostScript produced by:
 %@GMT: gmt pssac seis.sac -R9/20/-2/2 -JX15c/3c -B1 -BWSen -W2p,red,- -K -P
 %@PROJ: xy 9.00000000 20.00000000 -2.00000000 2.00000000 9.000 20.000 -2.000 2.000 +xy
-%GMTBoundingBox: 72 72 425.197 85.0394
+%GMTBoundingBox: 72 72 425.196850394 85.0393700787
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 33 W
 [267 133] 0 B
 1 0 0 C
@@ -1308,6 +1301,7 @@ S
 [] 0 B
 25 W
 0 A
+/PSL_slant_y 0 def
 2 setlinecap
 N 0 1417 M 0 -1417 D S
 /PSL_A0_y 83 def
@@ -1318,8 +1312,8 @@ N 0 354 M -83 0 D S
 N 0 709 M -83 0 D S
 N 0 1063 M -83 0 D S
 N 0 1417 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (”2) sw mx
@@ -1371,8 +1365,8 @@ N 5154 0 M 0 -83 D S
 N 5798 0 M 0 -83 D S
 N 6442 0 M 0 -83 D S
 N 7087 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 (9) sh mx
 (10) sh mx
 (11) sh mx
@@ -1445,7 +1439,7 @@ O0
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 17 W
 296 674 M
 39 1 D
@@ -2067,6 +2061,7 @@ O0
 6 0 D
 S
 25 W
+/PSL_slant_y 0 def
 2 setlinecap
 N 0 1417 M 0 -1417 D S
 /PSL_A0_y 83 def
@@ -2077,8 +2072,8 @@ N 0 354 M -83 0 D S
 N 0 709 M -83 0 D S
 N 0 1063 M -83 0 D S
 N 0 1417 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (”2) sw mx
@@ -2164,7 +2159,7 @@ O0
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 0 0 1 C
 296 674 M
@@ -2788,6 +2783,7 @@ O0
 S
 25 W
 0 A
+/PSL_slant_y 0 def
 2 setlinecap
 N 0 1417 M 0 -1417 D S
 /PSL_A0_y 83 def
@@ -2798,8 +2794,8 @@ N 0 354 M -83 0 D S
 N 0 709 M -83 0 D S
 N 0 1063 M -83 0 D S
 N 0 1417 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (”2) sw mx
@@ -2885,7 +2881,7 @@ O0
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 [4 17] 0 B
 296 674 M
@@ -3509,6 +3505,7 @@ O0
 S
 [] 0 B
 25 W
+/PSL_slant_y 0 def
 2 setlinecap
 N 0 1417 M 0 -1417 D S
 /PSL_A0_y 83 def
@@ -3519,8 +3516,8 @@ N 0 354 M -83 0 D S
 N 0 709 M -83 0 D S
 N 0 1063 M -83 0 D S
 N 0 1417 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (”2) sw mx
@@ -3606,7 +3603,7 @@ O0
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 296 674 M
 39 1 D
@@ -4228,6 +4225,7 @@ O0
 6 0 D
 S
 25 W
+/PSL_slant_y 0 def
 2 setlinecap
 N 0 1417 M 0 -1417 D S
 /PSL_A0_y 83 def
@@ -4238,8 +4236,8 @@ N 0 354 M -83 0 D S
 N 0 709 M -83 0 D S
 N 0 1063 M -83 0 D S
 N 0 1417 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (”2) sw mx
@@ -4320,10 +4318,23 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt psxy -R9/20/-2/2 -JX15c/3c -T -K -O
+%@GMT: gmt psxy -R9/20/-2/2 -JX15c/3c -T -O
 %@PROJ: xy 9.00000000 20.00000000 -2.00000000 2.00000000 9.000 20.000 -2.000 2.000 +xy
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 %%EndObject
+
+grestore
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
+%PSL_Begin_Trailer
+%%PageTrailer
+U
+showpage
+
+%%Trailer
+
+end
+%%EOF

@@ -1,0 +1,28 @@
+# Workflow to run cppchecks
+
+on:
+  # enable pull request for debugging
+  # pull_request:
+  # Schedule runs daily
+  schedule:
+    - cron: '0 0 * * *'
+
+name: Lint Checker
+
+jobs:
+  lint-checker:
+    name: Lint Checker
+    runs-on: macos-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: Install cppcheck
+      run: |
+        set -x -e
+        brew install cppcheck
+        cppcheck --version
+
+    - name: Run cppcheck
+      run: bash admin/run_cppcheck.sh src

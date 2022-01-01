@@ -1,6 +1,15 @@
 {# Import the theme's layout. #}
 {% extends "!layout.html" %}
 
+{%- block extrahead %}
+{# Enable versions switch #}
+{% if enable_versions_switch %}
+  <!-- Point to the *latest* version switcher. This will allow the latest versions to appear on older documentation. -->
+  <script type="text/javascript" src="/latest/_static/version_switch.js"></script>
+{% endif %}
+{% endblock %}
+
+
 {% block menu %}
     {{ super() }}
 

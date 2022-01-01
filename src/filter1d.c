@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -60,10 +60,11 @@ struct FILTER1D_CTRL {
 	struct FILTER1D_F {	/* -F<type><width>[<mode>] */
 		bool active;
 		bool highpass;
+		bool variable;
 		char filter;	/* Character codes for the filter */
 		double width;
 		int mode;	/* -1/0/+1 */
-		char *file;	/* Character codes for the filter */
+		char *file;	/* File with custom filter coefficients or w(t) variable widths */
 	} F;
 	struct FILTER1D_L {	/* -L<lackwidth> */
 		bool active;
@@ -114,6 +115,7 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	bool out_at_time;		/* true when output is required at evenly spaced intervals */
 	bool f_operator;		/* true if custom weights coefficients sum to zero */
 	bool highpass;		/* true if we are doing a highpass filter */
+	bool variable;		/* true if we are doing a variable width filter */
 
 	uint64_t *n_this_col;		/* Pointer to array of counters [one per column]  */
 	uint64_t *n_left;		/* Pointer to array of counters [one per column]  */
@@ -130,7 +132,10 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	int way;			/* -1 find minimum, +1 find maximum  [for the l|L|u|U filter] */
 	unsigned int mode_selection;
 	unsigned int n_multiples;
+	unsigned int nw;		/* Length of variable filter width array */
 
+	double *ft;				/* Pointer for array of variable filter times  */
+	double *fw;				/* Pointer for array of variable filter widths  */
 	double *f_wt;			/* Pointer for array of filter coefficients  */
 	double *min_loc;		/* Pointer for array of values, one per [column]  */
 	double *max_loc;
@@ -156,6 +161,7 @@ struct FILTER1D_INFO {	/* Control structure for all aspects of the filter setup 
 	double extreme;			/* Extreme value [for the l|L|u|U filter] */
 
 	struct GMT_DATASET *Fin;	/* Pointer to table with custom weight coefficients (optional) */
+	struct GMT_DATASET *W;	/* Pointer to table with variable filter widths (optional) */
 	struct GMT_ARRAY T;
 };
 
@@ -169,7 +175,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	return (C);
 }
 
-static void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
+static void Free_Ctrl (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *C) {	/* Deallocate control structure */
 	if (!C) return;
 	gmt_M_str_free (C->F.file);
 	gmt_free_array (GMT, &(C->T.T));
@@ -179,60 +185,70 @@ static void Free_Ctrl (struct GMT_CTRL *GMT,struct FILTER1D_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -F<type><width>[<modifiers>] [-D<increment>] [-E]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>[+e|n|a]]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -F<type><width>[+l|u] [-D<increment>] [-E] "
+		"[-L<lack_width>] [-N<t_col>] [-Q<q_factor>] [-S<symmetry>] [-T[<min>/<max>/]<inc>|<file>|<list>[+a][+e|i|n]] "
+		"[%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_a_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_j_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Set filtertype.  Choose from convolution and non-convolution filters\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   and append filter <width> in same units as time column.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +h select high-pass filtering [Default is low-pass filtering].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Convolution filters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar : Weights are equal.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c: Cosine arch : Weights given by cosine arch.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g: Gaussian : Weights given by Gaussian function.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f<name>: Custom : Weights given in one-column file <name>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Non-convolution filters:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     m: Median : Return the median value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     p: Maximum likelihood probability (mode) estimator : Return the mode.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        By default, we return the average mode if more than one is found.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append +l to return the lowest mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t        Append +u to return the uppermost mode if multiple modes are found [return average].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     l: Lower : Return minimum of all points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     L: Lower+ : Return minimum of all positive points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     u: Upper : Return maximum of all points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     U: Upper- : Return maximum of all negative points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Upper case type B, C, G, M, P, F will use robust filter versions,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i.e., replace outliers (2.5 L1 scale (MAD) of median) with median during filtering.\n");
-
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set fixed increment when series is NOT equidistantly sampled.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Then <increment> will be the abscissae resolution, i.e., all abscissae\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   will be rounded off to a multiple of <increment>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Include ends of time series in output [Default loses half_width at each end].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Check for lack of data condition.  If input data has a gap exceeding\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <width> then no output will be given at that point [Default does not check Lack].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Set the column that contains the independent variable (time) [0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The left-most column is # 0, the right-most is # (<n_cols> - 1).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Assess quality of output value by checking mean weight in convolution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Enter <q_factor> between 0 and 1.  If mean weight < q_factor, output is\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   suppressed at this point [Default does not check quality].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Check symmetry of data about window center.  Enter a factor\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   then no output will be given at this point [Default does not check Symmetry].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Make evenly spaced output time steps from <min> to <max> by <inc> [Default uses input times].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +n to indicate <inc> is the number of t-values to produce instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If only <inc> is given, optionally append +e to keep increment exact [Default will adjust to fit range].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For absolute time filtering, append a valid time unit (%s) to the increment.\n", GMT_TIME_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   For spatial filtering with distance computed from the first two columns, specify increment as\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <inc> and append a geospatial distance unit (%s) or c (for Cartesian distances).\n", GMT_LEN_UNITS_DISPLAY);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +a to add such internal distances as a final output column [no distances added].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, give a file with output times in the first column or a comma-separated list.\n");
-	GMT_Option (API, "V,bi,bo,d,e,f,g,h,i,j,o,q,:,.");
+	GMT_Usage (API, 1, "\n-F<type><width>[+l|u]");
+	GMT_Usage (API, -2, "Set filter type.  Choose from convolution and non-convolution filters "
+		"and append filter <width> in same units as time column. "
+		"If <width> is a file (and <type> is not f) it must have a time-series of filter widths. "
+		"Append +h to select high-pass filtering [Default is low-pass filtering].");
+	GMT_Usage (API, -2, "Convolution filters:");
+	GMT_Usage (API, 3, "b: Boxcar : Weights are equal.");
+	GMT_Usage (API, 3, "c: Cosine arch : Weights given by cosine arch.");
+	GMT_Usage (API, 3, "g: Gaussian : Weights given by Gaussian function.");
+	GMT_Usage (API, 3, "f: Custom : Weights given in one-column file <name>.");
+	GMT_Usage (API, -2, "Non-convolution filters:");
+	GMT_Usage (API, 3, "m: Median : Return the median value.");
+	GMT_Usage (API, 3, "p: Maximum likelihood probability (mode) estimator : Return the mode:");
+	GMT_Usage (API, 4, "+l Return the lowest mode if multiple modes are found [return average mode].");
+	GMT_Usage (API, 4, "+u Return the uppermost mode if multiple modes are found [return average mode].");
+	GMT_Usage (API, 3, "l: Lower : Return minimum of all points.");
+	GMT_Usage (API, 3, "L: Lower+ : Return minimum of all positive points.");
+	GMT_Usage (API, 3, "u: Upper : Return maximum of all points.n");
+	GMT_Usage (API, 3, "U: Upper- : Return maximum of all negative points.");
+	GMT_Usage (API, -2, "Upper case type B, C, G, M, P, F will use robust filter versions, "
+		"i.e., replace outliers (2.5 L1 scale (MAD) of median) with median during filtering.");
+
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+
+	GMT_Usage (API, 1, "\n-D<increment>");
+	GMT_Usage (API, -2, "Set fixed increment when series is NOT equidistantly sampled. "
+		"Then <increment> will be the abscissae resolution, i.e., all abscissae "
+		"will be rounded off to a multiple of <increment>.");
+	GMT_Usage (API, 1, "\n-E Include ends of time series in output [Default loses half_width at each end].");
+	GMT_Usage (API, 1, "\n-L<lack_width>");
+	GMT_Usage (API, -2, "Check for lack of data condition.  If input data has a gap exceeding "
+		"<width> then no output will be given at that point [Default does not check Lack].");
+	GMT_Usage (API, 1, "\n-N<t_col>");
+	GMT_Usage (API, -2, "Set the column that contains the independent variable (time) [0]. "
+		"The left-most column is 0, the right-most is (<n_cols> - 1).");
+	GMT_Usage (API, 1, "\n-Q<q_factor>");
+	GMT_Usage (API, -2, "Assess quality of output value by checking mean weight in convolution. "
+		"Append <q_factor> between 0 and 1.  If mean weight < q_factor, output is "
+		"suppressed at this point [Default does not check quality].");
+	GMT_Usage (API, 1, "\n-S<symmetry>");
+	GMT_Usage (API, -2, "Check symmetry of data about window center.  Append a factor "
+		"between 0 and 1.  If ( (abs(n_left - n_right)) / (n_left + n_right) ) > factor, "
+		"then no output will be given at this point [Default does not check Symmetry].");
+	GMT_Usage (API, 1, "\n-T[<min>/<max>/]<inc>[<unit>]|<file>|<list>[+a][+e|i|n]");
+	GMT_Usage (API, -2, "Make evenly spaced output time steps from <min> to <max> by <inc> [Default uses input times]. "
+		"Alternatively, give a <file> with output times in the first column or a comma-separated <list>. "
+		"For absolute time filtering, append a valid time unit (%s) to the increment. "
+		"For spatial filtering with distance computed from the first two columns, "
+		"append a geospatial distance unit (%s) or c (for Cartesian distances) to the increment.", GMT_TIME_UNITS_DISPLAY, GMT_LEN_UNITS_DISPLAY);
+	GMT_Usage (API, 3, "+e Keep increment exact [Default will adjust to fit range]. Only valid if just an <inc> is given.");
+	GMT_Usage (API, 3, "+a Add internal geospatial distances as a final output column [no distances added].");
+	GMT_Usage (API, 3, "+i Indicate <inc> is the reciprocal of desired <inc> (e.g., 3 for 0.3333.....).");
+	GMT_Usage (API, 3, "+n Indicate <inc> is the number of t-values to produce instead.");
+	GMT_Option (API, "V,a,bi,bo,d,e,f,g,h,i,j,o,q,:,.");
 
 	return (GMT_MODULE_USAGE);
 }
@@ -264,26 +280,34 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'D':	/* Get fixed increment */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.inc = atof (opt->arg);
 				Ctrl->D.active = true;
 				break;
 			case 'E':	/* Include ends of series */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'F':	/* Filter selection  */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0] && strchr ("BbCcGgMmPpLlUuFf", opt->arg[0])) {	/* OK filter code */
 					Ctrl->F.filter = opt->arg[0];
-					Ctrl->F.width = atof (&opt->arg[1]);
 					if ((c = strstr (opt->arg, "+h"))) {	/* Want high-pass filter */
 						Ctrl->F.highpass = true;
 						c[0] = '\0';	/* Chop off +h */
+					}
+					if (gmt_access (GMT, &opt->arg[1], R_OK))
+						Ctrl->F.width = atof (&opt->arg[1]);
+					else if (Ctrl->F.filter != 'f') {	/* Got variable filter width series */
+						Ctrl->F.variable = true;
+						Ctrl->F.file = strdup (&opt->arg[1]);
 					}
 					switch (Ctrl->F.filter) {	/* Get some further info from some filters */
 						case 'P':
@@ -318,10 +342,12 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 				n_errors += gmt_parse_d_option (GMT, txt);
 				break;
 			case 'L':	/* Check for lack of data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.value = atof (opt->arg);
 				break;
 			case 'N':	/* Select column with independent coordinate [0] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (gmt_M_compat_check (GMT, 4)) {	/* GMT4 LEVEL */
 					if (strchr (opt->arg, '/')) { /* Gave obsolete format */
@@ -363,14 +389,17 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 				}
 				break;
 			case 'Q':	/* Assess quality of output */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.value = atof (opt->arg);
 				Ctrl->Q.active = true;
 				break;
 			case 'S':	/* Activate symmetry test */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.value = atof (opt->arg);
 				break;
 			case 'T':	/* Set output knots */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				t_arg = opt->arg;
 				break;
@@ -382,7 +411,7 @@ static int parse (struct GMT_CTRL *GMT, struct FILTER1D_CTRL *Ctrl, struct GMT_O
 	}
 
 	if (Ctrl->T.active)	/* Do this one here since we need Ctrl->N.col to be set first, if selected */
-		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_ROUND, Ctrl->N.col);
+		n_errors += gmt_parse_array (GMT, 'T', t_arg, &(Ctrl->T.T), GMT_ARRAY_TIME | GMT_ARRAY_DIST | GMT_ARRAY_ROUND | GMT_ARRAY_UNIQUE, Ctrl->N.col);
 	if (Ctrl->N.spatial) {	/* Obsolete -N settings propagated to -T */
 		Ctrl->T.T.spatial = Ctrl->N.spatial;
 		Ctrl->T.T.unit = Ctrl->N.unit;
@@ -474,13 +503,14 @@ GMT_LOCAL int filter1d_set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO
 
 	if (F->out_at_time) {
 		/* populate F->t_start and F->t_stop */
-		double	t_shift;
+		/* Here, F->T.set == 1 means we were only given an increment, otherwise we got min/max/inc.
+		 * Thus, for the latter we want whatever stop we pick to be an integer steps of inc from min. */
 		if (F->T.set == 1 || F->t_start_t < t_0) /* Not set or user defined t_start_t outside bounds */
-			F->t_start = t_0;
+			F->t_start = (F->T.set == 1) ? floor (t_0 / F->t_int) * F->t_int : F->t_start_t + floor ((t_0 - F->t_start_t) / F->t_int) * F->t_int;
 		else
 			F->t_start = F->t_start_t;
 		if (F->T.set == 1 || F->t_stop_t > t_1) /* Not set or user defined t_stop_t outside bounds */
-			F->t_stop = t_1;
+			F->t_stop = (F->T.set == 1) ? ceil (t_1 / F->t_int) * F->t_int : F->t_stop_t - floor ((F->t_stop_t - t_1) / F->t_int) * F->t_int;
 		else
 			F->t_stop = F->t_stop_t;
 
@@ -489,14 +519,6 @@ GMT_LOCAL int filter1d_set_up_filter (struct GMT_CTRL *GMT, struct FILTER1D_INFO
 			F->t_start += F->half_width;
 			F->t_stop  -= F->half_width;
 		}
-
-		/* align F->t_start and F->t_stop to F->t_int */
-		t_shift = F->t_int - fmod (F->t_start - F->t_start_t, F->t_int);
-		if ( fabs (t_shift - F->t_int) < GMT_CONV4_LIMIT ) t_shift = 0.0; /* avoid values close to F->t_int */
-		F->t_start += t_shift; /* make F->t_start - F->t_start_t an integral multiple of F->t_int */
-		t_shift = fmod (F->t_stop - F->t_start_t, F->t_int);
-		if ( fabs (t_shift - F->t_int) < GMT_CONV4_LIMIT ) t_shift = 0.0; /* avoid values close to F->t_int */
-		F->t_stop -= t_shift; /* make F->t_stop - F->t_start_t an integral multiple of F->t_int */
 	}
 	else {
 		if (F->use_ends) {
@@ -576,6 +598,7 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 	uint64_t i_row, left, right, n_l, n_r, k = 0, n_for_call, n_good_ones, last_k;
 	uint64_t iq, i_col, diff;
 	int64_t i_f_wt, n_in_filter;
+	int result;
 	bool *good_one = NULL;	/* Pointer to array of logicals [one per column]  */
 	double t_time, delta_time, wt, val, med, scl, small, symmetry;
 	double *wt_sum = NULL;		/* Pointer for array of weight sums [each column]  */
@@ -608,7 +631,24 @@ GMT_LOCAL int filter1d_do_the_filter (struct GMTAPI_CTRL *C, struct FILTER1D_INF
 	Out = gmt_new_record (GMT, NULL, NULL);
 
 	while (k <= last_k) {
-		while ((F->T.array[k] - F->data[F->t_col][left] - small) > F->half_width) ++left;
+		if (F->variable) {	/* Must obtain the filter width for this time */
+			if (F->T.array[k] < F->ft[0] || F->T.array[k] > F->ft[F->nw-1]) {
+				k++;
+				continue;	/* Outside filter width array */
+			}
+			if ((result = gmt_intpol (GMT, F->ft, F->fw, NULL, F->nw, 1, &(F->T.array[k]), &(F->filter_width), 0.0, GMT->current.setting.interpolant))) {
+				GMT_Report (GMT->parent, GMT_MSG_WARNING, "Interpolation failure in gmt_intpol (error %d) - skipping segment", result);
+				continue;
+			}
+			filter1d_set_up_filter (GMT, F);
+			if (F->T.array[k] < F->t_start || F->T.array[k] > F->t_stop) {
+				k++;
+				continue;	/* Outside full filter window */
+			}
+		}
+
+		/* Determine data window for convolution/filter */
+		while (left  < F->n_rows && (F->T.array[k] - F->data[F->t_col][left]  - small) > F->half_width)  ++left;
 		while (right < F->n_rows && (F->data[F->t_col][right] - F->T.array[k] - small) <= F->half_width) ++right;
 		n_in_filter = (int64_t)(right - left);
 		if ( n_in_filter <= 0 || (F->check_lack && ( (F->filter_width / n_in_filter) > F->lack_width) ) ) {
@@ -834,6 +874,7 @@ GMT_LOCAL void filter1d_load_parameters (struct FILTER1D_INFO *F, struct FILTER1
 	F->T = Ctrl->T.T;
 	F->out_at_time = Ctrl->T.active;
 	F->highpass = Ctrl->F.highpass;
+	F->variable = Ctrl->F.variable;
 }
 
 /* Must free allocated memory before returning */
@@ -842,9 +883,9 @@ GMT_LOCAL void filter1d_load_parameters (struct FILTER1D_INFO *F, struct FILTER1
 #define Return2(code) {Free_Ctrl (GMT, Ctrl); gmt_end_module (GMT, GMT_cpy); bailout (code);}
 
 EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
-	uint64_t col, tbl, row, seg;
+	uint64_t col, tbl, row, seg, tseg;
 	int error;
-	unsigned int save_col, n_out_cols;
+	unsigned int save_col[2], n_out_cols;
 
 	double last_time, new_time, in;
 
@@ -958,18 +999,36 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 		case 'f':
 			F.filter_type = FILTER1D_CUSTOM;
 			if ((error = GMT_Set_Columns (API, GMT_IN, 1, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
-			save_col = GMT->current.io.col_type[GMT_IN][GMT_X];	/* Save col type in case it is a time column */
-			gmt_set_column (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
-			gmt_disable_bghi_opts (GMT);	/* Do not want any -b -g -h -i to affect the reading from -F files */
+			save_col[GMT_X] = gmt_get_column_type (GMT, GMT_IN, GMT_X);	/* Save col type in case it is a time column */
+			gmt_set_column_type (GMT, GMT_IN, GMT_X, GMT_IS_FLOAT);	/* Always read the weights as floats */
+			gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
 			if ((F.Fin = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
 				Return (API->error, "Error Reading input\n");
 			}
-			gmt_reenable_bghi_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
-			gmt_set_column (GMT, GMT_IN, GMT_X, save_col);	/* Reset this col type to whatever it actually is */
+			gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+			gmt_set_column_type (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
 			GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.Fin->n_records, Ctrl->F.file);
 			break;
 	}
 	if (F.filter_type > FILTER1D_CONVOLVE) F.robust = false;
+	if (F.variable) {
+		if ((error = GMT_Set_Columns (API, GMT_IN, 2, GMT_COL_FIX_NO_TEXT)) != 0) Return (error, "Error in GMT_Set_Columns");
+		save_col[GMT_X] = gmt_get_column_type (GMT, GMT_IN, GMT_X);	/* Save col type in case it is a time column */
+		save_col[GMT_Y] = gmt_get_column_type (GMT, GMT_IN, GMT_Y);	/* Save col type in case it is a time column */
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, gmt_get_column_type (GMT, GMT_IN, F.t_col));	/* Same units as time-series "t"*/
+		gmt_set_column_type (GMT, GMT_IN, GMT_Y, GMT_IS_FLOAT);	/* Always read the widths as floats */
+		gmt_disable_bghio_opts (GMT);	/* Do not want any -b -g -h -i -o to affect the reading from -F files */
+		if ((F.W = GMT_Read_Data (API, GMT_IS_DATASET, GMT_IS_FILE, GMT_IS_NONE, GMT_READ_NORMAL, NULL, Ctrl->F.file, NULL)) == NULL) {
+			Return (API->error, "Error Reading input\n");
+		}
+		gmt_reenable_bghio_opts (GMT);	/* Recover settings provided by user (if -b -g -h -i were used at all) */
+		gmt_set_column_type (GMT, GMT_IN, GMT_X, save_col[GMT_X]);	/* Reset this col type to whatever it actually is */
+		gmt_set_column_type (GMT, GMT_IN, GMT_Y, save_col[GMT_Y]);	/* Reset this col type to whatever it actually is */
+		GMT_Report (API, GMT_MSG_INFORMATION, "Read %" PRIu64 " filter weights from file %s.\n", F.W->n_records, Ctrl->F.file);
+		if (! (F.W->n_segments == 1 || F.W->n_segments == D->n_segments)) {
+			Return (API->error, "Variable filter width requires either one segment (shared with all data segments) or one width segment per input data segments\n");
+		}
+	}
 
 	GMT->current.io.skip_if_NaN[GMT_X] = GMT->current.io.skip_if_NaN[GMT_Y] = false;	/* Turn off default GMT NaN-handling */
 	GMT->current.io.skip_if_NaN[F.t_col] = true;			/* ... But disallow NaN in "time" column */
@@ -989,10 +1048,12 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 
 	filter1d_allocate_space (GMT, &F);	/* Gets column-specific flags and uint64_t space */
 
+	gmt_increase_abstime_format_precision (GMT, Ctrl->N.col, F.t_int);	/* In case we need more sub-second precision output */
+
 	GMT_Report (API, GMT_MSG_INFORMATION, "Filter the data columns\n");
 
-	for (tbl = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
-		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg) {	/* For each segment */
+	for (tbl = tseg = 0; tbl < D->n_tables; ++tbl) {	/* For each input table */
+		for (seg = 0; seg < D->table[tbl]->n_segments; ++seg, tseg++) {	/* For each segment */
 			/* Duplicate data and set up arrays and parameters needed to filter this segment */
 			S = D->table[tbl]->segment[seg];
 			if (S->n_rows > F.n_row_alloc) {
@@ -1038,7 +1099,14 @@ EXTERN_MSC int GMT_filter1d (void *V_API, int mode, void *args) {
 				}
 			}
 
-			if (filter1d_set_up_filter (GMT, &F)) {
+			if (F.variable) {
+				/* Set pointers to these arrays */
+				unsigned int ks = (F.W->n_segments > 1) ? tseg : 0;	/* Either a shared segment or one per input segment */
+				F.ft = F.W->table[0]->segment[ks]->data[GMT_X];
+				F.fw = F.W->table[0]->segment[ks]->data[GMT_Y];
+				F.nw = F.W->table[0]->segment[ks]->n_rows;
+			}
+			if (!F.variable && filter1d_set_up_filter (GMT, &F)) {
 				filter1d_free_space (GMT, &F);
 				Return (GMT_RUNTIME_ERROR, "Fatal error during coefficient setup.\n");
 			}

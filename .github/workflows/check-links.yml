@@ -1,0 +1,51 @@
+# This workflow checks the links in plaintext files in the repository
+name: Check Links
+
+on:
+  # Uncomment the 'pull_request' line below to trigger the workflow in PR
+  # pull_request:
+  # Schedule runs on 12 noon every Sunday
+  schedule:
+    - cron: '0 12 * * 0'
+
+jobs:
+  check_links:
+    name: Check Links
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the repository
+      uses: actions/checkout@v2.3.4
+
+    - name: Link Checker
+      uses: lycheeverse/lychee-action@v1.2.0
+      with:
+        # 429: Too many requests
+        args: >
+          --accept 429
+          --exclude "^ftp://"
+          --exclude "^https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$"
+          --exclude "^https://download1.rpmfusion.org/free/el/rpmfusion-free-release-$"
+          --exclude "^http://maps.google.com/mapfiles/kml/$"
+          --exclude "^http://aa.usno.navy.mil/faq/docs/lawyers.php$"
+          --exclude "^uhttp://my.server.com/images$"
+          --exclude "^-W@weight.png$"
+          --exclude "^http://topex.ucsd.edu/marine_grav/mar_grav.html"
+          --exclude "^https://topex.ucsd.edu/sandwell/"
+          --exclude "^http://topex.ucsd.edu"
+          --verbose
+          **/*.rst
+          **/*.rst_
+          **/*.md
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+
+    - name: Create Issue From File
+      uses: peter-evans/create-issue-from-file@v3
+      with:
+        title: Link Checker Report on ${{ steps.date.outputs.date }}
+        content-filepath: ./lychee/out.md

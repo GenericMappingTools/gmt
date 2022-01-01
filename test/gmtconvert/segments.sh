@@ -68,6 +68,4 @@ gmt convert nan_i.txt --IO_SEGMENT_MARKER='N,B' > t.txt
 gmt psxy -R -J -O -K -Ba -BWSne nan_i.txt -Sc0.2i -Ggreen -X3.5i --IO_SEGMENT_MARKER=N >> $ps
 gmt psxy -R -J -O -K t.txt -Sc0.1i -Gred  --IO_SEGMENT_MARKER=B >> $ps
 gmt psxy -R -J -O -K t.txt -W0.5p  --IO_SEGMENT_MARKER=B >> $ps
-echo "10 10 NaN->blank" | gmt pstext -R -J -O -K -F+jTR+f12 -Dj0.1i >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+echo "10 10 NaN->blank" | gmt pstext -R -J -O -F+jTR+f12 -Dj0.1i >> $ps

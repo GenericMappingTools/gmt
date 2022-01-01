@@ -1,5 +1,5 @@
 #
-#	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+#	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 #	See LICENSE.TXT file for copying and redistribution conditions.
 #
 #	This program is free software; you can redistribute it and/or modify
@@ -55,6 +55,7 @@ foreach (p
 		CMP0026 # CMake 3.0: Disallow use of the LOCATION target property
 		CMP0058 # CMake 3.3: Ninja requires custom command byproducts to be explicit
 		CMP0074	# CMake 3.12: find_package uses PackageName_ROOT variables
+		CMP0115 # CMake 3.20: Source file extensions must be explicit.
 		)
 	if (POLICY ${p})
 		cmake_policy (SET ${p} NEW)
@@ -87,6 +88,10 @@ if (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 		"Need to either install GraphicsMagick or disable tests.")
 endif (DO_EXAMPLES OR DO_TESTS AND NOT GRAPHICSMAGICK)
 
+# Find latex and dvips for LaTeX integration
+find_program (LATEX latex)
+find_program (DVIPS dvips)
+
 # Add subdirectories
 add_subdirectory (src)
 add_subdirectory (share)      # share must be processed *after* src (GSHHG_PATH)
@@ -108,8 +113,9 @@ if (GIT_FOUND AND HAVE_GIT_VERSION)
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/admin
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/ci
 		COMMAND ${CMAKE_COMMAND} -E remove_directory ${GMT_RELEASE_PREFIX}/test
-		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.azure-pipelines.yml
 		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/.gitignore
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/package.json
+		COMMAND ${CMAKE_COMMAND} -E remove ${GMT_RELEASE_PREFIX}/vercel.json
 	)
 	add_depend_to_target (gmt_release git_export_release)
 	find_program (GNUTAR NAMES gnutar gtar tar)
@@ -183,14 +189,25 @@ endif (GMT_INSTALL_MODULE_LINKS)
 # Configure header file to pass some of the CMake settings to the source code
 configure_file (src/config.h.in src/config.h)
 
+if (DCW_PATH)
+	set (GMT_CONFIG_DCW_MESSAGE "${DCW_PATH} (${DCW_VERSION})")
+else (DCW_PATH)
+	set (GMT_CONFIG_DCW_MESSAGE "${DCW_PATH} (GMT will download on demand)")
+endif (DCW_PATH)
+if (GSHHG_PATH)
+	set (GMT_CONFIG_GSHHG_MESSAGE "${GSHHG_PATH} (${GSHHG_VERSION})")
+else (GSHHG_PATH)
+	set (GMT_CONFIG_GSHHG_MESSAGE "${GSHHG_PATH} (GMT will download on demand)")
+endif (GSHHG_PATH)
+
 # Configuration done
 message(
 	"*\n"
 	"*  GMT Version:               : ${GMT_PACKAGE_VERSION_WITH_GIT_REVISION}\n"
 	"*\n"
 	"*  Options:\n"
-	"*  Found GSHHG database       : ${GSHHG_PATH} (${GSHHG_VERSION})\n"
-	"*  Found DCW-GMT database     : ${DCW_PATH} (${DCW_VERSION})\n"
+	"*  Found GSHHG database       : ${GMT_CONFIG_GSHHG_MESSAGE}\n"
+	"*  Found DCW-GMT database     : ${GMT_CONFIG_DCW_MESSAGE}\n"
 	"*  Found GMT data server      : ${GMT_DATA_SERVER}\n"
 	"*  NetCDF library             : ${NETCDF_LIBRARY}\n"
 	"*  NetCDF include dir         : ${NETCDF_INCLUDE_DIR}\n"

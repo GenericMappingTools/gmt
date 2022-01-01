@@ -12,14 +12,16 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphdistance** [ *table* ] |-G|\ *grdfile*
+**gmt sphdistance** [ *table* ]
+|-G|\ *grdfile*
+|SYN_OPT-I|
+|SYN_OPT-R|
 [ |-C| ]
+[ |-D| ]
 [ |-E|\ **d**\|\ **n**\|\ **z**\ [*dist*] ]
-[ |SYN_OPT-I| ]
 [ |-L|\ *unit* ]
 [ |-N|\ *nodetable* ]
 [ |-Q|\ *voronoi.txt* ]
-[ |SYN_OPT-R| ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-b| ]
 [ |SYN_OPT-d| ]
@@ -49,17 +51,27 @@ triangularization.
 Required Arguments
 ------------------
 
+.. |Add_intables| unicode:: 0x20 .. just an invisible code
+.. include:: explain_intables.rst_
+
 .. _-G:
 
-**-G**\ *grdfile*
-    Name of the output grid to hold the computed distances (but see **-E**
-    for other node value options).
+.. |Add_outgrid| replace:: Give the name of the output distance grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
+
+.. _-I:
+
+.. include:: explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rgeo.rst_
 
 Optional Arguments
 ------------------
-
-.. |Add_intables| unicode:: 0x20 .. just an invisible code
-.. include:: explain_intables.rst_
 
 .. _-C:
 
@@ -69,6 +81,12 @@ Optional Arguments
     (geographic or Cartesian 3-D vectors) at any given time, translating
     from one form to the other when necessary [Default keeps both arrays
     in memory]. Not applicable with **-Q**.
+
+.. _-D:
+
+**-D**
+    Used to skip duplicate points since the algorithm cannot handle them.
+    [Default assumes there are no duplicates].
 
 .. _-E:
 
@@ -80,10 +98,6 @@ Optional Arguments
     we assign all nodes inside the polygon the z-value of the center node.
     Optionally, append the resampling interval along Voronoi arcs in spherical
     degrees [1].
-
-.. _-I:
-
-.. include:: explain_-I.rst_
 
 .. _-L:
 
@@ -108,15 +122,10 @@ Optional Arguments
     binary data **-bi** you must specify the node
     information separately (via **-N**).
 
-.. _-R:
-
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rgeo.rst_
-
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 2 input columns].
 .. include:: explain_-bi.rst_
@@ -135,9 +144,9 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. include:: explain_-qi.rst_
-
 .. include:: explain_distcalc.rst_
+
+.. include:: explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
@@ -175,6 +184,16 @@ To generate the same grid in two steps using :doc:`sphtriangulate` separately, t
 
     gmt sphtriangulate testdata.txt -Qv > voronoi.txt
     gmt sphdistance -Qvoronoi.txt -Rg -I1 -Gglobedist.nc
+
+Notes
+-----
+
+The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as :doc:`blockmean` and others, to combine close points into single entries.
+Also, **sphdistance** has a **-D** option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparison that is very slow for large data sets.
+Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also
 --------

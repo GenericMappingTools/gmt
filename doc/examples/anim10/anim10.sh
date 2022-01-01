@@ -19,16 +19,16 @@
 # The movie took ~2 minutes to render on a 24-core MacPro 2013.
 # Demonstrate the effect of sub-pixeling
 # 1. Create the angle file
-cat << EOF > pre.sh
+cat << 'EOF' > pre.sh
 gmt begin
 	gmt math -T0/30/0.05 T 15 ADD = angles.txt
 gmt end
 EOF
 # 2. Set up the main frame script
-cat << EOF > main.sh
+cat << 'EOF' > main.sh
 gmt begin
 	echo "BELL" | gmt text -R-26/-12/63/67 -JM6i -F+f144p+cCM -Bafg \
-		-X2i -Y1.25i -p\${MOVIE_COL0}/\${MOVIE_COL1}+w20W/65N+v3i/1.5i
+		-X2i -Y1.25i -p${MOVIE_COL0}/${MOVIE_COL1}+w20W/65N+v3i/1.5i
 	echo -15 65 100 | gmt plot -SE- -Gred -p
 	echo -25 66.5 -20 66.5  | gmt plot -SV0.5i+s+e+h0.5 -Gblue -W3p -p
 gmt end

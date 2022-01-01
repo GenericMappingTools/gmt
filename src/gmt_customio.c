@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -1909,7 +1909,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 			/* Here we assume that all pad[0] ... pad[3] are equal. Otherwise ... */
 			to_gdalread->mini_hdr.active = false;	/* Undo above setting */
 			to_gdalread->p.active = true;
-			to_gdalread->p.pad = (int)pad[XLO];
+			gmt_M_memcpy (to_gdalread->p.pad, pad, 4U, unsigned int);
 		}
 
 		/* OK, now test if we are under the condition of #403 (very small grids).
@@ -1917,7 +1917,7 @@ int gmt_gdal_read_grd (struct GMT_CTRL *GMT, struct GMT_GRID_HEADER *header, gmt
 		if (to_gdalread->mini_hdr.active && (header->n_columns <= 4 || header->n_rows <= 4)) {
 			to_gdalread->mini_hdr.active = false;
 			to_gdalread->p.active = true;
-			to_gdalread->p.pad = (int)pad[XLO];
+			gmt_M_memcpy (to_gdalread->p.pad, pad, 4U, unsigned int);
 		}
 	}
 	if (HH->pocket) {	/* Have a band request. */

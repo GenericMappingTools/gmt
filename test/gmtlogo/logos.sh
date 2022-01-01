@@ -32,5 +32,4 @@ gmt logo -Dx0/0+w3.5i -O -K -F+glightyellow -X4.25i >> $ps
 # Logo by itself
 gmt logo -Dx0/0+w3.5i -O -K -Y2.75i -X-4.25i >> $ps
 # Logo with outline
-gmt logo -Dx0/0+w3.5i -O -K -F -X4.25i >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt logo -Dx0/0+w3.5i -O -F -X4.25i >> $ps

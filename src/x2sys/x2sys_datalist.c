@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -92,24 +92,29 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *C) {	/*
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrtable.txt>]] [-I<ignorelist>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-S] [%s] [%s] [%s] [%s]\n\n", GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <files> -T<TAG> [-A] [-E] [-F<fields>] [-L[<corrections>]] [-I<list>] "
+		"[%s] [-S] [%s] [%s] [%s] [%s]\n", name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Use any adjustment splines per track to redistribute COEs between tracks\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   according to their relative weight [no adjustments].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Add segment headers with track names between separate file output [no added segment headers].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Comma-separated list of column names to output [Default are all fields].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I List of tracks to ignore [Use all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A Use any adjustment splines per track to redistribute COEs between tracks "
+		"according to their relative weight [no adjustments].");
+	GMT_Usage (API, 1, "\n-E Add segment headers with track names between separate file output [no added segment headers].");
+	GMT_Usage (API, 1, "\n-F<fields>");
+	GMT_Usage (API, -2, "Comma-separated list of column names to output [Default are all fields].");
+	GMT_Usage (API, 1, "\n-I<list>");
+	GMT_Usage (API, -2, "List of tracks to ignore [Use all tracks].");
+	GMT_Usage (API, 1, "\n-L[<corrections>]");
+	GMT_Usage (API, -2, "Subtract systematic corrections from the data. If no correction file is given, "
+		"the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.");
 	GMT_Option (API, "R");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Suppress output records where all data columns are NaN [Output all records].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (Note: data columns exclude navigation (lon|x,lat|y,time) columns.)\n");
+	GMT_Usage (API, 1, "\n-S Suppress output records where all data columns are NaN [Output all records]. "
+		"Note: data columns exclude navigation (lon|x,lat|y,time) columns.");
 	GMT_Option (API, "V,bo,do,.");
 
 	return (GMT_MODULE_USAGE);
@@ -125,6 +130,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct
 
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -141,31 +147,38 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_DATALIST_CTRL *Ctrl, struct
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0]) Ctrl->I.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					Ctrl->L.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				}
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
@@ -222,7 +235,7 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	char **trk_name = NULL, **ignore = NULL;
 	char fmt_record[GMT_BUFSIZ] = {""};
 
-	int error = 0, this_col, xpos = -1, ypos = -1, tpos = -1;
+	int error = 0, this_col, xpos = GMT_NOTSET, ypos = GMT_NOTSET, tpos = GMT_NOTSET;
 	bool cmdline_files, gmt_formatting = false, skip, *adj_col = NULL;
 	unsigned int ocol, bad, n_data_col_out = 0, k, n_ignore = 0, cmode;
 	uint64_t row, trk_no, n_tracks;
@@ -395,19 +408,19 @@ EXTERN_MSC int GMT_x2sys_datalist (void *V_API, int mode, void *args) {
 	/* Override default GMT->current.io.col_type[GMT_OUT] settings */
 	for (ocol = 0; ocol < s->n_out_columns; ocol++) {	/* Set output formats for each output column */
 		if ((int)s->out_order[ocol] == s->t_col) {
-			gmt_set_column (GMT, GMT_OUT, ocol, GMT_IS_ABSTIME);
+			gmt_set_column_type (GMT, GMT_OUT, ocol, GMT_IS_ABSTIME);
 			tpos = ocol;	/* This is the output column with time */
 		}
 		else if ((int)s->out_order[ocol] == s->x_col) {
-			gmt_set_column (GMT, GMT_OUT, ocol, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_OUT, ocol, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
 			xpos = ocol;	/* This is the output column with x */
 		}
 		else if ((int)s->out_order[ocol] == s->y_col) {
-			gmt_set_column (GMT, GMT_OUT, ocol, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_OUT, ocol, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
 			ypos = ocol;	/* This is the output column with y */
 		}
 		else
-			gmt_set_column (GMT, GMT_OUT, ocol, GMT_IS_FLOAT);
+			gmt_set_column_type (GMT, GMT_OUT, ocol, GMT_IS_FLOAT);
 
 		if (s->info[s->out_order[ocol]].format[0] != '-') gmt_formatting = true;
 	}

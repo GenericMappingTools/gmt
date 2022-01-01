@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -46,6 +46,8 @@
 #define THIS_MODULE_OPTIONS "-Vbdefghiqs"
 
 #define SPECTRUM1D_N_OUTPUT_CHOICES 8
+#define SPECTRUM1D_SEPARATE_YES	0
+#define SPECTRUM1D_SEPARATE_NO	1
 
 struct SPECTRUM1D_CTRL {
 	struct SPECTRUM1D_Out {	/* -><file> */
@@ -530,6 +532,7 @@ static void *New_Ctrl (struct GMT_CTRL *GMT) {	/* Allocate and initialize a new 
 	C->C.col[6] = 'g';
 	C->C.col[7] = 'o';
 	C->N.name = strdup ("spectrum");
+	C->N.mode = SPECTRUM1D_SEPARATE_YES;
 	return (C);
 }
 
@@ -542,30 +545,43 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[m|h]] [-N[<name_stem>]] [-T]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [-W] [%s] [%s] [%s] [%s]\n\t[%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s]\n\n",
-		GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_qi_OPT, GMT_s_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -S<segment_size> [-C[<xycnpago>]] [-D<dt>] [-L[h|m]] [-N[<name_stem>]] "
+		"[-T] [%s] [-W] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_b_OPT, GMT_d_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_qi_OPT, GMT_s_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Use data subsets of <segment_size> elements.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   <segment_size> must be radix 2;\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   std. err. = 1/sqrt(n_data/segment_size).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C[<xycnpago>] 2 column X(t),Y(t) input; estimate Cross-spectra\n\t   [Default 1 col, X power only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally specify cross-spectra output(s)  [Default is all].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x = xpower, y = ypower, c = coherent power, n = noise power,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   p = phase, a = admittance, g = gain, o = squared coherency.\n\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Set delta_time sampling interval of data [Default = 1.0].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Leave trend alone:  Do not remove least squares trend from data [Default removes trend].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append m to just remove mean or h to remove mid-value instead.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Supply name stem for files [Default = 'spectrum'].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Output files will be named <name_stem>.xpower, etc.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To disable the writing of individual files, just give -N.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Disable writing the single output to stdout.\n");
+	GMT_Usage (API, 1, "\n-S<segment_size>");
+	GMT_Usage (API, -2, "Use data subsets of <segment_size> elements. "
+		"Note: <segment_size> must be radix 2; "
+		"std. err. = 1/sqrt(n_data/segment_size).");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C[<xycnpago>]");
+	GMT_Usage (API, -2, "Specify cross-spectra output(s) for two-column X(t),Y(t) input [Default is all]:");
+	GMT_Usage (API, 3, "x: x-power.");
+	GMT_Usage (API, 3, "y: y-power.");
+	GMT_Usage (API, 3, "c: Coherent power.");
+	GMT_Usage (API, 3, "n: Noise power.");
+	GMT_Usage (API, 3, "p: Phase spectrum.");
+	GMT_Usage (API, 3, "a: Admittance.");
+	GMT_Usage (API, 3, "g: Gain.");
+	GMT_Usage (API, 3, "o: Squared coherency.");
+	GMT_Usage (API, 1, "\n-D<dt>");
+	GMT_Usage (API, -2, "Set delta_time sampling interval of data [Default = 1.0].");
+	GMT_Usage (API, 1, "\n-L[h|m]");
+	GMT_Usage (API, -2, "Leave trend alone:  Do not remove least squares trend from data [Default removes trend]. Optional directives:");
+	GMT_Usage (API, 3, "h: Remove mid-value instead.");
+	GMT_Usage (API, 3, "m: Remove mean instead.");
+	GMT_Usage (API, 1, "\n-N[<name_stem>]");
+	GMT_Usage (API, -2, "Supply name stem for files [Default = 'spectrum']. "
+		"Output files will be named <name_stem>.xpower, etc. "
+		"To disable the writing of individual files, just give -N.");
+	GMT_Usage (API, 1, "\n-T Disable writing a single output table with selected columns to standard output.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Write Wavelength of spectral estimate in col 1 [Default = frequency].\n");
+	GMT_Usage (API, 1, "\n-W Write Wavelength of spectral estimate in first column [Default = frequency].");
 	GMT_Option (API, "bi2,bo,d,e,f,g,h,i,qi,s,.");
 
 	return (GMT_MODULE_USAGE);
@@ -587,19 +603,20 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			case '>':	/* Got named output file */
 				if (n_files++ > 0) { n_errors++; continue; }
 				Ctrl->Out.active = true;
 				if (opt->arg[0]) Ctrl->Out.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->Out.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				if (!opt->arg[0]) break;	/* Stay with the default order of output */
 				gmt_M_memset (Ctrl->C.col, SPECTRUM1D_N_OUTPUT_CHOICES, char);	/* Reset and read options */
@@ -618,20 +635,23 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.inc = atof (opt->arg);
 				break;
 			case 'L':	/* Leave trend alone */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				if (opt->arg[0] == 'm') Ctrl->L.mode = 1;
 				else if (opt->arg[0] == 'h') Ctrl->L.mode = 2;
 				else Ctrl->L.active = true;
 				break;
 			case 'N':	/* Set alternate file stem OR turn off multiple files */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (opt->arg[0]) {
 					if (opt->arg[0] == '+') {	/* Obsolete syntax */
 						if (gmt_M_compat_check (GMT, 5)) {
-							GMT_Report (API, GMT_MSG_COMPAT, "Modifier -N+<file> is deprecated; use -N in the future to save to stdout.\n");
+							GMT_Report (API, GMT_MSG_COMPAT, "Modifier -N+<file> is deprecated; use -N in the future to save to standard output.\n");
 							if (n_files++ == 0) Ctrl->Out.file = strdup (&opt->arg[1]);
 						}
 						else {
@@ -645,9 +665,10 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 					}
 				}
 				else	/* Turn off multiple file output */
-					Ctrl->N.mode = 1;
+					Ctrl->N.mode = SPECTRUM1D_SEPARATE_NO;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				sval = atoi (opt->arg);
 				n_errors += gmt_M_check_condition (GMT, sval <= 0, "Option -S: segment size must be positive\n");
@@ -657,9 +678,11 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 				}
 				break;
 			case 'T':	/* Turn off multicolumn single output file */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				break;
 
@@ -673,7 +696,7 @@ static int parse (struct GMT_CTRL *GMT, struct SPECTRUM1D_CTRL *Ctrl, struct GMT
 	n_errors += gmt_M_check_condition (GMT, Ctrl->D.inc <= 0.0, "Option -D: Sampling interval must be positive\n");
 	n_errors += gmt_check_binary_io (GMT, Ctrl->C.active + 1);
 	n_errors += gmt_M_check_condition (GMT, n_files > 1, "Only one output destination can be specified\n");
-	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == 1 && Ctrl->T.active, "Cannot use both -T and -N as no output would be produced\n");
+	n_errors += gmt_M_check_condition (GMT, Ctrl->N.mode == SPECTRUM1D_SEPARATE_NO && Ctrl->T.active, "Cannot use both -T and -N as no output would be produced\n");
 
 	return (n_errors ? GMT_PARSE_ERROR : GMT_NOERROR);
 }
@@ -774,7 +797,7 @@ EXTERN_MSC int GMT_spectrum1d (void *V_API, int mode, void *args) {
 				spectrum1d_assign_output (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Sout->data);
 				Sout->n_rows = C.n_spec;
 			}
-			if (Ctrl->N.mode == 0) {	/* Write separate tables */
+			if (Ctrl->N.mode == SPECTRUM1D_SEPARATE_YES) {	/* Write separate tables */
 				if (spectrum1d_write_output_separate (GMT, &C, Ctrl->C.col, n_outputs, Ctrl->W.active, Ctrl->N.name))
 					Return (GMT_RUNTIME_ERROR);
 			}

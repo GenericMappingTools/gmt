@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -66,7 +66,7 @@ struct GRD2KML_CTRL {
 		bool active;
 		char filter;
 	} F;
-	struct GRD2KML_H {	/* -H<factor> */
+	struct GRD2KML_H {	/* -H<scale> */
 		bool active;
 		int factor;
 	} H;
@@ -143,45 +143,61 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *C) {	/* Deallo
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <grid> -N<name> [-Aa|g|s[<altitude>]] [-C<cpt>] [-E<url>] [-F<filter>] [-H<factor>] [-I[<intensgrid>|<value>|<modifiers>]]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "	[-L<size>] [-S[<extra>]] [-T<title>] [%s] [-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s]\n\n", GMT_V_OPT, GMT_f_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s -N<name> [-Aa|g|s[<altitude>]] [-C<cpt>] [-E<url>] [-F<filter>] "
+		"[-H<scale>] [-I[<intensgrid>|<value>|<modifiers>]] [-L<size>] [-S[<extra>]] [-T<title>] [%s] "
+		"[-W<contfile>|<pen>[+s<scl>/<limit>]] [%s] [%s] [%s]\n", name, GMT_INGRID, GMT_V_OPT, GMT_f_OPT, GMT_n_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<grid> is the data set to be plotted.  Its z-values are in user units and will be\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  converted to colors via the CPT [%s].\n", GMT_DEFAULT_CPT_NAME);
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Sets file name prefix for image directory and KML file. If the directory\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   already exist we will overwrite the files.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Altitude mode of the image layer, choose among three modes:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     a Absolute altitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g Altitude relative to sea surface or ground.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s Altitude relative to sea floor or ground.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append fixed <altitude> [g0: Clamped to sea surface or ground].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Color palette file to convert z to rgb. Optionally, instead give name of a master cpt\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   to automatically assign continuous colors over the data range [%s]; if so,\n", GMT_DEFAULT_CPT_NAME);
-	GMT_Message (API, GMT_TIME_NONE, "\t   optionally append +i<dz> to quantize the range [the exact grid range].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   linear continuous cpt from those colors automatically.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E To store all files remotely, give leading URL [local files only].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify filter type used for down-sampling.  Choose among.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     b: Boxcar      : Simple averaging of all points inside filter domain.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c: Cosine arch : Weighted averaging with cosine arc weights.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     g: Gaussian    : Weighted averaging with Gaussian weights [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     m: Median      : Median (50%% quantile) value of all points.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-H Do sub-pixel smoothing using factor <factor> [no sub-pixel smoothing]. Ignored if -W not set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Apply directional illumination. Append name of intensity grid file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   For a constant intensity (i.e., change the ambient light), append a single value.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   To derive intensities from <grid> instead, append +a<azim> [-45] and +n<method> [t1]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   or use -I+d to accept the default values (see grdgradient for details).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Set tile size as a power of 2 [512; for global grids, we instead select 360].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Add extra interpolated levels [no extra layers].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Set title (document description) for the top-level KML.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<grid>");
+	gmt_ingrid_syntax (API, 0, "Name of grid to be plotted");
+	GMT_Usage (API, -2, "Note: Grid z-values are in user units and will be "
+		"converted to colors via the CPT [%s].", API->GMT->current.setting.cpt);
+	GMT_Usage (API, 1, "\n-N<name>");
+	GMT_Usage (API, -2, "Set file name prefix for image directory and KML file. If the directory "
+		"already exists we will overwrite the files.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-Aa|g|s[<altitude>]");
+	GMT_Usage (API, -2, "Altitude mode of the image layer, choose among three modes:");
+	GMT_Usage (API, 3, "a: Absolute altitude.");
+	GMT_Usage (API, 3, "g: Altitude relative to sea surface or ground.");
+	GMT_Usage (API, 3, "s: Altitude relative to sea floor or ground.");
+	GMT_Usage (API, -2, "Optionally, append fixed <altitude> [g0: Clamped to sea surface or ground].");
+	GMT_Usage (API, 1, "\n-C<cpt>");
+	GMT_Usage (API, -2, "Color palette file to convert grid values to colors. Optionally, instead give name of a master cpt "
+		"to automatically assign continuous colors over the data range [%s]; if so, "
+		"optionally append +i<dz> to quantize the range [the exact grid range]. "
+		"Another option is to specify -C<color1>,<color2>[,<color3>,...] to build a "
+		"linear continuous cpt from those colors automatically.", API->GMT->current.setting.cpt);
+	GMT_Usage (API, 1, "\n-E<url>");
+	GMT_Usage (API, -2, "To store all files remotely, give leading URL [local files only].");
+	GMT_Usage (API, 1, "\n-F<filter>");
+	GMT_Usage (API, -2, "Specify filter type used for down-sampling (width is set automatically):");
+	GMT_Usage (API, 3, "b: Boxcar - simple averaging of all points inside filter domain.");
+	GMT_Usage (API, 3, "c: Cosine arch - weighted averaging with cosine arc weights.");
+	GMT_Usage (API, 3, "g: Gaussian - weighted averaging with Gaussian weights [Default].");
+	GMT_Usage (API, 3, "m: Median - median (50%% quantile) value of all points.");
+	GMT_Usage (API, 1, "\n-H<scale>");
+	GMT_Usage (API, -2, "Do sub-pixel smoothing using factor <scale> [no sub-pixel smoothing]. Ignored if -W not set.");
+	GMT_Usage (API, 1, "\n-I[<intensgrid>|<value>|<modifiers>]");
+	GMT_Usage (API, -2, "Apply directional illumination. Append name of intensity grid file. "
+		" For a constant intensity (i.e., change the ambient light), append a single value. "
+		"To derive intensities from <grid> instead, use -I+d to accept the default values (see grdgradient for details) or be specific:");
+	GMT_Usage (API, 3, "+a Append <azimuth> of illumination [-45]");
+	GMT_Usage (API, 3, "+n Append <method> pf intensity calculation [t1]");
+	GMT_Usage (API, 1, "\n-L<size>");
+	GMT_Usage (API, -2, "Set tile size as a power of 2 [512; for global grids, we instead select 360].n");
+	GMT_Usage (API, 1, "\n-S[<extra>]");
+	GMT_Usage (API, -2, "Add extra interpolated levels [no extra layers].");
+	GMT_Usage (API, 1, "\n-T<title>");
+	GMT_Usage (API, -2, "Set title (document description) for the top-level KML.");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Give file with select contours and pens to overlay contours [no contours].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If no file is given we assume it is a pen and to use the contours implied by the CPT file.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Pen widths apply at final tile resolution and are reduced by *scl* [1.1412] for each lower level.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If a contour's scaled width is < *limit* [0.1] it will not be drawn.\n");
+	GMT_Usage (API, 1, "\n-W<contfile>|<pen>[+s<scl>/<limit>]");
+	GMT_Usage (API, -2, "Give file with select contours and pens to overlay contours [no contours]. "
+		"If no file is given we assume it is a <pen> and to use the contours implied by the CPT file. "
+		"Pen widths apply at final tile resolution and are reduced by <scl> [1.1412] for each lower level. "
+		"If a contour's scaled width is less than <limit> [0.1] it will not be drawn.");
 	GMT_Option (API, "f,n,.");
 
 	return (GMT_MODULE_USAGE);
@@ -198,6 +214,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 	unsigned int n_errors = 0, n_files = 0;
 	char *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -208,54 +225,61 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 				if (n_files++ > 0) {n_errors++; continue; }
 				Ctrl->In.active = true;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file))) n_errors++;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'A':	/* Altitude mode */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				switch (opt->arg[0]) {
 					case 'g': Ctrl->A.mode = 0; break;
 					case 's': Ctrl->A.mode = 1; break;
 					case 'a': Ctrl->A.mode = 2; break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -A: Append either a(bsolute), g(round) or s(eafloor) with optional <altitude>.\n");
+						GMT_Report (API, GMT_MSG_ERROR, "Option -A: Append either a(bsolute), g(round) or s(eafloor) with optional <altitude>.\n");
 						n_errors++;
 						break;
 				}
 				if (opt->arg[1]) Ctrl->A.altitude = atof (&opt->arg[1]);
 				break;
 			case 'C':	/* CPT */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				gmt_M_str_free (Ctrl->C.file);
 				if (opt->arg[0]) Ctrl->C.file = strdup (opt->arg);
 				gmt_cpt_interval_modifier (GMT, &(Ctrl->C.file), &(Ctrl->C.dz));
 				break;
 			case 'D':	/* Debug options - may fade away when happy with the performance */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				if (strstr (opt->arg, "+s")) Ctrl->D.single = true;	/* Write all files in a single directory instead of one directory per level */
 				if (strstr (opt->arg, "+d")) Ctrl->D.dump = true;	/* Dump quadtree information to stdout */
 				break;
 			case 'E':	/* Remove URL for all contents but top driver kml */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				gmt_M_str_free (Ctrl->E.url);
 				Ctrl->E.url = strdup (opt->arg);
 				break;
 			case 'F':	/* Select filter type */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (strchr ("bcgm", opt->arg[0]))
 					Ctrl->F.filter = opt->arg[0];
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Choose among b, c, g, m!\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -F: Choose among b, c, g, m!\n");
 					n_errors++;
 				}
 				break;
 			case 'H':	/* RIP at a higher dpi, then downsample in gs */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->H.active);
 				Ctrl->H.active = true;
 				Ctrl->H.factor = atoi (opt->arg);
 				break;
 			case 'I':	/* Here, intensity must be a grid file since we need to filter it */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (!strcmp (opt->arg, "+d"))	/* Gave +d only, so derive intensities from input grid using default settings */
 					Ctrl->I.derive = true;
@@ -282,31 +306,36 @@ static int parse (struct GMT_CTRL *GMT, struct GRD2KML_CTRL *Ctrl, struct GMT_OP
 					Ctrl->I.constant = true;
 				}
 				else {
-					GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
+					GMT_Report (API, GMT_MSG_ERROR, "Option -I: Requires a valid grid file or a constant\n");
 					n_errors++;
 				}
 				break;
 			case 'L':	/* Tiles sizes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.size = atoi (opt->arg);
 				break;
 			case 'N':	/* File name prefix */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				gmt_M_str_free (Ctrl->N.prefix);
 				Ctrl->N.prefix = strdup (opt->arg);
 				break;
 			case 'Q':	/* Deprecated colormasking option */
-				GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Q is deprecated as transparency is automatically detected\n");
+				GMT_Report (API, GMT_MSG_ERROR, "Option -Q is deprecated as transparency is automatically detected\n");
 				break;
 			case 'S':	/* Extra levels */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				Ctrl->S.extra = (opt->arg[0]) ? atoi (opt->arg) : 1;
 				break;
 			case 'T':	/* Title */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				if (opt->arg[0]) Ctrl->T.title = strdup (opt->arg);
 				break;
 			case 'W':	/* Contours and pens */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				if ((c = strstr (opt->arg, "+s"))) {	/* Gave +s<scl> modifier to scale pen widths given via -C and optional cutoff pen width */
 					sscanf (&c[2], "%lf/%lg", &Ctrl->W.scale, &Ctrl->W.cutoff);

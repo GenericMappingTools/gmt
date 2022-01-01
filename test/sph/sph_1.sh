@@ -13,6 +13,4 @@ gmt sphinterpolate ${mars370} -Rg -I1 -Qg -Gtt.nc
 gmt grdimage tt.nc -J -B30g30 -B+t"-Qg" -Ctt.cpt -X-5.1i -Y-5i -O -K  --MAP_TITLE_OFFSET=0i --FONT_TITLE=18p >> $ps
 gmt sphinterpolate ${mars370} -Rg -I1 -Qs -Gtt.nc
 gmt grdimage tt.nc -J -B30g30 -B+t"-Qs" -Ctt.cpt -X5.1i -O -K  --MAP_TITLE_OFFSET=0i --FONT_TITLE=18p >> $ps
-gmt psxy -Rg -J -O -K ${mars370} -Sc0.05i -G0 -B30g30 -X-2.55i -Y2.5i >> $ps
-gmt psxy -Rg -J -O -T >> $ps
-
+gmt psxy -Rg -J -O ${mars370} -Sc0.05i -G0 -B30g30 -X-2.55i -Y2.5i >> $ps

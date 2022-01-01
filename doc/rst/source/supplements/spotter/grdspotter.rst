@@ -12,20 +12,22 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt grdspotter** [*grdfile*] |-E|\ *rotfile* |-G|\ *CVAgrid*
+**gmt grdspotter** *ingrid*
+|-E|\ *rot_file*\|\ *lon*/*lat*/*angle*\ [**+i**]
+|-G|\ *outgrid*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ *agegrid* ]
-[ |-D|\ *DIgrid* ]
+[ |-D|\ **i**\|\ **p**\ *grid* ]
 [ |-L|\ *IDgrid* ]
 [ |-M| ]
 [ |-N|\ *upper_age* ]
-[ |-P|\ *PAgrid* ]
 [ |-Q|\ *IDinfo* ]
 [ |-S| ]
 [ |-T|\ **t**\|\ **u**\ *fixed_val* ] [
 [ |SYN_OPT-V| ]
-[ |-W|\ *n\_try* ]] [ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ]
+[ |-W|\ *n\_try* ]]
+[ **-Z**\ *z_min*\ [/*z_max*\ [/*z_inc*]] ]
 [ |SYN_OPT-r| ]
 [ |SYN_OPT--| ]
 
@@ -43,15 +45,20 @@ give a Cumulative Volcano Amplitude grid (CVA).
 Required Arguments
 ------------------
 
-*grdfile*
-    Data grid to be processed, typically residual bathymetry or free-air anomalies.
+.. |Add_ingrid| replace:: Data grid to be processed, typically residual
+    bathymetry or free-air anomalies.
+.. include:: /explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. include:: explain_rots.rst_
 
 .. _-G:
 
-**-G**
-    Specify name for output CVA grid file.
+.. |Add_outgrid| replace::  Specify name for output CVA grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -75,10 +82,12 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ *DIgrid*
-    Use flowlines to determine the maximum CVA encountered along each
+**-Di**\|\ **p**\ *grid*
+    For **-Di**, we use flowlines to determine the maximum CVA encountered along each
     flowline and create a Data Importance (DI) grid with these values at
-    the originating nodes.
+    the originating nodes.  For **-Dp** we will instead use flowlines to determine
+    the flowline age at the CVA maximum for each node and create a Predicted Age (PA)
+    grid with these values at the originating nodes.  Repeatable.
 
 .. _-L:
 
@@ -100,13 +109,6 @@ Optional Arguments
 **-N**\ *upper_age*
     Set the upper age to assign to nodes whose crustal age is unknown
     (i.e., NaN) [no upper age]. Also see |-A|.
-
-.. _-P:
-
-**-P**\ *PAgrid*
-    Use flowlines to determine the flowline age at the CVA maximum for
-    each node and create a Predicted Age (PA) grid with these values at
-    the originating nodes.
 
 .. _-Q:
 
@@ -134,16 +136,16 @@ Optional Arguments
     use this *fixed_val* instead in the calculations. [Default uses
     individual node values].
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
 **-W**\ *n\_try*
     Get *n\_try* bootstrap estimates of the maximum CVA location; the
-    longitude and latitude results are written to stdout [Default is no
+    longitude and latitude results are written to standard output [Default is no
     bootstrapping]. Cannot be used with **-M**.
 
 .. _-Z:

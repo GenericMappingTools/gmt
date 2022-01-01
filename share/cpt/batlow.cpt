@@ -1,12 +1,12 @@
 #
-# Perceptually uniform ‘rainbow’ colormap by Fabio Crameri [C=RGB]
+# Perceptually uniform 'rainbow' colormap by Fabio Crameri [C=RGB]
 #
 #	www.fabiocrameri.ch/visualisation
 #
-# License: Creative Commons Attribution 4.0 International License
-# Copyright (c) 2018, Fabio Crameri All rights reserved.
-# Crameri, F., (2018). Scientific colour-maps. Zenodo. http://doi.org/10.5281/zenodo.1243862
-# This is Scientific Colour Maps version 6.0.4
+# License: MIT License
+# Copyright (c) 2021, Fabio Crameri.
+# Crameri, F., (2021). Scientific colour maps. Zenodo. https://zenodo.org/record/5501399
+# This is Scientific Colour Maps version 7.0.1
 # Note: Original file converted to GMT version >= 5 CPT format.
 #
 #----------------------------------------------------------

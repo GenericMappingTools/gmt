@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -120,26 +120,30 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *C) {	/* Deal
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [<table>] -L[<norm>] [-F[<flags>]] [-S[<lat>]] [%s] [%s]\n", name, GMT_V_OPT, GMT_a_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[%s] [%s] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT, GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<table>] -L[<norm>] [-F[<flags>]] [-S[<lat>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] "
+			"[%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_V_OPT, GMT_a_OPT, GMT_bi_OPT, GMT_di_OPT, GMT_e_OPT, GMT_f_OPT, GMT_g_OPT, GMT_h_OPT, GMT_i_OPT,
+		GMT_o_OPT, GMT_q_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
 	GMT_Option (API, "<");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F We normally write a mixed numerical/text report.  Use -F to return just data columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append the output columns you want as one or more of fmnsc in any order:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     f: Flat Earth mean location.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     m: Fisher (L1) or Eigenvalue (L2) mean location.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     n: North hemisphere pole location.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     s: South hemisphere pole location.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c: Small-circle pole location and colatitude.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     [Default is fmnsc].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If -L3 is used we repeat the output for m|n|s|c (if selected).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Attempt to fit a small circle rather than a great circle.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally append the oblique latitude <lat> of the small circle you want to fit.\n");
+	GMT_Usage (API, 1, "\n-L[<norm>]");
+	GMT_Usage (API, -2, "Specify <norm> as -L1 or -L2; or use -L or -L3 to give both.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-F[<flags>]");
+	GMT_Usage (API, -2, "We normally write a mixed numerical/text report.  Use -F to return just data columns.");
+	GMT_Usage (API, -2, "Append the output columns you want as one or more of fmnsc in any order [Default is fmnsc]:");
+	GMT_Usage (API, -3, "f: Flat Earth mean location.");
+	GMT_Usage (API, -3, "m: Fisher (L1) or Eigenvalue (L2) mean location.");
+	GMT_Usage (API, -3, "n: North hemisphere pole location.");
+	GMT_Usage (API, -3, "s: South hemisphere pole location.");
+	GMT_Usage (API, -3, "c: Small-circle pole location and colatitude.");
+	GMT_Usage (API, -2, "If -L3 is used we repeat the output for m|n|s|c (if selected).");
+	GMT_Usage (API, 1, "\n-S[<lat>]");
+	GMT_Usage (API, -2, "Attempt to fit a small circle rather than a great circle. "
+		"Optionally append the oblique latitude <lat> of the small circle you want to fit.");
 	GMT_Option (API, "V,a,bi,di,e,f,g,h,i,o,q,:,.");
 
 	return (GMT_MODULE_USAGE);
@@ -155,17 +159,19 @@ static int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct GMT_
 	unsigned int n_errors = 0;
 	size_t k, s_length;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
 
 			case '<':	/* Skip input files */
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(opt->arg))) n_errors++;;
 				break;
 
 			/* Processes program-specific parameters */
 
 			case 'F':	/* Select outputs for data */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				s_length = strlen (opt->arg);
 				for (k = 0; k < s_length; k++) {
@@ -176,17 +182,19 @@ static int parse (struct GMT_CTRL *GMT, struct FITCIRCLE_CTRL *Ctrl, struct GMT_
 						case 's': Ctrl->F.mode |=  8;	break;
 						case 'c': Ctrl->F.mode |= 16;	break;
 						default:
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -F: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
+							GMT_Report (API, GMT_MSG_ERROR, "Option -F: Bad arg %s. Select any combination from fmnsc\n", opt->arg);
 							n_errors++;
 							break;
 					}
 				}
 				break;
 			case 'L':	/* Select norm */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				Ctrl->L.norm = (opt->arg[0]) ? atoi(opt->arg) : 3;
 				break;
 			case 'S':	/* Fit small-circle instead [optionally fix the latitude] */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
   				if (opt->arg[0]) {
 					Ctrl->S.lat = atof (opt->arg);

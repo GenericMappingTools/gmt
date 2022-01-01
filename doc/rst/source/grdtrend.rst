@@ -12,10 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdtrend** *grdfile* |-N|\ *n\_model*\ [**+r**]
+**gmt grdtrend** *ingrid* |-N|\ *n_model*\ [**+r**][**+x**\|\ **y**]
 [ |-D|\ *diff.nc* ]
 [ |SYN_OPT-R| ]
-[ |-T|\ *trend.nc* ] [ |-W|\ *weight.nc* ]
+[ |-T|\ *trend.nc* ]
+[ |SYN_OPT-V| ]
+[ |-W|\ *weight.nc* ]
 [ |SYN_OPT--| ]
 
 |No-spaces|
@@ -27,10 +29,10 @@ Description
 to these data by [optionally weighted] least-squares. The trend surface
 is defined by:
 
-   m1 + m2\*x + m3\*y + m4\*x\*y + m5\*x\*x + m6\*y\*y + m7\*x\*x\*x +
-   m8\*x\*x\*y + m9\*x\*y\*y + m10\*y\*y\*y.
+.. math::
+    m_1 + m_2x + m_3y + m_4xy + m_5x^2 + m_6y^2 + m_7x^3 + m_8x^2y + m_9xy^2 + m_{10}y^3.
 
-The user must specify **-N**\ *n\_model*, the number of model parameters
+The user must specify **-N**\ *n_model*, the number of model parameters
 to use; thus, **-N**\ *3* fits a bilinear trend, **-N**\ *6* a quadratic
 surface, and so on. Optionally, append **+r** to the **-N** option to
 perform a robust fit. In this case, the program will iteratively
@@ -38,6 +40,8 @@ reweight the data based on a robust scale estimate, in order to converge
 to a solution insensitive to outliers. This may be handy when separating
 a "regional" field from a "residual" which should have non-zero mean,
 such as a local mountain on a regional surface.
+Optionally, you may choose to fit a trend that varies only along the *x* or *y* axis,
+in which case you select an *n_model* from 1 (constant) to 4 (cubic).
 
 If data file has values set to NaN, these will be ignored during
 fitting; if output files are written, these will also have NaN in the
@@ -46,35 +50,44 @@ same locations.
 Required Arguments
 ------------------
 
-*grdfile*
-    The name of a 2-D binary grid file.
+.. |Add_ingrid| replace:: 2-D gridded data file.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 .. _-N:
 
-**-N**\ *n\_model*\ [**+r**]
-    *n\_model* sets the number of model parameters to fit.
-    Append **+r** for robust fit.
+**-N**\ *n_model*\ [**+r**][**+x**\|\ **y**]
+    *n_model* sets the ID of the highest model parameters to fit.
+    Append **+r** for robust fit.  As an option, append either **+x** or **+y** to only
+    fit a model that depends on *x* or *y* terms, respectively. This means we either fit
+    :math:`m_1 + m_2x + m_3x^2 + m_4x^3` or :math:`m_1 + m_2y + m_3y^2 + m_4y^3`.
+    Note that *n_model* may only be 1-4 for the one-dimensional fits but may be 1-10
+    for the two-dimensional surface fits.
 
 Optional Arguments
 ------------------
 
+.. _-D:
+
 **-D**\ *diff.nc*
     Write the difference (input data - trend) to the file *diff.nc*.
 
-.. |Add_-R| replace:: Using the **-R** option
-    will select a subsection of the input grid. If this subsection
-    exceeds the boundaries of the grid, only the common region will be extracted.
+.. |Add_-R| replace:: Using the **-R** option will select a subsection of the input grid. If this subsection
+    exceeds the boundaries of the grid, only the common region will be extracted. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-T:
 
 **-T**\ *trend.nc*
     Write the fitted trend to the file *trend.nc*.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -95,12 +108,10 @@ basis functions are built from Legendre polynomials. These have a
 numerical advantage in the form of the matrix which must be inverted and
 allow more accurate solutions. NOTE: The model parameters listed with
 **-V** are Legendre polynomial coefficients; they are not numerically
-equivalent to the m#s in the equation described above. The description
+equivalent to the :math:`m_j` in the equation described above. The description
 above is to allow the user to match **-N** with the order of the
 polynomial surface. See :doc:`grdmath` if you need to evaluate the trend
 using the reported coefficients.
-
-.. include:: explain_grd_inout_short.rst_
 
 Examples
 --------

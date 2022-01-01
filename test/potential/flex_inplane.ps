@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000             
-%%Title: GMT v6.0.0_831abca_2019.06.27 [64-bit] Document from psxy
+%%Title: GMT v6.2.0_cbc256d-dirty_2020.10.07 [64-bit] Document from psxy
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Jun 27 12:16:25 2019
+%%CreationDate: Thu Oct  8 09:37:29 2020
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -646,6 +646,7 @@ end
 
 %%BeginSetup
 /PSLevel /languagelevel where {pop languagelevel} {1} ifelse def
+PSLevel 1 gt { << /WhiteIsOpaque true >> setpagedevice } if
 PSLevel 1 gt { << /PageSize [612 792] /ImagingBBox null >> setpagedevice } if
 %%EndSetup
 
@@ -657,8 +658,9 @@ V 0.06 0.06 scale
 
 /PSL_page_xsize 10200 def
 /PSL_page_ysize 13200 def
-/PSL_completion {} def
-/PSL_movie_completion {} def
+/PSL_plot_completion {} def
+/PSL_movie_label_completion {} def
+/PSL_movie_prog_indicator_completion {} def
 %PSL_End_Header
 gsave
 0 A
@@ -673,17 +675,11 @@ O0
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
+0 A [] 0 B
 25 W
-4 W
-3600 0 M
-0 3600 D
-S
-0 0 M
-7200 0 D
-S
+/PSL_slant_y 0 def
 2 setlinecap
-25 W
 N 0 3600 M 0 -3600 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -691,8 +687,8 @@ N 0 3600 M 0 -3600 D S
 N 0 0 M -83 0 D S
 N 0 1309 M -83 0 D S
 N 0 2618 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (0) sw mx
@@ -737,8 +733,8 @@ N 3600 0 M 0 -83 D S
 N 4800 0 M 0 -83 D S
 N 6000 0 M 0 -83 D S
 N 7200 0 M 0 -83 D S
-/PSL_AH0 0
 /MM {neg M} def
+/PSL_AH0 0
 (”300) sh mx
 (”200) sh mx
 (”100) sh mx
@@ -881,6 +877,13 @@ FO
 /FO {fs os}!
 FO
 PSL_cliprestore
+4 W
+3600 0 M
+0 3600 D
+S
+0 0 M
+7200 0 D
+S
 %%EndObject
 0 A
 FQ
@@ -893,7 +896,7 @@ O0
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -917,8 +920,7 @@ O0
 %%BeginObject PSL_Layer_3
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
 3600 0 M
 0 3600 D
@@ -926,8 +928,10 @@ S
 0 3150 M
 7200 0 D
 S
-2 setlinecap
+0 A [] 0 B
 25 W
+/PSL_slant_y 0 def
+2 setlinecap
 N 0 3600 M 0 -3600 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -936,8 +940,8 @@ N 0 450 M -83 0 D S
 N 0 1350 M -83 0 D S
 N 0 2250 M -83 0 D S
 N 0 3150 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (”3000) sw mx
@@ -1180,7 +1184,7 @@ O0
 %%BeginObject PSL_Layer_4
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 17 W
 0 0 1 C
 clipsave
@@ -1279,7 +1283,7 @@ O0
 %%BeginObject PSL_Layer_5
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 17 W
 1 0 0 C
 clipsave
@@ -1398,7 +1402,7 @@ O0
 %%BeginObject PSL_Layer_6
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -1424,8 +1428,7 @@ O0
 %%BeginObject PSL_Layer_7
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
 3600 0 M
 0 3600 D
@@ -1433,8 +1436,10 @@ S
 0 635 M
 7200 0 D
 S
-2 setlinecap
+0 A [] 0 B
 25 W
+/PSL_slant_y 0 def
+2 setlinecap
 N 0 3600 M 0 -3600 D S
 /PSL_A0_y 83 def
 /PSL_A1_y 0 def
@@ -1442,8 +1447,8 @@ N 0 3600 M 0 -3600 D S
 N 0 635 M -83 0 D S
 N 0 1694 M -83 0 D S
 N 0 2753 M -83 0 D S
-/PSL_AH0 0
 /MM {neg exch M} def
+/PSL_AH0 0
 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 200 F0
 (0) sw mx
@@ -1682,7 +1687,7 @@ O0
 %%BeginObject PSL_Layer_8
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 [33 17] 0 B
 clipsave
@@ -1752,7 +1757,7 @@ O0
 %%BeginObject PSL_Layer_9
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 17 W
 0 0 1 C
 clipsave
@@ -1857,7 +1862,7 @@ O0
 %%BeginObject PSL_Layer_10
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 [33 17] 0 B
 0 0 1 C
@@ -1927,7 +1932,7 @@ O0
 %%BeginObject PSL_Layer_11
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 17 W
 1 0 0 C
 clipsave
@@ -2045,7 +2050,7 @@ O0
 %%BeginObject PSL_Layer_12
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 4 W
 [33 17] 0 B
 1 0 0 C
@@ -2124,7 +2129,7 @@ O0
 %%BeginObject PSL_Layer_13
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2143,12 +2148,12 @@ O0
 0 0 TM
 
 % PostScript produced by:
-%@GMT: gmt pstext -R-300/300/-60/280 -JX6i/3i -O -K -F+jRB+f14p -Dj0.1i
+%@GMT: gmt pstext -R-300/300/-60/280 -JX6i/3i -O -F+jRB+f14p -Dj0.1i
 %@PROJ: xy -300.00000000 300.00000000 -60.00000000 280.00000000 -300.000 300.000 -60.000 280.000 +xy
 %%BeginObject PSL_Layer_14
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 clipsave
 0 0 M
 7200 0 D
@@ -2166,22 +2171,10 @@ V MU 0 0 M 233 F0 (Compression \[-5e12 Pa\]) FP pathbbox N pop exch pop add U ne
 1 0 0 C 233 F0 (Compression \[-5e12 Pa\]) Z
 0 A PSL_cliprestore
 %%EndObject
-0 A
-FQ
-O0
-0 0 TM
-
-% PostScript produced by:
-%@GMT: gmt psxy -R-300/300/-60/280 -JX6i/3i -O -T
-%@PROJ: xy -300.00000000 300.00000000 -60.00000000 280.00000000 -300.000 300.000 -60.000 280.000 +xy
-%%BeginObject PSL_Layer_15
-0 setlinecap
-0 setlinejoin
-3.32551 setmiterlimit
-%%EndObject
 
 grestore
-PSL_movie_completion /PSL_movie_completion {} def
+PSL_movie_label_completion /PSL_movie_label_completion {} def
+PSL_movie_prog_indicator_completion /PSL_movie_prog_indicator_completion {} def
 %PSL_Begin_Trailer
 %%PageTrailer
 U

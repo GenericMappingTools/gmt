@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -19,7 +19,7 @@
  * Date:	2-May-2013
  * Version:	6 API
  *
- * Brief synopsis: gmt write lets us (read from memory and) write any of the 5 GMT resources.
+ * Brief synopsis: gmt write lets us (read from memory and) write any of the 6 GMT resources.
  *
  */
 
@@ -66,7 +66,7 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *C) {	/* Deall
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <infile> <outfile> -Tc|d|g|i|p [%s] [%s]\n", name, GMT_Rx_OPT, GMT_V_OPT);
+	GMT_Message (API, GMT_TIME_NONE, "usage: %s <infile> <outfile> -Tc|d|g|i|p|u [%s] [%s]\n", name, GMT_Rx_OPT, GMT_V_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
@@ -77,7 +77,8 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 	GMT_Message (API, GMT_TIME_NONE, "\t   g : Grid\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   i : Image\n");
 	GMT_Message (API, GMT_TIME_NONE, "\t   p : PostScript\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
+	GMT_Message (API, GMT_TIME_NONE, "\t   u : Cube\n");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
 	GMT_Option (API, "R,V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -85,7 +86,7 @@ static int usage (struct GMTAPI_CTRL *API, int level) {
 
 static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_OPTION *options) {
 
-	/* This parses the options provided to grdcut and sets parameters in CTRL.
+	/* This parses the options provided to grdwrite and sets parameters in CTRL.
 	 * Any GMT common options will override values set previously by other commands.
 	 * It also replaces any file names specified as input or output with the data ID
 	 * returned when registering these sources/destinations with the API.
@@ -93,6 +94,7 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_O
 
 	unsigned int n_errors = 0, n_files = 0;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -101,28 +103,32 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_O
 
 			case GMT_OPT_INFILE:	/* File args */
 				if (Ctrl->IO.active[GMT_OUT]) {	/* User gave output as ->outfile and it was found on the command line earlier */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[GMT_IN]);
 					Ctrl->IO.active[GMT_IN] = true;
 					Ctrl->IO.file[GMT_IN] = strdup (opt->arg);
 				}
 				else if (n_files < 2) {	/* Encountered input file(s); the 2nd would be output */
+					n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[n_files]);
 					Ctrl->IO.active[n_files] = true;
 					Ctrl->IO.file[n_files] = strdup (opt->arg);
 				}
 				n_files++;
 				break;
 			case GMT_OPT_OUTFILE:	/* Got specific output argument */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->IO.active[GMT_OUT]);
 				Ctrl->IO.active[GMT_OUT] = true;
 				Ctrl->IO.file[GMT_OUT] = strdup (opt->arg);
 				n_files++;
 				break;
 			case 'T':	/* Type */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				switch (opt->arg[0]) {
 					case 't':
 						if (gmt_M_compat_check (GMT, 5))	/* There is no longer a T type but we will honor T as D from GMT5 */
 							Ctrl->T.mode = GMT_IS_DATASET;
 						else {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
+							GMT_Report (API, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
 							n_errors++;
 						}
 						break;
@@ -131,8 +137,9 @@ static int parse (struct GMT_CTRL *GMT, struct GMTWRITE_CTRL *Ctrl, struct GMT_O
 					case 'c': Ctrl->T.mode = GMT_IS_PALETTE;	 break;
 					case 'i': Ctrl->T.mode = GMT_IS_IMAGE;	 break;
 					case 'p': Ctrl->T.mode = GMT_IS_POSTSCRIPT;	 break;
+					case 'u': Ctrl->T.mode = GMT_IS_CUBE;	 break;
 					default:
-						GMT_Report (GMT->parent, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, and p\n", opt->arg[0]);
+						GMT_Report (API, GMT_MSG_ERROR, "Unrecognized data type %c.  Choose from c, d, g, i, p, and u\n", opt->arg[0]);
 						n_errors++;
 						break;
 				}

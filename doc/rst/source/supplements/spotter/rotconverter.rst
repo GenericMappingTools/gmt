@@ -14,7 +14,7 @@ Synopsis
 
 **gmt rotconverter** [ **±** ] *rotA* [ **±** *rotB* ] [ **±** *rotC* ] ...
 [ |-A| ] [ |-D| ]
-[ |-F|\ *out* ]
+[ |-F|\ **s**\|\ **t** ]
 [ |-G| ]
 [ |-M|\ [*fact*] ]
 [ |-N| ] [ |-S| ]
@@ -68,7 +68,7 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ *out*
+**-F**\ **s**\|\ **t**
     Specify the output format for rotations. The *out* flag must be
     either **t** or **s** for total reconstruction or stage rotations,
     respectively. [Default is **-Ft** (output contains total
@@ -106,10 +106,13 @@ Optional Arguments
 **-W**
     Ensure all output rotations have negative opening angles [Default reports positive rotation angles].
 
-.. _-V:
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. |Add_-V| replace:: Report statistics of extracted rotations.
-.. include:: ../../explain_-V.rst_
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
+.. include:: ../../explain_-h.rst_
 
 .. include:: ../../explain_help.rst_
 

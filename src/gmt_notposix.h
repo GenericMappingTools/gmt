@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- * Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ * Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  * See LICENSE.TXT file for copying and redistribution conditions.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -498,7 +498,7 @@
 /* rmdir is usually in unistd.h; we use a macro here
  * since the same function under WIN32 is prefixed with _
  * and defined in direct.h */
-#ifdef HAVE__GETCWD
+#ifdef HAVE__RMDIR
 #	define rmdir _rmdir
 #endif
 

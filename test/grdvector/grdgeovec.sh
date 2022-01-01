@@ -38,5 +38,4 @@ echo -1	60	0	11.113 > t.txt
 echo 1	60	90	11.113 >> t.txt
 gmt xyz2grd -R-1/1/59/61 -I1 -fg -Ga.grd t.txt
 gmt xyz2grd -R -I1 -fg -Gr.grd t.txt -i0,1,3
-gmt grdvector r.grd a.grd -A -R-2/3/58/63 -J -O -K -Q0.2i+e -Gblue -W2p,blue -S0.1n -Bafg1 -BwSne+t"nm" -Y3.75i >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt grdvector r.grd a.grd -A -R-2/3/58/63 -J -O -Q0.2i+e -Gblue -W2p,blue -S0.1n -Bafg1 -BwSne+t"nm" -Y3.75i >> $ps

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -199,7 +199,7 @@ struct GMT_GEO_IO {			/* For geographic output and plotting */
 	unsigned int range;		/* 0 for 0/360, 1 for -360/0, 2 for -180/+180 */
 	unsigned int wesn;		/* 1 if we want sign encoded with suffix W, E, S, N, 2 if also want space before letter */
 	int order[3];			/* The relative order of degree, minute, seconds in form (-ve if unused) */
-	bool decimal;			/* true if we want to use the D_FORMAT for decimal degrees only */
+	bool decimal;			/* true if we want to use the FORMAT_FLOAT_OUT for decimal degrees only */
 	bool no_sign;			/* true if we want absolute values (plot only) */
 	char x_format[GMT_LEN64];	/* Actual C format used to plot/output longitude */
 	char y_format[GMT_LEN64];	/* Actual C format used to plot/output latitude */
@@ -316,8 +316,16 @@ struct GMT_IO {				/* Used to process input data records */
 	struct GMT_OGR *OGR;		/* Pointer to GMT/OGR info used during reading */
 	struct GMT_RECORD record;	/* Current record with pointers to data columns and text */
 	double *nc_xarray, *nc_yarray;	/* For grids with variable x,y arrays */
+	enum GMT_time_period cycle_operator;
+	bool cycle_interval;	/* true for annual and weekly cycles */
+	int64_t cycle_col;	/* The input column with periodic time [-1 meaning no such thing] */
+	double cycle_min;	/* Min cyclical time requested via -R */
+	double cycle_max;	/* Max cyclical time requested via -R */
+	double cycle_range;	/* A full period of time */
+	double cycle_period;	/* Custom period */
+	double cycle_phase;		/* Custom phase */
 	/* The remainder are just pointers to memory allocated elsewhere */
-	int *varid;			/* Array of variable IDs (netCDF only) */
+	int *grpid, *varid;			/* Arrays of group and variable IDs (netCDF only) */
 	double *scale_factor;		/* Array of scale factors (netCDF only) */
 	double *add_offset;		/* Array of offsets (netCDF only) */
 	double *missing_value;		/* Array of missing values (netCDF only) */

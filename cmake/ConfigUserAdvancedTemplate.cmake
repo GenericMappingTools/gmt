@@ -1,6 +1,6 @@
 #
 #
-# Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -185,7 +185,6 @@
 #enable_testing()
 #set (DO_EXAMPLES TRUE)
 #set (DO_TESTS TRUE)
-#set (DO_ANIMATIONS TRUE)
 # Number of parallel test jobs with "make check":
 #set (N_TEST_JOBS 4)
 
@@ -200,6 +199,11 @@
 
 # Uncomment the following line to enable running low-level C tests of the API
 #set (DO_API_TESTS ON)
+
+# Uncomment the following line if you need to run the full tests suite using
+# the gmtserver "test" distribution instead of the default server.
+# You may wish to rename existing cache and server dirs so you can restore afterwards
+# set (GMT_DATA_SERVER "test")
 
 # List extra sub-dirs of 'src' with a CMakeLists.txt to build custom modules
 # that link against the full gmt libs. (For building codes that only need the GMT API,
@@ -236,6 +240,7 @@
 #add_definitions(-DUSE_COMMON_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for common GMT options
 #add_definitions(-DUSE_MODULE_LONG_OPTIONS) 	# Turn on testing of upcoming long-option syntax for module options
 #add_definitions(-DEXPORT_GMTLIB)				# Turn on to access normally un-exported or static gmtlib functions from external tools
+#add_definitions(-DNO_THEMES) 	                # Turn off implementation of GMT_THEME for debugging
 
 #set (CMAKE_C_FLAGS "-Wall -Wdeclaration-after-statement ${CMAKE_C_FLAGS}") # recommended even for release build
 #set (CMAKE_C_FLAGS "-Wextra ${CMAKE_C_FLAGS}")            # extra warnings

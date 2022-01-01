@@ -17,8 +17,8 @@ gmt begin ex40
 		gmt spatial T100k.txt -fg -Qk | gawk "{printf \"Reduced area = %%.0f km@+2@+\n\", $3}" > area_T100k.txt
 		gmt plot -W1p,blue T100k.txt
 		gmt plot -Sx0.75c -W3p centroid.txt
-		gmt text -Dj8p-F+cLT+jTL+f18p+t"T = 100 km"
-		gmt text area.txt -F+f14p+cCM
+		gmt text -Dj8p -F+cLT+jTL+f18p+t"T = 100 km"
+		gmt text area.txt -F+f14p+cCM -D0/1c
 		gmt text area_T100k.txt -F+f14p+cLB -Dj14p
 
 		gmt subplot set 1
@@ -30,7 +30,7 @@ gmt begin ex40
 		gmt plot -W1p,blue T500k.txt
 		gmt plot -Sx0.75c -W3p centroid.txt
 		gmt text -Dj8p -F+cLT+jTL+f18p+t"T = 500 km"
-		gmt text area.txt -F+f14p+cCM
+		gmt text area.txt -F+f14p+cCM -D0/1c
 		gmt text area_T500k.txt -F+f14p+cLB -Dj14p
 	gmt subplot end
 	del centroid.txt area*.txt T*.txt

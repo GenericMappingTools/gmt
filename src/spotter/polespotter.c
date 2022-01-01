@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *   Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *   Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
@@ -41,7 +41,7 @@ struct POLESPOTTER_CTRL {	/* All control options for this program (except common
 		double length;
 	} D;
 	struct POLESPOTTER_E {	/* -Ea|f<sigma> */
-		bool active;
+		bool active[2];
 	} E;
 	struct POLESPOTTER_F {	/* -F<fzfile> */
 		bool active;
@@ -52,6 +52,9 @@ struct POLESPOTTER_CTRL {	/* All control options for this program (except common
 		bool active;
 		char *file;
 	} G;
+	struct POLESPOTTER_I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct POLESPOTTER_N {	/* -N */
 		bool active;
 	} N;
@@ -94,30 +97,36 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *C) {	/* De
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s [%s] [-G<polegrid>] [%s]\n", name, GMT_Id_OPT, GMT_Rgeo_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-A<abyssalhills>] [-D<step>] [-Ea|f<sigma>] [-F<FZfile] [-N] [%s]\n", GMT_V_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-Ss|p|l[<modifiers>]] [%s] [%s] [%s]\n\t[%s] [%s]\n\t[%s] [%s] [%s] [%s] [%s]\n\n",
-		GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT, GMT_i_OPT, GMT_r_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [-A<abyssalhills>] [-D<step>] [-Ea|f<sigma>] [-F<FZfile>] [-G%s] "
+		"[%s] [-N] [%s] [-Ss|p|l[<modifiers>]] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s] [%s]\n",
+		name, GMT_OUTGRID, GMT_Id_OPT, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bi_OPT, GMT_d_OPT, GMT_e_OPT, GMT_h_OPT,
+		GMT_i_OPT, GMT_r_OPT, GMT_o_OPT, GMT_s_OPT, GMT_colon_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Give multisegment file with abyssal hill lineaments [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Give step-length along great circles in km [5].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Specify typical angular error (in degrees) for (a)byssal hills or (f)racture zones [1].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Give multisegment file with fracture zone lineaments [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Specify file name for output grid [no grid].  Requires -R -I [-r]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Accumulates weighted great-circle length density grid.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Normalize grid to max = 1 [no normalization].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Determines the spotter mode.  Select from:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Ss scan for spots [default].  This mode offers two optional modifiers:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +l to dump all great circles to stdout [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +c<xfile> to save all great circle intersections to <xfile> [no crossings].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Sp scan for poles.  Writes a misfit grid to <grid>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t  -Sl scan for compatible lines given <plon>/<plat> trial pole.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t    Append +m to report misfit for each midpoint.\n");
+	GMT_Message (API, GMT_TIME_NONE, "  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<abyssalhills>");
+	GMT_Usage (API, -2, "Give multisegment file with abyssal hill lineaments [none].");
+	GMT_Usage (API, 1, "\n-D<step>");
+	GMT_Usage (API, -2, "Give step-length along great circles in km [5].");
+	GMT_Usage (API, 1, "\n-Ea|f<sigma>");
+	GMT_Usage (API, -2, "Specify typical angular error (in degrees) for (a)byssal hills or (f)racture zones [1]. Repeatable");
+	GMT_Usage (API, 1, "\n-F<FZfile>");
+	GMT_Usage (API, -2, "Give multisegment file with fracture zone lineaments [none].");
+	gmt_outgrid_syntax (API, 'G', "Specify file name for output pole-density grid [no grid].  Requires -R -I [-r]. "
+		"Accumulates weighted great-circle length density on the grid");
+	GMT_Usage (API, 1, "\n%s", GMT_Id_OPT);
+	GMT_Usage (API, -2, "Specify grid interval(s); Append m [or s] to <dx> and/or <dy> for minutes [or seconds].");
+	GMT_Usage (API, 1, "\n-N Normalize grid so maximum is 1 [no normalization].");
 	GMT_Option (API, "Rg");
+	GMT_Usage (API, 1, "\n-Ss|p|l[<modifiers>]");
+	GMT_Usage (API, -2, "Set the spotter directive:");
+	GMT_Usage (API, 3, "s: Scan for spots [Default].  This mode offers two optional modifiers:");
+	GMT_Usage (API, 4, "+l Dump all great circles to standard output [none].");
+	GMT_Usage (API, 4, "+c Save all great circle intersections to appended file <xfile> [no crossings].");
+	GMT_Usage (API, 3, "p: Scan for poles.  Writes a misfit grid to <outgrid>.");
+	GMT_Usage (API, 3, "l: Scan for compatible lines given appended <plon>/<plat> trial pole. "
+		"Append +m to report misfit for each midpoint.");
 	GMT_Option (API, "V");
 	GMT_Option (API, "bi2,d,e,h,i,o,r,s,:,.");
 
@@ -132,9 +141,10 @@ static int parse (struct GMT_CTRL *GMT, struct POLESPOTTER_CTRL *Ctrl, struct GM
 	 */
 
 	unsigned int n_errors = 0;
-int n;
+	int n;
 	char txt_a[GMT_LEN256] = {""}, txt_b[GMT_LEN256] = {""}, *c = NULL;
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {
 		switch (opt->option) {
@@ -142,38 +152,53 @@ int n;
 			/* Supplemental parameters */
 
 			case 'A':	/* File with abyssal hill traces */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				if (opt->arg[0]) Ctrl->A.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->A.file))) n_errors++;
 				break;
 			case 'D':	/* Step length */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				Ctrl->D.length = atof (opt->arg);
 				break;
 			case 'E':	/* Sigma of lines (store 1/sigma here) */
 				switch (opt->arg[0]) {
-					case 'a': Ctrl->A.weight = 1.0 / atof (&opt->arg[1]);	break;
-					case 'f': Ctrl->F.weight = 1.0 / atof (&opt->arg[1]);	break;
+					case 'a':
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[0]);
+						Ctrl->E.active[0] = true;
+						Ctrl->A.weight = 1.0 / atof (&opt->arg[1]);
+						break;
+					case 'f':
+						n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active[1]);
+						Ctrl->E.active[1] = true;
+						Ctrl->F.weight = 1.0 / atof (&opt->arg[1]);
+						break;
 				}
-				Ctrl->E.active = true;
 				break;
 			case 'F':	/* File with fracture zone traces */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				if (opt->arg[0]) Ctrl->F.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->F.file))) n_errors++;
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_REMOTE, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
+				Ctrl->I.active = true;
 				n_errors += gmt_parse_inc_option (GMT, 'I', opt->arg);
 				break;
 			case 'N':	/* Normalize grid */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				break;
 			case 'S':	/* modes */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				switch (opt->arg[0]) {
 					case 'p': Ctrl->S.mode = SPOTTER_SCAN_POLES;
 						break;
@@ -184,7 +209,7 @@ int n;
 							c[0] = '\0';	/* Chop off modifier */
 						}
 						if ((n = sscanf (&opt->arg[1], "%[^/]/%s", txt_a, txt_b)) != 2) {
-							GMT_Report (GMT->parent, GMT_MSG_ERROR, "Option -Sp: No pole given\n");
+							GMT_Report (API, GMT_MSG_ERROR, "Option -Sp: No pole given\n");
 							n_errors++;
 						}
 						else {

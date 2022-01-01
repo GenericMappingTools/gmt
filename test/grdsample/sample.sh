@@ -12,6 +12,4 @@ gmt grdimage tmp.nc -JX4.5i -Ct.cpt -P -K -B10f5 -BWSne -Xc -Y0.75i > $ps
 gmt psscale -Dx5i/4.75i+w6i/0.15i+jML+e+n -O -K -Ct.cpt >> $ps
 # Resample to 0.2 spacing
 gmt grdsample tmp.nc -I0.2 -Gout.nc
-gmt grdimage out.nc -JX4.5i -Ct.cpt -O -K -B10f5 -BWSne -Xc -Y5i >> $ps
-gmt psxy -R -J -O -T >> $ps
-
+gmt grdimage out.nc -JX4.5i -Ct.cpt -O -B10f5 -BWSne -Xc -Y5i >> $ps

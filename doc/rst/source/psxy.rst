@@ -14,26 +14,27 @@ Synopsis
 
 **gmt psxy** [ *table* ] |-J|\ *parameters*
 |SYN_OPT-Rz|
-[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**] ]
+[ |-A|\ [**m**\|\ **p**\|\ **x**\|\ **y**\|\ **r**\|\ **t**] ]
 [ |SYN_OPT-B| ]
 [ |-C|\ *cpt* ]
 [ |-D|\ *dx*/*dy* ]
-[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
+[ |-E|\ [**x**\|\ **y**\|\ **X**\|\ **Y**][**+a**\|\ **A**][**+cl**\|\ **f**][**+n**][**+w**\ *cap*][**+p**\ *pen*] ]
 [ |-F|\ [**c**\|\ **n**\|\ **r**][**a**\|\ **f**\|\ **s**\|\ **r**\|\ *refpoint*] ]
 [ |-G|\ *fill* ]
+[ |-H|\ [*scale*] ]
 [ |-I|\ [*intens*] ]
 [ |-K| ]
 [ |-L|\ [**+b**\|\ **d**\|\ **D**][**+xl**\|\ **r**\|\ *x0*][**+yl**\|\ **r**\|\ *y0*][**+p**\ *pen*] ]
 [ |-N|\ [**c**\|\ **r**] ]
 [ |-O| ] [ |-P| ]
-[ |-S|\ [*symbol*][*size* ]
+[ |-S|\ [*symbol*][*size*] ]
 [ |-T| ]
 [ |SYN_OPT-U| ]
 [ |SYN_OPT-V| ]
 [ |-W|\ [*pen*][*attr*] ]
 [ |SYN_OPT-X| ]
 [ |SYN_OPT-Y| ]
-[ |-Z|\ *value* [**+f**\|\ **l**]]
+[ |-Z|\ *value* [**+f**\|\ **l**] ]
 [ |SYN_OPT-a| ]
 [ |SYN_OPT-bi| ]
 [ |SYN_OPT-di| ]
@@ -44,11 +45,14 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-p| ]
 [ |SYN_OPT-qi| ]
-[ |SYN_OPT-t| ]
+[ |SYN_OPT-tv| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: plot_common.rst_
+.. include:: plot.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: common_classic.rst_
 

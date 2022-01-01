@@ -30,5 +30,4 @@ gmt psxy -R -J -O -K b.txt -W1p,green >> $ps
 gmt psxy -R -J -O -K c.txt -W1p,blue >> $ps
 gmt psxy -R -J -O -K d.txt -W1p,yellow >> $ps
 gmt psxy -R -J -O -K e.txt -Sc0.1c -Gbrown >> $ps
-gmt psxy -R -J -O -K f.txt -Sc0.1c -Gblack >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt psxy -R -J -O f.txt -Sc0.1c -Gblack >> $ps

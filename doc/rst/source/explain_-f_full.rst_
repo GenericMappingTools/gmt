@@ -1,18 +1,30 @@
-.. _-f_full:
+The **-f** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
 
 **-f**\ [**i**\|\ **o**]\ *colinfo*
-    Specify the data types of input and/or output columns (time or
-    geographical data). Specify **i** or **o** to make this apply only
-    to input or output [Default applies to both]. Give one or more
-    columns (or column ranges) separated by commas, or use **-f**
-    multiple times (column ranges must be given
-    in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
-    not specified).  Append **T** (absolute calendar time), **t**
-    (relative time in chosen :term:`TIME_UNIT` since :term:`TIME_EPOCH`),
-    **x** (longitude), **y** (latitude), **p**\ [*unit*] (projected
-    x,y map coordinates in given *unit* [meter]) or **f** (floating point)
-    to each column or column range item. Shorthands
-    **-f**\ [**i**\|\ **o**]\ **g** means
-    **-f**\ [**i**\|\ **o**]0\ **x**,1\ **y** (geographic coordinates)
-    and **-f**\ [**i**\|\ **o**]\ **c** means
-    **-f**\ [**i**\|\ **o**]0:1\ **f** (Cartesian coordinates)
+    Specify the data types of input and/or output columns (time or geographical data).
+
+**Description**
+
+The **-f** option specifies what kind of data each input or output column contains when map projections are not
+required. Optionally, append **i** or **o** to make this apply only to input or output, respectively [Default applies
+to both]. Append a text string with information about each column (or range of columns) separated by commas. Each group
+starts with the column number (0 is the first column) followed by either **x** (longitude), **y** (latitude), **T**
+(absolute calendar time), **t** (relative time in chosen :term:`TIME_UNIT` since :term:`TIME_EPOCH`), **d** (dimension)
+or **s** (trailing text). If several consecutive columns have the same format you may specify a range of columns rather
+than a single column. Column ranges must be given in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
+not specified.  For example, if our input file has geographic coordinates (latitude, longitude) with absolute calendar
+coordinates in the columns 3 and 4, we would specify **fi**\ 0\ **y**,1\ **x**,3:4\ **T**. All other columns are assumed
+to have the default (**f**\ loating point) format and need not be set individually. **Note**: You can also indicate that
+all items from the given column and to the end of the record should be considered *trailing text* by giving the code
+**s** (for string). Only the last group may set **s**. **Note**: Types **T** and **s** can only be used with ASCII data sets.
+
+Three shorthand options for common selections are available. The shorthand **-f**\ [**i**\|\ **o**]\ **g** means
+**-f**\ [**i**\|\ **o**]0x,1y (i.e., geographic coordinates), while **-f**\ [**i**\|\ **o**]\ **c** means
+**-f**\ [**i**\|\ **o**]0:1\ **f** (i.e., Cartesian coordinates). A special use of **-f** is to select
+**-fp**\ [*unit*], which *requires* **-J -R** and lets you use *projected* map coordinates (e.g., UTM meters) as data input.
+Such coordinates are automatically inverted to longitude, latitude during the data import. Optionally, append a length
+*unit* (see table :ref:`distance units <tbl-distunits>`) [default is meter]. For more information, see Sections
+:ref:`input-data-formats` and :ref:`output-data-formats`.

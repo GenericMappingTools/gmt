@@ -13,5 +13,4 @@ gmt sphdistance -Rg -I1 -Qtt.pol -Gtt.nc -Lk
 gmt grdcontour tt.nc -JG-140/30/7i -P -B30g30 -B+t"Distances from GSHHS crude" -K -C500 -A1000 \
 	-L500 -GL0/90/203/-10,175/60/170/-30,-50/30/220/-5 -X0.75i -Y2i > $ps
 gmt psxy -R -J -O -K tt.pol -W0.25p,red >> $ps
-gmt pscoast -R -J -O -K -W1p -Glightgray -A0/1/1 >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt pscoast -R -J -O -W1p -Glightgray -A0/1/1 >> $ps

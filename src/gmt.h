@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -62,7 +62,7 @@ extern "C" {
  *=====================================================================================
  */
 
-/* 33 Primary API functions */
+/* 34 Primary API functions */
 EXTERN_MSC void * GMT_Create_Session   (const char *tag, unsigned int pad, unsigned int mode, int (*print_func) (FILE *, const char *));
 EXTERN_MSC void * GMT_Create_Data      (void *API, unsigned int family, unsigned int geometry, unsigned int mode, uint64_t dim[],
                                            double *wesn, double *inc, unsigned int registration, int pad, void *data);
@@ -86,6 +86,7 @@ EXTERN_MSC int GMT_Get_Row             (void *API, int rec_no, struct GMT_GRID *
 EXTERN_MSC int GMT_Put_Row             (void *API, int rec_no, struct GMT_GRID *G, gmt_grdfloat *row);
 EXTERN_MSC int GMT_Set_Comment         (void *API, unsigned int family, unsigned int mode, void *arg, void *data);
 EXTERN_MSC int GMT_Set_Geometry	       (void *API, unsigned int direction, unsigned int geometry);
+EXTERN_MSC int GMT_Free                (void *API, void *ptr);
 
 EXTERN_MSC int GMT_Open_VirtualFile    (void *API, unsigned int family, unsigned int geometry, unsigned int direction, void *data, char *string);
 EXTERN_MSC int GMT_Close_VirtualFile   (void *API, const char *string);
@@ -106,15 +107,19 @@ EXTERN_MSC int GMT_Put_Matrix          (void *API, struct GMT_MATRIX *M, unsigne
 /* These 2 functions are new in 6.0 and are being considered beta */
 EXTERN_MSC int GMT_Put_Strings         (void *API, unsigned int family, void *object, char **array);
 EXTERN_MSC char ** GMT_Get_Strings     (void *API, unsigned int family, void *object);
+/* This function is new in 6.2 and is being considered beta */
+EXTERN_MSC int GMT_Put_Levels          (void *API, struct GMT_CUBE *C, double *levels, uint64_t n_levels);
 
-/* 4 functions to relate (row,col) to a 1-D index for grids and images and to precompute equidistant coordinates for grids and images */
+/* 5 functions to relate (row,col) to a 1-D index for grids, cubes and images and to precompute equidistant coordinates for grids and images */
 
 EXTERN_MSC uint64_t GMT_Get_Index      (void *API, struct GMT_GRID_HEADER *header, int row, int col);
 EXTERN_MSC double * GMT_Get_Coord      (void *API, unsigned int family, unsigned int dim, void *container);
 EXTERN_MSC int GMT_Set_Index	       (void *API, struct GMT_GRID_HEADER *header, char *code);	/* Experimental */
 EXTERN_MSC uint64_t GMT_Get_Pixel      (void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);	/* Experimental */
+/* This function for cubes is new in 6.2 and is being considered beta */
+EXTERN_MSC uint64_t GMT_Get_Index3     (void *API, struct GMT_GRID_HEADER *header, int row, int col, int layer);
 
-/* 11 functions to show and inquire about GMT common options, GMT default settings, object metadata, convert strings to doubles, and message and report printing */
+/* 12 functions to show and inquire about GMT common options, GMT default settings, object metadata, convert strings to doubles, and message and report printing */
 
 EXTERN_MSC int GMT_Option              (void *API, const char *options);
 EXTERN_MSC int GMT_Get_Common          (void *API, unsigned int option, double *par);
@@ -125,6 +130,7 @@ EXTERN_MSC int GMT_Get_Info            (void *API, unsigned int family, void *da
 EXTERN_MSC int GMT_Get_Values          (void *API, const char *arg, double *par, int maxpar);
 EXTERN_MSC int GMT_Report              (void *API, unsigned int level, const char *message, ...);
 EXTERN_MSC int GMT_Message             (void *API, unsigned int mode, const char *format, ...);
+EXTERN_MSC int GMT_Usage               (void *API, int level, const char *format, ...);
 EXTERN_MSC char * GMT_Error_Message    (void *API);
 EXTERN_MSC int GMT_Handle_Messages     (void *API, unsigned int mode, unsigned int method, void *dest);
 

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2009-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2009-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU Lesser General Public License as published by
@@ -219,9 +219,11 @@ static char *PSL_ISO_name[] = {
 	"PSL_ISO-8859-8",
 	"PSL_ISO-8859-9",
 	"PSL_ISO-8859-10",
+	"PSL_ISO-8859-11",
 	"PSL_ISO-8859-13",
 	"PSL_ISO-8859-14",
 	"PSL_ISO-8859-15",
+	"PSL_ISO-8859-16",
 	NULL
 };
 
@@ -240,9 +242,11 @@ static char *PSL_ISO_encoding[] = {
 #include "PSL_ISO-8859-8.h"
 #include "PSL_ISO-8859-9.h"
 #include "PSL_ISO-8859-10.h"
+#include "PSL_ISO-8859-11.h"
 #include "PSL_ISO-8859-13.h"
 #include "PSL_ISO-8859-14.h"
 #include "PSL_ISO-8859-15.h"
+#include "PSL_ISO-8859-16.h"
 NULL
 };
 
@@ -333,6 +337,7 @@ static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #define PSL_SUB_DOWN		0.25	/* Baseline shift down in font size for subscript */
 #define PSL_SUP_UP_LC		0.35	/* Baseline shift up in font size for superscript after lowercase letter */
 #define PSL_SUP_UP_UC		0.35	/* Baseline shift up in font size for superscript after uppercase letter */
+#define PSL_ASCII_ES		27		/* ASCII code for escape (used to prevent +? strings in plain text from being seen as modifiers) */
 #if 0
 /* These are potential revisions to some of the settings above but remains to be tested */
 #define PSL_SUBSUP_SIZE		0.58	/* Relative size of sub/sup-script to normal size */
@@ -368,6 +373,7 @@ static struct PSL_FONT PSL_standard_fonts[PSL_N_STANDARD_FONTS] = {
 #define PSL_ONE_SPACE		1
 #define PSL_COMPOSITE_1		8
 #define PSL_COMPOSITE_2		16
+#define PSL_COMPOSITE_2_FNT		64
 #define PSL_SYMBOL_FONT		12
 #define PSL_CHUNK		2048
 
@@ -415,7 +421,15 @@ typedef struct {
 	unsigned char *buffer;
 } *psl_byte_stream_t;
 
-/* These are used when the PDF pdfmark extension for transparency is used. */
+/* These are used when the PDF pdfmark or Ghostscript extensions for transparency is used:
+ * Adobe:       https://www.adobe.com/content/dam/acom/en/devnet/acrobat/pdfs/pdfmarkReference_v9.pdf
+ * Ghostscript: https://www.ghostscript.com/doc/current/Language.htm#Transparency
+ *
+ * From gs 9.53 their transparency model takes two transparencies (stroke and fill) while before
+ * it only took one.  The pdfmark took two but we simply duplicated it since GMT itself only dealt
+ * with one transparency for both.  From GMT 6.2.0 we will allow these two transparencies to be set
+ * individually if the user so selects.  Note: We do not support any of the soft masks/shapes stuff.
+ */
 
 #define N_PDF_TRANSPARENCY_MODES	16
 static const char *PDF_transparency_modes[N_PDF_TRANSPARENCY_MODES] = {
@@ -717,6 +731,16 @@ static int psl_iy (struct PSL_CTRL *PSL, double y) {
 	return (PSL->internal.y0 + (int)lrint (y * PSL->internal.y2iy));
 }
 
+static double psl_ix10 (struct PSL_CTRL *PSL, double x) {
+	/* Convert user x to PS dots with 1 decimal point */
+	return (PSL->internal.x0 + 0.1 *lrint (10.0 * x * PSL->internal.x2ix));
+}
+
+static double psl_iy10 (struct PSL_CTRL *PSL, double y) {
+	/* Convert user y to PS dots with 1 decimal point */
+	return (PSL->internal.y0 + 0.1 * lrint (10.0 * y * PSL->internal.y2iy));
+}
+
 static int psl_iz (struct PSL_CTRL *PSL, double z) {
 	/* Convert user distances to PS dots */
 	return ((int)lrint (z * PSL->internal.dpu));
@@ -851,7 +875,9 @@ static int psl_shorten_path_old (struct PSL_CTRL *PSL, double *x, double *y, int
 	return (k);
 }
 
-#define N_LENGTH_THRESHOLD 100000000
+/* Addressing issue https://github.com/GenericMappingTools/gmt/issues/439 for long DCW polygons.
+   #define N_LENGTH_THRESHOLD 100000000 meant we only did new path but now we try 50000 as cutoff */
+#define N_LENGTH_THRESHOLD 50000
 static int psl_shorten_path (struct PSL_CTRL *PSL, double *x, double *y, int n, int *ix, int *iy, int mode) {
 	if (n > N_LENGTH_THRESHOLD)
 		return psl_shorten_path_old (PSL, x, y, n, ix, iy, mode);
@@ -939,11 +965,13 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 
 	}
 
+	/* For curved lines for text placement we use 10 times the precision in the coordinates since we will
+	 * be taking derivatives to compute angles and thus need higher precision than integer PS coordinates */
 	PSL_comment (PSL, "Set concatenated coordinate arrays for line segments:\n");
 	PSL_command (PSL, "/PSL_path_x [ ");
 	for (i = k = 0; i < ntot; i++) {
 		if (!use[i]) continue;
-		PSL_command (PSL, "%d ", psl_ix (PSL, x[i]));
+		PSL_command (PSL, "%g ", psl_ix10 (PSL, x[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
 	}
@@ -951,7 +979,7 @@ static void psl_set_reducedpath_arrays (struct PSL_CTRL *PSL, double *x, double 
 	PSL_command (PSL, "/PSL_path_y [ ");
 	for (i = k = 0; i < ntot; i++) {
 		if (!use[i]) continue;
-		PSL_command (PSL, "%d ", psl_iy (PSL, y[i]));
+		PSL_command (PSL, "%g ", psl_iy10 (PSL, y[i]));
 		k++;
 		if ((k%10) == 0) PSL_command (PSL, "\n\t");
 	}
@@ -1035,6 +1063,7 @@ static void psl_rgb_to_hsv (double rgb[], double hsv[]) {
 	hsv[0] = 120.0 * imax + 60.0 * (rgb[(imax + 1) % 3] - rgb[(imax + 2) % 3]) / diff;
 	if (hsv[0] < 0.0) hsv[0] += 360.0;
 	if (hsv[0] > 360.0) hsv[0] -= 360.0;
+	hsv[0] /= 360.0;	/* All h,s,v values in PostScript are 0-1 range */
 }
 
 #if 0 /* Not used */
@@ -1811,10 +1840,11 @@ static void psl_bulkcopy (struct PSL_CTRL *PSL, const char *text) {
 
 static struct PSL_WORD *psl_add_word_part (struct PSL_CTRL *PSL, char *word, int length, int fontno, double fontsize, int sub, int super, int small, int under, int space, double rgb[]) {
 	/* For flag: bits 1 and 2 give number of spaces to follow (0, 1, or 2)
-	 * bit 3 == 1 means leading TAB
-	 * bit 4 == 1 means Composite 1 character
-	 * bit 5 == 1 means Composite 2 character
-	 * bit 6 == 1 means underline word
+	 * bit 3 == 1 [4]  means leading TAB
+	 * bit 4 == 1 [8]  means Composite 1 character
+	 * bit 5 == 1 [16] means Composite 2 character
+	 * bit 6 == 1 [32] means underline word
+	 * bit 7 == 1 [64] means Composite 2 character has a different font that Composite 1 character
 	 */
 
 	int i = 0;
@@ -1871,11 +1901,47 @@ static void psl_freewords (struct PSL_WORD **word, int n_words) {
 	}
 }
 
+void psl_got_composite_fontswitch (struct PSL_CTRL *PSL, char *text) {
+	/* If a composite character is made from two different fonts then we need to flag these.
+	 * E.g., Epsilon time-derivative = @!\277@~145@~ using current and Symbol font.
+	 * Here we need to switch to symbol font for one char, from whatever font we are using.
+	 * We look for such cases and count the occurrences, plus replace the font changing code
+	 * @ (either @~ or @%font% with ASCII escape (27)). */
+	size_t k;
+	int n = 0;
+	for (k = 0; k < strlen (text); k++) {
+		if (text[k] != '@') continue;
+		/* Start of an escape sequence */
+		k++;
+		if (text[k] != '!') continue;	/* Not a composite character request */
+		k++;	/* Step to start of character1 */
+		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular first character */
+		if (text[k] != '@') continue;	/* No font switching in the composite glyph */
+		/* Here we do have such a thing, and we need to avoid the regular string splitting at @ in PSL_plottext and PSL_deftextdim */
+		text[k] = PSL_ASCII_ES;	/* Replace @ with ASCII ESC code for now */
+		k++;	/* Font code type is ~ or % */
+		if (text[k] == '~')	/* Symbol font */
+			k++;	/* Step to character2 */
+		else {	/* Some random font switch */
+			k++;	/* Step past first % */
+			while (text[k] != '%') k++;	/* Skip past the font name or number */
+			k++;	/* Step to character2 */
+		}
+		if (text[k] == '\\') k += 4; else k++;	/* Skip the octal or regular second character */
+		if (text[k] != '@')	/* Not ideal, user error presumably */
+			PSL_message (PSL, PSL_MSG_WARNING, "Warning: psl_got_composite_fontswitch expected a font-change at end of composite character 2\n");
+		else	/* Get passed the font return code */
+			text[k] = PSL_ASCII_ES;	/* Skip to end of text section */
+		n++;	/* Found one of these cases */
+	}
+	if (n) PSL_message (PSL, PSL_MSG_DEBUG, "psl_got_composite_fontswitch found %d composite characters with different fonts/char sets\n", n);
+}
+
 static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize, char *paragraph) {
 	/* Typeset one or more paragraphs.  Separate paragraphs by adding \r to end of last word in a paragraph.
 	 * This is a subfunction that simply place all the text attributes on the stack.
 	 */
-	int n, p, n_scan, last_k = -1, error = 0, old_font, font, after, len, n_alloc_txt;
+	int n, p, n_scan, last_k = -1, error = 0, old_font, font, font2, after, len, n_alloc_txt, F_flag;
 	int *font_unique = NULL;
 	unsigned int i, i1, i0, j, k, n_items, n_font_unique, n_rgb_unique;
 	size_t n_alloc, n_words = 0;
@@ -1889,10 +1955,12 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 
 	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
 
+
 	/* Break input string into words (sorta based on old pstext) */
 	n_alloc = PSL_CHUNK;
 	text = (char **) PSL_memory (PSL, NULL, n_alloc, char *);
 	copy = strdup (paragraph);	/* Need copy since strtok_r will mess with the text */
+	psl_got_composite_fontswitch (PSL, copy);
 	c = strtok_r (copy, sep, &lastp);	/* Found first word */
 	while (c) {	/* Found another word */
 		text[n_words] = strdup (c);
@@ -1921,7 +1989,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 	n_alloc = PSL_CHUNK;
 	old_font = font = PSL->current.font_no;
 	old_size = fontsize;
-	PSL_rgb_copy (rgb, PSL->current.rgb[PSL_IS_STROKE]);	/* Initial font color is current color */
+	PSL_rgb_copy (rgb, PSL->current.rgb[PSL_IS_FONT]);	/* Initial font color is current font color */
 
 	word = PSL_memory (PSL, NULL, n_alloc, struct PSL_WORD *);
 
@@ -1964,13 +2032,38 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 							n_alloc <<= 1;
 							word = PSL_memory (PSL, word, n_alloc, struct PSL_WORD *);
 						}
+						/* Watch out for escaped font change before 2nd character */
+						if (clean[i1] == PSL_ASCII_ES) {	/* Have a font change on either side of 2nd character */
+							i1++;
+							if (clean[i1] == '~')	/* Toggle the symbol font */
+								font2 = PSL_SYMBOL_FONT;
+							else {	/* Font switching with @%font% ...@%% */
+								i1++;
+								font2 = psl_getfont (PSL, &clean[i1]);
+								while (clean[i1] != '%') i1++;
+							}
+							i1++;	/* Now at start of 2nd character */
+							F_flag = PSL_COMPOSITE_2 | PSL_COMPOSITE_2_FNT;
+						}
+						else {	/* No 2nd font */
+							font2 = font;
+							F_flag = PSL_COMPOSITE_2;
+						}
+
 						if (clean[i1] == '\\') { /* 2nd char is Octal code character */
-							word[k] = psl_add_word_part (PSL, &clean[i1], 4, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_COMPOSITE_2, rgb);
+							word[k] = psl_add_word_part (PSL, &clean[i1], 4, font2, fontsize, sub_on, super_on, scaps_on, under_on, F_flag, rgb);
 							i1 += 4;
 						}
 						else {	/* Regular character */
-							word[k] = psl_add_word_part (PSL, &clean[i1], 1, font, fontsize, sub_on, super_on, scaps_on, under_on, PSL_COMPOSITE_2, rgb);
+							word[k] = psl_add_word_part (PSL, &clean[i1], 1, font2, fontsize, sub_on, super_on, scaps_on, under_on, F_flag, rgb);
 							i1++;
+						}
+						if (font2 != font) {	/* Skip past the font switcher */
+							i1++;	/* Step over the implicit @ (ASCII 27) */
+							if (font2 == PSL_SYMBOL_FONT)
+								i1++;	/* Move past the ~ */
+							else
+								i1 += 2;	/* Move past the %% */
 						}
 						if (!clean[i1]) word[k]->flag++;	/* New word after this composite */
 						k++;
@@ -2086,7 +2179,7 @@ static int psl_paragraphprocess (struct PSL_CTRL *PSL, double y, double fontsize
 			} /* End loop over word with @ in it */
 
 			if (!plain_word && (last_k = k - 1) >= 0) {	/* Allow space if text ends with @ commands only */
-				word[last_k]->flag &= 60;
+				word[last_k]->flag &= 124;	/* Knock of anything unused */
 				word[last_k]->flag |= 1;
 			}
 		}
@@ -2296,13 +2389,20 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	 * the straight angle symbol when the angles subtend 90 degrees.
 	 *
 	 * param must hold up to 8 values:
-	 * param[0] = radius, param[1] = angle1, param[2] = angle2,
-	 * param[3] = headlength, param[4] = headwidth, param[5] = penwidth(inch)
- 	 * param[6] = vector-shape (0-1), param[7] = status bit flags
-	 * param[8] = begin head type;	param[9] = end head type)
-	 * param[10] = begin trim (degrees);	param[11] = end trim (degrees)
-	 * param[12] = head penwidth
-	 * add 4 to param[6] if you want to use a straight angle
+	 * param[PSL_MATHARC_RADIUS] = radius,
+    * param[PSL_MATHARC_ANGLE_BEGIN] = begin angle1,
+    * param[PSL_MATHARC_ANGLE_END] = end angle2,
+	 * param[PSL_MATHARC_HEAD_LENGTH] = headlength,
+    * param[PSL_MATHARC_HEAD_WIDTH] = headwidth,
+    * param[PSL_MATHARC_ARC_PENWIDTH] = penwidth(inch)
+ 	 * param[PSL_MATHARC_HEAD_SHAPE] = vector-shape (0-2),
+    * param[PSL_MATHARC_STATUS] = status bit flags
+	 * param[PSL_MATHARC_HEAD_TYPE_BEGIN] = begin head type;
+    * param[PSL_MATHARC_HEAD_TYPE_END] = end head type)
+	 * param[PSL_MATHARC_TRIM_BEGIN] = begin trim (degrees);
+    * param[PSL_MATHARC_TRIM_END] = end trim (degrees)
+	 * param[PSL_MATHARC_HEAD_PENWIDTH] = head penwidth
+	 * add 4 to param[PSL_MATHARC_HEAD_SHAPE] if you want to use a straight angle
 	 * symbol if the opening is 90.  */
 
 	int i, side[2], heads, outline, fill, sign[2] = {+1, -1};
@@ -2311,24 +2411,25 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	double angle[2], tangle[2], off[2], A, B, bo1, bo2, xi, yi, bi1, bi2, xv, yv, rshift[2] = {0.0, 0.0}, circ_r, xx[2], yy[2], trim[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"}, *end[2] = {"start", "end"};
 
-	status = (unsigned int)lrint (param[7]);
-	if (status & PSL_VEC_MARC90 && fabs (90.0 - fabs (param[2]-param[1])) < 1.0e-8) {	/* Right angle */
+	status = (unsigned int)lrint (param[PSL_MATHARC_STATUS]);
+	if (status & PSL_VEC_MARC90 && fabs (90.0 - fabs (param[PSL_MATHARC_ANGLE_END]-param[PSL_MATHARC_ANGLE_BEGIN])) < 1.0e-8) {	/* Right angle */
 		return (psl_mathrightangle (PSL, x, y, param));
 	}
 	PSL_comment (PSL, "Start of Math arc\n");
 	/* Make any adjustments caused by trim */
-	trim[PSL_BEGIN] = (status & PSL_VEC_OFF_BEGIN) ? param[10] : 0.0;
-	trim[PSL_END]   = (status & PSL_VEC_OFF_END)   ? param[11] : 0.0;
+	trim[PSL_BEGIN] = (status & PSL_VEC_OFF_BEGIN) ? param[PSL_MATHARC_TRIM_BEGIN] : 0.0;
+	trim[PSL_END]   = (status & PSL_VEC_OFF_END)   ? param[PSL_MATHARC_TRIM_END]   : 0.0;
 	PSL_command (PSL, "V %d %d T\n", psl_ix (PSL, x), psl_iy (PSL, y));
-	kind[PSL_BEGIN] = (unsigned int)lrint (param[8]);
-	kind[PSL_END] = (unsigned int)lrint (param[9]);
-	r = param[0];				  /* Radius of arc in inch */
-	angle[PSL_BEGIN] = param[1] + trim[PSL_BEGIN]; angle[PSL_END] = param[2] - trim[PSL_END]; /* Start/stop angles of arc, possibly adjusted */
-	head_arc_length = param[3];		  /* Head length in inch */
-	head_half_width = 0.5 * param[4];	  /* Head half-width in inch */
-	arc_width = param[5];			  /* Arc width in inch */
-	shape = param[6];			  /* Vector head shape (0-1) */
-	h_penwidth = param[12];
+	kind[PSL_BEGIN] = (unsigned int)lrint (param[PSL_MATHARC_HEAD_TYPE_BEGIN]);
+	kind[PSL_END]   = (unsigned int)lrint (param[PSL_MATHARC_HEAD_TYPE_END]);
+	r = param[PSL_MATHARC_RADIUS];				  /* Radius of arc in inch */
+	angle[PSL_BEGIN] = param[PSL_MATHARC_ANGLE_BEGIN] + trim[PSL_BEGIN];
+   angle[PSL_END]   = param[PSL_MATHARC_ANGLE_END] - trim[PSL_END]; /* Start/stop angles of arc, possibly adjusted */
+	head_arc_length  = param[PSL_MATHARC_HEAD_LENGTH];		  /* Head length in inch */
+	head_half_width  = 0.5 * param[PSL_MATHARC_HEAD_WIDTH];	  /* Head half-width in inch */
+	arc_width = param[PSL_MATHARC_ARC_PENWIDTH];			  /* Arc width in inch */
+	shape = param[PSL_MATHARC_HEAD_SHAPE];			  /* Vector head shape (0-1) */
+	h_penwidth = param[PSL_MATHARC_HEAD_PENWIDTH];
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
@@ -2350,7 +2451,7 @@ static int psl_matharc (struct PSL_CTRL *PSL, double x, double y, double param[]
 	 * for this half-thickness by adding/subtracting from the radius accordingly, using r2,
 	 * but only if the two heads agree. */
 	rshift[PSL_BEGIN] = 0.5 * side[PSL_BEGIN] * arc_width;
-	rshift[PSL_END] = 0.5 * side[PSL_END] * arc_width;
+	rshift[PSL_END]   = 0.5 * side[PSL_END]   * arc_width;
 
 	PSL_setlinewidth (PSL, arc_width * PSL_POINTS_PER_INCH);
 	PSL_plotarc (PSL, 0.0, 0.0, r, tangle[PSL_BEGIN], tangle[PSL_END], PSL_MOVE | PSL_STROKE);	/* Draw the (possibly shortened) arc */
@@ -2507,25 +2608,27 @@ static int psl_pattern_init (struct PSL_CTRL *PSL, int image_no, char *imagefile
 void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], double rgb[], int outline)
 {
 	/* Old GMT4 vector symbol:
-	 * param[0] = xtip;
-	 * param[1] = ytip;
-	 * param[2] = tailwidth;
-	 * param[3] = headlength;
-	 * param[4] = headwidth;
-	 * param[5] = headshape;
+	 * param[PSL_VEC_XTIP] = xtip;
+	 * param[PSL_VEC_YTIP] = ytip;
+	 * param[PSL_VEC_TAIL_WIDTH] = tailwidth;
+	 * param[PSL_VEC_HEAD_LENGTH] = headlength;
+	 * param[PSL_VEC_HEAD_WIDTH] = headwidth;
+	 * param[PSL_VEC_HEAD_SHAPE] = headshape;
 	 * Will make sure that arrow has a finite width in PS coordinates */
 
 	double angle, xtail, ytail, xtip, ytip, tailwidth, headlength, headwidth, headshape;
 	int w2, length, hw, hl, hl2, hw2, l2;
 
-	xtail = x;	ytail = y;	xtip = param[0];	ytip = param[1];
+	xtail = x;	ytail = y;
+   xtip = param[PSL_VEC_XTIP];
+   ytip = param[PSL_VEC_YTIP];
 	length = psl_iz (PSL, hypot (xtail-xtip, ytail-ytip));	/* Vector length in PS units */
 	if (length == 0) return;	/* NULL vector */
 
-	tailwidth  = param[2];
-	headlength = param[3];
-	headwidth  = param[4];
-	headshape  = param[5];
+	tailwidth  = param[PSL_VEC_TAIL_WIDTH];
+	headlength = param[PSL_VEC_HEAD_LENGTH];
+	headwidth  = param[PSL_VEC_HEAD_WIDTH];
+	headshape  = param[PSL_VEC_HEAD_SHAPE];
 	if (outline & 8)
 		PSL_setfill (PSL, rgb, outline - 8);
 	else
@@ -2558,30 +2661,36 @@ void psl_vector_v4 (struct PSL_CTRL *PSL, double x, double y, double param[], do
 static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[]) {
 	/* Will make sure that arrow has a finite width in PS coordinates.
 	 * param must hold up to 12 values:
-	 * param[0] = xtip;		param[1] = ytip;
-	 * param[2] = tailwidth;	param[3] = headlength;	param[4] = headwidth;
-	 * param[5] = headshape;	param[6] = status bit flags
-	 * param[7] = begin head type;	param[8] = end head type
-	 * param[9] = begin trim value;	param[10] = end trim value.
-	 * param[11] = head penwidth
+	 * param[PSL_VEC_XTIP] = xtip;
+    * param[PSL_VEC_YTIP] = ytip;
+	 * param[PSL_VEC_TAIL_WIDTH] = tailwidth;
+    * param[PSL_VEC_HEAD_LENGTH] = headlength;
+    * param[PSL_VEC_HEAD_WIDTH] = headwidth;
+	 * param[PSL_VEC_HEAD_SHAPE] = headshape;
+    * param[PSL_VEC_STATUS] = status bit flags
+	 * param[PSL_VEC_HEAD_TYPE_BEGIN] = begin head type;
+    * param[PSL_VEC_HEAD_TYPE_END] = end head type
+	 * param[PSL_VEC_TRIM_BEGIN] = begin trim value;
+    * param[PSL_VEC_TRIM_END] = end trim value.
+	 * param[PSL_VEC_HEAD_PENWIDTH] = head penwidth
 	 */
 
 	double angle, xtip, ytip, r, s, tailwidth, headlength, headwidth, headshape, length_inch;
 	double xx[6], yy[6], xc[3], yc[3], off[2], yshift[2], trim[2], xp = 0.0, h_penwidth;
-	int length, asymmetry[2], n, heads, outline, fill, status;
+	int length, asymmetry[2], n, heads, outline, fill, status, head_check;
 	unsigned int kind[2];
 	char *line[2] = {"N", "P S"}, *dump[2] = {"", "fs"};
 
-	xtip = param[0];	ytip = param[1];
+	xtip = param[PSL_VEC_XTIP];	ytip = param[PSL_VEC_YTIP];
 	length_inch = hypot (x-xtip, y-ytip);					/* Vector length in inches */
 	length = psl_iz (PSL, length_inch);					/* Vector length in PS units */
 	if (length == 0) return (PSL_NO_ERROR);					/* NULL vector */
 	angle = atan2 (ytip-y, xtip-x) * R2D;					/* Angle vector makes with horizontal, in degrees */
-	status = lrint (param[6]);
-	h_penwidth = param[11];
+	status = lrint (param[PSL_VEC_STATUS]);
+	h_penwidth = param[PSL_VEC_HEAD_PENWIDTH];
 	/* Make any adjustments caused by trim */
-	trim[PSL_BEGIN] = (status & PSL_VEC_OFF_BEGIN) ? param[9]  : 0.0;
-	trim[PSL_END]   = (status & PSL_VEC_OFF_END)   ? param[10] : 0.0;
+	trim[PSL_BEGIN] = (status & PSL_VEC_OFF_BEGIN) ? param[PSL_VEC_TRIM_BEGIN] : 0.0;
+	trim[PSL_END]   = (status & PSL_VEC_OFF_END)   ? param[PSL_VEC_TRIM_END]   : 0.0;
 	if (fabs (angle) == 90.0) {	/* Vertical segment; only adjust y coordinates */
 		y += copysign (trim[PSL_BEGIN], angle);	ytip -= copysign (trim[PSL_END], angle);
 	}
@@ -2594,22 +2703,29 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	length_inch = hypot (x-xtip, y-ytip);					/* Recalculate vector length in inches */
 	length = psl_iz (PSL, length_inch);					/* Vector length in PS units */
 	if (length == 0) return (PSL_NO_ERROR);					/* NULL vector */
-	tailwidth = param[2];
-	headlength = param[3];	headwidth = 0.5 * param[4];	headshape = param[5];
-	kind[PSL_BEGIN] = (unsigned int)lrint (param[7]);
-	kind[PSL_END] = (unsigned int)lrint (param[8]);
+	tailwidth = param[PSL_VEC_TAIL_WIDTH];
+	headlength = param[PSL_VEC_HEAD_LENGTH];	headwidth = 0.5 * param[PSL_VEC_HEAD_WIDTH];	headshape = param[PSL_VEC_HEAD_SHAPE];
+	kind[PSL_BEGIN] = (unsigned int)lrint (param[PSL_VEC_HEAD_TYPE_BEGIN]);
+	kind[PSL_END]   = (unsigned int)lrint (param[PSL_VEC_HEAD_TYPE_END]);
 	off[PSL_BEGIN] = (kind[PSL_BEGIN] == PSL_VEC_ARROW) ? 0.5 * (2.0 - headshape) * headlength : 0.0;
-	off[PSL_END] = (kind[PSL_END] == PSL_VEC_ARROW) ? 0.5 * (2.0 - headshape) * headlength : 0.0;
+	off[PSL_END]   = (kind[PSL_END] == PSL_VEC_ARROW)   ? 0.5 * (2.0 - headshape) * headlength : 0.0;
 	if (kind[PSL_BEGIN] == PSL_VEC_ARROW_PLAIN) off[PSL_BEGIN] = 0.5 * tailwidth *  headlength / headwidth;
 	else if (kind[PSL_BEGIN] == PSL_VEC_TAIL) off[PSL_BEGIN] = FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - tailwidth;
 	if (kind[PSL_END] == PSL_VEC_ARROW_PLAIN) off[PSL_END] = 0.5 * tailwidth *  headlength / headwidth;
 	else if (kind[PSL_END] == PSL_VEC_TAIL) off[PSL_END] = FIN_SLANT_COS * headwidth + FIN_LENGTH_SCALE * headlength - tailwidth;
 	heads = PSL_vec_head (status);		  /* 1 = at beginning, 2 = at end, 3 = both */
+	head_check = PSL_vec_headcheck (status);		  /* nonzero if we should always place a head regardless of length */
+	if (head_check) {	/* Must worry about head size relative to vector length */
+		double h_length_limit = length_inch; /* Max length of arrow in inches */
+		if (heads == 3) h_length_limit *= 0.5;    /* Split this length between the two heads */
+		if (heads & 1 && headlength > h_length_limit) heads -= 1;	/* No room for head */
+		if (heads & 2 && headlength > h_length_limit) heads -= 2;	/* No room for head */
+	}
 	PSL_setlinewidth (PSL, tailwidth * PSL_POINTS_PER_INCH);	/* Inherits color from current pen */
 	outline = ((status & PSL_VEC_OUTLINE) > 0);
 	fill = ((status & PSL_VEC_FILL) > 0);
-	asymmetry[PSL_BEGIN] = -PSL_vec_side (status, 0);	  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
-	asymmetry[PSL_END] = PSL_vec_side (status, 1);		  /* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
+	asymmetry[PSL_BEGIN] = -PSL_vec_side (status, 0);	/* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
+	asymmetry[PSL_END]   = PSL_vec_side (status, 1);	/* -1 = left-only, +1 = right-only, 0 = normal head at beginning */
 	r = sqrt (headlength * headwidth / M_PI);	/* Same circle area as vector head */
 	s = sqrt (headlength * headwidth)/2;		/* Same square 	area as vector head */
 	PSL_comment (PSL, "Start of Cartesian vector\n");
@@ -2619,7 +2735,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 	xx[0] = (heads & 1) ? off[PSL_BEGIN] : 0.0;
 	xx[1] = (heads & 2) ? length_inch - off[PSL_END] : length_inch;
 	if (heads & 1 && asymmetry[PSL_BEGIN] && kind[PSL_BEGIN] == PSL_VEC_CIRCLE) xx[0] = -r;
-	if (heads & 2 && asymmetry[PSL_END] && kind[PSL_END] == PSL_VEC_CIRCLE) xx[1] += r;
+	if (heads & 2 && asymmetry[PSL_END]   && kind[PSL_END]   == PSL_VEC_CIRCLE) xx[1] += r;
 	if (xx[1] > xx[0]) PSL_plotsegment (PSL, xx[0], 0.0, xx[1], 0.0);		/* Draw vector line body unless head length equals or exceeds total length */
 
 	if (status & PSL_VEC_MID_FWD) {	/* Want forward-pointing mid-point head instead of at end */
@@ -2638,7 +2754,7 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 
 	/* Must switch asymmetry for start head since implemented backwards */
 	yshift[PSL_BEGIN] = 0.5 * asymmetry[PSL_BEGIN] * tailwidth;
-	yshift[PSL_END] = 0.5 * asymmetry[PSL_END] * tailwidth;
+	yshift[PSL_END]   = 0.5 * asymmetry[PSL_END]   * tailwidth;
 
 	if (heads & 1) {	/* Need head at beginning, pointing backwards */
 		double f = (kind[PSL_BEGIN] == PSL_VEC_ARROW_PLAIN) ? 4.0 : 2.0;
@@ -2873,69 +2989,77 @@ static int psl_vector (struct PSL_CTRL *PSL, double x, double y, double param[])
 static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) {
 	/* Takes care of plotting a wedge.
 	 * param may hold up to 11 values; only 8 used here.
-	 * param[0] = radius;
-	 * param[1] = start angle;	param[2] = end angle;
-	 * param[3] = status bit flags;	param[4] = inner_radius [0]
-	 * param[5] = dr [0];		param[6] = da [0]
-	 * param[7] = do_fill (1) | do_outline (2)
+	 * param[PSL_WEDGE_RADIUS_O] = radius;
+	 * param[PSL_WEDGE_ANGLE_BEGIN] = start angle;
+    * param[PSL_WEDGE_ANGLE_END] = end angle;
+	 * param[PSL_WEDGE_STATUS] = status bit flags;
+    * param[PSL_WEDGE_RADIUS_I] = inner_radius [0]
+	 * param[PSL_WEDGE_DR] = dr [0];
+    * param[PSL_WEDGE_DA] = da [0]
+	 * param[PSL_WEDGE_ACTION] = do_fill (1) | do_outline (2)
 	 */
 
-	double xx[3], yy[3];
-	int status = lrint (param[3]), flags = lrint (param[7]);
-	bool windshield = (param[4] > 0.0);	/* Flag that we have an inner-tube */
+	double xx[3], yy[3], sa, ca;
+	int status = lrint (param[PSL_WEDGE_STATUS]), flags = lrint (param[PSL_WEDGE_ACTION]);
+	bool windshield = (param[PSL_WEDGE_RADIUS_I] > 0.0);	/* Flag that we have an inner-tube */
 	bool fill = flags & 1, outline = flags & 2;
 
 	if (status == 0 && !windshield) {	/* Good old plain pie wedge */
-		PSL_command (PSL, "%d %.12g %.12g %d %d Sw\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+		PSL_command (PSL, "%d %.12g %.12g %d %d Sw\n", psl_iz (PSL, param[PSL_WEDGE_RADIUS_O]), param[PSL_WEDGE_ANGLE_BEGIN], param[PSL_WEDGE_ANGLE_END], psl_ix (PSL, x), psl_iy (PSL, y));
 		return (PSL_NO_ERROR);
 	}
 	/* Somewhat more involved */
 	if (fill) {	/* Paint wedge given fill first but not outline (if desired) */
 		if (windshield)
 			PSL_command (PSL, "V %d %d T 0 0 %d %.12g %.12g arc 0 0 %d %.12g %.12g arcn P fs U\n", psl_ix (PSL, x), psl_iy (PSL, y),
-				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
+				psl_iz (PSL, param[PSL_WEDGE_RADIUS_O]), param[PSL_WEDGE_ANGLE_BEGIN], param[PSL_WEDGE_ANGLE_END], psl_iz (PSL, param[PSL_WEDGE_RADIUS_I]), param[PSL_WEDGE_ANGLE_END], param[PSL_WEDGE_ANGLE_BEGIN]);
 		else
-			PSL_command (PSL, "%d %.12g %.12g %d %d 2 copy M 5 2 roll arc fs\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+			PSL_command (PSL, "%d %.12g %.12g %d %d 2 copy M 5 2 roll arc fs\n", psl_iz (PSL, param[PSL_WEDGE_RADIUS_O]), param[PSL_WEDGE_ANGLE_BEGIN], param[PSL_WEDGE_ANGLE_END], psl_ix (PSL, x), psl_iy (PSL, y));
 	}
 	/* Next, if spiderweb is desired we need to set up a save/restore section and change the pen to PSL_spiderpen */
 	if (status) PSL_command (PSL, "V PSL_spiderpen\n");
 	if (status & 1) {	/* Draw one or more arcs */
-		if (param[5] > 0.0) {	/* Array of arcs requested */
-			double r = (windshield) ? ceil (param[4] / param[5]) * param[5] : param[5];	/* Either start at first arc inside windshield or the first zero-length arc of wedge */
-			while (r <= (param[0]+PSL_SMALL)) {
-				PSL_plotarc (PSL, x, y, r, param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the arcs */
-				r += param[5];	/* Go to next radial distance */
+		if (param[PSL_WEDGE_DR] > 0.0) {	/* Array of arcs requested */
+			double r = (windshield) ? ceil (param[PSL_WEDGE_RADIUS_I] / param[PSL_WEDGE_DR]) * param[PSL_WEDGE_DR] : param[PSL_WEDGE_DR];	/* Either start at first arc inside windshield or the first zero-length arc of wedge */
+			while (r <= (param[PSL_WEDGE_RADIUS_O]+PSL_SMALL)) {
+				PSL_plotarc (PSL, x, y, r, param[PSL_WEDGE_ANGLE_BEGIN], param[PSL_WEDGE_ANGLE_END], PSL_MOVE | PSL_STROKE);	/* Draw the arcs */
+				r += param[PSL_WEDGE_DR];	/* Go to next radial distance */
 			}
 		}
 		else {	/* Just draw outer and possibly inner arcs */
-			PSL_plotarc (PSL, x, y, param[0], param[1], param[2], PSL_MOVE | PSL_STROKE);	/* Draw the outer arc */
+			PSL_plotarc (PSL, x, y, param[PSL_WEDGE_RADIUS_O], param[PSL_WEDGE_ANGLE_BEGIN], param[PSL_WEDGE_ANGLE_END], PSL_MOVE | PSL_STROKE);	/* Draw the outer arc */
 			if (windshield)	/* Draw the inner arc */
-				PSL_plotarc (PSL, x, y, param[4], param[1], param[2], PSL_MOVE | PSL_STROKE);
+				PSL_plotarc (PSL, x, y, param[PSL_WEDGE_RADIUS_I], param[PSL_WEDGE_ANGLE_BEGIN], param[PSL_WEDGE_ANGLE_END], PSL_MOVE | PSL_STROKE);
 		}
 	}
 	if (status & 2) {	/* Draw one or more radial lines */
-		if (param[6] > 0.0) {	/* Array of lines requestedii */
-			double a = ceil (param[1] / param[6]) * param[6];	/* First angle of desired multiple inside range */
-			while (a <= (param[2]+PSL_SMALL)) {
-				xx[0] = x + param[4] * cos (D2R * a);	yy[0] = y + param[4] * sin (D2R * a);
-				xx[1] = x + param[0] * cos (D2R * a);	yy[1] = y + param[0] * sin (D2R * a);
+		if (param[PSL_WEDGE_DA] > 0.0) {	/* Array of lines requested */
+			double a = ceil (param[PSL_WEDGE_ANGLE_BEGIN] / param[PSL_WEDGE_DA]) * param[PSL_WEDGE_DA];	/* First angle of desired multiple inside range */
+			while (a <= (param[PSL_WEDGE_ANGLE_END]+PSL_SMALL)) {
+            sa = sin (D2R * a);   ca = cos (D2R * a);
+				xx[0] = x + param[PSL_WEDGE_RADIUS_I] * ca;	yy[0] = y + param[PSL_WEDGE_RADIUS_I] * sa;
+				xx[1] = x + param[PSL_WEDGE_RADIUS_O] * ca;	yy[1] = y + param[PSL_WEDGE_RADIUS_O] * sa;
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot radial line */
-				a += param[6];	/* Go to next angle */
+				a += param[PSL_WEDGE_DA];	/* Go to next angle */
 			}
 		}
 		else {	/* Just draw the start and stop radii */
 			if (windshield) {	/* These are two separate lines not connecting */
-				xx[0] = x + param[4] * cos (D2R * param[1]);	yy[0] = y + param[4] * sin (D2R * param[1]);
-				xx[1] = x + param[0] * cos (D2R * param[1]);	yy[1] = y + param[0] * sin (D2R * param[1]);
+				sa = sin (D2R * param[PSL_WEDGE_ANGLE_BEGIN]);   ca = cos (D2R * param[PSL_WEDGE_ANGLE_BEGIN]);
+				xx[0] = x + param[PSL_WEDGE_RADIUS_I] * ca;	yy[0] = y + param[PSL_WEDGE_RADIUS_I] * sa;
+				xx[1] = x + param[PSL_WEDGE_RADIUS_O] * ca;	yy[1] = y + param[PSL_WEDGE_RADIUS_O] * sa;
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
-				xx[0] = x + param[4] * cos (D2R * param[2]);	yy[0] = y + param[4] * sin (D2R * param[2]);
-				xx[1] = x + param[0] * cos (D2R * param[2]);	yy[1] = y + param[0] * sin (D2R * param[2]);
+				sa = sin (D2R * param[PSL_WEDGE_ANGLE_END]);   ca = cos (D2R * param[PSL_WEDGE_ANGLE_END]);
+				xx[0] = x + param[PSL_WEDGE_RADIUS_I] * ca;	yy[0] = y + param[PSL_WEDGE_RADIUS_I] * sa;
+				xx[1] = x + param[PSL_WEDGE_RADIUS_O] * ca;	yy[1] = y + param[PSL_WEDGE_RADIUS_O] * sa;
 				PSL_plotline (PSL, xx, yy, 2, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
 			}
 			else {	/* Open triangular jaw */
-				xx[0] = x + param[0] * cos (D2R * param[1]);	yy[0] = y + param[0] * sin (D2R * param[1]);
+				xx[0] = x + param[PSL_WEDGE_RADIUS_O] * cos (D2R * param[PSL_WEDGE_ANGLE_BEGIN]);
+				yy[0] = y + param[PSL_WEDGE_RADIUS_O] * sin (D2R * param[PSL_WEDGE_ANGLE_BEGIN]);
 				xx[1] = x;				yy[1] = y;
-				xx[2] = x + param[0] * cos (D2R * param[2]);	yy[2] = y + param[0] * sin (D2R * param[2]);
+				xx[2] = x + param[PSL_WEDGE_RADIUS_O] * cos (D2R * param[PSL_WEDGE_ANGLE_END]);
+				yy[2] = y + param[PSL_WEDGE_RADIUS_O] * sin (D2R * param[PSL_WEDGE_ANGLE_END]);
 				PSL_plotline (PSL, xx, yy, 3, PSL_MOVE+PSL_STROKE);	/* Plot jaw */
 			}
 		}
@@ -2944,9 +3068,9 @@ static int psl_wedge (struct PSL_CTRL *PSL, double x, double y, double param[]) 
 	if (outline) {	/* Draw wedge outline on top */
 		if (windshield)
 			PSL_command (PSL, "V %d %d T 0 0 %d %.12g %.12g arc 0 0 %d %.12g %.12g arcn P os U\n", psl_ix (PSL, x), psl_iy (PSL, y),
-				psl_iz (PSL, param[0]), param[1], param[2], psl_iz (PSL, param[4]), param[2], param[1]);
+				psl_iz (PSL, param[PSL_WEDGE_RADIUS_O]), param[PSL_WEDGE_ANGLE_BEGIN], param[PSL_WEDGE_ANGLE_END], psl_iz (PSL, param[PSL_WEDGE_RADIUS_I]), param[PSL_WEDGE_ANGLE_END], param[PSL_WEDGE_ANGLE_BEGIN]);
 		else
-			PSL_command (PSL, "%d %.12g %.12g %d %d 2 copy M 5 2 roll arc os\n", psl_iz (PSL, param[0]), param[1], param[2], psl_ix (PSL, x), psl_iy (PSL, y));
+			PSL_command (PSL, "%d %.12g %.12g %d %d 2 copy M 5 2 roll arc os\n", psl_iz (PSL, param[PSL_WEDGE_RADIUS_O]), param[PSL_WEDGE_ANGLE_BEGIN], param[PSL_WEDGE_ANGLE_END], psl_ix (PSL, x), psl_iy (PSL, y));
 	}
 	return (PSL_NO_ERROR);
 }
@@ -3176,11 +3300,11 @@ static int psl_init_fonts (struct PSL_CTRL *PSL) {
 				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Trouble decoding custom font info [%s].  Skipping this font\n", buf);
 				continue;
 			}
-			if (strlen (fullname) >= PSL_NAME_LEN) {
-				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_NAME_LEN);
-				fullname[PSL_NAME_LEN-1] = '\0';
+			if (strlen (fullname) >= PSL_FONTNAME_LEN) {
+				PSL_message (PSL, PSL_MSG_ERROR, "Warning: Font name %s exceeds %d characters and will be truncated\n", fullname, PSL_FONTNAME_LEN);
+				fullname[PSL_FONTNAME_LEN-1] = '\0';
 			}
-			strncpy (PSL->internal.font[i].name, fullname, PSL_NAME_LEN-1);
+			strncpy (PSL->internal.font[i].name, fullname, PSL_FONTNAME_LEN);
 			i++;
 			if (i == n_alloc) {
 				n_alloc <<= 1;
@@ -3346,7 +3470,8 @@ static psl_indexed_image_t psl_makecolormap (struct PSL_CTRL *PSL, unsigned char
 	return (image);
 }
 
-static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]) {
+static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[], int force) {
+   /* Pass force = 1 when you want to reset transparency regardless of rgb[3] */
 	static char text[PSL_BUFSIZ];
 
 	if (PSL_eq (rgb[0], -1.0)) {
@@ -3381,9 +3506,9 @@ static char *psl_putcolor (struct PSL_CTRL *PSL, double rgb[]) {
 		psl_rgb_to_hsv (rgb, hsv);
 		sprintf (text, PSL->current.hsv_format, hsv[0], hsv[1], hsv[2]);
 	}
-	if (!PSL_eq (rgb[3], 0.0)) {
+	if (!PSL_eq (rgb[3], 0.0) || force) {
 		/* Transparency */
-		sprintf (&text[strlen(text)], " %.12g /%s PSL_transp", 1.0 - rgb[3], PSL->current.transparency_mode);
+		sprintf (&text[strlen(text)], " %.12g %.12g /%s PSL_transp", 1.0 - rgb[3], 1.0 - rgb[3], PSL->current.transparency_mode);
 	}
 	return (text);
 }
@@ -3681,7 +3806,7 @@ int PSL_beginclipping (struct PSL_CTRL *PSL, double *x, double *y, int n, double
 	}
 
 	if (flag & 2) {	/* End path and [optionally] fill */
-		if (!PSL_eq(rgb[0],-1.0)) PSL_command (PSL, "V %s eofill U ", psl_putcolor (PSL, rgb));
+		if (!PSL_eq(rgb[0],-1.0)) PSL_command (PSL, "V %s eofill U ", psl_putcolor (PSL, rgb, 0));
 		PSL->current.nclip++;
 		PSL_command (PSL, (flag & 4) ? "PSL_eoclip N\n" : "PSL_clip N\n");
 		PSL_comment (PSL, "End of polygon clip path.  Polygon clipping is currently ON\n");
@@ -3894,15 +4019,33 @@ int PSL_setcurrentpoint (struct PSL_CTRL *PSL, double x, double y) {
 }
 
 int PSL_settransparency (struct PSL_CTRL *PSL, double transparency) {
-	/* Updates the current PDF transparency only */
+	/* Updates the current PDF transparency only (for both fill and stroke transparency) */
 	if (transparency < 0.0 || transparency > 1.0) {
 		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad transparency value [%g] - ignored\n", transparency);
 		return (PSL_BAD_RANGE);
 	}
 	if (transparency == PSL->current.transparency) return (PSL_NO_ERROR);	/* Quietly return if same as before */
 
-	PSL_command (PSL, "%.12g /%s PSL_transp\n", 1.0 - transparency, PSL->current.transparency_mode);
+	PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transparency, 1.0 - transparency, PSL->current.transparency_mode);
 	PSL->current.transparency = transparency;	/* Remember current setting */
+	return (PSL_NO_ERROR);
+}
+
+int PSL_settransparencies (struct PSL_CTRL *PSL, double *transparencies) {
+	/* Updates the current PDF transparencies only (fill and stroke separately) */
+	if (transparencies[0] < 0.0 || transparencies[0] > 1.0) {
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad fill transparency value [%g] - ignored\n", transparencies[0]);
+		return (PSL_BAD_RANGE);
+	}
+	if (transparencies[1] < 0.0 || transparencies[1] > 1.0) {
+		PSL_message (PSL, PSL_MSG_ERROR, "Error: Bad stroke transparency value [%g] - ignored\n", transparencies[1]);
+		return (PSL_BAD_RANGE);
+	}
+	if (transparencies[0] == PSL->current.transparencies[0] && transparencies[1] == PSL->current.transparencies[1]) return (PSL_NO_ERROR);	/* Quietly return if same as before */
+
+	PSL_command (PSL, "%.12g %.12g /%s PSL_transp\n", 1.0 - transparencies[0], 1.0 - transparencies[1], PSL->current.transparency_mode);
+	PSL->current.transparencies[0] = transparencies[0];	/* Remember current settings */
+	PSL->current.transparencies[1] = transparencies[1];	/* Remember current settings */
 	return (PSL_NO_ERROR);
 }
 
@@ -3939,11 +4082,11 @@ int PSL_setfill (struct PSL_CTRL *PSL, double rgb[], int outline) {
 	}
 	else if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) {
 		/* If stroke color is transparent and fill is not, explicitly set transparency for fill */
-		PSL_command (PSL, "{%s 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb));
+		PSL_command (PSL, "{%s 1 1 /Normal PSL_transp} FS\n", psl_putcolor (PSL, rgb, 0));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 	else {	/* Set new r/g/b fill, after possibly changing fill transparency */
-		PSL_command (PSL, "{%s} FS\n", psl_putcolor (PSL, rgb));
+		PSL_command (PSL, "{%s} FS\n", psl_putcolor (PSL, rgb, 0));
 		PSL_rgb_copy (PSL->current.rgb[PSL_IS_FILL], rgb);
 	}
 
@@ -4095,6 +4238,53 @@ int PSL_plotepsimage (struct PSL_CTRL *PSL, double x, double y, double xsize, do
 	PSL_command (PSL, "%%%%EndDocument\n");
 	PSL_command (PSL, "PSL_eps_end\n");
 	return (PSL_NO_ERROR);
+}
+
+int PSL_plotlatexeps (struct PSL_CTRL *PSL, double x, double y, double xsize, double ysize, int justify, unsigned char *buffer, double *rgb, struct imageinfo *h) {
+   /* Plots an Latex EPS image
+    * x,y      : Position of image (in plot coordinates)
+    * xsize, ysize   : Size of image (in user units)
+    * justify  : Indicate which corner (x,y) refers to (see graphic)
+    * buffer   : EPS file (buffered)
+    * rgb      : Font color
+    * h        : Image buffer header
+    *
+    *   9       10      11
+    *   |----------------|
+    *   5    <image>     7
+    *   |----------------|
+    *   1       2        3
+    */
+   double width, height;
+
+   /* If one of [xy]size is 0, keep the aspect ratio */
+   width = h->trx - h->llx;
+   height = h->try - h->lly;
+   if (PSL_eq (xsize, 0.0)) xsize = ysize * width / height;
+   if (PSL_eq (ysize, 0.0)) ysize = xsize * height / width;
+
+   /* Correct origin (x,y) in case of justification */
+   if (justify > 1) {      /* Move the new origin so (0,0) is lower left of box */
+      x -= 0.5 * ((justify + 3) % 4) * xsize;
+      y -= 0.5 * (int)(justify / 4) * ysize;
+   }
+
+   PSL_command (PSL, "PSL_eps_begin\n");
+   PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
+   PSL_command (PSL, "%d %d T %.12g %.12g scale\n", psl_ix (PSL, x), psl_iy (PSL, y), xsize * PSL->internal.dpu / width, ysize * PSL->internal.dpu / height);
+   PSL_command (PSL, "%.12g %.12g T\n", -h->llx, -h->lly);
+   PSL_command (PSL, "N %.12g %.12g M %.12g %.12g L %.12g %.12g L %.12g %.12g L P clip N\n", h->llx, h->lly, h->trx, h->lly, h->trx, h->try, h->llx, h->try);
+   PSL_command (PSL, "%%%%BeginDocument: psimage.eps\n");
+   if (PSL->internal.memory) {
+      psl_prepare_buffer (PSL, h->length); /* Make sure we have enough memory to hold the EPS */
+      strncat (&(PSL->internal.buffer[PSL->internal.n]), (char *)buffer, h->length);
+      PSL->internal.n += h->length;
+   }
+   else
+      fwrite (buffer, 1U, (size_t)h->length, PSL->internal.fp);
+   PSL_command (PSL, "%%%%EndDocument\n");
+   PSL_command (PSL, "PSL_eps_end\n");
+   return (PSL_NO_ERROR);
 }
 
 int PSL_plotline (struct PSL_CTRL *PSL, double *x, double *y, int n, int type) {
@@ -4264,7 +4454,7 @@ int PSL_endplot (struct PSL_CTRL *PSL, int lastpage) {
 		memset (PSL->internal.pattern, 0, 2*PSL_N_PATTERNS*sizeof (struct PSL_PATTERN));	/* Reset all pattern info since the file is now closed */
 	}
 	PSL_setdash (PSL, NULL, 0.0);
-	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp\n");
+	if (!PSL_eq (PSL->current.rgb[PSL_IS_STROKE][3], 0.0)) PSL_command (PSL, "1 1 /Normal PSL_transp\n");
 
 	if (lastpage) {
 		PSL_command (PSL, "\ngrestore\n");	/* End encapsulation of main body for this plot */
@@ -4487,7 +4677,7 @@ int PSL_beginplot (struct PSL_CTRL *PSL, FILE *fp, int orientation, int overlay,
 		PSL_command (PSL, "%%%%EndPageSetup\n\n");
 
 		if (!(PSL_is_gray(PSL->init.page_rgb) && PSL_eq(PSL->init.page_rgb[0],1.0)))	/* Change background color from white but not if PSL_no_pagefill is set via psconvert */
-			PSL_command (PSL, "systemdict /PSL_no_pagefill known not {clippath %s F N} if\n", psl_putcolor (PSL, PSL->init.page_rgb));
+			PSL_command (PSL, "systemdict /PSL_no_pagefill known not {clippath %s F N} if\n", psl_putcolor (PSL, PSL->init.page_rgb, 0));
 		PSL_comment (PSL, "End of PSL header\n");
 
 		/* Save page size */
@@ -4697,10 +4887,10 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 	if (PSL_same_rgb (rgb, PSL->current.rgb[mode])) return (PSL_NO_ERROR);	/* Same color as already set */
 
 	/* Because psl_putcolor does not set transparency if it is 0%, we reset it here when needed */
-	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 /Normal PSL_transp ");
+	if (PSL_eq (rgb[3], 0.0) && !PSL_eq (PSL->current.rgb[mode][3], 0.0)) PSL_command (PSL, "1 1 /Normal PSL_transp ");
 
 	/* Then, finally, set the color using psl_putcolor */
-	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb));
+	PSL_command (PSL, "%s\n", psl_putcolor (PSL, rgb, 0));
 
 	/* Update the current stroke/fill color information */
 
@@ -4711,14 +4901,14 @@ int PSL_setcolor (struct PSL_CTRL *PSL, double rgb[], int mode) {
 char * PSL_makepen (struct PSL_CTRL *PSL, double linewidth, double rgb[], char *pattern, double offset) {
 	/* Creates a text string with the corresponding PS command to set the pen */
 	static char buffer[PSL_BUFSIZ];
-	sprintf (buffer, "%d W %s %s", psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb), psl_putdash (PSL, pattern, offset));
+	sprintf (buffer, "%d W %s %s", psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb, 0), psl_putdash (PSL, pattern, offset));
 	return (buffer);
 }
 
 char * PSL_makefont (struct PSL_CTRL *PSL, double size, double rgb[]) {
 	/* Creates a text string with the corresponding PS command to set the font (current font) */
 	static char buffer[PSL_BUFSIZ];
-	sprintf (buffer, "%s %d F%d", psl_putcolor (PSL, rgb), psl_ip (PSL, size), PSL->current.font_no);
+	sprintf (buffer, "%s %d F%d", psl_putcolor (PSL, rgb, 0), psl_ip (PSL, size), PSL->current.font_no);
 	return (buffer);
 }
 
@@ -4732,7 +4922,7 @@ char * PSL_makefontsize (struct PSL_CTRL *PSL, double size) {
 char * PSL_makecolor (struct PSL_CTRL *PSL, double rgb[]) {
 	/* Creates a text string with the corresponding PS command to set the color */
 	static char buffer[PSL_BUFSIZ];
-	sprintf (buffer, "%s", psl_putcolor (PSL, rgb));
+	sprintf (buffer, "%s", psl_putcolor (PSL, rgb, 0));
 	return (buffer);
 }
 
@@ -4866,9 +5056,9 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	 * depth or both width and height on the PostScript stack.
 	 */
 
-	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL, previous[BUFSIZ] = {""};
-	int dy, font, sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, last_chr, kase = PSL_LC;
-	bool last_sub = false, last_sup = false, supersub;
+	char *tempstring = NULL, *piece = NULL, *piece2 = NULL, *ptr = NULL, *string = NULL, *plast = NULL, previous[BUFSIZ] = {""}, c;
+	int dy, font, font2, sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, last_chr, kase = PSL_LC;
+	bool last_sub = false, last_sup = false, supersub, composite;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep;
 
 	if (strlen (text) >= (PSL_BUFSIZ-1)) {
@@ -4891,6 +5081,8 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 		return (PSL_NO_ERROR);
 	}
 
+	psl_got_composite_fontswitch (PSL, string);
+
 	/* Here, we have special request for Symbol font and sub/superscript
 	 * @~ toggles between Symbol font and default font
 	 * @%<fontno>% switches font number <fontno>; give @%% to reset
@@ -4904,14 +5096,14 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	piece  = PSL_memory (PSL, NULL, 2 * PSL_BUFSIZ, char);
 	piece2 = PSL_memory (PSL, NULL, PSL_BUFSIZ, char);
 
-	font = old_font = PSL->current.font_no;
+	font = font2 = old_font = PSL->current.font_no;
 	orig_size = size = fontsize;
 	small_size = size * PSL->current.subsupsize;	/* Sub-script/Super-script set at given fraction of font size */
 	scap_size = size * PSL->current.scapssize;	/* Small caps set at given fraction of font size */
 	ustep[PSL_LC] = PSL->current.sup_up[PSL_LC] * size;	/* Super-script baseline raised by given fraction of font size for lower case*/
 	ustep[PSL_UC] = PSL->current.sup_up[PSL_UC] * size;	/* Super-script baseline raised by given fraction of font size for upper case */
 	dstep = PSL->current.sub_down * size;		/* Sub-script baseline lowered by given fraction of font size */
-	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = false;
+	sub_on = super_on = scaps_on = symbol_on = font_on = size_on = color_on = under_on = composite = false;
 	supersub = (strstr (string, "@-@+") || strstr (string, "@+@-"));	/* Check for sub/super combo */
 	tempstring = PSL_memory (PSL, NULL, strlen(string)+1, char);	/* Since strtok steps on it */
 	strcpy (tempstring, string);
@@ -4925,13 +5117,51 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 	}
 
 	while (ptr) {
-		if (ptr[0] == '!') {	/* Composite character */
+		if (ptr[0] == '!') {	/* Composite character. Only use the second character to measure width */
 			ptr++;
 			if (ptr[0] == '\\')	/* Octal code */
 				ptr += 4;
 			else
 				ptr++;
-			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
+			/* Watch out for escaped font change before 2nd character */
+			if (ptr[0] == PSL_ASCII_ES) {	/* Have a font change on either side of 2nd character */
+				ptr++;
+				if (ptr[0] == '~')	/* Toggle the symbol font */
+					font2 = PSL_SYMBOL_FONT;
+				else {	/* Font switching with @%font% ...@%% */
+					ptr++;
+					font2 = psl_getfont (PSL, ptr);
+					while (*ptr != '%') ptr++;
+				}
+				ptr++;	/* Now at start of 2nd character */
+			}
+			else	/* No 2nd font */
+				font2 = font;
+			if (ptr[0] == '\\') {	/* Octal code */
+				c = ptr[4];
+				ptr[4] = '\0';	/* Temporary chop at end of this code */
+			}
+			else {
+				c = ptr[1];
+				ptr[1] = '\0';	/* Temporary chop at end of char */
+			}
+			strncpy (piece, ptr, 2 * PSL_BUFSIZ);	/* Picked character2 */
+			if (ptr[0] == '\\')	{	/* Octal code */
+				ptr[4] = c;	/* Restore code */
+				ptr += 4;
+			}
+			else {
+				ptr[1] = c;	/* Restore char */
+				ptr++;
+			}
+			if (font2 != font) {	/* Skip past the font switcher */
+				ptr++;	/* Step over the implicit @ (ASCII 27) */
+				if (font2 == PSL_SYMBOL_FONT)
+					ptr++;	/* Move past the ~ */
+				else
+					ptr += 2;	/* Move past the %% */
+			}
+			composite = true;	/* Flag this case */
 		}
 		else if (ptr[0] == '~') {	/* Symbol font toggle */
 			symbol_on = !symbol_on;
@@ -5028,6 +5258,10 @@ int PSL_deftextdim (struct PSL_CTRL *PSL, const char *dim, double fontsize, char
 				PSL_command (PSL, "PSL_last_width 0 G ");	/* Rewind position to orig baseline */
 				last_sub = last_sup = false;
 			}
+			if (ptr && composite) {
+				strcat (piece, ptr);
+				composite = false;
+			}
 			PSL_command (PSL, "%d F%d (%s) FP ", psl_ip (PSL, size), font, piece);
 			last_chr = ptr[strlen(piece)-1];
 			if (!super_on && (last_chr > 0 && last_chr < 255)) kase = (islower (last_chr)) ? PSL_LC : PSL_UC;
@@ -5103,7 +5337,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 	const char *justcmd[12] = {"", "bl ", "bc ", "br ", "", "ml ", "mc ", "mr ", "", "tl ", "tc ", "tr "};
 	/* PS strings to be used dependent on "justify%4". Empty string added for unused value. */
 	const char *align[4] = {"0", "-2 div", "neg", ""};
-	int dy, i = 0, j, font, x_just, y_just, upen, ugap;
+	int dy, i = 0, j, font, font2, x_just, y_just, upen, ugap;
 	int sub_on, super_on, scaps_on, symbol_on, font_on, size_on, color_on, under_on, old_font, n_uline, start_uline, stop_uline, last_chr, kase = PSL_LC;
 	bool last_sub = false, last_sup = false, supersub;
 	double orig_size, small_size, size, scap_size, ustep[2], dstep, last_rgb[4] = {0.0, 0.0, 0.0, 0.0};
@@ -5148,6 +5382,8 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		return (PSL_NO_ERROR);
 	}
 
+	psl_got_composite_fontswitch (PSL, string);
+
 	/* For more difficult cases we use the PSL_deftextdim machinery to get the size of the font box */
 
 	if (justify > 1) {
@@ -5189,7 +5425,6 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 		last_chr = ptr[strlen(ptr)-1];
 		ptr = strtok_r (NULL, "@", &plast);
 		kase = ((last_chr > 0 && last_chr < 255) && islower (last_chr)) ? PSL_LC : PSL_UC;
-
 	}
 
 	font = old_font = PSL->current.font_no;
@@ -5216,6 +5451,21 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				piece[0] = ptr[0];	piece[1] = 0;
 				ptr++;
 			}
+			/* Watch out for escaped font change before 2nd character */
+			if (ptr[0] == PSL_ASCII_ES) {	/* Have a font change on either side of 2nd character */
+				ptr++;
+				if (ptr[0] == '~')	/* Toggle the symbol font */
+					font2 = PSL_SYMBOL_FONT;
+				else {	/* Font switching with @%font% ...@%% */
+					ptr++;
+					font2 = psl_getfont (PSL, ptr);
+					psl_encodefont (PSL, font);
+					while (*ptr != '%') ptr++;
+				}
+				ptr++;	/* Now at start of 2nd character */
+			}
+			else
+				font2 = font;
 			if (ptr[0] == '\\') {	/* Octal code again */
 				strncpy (piece2, ptr, 4U);
 				piece2[4] = 0;
@@ -5225,8 +5475,17 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				piece2[0] = ptr[0];	piece2[1] = 0;
 				ptr++;
 			}
+			if (font2 != font) {	/* Skip past the font switcher */
+				ptr++;	/* Step over the implicit @ (ascii 27) */
+				if (font2 == PSL_SYMBOL_FONT)
+					ptr++;	/* Move past the ~ */
+				else
+					ptr += 2;	/* Move past the %% */
+			}
 			/* Try to center justify these two character to make a composite character - may not be right */
-			PSL_command (PSL, "%d F%d (%s) E exch %s -2 div dup 0 G\n", psl_ip (PSL, size), font, piece2, op[mode]);
+			PSL_command (PSL, "%d F%d (%s) E exch %s -2 div dup 0 G\n", psl_ip (PSL, size), font2, piece2, op[mode]);
+			if (font2 != font)	/* Must switch font in the call */
+				PSL_command (PSL, "%d F%d\n", psl_ip (PSL, size), font);
 			PSL_command (PSL, "(%s) E -2 div dup 0 G exch %s sub neg dup 0 lt {pop 0} if 0 G\n", piece, op[mode]);
 			strncpy (piece, ptr, 2 * PSL_BUFSIZ);
 		}
@@ -5314,7 +5573,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 			color_on = !color_on;
 			ptr++;
 			if (ptr[0] == ';') {	/* Reset color to previous value */
-				PSL_command (PSL, "%s ", psl_putcolor (PSL, last_rgb));
+				PSL_command (PSL, "%s ", psl_putcolor (PSL, last_rgb, 0));
 				PSL_rgb_copy (PSL->current.rgb[PSL_IS_FONT], last_rgb);	/* Update present color */
 			}
 			else {
@@ -5349,7 +5608,7 @@ int PSL_plottext (struct PSL_CTRL *PSL, double x, double y, double fontsize, cha
 				if (s) s[0] = '@';
 				while (*ptr != ';') ptr++;
 				if (!error) {
-					PSL_command (PSL, "%s ", psl_putcolor (PSL, rgb));
+					PSL_command (PSL, "%s ", psl_putcolor (PSL, rgb, 0));
 					PSL_rgb_copy (last_rgb, PSL->current.rgb[PSL_IS_FONT]);	/* Save previous color */
 					PSL_rgb_copy (PSL->current.rgb[PSL_IS_FONT], rgb);	/* Update present color */
 				}
@@ -5431,6 +5690,8 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 	 * 			= 64: Typeset text along path [straight text].
 	 * 			= 128: Fill box
 	 * 			= 256: Draw box
+	 * 			= 512: Fill & outline font, fill first, then outline
+	 * 			= 1024: Fill & outline font, outline first, then fill
 	 */
 
 	bool curved = ((mode & PSL_TXT_CURVED) == PSL_TXT_CURVED);	/* True if baseline must follow line path */
@@ -5464,7 +5725,7 @@ int PSL_plottextline (struct PSL_CTRL *PSL, double x[], double y[], int np[], in
 		PSL_command (PSL, "PSL_set_label_heights\n");	/* Estimate text heights */
 	}
 
-	extras = mode & (PSL_TXT_ROUND | PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX);	/* This just gets these bit settings, if present */
+	extras = mode & (PSL_TXT_ROUND | PSL_TXT_FILLBOX | PSL_TXT_DRAWBOX | PSL_TXT_DRAWBOX | PSL_TXT_FILLPEN | PSL_TXT_PENFILL);	/* This just gets these bit settings, if present */
 	if (mode & PSL_TXT_SHOW) {	/* Lay down visible text */
 		PSL_comment (PSL, "Display the texts:\n");
 		PSL_command (PSL, "%d PSL_%s_path_labels\n", PSL_TXT_SHOW|extras, name[kind]);
@@ -5687,13 +5948,13 @@ int PSL_definteger (struct PSL_CTRL *PSL, const char *param, int value) {
 }
 
 int PSL_defpen (struct PSL_CTRL *PSL, const char *param, double linewidth, char *style, double offset, double rgb[]) {
-	/* Function to set line pen attributes */
-	PSL_command (PSL, "/%s {%d W %s %s} def\n", param, psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb), psl_putdash (PSL, style, offset));
-	return (PSL_NO_ERROR);
+   /* Function to set line pen attributes. We force any transparency change since this is all inside a gsave/hrestore */
+   PSL_command (PSL, "/%s {%d W %s %s} def\n", param, psl_ip (PSL, linewidth), psl_putcolor (PSL, rgb, 1), psl_putdash (PSL, style, offset));
+   return (PSL_NO_ERROR);
 }
 
 int PSL_defcolor (struct PSL_CTRL *PSL, const char *param, double rgb[]) {
-	PSL_command (PSL, "/%s {%s} def\n", param, psl_putcolor (PSL, rgb));
+	PSL_command (PSL, "/%s {%s} def\n", param, psl_putcolor (PSL, rgb, 0));
 	return (PSL_NO_ERROR);
 }
 

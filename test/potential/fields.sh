@@ -89,5 +89,4 @@ echo "100 250 FAA" | gmt pstext -R -J -O -K -F+jTR+f12p,Helvetica,red -Dj0.1i/0.
 gmt psxy -R-100/100/-50/250 -JX3i/2.5i -O -K -W1p,blue -i0,3 vgg.trk -Bafg1000 -BwsN -X3.5i >> $ps
 echo "-100 250 VGG" | gmt pstext -R -J -O -K -F+jTL+f12p,Helvetica,blue -Dj0.1i >> $ps
 gmt psxy -R-100/100/0/4 -J -O -K -W1p,orange -i0,3 geoid.trk -Baf -BE >> $ps
-echo "100 4 GEOID" | gmt pstext -R -J -O -K -F+jTR+f12p,Helvetica,orange -Dj0.1i >> $ps
-gmt psxy -R -J -O -T >> $ps
+echo "100 4 GEOID" | gmt pstext -R -J -O -F+jTR+f12p,Helvetica,orange -Dj0.1i >> $ps

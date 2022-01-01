@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,9 @@ struct BLOCK_CTRL {
 		unsigned int n;			/* Number of output grids specified via -G */
 		char *file[BLK_N_FIELDS];	/* Only first is used for commandline but API may need many */
 	} G;
+	struct I {	/* -I (for checking only) */
+		bool active;
+	} I;
 	struct N {	/* -N<empty> */
 		bool active;
 		double no_data;
@@ -85,33 +88,6 @@ struct BLOCK_CTRL {
 		bool weighted[2];
 		bool sigma[2];
 	} W;
-};
-
-static struct GMT_KEYWORD_DICTIONARY module_kw[] = { /* Local options for all the block* modules */
-	/* separator, short-option, long-option, short-directives, long-directives, short-modifiers, long-modifiers */
-	{ 0, 'A', "fields", "", "", "", "" },
-	{ 0, 'C', "center", "", "", "", "" },
-#if defined(BLOCKMODE)	/* Only blockmode has a -D option */
-	{ 0, 'D', "bin-width", "", "", "a,c,h,l", "average,center,high,low" },
-#endif
-#if defined(BLOCKMEAN)
-	{ 0, 'E', "extend", "", "", "P,p", "prop-simple,prop-weighted" },
-#elif defined(BLOCKMODE)
-	{ 0, 'E', "extend", "r,s", "record,source", "l,h", "lower,higher" },
-#else
-	{ 0, 'E', "extend", "b,r,s", "box-whisker,record,source", "l,h", "lower,higher" },
-#endif
-	{ 0, 'G', "gridfile", "", "", "", "" },
-	GMT_INCREMENT_KW,
-#if !defined(BLOCKMEAN)		/* Only blockmedian & blockmode have a -Q option */
-	{ 0, 'Q', "quicker", "", "", "", "" },
-#endif
-	{ 0, 'S', "select", "m,n,s,w", "mean,count,sum,weight", "", "" },
-#if defined(BLOCKMEDIAN)	/* Only blockmedian has a -T option */
-	{ 0, 'T', "quantile", "", "", "", "" },
-#endif
-	{ 0, 'W', "weights", "i,o", "in,out", "s", "sigma" },
-	{ 0, '\0', "", "", "", "", ""}	/* End of list marked with empty option and strings */
 };
 
 #if 0

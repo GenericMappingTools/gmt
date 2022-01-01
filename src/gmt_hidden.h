@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 2012-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -42,6 +42,7 @@ static inline struct GMT_MATRIX_HIDDEN      * gmt_get_M_hidden (struct GMT_MATRI
 static inline struct GMT_GRID_HIDDEN        * gmt_get_G_hidden (struct GMT_GRID *p)         {return (p->hidden);}
 static inline struct GMT_IMAGE_HIDDEN       * gmt_get_I_hidden (struct GMT_IMAGE *p)        {return (p->hidden);}
 static inline struct GMT_GRID_HEADER_HIDDEN * gmt_get_H_hidden (struct GMT_GRID_HEADER *p)  {return (p->hidden);}
+static inline struct GMT_CUBE_HIDDEN    * gmt_get_U_hidden (struct GMT_CUBE *p)     {return (p->hidden);}
 
 /* Here are the GMT data types used for tables */
 
@@ -78,7 +79,7 @@ struct GMT_DATASEGMENT_HIDDEN {    /* Supporting information hidden from the API
 	double lat_limit;		/* For polar caps: the latitude of the point closest to the pole */
 	struct GMT_OGR_SEG *ogr;	/* NULL unless OGR/GMT metadata exist for this segment */
 	struct GMT_DATASEGMENT *next;	/* NULL unless polygon and has holes and pointing to next hole */
-	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc *alloc_mode;	/* Allocation mode per column [GMT_ALLOC_INTERNALLY] */
 	char *file[2];			/* Name of file or source [0 = in, 1 = out] */
 };
 
@@ -86,8 +87,10 @@ struct GMT_DATATABLE_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;            /* The internal number of the table */
 	size_t n_alloc;         /* The current allocation length of segments */
 	double dist;            /* Distance from a point to this feature */
+	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_write mode;	/* 0 = output table, 1 = output header only, 2 = skip table */
 	struct GMT_OGR *ogr;    /* Pointer to struct with all things GMT/OGR (if MULTI-geometry and not MULTIPOINT) */
+	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	char *file[2];          /* Name of file or source [0 = in, 1 = out] */
 };
 
@@ -96,6 +99,7 @@ struct GMT_DATASET_HIDDEN {	/* Supporting information hidden from the API */
 	size_t n_alloc;			/* The current allocation length of tables */
 	uint64_t dim[4];		/* Only used by GMT_Duplicate_Data to override dimensions */
 	unsigned int alloc_level;	/* The level it was allocated at */
+	unsigned int geographic;	/* 0 for Cartesian, 1 for geographic, mostly used for memory files */
 	enum GMT_enum_write io_mode;	/* -1 means write OGR format (requires proper -a),
 					 * 0 means write everything to one destination [Default],
 					 * 1 means use table->file[GMT_OUT] to write separate table,
@@ -109,6 +113,7 @@ struct GMT_PALETTE_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;			/* The internal number of the data set */
 	size_t n_alloc;            	/* Memory allocated so far */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc alloc_mode_text[2];	/* Allocation mode per label|key [GMT_ALLOC_INTERNALLY] */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	unsigned int auto_scale;	/* If 1 then we must resample to fit actual data range */
 	unsigned int skip;		/* true if current z-slice is to be skipped */
@@ -128,6 +133,7 @@ struct GMT_POSTSCRIPT_HIDDEN {	/* Supporting information hidden from the API */
 struct GMT_VECTOR_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;			/* The internal number of the data set */
 	unsigned int alloc_level;	/* The level it was allocated at */
+	unsigned int geographic;	/* 0 for Cartesian, 1 for geographic, mostly used for memory files */
 	enum GMT_enum_alloc *alloc_mode;	/* Allocation mode per column [GMT_ALLOC_INTERNALLY] */
 	enum GMT_enum_alloc alloc_mode_text;	/* Allocation mode per text [GMT_ALLOC_INTERNALLY] */
 };
@@ -135,6 +141,7 @@ struct GMT_VECTOR_HIDDEN {	/* Supporting information hidden from the API */
 struct GMT_MATRIX_HIDDEN {	/* Supporting information hidden from the API */
 	uint64_t id;			/* The internal number of the data set */
 	int pad;			/* The internal number of the data set */
+	unsigned int grdtype;		/* 0 for Cartesian, > 0 for geographic and depends on 360 periodicity [see GMT_enum_grdtype in gmt_grd.h] */
 	unsigned int alloc_level;	/* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 	enum GMT_enum_alloc alloc_mode_text;	/* Allocation mode per text [GMT_ALLOC_INTERNALLY] */
@@ -142,7 +149,7 @@ struct GMT_MATRIX_HIDDEN {	/* Supporting information hidden from the API */
 
 struct GMT_GRID_HEADER_HIDDEN {
 	/* ---- Variables "hidden" from the API ----
-	 * This section is flexible.  It is not copied to any grid header
+	 * This section is flexible.  It is not copied to any grid or image header
 	 * or stored in any file.  It is considered private */
 	unsigned int trendmode;          /* Holds status for detrending of grids.  0 if not detrended, 1 if mean, 2 if mid-value, and 3 if LS plane removed */
 	unsigned int arrangement;        /* Holds status for complex grid as how the read/imag is placed in the grid (interleaved, R only, etc.) */
@@ -151,10 +158,14 @@ struct GMT_GRID_HEADER_HIDDEN {
 	unsigned int reset_pad;          /* true in cases where we need a subset from a memory grid and must compute node index separately */
 	char name[GMT_GRID_NAME_LEN256]; /* Actual name of the file after any ?<varname> and =<stuff> has been removed */
 	char varname[GMT_GRID_VARNAME_LEN80];/* NetCDF: variable name */
+	char *title;					 /* Title string not limited to GMT_GRID_TITLE_LEN80 characters */
+	char *command;					 /* Command/history string not limited to GMT_GRID_TITLE_LEN80 characters */
+	char *remark;					 /* Remark/description string not limited to GMT_GRID_REMARK_LEN160 characters */
 	int row_order;                   /* NetCDF: k_nc_start_south if S->N, k_nc_start_north if N->S */
 	int z_id;                        /* NetCDF: id of z field */
 	int ncid;                        /* NetCDF: file ID */
 	int xy_dim[2];                   /* NetCDF: dimension order of x and y; normally {1, 0} */
+	int xyz_id[3];                   /* NetCDF: id of x, y, and z (if cube) field */
 	size_t t_index[3];               /* NetCDF: index of higher coordinates */
 	size_t data_offset;              /* NetCDF: distance from the beginning of the in-memory grid */
 	size_t n_alloc;                  /* Bytes allocated for this grid */
@@ -202,6 +213,14 @@ struct GMT_IMAGE_HIDDEN {	/* Supporting information hidden from the API */
 	unsigned int alloc_level;       /* The level it was allocated at */
 	enum GMT_enum_alloc alloc_mode;	/* Allocation mode [GMT_ALLOC_INTERNALLY] */
 };
+
+struct GMT_CUBE_HIDDEN {	/* Supporting information hidden from the API */
+	unsigned int id;                /* The internal number of the grid */
+	unsigned int alloc_level;       /* The level it was allocated at */
+	enum GMT_enum_alloc alloc_mode; /* Allocation mode [GMT_ALLOC_INTERNALLY] */
+	enum GMT_enum_alloc xyz_alloc_mode[3];	 /* Stores how the x, y and z arrays were allocated (external or internal) */
+};
+
 
 /* Get the segments next segment (for holes in perimeters */
 static inline struct GMT_DATASEGMENT * gmt_get_next_S (struct GMT_DATASEGMENT *S) {struct GMT_DATASEGMENT_HIDDEN *SH = gmt_get_DS_hidden (S); return (SH->next);}

@@ -18,7 +18,7 @@ Optional file header records
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The first data record may be preceded by one or more header records. Any
-records that begins with '#' is considered a header or comment line and
+records that has '#' as the *first* character is considered a header or comment line and
 are always processed correctly. If your data file has leading header
 records that do *not* start with '#' then you must make sure to use the
 **-h** option and set the parameter :term:`IO_N_HEADER_RECS` in the :doc:`/gmt.conf` file
@@ -88,7 +88,7 @@ columns as are needed by the program, starting with the first
 variables are to be read, append the suffix
 **?**\ *var1*\ **/**\ *var2*\ **/**\ *...* to the netCDF file name or
 add the option **-bic**\ *var1*\ **/**\ *var2*\ **/**\ *...*, where
-*var1*, *var2*, etc.are the names of the variables to be processed. The
+*var1*, *var2*, etc. are the names of the variables to be processed. The
 latter option is particularly practical when more than one file is read:
 the **-bic** option will apply to all files. Currently, GMT only
 reads, but does not write, netCDF tabular data.
@@ -248,7 +248,9 @@ convert from one format to the other;
 :doc:`/grdedit` can make changes to the grid
 header and convert a pixel- to a gridline-registered grid, or *vice
 versa*. The grid registration is determined by the common GMT **-r**
-option (see Section :ref:`option_nodereg`).
+option (see Section :ref:`option_nodereg`). **Note**: The smallest
+pixel-registered grid can be 1x1 (storing a single value), while a
+gridline-registered grid cannot be smaller than 2x2.
 
 Boundary Conditions for operations on grids
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

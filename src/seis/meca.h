@@ -1,8 +1,8 @@
 /*
  *    Copyright (c) 1996-2012 by G. Patau
- *    Copyright (c) 2013-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *    Copyright (c) 2013-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    Donated to the GMT project by G. Patau upon her retirement from IGPG
- *    Distributed under the Lesser GNU Public Licence
+ *    Distributed under the Lesser GNU Public License
  *    See README file for copying and redistribution conditions.
  */
 
@@ -16,19 +16,9 @@
 
 #define EPSIL 0.0001
 
-#ifndef true
-#define true 1
-#endif
-#ifndef false
-#define false 0
-#endif
-
-#ifndef M_PI_4
-#define M_PI_4          0.78539816339744830962
-#endif
-#ifndef M_PI_2
-#define M_PI_2          1.57079632679489661923
-#endif
+#define SEIS_MAG_REFERENCE 5.0			/* Reference magnitude for -S */
+#define SEIS_MOMENT_MANT_REFERENCE 4.0	/* Mantissa for reference moment for -S */
+#define SEIS_MOMENT_EXP_REFERENCE 23	/* Exponent for reference moment for -S */
 
 #define squared(x) ((x) * (x))
 

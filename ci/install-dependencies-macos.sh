@@ -4,20 +4,22 @@
 #
 # Environmental variables that can control the installation:
 #
-# - BUILD_DOCS: Build GMT documentations [false]
+# - BUILD_DOCS: Build GMT documentation  [false]
 # - RUN_TESTS:  Run GMT tests            [false]
+# - PACKAGE:    Create GMT packages      [false]
 #
 set -x -e
 
 # set defaults to false
 BUILD_DOCS="${BUILD_DOCS:-false}"
 RUN_TESTS="${RUN_TESTS:-false}"
+PACKAGE="${PACKAGE:-false}"
 
 # packages for compiling GMT
 # cmake is pre-installed on GitHub Actions
-packages="ninja curl pcre2 netcdf gdal fftw ghostscript"
+packages="ninja curl pcre2 netcdf gdal geos fftw ghostscript"
 
-# packages for build documentations
+# packages for build documentation
 if [ "$BUILD_DOCS" = "true" ]; then
     packages+=" graphicsmagick ffmpeg pngquant"
 fi
@@ -28,13 +30,17 @@ fi
 
 if [ "$PACKAGE" = "true" ]; then
     # we need the GNU tar for packaging
-	packages+=" gnu-tar"
+    packages+=" gnu-tar"
 fi
 
-# Install packages
-brew update
+# Install GMT dependencies
+#brew update
 brew install ${packages}
 
 if [ "$BUILD_DOCS" = "true" ]; then
-	pip3 install --user sphinx
+	pip3 install --user docutils==0.17 sphinx
+    # Add sphinx to PATH
+    echo "$(python3 -m site --user-base)/bin" >> $GITHUB_PATH
 fi
+
+set +x +e

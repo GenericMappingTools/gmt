@@ -1,5 +1,5 @@
 #
-#	Definition file a rightpointing crescent symbol.
+#	Definition file for a right-pointing crescent symbol.
 #
 -0.25		-0.5	M
 -0.25		0	1 		-90	90	A

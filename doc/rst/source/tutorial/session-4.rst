@@ -60,10 +60,10 @@ In addition, the **-B** option can be used to set the title
 and unit label (and optionally to set the annotation-, tick-,
 and grid-line intervals for the color bars.).  Note that the makecpt commands
 above are done in classic mode.  If you run :doc:`/makecpt` in modern mode
-then you usually do not specify an output file via stdout since
+then you usually do not specify an output file via standard output since
 modern mode maintains what is known as the current CPT.  However,
 if you must explicitly name an output CPT then you will need to
-add the -H option for modern mode to allow output to stdout.
+add the -H option for modern mode to allow output to standard output.
 
 ======================================================= ==================================================================================
 Option                                                  Purpose
@@ -259,7 +259,7 @@ that GMT is able to plot "horizontal"
 slices (spanning latitude and longitude) of such grids without much effort.
 
 As an example we will download the Seasonal Analysed Mean Temperature from the
-`World Ocean Atlas 1998 <http://www.cdc.noaa.gov/cdc/data.nodc.woa98.html)>`_
+`World Ocean Atlas 1998 <https://psl.noaa.gov/data/gridded/data.nodc.woa98.html>`_
 The file in question is named
 otemp.anal1deg.nc (ftp://ftp.cdc.noaa.gov/Datasets/nodc.woa98/temperat/seasonal/otemp.anal1deg.nc).
 

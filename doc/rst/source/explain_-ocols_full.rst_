@@ -1,16 +1,22 @@
-.. _-ocols_full:
+The **-o** option
+^^^^^^^^^^^^^^^^^
+
+**Syntax**
 
 **-o**\ *cols*\ [,...][,\ **t**\ [*word*]]
-    Select specific data columns for primary output, in arbitrary order. Columns
-    not listed will be skipped. Give columns (or column ranges
-    in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if
-    not specified) separated by commas.  Columns may be repeated.
-    To write from a given column until the end the columns, leave off *stop*.
-    [Default writes all columns in order].
-    Normally, any trailing text in the internal records will be written but
-    when **-o** is used you must explicitly add the column **t**. To only output a single word from the
-    trailing text, append the word number (first word is 0).  Finally, **-on** will
-    simply write the numerical output only and skip any trailing text, while **-ot**
-    will only output the trailing text (or selected word).  **Note**: If **-i** is
-    also used then columns given to **-o** correspond to the order *after* the **-i** selection
-    and not the columns in the original record.
+    Select specific data columns for primary output, in arbitrary order.
+
+**Description**
+
+The **-o** option allows you to specify which output file physical data columns to use and in what order. Specify
+individual columns or column ranges in the format *start*\ [:*inc*]:*stop*, where *inc* defaults to 1 if not specified,
+separated by commas [Default writes all columns in order, starting with the first column (i.e., column 0)]. Columns can
+be repeated. The chosen data columns will be used as given and columns not listed will be skipped. To write from a given
+column until the end of the record, leave off *stop* when specifying the column range.
+
+Normally, any trailing text in the internal records will be included in the output, but when **-o** is used to specify
+specific columns you must explicitly append the extra "column" **t** to include the trailing text on output. To only select
+a single word from the trailing text, append the word number (first word is 0).
+Finally, **-on** will simply write the numerical output only and skip any trailing text, while **-ot** will only output
+the trailing text (or selected word). **Note**: If **-i** is also used then columns given to **-o** correspond to the
+order *after* the **-i** selection has taken place and *not* the columns in the original record.

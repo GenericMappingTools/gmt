@@ -14,7 +14,7 @@ Synopsis
 
 **gmt mgd77sniffer** *GEODAS-ids* [ |-A|\ *fieldabbrev*,\ *scale*,\ *offset* ]
 [ |-C|\ *maxspd* ]
-[ |-D|\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [*r*] ]
+[ |-D|\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [**r**] ]
 [ |-E| ]
 [ |-G|\ *fieldabbrev*,\ *imggrid*,\ *scale*,\ *mode* or |-G|\ *fieldabbrev*,\ *grid* ]
 [ |-H| ]
@@ -74,11 +74,11 @@ Optional Arguments
 
 .. _-D:
 
-**-D**\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [*r*]
+**-D**\ **d**\|\ **e**\|\ **E**\|\ **f**\|\ **l**\|\ **m**\|\ **s**\|\ **v**\ [**r**]
     Suppress default warning output and only dump cruise data row-by-row
     such as values, gradients, grid-cruise differences, E77 error
     summaries for each record, re-created MGD77 records or sniffer
-    limits. Append *r* to include all records (default omits records where
+    limits. Append **r** to include all records (default omits records where
     navigation errors were detected).
 
     **-Dd** output differences between cruise and grid data. Requires
@@ -279,16 +279,16 @@ Optional Arguments
     warning summaries. By default ALL warning messages are printed.Not
     compatible with any **-D** options.
 
-.. _-V:
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
 **-Z**
     Flag regression statistics that are outside the specified confidence
     level. (i.e., **-Z**\ 5 flags coefficients m, b, rms, and r that fall outside 95%.)
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
 
 .. |Add_-bo| replace:: Output binary data for **-D**\ d\|f\|s\|v option.
 .. include:: ../../explain_-bo.rst_
@@ -499,7 +499,7 @@ Sandwell/Smith 2 min gravity version 11, try
 
    ::
 
-    mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
+    gmt mgd77sniffer 08010001 -Gdepth,/data/GRIDS/etopo5_hdr.i2 \
                  -Gfaa,/data/GRIDS/grav.11.2.img,0.1,1
 
 See Also

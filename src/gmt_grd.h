@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -115,7 +115,7 @@ enum gmt_enum_wesnids {
 /*! These macros calculate the number of nodes in x or y for the increment dx, dy */
 
 #define gmt_M_get_n(C,min,max,inc,off) (urint ((((max) - (min)) / (inc)) + 1 - (off)) )
-#define gmt_M_get_inc(C,min,max,n,off) (((max) - (min)) / ((n) + (off) - 1))
+#define gmt_M_get_inc(C,min,max,n,off) (((n) + (off) - 1 == 0) ? ((max) - (min)) : ((max) - (min)) / ((n) + (off) - 1))
 
 /*! The follow macros simplify using the 2 above macros when all info is in the struct header */
 
@@ -150,7 +150,7 @@ enum gmt_enum_wesnids {
 /*! IJ macro using h but treats the entire grid with pad as no-pad grid, i.e. using mx as width */
 #define gmt_M_ij(h,row,col) ((uint64_t)(((int64_t)(row))*((int64_t)h->mx)+(int64_t)(col)))
 /*! IJPGI macro using h and the pad info that works for either grids (n_bands = 1) or images (n_bands = 1,3,4) */
-#define gmt_M_ijpgi(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx*(int64_t)h->n_bands)+(int64_t)(col)+(int64_t)h->pad[XLO]*(int64_t)h->n_bands))
+#define gmt_M_ijpgi(h,row,col) ((uint64_t)(((int64_t)(row)+(int64_t)h->pad[YHI])*((int64_t)h->mx*(int64_t)h->n_bands)+((int64_t)(col)+(int64_t)h->pad[XLO])*(int64_t)h->n_bands))
 
 /*! Obtain row and col from index */
 #define gmt_M_col(h,ij) (((ij) % h->mx) - h->pad[XLO])
@@ -183,6 +183,8 @@ enum gmt_enum_wesnids {
 #define gmt_M_grd_equal_xy_inc(C,G) (fabs (1.0 - G->header->inc[GMT_X] / G->header->inc[GMT_Y]) < 1.0e-6)
 /*! GMT_grd_same_dim is true if two grids have the exact same dimensions and registrations */
 #define gmt_M_grd_same_shape(C,G1,G2) (G1->header->n_columns == G2->header->n_columns && G1->header->n_rows == G2->header->n_rows && G1->header->registration == G2->header->registration)
+/*! gmt_M_grd_same_pad is true if two grids have the exact same pad */
+#define gmt_M_grd_same_pad(C,G1,G2) (G1->header->pad[XLO] == G2->header->pad[XLO] && G1->header->pad[XHI] == G2->header->pad[XHI] && G1->header->pad[YLO] == G2->header->pad[YLO] && G1->header->pad[YHI] == G2->header->pad[YHI])
 /*! gmt_M_y_is_outside is true if y is outside the given range */
 #define gmt_M_y_is_outside(C,y,bottom,top) ((gmt_M_is_dnan(y) || (y) < bottom || (y) > top) ? true : false)
 

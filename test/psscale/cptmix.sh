@@ -25,5 +25,4 @@ gmt psscale -R -J -O -K -Cex16_v10.cpt >> $ps -DJLM+w8.5c/0.618c+e+n -Ba+l"v10" 
 gmt psscale -R -J -O -K -Cex16_v11.cpt >> $ps -DJLM+w8.5c/0.618c+e+n -Ba+l"v11" -X5c
 gmt psscale -R -J -O -K -Cex16_v9.cpt  >> $ps -DJLM+w8.5c/0.618c+e+n -I -Ba+l"v9" -X-10c -Y12c
 gmt psscale -R -J -O -K -Cex16_v10.cpt >> $ps -DJLM+w8.5c/0.618c+e+n -I -Ba+l"v10" -X5c
-gmt psscale -R -J -O -K -Cex16_v11.cpt >> $ps -DJLM+w8.5c/0.618c+e+n -I -Ba+l"v11" -X5c
-gmt psxy -R -J -T -O >> $ps
+gmt psscale -R -J -O -Cex16_v11.cpt >> $ps -DJLM+w8.5c/0.618c+e+n -I -Ba+l"v11" -X5c

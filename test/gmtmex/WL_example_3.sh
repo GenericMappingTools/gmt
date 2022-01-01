@@ -3,6 +3,9 @@
 # Bourne shell replica of GMT/MEX example 3 (HDF5 file layers)
 # This is Figure 4 in Wessel & Luis, 2017
 #
+# GMT_KNOWN_FAILURE_LINUX
+# GMT_KNOWN_FAILURE_WINDOWS
+#
 gmt begin WL_example_3 ps
   # Import sea surface temperature grids from several HDF5 layers (lon, lat, sst, sst_qual)
   # Speed up processing by using native binary intermediary files

@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -140,6 +140,12 @@ enum GMT_enum_zdown {GMT_ZDOWN_R = 0,	/* Default: Annotating radius */
 	GMT_ZDOWN_ZP	= 2,	/* Annotating planetary radius - r */
 	GMT_ZDOWN_ZR	= 3};	/* Annotating given radius - r */
 
+/* For drawing the 3-D backboard */
+enum GMT_enum_3Dmode {
+	GMT_3D_NONE = 0,	/* Default: No 3-D backboard */
+	GMT_3D_WALL	= 1,	/* Draw the backboard */
+	GMT_3D_BOX	= 2};	/* Draw the backboard and the 3-D wire box */
+
 /* gmt_M_is_periodic means the east and west meridians of a global map are separated */
 #define gmt_M_is_periodic(C) (gmt_M_is_cylindrical (C) || gmt_M_is_misc (C))
 
@@ -262,6 +268,7 @@ struct GMT_PROJ {
 	bool search;		/* true if we are allowed to search along oblique boundary for min/max lon/lats */
 	bool units_pr_degree;	/* true if scale is given as inch (or cm)/degree.  false for 1:xxxxx */
 	bool north_pole;		/* true if projection is on northern hemisphere, false on southern */
+	bool pole_in_map[2];		/* true if S and N poles are inside the domain of an oblique projection */
 	bool edge[4];		/* true if the edge is a map boundary */
 	bool three_D;		/* Parameters for 3-D projections */
 	bool JZ_set;		/* true if -Jz|Z was set */
@@ -308,6 +315,7 @@ struct GMT_PROJ {
 	bool compute_scale[3];	/* true if axes lengths were set rather than scales */
 	double xyz_pow[3];		/* For GMT_POW projection */
 	double xyz_ipow[3];
+	double VE;				/* Vertical exaggeration for x-z plots */
 
 	/* Center of radii for all conic projections */
 
@@ -418,7 +426,7 @@ struct GMT_PROJ {
 	double g_ymin, g_ymax;
 
 	unsigned int g_debug;
-	int g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_auto_twist;
+	bool g_box, g_outside, g_longlat_set, g_sphere, g_radius, g_geosync, g_earth_radius;
 	bool windowed;
 
 	/* Polar (cylindrical) projection */
@@ -426,6 +434,7 @@ struct GMT_PROJ {
 	double p_base_angle, flip_radius, radial_offset, z_radius;
 	bool got_azimuths, got_elevations, flip;
 	enum GMT_enum_zdown z_down;
+	unsigned int angle_kind;	/* 0 = angle, 4 = longitude, 2 = latitude (for annotation purposes) */
 
 	/* PROJ4 variables */
 	double proj4_x0, proj4_y0, proj4_scl;
@@ -490,6 +499,7 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 	unsigned int label_mode;	/* 0 = parallel to all axes, 1 = always horizontal on map */
 	bool substitute_pi;		/* True if we need to plot fractions of pi on this axis */
 	bool use_angle;			/* True if we got +a<angle>|n|p for this axis */
+	bool skip[2];			/* Determines if we skip annotations at the lower or upper bounds of an axis [false/false] */
 	struct GMT_PLOT_AXIS_ITEM item[8];	/* see above defines for which is which */
 	double phase;			/* Phase offset for strides: (knot-phase)%interval = 0  */
 	double angle;			/* Annotations angle set by user */
@@ -503,24 +513,30 @@ struct GMT_PLOT_AXIS {		/* Information for one time axis */
 struct GMT_PLOT_FRAME {		/* Various parameters for plotting of time axis boundaries */
 	struct GMT_PLOT_AXIS axis[3];	/* One each for x, y, and z */
 	char header[GMT_LEN256];	/* Plot title */
-	struct GMT_FILL fill;		/* Fill for the basemap inside, if paint == true */
+	char sub_header[GMT_LEN256];	/* Plot subtitle */
+	struct GMT_FILL fill[3];		/* Fill for the basemap inside for planes x,y,z, if paint == true */
+	struct GMT_PEN pen;		/* Pen for the 3-D back wall outlines */
 	bool plotted_header;		/* true if header has been plotted */
 	bool init;			/* true if -B was used at all */
-	bool set;			/* true if -B was used to set any increments */
+	bool set[3];		/* true if -B was used to set any x,y,z increments */
 	bool draw;			/* true if -B<int> was used, even -B0, as sign to draw axes */
 	bool drawz;			/* true if -B<int> was used, even -Bz0, as sign to draw z axes */
-	bool paint;			/* true if -B +g<fill> was used */
-	bool draw_box;			/* true if a 3-D Z-box is desired */
+	bool paint[3];			/* true if -B +x[<fill>], +y[<fill>], +g<fill> was used */
 	bool no_frame;			/* true if we just want gridlines but no frame, i.e +n was used */
 	bool check_side;		/* true if lon and lat annotations should be on x and y axis only */
 	bool primary;			/* true if current axis is primary, false if secondary */
 	bool set_both;			/* true if -B argument applies to both x and y axes */
 	bool obl_grid;			/* true if +o was given to draw oblique gridlines */
+	bool draw_wall;			/* true if +w was given to draw backwall outline */
+	bool gridline_plotted;	/* true if we already have plotted the gridlines or gridticks */
+	unsigned int draw_box;			/* 0 = no 3-D frame. 1 if 3-D Z-box is desired [default], 2 if no -Z box lines covering up the plot */
 	unsigned int internal_annot;	/* 1 (longitude) or 2 (latitude or radius) if +i was given to draw internal annotations */
 	unsigned int set_frame[2];	/* 1 if a -B<WESNframe> setting was given */
 	unsigned int horizontal;	/* 1 is S/N annotations should be parallel to axes, 2 if forced */
 	unsigned int side[5];		/* Which sides (0-3 in plane; 4 = z) to plot. 2 is annot/draw, 1 is draw, 0 is not */
 	unsigned int z_axis[4];		/* Which axes to use for the 3-D z-axis [auto] */
+	unsigned int order;			/* 0: We are plotting before data, 1 we are plotting after data have been plotted */
+	unsigned int basemap_flag;	/* Bit flag determining if frame, gridlines, and annotations+ticks are plotted before or after data */
 	double internal_arg;		/* Internal annotation latitude or longitude location set via +i<val> */
 };
 

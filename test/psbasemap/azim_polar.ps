@@ -1,11 +1,11 @@
 %!PS-Adobe-3.0
 %%BoundingBox: 0 0 612 792
 %%HiResBoundingBox: 0 0 612.0000 792.0000
-%%Title: GMT v6.1.0_4d56427_2020.03.05 [64-bit] Document from psxy
+%%Title: GMT v6.3.0_c4e2ed5_2021.10.04 [64-bit] Document from plot
 %%Creator: GMT6
 %%For: unknown
 %%DocumentNeededResources: font Helvetica
-%%CreationDate: Thu Mar  5 09:30:40 2020
+%%CreationDate: Mon Oct  4 20:54:29 2021
 %%LanguageLevel: 2
 %%DocumentData: Clean7Bit
 %%Orientation: Portrait
@@ -111,9 +111,11 @@
   PSL_eps_state restore
 }!
 /PSL_transp {
-  /.setopacityalpha where {pop .setblendmode .setopacityalpha}{
-  /pdfmark where {pop [ /BM exch /CA exch dup /ca exch /SetTransparency pdfmark}
-  {pop pop} ifelse} ifelse
+  /PSL_BM_arg edef /PSL_S_arg edef /PSL_F_arg edef
+  /.setfillconstantalpha where
+  { pop PSL_BM_arg .setblendmode PSL_S_arg .setstrokeconstantalpha PSL_F_arg .setfillconstantalpha }
+  { /pdfmark where {pop [ /BM PSL_BM_arg /CA PSL_S_arg /ca PSL_F_arg /SetTransparency pdfmark} if }
+  ifelse
 }!
 /Standard+_Encoding [
 /.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef	/.notdef
@@ -252,9 +254,16 @@ PSL_pathtextdict begin
     V cpx cpy itransform T
       dy dx atan R
       0 justy M
-      char show
-      0 justy neg G
-      currentpoint transform
+      PSL_font_F {
+        char show}
+      if
+      PSL_font_FO {
+        currentpoint N M V char true charpath fs U V char false charpath S U char E 0 G
+      } if
+      PSL_font_OF {
+        currentpoint N M V char false charpath S U V char true charpath fs U char E 0 G
+      } if
+      0 justy neg G currentpoint transform
       /cpy exch def /cpx exch def
     U /setdist setdist charwidth add def
   } def
@@ -278,6 +287,9 @@ end
   /PSL_strokeline false def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_paths1 PSL_n_paths 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   PSL_clippath {clipsave N clippath} if
@@ -325,8 +337,10 @@ end
     node_type 1 eq
     {n 0 eq
       {PSL_CT_drawline}
-      {	PSL_CT_reversepath
-	PSL_CT_textline} ifelse
+      {
+        PSL_CT_reversepath
+	      PSL_CT_textline}
+      ifelse
       /j 0 def
       PSL_xp j PSL_xx i get put
       PSL_yp j PSL_yy i get put
@@ -553,6 +567,9 @@ end
   /PSL_rounded psl_bits 32 and 32 eq def
   /PSL_fillbox psl_bits 128 and 128 eq def
   /PSL_drawbox psl_bits 256 and 256 eq def
+  /PSL_font_F  psl_bits 1536 and 0 eq def
+  /PSL_font_FO psl_bits 512 and 512 eq def
+  /PSL_font_OF psl_bits 1024 and 1024 eq def
   /PSL_n_labels_minus_1 PSL_n_labels 1 sub def
   /PSL_usebox PSL_fillbox PSL_drawbox or def
   0 1 PSL_n_labels_minus_1
@@ -567,7 +584,15 @@ end
       PSL_drawbox {V PSL_setboxpen S U} if
       N
     } if
-    PSL_placetext {PSL_ST_place_label} if
+    PSL_font_F {
+      PSL_placetext {PSL_ST_place_label} if
+    } if
+    PSL_font_FO {
+      PSL_placetext {PSL_ST_place_label_FO} if
+    } if
+    PSL_font_OF {
+      PSL_placetext {PSL_ST_place_label_OF} if
+    } if
   } for
 } def
 /PSL_straight_path_clip
@@ -637,6 +662,20 @@ end
     psl_label dup sd neg 0 exch G show
     U
 } def
+/PSL_ST_place_label_FO
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V fs U S N
+    U
+} def
+/PSL_ST_place_label_OF
+{
+    V psl_xp psl_yp T psl_angle R
+    psl_SW PSL_justx mul psl_y0 M
+    psl_label dup sd neg 0 exch G false charpath V S U fs N
+    U
+} def
 /PSL_nclip 0 def
 /PSL_clip {clip /PSL_nclip PSL_nclip 1 add def} def
 /PSL_eoclip {eoclip /PSL_nclip PSL_nclip 1 add def} def
@@ -661,12 +700,12 @@ FQ
 O0
 709 1200 TM
 % PostScript produced by:
-%@GMT: gmt psxy -R0/7.10899/0/7.10899 -Jx1i -T -Xr0.590551i -Yr1i --GMT_HISTORY=false
+%@GMT: gmt plot -R0/7.10899/0/7.10899 -Jx1i -T -Xr0.590551i -Yr1i --GMT_HISTORY=readonly
 %@PROJ: xy 0.00000000 7.10899000 0.00000000 7.10899000 0.000 7.109 0.000 7.109 +xy
 %%BeginObject PSL_Layer_1
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
+3.32550952342 setmiterlimit
 %%EndObject
 PSL_plot_completion /PSL_plot_completion {} def
 0 A
@@ -674,14 +713,14 @@ FQ
 O0
 0 4751 TM
 % PostScript produced by:
-%@GMT: gmt psbasemap -R0/360/0/90 -JA0/90/3.1496i '-BWENS+tNorth Pole+i' -Bxa30fg30 -Bya30fg30 -Xa0i -Ya3.9594i
+%@GMT: gmt basemap -R0/360/0/90 -JA0/90/3.1496i '-BWENS+tNorth Pole+i' -Bxa30fg30 -Bya30fg30 -Xa0i -Ya3.9594i
 %@PROJ: laea 0.00000000 360.00000000 0.00000000 90.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
 %%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 1890 0 M
 0 1539 D
 S
@@ -1402,19 +1441,8 @@ N 0 1890 M -50 0 D S
 N 253 945 M -43 -25 D S
 N 945 253 M -25 -43 D S
 N 1890 0 M 0 -50 D S
+24 W
 50 W
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
 1 A
 0 A
 1 A
@@ -1472,29 +1500,31 @@ N 1890 1890 1915 -105 -90 arc S
 5 W
 N 1890 1890 1890 0 360 arc S
 N 1890 1890 1940 0 360 arc S
-/PSL_H_y 333 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 296 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1890 3780 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (North Pole) bc Z
 1854 35 M 117 F0
 (0è) br Z
-1854 587 M (30è) br Z
-1854 1231 M (60è) br Z
-1854 1925 M (90è) br Z
+1854 587 M (30èN) br Z
+1854 1231 M (60èN) br Z
+1854 1925 M (90èN) br Z
 1890 -100 M (0è) tc Z
-2885 167 M V 30 R (30è) tc Z U
-3613 895 M V 60 R (60è) tc Z U
-3880 1890 M V 90 R (90è) tc Z U
-3613 2885 M V -60 R (120è) bc Z U
-2885 3613 M V -30 R (150è) bc Z U
+2885 167 M V 30 R (30èE) tc Z U
+3613 895 M V 60 R (60èE) tc Z U
+3880 1890 M V 90 R (90èE) tc Z U
+3613 2885 M V -60 R (120èE) bc Z U
+2885 3613 M V -30 R (150èE) bc Z U
 1890 3880 M (180è) bc Z
-895 3613 M V 30 R (î150è) bc Z U
-167 2885 M V 60 R (î120è) bc Z U
--100 1890 M V 90 R (î90è) bc Z U
-167 895 M V -60 R (î60è) tc Z U
-895 167 M V -30 R (î30è) tc Z U
+895 3613 M V 30 R (150èW) bc Z U
+167 2885 M V 60 R (120èW) bc Z U
+-100 1890 M V 90 R (90èW) bc Z U
+167 895 M V -60 R (60èW) tc Z U
+895 167 M V -30 R (30èW) tc Z U
+0 A
 %%EndObject
 0 -4751 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -1503,14 +1533,14 @@ FQ
 O0
 4751 4751 TM
 % PostScript produced by:
-%@GMT: gmt psbasemap -R0/360/10/65 -JA0/90/3.1496i '-BWENS+tNorth Annulus+i90' -Bxa30fg30 -Bya30fg30 -Xa3.9594i -Ya3.9594i
+%@GMT: gmt basemap -R0/360/10/65 -JA0/90/3.1496i '-BWENS+tNorth Annulus+i90' -Bxa30fg30 -Bya30fg30 -Xa3.9594i -Ya3.9594i
 %@PROJ: laea 0.00000000 360.00000000 10.00000000 65.00000000 -8194139.417 8194139.417 -8194139.417 8194139.417 +proj=laea +lat_0=90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_3
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 1890 0 M
 0 1251 D
 S
@@ -1935,29 +1965,8 @@ N 945 253 M -25 -43 D S
 N 1571 1337 M 25 43 D S
 N 1890 0 M 0 -50 D S
 N 1890 1251 M 0 50 D S
+24 W
 50 W
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
 1 A
 0 A
 1 A
@@ -2041,39 +2050,35 @@ N 1890 1890 1890 0 360 arc S
 N 1890 1890 1940 0 360 arc S
 N 1890 1890 638 0 360 arc S
 N 1890 1890 588 0 360 arc S
-/PSL_H_y 333 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 296 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1890 3780 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (North Annulus) bc Z
 3326 1854 M 117 F0
-V -90 R (30è) tl Z U
-2618 1854 M V -90 R (60è) tl Z U
+V -90 R (30èN) tl Z U
+2618 1854 M V -90 R (60èN) tl Z U
 1890 -100 M (0è) tc Z
 1890 1351 M (0è) bc Z
-2885 167 M V 30 R (30è) tc Z U
-2159 1423 M V 30 R (30è) bc Z U
-3613 895 M V 60 R (60è) tc Z U
-2356 1621 M V 60 R (60è) bc Z U
-3880 1890 M V 90 R (90è) tc Z U
-2428 1890 M V 90 R (90è) bc Z U
-3613 2885 M V -60 R (120è) bc Z U
-2356 2159 M V -60 R (120è) tc Z U
-2885 3613 M V -30 R (150è) bc Z U
-2159 2356 M V -30 R (150è) tc Z U
+2885 167 M V 30 R (30èE) tc Z U
+3613 895 M V 60 R (60èE) tc Z U
+2356 1621 M V 60 R (60èE) bc Z U
+3880 1890 M V 90 R (90èE) tc Z U
+3613 2885 M V -60 R (120èE) bc Z U
+2356 2159 M V -60 R (120èE) tc Z U
+2885 3613 M V -30 R (150èE) bc Z U
 1890 3880 M (180è) bc Z
 1890 2428 M (180è) tc Z
-895 3613 M V 30 R (î150è) bc Z U
-1621 2356 M V 30 R (î150è) tc Z U
-167 2885 M V 60 R (î120è) bc Z U
-1423 2159 M V 60 R (î120è) tc Z U
--100 1890 M V 90 R (î90è) bc Z U
-1351 1890 M V 90 R (î90è) tc Z U
-167 895 M V -60 R (î60è) tc Z U
-1423 1621 M V -60 R (î60è) bc Z U
-895 167 M V -30 R (î30è) tc Z U
-1621 1423 M V -30 R (î30è) bc Z U
+895 3613 M V 30 R (150èW) bc Z U
+167 2885 M V 60 R (120èW) bc Z U
+1423 2159 M V 60 R (120èW) tc Z U
+-100 1890 M V 90 R (90èW) bc Z U
+167 895 M V -60 R (60èW) tc Z U
+1423 1621 M V -60 R (60èW) bc Z U
+895 167 M V -30 R (30èW) tc Z U
+0 A
 %%EndObject
 -4751 -4751 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -2082,14 +2087,14 @@ FQ
 O0
 0 0 TM
 % PostScript produced by:
-%@GMT: gmt psbasemap -R0/360/-90/0 -JA0/-90/3.1496i '-BWENS+tSouth Pole+i-90' -Bxa30fg30 -Bya30fg30 -Xa0i -Ya0i
+%@GMT: gmt basemap -R0/360/-90/0 -JA0/-90/3.1496i '-BWENS+tSouth Pole+i-90' -Bxa30fg30 -Bya30fg30 -Xa0i -Ya0i
 %@PROJ: laea 0.00000000 360.00000000 -90.00000000 0.00000000 -9009964.761 9009964.761 -9009964.761 9009964.761 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_4
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 1890 2240 M
 0 1540 D
 S
@@ -2815,19 +2820,8 @@ N 0 1890 M -50 0 D S
 N 253 2835 M -43 25 D S
 N 945 3526 M -25 44 D S
 N 1890 3780 M 0 50 D S
+24 W
 50 W
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
 1 A
 0 A
 1 A
@@ -2885,29 +2879,31 @@ N 1890 1890 1915 90 105 arc S
 5 W
 N 1890 1890 1890 0 360 arc S
 N 1890 1890 1940 0 360 arc S
-/PSL_H_y 333 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 296 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1890 3780 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (South Pole) bc Z
 1918 1931 M 117 F0
-V -90 R (î90è) br Z U
-1224 1931 M V -90 R (î60è) br Z U
-580 1931 M V -90 R (î30è) br Z U
+V -90 R (90èS) br Z U
+1224 1931 M V -90 R (60èS) br Z U
+580 1931 M V -90 R (30èS) br Z U
 29 1931 M V -90 R (0è) br Z U
 1890 3880 M (0è) bc Z
-2885 3613 M V -30 R (30è) bc Z U
-3613 2885 M V -60 R (60è) bc Z U
-3880 1890 M V 90 R (90è) tc Z U
-3613 895 M V 60 R (120è) tc Z U
-2885 167 M V 30 R (150è) tc Z U
+2885 3613 M V -30 R (30èE) bc Z U
+3613 2885 M V -60 R (60èE) bc Z U
+3880 1890 M V 90 R (90èE) tc Z U
+3613 895 M V 60 R (120èE) tc Z U
+2885 167 M V 30 R (150èE) tc Z U
 1890 -100 M (180è) tc Z
-895 167 M V -30 R (î150è) tc Z U
-167 895 M V -60 R (î120è) tc Z U
--100 1890 M V 90 R (î90è) bc Z U
-167 2885 M V 60 R (î60è) bc Z U
-895 3613 M V 30 R (î30è) bc Z U
+895 167 M V -30 R (150èW) tc Z U
+167 895 M V -60 R (120èW) tc Z U
+-100 1890 M V 90 R (90èW) bc Z U
+167 2885 M V 60 R (60èW) bc Z U
+895 3613 M V 30 R (30èW) bc Z U
+0 A
 %%EndObject
 0 0 TM
 PSL_plot_completion /PSL_plot_completion {} def
@@ -2916,14 +2912,14 @@ FQ
 O0
 4751 0 TM
 % PostScript produced by:
-%@GMT: gmt psbasemap -R0/360/-65/-10 -JA0/-90/3.1496i '-BWENS+tSouth Annulus+i' -Bxa30fg30 -Bya30fg30 -Xa3.9594i -Ya0i
+%@GMT: gmt basemap -R0/360/-65/-10 -JA0/-90/3.1496i '-BWENS+tSouth Annulus+i' -Bxa30fg30 -Bya30fg30 -Xa3.9594i -Ya0i
 %@PROJ: laea 0.00000000 360.00000000 -65.00000000 -10.00000000 -8194139.417 8194139.417 -8194139.417 8194139.417 +proj=laea +lat_0=-90 +lon_0=0 +x_0=0 +y_0=0 +units=m +a=6378137.000 +b=6356752.314 +ellps=WGS84 +datum=WGS84 +units=m +no_defs
-%%BeginObject PSL_Layer_5
+%%BeginObject PSL_Layer_2
 0 setlinecap
 0 setlinejoin
-3.32551 setmiterlimit
-25 W
+3.32550952342 setmiterlimit
 4 W
+0 A
 1890 2528 M
 0 1252 D
 S
@@ -3352,29 +3348,8 @@ N 1571 2443 M 25 -44 D S
 N 945 3526 M -25 44 D S
 N 1890 2528 M 0 -50 D S
 N 1890 3780 M 0 50 D S
+24 W
 50 W
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
-1 A
-0 A
 1 A
 0 A
 1 A
@@ -3458,39 +3433,35 @@ N 1890 1890 638 0 360 arc S
 N 1890 1890 588 0 360 arc S
 N 1890 1890 1890 0 360 arc S
 N 1890 1890 1940 0 360 arc S
-/PSL_H_y 333 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
+/PSL_H_y 296 PSL_font_encode 0 get 0 eq {Standard+_Encoding /Helvetica /Helvetica PSL_reencode PSL_font_encode 0 1 put} if
 117 F0
 (100è) sh add def
 1890 3780 PSL_H_y add M
-200 F0
+PSL_font_encode 1 get 0 eq {Standard+_Encoding /Helvetica-Bold /Helvetica-Bold PSL_reencode PSL_font_encode 1 1 put} if
+200 F1
 (South Annulus) bc Z
 1931 2624 M 117 F0
-(î60è) tl Z
-1931 3333 M (î30è) tl Z
+(60èS) tl Z
+1931 3333 M (30èS) tl Z
 1890 2428 M (0è) tc Z
 1890 3880 M (0è) bc Z
-2159 2356 M V -30 R (30è) tc Z U
-2885 3613 M V -30 R (30è) bc Z U
-2356 2159 M V -60 R (60è) tc Z U
-3613 2885 M V -60 R (60è) bc Z U
-2428 1890 M V 90 R (90è) bc Z U
-3880 1890 M V 90 R (90è) tc Z U
-2356 1621 M V 60 R (120è) bc Z U
-3613 895 M V 60 R (120è) tc Z U
-2159 1423 M V 30 R (150è) bc Z U
-2885 167 M V 30 R (150è) tc Z U
-1890 1351 M V 2.84e-14 R (180è) bc Z U
+2885 3613 M V -30 R (30èE) bc Z U
+2356 2159 M V -60 R (60èE) tc Z U
+3613 2885 M V -60 R (60èE) bc Z U
+3880 1890 M V 90 R (90èE) tc Z U
+2356 1621 M V 60 R (120èE) bc Z U
+3613 895 M V 60 R (120èE) tc Z U
+2885 167 M V 30 R (150èE) tc Z U
+1890 1351 M V 2.84217094304e-14 R (180è) bc Z U
 1890 -100 M (180è) tc Z
-1621 1423 M V -30 R (î150è) bc Z U
-895 167 M V -30 R (î150è) tc Z U
-1423 1621 M V -60 R (î120è) bc Z U
-167 895 M V -60 R (î120è) tc Z U
-1351 1890 M V 90 R (î90è) tc Z U
--100 1890 M V 90 R (î90è) bc Z U
-1423 2159 M V 60 R (î60è) tc Z U
-167 2885 M V 60 R (î60è) bc Z U
-1621 2356 M V 30 R (î30è) tc Z U
-895 3613 M V 30 R (î30è) bc Z U
+895 167 M V -30 R (150èW) tc Z U
+1423 1621 M V -60 R (120èW) bc Z U
+167 895 M V -60 R (120èW) tc Z U
+-100 1890 M V 90 R (90èW) bc Z U
+1423 2159 M V 60 R (60èW) tc Z U
+167 2885 M V 60 R (60èW) bc Z U
+895 3613 M V 30 R (30èW) bc Z U
+0 A
 %%EndObject
 -4751 0 TM
 PSL_plot_completion /PSL_plot_completion {} def

@@ -26,4 +26,3 @@ plot1 8cd/8c -X12c >> $ps
 plot1 8c/8cd -Y-11c >> $ps
 plot1 8cd/8cd -X-12c >> $ps
 gmt psxy -T -R -J -O >> $ps
-

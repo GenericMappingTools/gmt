@@ -12,9 +12,11 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt grdedit** *grid* [ |-A| ] [ |-C| ]
-[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
-[ |-E|\ [**a**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**] ]
+**gmt grdedit** *ingrid*
+[ |-A| ]
+[ |-C|\ **b**\|\ **c**\|\ **n**\|\ **p** ]
+[ |SYN_OPT-D2| ]
+[ |-E|\ [**a**\|\ **e**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**] ]
 [ |-G|\ *outgrid* ]
 [ |-J|\ *parameters* ]
 [ |-L|\ [**+n**\|\ **p**] ]
@@ -28,6 +30,7 @@ Synopsis
 [ |SYN_OPT-f| ]
 [ |SYN_OPT-h| ]
 [ |SYN_OPT-i| ]
+[ |SYN_OPT-w| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -48,8 +51,10 @@ to save the modified grid to a new file.
 Required Arguments
 ------------------
 
-*grid*
-    Name of the 2-D grid file to modify. (See GRID FILE FORMATS below).
+.. |Add_ingrid| replace:: Name of the 2-D grid file to modify.
+.. include:: explain_grd_inout.rst_
+    :start-after: ingrid-syntax-begins
+    :end-before: ingrid-syntax-ends
 
 Optional Arguments
 ------------------
@@ -65,8 +70,13 @@ Optional Arguments
 
 .. _-C:
 
-**-C**
-    Clear the command history from the grid header.
+**-Cb**\|\ **c**\|\ **n**\|\ **p**
+    Normally, output grids store the current module's command-line history.
+    Use **-C** to specify what the output grid's command history should be:
+    Append directive **b** to write both the previous and the current module's 
+    command histories, **c** to only write the current module's command
+    history, **n** to save no history whatsoever [Default], or select **p**
+    to instead save only the previous command history.
 
 .. _-D:
 
@@ -74,10 +84,11 @@ Optional Arguments
 
 .. _-E:
 
-**-E**\ [**a**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**]
+**-E**\ [**a**\|\ **e**\|\ **h**\|\ **l**\|\ **r**\|\ **t**\|\ **v**]
     Transform the grid in one of six ways and (for **l**\|\ **r**\|\ **t**)
     interchange the *x* and *y* information:
-    **-Ea** will rotate the grid around 180 degrees,
+    **-Ea** will flip the grid both horizontally and vertically,
+    **-Ee** will exchange the x (longitude) and y (latitude) dimensions,
     **-Eh** will flip the grid horizontally (left-to-right),
     **-El** will rotate the grid 90 degrees counter-clockwise (left),
     **-Er** will rotate the grid 90 degrees clockwise (right),
@@ -87,15 +98,17 @@ Optional Arguments
 
 .. _-G:
 
-**-G**\ *outgrid*
-    Normally, **grdedit** will overwrite the existing grid with the modified grid.
+.. |Add_outgrid| replace:: Normally, **grdedit** will overwrite the existing grid with the modified grid.
     Use **-G** to write the modified grid to the file *outgrid* instead.
-
-.. _-J:
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. |Add_-J| replace:: Use the **-J** syntax to save the georeferencing info as CF-1 compliant
     metadata in netCDF grids. This metadata will be recognized by GDAL.
 .. include:: explain_-J.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-L:
 
@@ -112,12 +125,11 @@ Optional Arguments
     *table* and replace the corresponding nodal values in the grid with
     these *x*,\ *y*,\ *z* values.
 
-.. _-R:
-
-.. |Add_-R| replace:: The new w/e/s/n values will
-    replace those in the grid, and the *x_inc*, *y_inc* values are
-    adjusted, if necessary.
+.. |Add_-R| replace:: The new w/e/s/n values will replace those in the grid, and the *x_inc*, *y_inc* values are
+    adjusted, if necessary. |Add_-R_links|
 .. include:: explain_-R.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-S:
 
@@ -135,10 +147,10 @@ Optional Arguments
     have their domain shrunk by the same amount.
     This is a *non-destructive* grid change; see :ref:`Switching registrations <Switch_Registrations>`.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. |Add_-bi| replace:: [Default is 3 input columns].
 .. include:: explain_-bi.rst_
@@ -157,9 +169,9 @@ Optional Arguments
 
 .. include:: explain_-icols.rst_
 
-.. include:: explain_help.rst_
+.. include:: explain_-w.rst_
 
-.. include:: explain_grd_inout_short.rst_
+.. include:: explain_help.rst_
 
 .. include:: explain_grd_coord.rst_
 
@@ -195,9 +207,15 @@ the rotated grid to a new file, run::
 
     gmt grdedit oblique.nc -El -Goblique_rot.nc
 
+
 To ensure that the grid depths.nc only has positive longitude values, run::
 
     gmt grdedit depths.nc -L+p
+
+The grid bad.nc has latitude as x-coordinates an longitude as y-coordinates.
+We can exchange the two dimension by running::
+
+    gmt grdedit bad.nc -Ee -Gnew.nc
 
 Notes:
 ------

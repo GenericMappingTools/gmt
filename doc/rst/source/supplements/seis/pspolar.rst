@@ -12,12 +12,14 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt pspolar** [ *table* ] |-D|\ *lon/lat* |-J|\ *parameters*
+**gmt pspolar**
+[ *table* ]
+|-D|\ *lon/lat*
+|-J|\ *parameters*
 |SYN_OPT-R|
 |-M|\ *size*\ [**+m**\ *mag*]
 |-S|\ *<symbol><size>*
 [ |SYN_OPT-B| ]
-[ |-C|\ *lon*/*lat*\ [**+p**\ *pen*][**+s**\ *pointsize*] ]
 [ |-E|\ *fill* ]
 [ |-F|\ *fill* ]
 [ |-G|\ *fill* ]
@@ -39,7 +41,9 @@ Synopsis
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
-.. include:: polar_common.rst_
+.. include:: polar.rst
+    :start-after: .. module_common_begins
+    :end-before: .. module_common_ends
 
 .. include:: ../../common_classic.rst_
 

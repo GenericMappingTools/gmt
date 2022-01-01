@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -76,7 +76,7 @@ int gmt_ogrproj(struct GMT_CTRL *GMT, char *pSrcSRS, char *pDstSRS, int n_pts,
     /* pSrcSRS and pDstSRS are pointers to strings defining the Source and Destination
 	   Referencing System. The SRS can be a +proj Proj.4 string, a WKT, a EPSG:n code or a filename with a WKT (?).
 	   n_pts is the number of points to be transformed.
-	   xi,yi,zi are pointers to arrays of n_pts points. If only 2D transform is wanted, passs zi = NULL.
+	   xi,yi,zi are pointers to arrays of n_pts points. If only 2D transform is wanted, pass zi = NULL.
 	   insitu, is a boolean stating if the transformed points will overwrite the input data in xi,yi,zi (true)
 	   or, when false, the output is stored in xo,yo,zo. In this later case, it's user responsibility
 	   to allocate the xo,yo[,zo] arrays with same size as xi,yi[,zi].

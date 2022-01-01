@@ -1,6 +1,6 @@
 /*
  *    Copyright (c) 1996-2012 by G. Patau
- *    Copyright (c) 2013-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *    Copyright (c) 2013-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *    Donated to the GMT project by G. Patau upon her retirement from IGPG
  *    Distributed under the Lesser GNU Public Licence
  *    See README file for copying and redistribution conditions.
@@ -709,7 +709,13 @@ double meca_ps_tensor (struct GMT_CTRL *GMT, struct PSL_CTRL *PSL, double x0, do
 			x1[i] = xc; y1[i] = yc;
 		}
 		else {
-			if (fabs (fabs (az - azp) - M_PI) < D2R * 10.) {
+			if (fabs (fabs (az - azp) - M_PI) < D2R * 10.0 && takeoff > 80.0 * D2R) {
+				/* Find a gap, so start a new segment. A gap must meet the following two criteria:
+				 * 1. Current azimuth diffs from previous azimuth by ~180 degree
+				 * 2. Takeoff angle is ~90 degree so that the data fall at the beachball boundary
+				 *
+				 * Note: the choices of 10.0 and 80.0 are arbitrary and may NOT work for extreme cases.
+				 */
 				azi[n][1] = azp;
 				assert (n < 2);
 				azi[++n][0] = az;

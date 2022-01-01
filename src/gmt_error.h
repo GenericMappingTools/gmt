@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -94,6 +94,8 @@ EXTERN_MSC const char * GMT_strerror (int err);
 
 /* Check condition and report error if true */
 #define gmt_M_check_condition(C,condition,...) ((condition) ? 1+GMT_Report(C->parent,GMT_MSG_ERROR,__VA_ARGS__) : 0)
+/* Check if a module option has been called more than once (context has opt available) */
+#define gmt_M_repeated_module_option(API,active) (gmt_M_check_condition (API->GMT, active, "Option -%c: Given more than once (offending option is -%c%s)\n", opt->option, opt->option, opt->arg))
 
 /* Set __func__ identifier */
 #ifndef HAVE___FUNC__

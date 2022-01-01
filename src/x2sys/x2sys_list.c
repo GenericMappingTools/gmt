@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -119,51 +119,64 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *C) {	/* Dea
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s -C<column> -T<TAG> [<COEdbase>] [-A<asymm_max] [-E] [-F<flags>] [-I<ignorelist>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-L[<corrtable.txt>]] [-N<nx_min>[+p]] [-Qe|i] [-S<track>[+b]]\n\t[%s] [%s] [-W<weight>] [%s] [%s] [%s]\n\n",
-		GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s [<COEdbase>] -C<column> -T<TAG> [-A<asymm_max>] [-E] [-F<flags>] [-I<list>] "
+		"[-L[<corrections>]] [-N<nx_min>[+p]] [-Qe|i] [-S<track>[+b]] [%s] [%s] [-W<weight>] [%s] [%s] [%s]\n",
+		name, GMT_Rgeo_OPT, GMT_V_OPT, GMT_bo_OPT, GMT_do_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t-C <column> is the name of the data column whose crossovers we want.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for the data set.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t<COEdbase> File with crossover error data base [stdin].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-A Return only crossovers whose distribution in time [or dist if no time]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   are fairly symmetric about the mid-point. Specify max abs value for\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   asymmetry = (n_right - n_left)/(n_right + n_left) [1, i.e., use all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify any combination of %s in the order of desired output:\n", LETTERS);
-	GMT_Message (API, GMT_TIME_NONE, "\t   Exception: n, if chosen, will always be placed at the end of the output record.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   a Angle (<= 90) between the two tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   c Crossover error in chosen observable (see -C).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   d Distance along tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   h Heading along tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   i Signed time interval between the two tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   I Unsigned time interval between the two tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n Names of the two tracks.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   N Id numbers of the two tracks.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   t Absolute time along tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   T Time since start of track along tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   v Speed along tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   w weight assigned to the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   x x-coordinate of the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   y y-coordinate of the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   z Observed values (see -C) along tracks at the crossover.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Unless -S is specified, d,h,n,t,T,v,z will yield two columns.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I List of tracks to ignore [Use all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-L Subtract systematic corrections from the data. If no correction file is given,\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-N Suppress results involving tracks with less than a total of <nx_min> crossovers [Use all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Alternatively, append +p to suppress pairs with less than <nx_min> crossovers [Use all pairs].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Append e or i for external or internal crossovers [Default is both].\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<COEdbase> File with crossover error data base [standard input].");
+	GMT_Usage (API, 1, "\n-C<column>");
+	GMT_Usage (API, -2, "The name of the data column whose crossovers we want.");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-A<asymm_max>");
+	GMT_Usage (API, -2, "Return only crossovers whose distribution in time [or distance if no time] "
+		"are fairly symmetric about the mid-point. Specify max absolute value for "
+		"asymmetry = (n_right - n_left)/(n_right + n_left) [1, i.e., use all tracks].");
+	GMT_Usage (API, 1, "\n-E Enhanced ASCII output: Add segment header with track names and number of crossovers [no segment headers].");
+	GMT_Usage (API, 1, "\n-F<flags>");
+	GMT_Usage (API, -2, "Specify any combination of %s in the order of desired output. "
+		"Exception: n, if chosen, will always be placed at the end of the output record:", LETTERS);
+	GMT_Usage (API, 3, "a: Angle (<= 90) between the two tracks at the crossover.");
+	GMT_Usage (API, 3, "c: Crossover error in chosen observable (see -C).");
+	GMT_Usage (API, 3, "d: Distance along tracks at the crossover.");
+	GMT_Usage (API, 3, "h: Heading along tracks at the crossover.");
+	GMT_Usage (API, 3, "i: Signed time interval between the two tracks at the crossover.");
+	GMT_Usage (API, 3, "I: Unsigned time interval between the two tracks at the crossover.");
+	GMT_Usage (API, 3, "n: Names of the two tracks.");
+	GMT_Usage (API, 3, "N: Id numbers of the two tracks.");
+	GMT_Usage (API, 3, "t: Absolute time along tracks at the crossover.");
+	GMT_Usage (API, 3, "T: Time since start of track along tracks at the crossover.");
+	GMT_Usage (API, 3, "v: Speed along tracks at the crossover.");
+	GMT_Usage (API, 3, "w: weight assigned to the crossover.");
+	GMT_Usage (API, 3, "x: x-coordinate of the crossover.");
+	GMT_Usage (API, 3, "y: y-coordinate of the crossover.");
+	GMT_Usage (API, 3, "z: Observed values (see -C) along tracks at the crossover.");
+	GMT_Usage (API, -2, "Unless -S is specified, d,h,n,t,T,v,z will yield two columns per selection.");
+	GMT_Usage (API, 1, "\n-I<list>");
+	GMT_Usage (API, -2, "List of tracks to ignore [Use all tracks].");
+	GMT_Usage (API, 1, "\n-L[<corrections>]");
+	GMT_Usage (API, -2, "Subtract systematic corrections from the data. If no correction file is given, "
+		"the default file <TAG>_corrections.txt in $X2SYS_HOME/<TAG> is assumed.");
+	GMT_Usage (API, 1, "\n-N<nx_min>[+p]");
+	GMT_Usage (API, -2, "Suppress results involving tracks with less than a total of <nx_min> crossovers [Use all tracks]. "
+		"Alternatively, append +p to suppress pairs with less than <nx_min> crossovers [Use all pairs].");
+	GMT_Usage (API, 1, "\n-Qe|i");
+	GMT_Usage (API, -2, "Specify the sub-group of crossovers to report:");
+	GMT_Usage (API, 3, "e: Report external crossovers.");
+	GMT_Usage (API, 3, "i: Report internal crossovers.");
 	GMT_Option (API, "R");
-	if (gmt_M_showusage (API)) GMT_Message (API, GMT_TIME_NONE, "\t   [Default region is the entire data domain].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Return only crossovers involving this track [Use all tracks].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append +b to make it print info relative to both tracks [Default is selected track].\n");
+	if (gmt_M_showusage (API)) GMT_Usage (API, -2, "[Default region is the entire data domain].");
+	GMT_Usage (API, 1, "\n-S<track>[+b]");
+	GMT_Usage (API, -2, "Return only crossovers involving this track [Use all tracks]. "
+		"Append +b to make it print information relative to both tracks [Default is selected track].");
 	GMT_Option (API, "V");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W If argument can be opened as a file then we expect a List of tracks and their\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   relative weights; otherwise the argument is the constant weight for all tracks [1].\n");
+	GMT_Usage (API, 1, "\n-W<weight>");
+	GMT_Usage (API, -2, "If argument can be opened as a file then we expect a list of tracks and their "
+		"relative weights; otherwise the argument is the constant <weight> for all tracks [1].");
 	GMT_Option (API, "bo,do,.");
 
 	return (GMT_MODULE_USAGE);
@@ -190,7 +203,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 			case '<':	/* Skip input files */
 				if (n_files[GMT_IN]++ > 0) break;
 				if (opt->arg[0]) Ctrl->In.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file)))
 					n_errors++;
 				else
 					Ctrl->In.active = true;
@@ -202,33 +215,40 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 			/* Processes program-specific parameters */
 
 			case 'A':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->A.active);
 				Ctrl->A.active = true;
 				Ctrl->A.value = atof (opt->arg);
 				break;
 			case 'C':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				Ctrl->C.col = strdup (opt->arg);
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				Ctrl->F.flags = strdup (opt->arg);
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				if (opt->arg[0]) Ctrl->I.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->I.file))) n_errors++;
 				break;
 			case 'L':	/* Crossover correction table */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->L.active);
 				Ctrl->L.active = true;
 				if (opt->arg[0]) {
 					Ctrl->L.file = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
+					if (GMT_Get_FilePath (API, GMT_IS_DATASET, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->L.file))) n_errors++;
 				}
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if ((c = strstr (opt->arg, "+p"))) {
 					c[0] = '\0';	/* Chop off modifier */
@@ -238,12 +258,14 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'Q':	/* Specify internal or external only */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				if (opt->arg[0] == 'e') Ctrl->Q.mode = 1;
 				else if (opt->arg[0] == 'i') Ctrl->Q.mode = 2;
 				else Ctrl->Q.mode = 3;
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				if (opt->arg[0] == '+' && opt->arg[1]) {
 					Ctrl->S.both = true;
@@ -263,10 +285,12 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 				if (c) c[0] = '+';	/* Restore modifier */
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
 			case 'W':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				Ctrl->W.file = strdup (opt->arg);
 				break;
@@ -276,7 +300,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_LIST_CTRL *Ctrl, struct GMT
 		}
 	}
 
-	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Only one COEdatabase can be given (or stdin)\n");
+	n_errors += gmt_M_check_condition (GMT, n_files[GMT_IN] > 1, "Only one COEdatabase can be given (or standard input)\n");
 	n_errors += gmt_M_check_condition (GMT, n_files[GMT_OUT] > 1, "More than one output file given\n");
 	n_errors += gmt_M_check_condition (GMT, !Ctrl->T.active || !Ctrl->T.TAG, "Option -T must be used to set the TAG\n");
 	n_errors += gmt_M_check_condition (GMT, Ctrl->Q.mode == 3, "Only one of -Qe -Qi can be specified!\n");
@@ -409,9 +433,9 @@ EXTERN_MSC int GMT_x2sys_list (void *V_API, int mode, void *args) {
 	both = Ctrl->S.both;		/* Usually false unless -S<track>+b is set */
 	if (!both) both = !Ctrl->S.active;	/* Two columns for many output choices */
 
-	gmt_set_column (GMT, GMT_OUT, GMT_X, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
-	gmt_set_column (GMT, GMT_OUT, GMT_Y, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
-	gmt_set_column (GMT, GMT_OUT, GMT_T, GMT_IS_ABSTIME);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_X, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Y, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_T, GMT_IS_ABSTIME);
 
 	n_items = strlen (Ctrl->F.flags);
 	for (i = j = 0; i < n_items; i++, j++) {	/* Overwrite the above settings */
@@ -422,25 +446,25 @@ EXTERN_MSC int GMT_x2sys_list (void *V_API, int mode, void *args) {
 			case 'i':	/* Time interval (signed) */
 			case 'v':	/* Speed along track */
 			case 'w':	/* Crossover composite weight */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, GMT_IS_FLOAT);
 				break;
 			case 'd':	/* Distance along track */
 			case 'h':	/* Heading along track */
 			case 'N':	/* ID numbers of tracks */
 			case 'T':	/* Time along track since beginning of the first year of the track */
 			case 'z':	/* Observed value along track */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, GMT_IS_FLOAT);
-				if (both) gmt_set_column (GMT, GMT_OUT, (unsigned int)(++j), GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, GMT_IS_FLOAT);
+				if (both) gmt_set_column_type (GMT, GMT_OUT, (unsigned int)(++j), GMT_IS_FLOAT);
 				break;
 			case 't':	/* Time along track */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, GMT_IS_ABSTIME);
-				if (both) gmt_set_column (GMT, GMT_OUT, (unsigned int)(++j), GMT_IS_ABSTIME);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, GMT_IS_ABSTIME);
+				if (both) gmt_set_column_type (GMT, GMT_OUT, (unsigned int)(++j), GMT_IS_ABSTIME);
 				break;
 			case 'x':	/* x coordinate of crossover */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, (s->geographic) ? GMT_IS_LON : GMT_IS_FLOAT);
 				break;
 			case 'y':	/* y coordinate of crossover */
-				gmt_set_column (GMT, GMT_OUT, (unsigned int)j, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
+				gmt_set_column_type (GMT, GMT_OUT, (unsigned int)j, (s->geographic) ? GMT_IS_LAT : GMT_IS_FLOAT);
 				break;
 		}
 	}

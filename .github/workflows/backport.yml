@@ -1,5 +1,5 @@
 #
-# Backport a PR lablled by "backport 6.1" into 6.1 branch
+# Backport PRs labeled by "backport 6.1" into 6.1 branch
 #
 
 name: Backport
@@ -15,6 +15,6 @@ jobs:
     name: Backport
     steps:
       - name: Backport
-        uses: tibdex/backport@v1.0.0
+        uses: tibdex/backport@v1.1.1
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

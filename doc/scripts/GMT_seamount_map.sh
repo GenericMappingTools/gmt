@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Illustrate the circular and elliptical bases of seamounts
 ps=GMT_seamount_map.ps
 gmt set MAP_VECTOR_SHAPE 0.5

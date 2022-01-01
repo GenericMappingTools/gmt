@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -61,6 +61,8 @@ struct GMT_DEFAULTS {
 	/* COLOR group [sorted by type to optimize storage] */
 	unsigned int color_model;		/* 1 = read RGB, 2 = use RGB, 4 = read HSV, 8 = use HSV, 16 = read CMYK, 32 = use CMYK [1+2]
 									 * Add 128 to disallow output of color names */
+	char cpt[GMT_LEN64];			/* Default CPT */
+	char color_set[GMT_LEN256];		/* Default color list (or CPT) for automatic, sequential color choices */
 	double color_patch[3][4];		/* Color of background, foreground, nan [black,white,127.5] */
 	double color_hsv_min_s;			/* For smallest or most negative intensity [1.0] */
 	double color_hsv_max_s;			/* For largest or most positive intensity [0.1] */
@@ -73,6 +75,7 @@ struct GMT_DEFAULTS {
 	struct GMT_FONT font_label;		/* Font for labels [16p,Helvetica,black] */
 	struct GMT_FONT font_logo;		/* Font for GMT logo [8p,Helvetica,black] */
 	struct GMT_FONT font_tag;		/* Font for plot figure tags, e.g., a) [20p,Helvetica,black] */
+	struct GMT_FONT font_subtitle;		/* Font for plot titles [20p,Helvetica,black] */
 	struct GMT_FONT font_title;		/* Font for plot titles [24p,Helvetica,black] */
 	/* FORMAT group */
 	char format_clock_in[GMT_LEN64];	/* How to decode an incoming clock string [hh:mm:ss] */
@@ -92,21 +95,25 @@ struct GMT_DEFAULTS {
 	size_t url_size_limit;
 	unsigned int refresh_time; /* Only refresh server catalog when the local copy is this old in days) */
 	unsigned int compatibility; /* Choose between 4 (GMT4) and up to latest version (5 for now) */
-	unsigned int auto_download;   /* 0 (GMT_NO_DOWNLOAD) or 1 (GMT_YES_DOWNLOAD): For auto-downlaod of known files */
+	unsigned int auto_download;   /* 0 (GMT_NO_DOWNLOAD) or 1 (GMT_YES_DOWNLOAD): For auto-download of known files */
 	unsigned int interpolant; /* Choose between 0 (Linear), 1 (Akima), or 2 (Cubic spline) */
 	unsigned int triangulate; /* 0 for Watson [Default], 1 for Shewchuk (if configured) */
 	unsigned int verbose;     /* Level of verbosity 0-4 [1] */
 	unsigned int fft;         /* Any of FFT_implementations: k_fft_auto, k_fft_accelerate, k_fft_fftw3, k_fft_kiss, k_fft_brenner */
 	unsigned int fftw_plan;   /* Only accessed if HAVE_FFTW3F is defined: Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
 	unsigned int run_mode;     /* Either classic [0] or modern [1] */
+	bool update_theme;    	 /* Refresh defaults with contents of selected theme */
 	bool use_modern_name;     /* true if we should use the modern name in usage message */
 	double extrapolate_val[2];/* Choose between [0] = 0, 1D extrapolated vals are NaN, = 1 -> extrapolate, = 2 -> set to const stored in [1] */
 	bool fftwf_threads;   /* Only accessed if HAVE_FFTW3F_THREADS is defined: Any of FFTW_planner_flags: FFTW_ESTIMATE, FFTW_MEASURE, FFTW_PATIENT, FFTW_EXHAUSTIVE */
 	unsigned int history;     /* mode to pass information via history file gmt.history (GMT_HISTORY_OFF, GMT_HISTORY_READ, GMT_HISTORY_WRITE) */
 	unsigned int history_orig;     /* Copy of history */
 	unsigned int export_type;     /* What data type to export to external APIs [GMT_DOUBLE] */
+	double graphics_dpu;	/* The default target image dpu when not specifying grid resolution [GMT_IMAGE_DPU_VALUE] */
+	char graphics_dpu_unit;	/* The unit we selected [GMT_IMAGE_DPU_UNIT] */
 	unsigned graphics_format;	/* The default graphics format in modern mode [GMT_SESSION_FORMAT] */
 	int max_cores;		/* The maximum number of cores for a multi-threaded module [GMT_MAX_CORES] */
+	char theme[GMT_LEN64];	/* User-selected defaults theme */
 	/* IO group */
 	uint64_t n_bin_header_cols;		/* Minimum number of columns in a binary file for which the all cols == NaN means segment header [2] */
 	unsigned int io_n_header_items;		/* Number of header records expected when -h is used [1]; else 0 */
@@ -127,13 +134,15 @@ struct GMT_DEFAULTS {
 	char io_head_marker_in[GMT_LEN32];  /* Characters used to recognize input header records [#%!;"'] */
 	char io_head_marker_out;            /* Character used to recognize and write header records [#,#] */
 	/* MAP group */
+	char map_annot_min_spacing_txt[GMT_LEN16];	/* Text version of this setting */
 	double map_annot_offset[2];		/* Distance between primary or secondary annotation and tickmarks [5p/5p] */
 	double map_annot_min_angle;		/* If angle between map boundary and annotation is less, no annotation is drawn [20] */
 	double map_annot_min_spacing;	/* If an annotation is closer that this to an older annotation, the annotation is skipped [0.0] */
+	double map_frame_percent;		/* Percentage of fancy map frame width to actually draw [100] */
 	double map_frame_width;			/* Thickness of fancy map frame [5p] */
 	double map_grid_cross_size[2];	/* Size of primary & secondary gridcrosses.  0 means draw continuous gridlines */
 	double map_heading_offset;		/* Distance between top of panel title and base of subplot heading [18p] */
-	double map_label_offset;		/* Distance between lowermost annotation and top of label [8p] */
+	double map_label_offset[2];		/* Distance between lowermost annotation and top of label [8p/8p] */
 	double map_line_step;			/* Maximum straight linesegment length for arcuate lines [0.75p] */
 	double map_logo_pos[2];			/* Where to plot timestamp relative to origin [BL/-54p/-54p] */
 	double map_origin[2];			/* x- and y-origin of plot, i.e. where lower left corner plots on paper [1i/1i] */
@@ -142,12 +151,14 @@ struct GMT_DEFAULTS {
 	double map_tick_length[4];		/* Length of primary and secondary major and minor tickmarks [5p/2.5p/15p/3.75p] */
 	double map_title_offset;		/* Distance between lowermost annotation (or label) and base of plot title [14p] */
 	double map_vector_shape;		/* 0.0 = straight vectorhead, 1.0 = arrowshape, with continuous range in between */
-	double map_graph_extension;		/* If mapframetype is graph, how must longer to make axis length. [7.5%] */
+	double map_graph_extension;		/* If map_frame_type is graph, how must longer to make axis length. [7.5%] */
 	unsigned int map_annot_oblique;	/* Controls annotations and tick angles etc. [GMT_OBL_ANNOT_ANYWHERE] */
 	unsigned int map_grid_cross_type[2];	/* 0 = normal cross, 1 = symmetric tick, 2 = asymmetric tick */
 	unsigned int map_logo_justify;		/* Justification of the GMT timestamp box [1 (BL)] */
 	unsigned int map_frame_type;		/* Fancy (0), plain (1), or graph (2) [0] */
-	unsigned int map_graph_extension_unit;	/* If mapframetype is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
+	unsigned int map_graph_extension_unit;	/* If map_frame_type is graph, the unit is GMT_CM, GMT_INCH, GMT_PT [%] */
+	double map_label_mode[2];		/* If label is relative to annotation (0) or axis (1) for x/t [0/0] */
+	bool map_annot_oblique_set;		/* true if user changed map_annot_oblique via a gmt.conf or --par=val */
 	bool map_logo;			/* Plot time and map projection on map [false] */
 	struct GMT_PEN map_default_pen;		/* Default pen for most pens [0.25p] */
 	struct GMT_PEN map_frame_pen;		/* Pen attributes for map boundary [1.25p] */
@@ -167,6 +178,7 @@ struct GMT_DEFAULTS {
 	struct ELLIPSOID ref_ellipsoid[GMT_N_ELLIPSOIDS];	/* Ellipsoid parameters */
 	/* PS group [These are arguments to pass to PSL_beginsession and PSL_setdefaults] */
 	/* [All other internal PSL settings are set directly when parsing PSL settings ] */
+	double ps_def_page_size[2];			/* Default Width and height of paper to plot on in points [Letter or A4] */
 	double ps_page_size[2];			/* Width and height of paper to plot on in points [Letter or A4] */
 	double ps_page_rgb[4];			/* Default paper color [white] */
 	double ps_magnify[2];			/* Width and height of paper to plot on in points [Letter or A4] */
@@ -175,7 +187,7 @@ struct GMT_DEFAULTS {
 	unsigned int ps_color_mode;		/* Postscript encoding of color [PSL_RGB | PSL_CMYK | PSL_HSV | PSL_GRAY] */
 	unsigned int ps_copies;		/* How man copies of each plot [>=1] [GMT4 COMPATIBILITY ONLY] */
 	int ps_media;			/* Default paper media [25(Letter)]; negative if custom size */
-	bool ps_orientation;			/* Orientation of page [false = Landscape, true = Portrait] */
+	unsigned int ps_orientation;			/* Orientation of page [PSL_LANDSCAPE (0)] or PSL_PORTRAIT (1) */
 	bool ps_comments;			/* true if we write comments in the PS file */
 	char ps_transpmode[GMT_LEN16];		/* Transparency mode for PDF only */
 	char ps_convert[GMT_LEN256];		/* Arguments for implicit psconvert calls under modern mode [""] */

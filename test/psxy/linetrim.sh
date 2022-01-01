@@ -43,5 +43,4 @@ gmt math -T0/50/1 T -C0 35 ADD = | gmt psxy -R -J -O -K -W2p+o0/10 >> $ps
 gmt math -T0/50/1 T -C0 40 ADD = | gmt psxy -R -J -O -K -Wfaint,red >> $ps
 gmt math -T0/50/1 T -C0 40 ADD = | gmt psxy -R -J -O -K -W2p+o1i/0 >> $ps
 gmt math -T0/50/1 T -C0 45 ADD = | gmt psxy -R -J -O -K -W2p+o0/1i >> $ps
-gmt math -T0/50/1 T -C0 45 ADD = | gmt psxy -R -J -O -K -Wfaint,red >> $ps
-gmt psxy -R -J -O -T >> $ps
+gmt math -T0/50/1 T -C0 45 ADD = | gmt psxy -R -J -O -Wfaint,red >> $ps

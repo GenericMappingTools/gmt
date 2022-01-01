@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -178,11 +178,11 @@ GMT_LOCAL int gravfft_do_admittance(struct GMT_CTRL *GMT, struct GMT_GRID *Grid,
 static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OPTION *options) {
 
 	unsigned int n_errors = 0;
-
 	int n, override_mode = GMT_FFT_REMOVE_MID;
 	struct GMT_OPTION *opt = NULL,  *popt = NULL;
 	struct GMTAPI_CTRL *API = GMT->parent;
 	char   ptr[GMT_BUFSIZ] = {""}, t_or_b[4] = {""}, argument[GMT_LEN16] = {""}, combined[GMT_BUFSIZ] = {""};
+
 	if (gmt_M_compat_check (GMT, 4)) {
 		char *mod = NULL;
 		if ((popt = GMT_Find_Option (API, 'L', options)) != 0) {	/* Gave old -L */
@@ -204,11 +204,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				}
 				else {
 					Ctrl->In.file[Ctrl->In.n_grids] = strdup (opt->arg);
-					if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]))) n_errors++;;
+					if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_IN, GMT_FILE_REMOTE, &(Ctrl->In.file[Ctrl->In.n_grids]))) n_errors++;;
 					Ctrl->In.n_grids++;
 				}
 				break;
 			case 'C':	/* For theoretical curves only */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->C.active);
 				Ctrl->C.active = true;
 				sscanf (opt->arg, "%d/%lf/%lf/%s", &Ctrl->C.n_pt, &Ctrl->C.theor_inc, &Ctrl->misc.z_level, t_or_b);
 				for (n = 0; t_or_b[n]; n++) {
@@ -230,6 +231,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				if (!opt->arg) {
 					GMT_Report (API, GMT_MSG_ERROR,
 					            "Option -D: must give constant density contrast or grid with density contrasts\n");
@@ -248,6 +250,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.n_terms = atoi (opt->arg);
 				if (Ctrl->E.n_terms > 10) {
 					GMT_Report (API, GMT_MSG_ERROR, "Option -E: n_terms must be <= 10\n");
@@ -259,6 +262,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'F':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->F.active);
 				Ctrl->F.active = true;
 				switch (opt->arg[0]) {
 					case 'g': Ctrl->F.mode = GRAVFFT_GEOID;      break;
@@ -277,11 +281,13 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'G':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->G.active);
 				Ctrl->G.active = true;
 				if (opt->arg[0]) Ctrl->G.file = strdup (opt->arg);
-				if (GMT_Get_FilePath (GMT->parent, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
+				if (GMT_Get_FilePath (API, GMT_IS_GRID, GMT_OUT, GMT_FILE_LOCAL, &(Ctrl->G.file))) n_errors++;
 				break;
 			case 'I':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->I.active);
 				Ctrl->I.active = true;
 				for (n = 0; opt->arg[n]; n++) {
 					switch (opt->arg[n]) {
@@ -314,6 +320,7 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 					n_errors += gmt_default_error (GMT, opt->option);
 				break;
 			case 'N':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->N.active);
 				Ctrl->N.active = true;
 				if (popt && gmt_M_compat_check (GMT, 4)) {	/* Got both old -L and -N; append */
 					sprintf (combined, "%s%s", opt->arg, argument);
@@ -325,13 +332,16 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				Ctrl->N.active = true;
 				break;
 			case 'Q':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Q.active);
 				Ctrl->Q.active = true;
 				override_mode = GMT_FFT_REMOVE_MID;	/* Leave trend alone and remove mid value */
 				break;
 			case 'S':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->S.active);
 				Ctrl->S.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				n = sscanf (opt->arg, "%lf/%lf/%lf/%lf/%lf", &Ctrl->T.te, &Ctrl->T.rhol, &Ctrl->T.rhom, &Ctrl->T.rhow, &Ctrl->T.rhoi);
 				Ctrl->T.rho_cw = Ctrl->T.rhol - Ctrl->T.rhow;
@@ -348,10 +358,12 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 				}
 				break;
 			case 'W':	/* Water depth */
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->W.active);
 				Ctrl->W.active = true;
 				GMT_Get_Values (API, opt->arg, &Ctrl->W.water_depth, 1);
 				break;
 			case 'Z':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->Z.active);
 				Ctrl->Z.active = true;
 				sscanf (opt->arg, "%lf/%lf", &Ctrl->Z.zm, &Ctrl->Z.zl);
 				break;
@@ -418,65 +430,72 @@ static int parse (struct GMT_CTRL *GMT, struct GRAVFFT_CTRL *Ctrl, struct GMT_OP
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <topo_grd> [<ingrid2>] -G<outgrid> [-C<n/wavelength/mean_depth/tbw>]\n", name);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-D<density|grid>] [-E<n_terms>] [-F[f[+s]|b|g|v|n|e]] [-I<wbctk>]\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t[-N%s] [-Q]\n", GMT_FFT_OPT);
-	GMT_Message (API, GMT_TIME_NONE, "\t[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>] [-Z<zm>[/<zl>]] [-fg] [%s]\n\n", GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s %s [<ingrid2>] -G%s [-C<n/wavelength/mean_depth/tbw>] "
+		"[-D<density>] [-E<n_terms>] [-F[f[+s]|b|g|v|n|e]] [-I<cbktw>] [-N%s] [-Q] [-S] "
+		"[-T<te/rl/rm/rw>[/<ri>][+m]] [%s] [-W<wd>[k]] [-Z<zm>[/<zl>]] [-fg] [%s]\n",
+		name, GMT_INGRID, GMT_OUTGRID, GMT_FFT_OPT, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\ttopo_grd is the input grdfile with topography values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-G Filename for output netCDF grdfile with gravity [or geoid] values\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-C Compute admittance curves based on a theoretical model.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append <n/wavelength/mean_depth/tbw> as specified below:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Total profile length in meters = <n> * <wavelength> (unless -Kx is set).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   --> Rest of parameters are set within -T AND -Z options\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append dataflags (one or two) of tbw:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t writes \"elastic plate\" admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     b writes \"loading from below\" admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     w writes wavelength instead of wavenumber.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Sets density contrast across surface (used when not -T).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Give a co-registered density grid for a variable density contrast [constant].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-I Use <ingrid2> and <topo_grd> to estimate admittance|coherence and write\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   it to stdout (-G ignored if set). This grid should contain gravity or geoid\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   for the same region of <topo_grd>. Default computes admittance. Output\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   contains 3 or 4 columns. Frequency (wavelength), admittance (coherence)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   one sigma error bar and, optionally, a theoretical admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append dataflags (one to three) of wbct:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     w writes wavelength instead of wavenumber.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     k Use km or wavelength unit [m].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     c computes coherence instead of admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     b writes a forth column with \"loading from below\" \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       theoretical admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t     t writes a forth column with \"elastic plate\" \n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       theoretical admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Number of terms used in Parker's expansion [Default = 3].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-F Specify desired geopotential field:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   b = Bouguer anomalies (mGal).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   f = Free-air anomalies (mGal) [Default].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t       Append +s to adjust for implied slab correction [none].\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   g = Geoid anomalies (m).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   v = Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   e = East deflections of the vertical (micro-radian).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   n = North deflections of the vertical (micro-radian).\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	gmt_ingrid_syntax (API, 0, "Name of input grid with topography values.  Optionally, give a second grid <ingrid2> for cross-spectral computations (same modifiers apply)");
+	gmt_outgrid_syntax (API, 'G', "Set name of the output grid file with gravity [or geoid] value");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-C<n/wavelength/mean_depth/tbw>");
+	GMT_Usage (API, -2, "Compute admittance curves based on a theoretical model. "
+		"Append <n/wavelength/mean_depth/tbw> as specified below. "
+		"Total profile length in meters = <n> * <wavelength>. "
+		"The remaining parameters are set by -T and -Z options. "
+		"Append /dataflags (one or two) from tbw:");
+	GMT_Usage (API, 3, "b: Write \"loading from below\" admittance.");
+	GMT_Usage (API, 3, "t: Write \"elastic plate\" admittance.");
+	GMT_Usage (API, 3, "w: Write wavelength instead of wavenumber.");
+	GMT_Usage (API, 1, "\n-D<density>");
+	GMT_Usage (API, -2, "Set density contrast across surface (used when not -T). "
+		"Append a co-registered density grid for a variable density contrast or a constant <density>.");
+	GMT_Usage (API, 1, "\n-E<n_terms>");
+	GMT_Usage (API, -2, "Number of terms used in Parker's expansion [Default = 3].");
+	GMT_Usage (API, 1, "\n-F[f[+s]|b|g|v|n|e]");
+	GMT_Usage (API, -2, "Specify desired geopotential field:");
+	GMT_Usage (API, 3, "b: Bouguer anomalies (mGal).");
+	GMT_Usage (API, 3, "f: Free-air anomalies (mGal) [Default].");
+	GMT_Usage (API, 4, "+s Adjust for implied slab correction [none].");
+	GMT_Usage (API, 3, "g: Geoid anomalies (m).");
+	GMT_Usage (API, 3, "v: Vertical Gravity Gradient (VGG; 1 Eovtos = 0.1 mGal/km).");
+	GMT_Usage (API, 3, "e: East deflections of the vertical (micro-radian).");
+	GMT_Usage (API, 3, "n: North deflections of the vertical (micro-radian).");
+	GMT_Usage (API, 1, "\n-I<cbktw>");
+	GMT_Usage (API, -2, "Use <ingrid2> and <ingrid> to estimate admittance|coherence and write "
+		"output to standard output (-G ignored if set). The <ingrid2>  should contain gravity or geoid anomalies "
+		"for the same region of <ingrid>. Default computes admittance. Output "
+		"contains 3 or 4 columns: Frequency (wavelength), admittance (coherence) "
+		"one sigma error bar and, optionally, a theoretical admittance. "
+		"Append dataflags (one to three) from cbktw:");
+	GMT_Usage (API, 3, "c: Compute coherence instead of admittance.");
+	GMT_Usage (API, 3, "b: Write a forth column with \"loading from below\" theoretical admittance.");
+	GMT_Usage (API, 3, "k: Use km or wavelength unit [m].");
+	GMT_Usage (API, 3, "t: Write a forth column with \"elastic plate\" theoretical admittance.");
+	GMT_Usage (API, 3, "w: Write wavelength instead of wavenumber.");
 	GMT_FFT_Option (API, 'N', GMT_FFT_DIM, "Choose or inquire about suitable grid dimensions for FFT, and set modifiers.");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Warning: both -D -T...+m and -Q will implicitly set -N's +h.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Q Writes out a grid with the flexural topography (with z positive up)\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   whose average depth is set to the value given by -Z<zm>.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-S Computes predicted geopotential (see -F) grid due to a subplate load\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   produced by the current bathymetry and the theoretical admittance.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   The necessary parameters are set within -T and -Z options\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T Computes the isostatic compensation. Input file is topo load.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Append elastic thickness and densities of load, mantle, and\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   water, all in SI units. Give average mantle depth via -Z\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If the elastic thickness is > 1e10 it will be interpreted as the\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   flexural rigidity (by default it is computed from Te and Young modulus).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   If an optional infill density <ri> != <rl> is appended we find an approximate solution.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   Optionally, append +m to write a grid with the Moho's geopotential effect\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t   (see -F) from model selected by -T.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-W Specify water depth (or observation level) in m; append k for km.  Must be positive.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-Z Specify Moho [and swell] average compensation depths.\n");
+	GMT_Usage (API, -2, "Warning: both -D -T...+m and -Q will implicitly set -N's +h.");
+	GMT_Usage (API, 1, "\n-Q Writes out a grid with the flexural topography (with z positive up) "
+		"whose average depth is set to the value given by -Z<zm>.");
+	GMT_Usage (API, 1, "\n-S Computes predicted geopotential (see -F) grid due to a subplate load "
+		"produced by the current bathymetry and the theoretical admittance. "
+		"The necessary parameters are set within -T and -Z options.");
+	GMT_Usage (API, 1, "\n-T<te/rl/rm/rw>[/<ri>][+m]");
+	GMT_Usage (API, -2, "Computes the isostatic compensation. Input file is topo load. "
+		"Append elastic thickness and densities of load, mantle, and "
+		"water, all in SI units. Give average mantle depth via -Z. "
+		"If the elastic thickness is > 1e10 it will be interpreted as the "
+		"flexural rigidity [by default it is computed from Te and Young modulus]. "
+		"If an optional infill density <ri> != <rl> is appended we find an approximate solution.");
+	GMT_Usage (API, 3, "+m Write a grid with the Moho's geopotential effect "
+		"(see -F) from model selected by -T.");
+	GMT_Usage (API, 1, "\n-W<wd>[k]");
+	GMT_Usage (API, -2, "Specify water depth (or observation level) in m; append k for km.  Must be positive.");
+	GMT_Usage (API, 1, "\n-Z<zm>[/<zl>]");
+	GMT_Usage (API, -2, "Specify Moho [and swell] average compensation depths.");
 	GMT_Option (API, "V");
 	GMT_Message (API, GMT_TIME_NONE, "\t-fg Convert geographic grids to meters using a \"Flat Earth\" approximation.\n");
 	GMT_Option (API, ".");

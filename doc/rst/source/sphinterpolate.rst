@@ -12,10 +12,13 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt sphinterpolate** [ *table* ] |-G|\ *grdfile*
-[ |SYN_OPT-I| ]
+**gmt sphinterpolate** [ *table* ]
+|-G|\ *grdfile*
+|SYN_OPT-I|
+|SYN_OPT-R|
+[ |-D|\ [*east*] ]
 [ |-Q|\ *mode*\ [*options*] ]
-[ |SYN_OPT-R| ]
+[ |-T| ]
 [ |SYN_OPT-V| ]
 [ |-Z| ]
 [ |SYN_OPT-bi| ]
@@ -25,6 +28,7 @@ Synopsis
 [ |SYN_OPT-i| ]
 [ |SYN_OPT-qi| ]
 [ |SYN_OPT-r| ]
+[ |SYN_OPT-s| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -44,20 +48,35 @@ criteria.
 Required Arguments
 ------------------
 
-.. _-G:
-
-**-G**\ *grdfile*
-    Name of the output grid to hold the interpolation.
-
-Optional Arguments
-------------------
-
 .. |Add_intables| unicode:: 0x20 .. just an invisible code
 .. include:: explain_intables.rst_
+
+.. _-G:
+
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
 .. include:: explain_-I.rst_
+
+.. _-R:
+
+.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
+.. include:: explain_-Rgeo.rst_
+
+Optional Arguments
+------------------
+
+.. _-D:
+
+**-D**\ [*east*]
+    Skip duplicate points since the spherical gridding algorithm cannot handle them.
+    [Default assumes there are no duplicates, except possibly at the poles].
+    Append a repeating longitude (*east*) to skip records with that longitude instead
+    of the full (slow) search for duplicates.
 
 .. _-Q:
 
@@ -84,20 +103,15 @@ Optional Arguments
     iterations used to converge at solutions for gradients when variable
     tensions are selected (e.g., **-T** only) [3]
 
-.. _-R:
-
-.. |Add_-Rgeo| unicode:: 0x20 .. just an invisible code
-.. include:: explain_-Rgeo.rst_
-
 .. _-T:
 
 **-T**
     Use variable tension (ignored with **-Q**\ 0 [constant]
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-Z:
 
@@ -117,12 +131,16 @@ Optional Arguments
 .. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
-.. include:: explain_-qi.rst_
+.. include:: explain_-icols.rst_
 
-.. include:: explain_colon.rst_
+.. include:: explain_-qi.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: explain_nodereg.rst_
+
+.. include:: explain_-s.rst_
+
+.. include:: explain_colon.rst_
 
 .. include:: explain_help.rst_
 
@@ -145,6 +163,17 @@ To interpolate the points in the file testdata.txt on a global 1x1
 degree grid with no tension, use::
 
     gmt sphinterpolate testdata.txt -Rg -I1 -Gsolution.nc
+
+Notes
+-----
+
+The STRIPACK algorithm and implementation expect that there are no duplicate points
+in the input.  It is best that the user ensures that this is the case.  GMT has tools,
+such as :doc:`blockmean` and others, to combine close points into single entries.
+Also, **sphinterpolate** has a **-D** option to determine and exclude duplicates, but
+it is a very brute-force yet exact comparison that is very slow for large data sets.
+A much quicker check involves appending a specific repeating longitude value.
+Detection of duplicates in the STRIPACK library will exit the module.
 
 See Also
 --------

@@ -12,11 +12,12 @@ Synopsis
 
 .. include:: common_SYN_OPTs.rst_
 
-**gmt makecpt** [ |-A|\ *transparency*\ [**+a**] ]
+**gmt makecpt**
+[ |-A|\ *transparency*\ [**+a**] ]
 [ |-C|\ *cpt* ]
 [ |-D|\ [**i**\|\ **o**] ]
 [ |-E|\ [*nlevels*] ]
-[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
+[ |-F|\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*] ]
 [ |-G|\ *zlo*\ /\ *zhi* ]
 [ |-H| ]
 [ |-I|\ [**c**][**z**] ]
@@ -24,7 +25,7 @@ Synopsis
 [ |-N| ]
 [ |-Q| ]
 [ |-S|\ *mode* ]
-[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
+[ |-T|\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*] ]
 [ |-V|\ [*level*] ]
 [ |-W|\ [**w**] ]
 [ |-Z| ]
@@ -40,7 +41,7 @@ Description
 -----------
 
 **makecpt** is a module that will help you make static color palette tables
-(CPTs). In classic mode we write the CMT to standard output, while under
+(CPTs). In classic mode we write the CPT to standard output, while under
 modern mode we simply save the CPT as the current session CPT (but see **-H**).
 You define an equidistant set of contour intervals or pass
 your own z-table or list, and create a new CPT based on an existing master (dynamic)
@@ -91,8 +92,8 @@ Optional Arguments
 
 **-D**\ [**i**\|\ **o**]
     Select the back- and foreground colors to match the colors for
-    lowest and highest *z*-values in the output CPT [Default uses
-    the colors specified in the master file, or those defined by the
+    lowest and highest *z*-values in the output CPT [Default (**-D** or **-Do**)
+    uses the colors specified in the master file, or those defined by the
     parameters :term:`COLOR_BACKGROUND`, :term:`COLOR_FOREGROUND`, and
     :term:`COLOR_NAN`]. Append **i** to match the colors for the lowest and
     highest values in the input (instead of the output) CPT.
@@ -110,11 +111,26 @@ Optional Arguments
 
 .. _-F:
 
-**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**]]
+**-F**\ [**R**\|\ **r**\|\ **h**\|\ **c**][**+c**\ [*label*]][**+k**\ *keys*]
     Force output CPT to be written with r/g/b codes, gray-scale values
     or color name (**R**, default) or r/g/b codes only (**r**), or h-s-v
     codes (**h**), or c/m/y/k codes (**c**).  Optionally or alternatively,
     append **+c** to write discrete palettes in categorical format.
+    If *label* is appended then we create labels for each category to be used
+    when the CPT is plotted. The *label* may be a comma-separated list of
+    category names (you can skip a category by not giving a name), or give
+    *start*\ [-], where we automatically build monotonically increasing labels
+    from *start* (a single letter or an integer). Append - to build ranges
+    *start*\ -*start+1* instead.  If the categorical CPT should have string
+    keys instead of numerical entries then append **+k**\ *keys*, where
+    *keys* is either a file with one key per record or a single letter (e.g., D),
+    then we build sequential letter keys (e.g., D, E, F, ...) starting at that point.
+    For comma-separated lists of keys, use **-T** instead.  **Note**: If **+cM** is given and the number
+    of categories is 12, then we automatically create a list of month names.
+    Likewise, if **+cD** is given and the number of categories is 7 then we
+    make a list of weekday names.  The format of these labels will depend on the
+    :term:`FORMAT_TIME_PRIMARY_MAP`, :term:`GMT_LANGUAGE` and possibly
+    :term:`TIME_WEEK_START` settings.
 
 .. _-G:
 
@@ -129,7 +145,7 @@ Optional Arguments
 **-H**\
     Modern mode only: Write the CPT to standard output as well [Default saves
     the CPT as the session current CPT]. Required for scripts used to make
-    animations via :doc:`movie` where we must pass named CPT files.
+    animations via :doc:`movie` and :doc:`batch` where we must pass named CPT files.
 
 .. _-I:
 
@@ -168,7 +184,7 @@ Optional Arguments
 .. _-S:
 
 **-S**\ *mode*
-    Determine a suitable range for the **-T** option from the input table(s) (or stdin).
+    Determine a suitable range for the **-T** option from the input table(s) (or standard input).
     Choose from several types of range determinations:
     **-Sr** will use the data range min/max, **-S**\ *inc*\ [**+d**] will use the data min/max but rounded
     to nearest *inc* (append **+d** to resample to a discrete CPT), **-Sa**\ *scl* will
@@ -181,18 +197,20 @@ Optional Arguments
 
 .. _-T:
 
-**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
+**-T**\ [*min*/*max*/*inc*\ [**+b**\|\ **i**\|\ **l**\|\ **n**]\|\ *file*\|\ *list*]
     Defines the range of the new CPT by giving the lowest and
     highest z-value (and optionally an interval).  If **-T** is
     not given, the existing range in the master CPT will be used intact.
     The values produces defines the color slice boundaries.  If **+n** is
     used it refers to the number of such boundaries and not the number of slices.
-    For details on array creation, see `Generate 1D Array`_.
+    For details on array creation, see `Generate 1D Array`_.  **Note**: To set
+    up categorical CPTs with string keys you can also give a comma-separated
+    list of your keys.
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
+.. |Add_-V| replace:: |Add_-V_links|
 .. include:: explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 .. _-W:
 
@@ -215,6 +233,7 @@ Optional Arguments
 .. |Add_-di| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-di.rst_
 
+.. |Add_-h| unicode:: 0x20 .. just an invisible code
 .. include:: explain_-h.rst_
 
 .. include:: explain_-icols.rst_
@@ -310,6 +329,19 @@ we always get a color regardless of the *z* value, try
    ::
 
     gmt makecpt -Cjet -T0/500 -Ww > wrapped.cpt
+
+To build a categorical table with 3 categories and add specific category
+names to them, try::
+
+    gmt makecpt -Ccubhelix -T0/3/1 -F+cClouds,Trees,Water > cat.cpt
+
+To instead add unique category labels A, B, C, ... to a 10-item categorical CPT, try::
+
+    gmt makecpt -Cjet -T0/10/1 -F+cA
+
+To make a categorical CPT with string keys instead of numerical lookup values, try::
+
+    gmt makecpt -Ccategorical -Twood,water,gold 
 
 .. include:: cpt_notes.rst_
 

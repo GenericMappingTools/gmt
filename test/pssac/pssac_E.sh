@@ -19,5 +19,4 @@ gmt pssac $SACFILEs -R200/1600/1500/5000 -J -Bx200 -By1000+lkm -BWsen -W1p,blue 
 # -Ed
 gmt pssac $SACFILEs -R200/1600/15/40 -J -Bx200 -By5+lDegree -BWsen -W1p,blue -Ed -M1.5c -K -O -Y6c >> $ps
 # -Eu0: ray parameter in s/radian
-gmt pssac $SACFILEs -R200/1600/420/750 -J -Bx200 -By50+lRayPar -BWsen -W1p,blue -Eu0 -M1.5c -K -O -Y6c >> $ps
-gmt psxy -J -R -O -T >> $ps
+gmt pssac $SACFILEs -R200/1600/420/750 -J -Bx200 -By50+lRayPar -BWsen -W1p,blue -Eu0 -M1.5c -O -Y6c >> $ps

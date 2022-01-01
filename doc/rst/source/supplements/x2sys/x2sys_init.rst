@@ -62,7 +62,8 @@ Required Arguments
 **-D**\ *fmtfile*
     Format definition file prefix for this data set [See Format Definition Files below
     for more information]. Specify full path if the file is not in the
-    current directory.
+    current directory. If **-D** is not given then we default to *TAG*\ .fmt.
+    **Note**: Deprecated extension .def will work but consider renaming the file.
 
 Optional Arguments
 ------------------
@@ -114,10 +115,10 @@ Optional Arguments
     statistics on those COE that fall inside the specified domain.
 .. include:: ../../explain_-Rgeo.rst_
 
-.. _-V:
-
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
 **-Wt**\|\ **d**\ *gap*
     Give **t** or **d** and append the corresponding maximum time gap

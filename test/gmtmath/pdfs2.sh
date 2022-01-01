@@ -73,6 +73,4 @@ EOF
 gmt math -T0/8/0.1 T 4 CHI2PDF = p.d
 gmt psxy -R0/8/0/0.25 -J -O -K p.d -W1p -BWS+t"Probability Density Functions" -Bxa1 -Byaf --MAP_FRAME_TYPE=graph -Y1.65i >> $ps
 gmt psxy -R -J -O -K ML.txt -Sc0.2c -Gred -N >> $ps
-gmt pstext -R -J -O -K -F+f12p,Times-Italic+cTR+jTR+t"@~c@~@+2@+(z,@~n=4@~)" >> $ps
-# Done
-gmt psxy -R -J -O -T >> $ps
+gmt pstext -R -J -O -F+f12p,Times-Italic+cTR+jTR+t"@~c@~@+2@+(z,@~n=4@~)" >> $ps

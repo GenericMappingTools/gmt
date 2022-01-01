@@ -1,6 +1,6 @@
 /*--------------------------------------------------------------------
  *
- *	Copyright (c) 1991-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *	Copyright (c) 1991-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *	See LICENSE.TXT file for copying and redistribution conditions.
  *
  *	This program is free software; you can redistribute it and/or modify
@@ -70,6 +70,7 @@ enum Gmt_api_error_code {
 	GMT_NOT_A_VALID_ARG,
 	GMT_NOT_A_VALID_DIRECTION,
 	GMT_NOT_A_VALID_DIRECTORY,
+	GMT_NOT_A_VALID_DOMAIN,
 	GMT_NOT_A_VALID_FAMILY,
 	GMT_NOT_A_VALID_LOGMODE,
 	GMT_WRONG_FAMILY,

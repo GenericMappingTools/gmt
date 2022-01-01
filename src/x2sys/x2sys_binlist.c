@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -77,15 +77,17 @@ static void Free_Ctrl (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *C) {	/* 
 static int usage (struct GMTAPI_CTRL *API, int level) {
 	const char *name = gmt_show_name_and_purpose (API, THIS_MODULE_LIB, THIS_MODULE_CLASSIC_NAME, THIS_MODULE_PURPOSE);
 	if (level == GMT_MODULE_PURPOSE) return (GMT_NOERROR);
-	GMT_Message (API, GMT_TIME_NONE, "usage: %s <files> -T<TAG> [-D] [-E] [%s] [%s]\n\n", name, GMT_V_OPT, GMT_PAR_OPT);
+	GMT_Usage (API, 0, "usage: %s <files> -T<TAG> [-D] [-E] [%s] [%s]\n", name, GMT_V_OPT, GMT_PAR_OPT);
 
 	if (level == GMT_SYNOPSIS) return (GMT_MODULE_SYNOPSIS);
 
-	GMT_Message (API, GMT_TIME_NONE, "\t<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-T <TAG> is the system tag for this compilation.\n");
-	GMT_Message (API, GMT_TIME_NONE, "\n\tOPTIONS:\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-D Calculate track-lengths per bin (see x2sys_init -j for method and -N for units).\n");
-	GMT_Message (API, GMT_TIME_NONE, "\t-E Bin tracks using equal-area bins (with -D only).\n");
+	GMT_Message (API, GMT_TIME_NONE, "  REQUIRED ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n<files> is one or more datafiles, or give =<files.lis> for a file with a list of datafiles.");
+	GMT_Usage (API, 1, "\n-T<TAG>");
+	GMT_Usage (API, -2, "Set the system tag for this compilation.");
+	GMT_Message (API, GMT_TIME_NONE, "\n  OPTIONAL ARGUMENTS:\n");
+	GMT_Usage (API, 1, "\n-D Calculate track-lengths per bin (see x2sys_init -j for method and -N for units).");
+	GMT_Usage (API, 1, "\n-E Bin tracks using equal-area bins (with -D only).");
 	GMT_Option (API, "V,.");
 
 	return (GMT_MODULE_USAGE);
@@ -101,6 +103,7 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct 
 
 	unsigned int n_errors = 0, n_files[2] = {0, 0};
 	struct GMT_OPTION *opt = NULL;
+	struct GMTAPI_CTRL *API = GMT->parent;
 
 	for (opt = options; opt; opt = opt->next) {	/* Process all the options given */
 
@@ -117,12 +120,15 @@ static int parse (struct GMT_CTRL *GMT, struct X2SYS_BINLIST_CTRL *Ctrl, struct 
 			/* Processes program-specific parameters */
 
 			case 'D':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->D.active);
 				Ctrl->D.active = true;
 				break;
 			case 'E':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->E.active);
 				Ctrl->E.active = true;
 				break;
 			case 'T':
+				n_errors += gmt_M_repeated_module_option (API, Ctrl->T.active);
 				Ctrl->T.active = true;
 				Ctrl->T.TAG = strdup (opt->arg);
 				break;
@@ -241,9 +247,9 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	}
 	else
 		gmt_set_cartesian (GMT, GMT_OUT);
-	gmt_set_column (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
-	gmt_set_column (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
-	if (Ctrl->D.active) gmt_set_column (GMT, GMT_OUT, 4, GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, GMT_OUT, GMT_Z, GMT_IS_FLOAT);
+	gmt_set_column_type (GMT, GMT_OUT, 3, GMT_IS_FLOAT);
+	if (Ctrl->D.active) gmt_set_column_type (GMT, GMT_OUT, 4, GMT_IS_FLOAT);
 	/* Ensure we write integers for the next two columns */
 	GMT->current.io.o_format[2] = GMT->current.io.o_format[3] = strdup ("%g");
 
@@ -285,8 +291,13 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 	X = gmt_M_memory (GMT, NULL, nx_alloc, struct X2SYS_BINLIST_BINCROSS);
 
 	if (Ctrl->D.active) {
-		if (gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE)
+		if (gmt_init_distaz (GMT, s->unit[X2SYS_DIST_SELECTION][0], s->dist_flag, GMT_MAP_DIST) == GMT_NOT_A_VALID_TYPE) {
+			gmt_M_free (GMT, X);
+			if (Ctrl->D.active) gmt_M_free (GMT, dist_bin);
+			x2sys_free_list (GMT, trk_name, n_tracks);
+			x2sys_end (GMT, s);
 			Return (GMT_NOT_A_VALID_TYPE);
+		}
 		dist_bin = gmt_M_memory (GMT, NULL, B.nm_bin, double);
 	}
 
@@ -350,6 +361,9 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 			int signed_flag = s->dist_flag;
 			gmt_M_memset (dist_bin, B.nm_bin, double);
 			if ((dist_km = gmt_dist_array_2 (GMT, data[s->x_col], data[s->y_col], p.n_rows, dist_scale, -signed_flag)) == NULL) {
+				x2sys_free_list (GMT, trk_name, n_tracks);
+				gmt_M_free (GMT, X);
+				gmt_M_free (GMT, Out);
 				error = gmt_M_err_fail (GMT, GMT_MAP_BAD_DIST_FLAG, "");	/* -ve gives increments */
 				Return (error);
 			}
@@ -357,12 +371,15 @@ EXTERN_MSC int GMT_x2sys_binlist (void *V_API, int mode, void *args) {
 
 		last_bin_index = UINT_MAX;
 		last_not_set = true;
-		last_bin_col = last_bin_row = -1;
+		last_bin_col = last_bin_row = GMT_NOTSET;
 		for (row = 0; row < p.n_rows; row++) {
 			if (x2sysbinlist_outside (data[s->x_col][row], data[s->y_col][row], &B, s->geographic)) continue;
 			if (x2sys_err_fail (GMT, x2sys_bix_get_index (GMT, data[s->x_col][row], data[s->y_col][row], &this_bin_col,
-			                                          &this_bin_row, &B, &this_bin_index), ""))
+			                                          &this_bin_row, &B, &this_bin_index), "")) {
+				x2sys_free_list (GMT, trk_name, n_tracks);
+				gmt_M_free (GMT, Out);
 				Return (GMT_RUNTIME_ERROR);
+			}
 
 
 			/* While this may be the same bin as the last bin, the data available may have changed so we keep

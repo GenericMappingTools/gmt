@@ -1,0 +1,174 @@
+#
+# Run full tests
+#
+name: Tests
+
+on:
+  # pull_request:
+  push:
+    branches:
+      - master
+      - 6.[0-9]+
+    paths:
+      - 'src/**'
+      - 'test/**'
+      - 'share/**'
+      - 'doc/examples/**'
+      - 'doc/scripts/**'
+      - '.github/workflows/**'
+      - 'ci/**'
+
+defaults:
+  run:
+    # default to use bash shell
+    shell: bash
+
+jobs:
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+
+    env:
+      # directories
+      COASTLINEDIR: ${{ github.workspace }}/coastline
+      INSTALLDIR: ${{ github.workspace }}/gmt-install-dir
+      # disable auto-display of GMT plots
+      GMT_END_SHOW: off
+      # Run full tests
+      BUILD_DOCS  : false
+      PACKAGE     : false
+      RUN_TESTS   : true
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-latest
+          - name: macOS
+            os: macos-latest
+          - name: Windows
+            os: windows-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup vcpkg (Windows)
+        uses: dawidd6/action-download-artifact@v2.16.0
+        with:
+          workflow: ci-caches.yml
+          name: vcpkg-cache
+          path: C:\vcpkg\installed\
+        if: runner.os == 'Windows'
+
+      - name: Install GMT dependencies
+        run: |
+          # $RUNNER_OS can be Linux, macOS or Windows
+          # The following command converts $RUNNER_OS to lowercase
+          os=$(echo "$RUNNER_OS" | tr '[:upper:]' '[:lower:]')
+          bash ci/install-dependencies-${os}.sh
+        env:
+          EXCLUDE_OPTIONAL: ${{ matrix.EXCLUDE_OPTIONAL }}
+
+      - name: Cache GSHHG and DCW data
+        uses: actions/cache@v2
+        id: cache-coastline
+        with:
+          path: ${{ env.COASTLINEDIR }}
+          key: coastline-${{ hashFiles('ci/download-coastlines.sh') }}
+
+      - name: Download coastlines
+        run: bash ci/download-coastlines.sh
+        if: steps.cache-coastline.outputs.cache-hit != 'true'
+
+      - name: Configure GMT
+        run: |
+          if [ "$RUNNER_OS" != "Windows" ]; then
+            bash ci/config-gmt-unix.sh
+          else
+            bash ci/config-gmt-windows.sh
+          fi
+
+      - name: Compile GMT (Linux/macOS)
+        run: |
+          mkdir build
+          cd build
+          cmake -G Ninja ..
+          cmake --build .
+        if: runner.os != 'Windows'
+
+      - name: Compile GMT (Windows)
+        shell: cmd
+        run: |
+          mkdir build
+          cd build
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+          cmake -G Ninja .. -DCMAKE_TOOLCHAIN_FILE=%VCPKG_INSTALLATION_ROOT%\scripts\buildsystems\vcpkg.cmake -DCMAKE_BUILD_TYPE=Release
+          cmake --build .
+        if: runner.os == 'Windows'
+
+      - name: Download cached GMT remote data from GitHub Artifacts
+        uses: dawidd6/action-download-artifact@v2.16.0
+        with:
+          workflow: ci-caches.yml
+          name: gmt-cache
+          path: .gmt
+
+      # Move downloaded files to ~/.gmt directory and list them
+      - name: Move and list downloaded remote files
+        run: |
+          mkdir -p ~/.gmt
+          mv .gmt/* ~/.gmt
+          ls -lRh ~/.gmt
+
+      - name: Install GMT
+        run: |
+          cd build
+          cmake --build . --target install
+          # Add GMT PATH to bin
+          echo "${INSTALLDIR}/bin" >> $GITHUB_PATH
+
+      - name: Check a few simple commands
+        run: bash ci/simple-gmt-tests.sh
+
+      - name: Check a few simple commands (Windows)
+        shell: cmd
+        run: call ci/simple-gmt-tests.bat
+        if: runner.os == 'Windows'
+
+      # Run full tests and rerun failed tests
+      - name: Run full tests
+        run: |
+          set -x -e
+          cd build
+          # Disable MinGW's path conversion, see #1035.
+          if [ "$RUNNER_OS" == "Windows" ]; then export MSYS_NO_PATHCONV=1; fi
+          # Run tests
+          ctest ${CTEST_ARGS} || ctest ${CTEST_ARGS} --rerun-failed || ctest ${CTEST_ARGS} --rerun-failed
+          # show the slowest tests
+          sort -k3nr Testing/Temporary/CTestCostData.txt > /tmp/cost.txt
+          head -n 30 /tmp/cost.txt | awk 'NF==3 {printf("%50-s %d %5.1f\n", $1, $2, $3)}'
+        env:
+          CTEST_ARGS : "--output-on-failure --force-new-ctest-process -j4 --timeout 480"
+
+      - name: Run DOS batch examples (Windows)
+        shell: cmd
+        run: |
+          cd doc/examples
+          call do_examples.bat
+        if: runner.os == 'Windows'
+
+      - name: Upload build directory if failed
+        uses: actions/upload-artifact@v2
+        with:
+          name: BuildDirectory-${{ runner.os }}
+          path: build/
+        if: failure()
+
+      - name: Upload test coverage
+        run: bash <(curl -s https://codecov.io/bash)
+        if: ${{ always() }}

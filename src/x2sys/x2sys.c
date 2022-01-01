@@ -1,6 +1,6 @@
 /*-----------------------------------------------------------------
  *
- *      Copyright (c) 1999-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+ *      Copyright (c) 1999-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
  *      See LICENSE.TXT file for copying and redistribution conditions.
  *
  *      This program is free software; you can redistribute it and/or modify
@@ -103,7 +103,6 @@
  */
 
 #include "gmt_dev.h"
-#include "gmt_common_byteswap.h"
 #include "gmt_internals.h"
 #include "mgd77/mgd77.h"
 #include "x2sys.h"
@@ -111,7 +110,6 @@
 /* Global variables used by X2SYS functions */
 
 char *X2SYS_HOME;
-static char *X2SYS_program;
 
 struct MGD77_CONTROL M;
 
@@ -226,9 +224,9 @@ GMT_LOCAL int x2sys_err_pass (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return (err);
 	/* When error code is non-zero: print error message and pass error code on */
 	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, " %s [%s]\n", x2sys_strerror(GMT, err), file);
 	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", x2sys_strerror(GMT, err));
 	return (err);
 }
 
@@ -328,7 +326,7 @@ int x2sys_initialize (struct GMT_CTRL *GMT, char *TAG, char *fname, struct GMT_I
 	X->TAG = strdup (TAG);
 	X->info = gmt_M_memory (GMT, NULL, n_alloc, struct X2SYS_DATA_INFO);
 	X->file_type = X2SYS_ASCII;
-	X->x_col = X->y_col = X->t_col = -1;
+	X->x_col = X->y_col = X->t_col = GMT_NOTSET;
 	X->ms_flag = '>';	/* Default multisegment header flag */
 	sprintf (line, "%s/%s.%s", TAG, fname, X2SYS_FMT_EXT);
 	X->dist_flag = 0;	/* Cartesian distances */
@@ -681,8 +679,10 @@ int x2sys_read_file (struct GMT_CTRL *GMT, char *fname, double ***data, struct X
 	z = gmt_M_memory (GMT, NULL, s->n_fields, double *);
 	for (i = 0; i < s->n_fields; i++) z[i] = gmt_M_memory (GMT, NULL, n_alloc, double);
 	p->ms_rec = gmt_M_memory (GMT, NULL, n_alloc, uint64_t);
-	if ((error = x2sys_skip_header (GMT, fp, s)))
+	if ((error = x2sys_skip_header (GMT, fp, s))) {
+		gmt_M_free (GMT, rec);
 		return error;
+	}
 	p->n_segments = 0;	/* So that first increment sets it to 0 */
 	j = 0;
 	while (!x2sys_read_record (GMT, fp, rec, s, G)) {	/* Gets the next data record */
@@ -912,7 +912,7 @@ int x2sys_read_mgd77ncfile (struct GMT_CTRL *GMT, char *fname, double ***data, s
 
 	S = MGD77_Create_Dataset (GMT);	/* Get data structure w/header */
 
-	strcpy (file, fname);
+	strncpy (file, fname, GMT_LEN32-1);
 	if (gmt_file_is_cache (GMT->parent, file)) {	/* Must be a cache file */
 		if (strstr (file, s->suffix) == NULL) {strcat (file, "."); strcat (file, s->suffix); }	/* Must have suffix to download */
 		first = gmt_download_file_if_not_found (GMT, file, 0);
@@ -1660,9 +1660,9 @@ int x2sys_err_fail (struct GMT_CTRL *GMT, int err, char *file) {
 	if (err == X2SYS_NOERROR) return X2SYS_NOERROR;
 	/* When error code is non-zero: print error message and exit */
 	if (file && file[0])
-		gmt_message (GMT, "%s: %s [%s]\n", X2SYS_program, x2sys_strerror(GMT, err), file);
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s [%s]\n", x2sys_strerror(GMT, err), file);
 	else
-		gmt_message (GMT, "%s: %s\n", X2SYS_program, x2sys_strerror(GMT, err));
+		GMT_Report (GMT->parent, GMT_MSG_ERROR, "%s\n", x2sys_strerror(GMT, err));
 	return GMT_RUNTIME_ERROR;
 }
 
@@ -1772,6 +1772,8 @@ int64_t x2sys_read_coe_dbase (struct GMT_CTRL *GMT, struct X2SYS_INFO *S, char *
 		}
 		if (line[0] != '>') {	/* Trouble */
 			GMT_Report (GMT->parent, GMT_MSG_ERROR, "No segment header found [line %" PRIu64 "]\n", rec_no);
+			x2sys_free_list (GMT, trk_list, n_tracks);
+			x2sys_free_list (GMT, ignore, n_ignore);
 			return (-GMT_RUNTIME_ERROR);
 		}
 		n_items = sscanf (&line[2], "%s %d %s %d %s %s", trk[0], &year[0], trk[1], &year[1], info[0], info[1]);

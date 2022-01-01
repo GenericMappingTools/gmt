@@ -12,18 +12,20 @@ Synopsis
 
 .. include:: ../../common_SYN_OPTs.rst_
 
-**gmt segy2grd** *segyfile* |-G|\ *grdfile*
+**gmt segy2grd**
+*segyfile*
+|-G|\ *grdfile*
 |SYN_OPT-I|
 |SYN_OPT-R|
 [ |-A|\ [**n**\|\ **z**] ]
-[ |-D|\ [**+x**\ *xname*][**+y**\ *yname*][**+z**\ *zname*][**+s**\ *scale*][**+o**\ *offset*][**+n**\ *invalid*][**+t**\ *title*][**+r**\ *remark*] ]
+[ |-D|\ |SYN_OPT-D2| ]
 [ |-L|\ [*nsamp*] ]
 [ |-M|\ [*ntraces*] ]
-[ |-N|\ *nodata* ]
 [ |-Q|\ *<mode><value>* ]
 [ |-S|\ [*header*] ]
 [ |SYN_OPT-V| ]
 [ |SYN_OPT-bi| ]
+[ |SYN_OPT-di| ]
 [ |SYN_OPT-:| ]
 [ |SYN_OPT--| ]
 
@@ -47,8 +49,10 @@ Required Arguments
 
 .. _-G:
 
-**-G**\ *grdfile*
-    *grdfile* is the name of the binary output grid file.
+.. |Add_outgrid| replace:: Give the name of the output grid file.
+.. include:: /explain_grd_inout.rst_
+    :start-after: outgrid-syntax-begins
+    :end-before: outgrid-syntax-ends
 
 .. _-I:
 
@@ -88,12 +92,6 @@ Optional Arguments
     **-M**\ 0 will read number in binary header, **-M**\ *ntraces* will
     attempt to read only *n* traces.
 
-.. _-N:
-
-**-N**\ *nodata*
-    No data. Set nodes with no input sample to this value [Default is
-    NaN].
-
 .. _-Q:
 
 **-Q**\ *<mode><value>*
@@ -110,10 +108,14 @@ Optional Arguments
     for 4-byte float starting at byte *number*. If **-S** not set, assumes even
     spacing of samples at the *x_inc, y_inc* supplied with **-I**.
 
-.. _-V:
+.. |Add_-V| replace:: |Add_-V_links|
+.. include:: /explain_-V.rst_
+    :start-after: **Syntax**
+    :end-before: **Description**
 
-.. |Add_-V| unicode:: 0x20 .. just an invisible code
-.. include:: ../../explain_-V.rst_
+.. |Add_-di| replace:: Also sets nodes with no input SEGY coverage to this value
+    [Default is NaN].
+.. include:: ../../explain_-di.rst_
 
 .. |Add_nodereg| unicode:: 0x20 .. just an invisible code
 .. include:: ../../explain_nodereg.rst_
@@ -123,9 +125,7 @@ Optional Arguments
 Examples
 --------
 
-To create a grid file from an even spaced SEGY file test.segy, try
-
-   ::
+To create a grid file from an even spaced SEGY file test.segy, try::
 
     gmt segy2grd test.segy -I0.1/0.1 -Gtest.nc -R198/208/18/25 -V
 
@@ -134,9 +134,7 @@ first trace will be assumed to be at X=198
 
 To create a grid file from the SEGY file test.segy, locating traces
 according to the CDP number, where there are 10 CDPs per km and the
-sample interval is 0.1, try
-
-   ::
+sample interval is 0.1, try::
 
     gmt segy2grd test.segy -Gtest.nc -R0/100/0/10 -I0.5/0.2 -V -Qx0.1 -Qy0.1
 

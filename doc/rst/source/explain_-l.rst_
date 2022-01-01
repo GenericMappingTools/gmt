@@ -1,2 +1,2 @@
-**-l**\ [*label*]\ [**+D**\ *pen*][**+G**\ *gap*][**+H**\ *header*][**+L**\ [*code*/]\ *txt*][**+N**\ *cols*][**+S**\ *size*][**+V**\ [*pen*]][**+f**\ *font*][**+g**\ *fill*][**+j**\ *just*][**+o**\ *off*][**+p**\ *pen*][**+s**\ *scale*][**+w**\ *width*] :ref:`(more ...) <-l_full>`
+**-l**\ [*label*]\ [**+D**\ *pen*][**+G**\ *gap*][**+H**\ *header*][**+L**\ [*code*/]\ *txt*][**+N**\ *cols*][**+S**\ *size*\ [/*height*]][**+V**\ [*pen*]][**+f**\ *font*][**+g**\ *fill*][**+j**\ *just*][**+o**\ *off*][**+p**\ *pen*][**+s**\ *scale*][**+w**\ *width*] :ref:`(more ...) <-l_full>`
     Add a legend entry for the symbol or line being plotted. |Add_-l|

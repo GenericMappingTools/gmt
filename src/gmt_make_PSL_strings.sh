@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Copyright (c) 2012-2020 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
+# Copyright (c) 2012-2021 by the GMT Team (https://www.generic-mapping-tools.org/team.html)
 # See LICENSE.TXT file for copying and redistribution conditions.
 #
 # This script just makes the include file PSL_strings.h
@@ -29,7 +29,8 @@ cat << EOF > PSL_strings.h
  *--------------------------------------------------------------------*/
 
 /* The three former include files PSL_label.ps, PSL_text.ps, and PSL_prologue.ps
- * are now represented as three very long string literals instead.
+ * are now represented as three very long string literals instead.  However,
+ * they are still the original sources and any edits should be made to them.
  */
 EOF
 cat << EOF > ${TMPDIR}/t.lis
@@ -42,7 +43,7 @@ while read file; do
 	n=$(cat $file | wc -l)
 	let n1=n-1
 	varname=$(basename $file .ps)
-	sed -n 1,${n1}p $file | awk 'BEGIN {printf "static char *%s_str =\n", "'$varname'"}; {printf "\"%s\\n\"\n", $0}' >> PSL_strings.h
+	sed -n 1,${n1}p $file | grep -v "^%+" | awk 'BEGIN {printf "static char *%s_str =\n", "'$varname'"}; {printf "\"%s\\n\"\n", $0}' >> PSL_strings.h
 	sed -n ${n}p $file | awk '{printf "\"%s\\n\";\n", $0}'>> PSL_strings.h
 done < ${TMPDIR}/t.lis
 rm -f ${TMPDIR}/t.lis
